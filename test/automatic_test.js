@@ -57,6 +57,13 @@ describe('automatic conversions', function() {
       it('inserts commas for braceless objects', function() {
         assert.strictEqual(convert('a: b\nc: d'), 'a: b,\nc: d');
       });
+
+      it('inserts commas at the end of a multi-line property value', function() {
+        assert.strictEqual(convert(
+          '{\n  a: ->\n    1  \n\n  b: 2\n}'),
+          '{\n  a: ->\n    1  \n  ,\n\n  b: 2\n}'
+        );
+      });
     });
 
     describe('in function calls', function() {
@@ -78,6 +85,13 @@ describe('automatic conversions', function() {
 
       it('inserts commas immediately after the element if followed by a comment', function() {
         assert.strictEqual(convert('a(\n  1 # hi\n  2\n)'), 'a(\n  1, # hi\n  2\n)');
+      });
+
+      it('inserts commas at the end of a multi-line property value', function() {
+        assert.strictEqual(convert(
+          'a\n  b: ->\n    c\n\n  c: ->\n    d\n'),
+          'a\n  b: ->\n    c\n  ,\n\n  c: ->\n    d\n'
+        );
       });
     });
   });
