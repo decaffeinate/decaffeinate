@@ -16,7 +16,7 @@ function run(args) {
   if (input.paths.length) {
     runWithPaths(input.paths, input.options);
   } else {
-    runWithStreams([process.stdin], [process.stdout], input.options);
+    runWithStream(process.stdin, process.stdout, input.options);
   }
 }
 
@@ -53,68 +53,62 @@ function parseArguments(args) {
  * @param {?function(Error[])=} callback
  */
 function runWithPaths(paths, options, callback) {
-  const inputs = [];
-  const outputs = [];
-  const temporaryPaths = [];
   const errors = [];
+  var index = 0;
 
-  paths.forEach(function(path) {
+  function processPath(path) {
     const temporaryPath = path + '.decaffeinate';
-    temporaryPaths.push(temporaryPath);
-    inputs.push(fs.createReadStream(path, 'utf8'));
-    outputs.push(fs.createWriteStream(temporaryPath, 'utf8'));
-  });
-
-  runWithStreams(inputs, outputs, options, function(errs) {
-    errors.push.call(errors, errs);
-    var remainingCount = paths.length;
-
-    temporaryPaths.forEach(function(temporaryPath, i) {
-      fs.rename(temporaryPath, paths[i], function(err) {
-        if (err) { errors.push(err); }
-
-        remainingCount--;
-        if (remainingCount === 0 && callback) {
-          callback(errors);
+    runWithStream(
+      fs.createReadStream(path, 'utf8'),
+      fs.createWriteStream(temporaryPath, 'utf8'),
+      options,
+      function(err) {
+        if (err) {
+          errors.push(err);
+        } else {
+          fs.rename(temporaryPath, path);
         }
-      });
-    });
-  });
+        processNext();
+      }
+    );
+  }
+
+  function processNext() {
+    if (index < paths.length) {
+      processPath(paths[index++]);
+    } else if (callback) {
+      callback(errors);
+    }
+  }
+
+  processNext();
 }
 
 /**
- * Run decaffeinate reading from inputs and writing to corresponding outputs.
+ * Run decaffeinate reading from input and writing to corresponding output.
  *
- * @param {ReadableStream[]} inputs
- * @param {WritableStream[]} outputs
+ * @param {ReadableStream} input
+ * @param {WritableStream} output
  * @param {ConvertOptions=} options
- * @param {function(Error[])=} callback
+ * @param {function(?Error)=} callback
  */
-function runWithStreams(inputs, outputs, options, callback) {
-  var remainingCount = inputs.length;
-  const errors = [];
+function runWithStream(input, output, options, callback) {
+  var error;
+  var data = '';
 
-  inputs.forEach(function(input, i) {
-    input.setEncoding('utf8');
+  input.setEncoding('utf8');
 
-    const output = outputs[i];
-    var data = '';
+  input.on('data', function(chunk) {
+    data += chunk;
+  });
 
-    input.on('data', function(chunk) {
-      data += chunk;
+  input.on('end', function() {
+    output.end(convert(data, options), function() {
+      callback(error);
     });
+  });
 
-    input.on('end', function() {
-      output.end(convert(data, options), function() {
-        remainingCount--;
-        if (remainingCount === 0 && callback) {
-          callback(errors);
-        }
-      });
-    });
-
-    output.on('error', function(err) {
-      errors.push(err);
-    });
+  output.on('error', function(err) {
+    error = err;
   });
 }
