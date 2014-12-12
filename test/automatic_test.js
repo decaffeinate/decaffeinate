@@ -7,6 +7,13 @@ describe('automatic conversions', function() {
       assert.strictEqual(convert('[\n  1\n  2\n]', { commas: false }), '[\n  1\n  2\n]');
     });
 
+    it('does not add commas after block comments', function() {
+      assert.strictEqual(convert(
+        '{\n  a: b\n  ###\n  # no comma\n  ###\n  c: d\n}'),
+        '{\n  a: b,\n  ###\n  # no comma\n  ###\n  c: d\n}'
+      );
+    });
+
     describe('in arrays', function() {
       it('inserts commas at the end of lines that would have them in JavaScript', function() {
         assert.strictEqual(convert('[\n  1\n  2\n]'), '[\n  1,\n  2\n]');
