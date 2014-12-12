@@ -1,0 +1,21 @@
+{
+  "name": "decaffeinate",
+  "version": "1.0.0",
+  "description": "Tools to move CoffeeScript to JavaScript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive test"
+  },
+  "keywords": [
+    "coffee",
+    "coffee-script",
+    "convert",
+    "es3",
+    "es6"
+  ],
+  "author": "Brian Donovan",
+  "license": "MIT",
+  "dependencies": {
+    "coffee-script": "^1.8.0"
+  }
+}

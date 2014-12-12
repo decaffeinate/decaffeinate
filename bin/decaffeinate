@@ -1,0 +1,91 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const convert = require('..').convert;
+
+run(process.argv.slice(2));
+
+/**
+ * Run the script with the user-supplied arguments.
+ *
+ * @param {string[]} args
+ */
+function run(args) {
+  if (args.length) {
+    runWithPaths(args);
+  } else {
+    runWithStreams([process.stdin], [process.stdout]);
+  }
+}
+
+/**
+ * Run decaffeinate on the given paths, changing them in place.
+ *
+ * @param {string[]} paths
+ * @param {function(Error[])=} callback
+ */
+function runWithPaths(paths, callback) {
+  const inputs = [];
+  const outputs = [];
+  const temporaryPaths = [];
+  const errors = [];
+
+  paths.forEach(function(path) {
+    const temporaryPath = path + '.decaffeinate';
+    temporaryPaths.push(temporaryPath);
+    inputs.push(fs.createReadStream(path, 'utf8'));
+    outputs.push(fs.createWriteStream(temporaryPath, 'utf8'));
+  });
+
+  runWithStreams(inputs, outputs, function(errs) {
+    errors.push.call(errors, errs);
+    var remainingCount = paths.length;
+
+    temporaryPaths.forEach(function(temporaryPath, i) {
+      fs.rename(temporaryPath, paths[i], function(err) {
+        if (err) { errors.push(err); }
+
+        remainingCount--;
+        if (remainingCount === 0 && callback) {
+          callback(errors);
+        }
+      });
+    });
+  });
+}
+
+/**
+ * Run decaffeinate reading from inputs and writing to corresponding outputs.
+ *
+ * @param {ReadableStream[]} inputs
+ * @param {WritableStream[]} outputs
+ * @param {function(Error[])} callback
+ */
+function runWithStreams(inputs, outputs, callback) {
+  var remainingCount = inputs.length;
+  const errors = [];
+
+  inputs.forEach(function(input, i) {
+    input.setEncoding('utf8');
+
+    const output = outputs[i];
+    var data = '';
+
+    input.on('data', function(chunk) {
+      data += chunk;
+    });
+
+    input.on('end', function() {
+      output.end(convert(data), function() {
+        remainingCount--;
+        if (remainingCount === 0 && callback) {
+          callback(errors);
+        }
+      });
+    });
+
+    output.on('error', function(err) {
+      errors.push(err);
+    });
+  });
+}
