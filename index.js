@@ -11,21 +11,32 @@ const getCommaInsertionsForList = require('./lib/conversions/commas').getCommaIn
 var Insertion;
 
 
+/** @typedef {{commas: boolean}} */
+var ConvertOptions;
+
+
 /**
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
  *
  * @param source
+ * @param {{ConvertOptions}=} options
  * @returns {string}
  */
-function convert(source) {
+function convert(source, options) {
   const ast = parse(source);
   var insertions = [];
 
+  const commas = (options && ('commas' in options)) ? options.commas : true;
+
   traverse(ast, function(node) {
     if (isArr(node) || isObj(node)) {
-      insertions = insertions.concat(getCommaInsertionsForList(source, node.objects));
+      if (commas) {
+        insertions = insertions.concat(getCommaInsertionsForList(source, node.objects));
+      }
     } else if (isCall(node)) {
-      insertions = insertions.concat(getCommaInsertionsForList(source, node.args));
+      if (commas) {
+        insertions = insertions.concat(getCommaInsertionsForList(source, node.args));
+      }
     }
   });
 

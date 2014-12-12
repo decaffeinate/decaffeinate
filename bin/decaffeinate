@@ -11,20 +11,48 @@ run(process.argv.slice(2));
  * @param {string[]} args
  */
 function run(args) {
-  if (args.length) {
-    runWithPaths(args);
+  const input = parseArguments(args);
+
+  if (input.paths.length) {
+    runWithPaths(input.paths, input.options);
   } else {
-    runWithStreams([process.stdin], [process.stdout]);
+    runWithStreams([process.stdin], [process.stdout], input.options);
   }
+}
+
+/**
+ * @param {string[]} args
+ * @returns {{options: ConvertOptions, paths: string[]}}
+ */
+function parseArguments(args) {
+  const options = /** @type ConvertOptions */{};
+  const paths = /** @type string[] */[];
+
+  for (var i = 0; i < args.length; i++) {
+    var arg = args[i];
+    switch (arg) {
+      case '--commas':
+      case '--no-commas':
+        options.commas = (arg === '--commas');
+        break;
+
+      default:
+        paths.push(arg);
+        break;
+    }
+  }
+
+  return { options: options, paths: paths };
 }
 
 /**
  * Run decaffeinate on the given paths, changing them in place.
  *
  * @param {string[]} paths
- * @param {function(Error[])=} callback
+ * @param {ConvertOptions=} options
+ * @param {?function(Error[])=} callback
  */
-function runWithPaths(paths, callback) {
+function runWithPaths(paths, options, callback) {
   const inputs = [];
   const outputs = [];
   const temporaryPaths = [];
@@ -37,7 +65,7 @@ function runWithPaths(paths, callback) {
     outputs.push(fs.createWriteStream(temporaryPath, 'utf8'));
   });
 
-  runWithStreams(inputs, outputs, function(errs) {
+  runWithStreams(inputs, outputs, options, function(errs) {
     errors.push.call(errors, errs);
     var remainingCount = paths.length;
 
@@ -59,9 +87,10 @@ function runWithPaths(paths, callback) {
  *
  * @param {ReadableStream[]} inputs
  * @param {WritableStream[]} outputs
- * @param {function(Error[])} callback
+ * @param {ConvertOptions=} options
+ * @param {function(Error[])=} callback
  */
-function runWithStreams(inputs, outputs, callback) {
+function runWithStreams(inputs, outputs, options, callback) {
   var remainingCount = inputs.length;
   const errors = [];
 
@@ -76,7 +105,7 @@ function runWithStreams(inputs, outputs, callback) {
     });
 
     input.on('end', function() {
-      output.end(convert(data), function() {
+      output.end(convert(data, options), function() {
         remainingCount--;
         if (remainingCount === 0 && callback) {
           callback(errors);

@@ -3,6 +3,10 @@ const convert = require('..').convert;
 
 describe('automatic conversions', function() {
   describe('inserting commas', function() {
+    it('can be opted out of with an option', function() {
+      assert.strictEqual(convert('[\n  1\n  2\n]', { commas: false }), '[\n  1\n  2\n]');
+    });
+
     describe('in arrays', function() {
       it('inserts commas at the end of lines that would have them in JavaScript', function() {
         assert.strictEqual(convert('[\n  1\n  2\n]'), '[\n  1,\n  2\n]');
