@@ -104,7 +104,9 @@ function runWithStream(input, output, options, callback) {
 
   input.on('end', function() {
     output.end(convert(data, options), function() {
-      callback(error);
+      if (callback) {
+        callback(error);
+      }
     });
   });
 
