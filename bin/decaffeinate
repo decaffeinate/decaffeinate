@@ -36,6 +36,11 @@ function parseArguments(args) {
         options.commas = (arg === '--commas');
         break;
 
+      case '--call-parens':
+      case '--no-call-parens':
+        options.callParens = (arg === '--call-parens');
+        break;
+
       default:
         paths.push(arg);
         break;

@@ -4,14 +4,16 @@ const types = require('./lib/types');
 const isArr = types.isArr;
 const isObj = types.isObj;
 const isCall = types.isCall;
-const getCommaInsertionsForList = require('./lib/conversions/commas').getCommaInsertionsForList;
+const isNew = types.isNew;
+const getCommaSplicesForList = require('./lib/conversions/commas').getCommaSplicesForList;
+const getParenthesesSplicesForCall = require('./lib/conversions/call-parens').getParenthesesSplicesForCall;
 
 
-/** @typedef {{index: number, value: string}} */
-var Insertion;
+/** @typedef {{start: number, end: number, value: string}} */
+var Splice;
 
 
-/** @typedef {{commas: boolean}} */
+/** @typedef {{commas: boolean, callParens: boolean}} */
 var ConvertOptions;
 
 
@@ -23,43 +25,60 @@ var ConvertOptions;
  * @returns {string}
  */
 function convert(source, options) {
-  const ast = parse(source);
-  var insertions = [];
+  var ast;
+  var splices;
 
   const commas = (options && ('commas' in options)) ? options.commas : true;
+  const callParens = (options && ('callParens' in options)) ? options.callParens : true;
 
-  traverse(ast, function(node) {
-    if (isArr(node) || isObj(node)) {
-      if (commas) {
-        insertions = insertions.concat(getCommaInsertionsForList(source, node.objects));
-      }
-    } else if (isCall(node)) {
-      if (commas) {
-        insertions = insertions.concat(getCommaInsertionsForList(source, node.args));
-      }
-    }
-  });
+  if (commas) {
+    ast = parse(source);
+    splices = [];
 
-  return performInsertions(source, insertions);
+    traverse(ast, function(node) {
+      if (isArr(node) || isObj(node)) {
+        splices = splices.concat(getCommaSplicesForList(source, node.objects));
+      } else if (isCall(node) || isNew(node)) {
+        splices = splices.concat(getCommaSplicesForList(source, node.args));
+      }
+    });
+
+    source = performSplices(source, splices);
+  }
+
+  if (callParens) {
+    ast = parse(source);
+    splices = [];
+
+    traverse(ast, function(node) {
+      if (isCall(node) || isNew(node)) {
+        splices = splices.concat(getParenthesesSplicesForCall(source, node));
+      }
+    });
+
+    source = performSplices(source, splices);
+  }
+
+  return source;
 }
 exports.convert = convert;
 
 
 /**
- * Inserts strings into the given source at the requested positions.
+ * Splices strings into the given source at the requested positions.
  *
  * @param {string} source
- * @param {Insertion[]} insertions
+ * @param {Splice[]} splice
  * @returns {string}
  */
-function performInsertions(source, insertions) {
+function performSplices(source, splice) {
   // Reverse-sort by index.
-  insertions = insertions.slice().sort(function(left, right) {
-    return right.index - left.index;
+  splice = splice.slice().sort(function(left, right) {
+    return right.end - left.end;
   });
 
-  insertions.forEach(function(insertion) {
-    source = source.slice(0, insertion.index) + insertion.value + source.slice(insertion.index);
+  splice.forEach(function(splice) {
+    source = source.slice(0, splice.start) + splice.value + source.slice(splice.end);
   });
 
   return source;
