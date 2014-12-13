@@ -31,6 +31,19 @@ function convert(source, options) {
   const commas = (options && ('commas' in options)) ? options.commas : true;
   const callParens = (options && ('callParens' in options)) ? options.callParens : true;
 
+  if (callParens) {
+    ast = parse(source);
+    splices = [];
+
+    traverse(ast, function(node) {
+      if (isCall(node) || isNew(node)) {
+        splices = splices.concat(getParenthesesSplicesForCall(source, node));
+      }
+    });
+
+    source = performSplices(source, splices);
+  }
+
   if (commas) {
     ast = parse(source);
     splices = [];
@@ -40,19 +53,6 @@ function convert(source, options) {
         splices = splices.concat(getCommaSplicesForList(source, node.objects));
       } else if (isCall(node) || isNew(node)) {
         splices = splices.concat(getCommaSplicesForList(source, node.args));
-      }
-    });
-
-    source = performSplices(source, splices);
-  }
-
-  if (callParens) {
-    ast = parse(source);
-    splices = [];
-
-    traverse(ast, function(node) {
-      if (isCall(node) || isNew(node)) {
-        splices = splices.concat(getParenthesesSplicesForCall(source, node));
       }
     });
 
