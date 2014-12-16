@@ -41,6 +41,11 @@ function parseArguments(args) {
         options.callParens = (arg === '--call-parens');
         break;
 
+      case '--function-parens':
+      case '--no-function-parens':
+        options.functionParens = (arg === '--function-parens');
+        break;
+
       default:
         paths.push(arg);
         break;
@@ -71,7 +76,7 @@ function runWithPaths(paths, options, callback) {
         if (err) {
           errors.push(err);
         } else {
-          fs.rename(temporaryPath, path);
+          fs.renameSync(temporaryPath, path);
         }
         processNext();
       }

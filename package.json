@@ -16,6 +16,7 @@
   "author": "Brian Donovan",
   "license": "MIT",
   "dependencies": {
-    "coffee-script": "^1.8.0"
+    "coffee-script": "^1.8.0",
+    "googlediff": "^0.1.0"
   }
 }

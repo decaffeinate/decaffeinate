@@ -5,15 +5,19 @@ const isArr = types.isArr;
 const isObj = types.isObj;
 const isCall = types.isCall;
 const isNew = types.isNew;
-const getCommaSplicesForList = require('./lib/conversions/commas').getCommaSplicesForList;
-const getParenthesesSplicesForCall = require('./lib/conversions/call-parens').getParenthesesSplicesForCall;
+const isCode = types.isCode;
+const getCommaDiffsForList = require('./lib/conversions/commas').getCommaDiffsForList;
+const getParenthesesDiffsForCall = require('./lib/conversions/call-parens').getParenthesesDiffsForCall;
+const getParenthesesDiffsForFunction = require('./lib/conversions/function-parens').getParenthesesDiffsForFunction;
+const DiffMatchPatch = require('googlediff');
+const dmp = new DiffMatchPatch();
 
 
-/** @typedef {{start: number, end: number, value: string}} */
-var Splice;
+/** @typedef {(number|string)[]} */
+var Diff;
 
 
-/** @typedef {{commas: boolean, callParens: boolean}} */
+/** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean}} */
 var ConvertOptions;
 
 
@@ -26,37 +30,65 @@ var ConvertOptions;
  */
 function convert(source, options) {
   var ast;
-  var splices;
+  var patches;
 
   const commas = (options && ('commas' in options)) ? options.commas : true;
+  const functionParens = (options && ('functionParens' in options)) ? options.functionParens : true;
   const callParens = (options && ('callParens' in options)) ? options.callParens : true;
 
-  if (callParens) {
+  if (functionParens) {
     ast = parse(source);
-    splices = [];
+    patches = [];
 
     traverse(ast, function(node) {
-      if (isCall(node) || isNew(node)) {
-        splices = splices.concat(getParenthesesSplicesForCall(source, node));
+      if (isCode(node)) {
+        const diffs = getParenthesesDiffsForFunction(source, node);
+        if (diffs.length > 0) {
+          patches.push(dmp.patch_make(source, diffs));
+        }
       }
     });
 
-    source = performSplices(source, splices);
+    source = applyPatches(source, patches);
+  }
+
+  if (callParens) {
+    ast = parse(source);
+    patches = [];
+
+    traverse(ast, function(node) {
+      if (isCall(node) || isNew(node)) {
+        const diffs = getParenthesesDiffsForCall(source, node);
+        if (diffs.length > 0) {
+          patches.push(dmp.patch_make(source, diffs));
+        }
+      }
+    });
+
+    source = applyPatches(source, patches);
   }
 
   if (commas) {
     ast = parse(source);
-    splices = [];
+    patches = [];
 
     traverse(ast, function(node) {
+      var diffs;
+
       if (isArr(node) || isObj(node)) {
-        splices = splices.concat(getCommaSplicesForList(source, node.objects));
+        diffs = getCommaDiffsForList(source, node.objects);
       } else if (isCall(node) || isNew(node)) {
-        splices = splices.concat(getCommaSplicesForList(source, node.args));
+        diffs = getCommaDiffsForList(source, node.args);
+      } else {
+        diffs = [];
+      }
+
+      if (diffs.length > 0) {
+        patches.push(dmp.patch_make(source, diffs));
       }
     });
 
-    source = performSplices(source, splices);
+    source = applyPatches(source, patches);
   }
 
   return source;
@@ -68,18 +100,14 @@ exports.convert = convert;
  * Splices strings into the given source at the requested positions.
  *
  * @param {string} source
- * @param {Splice[]} splice
+ * @param {Patch[]} patches
  * @returns {string}
  */
-function performSplices(source, splice) {
-  // Reverse-sort by index.
-  splice = splice.slice().sort(function(left, right) {
-    return right.end - left.end;
+function applyPatches(source, patches) {
+  patches.forEach(function(patch) {
+    const result = dmp.patch_apply(patch, source);
+    // TODO: Error handling.
+    source = result[0];
   });
-
-  splice.forEach(function(splice) {
-    source = source.slice(0, splice.start) + splice.value + source.slice(splice.end);
-  });
-
   return source;
 }
