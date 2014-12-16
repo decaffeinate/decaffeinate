@@ -1,6 +1,8 @@
 const parse = require('coffee-script').nodes;
 const traverse = require('./lib/types').visit;
 const types = require('./lib/types');
+const source = require('./lib/source');
+const fixClosingParenthesesOrder = source.fixClosingParenthesesOrder;
 const isArr = types.isArr;
 const isObj = types.isObj;
 const isCall = types.isCall;
@@ -109,5 +111,5 @@ function applyPatches(source, patches) {
     // TODO: Error handling.
     source = result[0];
   });
-  return source;
+  return fixClosingParenthesesOrder(source);
 }
