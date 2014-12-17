@@ -4,10 +4,16 @@ const convert = require('..').convert;
 describe('automatic conversions', function() {
   /**
    * @param {?string} name
-   * @returns {{commas: boolean, callParens: boolean}}
+   * @returns {ConvertOptions}
    */
   function onlyConvert(name) {
-    const options = { commas: false, callParens: false, functionParens: false, this: false };
+    const options = {
+      commas: false,
+      callParens: false,
+      functionParens: false,
+      this: false,
+      objectBraces: false
+    };
     if (name) { options[name] = true; }
     return options;
   }
@@ -230,6 +236,10 @@ describe('automatic conversions', function() {
       check('a = @a', 'a = this.a');
     });
 
+    it('changes shorthand computed member expressions to longhand computed member expressions', function() {
+      check('a = @[a]', 'a = this[a]');
+    });
+
     it('changes shorthand standalone this to longhand standalone this', function() {
       check('bind(@)', 'bind(this)');
     });
@@ -240,6 +250,10 @@ describe('automatic conversions', function() {
 
     it('does not change "@" in strings', function() {
       check('"@"', '"@"');
+    });
+
+    it('does not add a dot to the shorthand prototype operator', function() {
+      check('@::a', 'this::a');
     });
   });
 });
