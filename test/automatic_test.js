@@ -122,6 +122,10 @@ describe('automatic conversions', function() {
       it('does not insert commas when there is one hiding on a line after the preceding argument', function() {
         check('a(\n  ->\n    b\n  ,\n  c\n)', 'a(\n  ->\n    b\n  ,\n  c\n)');
       });
+
+      it('inserts commas on the same line when the property value is an interpolated string', function() {
+        check('a\n  b: "#{c}"\n  d: e', 'a\n  b: "#{c}",\n  d: e');
+      });
     });
   });
 
