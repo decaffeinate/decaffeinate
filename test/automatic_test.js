@@ -178,6 +178,10 @@ describe('automatic conversions', function() {
     it('adds parens before any trailing comments', function() {
       check('a ->\n  b\n# c', 'a(->\n  b)\n# c');
     });
+
+    it('adds parens after the brackets on a computed member expression', function() {
+      check('a b[c]', 'a(b[c])');
+    });
   });
 
   describe('inserting function body parentheses', function() {
