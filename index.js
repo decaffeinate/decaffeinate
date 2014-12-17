@@ -4,13 +4,16 @@ const types = require('./lib/types');
 const source = require('./lib/source');
 const fixClosingParenthesesOrder = source.fixClosingParenthesesOrder;
 const isArr = types.isArr;
-const isObj = types.isObj;
 const isCall = types.isCall;
-const isNew = types.isNew;
 const isCode = types.isCode;
+const isLiteral = types.isLiteral;
+const isNew = types.isNew;
+const isObj = types.isObj;
+const isValue = types.isValue;
 const getCommaDiffsForList = require('./lib/conversions/commas').getCommaDiffsForList;
 const getParenthesesDiffsForCall = require('./lib/conversions/call-parens').getParenthesesDiffsForCall;
 const getParenthesesDiffsForFunction = require('./lib/conversions/function-parens').getParenthesesDiffsForFunction;
+const getThisDiffForValue = require('./lib/conversions/this').getThisDiffForValue;
 const DiffMatchPatch = require('googlediff');
 const dmp = new DiffMatchPatch();
 
@@ -19,7 +22,7 @@ const dmp = new DiffMatchPatch();
 var Diff;
 
 
-/** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean}} */
+/** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean, this: boolean}} */
 var ConvertOptions;
 
 
@@ -37,6 +40,7 @@ function convert(source, options) {
   const commas = (options && ('commas' in options)) ? options.commas : true;
   const functionParens = (options && ('functionParens' in options)) ? options.functionParens : true;
   const callParens = (options && ('callParens' in options)) ? options.callParens : true;
+  const _this = (options && ('this' in options)) ? options.this : true;
 
   if (functionParens) {
     ast = parse(source);
@@ -86,6 +90,22 @@ function convert(source, options) {
       }
 
       if (diffs.length > 0) {
+        patches.push(dmp.patch_make(source, diffs));
+      }
+    });
+
+    source = applyPatches(source, patches);
+  }
+
+  if (_this) {
+    ast = parse(source);
+    patches = [];
+
+    traverse(ast, function(node) {
+      var diffs;
+
+      if (isValue(node) && isLiteral(node.base) && node.base.value === 'this') {
+        diffs = getThisDiffForValue(source, node);
         patches.push(dmp.patch_make(source, diffs));
       }
     });

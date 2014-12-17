@@ -7,7 +7,7 @@ describe('automatic conversions', function() {
    * @returns {{commas: boolean, callParens: boolean}}
    */
   function onlyConvert(name) {
-    const options = { commas: false, callParens: false, functionParens: false };
+    const options = { commas: false, callParens: false, functionParens: false, this: false };
     if (name) { options[name] = true; }
     return options;
   }
@@ -218,6 +218,28 @@ describe('automatic conversions', function() {
         '->\n  a = ->\n    a\n\n  a = ->\n    a\n\n  a ->\n    a = ->\n      a()\n        .a ->\n          a\n',
         '(->\n  a = (->\n    a\n  )\n\n  a = (->\n    a\n  )\n\n  a (->\n    a = (->\n      a()\n        .a (->\n          a\n        )\n    )\n  )\n)\n'
       );
+    });
+  });
+
+  describe('changing shorthand this to longhand this', function() {
+    function check(source, expected) {
+      assert.strictEqual(convert(source, onlyConvert('this')), expected);
+    }
+
+    it('changes shorthand member expressions to longhand member expressions', function() {
+      check('a = @a', 'a = this.a');
+    });
+
+    it('changes shorthand standalone this to longhand standalone this', function() {
+      check('bind(@)', 'bind(this)');
+    });
+
+    it('does not change longhand this', function() {
+      check('this.a', 'this.a');
+    });
+
+    it('does not change "@" in strings', function() {
+      check('"@"', '"@"');
     });
   });
 });

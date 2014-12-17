@@ -46,6 +46,11 @@ function parseArguments(args) {
         options.functionParens = (arg === '--function-parens');
         break;
 
+      case '--this':
+      case '--no-this':
+        options.this = (arg === '--this');
+        break;
+
       default:
         paths.push(arg);
         break;
