@@ -141,24 +141,24 @@ describe('automatic conversions', function() {
     }
 
     it('replaces the space between the callee and the first argument for first arg on same line', function() {
-      check('a 1, 2',  'a(1, 2)');
+      check('a 1, 2\n',  'a(1, 2)\n');
     });
 
     it('does not add anything if there are already parens', function() {
-      check('a()', 'a()');
-      check('a(1, 2)', 'a(1, 2)');
+      check('a()\n', 'a()\n');
+      check('a(1, 2)\n', 'a(1, 2)\n');
     });
 
     it('adds parens for nested function calls', function() {
-      check('a   b  c d     e', 'a(b(c(d(e))))');
+      check('a   b  c d     e\n', 'a(b(c(d(e))))\n');
     });
 
     it('adds parens for a new expression with args', function() {
-      check('new Foo 1', 'new Foo(1)');
+      check('new Foo 1\n', 'new Foo(1)\n');
     });
 
     it('adds parens for a new expression without args', function() {
-      check('new Foo', 'new Foo()');
+      check('new Foo\n', 'new Foo()\n');
     });
 
     it('adds parens wrapping loosely if args are on other lines', function() {
@@ -182,15 +182,15 @@ describe('automatic conversions', function() {
     });
 
     it('adds parens after the properties of a member expression', function() {
-      check('a.b c', 'a.b(c)');
+      check('a.b c\n', 'a.b(c)\n');
     });
 
     it('adds parens before any trailing comments', function() {
-      check('a ->\n  b\n# c', 'a(->\n  b)\n# c');
+      check('a ->\n  b\n# c\n', 'a(->\n  b)\n# c\n');
     });
 
     it('adds parens after the brackets on a computed member expression', function() {
-      check('a b[c]', 'a(b[c])');
+      check('a b[c]\n', 'a(b[c])\n');
     });
   });
 

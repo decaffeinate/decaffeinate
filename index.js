@@ -1,11 +1,9 @@
-const parse = require('coffee-script-redux').parse;
+const parse = require('./lib/utils/parse').parse;
 const traverse = require('./lib/utils/traverse').traverse;
 const source = require('./lib/source');
 const MagicString = require('magic-string');
-
-
-/** @typedef {(number|string)[]} */
-var Diff;
+const patchThis = require('./lib/patchers/patchThis').patchThis;
+const patchCallParens = require('./lib/patchers/patchCallParens').patchCallParens;
 
 
 /** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean, this: boolean}} */
@@ -20,7 +18,7 @@ var ConvertOptions;
  * @returns {string}
  */
 function convert(source, options) {
-  var ast = parse(source, { raw: true }).toBasicObject();
+  var ast = parse(source, { raw: true });
   var patcher = new MagicString(source);
 
   const commas = (options && ('commas' in options)) ? options.commas : true;
@@ -28,16 +26,17 @@ function convert(source, options) {
   const callParens = (options && ('callParens' in options)) ? options.callParens : true;
   const _this = (options && ('this' in options)) ? options.this : true;
 
-  if (_this) {
-    traverse(ast, source, function(node) {
-      if (node.type === 'This' && node.raw === '@') {
-        patcher.replace(node.range[0], node.range[1], 'this');
-      } else if (node.type === 'MemberAccessOp' && node.raw[0] === '@' && node.raw[1] !== '.') {
-        patcher.insert(node.range[0] + 1, '.');
-      }
-    });
-  }
+  traverse(ast, function(node) {
+    if (_this) {
+      patchThis(node, patcher);
+    }
+
+    if (callParens) {
+      patchCallParens(node, patcher);
+    }
+  });
 
   return patcher.toString();
 }
 exports.convert = convert;
+
