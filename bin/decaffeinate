@@ -51,6 +51,11 @@ function parseArguments(args) {
         options.this = (arg === '--this');
         break;
 
+      case '--prototype-access':
+      case '--no-prototype-access':
+        options.prototypeAccess = (arg === '--prototype-access');
+        break;
+
       default:
         paths.push(arg);
         break;

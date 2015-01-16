@@ -12,7 +12,8 @@ describe('automatic conversions', function() {
       callParens: false,
       functionParens: false,
       this: false,
-      objectBraces: false
+      objectBraces: false,
+      prototypeAccess: false
     };
     if (name) { options[name] = true; }
     return options;
@@ -175,6 +176,20 @@ describe('automatic conversions', function() {
 
     it('does not add a dot to the shorthand prototype operator', function() {
       check('@::a', 'this::a');
+    });
+  });
+
+  describe('changing prototype member access into normal member access', function() {
+    function check(source, expected) {
+      assert.strictEqual(convert(source, onlyConvert('prototypeAccess')), expected);
+    }
+
+    it('replaces prototype member access', function() {
+      check('A::b', 'A.prototype.b');
+    });
+
+    it('works in combination with the shorthand this patcher', function() {
+      assert.strictEqual(convert('@::b'), 'this.prototype.b');
     });
   });
 });

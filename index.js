@@ -3,11 +3,12 @@ const traverse = require('./lib/utils/traverse').traverse;
 const source = require('./lib/source');
 const MagicString = require('magic-string');
 const patchThis = require('./lib/patchers/patchThis').patchThis;
+const patchPrototypeAccess = require('./lib/patchers/patchPrototypeAccess').patchPrototypeAccess;
 const patchCallParens = require('./lib/patchers/patchCallParens').patchCallParens;
 const patchCommas = require('./lib/patchers/patchCommas').patchCommas;
 
 
-/** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean, this: boolean}} */
+/** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean, this: boolean, prototypeAccess: boolean}} */
 var ConvertOptions;
 
 
@@ -26,10 +27,15 @@ function convert(source, options) {
   const functionParens = (options && ('functionParens' in options)) ? options.functionParens : true;
   const callParens = (options && ('callParens' in options)) ? options.callParens : true;
   const _this = (options && ('this' in options)) ? options.this : true;
+  const prototypeAccess = (options && ('prototypeAccess' in options)) ? options.prototypeAccess : true;
 
   traverse(ast, function(node) {
     if (_this) {
       patchThis(node, patcher);
+    }
+
+    if (prototypeAccess) {
+      patchPrototypeAccess(node, patcher);
     }
 
     if (callParens) {
