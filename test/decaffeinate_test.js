@@ -1,5 +1,17 @@
 const assert = require('assert');
-const convert = require('..').convert;
+
+var convert;
+
+before(function() {
+  return require('../gobblefile').build({
+    dest: '.tmp', force: true
+  }).then(function() {
+    convert = require('../.tmp').convert;
+  }).catch(function(err) {
+    console.error('Error building library:', err);
+    throw err;
+  });
+});
 
 describe('automatic conversions', function() {
   /**

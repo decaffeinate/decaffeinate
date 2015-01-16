@@ -18,5 +18,9 @@
   "dependencies": {
     "coffee-script-redux": "^2.0.0-beta8",
     "magic-string": "^0.3.1"
+  },
+  "devDependencies": {
+    "gobble": "^0.7.2",
+    "gobble-6to5": "^1.0.3"
   }
 }
