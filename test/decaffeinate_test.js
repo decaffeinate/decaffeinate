@@ -160,6 +160,10 @@ describe('automatic conversions', function() {
     it('adds parens after the brackets on a computed member expression', function() {
       check('a b[c]\n', 'a(b[c])\n');
     });
+
+    it('adds parens without messing up multi-line calls', function() {
+      check('a\n  b: c', 'a(\n  b: c\n)');
+    });
   });
 
   describe('changing shorthand this to longhand this', function() {
