@@ -13,7 +13,8 @@ describe('automatic conversions', function() {
       functionParens: false,
       this: false,
       objectBraces: false,
-      prototypeAccess: false
+      prototypeAccess: false,
+      declarations: false
     };
     if (name) { options[name] = true; }
     return options;
@@ -190,6 +191,32 @@ describe('automatic conversions', function() {
 
     it('works in combination with the shorthand this patcher', function() {
       assert.strictEqual(convert('@::b'), 'this.prototype.b');
+    });
+  });
+
+  describe('adding variable declarations', function() {
+    function check(source, expected) {
+      assert.strictEqual(convert(source, onlyConvert('declarations')), expected);
+    }
+
+    it('adds variable declarations for assignments', function() {
+      check('a = 1', 'var a = 1');
+    });
+
+    it('adds variable declarations for only the creating binding', function() {
+      check('a = 1\na = 2', 'var a = 1\na = 2');
+    });
+
+    it('does not add variable declarations for reassignments in functions', function() {
+      check('a = 1\n->\n  a = 2', 'var a = 1\n->\n  a = 2');
+    });
+
+    it('does not add variable declarations for reassignments of function params', function() {
+      check('(a) -> a = 1', '(a) -> a = 1');
+    });
+
+    it('does not add variable declarations when the LHS is a member expression', function() {
+      check('a.b = 1', 'a.b = 1');
     });
   });
 });

@@ -56,6 +56,11 @@ function parseArguments(args) {
         options.prototypeAccess = (arg === '--prototype-access');
         break;
 
+      case '--declarations':
+      case '--no-declarations':
+        options.declarations = (arg === '--declarations');
+        break;
+
       default:
         paths.push(arg);
         break;

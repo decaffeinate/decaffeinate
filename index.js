@@ -6,9 +6,10 @@ const patchThis = require('./lib/patchers/patchThis').patchThis;
 const patchPrototypeAccess = require('./lib/patchers/patchPrototypeAccess').patchPrototypeAccess;
 const patchCallParens = require('./lib/patchers/patchCallParens').patchCallParens;
 const patchCommas = require('./lib/patchers/patchCommas').patchCommas;
+const patchDeclarations = require('./lib/patchers/patchDeclarations').patchDeclarations;
 
 
-/** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean, this: boolean, prototypeAccess: boolean}} */
+/** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean, this: boolean, prototypeAccess: boolean, declarations: boolean}} */
 var ConvertOptions;
 
 
@@ -28,6 +29,7 @@ function convert(source, options) {
   const callParens = (options && ('callParens' in options)) ? options.callParens : true;
   const _this = (options && ('this' in options)) ? options.this : true;
   const prototypeAccess = (options && ('prototypeAccess' in options)) ? options.prototypeAccess : true;
+  const declarations = (options && ('declarations' in options)) ? options.declarations : true;
 
   traverse(ast, function(node) {
     if (_this) {
@@ -44,6 +46,10 @@ function convert(source, options) {
 
     if (commas) {
       patchCommas(node, patcher);
+    }
+
+    if (declarations) {
+      patchDeclarations(node, patcher);
     }
   });
 
