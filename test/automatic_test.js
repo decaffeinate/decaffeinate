@@ -17,7 +17,7 @@ describe('automatic conversions', function() {
     if (name) { options[name] = true; }
     return options;
   }
-  
+
   describe('inserting commas', function() {
     function check(source, expected) {
       assert.strictEqual(convert(source, onlyConvert('commas')), expected);
@@ -161,69 +161,12 @@ describe('automatic conversions', function() {
       check('new Foo\n', 'new Foo()\n');
     });
 
-    it('adds parens wrapping loosely if args are on other lines', function() {
-      check('a\n  b: c\n', 'a(\n  b: c\n)\n');
-    });
-
-    it('adds parens wrapping tightly if the first arg starts on the same line', function() {
-      check('a (b) ->\n  c\n', 'a((b) ->\n  c)\n');
-    });
-
-    it('indents the loosely-wrapped parens if the call start is indented', function() {
-      check('->\n  a\n    b: c\n', '->\n  a(\n    b: c\n  )\n');
-    });
-
-    it('adds parens for multi-line calls with multi-line arguments', function() {
-      check('a\n  b: ->\n    c\n\n0', 'a(\n  b: ->\n    c\n)\n\n0');
-    });
-
-    it('adds parens for nested multi-line function calls', function() {
-      check('a\n  b: c d, e\n  f:\n    g: h i\n', 'a(\n  b: c(d, e)\n  f:\n    g: h(i)\n)\n');
-    });
-
     it('adds parens after the properties of a member expression', function() {
       check('a.b c\n', 'a.b(c)\n');
     });
 
-    it('adds parens before any trailing comments', function() {
-      check('a ->\n  b\n# c\n', 'a(->\n  b)\n# c\n');
-    });
-
     it('adds parens after the brackets on a computed member expression', function() {
       check('a b[c]\n', 'a(b[c])\n');
-    });
-  });
-
-  describe('inserting function body parentheses', function() {
-    function check(source, expected) {
-      assert.strictEqual(convert(source, onlyConvert('functionParens')), expected);
-    }
-
-    it('does not add parentheses when the function is on a single line', function() {
-      check('a(1, -> b)', 'a(1, -> b)');
-    });
-
-    it('adds parens where the curly braces might be in JavaScript for multi-line functions', function() {
-      check('a.forEach (e) ->\n  e', 'a.forEach ((e) ->\n  e\n)');
-    });
-
-    it('ensures the closing paren is indented correctly', function() {
-      check('{\n  a: ->\n    1\n}', '{\n  a: (->\n    1\n  )\n}');
-    });
-
-    it('wraps functions being assigned', function() {
-      check('a = ->\n  1\n', 'a = (->\n  1\n)\n');
-    });
-
-    it('does not wrap functions already wrapped', function() {
-      check('a = (->\n  1\n).property()', 'a = (->\n  1\n).property()');
-    });
-
-    it('inserts nested closing parens in the right order', function() {
-      check(
-        '->\n  a = ->\n    a\n\n  a = ->\n    a\n\n  a ->\n    a = ->\n      a()\n        .a ->\n          a\n',
-        '(->\n  a = (->\n    a\n  )\n\n  a = (->\n    a\n  )\n\n  a (->\n    a = (->\n      a()\n        .a (->\n          a\n        )\n    )\n  )\n)\n'
-      );
     });
   });
 

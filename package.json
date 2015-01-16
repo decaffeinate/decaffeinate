@@ -17,6 +17,6 @@
   "license": "MIT",
   "dependencies": {
     "coffee-script-redux": "^2.0.0-beta8",
-    "magic-string": "^0.3.0"
+    "magic-string": "^0.3.1"
   }
 }
