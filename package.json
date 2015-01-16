@@ -2,9 +2,10 @@
   "name": "decaffeinate",
   "version": "1.0.0",
   "description": "Tools to move CoffeeScript to JavaScript.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "mocha --recursive test"
+    "test": "mocha --recursive test",
+    "build": "gobble build lib -f"
   },
   "keywords": [
     "coffee",
