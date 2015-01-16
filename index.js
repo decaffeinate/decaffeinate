@@ -4,6 +4,7 @@ const source = require('./lib/source');
 const MagicString = require('magic-string');
 const patchThis = require('./lib/patchers/patchThis').patchThis;
 const patchCallParens = require('./lib/patchers/patchCallParens').patchCallParens;
+const patchCommas = require('./lib/patchers/patchCommas').patchCommas;
 
 
 /** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean, this: boolean}} */
@@ -33,6 +34,10 @@ function convert(source, options) {
 
     if (callParens) {
       patchCallParens(node, patcher);
+    }
+
+    if (commas) {
+      patchCommas(node, patcher);
     }
   });
 

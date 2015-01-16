@@ -88,22 +88,11 @@ describe('automatic conversions', function() {
       it('inserts commas for braceless objects', function() {
         check('a: b\nc: d', 'a: b,\nc: d');
       });
-
-      it('inserts commas at the end of a multi-line property value', function() {
-        assert.strictEqual(convert(
-          '{\n  a: ->\n    1  \n\n  b: 2\n}', onlyConvert('commas')),
-          '{\n  a: ->\n    1  \n  ,\n\n  b: 2\n}'
-        );
-      });
     });
 
     describe('in function calls', function() {
       it('inserts commas after arguments if they are not there', function() {
         check('a(\n  1\n  2\n)', 'a(\n  1,\n  2\n)');
-      });
-
-      it('does not insert commas if there already is one', function() {
-        check('a(\n  a,\n  c\n)', 'a(\n  a,\n  c\n)');
       });
 
       it('does not insert commas in single-line calls', function() {
@@ -116,17 +105,6 @@ describe('automatic conversions', function() {
 
       it('inserts commas immediately after the element if followed by a comment', function() {
         check('a(\n  1 # hi\n  2\n)', 'a(\n  1, # hi\n  2\n)');
-      });
-
-      it('inserts commas at the end of a multi-line property value', function() {
-        check(
-          'a\n  b: ->\n    c\n\n  c: ->\n    d\n',
-          'a\n  b: ->\n    c\n  ,\n\n  c: ->\n    d\n'
-        );
-      });
-
-      it('does not insert commas when there is one hiding on a line after the preceding argument', function() {
-        check('a(\n  ->\n    b\n  ,\n  c\n)', 'a(\n  ->\n    b\n  ,\n  c\n)');
       });
 
       it('inserts commas on the same line when the property value is an interpolated string', function() {
