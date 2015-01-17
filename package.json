@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Tools to move CoffeeScript to JavaScript.",
   "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
   "scripts": {
     "test": "mocha --recursive test",
-    "build": "gobble build lib -f"
+    "build": "gobble build lib -f",
+    "prepublish": "gobble build lib -f"
   },
   "keywords": [
     "coffee",
@@ -20,6 +22,11 @@
     "coffee-script-redux": "^2.0.0-beta8",
     "magic-string": "^0.3.1"
   },
+  "files": [
+    "bin/decaffeinate",
+    "lib/**/*.js",
+    "src/**/*.js"
+  ],
   "devDependencies": {
     "gobble": "^0.7.2",
     "gobble-6to5": "^1.0.3"

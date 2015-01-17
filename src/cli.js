@@ -1,4 +1,5 @@
 import { createReadStream, createWriteStream, renameSync } from 'fs';
+import { basename } from 'path';
 import { convert } from './index';
 
 /**
@@ -55,6 +56,22 @@ function parseArguments(args) {
       case '--declarations':
       case '--no-declarations':
         options.declarations = (arg === '--declarations');
+        break;
+
+      case '--returns':
+      case '--no-returns':
+        options.returns = (arg === '--returns');
+        break;
+
+      case '--keywords':
+      case '--no-keywords':
+        options.keywords = (arg === '--keywords');
+        break;
+
+      case '-h':
+      case '--help':
+        usage();
+        process.exit(0);
         break;
 
       default:
@@ -134,4 +151,36 @@ function runWithStream(input, output, options, callback) {
   output.on('error', function(err) {
     error = err;
   });
+}
+
+/**
+ * Print usage help.
+ */
+function usage() {
+  const exe = basename(process.argv[1]);
+  console.log('%s [OPTIONS] PATH [PATH …]', exe);
+  console.log('%s [OPTIONS] < INPUT', exe);
+  console.log();
+  console.log('Move your CoffeeScript source to JavaScript using ES6 syntax.');
+  console.log();
+  console.log('OPTIONS');
+  console.log();
+  console.log('  --[no-]commas           Add missing commas in array, object, and function param lists.');
+  console.log('  --[no-]call-parens      Add missing parentheses on function calls.');
+  console.log('  --[no-]declarations     Add declarations for variable assignments.');
+  console.log('  --[no-]function-parens  Surround functions with parentheses.');
+  console.log('  --[no-]keywords         Rename keywords from from to their JavaScript equivalents.');
+  console.log('  --[no-]prototype-access Change shorthand prototype access to longhand (e.g. `A::b`).');
+  console.log('  --[no-]this             Change shorthand `this`, i.e. `@`, to longhand `this`.');
+  console.log();
+  console.log('EXAMPLES');
+  console.log();
+  console.log('  # Pipe an example from the command-line.');
+  console.log('  $ echo "a = 1" | decaffeinate');
+  console.log();
+  console.log('  # Redirect input from a file.');
+  console.log('  $ decaffeinate < index.coffee');
+  console.log();
+  console.log('  # Prevent modifying `this`.');
+  console.log('  $ echo "a = @a" | decaffeinate --no-this');
 }
