@@ -1,13 +1,17 @@
 {
   "name": "decaffeinate",
   "version": "1.0.0",
-  "description": "Tools to move CoffeeScript to JavaScript.",
+  "description": "Move your CoffeeScript source to JavaScript using ES6 syntax.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
   "scripts": {
     "test": "mocha --recursive test",
     "build": "gobble build lib -f",
     "prepublish": "gobble build lib -f"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eventualbuddha/decaffeinate.git"
   },
   "keywords": [
     "coffee",
