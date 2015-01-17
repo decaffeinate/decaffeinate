@@ -61,8 +61,22 @@ export default function traverse(node, callback) {
         add(node.key);
         break;
 
+      case 'LogicalAndOp':
+      case 'LogicalOrOp':
+        add(node.right);
+        add(node.left);
+        break;
+
+      case 'LogicalNotOp':
+        add(node.expression);
+        break;
+
       case 'Block':
         addAll(node.statements);
+        break;
+
+      case 'Return':
+        add(node.expression);
         break;
 
       case 'ConcatOp':

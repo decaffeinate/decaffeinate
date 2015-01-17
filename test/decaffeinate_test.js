@@ -26,7 +26,9 @@ describe('automatic conversions', function() {
       this: false,
       objectBraces: false,
       prototypeAccess: false,
-      declarations: false
+      declarations: false,
+      returns: false,
+      keywords: false
     };
     if (name) { options[name] = true; }
     return options;
@@ -245,6 +247,60 @@ describe('automatic conversions', function() {
 
     it('does not add variable declarations when the LHS is a member expression', function() {
       check('a.b = 1', 'a.b = 1');
+    });
+  });
+
+  describe('adding explicit returns', function() {
+    function check(source, expected) {
+      assert.strictEqual(convert(source, onlyConvert('returns')), expected);
+    }
+
+    it('adds a return for the only expression in functions', function() {
+      check('a = -> 1', 'a = -> return 1');
+    });
+
+    it('does not add a return when one is already there', function() {
+      check('a = -> return 1', 'a = -> return 1');
+    });
+
+    it('adds a return for the final expression in functions', function() {
+      check('a = ->\n  1\n  2', 'a = ->\n  1\n  return 2');
+    });
+  });
+
+  describe('changing keywords', function() {
+    function check(source, expected) {
+      assert.strictEqual(convert(source, onlyConvert('keywords')), expected);
+    }
+
+    it('renames "yes" to "true"', function() {
+      check('a = yes', 'a = true');
+    });
+
+    it('renames "no" to "false"', function() {
+      check('a = no', 'a = false');
+    });
+
+    it('renames "and" to "&&"', function() {
+      check('a and b', 'a && b');
+    });
+
+    it('renames "or" to "||"', function() {
+      check('a or b', 'a || b');
+    });
+
+    it('renames "not" to "!" and removes the space if one is present', function() {
+      check('not a', '!a');
+    });
+
+    it('renames "not" to "!"', function() {
+      check('not(a)', '!(a)');
+    });
+
+    it.skip('handles chained "not"s', function() {
+      // This seems to trigger a CoffeeScriptRedux bug.
+      // The inner LogicalNotOp has no raw/range.
+      check('not not a', '!!a');
     });
   });
 });

@@ -6,9 +6,21 @@ import patchPrototypeAccess from './patchers/patchPrototypeAccess';
 import patchCallParens from './patchers/patchCallParens';
 import patchCommas from './patchers/patchCommas';
 import patchDeclarations from './patchers/patchDeclarations';
+import patchReturns from './patchers/patchReturns';
+import patchKeywords from './patchers/patchKeywords';
 
 
-/** @typedef {{commas: boolean, callParens: boolean, functionParens: boolean, this: boolean, prototypeAccess: boolean, declarations: boolean}} */
+/**
+ * @typedef {{
+ *    commas: boolean,
+ *    callParens: boolean,
+ *    functionParens: boolean,
+ *    this: boolean,
+ *    prototypeAccess: boolean,
+ *    declarations: boolean,
+ *    returns: boolean
+ * }}
+ **/
 var ConvertOptions;
 
 
@@ -29,8 +41,14 @@ export function convert(source, options) {
   const _this = (options && ('this' in options)) ? options.this : true;
   const prototypeAccess = (options && ('prototypeAccess' in options)) ? options.prototypeAccess : true;
   const declarations = (options && ('declarations' in options)) ? options.declarations : true;
+  const returns = (options && ('returns' in options)) ? options.returns : true;
+  const keywords = (options && ('keywords' in options)) ? options.keywords : true;
 
   traverse(ast, function(node) {
+    if (keywords) {
+      patchKeywords(node, patcher);
+    }
+
     if (_this) {
       patchThis(node, patcher);
     }
@@ -49,6 +67,10 @@ export function convert(source, options) {
 
     if (declarations) {
       patchDeclarations(node, patcher);
+    }
+
+    if (returns) {
+      patchReturns(node, patcher);
     }
   });
 
