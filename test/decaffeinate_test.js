@@ -248,6 +248,27 @@ describe('automatic conversions', function() {
     it('does not add variable declarations when the LHS is a member expression', function() {
       check('a.b = 1', 'a.b = 1');
     });
+
+    it('adds variable declarations for destructuring array assignment', function() {
+      check('[a] = b', 'var [a] = b');
+    });
+
+    it('adds variable declarations for destructuring object assignment', function() {
+      check('{a} = b', 'var {a} = b');
+    });
+
+    it('does not add variable declarations for destructuring array assignment with previously declared bindings', function() {
+      check('a = 1\n[a] = b', 'var a = 1\n[a] = b');
+    });
+
+    it('wraps object destructuring that is not part of a variable declaration in parentheses', function() {
+      check('a = 1\n{a} = b', 'var a = 1\n({a}) = b');
+    });
+
+    it('adds variable declarations when the destructuring is mixed', function() {
+      // FIXME: Is this a good idea? Should we be marking this as an error?
+      check('a = 1\n[a, b] = c', 'var a = 1\nvar [a, b] = c');
+    })
   });
 
   describe('adding explicit returns', function() {

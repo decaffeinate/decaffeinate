@@ -2,6 +2,7 @@ import { parse as coffeeScriptParse } from 'coffee-script-redux';
 import fixRange from './fixRange';
 import traverse from './traverse';
 import Scope from './Scope';
+import leftHandIdentifiers from './leftHandIdentifiers';
 
 export default function parse(source) {
   const ast = coffeeScriptParse(source, { raw: true }).toBasicObject();
@@ -15,7 +16,9 @@ export default function parse(source) {
     }
 
     if (node.type === 'AssignOp') {
-      node.scope.assigns(node.assignee.data, node.assignee);
+      leftHandIdentifiers(node.assignee).forEach(identifier =>
+        node.scope.assigns(identifier.data, identifier)
+      );
     }
 
     if (node.type === 'Function') {
