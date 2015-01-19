@@ -4,6 +4,9 @@
   "description": "Move your CoffeeScript source to JavaScript using ES6 syntax.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
+  "bin": {
+    "decaffeinate": "./bin/decaffeinate"
+  },
   "scripts": {
     "test": "mocha --recursive test",
     "build": "gobble build lib -f",
