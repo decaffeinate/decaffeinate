@@ -84,6 +84,23 @@ export default function traverse(node, callback) {
         add(node.left);
         break;
 
+      case 'ForOf':
+        add(node.body);
+        add(node.filter);
+        add(node.target);
+        add(node.valAssignee);
+        add(node.keyAssignee);
+        break;
+
+      case 'ForIn':
+        add(node.body);
+        add(node.filter);
+        add(node.step);
+        add(node.target);
+        add(node.valAssignee);
+        add(node.keyAssignee);
+        break;
+
       case 'NewOp':
         addAll(node.arguments);
         add(node.ctor);
