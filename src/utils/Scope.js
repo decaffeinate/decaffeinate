@@ -1,3 +1,5 @@
+import leftHandIdentifiers from './leftHandIdentifiers';
+
 /**
  * Represents a CoffeeScript scope and its bindings.
  *
@@ -44,5 +46,24 @@ export default class Scope {
    */
   key(name) {
     return '$' + name;
+  }
+
+  /**
+   * Handles declarations or assigns for any bindings for a given node.
+   *
+   * @param {Object} node
+   */
+  processNode(node) {
+    if (node.type === 'AssignOp') {
+      leftHandIdentifiers(node.assignee).forEach(identifier =>
+        this.assigns(identifier.data, identifier)
+      );
+    }
+
+    if (node.type === 'Function') {
+      node.parameters.forEach(parameter =>
+        this.declares(parameter.data, parameter)
+      );
+    }
   }
 }
