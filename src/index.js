@@ -12,13 +12,14 @@ import patchKeywords from './patchers/patchKeywords';
 
 /**
  * @typedef {{
- *    commas: boolean,
- *    callParens: boolean,
- *    functionParens: boolean,
- *    this: boolean,
- *    prototypeAccess: boolean,
- *    declarations: boolean,
- *    returns: boolean
+ *   commas: boolean,
+ *   callParens: boolean,
+ *   declarations: boolean,
+ *   functionParens: boolean,
+ *   keywords: boolean,
+ *   prototypeAccess: boolean,
+ *   returns: boolean,
+ *   this: boolean,
  * }}
  **/
 var ConvertOptions;
@@ -36,20 +37,20 @@ export function convert(source, options) {
   var patcher = new MagicString(source);
 
   const commas = (options && ('commas' in options)) ? options.commas : true;
-  const functionParens = (options && ('functionParens' in options)) ? options.functionParens : true;
   const callParens = (options && ('callParens' in options)) ? options.callParens : true;
-  const _this = (options && ('this' in options)) ? options.this : true;
-  const prototypeAccess = (options && ('prototypeAccess' in options)) ? options.prototypeAccess : true;
   const declarations = (options && ('declarations' in options)) ? options.declarations : true;
-  const returns = (options && ('returns' in options)) ? options.returns : true;
+  const functionParens = (options && ('functionParens' in options)) ? options.functionParens : true;
   const keywords = (options && ('keywords' in options)) ? options.keywords : true;
+  const prototypeAccess = (options && ('prototypeAccess' in options)) ? options.prototypeAccess : true;
+  const returns = (options && ('returns' in options)) ? options.returns : true;
+  const this_ = (options && ('this' in options)) ? options.this : true;
 
   traverse(ast, function(node) {
     if (keywords) {
       patchKeywords(node, patcher);
     }
 
-    if (_this) {
+    if (this_) {
       patchThis(node, patcher);
     }
 
