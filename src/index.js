@@ -29,7 +29,7 @@ var ConvertOptions;
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
  *
  * @param source
- * @param {{ConvertOptions}=} options
+ * @param {ConvertOptions=} options
  * @returns {string}
  */
 export function convert(source, options) {
