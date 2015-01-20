@@ -1,3 +1,10 @@
+/**
+ * Traverses an AST node, calling a callback for each node in the hierarchy in
+ * source order.
+ *
+ * @param {Object} node
+ * @param {function(Object)} callback
+ */
 export default function traverse(node, callback) {
   var current = 0;
   var queue = [];

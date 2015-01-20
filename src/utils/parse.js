@@ -3,6 +3,12 @@ import fixRange from './fixRange';
 import traverse from './traverse';
 import Scope from './Scope';
 
+/**
+ * Parses a CoffeeScript program and cleans up and annotates the AST.
+ *
+ * @param {string} source
+ * @returns {Object} An AST from CoffeeScriptRedux with `scope` and `parent`.
+ */
 export default function parse(source) {
   const ast = coffeeScriptParse(source, { raw: true }).toBasicObject();
   ast._offset = 0;

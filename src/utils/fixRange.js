@@ -1,3 +1,9 @@
+/**
+ * Fixes the range information for a node.
+ *
+ * @param {Object} node
+ * @param {string} source Code parsed into an AST which `node` comes from.
+ */
 export default function fixRange(node, source) {
   var index = -1;
   var expectedStart = node.range[0];
