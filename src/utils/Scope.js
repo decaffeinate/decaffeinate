@@ -64,16 +64,18 @@ export default class Scope {
    * @param {Object} node
    */
   processNode(node) {
-    if (node.type === 'AssignOp') {
-      leftHandIdentifiers(node.assignee).forEach(identifier =>
-        this.assigns(identifier.data, identifier)
-      );
-    }
+    switch (node.type) {
+      case 'AssignOp':
+        leftHandIdentifiers(node.assignee).forEach(identifier =>
+          this.assigns(identifier.data, identifier)
+        );
+        break;
 
-    if (node.type === 'Function') {
-      node.parameters.forEach(parameter =>
-        this.declares(parameter.data, parameter)
-      );
+      case 'Function':
+        node.parameters.forEach(parameter =>
+          this.declares(parameter.data, parameter)
+        );
+        break;
     }
   }
 
