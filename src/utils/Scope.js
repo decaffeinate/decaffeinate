@@ -72,6 +72,7 @@ export default class Scope {
         break;
 
       case 'Function':
+      case 'BoundFunction':
         node.parameters.forEach(parameter =>
           this.declares(parameter.data, parameter)
         );

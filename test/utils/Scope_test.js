@@ -52,8 +52,14 @@ describe('Scope', function() {
 
     it('processes functions by binding all its parameters', function() {
       const scope = new Scope();
-
       scope.processNode(parse('(a, b) ->').toBasicObject().body.statements[0]);
+      assert.ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
+      assert.ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
+    });
+
+    it('processes bound functions by binding all its parameters', function() {
+      const scope = new Scope();
+      scope.processNode(parse('(a, b) =>').toBasicObject().body.statements[0]);
       assert.ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
       assert.ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
     });

@@ -38,6 +38,7 @@ export default function traverse(node, callback) {
         break;
 
       case 'Function':
+      case 'BoundFunction':
         add(node.body);
         addAll(node.parameters);
         break;
