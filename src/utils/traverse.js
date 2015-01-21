@@ -3,29 +3,69 @@
  * source order.
  *
  * @param {Object} node
- * @param {function(Object)} callback
+ * @param {function(Object, function(Object), boolean): ?boolean} callback
  */
 export default function traverse(node, callback) {
-  callback(node);
+  var descended = false;
 
-  const childNames = ORDER[node.type];
+  function descend(node) {
+    descended = true;
 
-  if (!childNames) {
+    childPropertyNames(node).forEach(property => {
+      const value = node[property];
+      if (Array.isArray(value)) {
+        value.forEach(child => {
+          child.parent = node;
+          traverse(child, callback);
+        });
+      } else if (value) {
+        value.parent = node;
+        traverse(value, callback);
+      }
+    });
+  }
+
+  const shouldDescend = callback(
+    node,
+    descend,
+    childPropertyNames(node).length === 0
+  );
+
+  if (!descended && shouldDescend !== false) {
+    descend(node);
+  }
+}
+
+/**
+ * Traverses an AST node, calling a callback for each node in the hierarchy
+ * depth-first in source order.
+ *
+ * @param {Object} node
+ * @param {function(Object, boolean): ?boolean} callback
+ */
+export function depthFirstTraverse(node, callback) {
+  traverse(node, (node, descend, isLeaf) => {
+    if (isLeaf) {
+      return callback(node, isLeaf);
+    } else {
+      descend(node);
+      return callback(node, isLeaf);
+    }
+  });
+}
+
+/**
+ * @param {Object} node
+ * @returns {string[]}
+ */
+function childPropertyNames(node) {
+  const names = ORDER[node.type];
+
+  if (!names) {
     throw new Error('cannot traverse unknown node type: ' + node.type);
   }
 
-  childNames.forEach(property => {
-    const value = node[property];
-    if (Array.isArray(value)) {
-      value.forEach(child => {
-        child.parent = node;
-        traverse(child, callback);
-      });
-    } else if (value) {
-      value.parent = node;
-      traverse(value, callback);
-    }
-  });
+  return names;
 }
 
 const ORDER = {
