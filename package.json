@@ -26,7 +26,7 @@
   "author": "Brian Donovan",
   "license": "MIT",
   "dependencies": {
-    "coffee-script-redux": "^2.0.0-beta8",
+    "coffee-script-redux": "git://github.com/michaelficarra/CoffeeScriptRedux",
     "magic-string": "^0.3.1"
   },
   "files": [
