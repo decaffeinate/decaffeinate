@@ -1,7 +1,7 @@
 import { parse as coffeeScriptParse } from 'coffee-script-redux';
-import fixRange from './fixRange';
 import traverse from './traverse';
 import Scope from './Scope';
+import buildLineAndColumnMap from './buildLineAndColumnMap';
 
 /**
  * Parses a CoffeeScript program and cleans up and annotates the AST.
@@ -11,8 +11,7 @@ import Scope from './Scope';
  */
 export default function parse(source) {
   const ast = coffeeScriptParse(source, { raw: true }).toBasicObject();
-  var offset = 0;
-  ast._offset = 0;
+  const map = buildLineAndColumnMap(source);
 
   traverse(ast, function(node) {
     switch (node.type) {
@@ -33,8 +32,15 @@ export default function parse(source) {
     node.scope.processNode(node);
 
     if (!node.range || node.raw !== source.slice(node.range[0], node.range[1])) {
-      fixRange(node, source, offset);
-      offset = node.range[1];
+      const fixed = map.getOffset(node.line - 1, node.column - 1);
+      node.range = [fixed, fixed + node.raw.length];
+
+      if (node.raw !== source.slice(node.range[0], node.range[1])) {
+        throw new Error(
+          'BUG! Could not fix range for ' + node.type +
+          ' at line ' + node.line + ', column ' + node.column
+        );
+      }
     }
   });
 
