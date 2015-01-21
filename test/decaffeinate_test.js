@@ -1,16 +1,10 @@
 const assert = require('assert');
+const withBuiltLibrary = require('./support/withBuiltLibrary');
 
 var convert;
 
-before(function() {
-  return require('../gobblefile').build({
-    dest: '.tmp', force: true
-  }).then(function() {
-    convert = require('../.tmp').convert;
-  }).catch(function(err) {
-    console.error('Error building library:', err);
-    throw err;
-  });
+withBuiltLibrary('index', function(index) {
+  convert = index.convert;
 });
 
 describe('automatic conversions', function() {

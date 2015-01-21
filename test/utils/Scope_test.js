@@ -1,6 +1,11 @@
-const Scope = require('../../.tmp/utils/Scope');
 const assert = require('assert');
 const parse = require('coffee-script-redux').parse;
+const withBuiltLibrary = require('../support/withBuiltLibrary');
+var Scope;
+
+withBuiltLibrary('utils/Scope', function(required) {
+  Scope = required;
+});
 
 describe('Scope', function() {
   const A = {};
