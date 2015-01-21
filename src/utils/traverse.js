@@ -6,134 +6,53 @@
  * @param {function(Object)} callback
  */
 export default function traverse(node, callback) {
-  var current = 0;
-  var queue = [];
+  callback(node);
 
-  add(node);
+  const childNames = ORDER[node.type];
 
-  function add(child) {
-    if (child) {
-      child.parent = node;
-      queue[current++] = child;
-    }
+  if (!childNames) {
+    throw new Error('cannot traverse unknown node type: ' + node.type);
   }
 
-  function addAll(arr) {
-    for (var i = arr.length; i >= 0; i--) {
-      add(arr[i]);
+  childNames.forEach(property => {
+    const value = node[property];
+    if (Array.isArray(value)) {
+      value.forEach(child => {
+        child.parent = node;
+        traverse(child, callback);
+      });
+    } else if (value) {
+      value.parent = node;
+      traverse(value, callback);
     }
-  }
-
-  while (current > 0) {
-    current--;
-    node = queue[current];
-    if (!node) continue;
-
-    callback(node);
-
-    switch (node.type) {
-      case 'Identifier':
-      case 'String':
-      case 'Bool':
-      case 'This':
-      case 'Int':
-        break;
-
-      case 'FunctionApplication':
-        addAll(node.arguments);
-        add(node.function);
-        break;
-
-      case 'Function':
-      case 'BoundFunction':
-        add(node.body);
-        addAll(node.parameters);
-        break;
-
-      case 'MemberAccessOp':
-        add(node.expression);
-        break;
-
-      case 'DynamicMemberAccessOp':
-        add(node.indexingExpr);
-        add(node.expression);
-        break;
-
-      case 'ObjectInitialiser':
-      case 'ArrayInitialiser':
-        addAll(node.members);
-        break;
-
-      case 'ObjectInitialiserMember':
-        add(node.expression);
-        add(node.key);
-        break;
-
-      case 'LogicalAndOp':
-      case 'LogicalOrOp':
-        add(node.right);
-        add(node.left);
-        break;
-
-      case 'LogicalNotOp':
-        add(node.expression);
-        break;
-
-      case 'Block':
-        addAll(node.statements);
-        break;
-
-      case 'Return':
-        add(node.expression);
-        break;
-
-      case 'ConcatOp':
-        add(node.right);
-        add(node.left);
-        break;
-
-      case 'ForOf':
-        add(node.body);
-        add(node.filter);
-        add(node.target);
-        add(node.valAssignee);
-        add(node.keyAssignee);
-        break;
-
-      case 'ForIn':
-        add(node.body);
-        add(node.filter);
-        add(node.step);
-        add(node.target);
-        add(node.valAssignee);
-        add(node.keyAssignee);
-        break;
-
-      case 'NewOp':
-        addAll(node.arguments);
-        add(node.ctor);
-        break;
-
-      case 'SeqOp':
-        add(node.right);
-        add(node.left);
-        break;
-
-      case 'AssignOp':
-        add(node.expression);
-        add(node.assignee);
-        break;
-
-      case 'Program':
-        add(node.body);
-        break;
-
-      case 'ProtoMemberAccessOp':
-        add(node.expression);
-        break;
-
-      default:
-        throw new Error('unknown node type: ' + node.type);
-    }
-  }
+  });
 }
+
+const ORDER = {
+  Program: ['body'],
+  ArrayInitialiser: ['members'],
+  AssignOp: ['assignee', 'expression'],
+  Block: ['statements'],
+  Bool: [],
+  BoundFunction: ['parameters', 'body'],
+  ConcatOp: ['left', 'right'],
+  DynamicMemberAccessOp: ['expression', 'indexingExpr'],
+  ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
+  ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
+  Function: ['parameters', 'body'],
+  FunctionApplication: ['function', 'arguments'],
+  Identifier: [],
+  Int: [],
+  LogicalAndOp: ['left', 'right'],
+  LogicalNotOp: ['expression'],
+  LogicalOrOp: ['left', 'right'],
+  MemberAccessOp: ['expression'],
+  NewOp: ['ctor', 'arguments'],
+  ObjectInitialiser: ['members'],
+  ObjectInitialiserMember: ['key', 'expression'],
+  ProtoMemberAccessOp: ['expression'],
+  Return: ['expression'],
+  SeqOp: ['left', 'right'],
+  String: [],
+  This: []
+};
