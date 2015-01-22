@@ -16,13 +16,13 @@ describe('automatic conversions', function() {
     const options = {
       commas: false,
       callParens: false,
+      declarations: false,
       functionParens: false,
-      this: false,
+      keywords: false,
       objectBraces: false,
       prototypeAccess: false,
-      declarations: false,
       returns: false,
-      keywords: false
+      this: false
     };
     if (name) { options[name] = true; }
     return options;
