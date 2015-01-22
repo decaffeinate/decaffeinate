@@ -26,6 +26,18 @@ import patchStringInterpolation from './patchers/patchStringInterpolation';
  **/
 var ConvertOptions;
 
+const ConvertOptionsKeys = [
+  'commas',
+  'callParens',
+  'declarations',
+  'functionParens',
+  'keywords',
+  'prototypeAccess',
+  'returns',
+  'stringInterpolation',
+  'this'
+];
+
 
 /**
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
@@ -35,52 +47,56 @@ var ConvertOptions;
  * @returns {string}
  */
 export function convert(source, options) {
-  var ast = parse(source, { raw: true });
-  var patcher = new MagicString(source);
+  const ast = parse(source, { raw: true });
+  const patcher = new MagicString(source);
 
-  const commas = (options && ('commas' in options)) ? options.commas : true;
-  const callParens = (options && ('callParens' in options)) ? options.callParens : true;
-  const declarations = (options && ('declarations' in options)) ? options.declarations : true;
-  const functionParens = (options && ('functionParens' in options)) ? options.functionParens : true;
-  const keywords = (options && ('keywords' in options)) ? options.keywords : true;
-  const prototypeAccess = (options && ('prototypeAccess' in options)) ? options.prototypeAccess : true;
-  const returns = (options && ('returns' in options)) ? options.returns : true;
-  const stringInterpolation = (options && ('stringInterpolation' in options)) ? options.stringInterpolation : true;
-  const this_ = (options && ('this' in options)) ? options.this : true;
+  options = normalizeOptions(options);
 
   traverse(ast, function(node) {
-    if (keywords) {
+    if (options.keywords) {
       patchKeywords(node, patcher);
     }
 
-    if (this_) {
+    if (options.this) {
       patchThis(node, patcher);
     }
 
-    if (prototypeAccess) {
+    if (options.prototypeAccess) {
       patchPrototypeAccess(node, patcher);
     }
 
-    if (stringInterpolation) {
+    if (options.stringInterpolation) {
       patchStringInterpolation(node, patcher);
     }
 
-    if (callParens) {
+    if (options.callParens) {
       patchCallParens(node, patcher);
     }
 
-    if (commas) {
+    if (options.commas) {
       patchCommas(node, patcher);
     }
 
-    if (declarations) {
+    if (options.declarations) {
       patchDeclarations(node, patcher);
     }
 
-    if (returns) {
+    if (options.returns) {
       patchReturns(node, patcher);
     }
   });
 
   return patcher.toString();
+}
+
+/**
+ * @param {ConvertOptions=} options
+ * @returns {ConvertOptions}
+ */
+function normalizeOptions(options=/** @type ConvertOptions */{}) {
+  const result = /** @type ConvertOptions */{};
+  ConvertOptionsKeys.forEach(key => {
+    result[key] = (key in options) ? options[key] : true;
+  });
+  return result;
 }

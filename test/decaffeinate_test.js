@@ -19,7 +19,6 @@ describe('automatic conversions', function() {
       declarations: false,
       functionParens: false,
       keywords: false,
-      objectBraces: false,
       prototypeAccess: false,
       returns: false,
       stringInterpolation: false,
