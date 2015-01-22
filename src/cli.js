@@ -54,6 +54,11 @@ function parseArguments(args) {
         process.exit(0);
         break;
 
+      case '--interpolation':
+      case '--no-interpolation':
+        options.stringInterpolation = (arg === '--interpolation');
+        break;
+
       case '--keywords':
       case '--no-keywords':
         options.keywords = (arg === '--keywords');
@@ -169,6 +174,7 @@ function usage() {
   console.log('  --[no-]commas           Add missing commas in array, object, and function param lists.');
   console.log('  --[no-]declarations     Add declarations for variable assignments.');
   console.log('  --[no-]function-parens  Surround functions with parentheses.');
+  console.log('  --[no-]interpolation    Change string interpolations to template strings.');
   console.log('  --[no-]keywords         Rename keywords from from to their JavaScript equivalents.');
   console.log('  --[no-]prototype-access Change shorthand prototype access to longhand (e.g. `A::b`).');
   console.log('  --[no-]returns          Add a `return` before implicit returns in block functions.');

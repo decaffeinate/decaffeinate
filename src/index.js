@@ -8,6 +8,7 @@ import patchCommas from './patchers/patchCommas';
 import patchDeclarations from './patchers/patchDeclarations';
 import patchReturns from './patchers/patchReturns';
 import patchKeywords from './patchers/patchKeywords';
+import patchStringInterpolation from './patchers/patchStringInterpolation';
 
 
 /**
@@ -19,7 +20,8 @@ import patchKeywords from './patchers/patchKeywords';
  *   keywords: boolean,
  *   prototypeAccess: boolean,
  *   returns: boolean,
- *   this: boolean,
+ *   stringInterpolation: boolean,
+ *   this: boolean
  * }}
  **/
 var ConvertOptions;
@@ -43,6 +45,7 @@ export function convert(source, options) {
   const keywords = (options && ('keywords' in options)) ? options.keywords : true;
   const prototypeAccess = (options && ('prototypeAccess' in options)) ? options.prototypeAccess : true;
   const returns = (options && ('returns' in options)) ? options.returns : true;
+  const stringInterpolation = (options && ('stringInterpolation' in options)) ? options.stringInterpolation : true;
   const this_ = (options && ('this' in options)) ? options.this : true;
 
   traverse(ast, function(node) {
@@ -56,6 +59,10 @@ export function convert(source, options) {
 
     if (prototypeAccess) {
       patchPrototypeAccess(node, patcher);
+    }
+
+    if (stringInterpolation) {
+      patchStringInterpolation(node, patcher);
     }
 
     if (callParens) {

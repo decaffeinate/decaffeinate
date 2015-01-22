@@ -22,6 +22,7 @@ describe('automatic conversions', function() {
       objectBraces: false,
       prototypeAccess: false,
       returns: false,
+      stringInterpolation: false,
       this: false
     };
     if (name) { options[name] = true; }
@@ -316,6 +317,20 @@ describe('automatic conversions', function() {
       // This seems to trigger a CoffeeScriptRedux bug.
       // The inner LogicalNotOp has no raw/range.
       check('not not a', '!!a');
+    });
+  });
+
+  describe('changing string interpolation to template strings', function() {
+    function check(source, expected) {
+      assert.strictEqual(convert(source, onlyConvert('stringInterpolation')), expected);
+    }
+
+    it('rewrites interpolations with #{} to ${}', function() {
+      check('"a#{b}c"', '`a${b}c`');
+    });
+
+    it('rewrites interpolations with spaces after the "{"', function() {
+      check('"a#{ b }c"', '`a${ b }c`');
     });
   });
 });
