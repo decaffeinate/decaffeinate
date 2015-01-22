@@ -75,7 +75,18 @@ class LineAndColumnMap {
     return thisLineOffset + column;
   }
 
+  /**
+   * Gets the line & column pair for an absolute character offset.
+   *
+   * @param {number} offset
+   * @returns {?number[]}
+   */
   getLocation(offset) {
+    if (offset < 0 || this.offsets[this.offsets.length - 1] < offset) {
+      // Offset out of bounds.
+      return null;
+    }
+
     // We start at offsets.length - 2 because the last entry is used to capture
     // the length of the last line, so there will always be N + 1 entries in
     // offsets for a string with N lines.
@@ -84,7 +95,5 @@ class LineAndColumnMap {
         return [i, offset - this.offsets[i]];
       }
     }
-
-    throw new Error('unable to find a line/column pair for offset: ' + offset);
   }
 }

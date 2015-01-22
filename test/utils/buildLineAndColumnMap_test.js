@@ -47,5 +47,11 @@ describe('buildLineAndColumnMap', function() {
       assert.deepEqual(map.getLocation(0), [0, 0]);
       assert.deepEqual(map.getLocation(4), [1, 0]);
     });
+
+    it('maps offsets outside the bounds of the string to null', function() {
+      const map = buildLineAndColumnMap('');
+      assert.strictEqual(map.getLocation(1), null);
+      assert.strictEqual(map.getLocation(-1), null);
+    });
   });
 });
