@@ -98,5 +98,10 @@ function normalizeOptions(options=/** @type ConvertOptions */{}) {
   ConvertOptionsKeys.forEach(key => {
     result[key] = (key in options) ? options[key] : true;
   });
+  Object.keys(options).forEach(key => {
+    if (ConvertOptionsKeys.indexOf(key) < 0) {
+      throw new Error('Unknown option: ' + key);
+    }
+  });
   return result;
 }
