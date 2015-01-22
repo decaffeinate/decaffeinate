@@ -14,35 +14,54 @@ export default function parse(source) {
   const map = buildLineAndColumnMap(source);
 
   traverse(ast, function(node) {
-    switch (node.type) {
-      case 'Program':
-        node.scope = new Scope();
-        break;
-
-      case 'Function':
-      case 'BoundFunction':
-        node.scope = new Scope(node.parent.scope);
-        break;
-
-      default:
-        node.scope = node.parent.scope;
-        break;
-    }
-
-    node.scope.processNode(node);
-
-    if (!node.range || node.raw !== source.slice(node.range[0], node.range[1])) {
-      const fixed = map.getOffset(node.line - 1, node.column - 1);
-      node.range = [fixed, fixed + node.raw.length];
-
-      if (node.raw !== source.slice(node.range[0], node.range[1])) {
-        throw new Error(
-          'BUG! Could not fix range for ' + node.type +
-          ' at line ' + node.line + ', column ' + node.column
-        );
-      }
-    }
+    attachScope(node);
+    fixRange(node, map, source);
   });
 
   return ast;
+}
+
+/**
+ * @param {Object} node
+ * @private
+ */
+function attachScope(node) {
+  switch (node.type) {
+    case 'Program':
+      node.scope = new Scope();
+      break;
+
+    case 'Function':
+    case 'BoundFunction':
+      node.scope = new Scope(node.parent.scope);
+      break;
+
+    default:
+      node.scope = node.parent.scope;
+      break;
+  }
+
+  node.scope.processNode(node);
+}
+
+/**
+ * @param {Object} node
+ * @param {LineAndColumnMap} map
+ * @param {string} source
+ * @private
+ */
+function fixRange(node, map, source) {
+  if (!node.range && node.type === 'ConcatOp') { return; }
+
+  if (!node.range || node.raw !== source.slice(node.range[0], node.range[1])) {
+    const fixed = map.getOffset(node.line - 1, node.column - 1);
+    node.range = [fixed, fixed + node.raw.length];
+
+    if (node.raw !== source.slice(node.range[0], node.range[1])) {
+      throw new Error(
+        'BUG! Could not fix range for ' + node.type +
+        ' at line ' + node.line + ', column ' + node.column
+      );
+    }
+  }
 }
