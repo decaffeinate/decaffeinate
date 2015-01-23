@@ -160,6 +160,10 @@ describe('automatic conversions', function() {
     it('adds parens without messing up multi-line calls', function() {
       check('a\n  b: c', 'a(\n  b: c\n)');
     });
+
+    it('adds parens to multi-line calls with the right indentation', function() {
+      check('->\n  a\n    b: c', '->\n  a(\n    b: c\n  )');
+    });
   });
 
   describe('changing shorthand this to longhand this', function() {

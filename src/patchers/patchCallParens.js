@@ -1,3 +1,5 @@
+import getIndent from '../utils/getIndent';
+
 /**
  * Inserts parentheses on function calls.
  *
@@ -41,8 +43,9 @@ function addParentheses(patcher, callee, callArguments) {
       patcher.replace(callee.range[1], firstArgument.range[0], '(');
       patcher.insert(lastArgument.range[1], ')');
     } else {
+      const indent = getIndent(patcher.original, callee.range[1]);
       patcher.insert(callee.range[1], '(');
-      patcher.insert(lastArgument.range[1], '\n)');
+      patcher.insert(lastArgument.range[1], `\n${indent})`);
     }
   }
 }
