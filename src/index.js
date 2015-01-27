@@ -1,15 +1,15 @@
 import parse from './utils/parse';
 import traverse from './utils/traverse';
 import MagicString from 'magic-string';
-import patchThis from './patchers/patchThis';
-import patchPrototypeAccess from './patchers/patchPrototypeAccess';
 import patchCallParens from './patchers/patchCallParens';
 import patchCommas from './patchers/patchCommas';
 import patchDeclarations from './patchers/patchDeclarations';
-import patchReturns from './patchers/patchReturns';
 import patchKeywords from './patchers/patchKeywords';
+import patchPrototypeAccess from './patchers/patchPrototypeAccess';
+import patchReturns from './patchers/patchReturns';
 import patchSemicolons from './patchers/patchSemicolons';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
+import patchThis from './patchers/patchThis';
 
 
 /**
