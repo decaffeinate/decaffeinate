@@ -76,6 +76,7 @@ const ORDER = {
   Bool: [],
   BoundFunction: ['parameters', 'body'],
   ConcatOp: ['left', 'right'],
+  Conditional: ['condition', 'consequent', 'alternate'],
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
   ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
@@ -94,5 +95,6 @@ const ORDER = {
   Return: ['expression'],
   SeqOp: ['left', 'right'],
   String: [],
-  This: []
+  This: [],
+  While: ['condition', 'body']
 };
