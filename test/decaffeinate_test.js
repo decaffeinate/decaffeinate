@@ -21,6 +21,7 @@ describe('automatic conversions', function() {
       keywords: false,
       prototypeAccess: false,
       returns: false,
+      semicolons: false,
       stringInterpolation: false,
       this: false
     };
@@ -218,7 +219,7 @@ describe('automatic conversions', function() {
     });
 
     it('works in combination with the shorthand this patcher', function() {
-      assert.strictEqual(convert('@::b'), 'this.prototype.b');
+      assert.strictEqual(convert('@::b'), 'this.prototype.b;');
     });
   });
 
@@ -334,6 +335,49 @@ describe('automatic conversions', function() {
 
     it('rewrites interpolations with spaces after the "{"', function() {
       check('"a#{ b }c"', '`a${ b }c`');
+    });
+  });
+
+  describe('adding semi-colons', function() {
+    function check(source, expected) {
+      assert.strictEqual(convert(source, onlyConvert('semicolons')), expected);
+    }
+
+    it('adds them after call expressions as statements', function() {
+      check('a b', 'a b;');
+    });
+
+    it('does not add them when they are already present', function() {
+      check('a b; c d', 'a b; c d;');
+    });
+
+    it('does not add them when they are already present following whitespace', function() {
+      check('a b ; c d', 'a b ; c d;');
+    });
+
+    it('adds them after identifiers as statements', function() {
+      check('a', 'a;');
+    });
+
+    it('adds them after assignments', function() {
+      check('a = 1', 'a = 1;');
+    });
+
+    it('does not add them after `if` statements', function() {
+      check('if a\n  b', 'if a\n  b;');
+    });
+
+    it('does not add them after `for` loops', function() {
+      check('for a in b\n  a', 'for a in b\n  a;');
+      check('for a of b\n  a', 'for a of b\n  a;');
+    });
+
+    it('does not add them after `while` loops', function() {
+      check('while a\n  a', 'while a\n  a;');
+    });
+
+    it('does not add them after `loop` loops', function() {
+      check('loop\n  a', 'loop\n  a;');
     });
   });
 });

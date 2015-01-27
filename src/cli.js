@@ -74,6 +74,11 @@ function parseArguments(args) {
         options.returns = (arg === '--returns');
         break;
 
+      case '--semicolons':
+      case '--no-semicolons':
+        options.semicolons = (arg === '--semicolons');
+        break;
+
       case '--this':
       case '--no-this':
         options.this = (arg === '--this');
@@ -178,6 +183,7 @@ function usage() {
   console.log('  --[no-]keywords         Rename keywords from from to their JavaScript equivalents.');
   console.log('  --[no-]prototype-access Change shorthand prototype access to longhand (e.g. `A::b`).');
   console.log('  --[no-]returns          Add a `return` before implicit returns in block functions.');
+  console.log('  --[no-]semicolons       Add semicolons after all statements that would have them.');
   console.log('  --[no-]this             Change shorthand `this`, i.e. `@`, to longhand `this`.');
   console.log();
   console.log('EXAMPLES');

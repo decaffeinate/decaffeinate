@@ -8,6 +8,7 @@ import patchCommas from './patchers/patchCommas';
 import patchDeclarations from './patchers/patchDeclarations';
 import patchReturns from './patchers/patchReturns';
 import patchKeywords from './patchers/patchKeywords';
+import patchSemicolons from './patchers/patchSemicolons';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
 
 
@@ -34,6 +35,7 @@ const ConvertOptionsKeys = [
   'keywords',
   'prototypeAccess',
   'returns',
+  'semicolons',
   'stringInterpolation',
   'this'
 ];
@@ -83,6 +85,10 @@ export function convert(source, options) {
 
     if (options.returns) {
       patchReturns(node, patcher);
+    }
+
+    if (options.semicolons) {
+      patchSemicolons(node, patcher);
     }
   });
 
