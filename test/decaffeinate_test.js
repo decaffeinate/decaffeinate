@@ -380,4 +380,14 @@ describe('automatic conversions', function() {
       check('loop\n  a', 'loop\n  a;');
     });
   });
+
+  describe('converting all at once', function() {
+    function check(source, expected) {
+      assert.strictEqual(convert(source), expected);
+    }
+
+    it('adds semicolons after call parentheses', function() {
+      check('Ember = require "ember"', 'var Ember = require("ember");');
+    });
+  });
 });

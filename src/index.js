@@ -54,7 +54,7 @@ export function convert(source, options) {
 
   options = normalizeOptions(options);
 
-  traverse(ast, function(node) {
+  traverse(ast, function(node, descend) {
     if (options.keywords) {
       patchKeywords(node, patcher);
     }
@@ -86,6 +86,8 @@ export function convert(source, options) {
     if (options.returns) {
       patchReturns(node, patcher);
     }
+
+    descend(node);
 
     if (options.semicolons) {
       patchSemicolons(node, patcher);
