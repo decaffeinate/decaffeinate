@@ -21,6 +21,7 @@ import patchThis from './patchers/patchThis';
  *   keywords: boolean,
  *   prototypeAccess: boolean,
  *   returns: boolean,
+ *   semicolons: boolean,
  *   stringInterpolation: boolean,
  *   this: boolean
  * }}
