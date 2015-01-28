@@ -11,77 +11,26 @@ export default function run(args) {
   const input = parseArguments(args);
 
   if (input.paths.length) {
-    runWithPaths(input.paths, input.options);
+    runWithPaths(input.paths);
   } else {
-    runWithStream(process.stdin, process.stdout, input.options);
+    runWithStream(process.stdin, process.stdout);
   }
 }
 
 /**
  * @param {string[]} args
- * @returns {{options: ConvertOptions, paths: string[]}}
+ * @returns {{paths: string[]}}
  */
 function parseArguments(args) {
-  const options = /** @type ConvertOptions */{};
   const paths = /** @type string[] */[];
 
   for (var i = 0; i < args.length; i++) {
     var arg = args[i];
     switch (arg) {
-      case '--call-parens':
-      case '--no-call-parens':
-        options.callParens = (arg === '--call-parens');
-        break;
-
-      case '--commas':
-      case '--no-commas':
-        options.commas = (arg === '--commas');
-        break;
-
-      case '--declarations':
-      case '--no-declarations':
-        options.declarations = (arg === '--declarations');
-        break;
-
-      case '--function-parens':
-      case '--no-function-parens':
-        options.functionParens = (arg === '--function-parens');
-        break;
-
       case '-h':
       case '--help':
         usage();
         process.exit(0);
-        break;
-
-      case '--interpolation':
-      case '--no-interpolation':
-        options.stringInterpolation = (arg === '--interpolation');
-        break;
-
-      case '--keywords':
-      case '--no-keywords':
-        options.keywords = (arg === '--keywords');
-        break;
-
-      case '--prototype-access':
-      case '--no-prototype-access':
-        options.prototypeAccess = (arg === '--prototype-access');
-        break;
-
-      case '--returns':
-      case '--no-returns':
-        options.returns = (arg === '--returns');
-        break;
-
-      case '--semicolons':
-      case '--no-semicolons':
-        options.semicolons = (arg === '--semicolons');
-        break;
-
-      case '--this':
-      case '--no-this':
-        options.this = (arg === '--this');
         break;
 
       default:
@@ -90,17 +39,16 @@ function parseArguments(args) {
     }
   }
 
-  return { options: options, paths: paths };
+  return { paths };
 }
 
 /**
  * Run decaffeinate on the given paths, changing them in place.
  *
  * @param {string[]} paths
- * @param {ConvertOptions=} options
  * @param {?function(Error[])=} callback
  */
-function runWithPaths(paths, options, callback) {
+function runWithPaths(paths, callback) {
   const errors = [];
   var index = 0;
 
@@ -109,7 +57,6 @@ function runWithPaths(paths, options, callback) {
     runWithStream(
       createReadStream(path, 'utf8'),
       createWriteStream(temporaryPath, 'utf8'),
-      options,
       function(err) {
         if (err) {
           errors.push(err);
@@ -137,10 +84,9 @@ function runWithPaths(paths, options, callback) {
  *
  * @param {ReadableStream} input
  * @param {WritableStream} output
- * @param {ConvertOptions=} options
  * @param {function(?Error)=} callback
  */
-function runWithStream(input, output, options, callback) {
+function runWithStream(input, output, callback) {
   var error;
   var data = '';
 
@@ -151,7 +97,7 @@ function runWithStream(input, output, options, callback) {
   });
 
   input.on('end', function() {
-    output.end(convert(data, options), function() {
+    output.end(convert(data), function() {
       if (callback) {
         callback(error);
       }
@@ -175,16 +121,7 @@ function usage() {
   console.log();
   console.log('OPTIONS');
   console.log();
-  console.log('  --[no-]call-parens      Add missing parentheses on function calls.');
-  console.log('  --[no-]commas           Add missing commas in array, object, and function param lists.');
-  console.log('  --[no-]declarations     Add declarations for variable assignments.');
-  console.log('  --[no-]function-parens  Surround functions with parentheses.');
-  console.log('  --[no-]interpolation    Change string interpolations to template strings.');
-  console.log('  --[no-]keywords         Rename keywords from from to their JavaScript equivalents.');
-  console.log('  --[no-]prototype-access Change shorthand prototype access to longhand (e.g. `A::b`).');
-  console.log('  --[no-]returns          Add a `return` before implicit returns in block functions.');
-  console.log('  --[no-]semicolons       Add semicolons after all statements that would have them.');
-  console.log('  --[no-]this             Change shorthand `this`, i.e. `@`, to longhand `this`.');
+  console.log('  -h, --help  Display this help message.');
   console.log();
   console.log('EXAMPLES');
   console.log();
@@ -193,7 +130,4 @@ function usage() {
   console.log();
   console.log('  # Redirect input from a file.');
   console.log('  $ decaffeinate < index.coffee');
-  console.log();
-  console.log('  # Prevent modifying `this`.');
-  console.log('  $ echo "a = @a" | decaffeinate --no-this');
 }
