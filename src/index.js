@@ -1,16 +1,17 @@
-import parse from './utils/parse';
-import traverse from './utils/traverse';
 import MagicString from 'magic-string';
-import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
+import parse from './utils/parse';
 import patchCommas from './patchers/patchCommas';
 import patchDeclarations from './patchers/patchDeclarations';
 import patchKeywords from './patchers/patchKeywords';
-import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
 import patchPrototypeAccess from './patchers/patchPrototypeAccess';
 import patchReturns from './patchers/patchReturns';
 import patchSemicolons from './patchers/patchSemicolons';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
+import traverse from './utils/traverse';
+import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
+import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
+import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
 
 /**
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
@@ -32,9 +33,11 @@ export function convert(source) {
     patchCommas(node, patcher);
     patchDeclarations(node, patcher);
     patchReturns(node, patcher);
+    patchFunctionStart(node, patcher);
 
     descend(node);
 
+    patchFunctionEnd(node, patcher);
     patchObjectBraceClosing(node, patcher);
     patchCallClosing(node, patcher);
     patchSemicolons(node, patcher);

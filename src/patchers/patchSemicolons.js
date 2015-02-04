@@ -21,8 +21,22 @@ export default function patchSemicolons(node, patcher) {
  * @returns {boolean}
  */
 function shouldHaveTrailingSemicolon(node) {
-  if (!node.parent || node.parent.type !== 'Block') {
+  if (!node.parent) {
     return false;
+  }
+
+  switch (node.parent.type) {
+    case 'Block':
+      break;
+
+    case 'Function':
+      if (node.parent.body !== node) {
+        return false;
+      }
+      break;
+
+    default:
+      return false;
   }
 
   switch (node.type) {
@@ -30,6 +44,7 @@ function shouldHaveTrailingSemicolon(node) {
     case 'ForIn':
     case 'ForOf':
     case 'While':
+    case 'Block':
       return false;
 
     default:

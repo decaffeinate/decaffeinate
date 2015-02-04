@@ -12,6 +12,11 @@ export default function patchReturns(node, patcher) {
     } else {
       patchLastStatement(body, patcher);
     }
+  } else if (node.type === 'BoundFunction') {
+    const body = node.body;
+    if (body.type === 'Block') {
+      patchLastStatement(body.statements[body.statements.length - 1], patcher);
+    }
   }
 }
 

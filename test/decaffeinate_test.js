@@ -134,7 +134,7 @@ describe('automatic conversions', function() {
     });
 
     it('adds parens to multi-line calls with the right indentation', function() {
-      check('->\n  a\n    b: c', '->\n  return a({\n    b: c\n  });;');
+      check('->\n  a\n    b: c', '(function() {\n  return a({\n    b: c\n  });\n});');
     });
   });
 
@@ -196,11 +196,11 @@ describe('automatic conversions', function() {
     });
 
     it('does not add variable declarations for reassignments in functions', function() {
-      check('a = 1\n->\n  a = 2', 'var a = 1;\n->\n  return a = 2;;');
+      check('a = 1\n->\n  a = 2', 'var a = 1;\n(function() {\n  return a = 2;\n});');
     });
 
     it('does not add variable declarations for reassignments of function params', function() {
-      check('(a) -> a = 1', '(a) -> return a = 1;');
+      check('(a) -> a = 1', '(function(a) { return a = 1; });');
     });
 
     it('does not add variable declarations when the LHS is a member expression', function() {
@@ -231,15 +231,15 @@ describe('automatic conversions', function() {
 
   describe('adding explicit returns', function() {
     it('adds a return for the only expression in functions', function() {
-      check('a = -> 1', 'var a = -> return 1;');
+      check('a = -> 1', 'var a = function() { return 1; };');
     });
 
     it('does not add a return when one is already there', function() {
-      check('a = -> return 1', 'var a = -> return 1;');
+      check('a = -> return 1', 'var a = function() { return 1; };');
     });
 
     it('adds a return for the final expression in functions', function() {
-      check('a = ->\n  1\n  2', 'var a = ->\n  1;\n  return 2;;');
+      check('a = ->\n  1\n  2', 'var a = function() {\n  1;\n  return 2;\n};');
     });
   });
 
@@ -346,7 +346,15 @@ describe('automatic conversions', function() {
     });
 
     it('does not add parentheses to objects that are implicit returns', function() {
-      check('->\n  {a: b}', '->\n  return {a: b};;');
+      check('->\n  {a: b}', '(function() {\n  return {a: b};\n});');
+    });
+
+    it('leaves fat arrow functions as arrow functions', function() {
+      check('add = (a, b) => a + b', 'var add = (a, b) => a + b;');
+    });
+
+    it('adds a block to fat arrow functions if their body is a block', function() {
+      check('add = (a, b) =>\n  a + b', 'var add = (a, b) => {\n  return a + b;\n};');
     });
   });
 });
