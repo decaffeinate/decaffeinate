@@ -360,5 +360,9 @@ describe('automatic conversions', function() {
     it('turns `;`-separated sequences into `,`-separated sequences', function() {
       check('a; b', 'a, b;');
     });
+
+    it('wraps the body of fat arrow functions if the body is a sequence', function() {
+      check('=> a; b', '() => (a, b);');
+    });
   });
 });

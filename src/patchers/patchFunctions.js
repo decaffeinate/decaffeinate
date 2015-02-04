@@ -28,6 +28,10 @@ export function patchFunctionStart(node, patcher) {
       patcher.replace(arrowStart, arrowStart + 2, '{');
     }
   } else if (node.type === 'BoundFunction') {
+    if (patcher.slice(node.range[0], node.range[0] + 1) !== '(') {
+      patcher.insert(node.range[0], '() ');
+    }
+
     if (node.body.type === 'Block') {
       let arrowStart = node.parameters.length > 0 ?
         node.parameters[node.parameters.length - 1].range[1] :
@@ -43,6 +47,9 @@ export function patchFunctionStart(node, patcher) {
       }
 
       patcher.insert(arrowStart + 2, ' {');
+    } else if (node.body.type === 'SeqOp') {
+      // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
+      patcher.insert(node.body.range[0], '(');
     }
   }
 }
@@ -55,7 +62,7 @@ export function patchFunctionStart(node, patcher) {
  */
 export function patchFunctionEnd(node, patcher) {
   if (node.type === 'Function' || node.type === 'BoundFunction') {
-    let functionClose;
+    let functionClose = '';
 
     if (isMultiline(patcher.original, node)) {
       functionClose = `\n${getIndent(patcher.original, node.range[0])}}`;
@@ -63,7 +70,10 @@ export function patchFunctionEnd(node, patcher) {
       functionClose = ' }';
     }
 
-    if (isStatement(node)) {
+    if (node.type === 'Function' && isStatement(node)) {
+      functionClose += ')';
+    } else if (node.type === 'BoundFunction' && node.body.type === 'SeqOp') {
+      // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
       functionClose += ')';
     }
 
