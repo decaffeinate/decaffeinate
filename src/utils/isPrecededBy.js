@@ -1,19 +1,19 @@
 /**
- * Determines whether a node is followed by a particular token.
+ * Determines whether a node is preceded by a particular token.
  *
  * @param {Object} node
  * @param {string} source
  * @param {string} token
  * @returns {boolean}
  */
-export default function isFollowedBy(node, source, token) {
-  var index = node.range[1];
+export default function isPrecededBy(node, source, token) {
+  var index = node.range[1] - token.length;
 
-  while (index < source.length) {
+  while (index >= 0) {
     if (source.slice(index, index + token.length) === token) {
       return true;
     } else if (source[index] === ' ' || source[index] === '\n' || source[index] === '\t') {
-      index++;
+      index--;
     } else {
       break;
     }

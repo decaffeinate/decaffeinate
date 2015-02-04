@@ -16,7 +16,7 @@ describe('automatic conversions', function() {
     it('does not add commas after block comments', function() {
       check(
         '{\n  a: b\n  ###\n  # no comma\n  ###\n  c: d\n}',
-        '{\n  a: b,\n  ###\n  # no comma\n  ###\n  c: d\n};'
+        '({\n  a: b,\n  ###\n  # no comma\n  ###\n  c: d\n});'
       );
     });
 
@@ -48,31 +48,31 @@ describe('automatic conversions', function() {
 
     describe('in objects', function() {
       it('inserts commas after properties if they are not there', function() {
-        check('{\n  a: b\n  c: d\n}', '{\n  a: b,\n  c: d\n};');
+        check('{\n  a: b\n  c: d\n}', '({\n  a: b,\n  c: d\n});');
       });
 
       it('does not insert commas if there already is one', function() {
-        check('{\n  a: b,\n  c: d\n}', '{\n  a: b,\n  c: d\n};');
+        check('{\n  a: b,\n  c: d\n}', '({\n  a: b,\n  c: d\n});');
       });
 
       it('does not insert commas in single-line objects', function() {
-        check('{ a: b, c: d }\n', '{ a: b, c: d };\n');
+        check('{ a: b, c: d }\n', '({ a: b, c: d });\n');
       });
 
       it('inserts commas only for objects that end a line', function() {
-        check('{\n  a: b, c: d\n  e: f\n  g: h\n}', '{\n  a: b, c: d,\n  e: f,\n  g: h\n};');
+        check('{\n  a: b, c: d\n  e: f\n  g: h\n}', '({\n  a: b, c: d,\n  e: f,\n  g: h\n});');
       });
 
       it('inserts commas immediately after the element if followed by a comment', function() {
-        check('{\n  a: b # hi!\n  c: d\n}', '{\n  a: b, # hi!\n  c: d\n};');
+        check('{\n  a: b # hi!\n  c: d\n}', '({\n  a: b, # hi!\n  c: d\n});');
       });
 
       it('inserts commas after shorthand properties', function() {
-        check('{\n  a\n  c\n}', '{\n  a,\n  c\n};');
+        check('{\n  a\n  c\n}', '({\n  a,\n  c\n});');
       });
 
       it('inserts commas for braceless objects', function() {
-        check('a: b\nc: d', 'a: b,\nc: d;');
+        check('a: b\nc: d', '({a: b,\nc: d});');
       });
     });
 
@@ -94,7 +94,7 @@ describe('automatic conversions', function() {
       });
 
       it('inserts commas on the same line when the property value is an interpolated string', function() {
-        check('a\n  b: "#{c}"\n  d: e', 'a(\n  b: `${c}`,\n  d: e\n);');
+        check('a\n  b: "#{c}"\n  d: e', 'a({\n  b: `${c}`,\n  d: e\n});');
       });
     });
   });
@@ -130,11 +130,11 @@ describe('automatic conversions', function() {
     });
 
     it('adds parens without messing up multi-line calls', function() {
-      check('a\n  b: c', 'a(\n  b: c\n);');
+      check('a\n  b: c', 'a({\n  b: c\n});');
     });
 
     it('adds parens to multi-line calls with the right indentation', function() {
-      check('->\n  a\n    b: c', '->\n  return a(\n    b: c\n  );;');
+      check('->\n  a\n    b: c', '->\n  return a({\n    b: c\n  });;');
     });
   });
 
@@ -327,6 +327,22 @@ describe('automatic conversions', function() {
   describe('converting all at once', function() {
     it('adds semicolons after call parentheses', function() {
       check('Ember = require "ember"', 'var Ember = require("ember");');
+    });
+
+    it('adds braces to implicit object literals', function() {
+      check('a b: c', 'a({b: c});');
+    });
+
+    it('adds parentheses around implicit bare object literals', function() {
+      check('a: b', '({a: b});');
+    });
+
+    it('adds parentheses around explicit bare object literals', function() {
+      check('{a}', '({a});');
+    });
+
+    it('adds object braces to the last function argument even if there are parentheses', function() {
+      check('a(b: c)', 'a({b: c});');
     });
   });
 });
