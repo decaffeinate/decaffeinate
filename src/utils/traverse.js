@@ -91,10 +91,12 @@ const ORDER = {
   NewOp: ['ctor', 'arguments'],
   ObjectInitialiser: ['members'],
   ObjectInitialiserMember: ['key', 'expression'],
+  PlusOp: ['left', 'right'],
   ProtoMemberAccessOp: ['expression'],
   Return: ['expression'],
   SeqOp: ['left', 'right'],
   String: [],
+  SubtractOp: ['left', 'right'],
   This: [],
   While: ['condition', 'body']
 };
