@@ -6,6 +6,7 @@ import patchKeywords from './patchers/patchKeywords';
 import patchPrototypeAccess from './patchers/patchPrototypeAccess';
 import patchReturns from './patchers/patchReturns';
 import patchSemicolons from './patchers/patchSemicolons';
+import patchSequences from './patchers/patchSequences';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
 import traverse from './utils/traverse';
@@ -41,6 +42,7 @@ export function convert(source) {
     patchObjectBraceClosing(node, patcher);
     patchCallClosing(node, patcher);
     patchSemicolons(node, patcher);
+    patchSequences(node, patcher);
   });
 
   return patcher.toString();

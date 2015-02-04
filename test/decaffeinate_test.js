@@ -291,11 +291,11 @@ describe('automatic conversions', function() {
     });
 
     it('does not add them when they are already present', function() {
-      check('a b; c d', 'a(b); c(d);');
+      check('a b; c d', 'a(b), c(d);');
     });
 
     it('does not add them when they are already present following whitespace', function() {
-      check('a b ; c d', 'a(b) ; c(d);');
+      check('a b ; c d', 'a(b) , c(d);');
     });
 
     it('adds them after identifiers as statements', function() {
@@ -355,6 +355,10 @@ describe('automatic conversions', function() {
 
     it('adds a block to fat arrow functions if their body is a block', function() {
       check('add = (a, b) =>\n  a + b', 'var add = (a, b) => {\n  return a + b;\n};');
+    });
+
+    it('turns `;`-separated sequences into `,`-separated sequences', function() {
+      check('a; b', 'a, b;');
     });
   });
 });
