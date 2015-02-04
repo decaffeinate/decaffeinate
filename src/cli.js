@@ -1,5 +1,5 @@
 import { createReadStream, createWriteStream, renameSync } from 'fs';
-import { basename, extname } from 'path';
+import { join, dirname, basename, extname } from 'path';
 import { convert } from './index';
 
 /**
@@ -53,7 +53,7 @@ function runWithPaths(paths, callback) {
   var index = 0;
 
   function processPath(path) {
-    const outputPath = basename(path, extname(path)) + '.js';
+    const outputPath = join(dirname(path), basename(path, extname(path))) + '.js';
     runWithStream(
       createReadStream(path, 'utf8'),
       createWriteStream(outputPath, 'utf8'),
