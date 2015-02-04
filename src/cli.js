@@ -1,5 +1,5 @@
 import { createReadStream, createWriteStream, renameSync } from 'fs';
-import { basename } from 'path';
+import { basename, extname } from 'path';
 import { convert } from './index';
 
 /**
@@ -53,16 +53,12 @@ function runWithPaths(paths, callback) {
   var index = 0;
 
   function processPath(path) {
-    const temporaryPath = path + '.decaffeinate';
+    const outputPath = basename(path, extname(path)) + '.js';
     runWithStream(
       createReadStream(path, 'utf8'),
-      createWriteStream(temporaryPath, 'utf8'),
+      createWriteStream(outputPath, 'utf8'),
       function(err) {
-        if (err) {
-          errors.push(err);
-        } else {
-          renameSync(temporaryPath, path);
-        }
+        if (err) { errors.push(err); }
         processNext();
       }
     );
@@ -124,6 +120,9 @@ function usage() {
   console.log('  -h, --help  Display this help message.');
   console.log();
   console.log('EXAMPLES');
+  console.log();
+  console.log('  # Convert a .coffee file to a .js file.');
+  console.log('  $ decaffeinate index.coffee');
   console.log();
   console.log('  # Pipe an example from the command-line.');
   console.log('  $ echo "a = 1" | decaffeinate');
