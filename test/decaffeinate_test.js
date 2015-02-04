@@ -364,5 +364,9 @@ describe('automatic conversions', function() {
     it('wraps the body of fat arrow functions if the body is a sequence', function() {
       check('=> a; b', '() => (a, b);');
     });
+
+    it('handles functions without a body', function() {
+      check('->', '(function() {});');
+    });
   });
 });

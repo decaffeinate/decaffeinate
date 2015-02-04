@@ -7,7 +7,9 @@
 export default function patchReturns(node, patcher) {
   if (node.type === 'Function') {
     const body = node.body;
-    if (body.type === 'Block') {
+    if (!body) {
+      // nothing to do
+    } else if (body.type === 'Block') {
       patchLastStatement(body.statements[body.statements.length - 1], patcher);
     } else {
       patchLastStatement(body, patcher);

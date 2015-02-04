@@ -67,7 +67,7 @@ export function patchFunctionEnd(node, patcher) {
     if (isMultiline(patcher.original, node)) {
       functionClose = `\n${getIndent(patcher.original, node.range[0])}}`;
     } else if (node.type === 'Function') {
-      functionClose = ' }';
+      functionClose = node.body ? ' }' : '}';
     }
 
     if (node.type === 'Function' && isStatement(node)) {
