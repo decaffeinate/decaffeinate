@@ -344,5 +344,9 @@ describe('automatic conversions', function() {
     it('adds object braces to the last function argument even if there are parentheses', function() {
       check('a(b: c)', 'a({b: c});');
     });
+
+    it('does not add parentheses to objects that are implicit returns', function() {
+      check('->\n  {a: b}', '->\n  return {a: b};;');
+    });
   });
 });
