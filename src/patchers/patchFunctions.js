@@ -1,6 +1,7 @@
 import getIndent from '../utils/getIndent';
 import isMultiline from '../utils/isMultiline';
 import isStatement from '../utils/isStatement';
+import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 /**
  * Patches the start of arrow functions to make them into JavaScript functions.
@@ -62,10 +63,11 @@ export function patchFunctionStart(node, patcher) {
  */
 export function patchFunctionEnd(node, patcher) {
   if (node.type === 'Function' || node.type === 'BoundFunction') {
+    let nodeRange = trimmedNodeRange(node, patcher.original);
     let functionClose = '';
 
     if (isMultiline(patcher.original, node)) {
-      functionClose = `\n${getIndent(patcher.original, node.range[0])}}`;
+      functionClose = `\n${getIndent(patcher.original, nodeRange[0])}}`;
     } else if (node.type === 'Function') {
       functionClose = node.body ? ' }' : '}';
     }
@@ -78,7 +80,7 @@ export function patchFunctionEnd(node, patcher) {
     }
 
     if (functionClose) {
-      patcher.insert(node.range[1], functionClose);
+      patcher.insert(nodeRange[1], functionClose);
     }
   }
 }

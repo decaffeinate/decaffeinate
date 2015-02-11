@@ -1,4 +1,5 @@
 import stripComments from '../utils/stripComments';
+import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 /**
  * Inserts missing commas in objects, arrays, and calls.
@@ -7,31 +8,38 @@ import stripComments from '../utils/stripComments';
  * @param {MagicString} patcher
  */
 export default function patchCommas(node, patcher) {
-  switch (node.type) {
+  switch (node.parent && node.parent.type) {
     case 'ObjectInitialiser':
     case 'ArrayInitialiser':
-      patchCommasInList(node.members, patcher);
+      patchCommaAfterNode(node, node.parent.members, patcher);
       break;
 
     case 'FunctionApplication':
-      patchCommasInList(node.arguments, patcher);
+      if (node.parent.arguments.indexOf(node) >= 0) {
+        patchCommaAfterNode(node, node.parent.arguments, patcher);
+      }
       break;
   }
 }
 
 /**
- * Inserts missing commas between nodes in the given list.
+ * Inserts missing commas between member and its next sibling.
  *
- * @param {Object[]} list
+ * @param {Object} member
+ * @param {Object[]} members
  * @param {MagicString} patcher
  */
-function patchCommasInList(list, patcher) {
-  for (var i = 1; i < list.length; i++) {
-    var member = list[i - 1];
-    var nextMember = list[i];
-    var sourceBetween = stripComments(patcher.original.slice(member.range[1], nextMember.range[0]));
-    if (sourceBetween.indexOf(',') < 0) {
-      patcher.insert(member.range[1], ',');
-    }
+function patchCommaAfterNode(member, members, patcher) {
+  const memberIndex = members.indexOf(member);
+  const nextMember = members[memberIndex + 1];
+
+  if (!nextMember) {
+    return;
+  }
+
+  const nodeRange = trimmedNodeRange(member, patcher.original);
+  const sourceBetween = stripComments(patcher.original.slice(member.range[1], nextMember.range[0]));
+  if (sourceBetween.indexOf(',') < 0) {
+    patcher.insert(nodeRange[1], ',');
   }
 }

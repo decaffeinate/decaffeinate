@@ -1,4 +1,5 @@
 import getIndent from '../utils/getIndent';
+import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 /**
  * Adds tokens necessary to open a function call.
@@ -103,7 +104,7 @@ export function patchCallClosing(node, patcher) {
    * @param {Object} node
    */
   function addObjectBrace(patcher, node) {
-    patcher.insert(node.range[1], '}');
+    patcher.insert(trimmedNodeRange(node, patcher.original)[1], '}');
   }
 
   /**
@@ -118,16 +119,17 @@ export function patchCallClosing(node, patcher) {
       patcher.insert(callee.range[1], ')');
     } else {
       const lastArgument = callArguments[callArguments.length - 1];
+      const lastArgumentRange = trimmedNodeRange(lastArgument, patcher.original);
 
       if (callee.line === lastArgument.line) {
         patcher.insert(
-          lastArgument.range[1],
+          lastArgumentRange[1],
           isImplicitObject(lastArgument, patcher.original) ? '})' : ')'
         );
       } else {
         const indent = getIndent(patcher.original, callee.range[1]);
         patcher.insert(
-          lastArgument.range[1],
+          lastArgumentRange[1],
           isImplicitObject(lastArgument, patcher.original) ? `\n${indent}})` : `\n${indent})`
         );
       }

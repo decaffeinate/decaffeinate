@@ -31,7 +31,6 @@ export function convert(source) {
     patchStringInterpolation(node, patcher);
     patchCallOpening(node, patcher);
     patchObjectBraceOpening(node, patcher);
-    patchCommas(node, patcher);
     patchDeclarations(node, patcher);
     patchReturns(node, patcher);
     patchFunctionStart(node, patcher);
@@ -43,6 +42,7 @@ export function convert(source) {
     patchCallClosing(node, patcher);
     patchSemicolons(node, patcher);
     patchSequences(node, patcher);
+    patchCommas(node, patcher);
   });
 
   return patcher.toString();

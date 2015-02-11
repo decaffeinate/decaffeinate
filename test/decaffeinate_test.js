@@ -368,5 +368,13 @@ describe('automatic conversions', function() {
     it('handles functions without a body', function() {
       check('->', '(function() {});');
     });
+
+    it('handles object literals with function property values', function() {
+      check('a\n  b: ->\n    c\n\n  d: 1\n', 'a({\n  b: function() {\n    return c;\n  },\n\n  d: 1\n});\n');
+    });
+
+    it('handles object literals with function property values followed by comments', function() {
+      check('a\n  b: ->\n    c\n\n# FOO\nd e', 'a({\n  b: function() {\n    return c;\n  }\n});\n\n# FOO\nd(e);');
+    });
   });
 });

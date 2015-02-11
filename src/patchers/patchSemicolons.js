@@ -1,4 +1,5 @@
 import isFollowedBy from '../utils/isFollowedBy';
+import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 /**
  * Adds semicolons after statements that should have semicolons.
@@ -9,7 +10,8 @@ import isFollowedBy from '../utils/isFollowedBy';
 export default function patchSemicolons(node, patcher) {
   if (shouldHaveTrailingSemicolon(node)) {
     if (!isFollowedBy(node, patcher.original, ';')) {
-      patcher.insert(node.range[1], ';');
+      const nodeRange = trimmedNodeRange(node, patcher.original);
+      patcher.insert(nodeRange[1], ';');
     }
   }
 }
