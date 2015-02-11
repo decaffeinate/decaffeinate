@@ -16,7 +16,7 @@ describe('automatic conversions', function() {
     it('does not add commas after block comments', function() {
       check(
         '{\n  a: b\n  ###\n  # no comma\n  ###\n  c: d\n}',
-        '({\n  a: b,\n  ###\n  # no comma\n  ###\n  c: d\n});'
+        '({\n  a: b,\n  /**\n  * no comma\n   */\n  c: d\n});'
       );
     });
 
@@ -38,7 +38,7 @@ describe('automatic conversions', function() {
       });
 
       it('inserts commas immediately after the element if followed by a comment', function() {
-        check('[\n  1 # hi!\n  2\n]', '[\n  1, # hi!\n  2\n];');
+        check('[\n  1 # hi!\n  2\n]', '[\n  1, // hi!\n  2\n];');
       });
 
       it('inserts commas in nested arrays', function() {
@@ -64,7 +64,7 @@ describe('automatic conversions', function() {
       });
 
       it('inserts commas immediately after the element if followed by a comment', function() {
-        check('{\n  a: b # hi!\n  c: d\n}', '({\n  a: b, # hi!\n  c: d\n});');
+        check('{\n  a: b # hi!\n  c: d\n}', '({\n  a: b, // hi!\n  c: d\n});');
       });
 
       it('inserts commas after shorthand properties', function() {
@@ -90,7 +90,7 @@ describe('automatic conversions', function() {
       });
 
       it('inserts commas immediately after the element if followed by a comment', function() {
-        check('a(\n  1 # hi\n  2\n)', 'a(\n  1, # hi\n  2\n);');
+        check('a(\n  1 # hi\n  2\n)', 'a(\n  1, // hi\n  2\n);');
       });
 
       it('inserts commas on the same line when the property value is an interpolated string', function() {
@@ -374,7 +374,19 @@ describe('automatic conversions', function() {
     });
 
     it('handles object literals with function property values followed by comments', function() {
-      check('a\n  b: ->\n    c\n\n# FOO\nd e', 'a({\n  b: function() {\n    return c;\n  }\n});\n\n# FOO\nd(e);');
+      check('a\n  b: ->\n    c\n\n# FOO\nd e', 'a({\n  b: function() {\n    return c;\n  }\n});\n\n// FOO\nd(e);');
+    });
+
+    it('converts line comments to // form', function() {
+      check('# foo\n1', '// foo\n1;');
+    });
+
+    it('converts non-doc block comments to /* */', function() {
+      check('a(\n  ###\n  HEY\n  ###\n  1\n)', 'a(\n  /*\n  HEY\n  */\n  1\n);');
+    });
+
+    it('converts doc block comments to /** */', function() {
+      check('a(\n  ###\n  # HEY\n  ###\n  1\n)', 'a(\n  /**\n  * HEY\n   */\n  1\n);');
     });
   });
 });

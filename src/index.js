@@ -1,6 +1,7 @@
 import MagicString from 'magic-string';
 import parse from './utils/parse';
 import patchCommas from './patchers/patchCommas';
+import patchComments from './patchers/patchComments';
 import patchDeclarations from './patchers/patchDeclarations';
 import patchKeywords from './patchers/patchKeywords';
 import patchPrototypeAccess from './patchers/patchPrototypeAccess';
@@ -44,6 +45,8 @@ export function convert(source) {
     patchSequences(node, patcher);
     patchCommas(node, patcher);
   });
+
+  patchComments(patcher);
 
   return patcher.toString();
 }
