@@ -423,5 +423,10 @@ describe('automatic conversions', function() {
       check('a.b?', 'a.b != null;');
       check('0?', '0 != null;');
     });
+
+    it('surrounds unary existential operator results if needed', function() {
+      check('a? or b?', '(typeof a !== "undefined" && a !== null) || (typeof b !== "undefined" && b !== null);');
+      check('0? or 1?', '(0 != null) || (1 != null);');
+    });
   });
 });

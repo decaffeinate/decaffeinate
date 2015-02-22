@@ -7,15 +7,33 @@
 export default function patchExistentialOperator(node, patcher) {
   if (node.type === 'UnaryExistsOp') {
     const expression = node.expression;
+    const parens = needsParens(node);
     if (expression.type === 'Identifier') {
       const checked = expression.data;
-      patcher.replace(
-        node.range[0],
-        node.range[1],
-        `typeof ${checked} !== "undefined" && ${checked} !== null`
-      );
+      let replacement = `typeof ${checked} !== "undefined" && ${checked} !== null`;
+      if (parens) {
+        replacement = `(${replacement})`;
+      }
+      patcher.replace(node.range[0], node.range[1], replacement);
     } else {
-      patcher.replace(node.range[1] - 1, node.range[1], ` != null`);
+      let replacement = ` != null`;
+      if (parens) {
+        patcher.insert(node.range[0], '(');
+        replacement += ')';
+      }
+      patcher.replace(node.range[1] - 1, node.range[1], replacement);
     }
   }
+}
+
+/**
+ * Wraps the given string unless the node, normally needing parens, would be
+ * unambiguous without them.
+ *
+ * @param {Object} node
+ * @param {string} string
+ * @returns {string}
+ */
+function needsParens(node, string) {
+  return node.parent.type !== 'Block';
 }
