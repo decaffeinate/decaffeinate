@@ -1,5 +1,4 @@
 import replaceBetween from '../utils/replaceBetween';
-import sourceBetween from '../utils/sourceBetween';
 
 /**
  * Replaces equality operators with strict equality operators.
