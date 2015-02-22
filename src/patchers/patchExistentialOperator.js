@@ -31,9 +31,8 @@ export default function patchExistentialOperator(node, patcher) {
  * unambiguous without them.
  *
  * @param {Object} node
- * @param {string} string
- * @returns {string}
+ * @returns {boolean}
  */
-function needsParens(node, string) {
+function needsParens(node) {
   return node.parent.type !== 'Block';
 }
