@@ -396,5 +396,15 @@ describe('automatic conversions', function() {
     it('converts `is` equality operator to triple-equal operator', function() {
       check('a is b', 'a === b;');
     });
+
+    it('leaves less-than operators alone', function() {
+      check('a < b', 'a < b;');
+      check('a <= b', 'a <= b;');
+    });
+
+    it('leaves greater-than operators alone', function() {
+      check('a > b', 'a > b;');
+      check('a >= b', 'a >= b;');
+    });
   });
 });
