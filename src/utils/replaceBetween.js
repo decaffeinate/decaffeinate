@@ -8,14 +8,16 @@ import sourceBetween from './sourceBetween';
  * @param {Object} right
  * @param {string} search
  * @param {string} replacement
+ * @returns {boolean}
  */
 export default function replaceBetween(patcher, left, right, search, replacement) {
   const between = sourceBetween(patcher.original, left, right);
   const offset = between.indexOf(search);
 
   if (offset < 0) {
-    return;
+    return false;
   }
 
   patcher.replace(left.range[1] + offset, left.range[1] + offset + search.length, replacement);
+  return true;
 }
