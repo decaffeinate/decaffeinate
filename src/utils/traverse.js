@@ -107,5 +107,6 @@ const ORDER = {
   String: [],
   SubtractOp: ['left', 'right'],
   This: [],
+  UnaryExistsOp: ['expression'],
   While: ['condition', 'body']
 };

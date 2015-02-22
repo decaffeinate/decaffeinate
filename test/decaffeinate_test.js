@@ -414,5 +414,14 @@ describe('automatic conversions', function() {
       check('a | b', 'a | b;');
       check('a ^ b', 'a ^ b;');
     });
+
+    it('converts unary existential identifier checks to typeof + null check', function() {
+      check('a?', 'typeof a !== "undefined" && a !== null;');
+    });
+
+    it('converts unary existential non-identifier to non-strict null check', function() {
+      check('a.b?', 'a.b != null;');
+      check('0?', '0 != null;');
+    });
   });
 });

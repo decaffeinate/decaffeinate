@@ -4,6 +4,7 @@ import patchCommas from './patchers/patchCommas';
 import patchComments from './patchers/patchComments';
 import patchDeclarations from './patchers/patchDeclarations';
 import patchEquality from './patchers/patchEquality';
+import patchExistentialOperator from './patchers/patchExistentialOperator';
 import patchKeywords from './patchers/patchKeywords';
 import patchPrototypeAccess from './patchers/patchPrototypeAccess';
 import patchReturns from './patchers/patchReturns';
@@ -40,6 +41,7 @@ export function convert(source) {
 
     descend(node);
 
+    patchExistentialOperator(node, patcher);
     patchFunctionEnd(node, patcher);
     patchObjectBraceClosing(node, patcher);
     patchCallClosing(node, patcher);
