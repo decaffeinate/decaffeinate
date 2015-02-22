@@ -96,6 +96,7 @@ const ORDER = {
   LogicalNotOp: ['expression'],
   LogicalOrOp: ['left', 'right'],
   MemberAccessOp: ['expression'],
+  NEQOp: ['left', 'right'],
   NewOp: ['ctor', 'arguments'],
   ObjectInitialiser: ['members'],
   ObjectInitialiserMember: ['key', 'expression'],

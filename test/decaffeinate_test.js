@@ -389,12 +389,14 @@ describe('automatic conversions', function() {
       check('a(\n  ###\n  # HEY\n  ###\n  1\n)', 'a(\n  /**\n  * HEY\n   */\n  1\n);');
     });
 
-    it('converts double-equal operator to triple-equal operator', function() {
+    it('converts equality operator to triple-equal operator', function() {
       check('a == b', 'a === b;');
+      check('a is b', 'a === b;');
     });
 
-    it('converts `is` equality operator to triple-equal operator', function() {
-      check('a is b', 'a === b;');
+    it('converts negative equality operator to triple-not-equal operator', function() {
+      check('a != b', 'a !== b;');
+      check('a isnt b', 'a !== b;');
     });
 
     it('leaves less-than operators alone', function() {

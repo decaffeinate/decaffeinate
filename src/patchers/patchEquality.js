@@ -7,8 +7,15 @@ import replaceBetween from '../utils/replaceBetween';
  * @param {MagicString} patcher
  */
 export default function patchEquality(node, patcher) {
-  if (node.type === 'EQOp') {
-    replaceBetween(patcher, node.left, node.right, '==', '===') ||
-      replaceBetween(patcher, node.left, node.right, 'is', '===');
+  switch (node.type) {
+    case 'EQOp':
+      replaceBetween(patcher, node.left, node.right, '==', '===') ||
+        replaceBetween(patcher, node.left, node.right, 'is', '===');
+      break;
+
+    case 'NEQOp':
+      replaceBetween(patcher, node.left, node.right, '!=', '!==') ||
+        replaceBetween(patcher, node.left, node.right, 'isnt', '!==');
+      break;
   }
 }
