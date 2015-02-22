@@ -406,5 +406,11 @@ describe('automatic conversions', function() {
       check('a > b', 'a > b;');
       check('a >= b', 'a >= b;');
     });
+
+    it('leaves bitwise operators alone', function() {
+      check('a & b', 'a & b;');
+      check('a | b', 'a | b;');
+      check('a ^ b', 'a ^ b;');
+    });
   });
 });
