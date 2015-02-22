@@ -78,6 +78,7 @@ const ORDER = {
   ConcatOp: ['left', 'right'],
   Conditional: ['condition', 'consequent', 'alternate'],
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
+  EQOp: ['left', 'right'],
   ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
   Function: ['parameters', 'body'],

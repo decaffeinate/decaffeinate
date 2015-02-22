@@ -3,6 +3,7 @@ import parse from './utils/parse';
 import patchCommas from './patchers/patchCommas';
 import patchComments from './patchers/patchComments';
 import patchDeclarations from './patchers/patchDeclarations';
+import patchEquality from './patchers/patchEquality';
 import patchKeywords from './patchers/patchKeywords';
 import patchPrototypeAccess from './patchers/patchPrototypeAccess';
 import patchReturns from './patchers/patchReturns';
@@ -35,6 +36,7 @@ export function convert(source) {
     patchDeclarations(node, patcher);
     patchReturns(node, patcher);
     patchFunctionStart(node, patcher);
+    patchEquality(node, patcher);
 
     descend(node);
 
