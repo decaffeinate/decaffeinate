@@ -17,6 +17,7 @@ import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
+import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
 import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
 
 /**
@@ -42,6 +43,7 @@ export function convert(source) {
     patchClassStart(node, patcher);
     patchEquality(node, patcher);
     patchThrowStart(node, patcher);
+    patchSpreadStart(node, patcher);
 
     descend(node);
 
@@ -54,6 +56,7 @@ export function convert(source) {
     patchSemicolons(node, patcher);
     patchSequences(node, patcher);
     patchCommas(node, patcher);
+    patchSpreadEnd(node, patcher);
   });
 
   patchComments(patcher);
