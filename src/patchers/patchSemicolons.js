@@ -1,4 +1,5 @@
 import isFollowedBy from '../utils/isFollowedBy';
+import isImplicitlyReturned from '../utils/isImplicitlyReturned';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 /**
@@ -37,6 +38,9 @@ function shouldHaveTrailingSemicolon(node) {
       }
       break;
 
+    case 'Class':
+      return false;
+
     default:
       return false;
   }
@@ -47,7 +51,12 @@ function shouldHaveTrailingSemicolon(node) {
     case 'ForOf':
     case 'While':
     case 'Block':
+    case 'ClassProtoAssignOp':
+    case 'Constructor':
       return false;
+
+    case 'Class':
+      return !node.nameAssignee || isImplicitlyReturned(node);
 
     default:
       return true;
