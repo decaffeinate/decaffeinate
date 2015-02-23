@@ -17,6 +17,7 @@ import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
+import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
 
 /**
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
@@ -40,9 +41,11 @@ export function convert(source) {
     patchFunctionStart(node, patcher);
     patchClassStart(node, patcher);
     patchEquality(node, patcher);
+    patchThrowStart(node, patcher);
 
     descend(node);
 
+    patchThrowEnd(node, patcher);
     patchExistentialOperator(node, patcher);
     patchFunctionEnd(node, patcher);
     patchClassEnd(node, patcher);

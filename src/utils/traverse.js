@@ -110,6 +110,7 @@ const ORDER = {
   String: [],
   SubtractOp: ['left', 'right'],
   This: [],
+  Throw: ['expression'],
   UnaryExistsOp: ['expression'],
   While: ['condition', 'body']
 };

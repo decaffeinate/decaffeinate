@@ -449,5 +449,13 @@ describe('automatic conversions', function() {
     it('preserves class constructors with arguments', function() {
       check('class A\n  constructor: (a) ->\n    @a = a', 'class A {\n  constructor(a) {\n    return this.a = a;\n  }\n}');
     });
+
+    it('preserves `throw` when used in a statement context', function() {
+      check('throw new Error()', 'throw new Error();');
+    });
+
+    it('wraps `throw` in an IIFE when used in an expression context', function() {
+      check('doSomething() or (throw err)', 'doSomething() || (() => { throw err; })();');
+    });
   });
 });

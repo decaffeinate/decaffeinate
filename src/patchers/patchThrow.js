@@ -1,0 +1,54 @@
+const LPAREN = '(';
+const RPAREN = ')';
+
+/**
+ * Wraps throw expressions in an IIFE.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+export function patchThrowStart(node, patcher) {
+  if (isThrowExpression(node)) {
+    let pos = node.range[0];
+    let str = '() => { ';
+    if (patcher.slice(pos, pos + LPAREN.length) === LPAREN) {
+      // Already starts with a parenthesis, so insert inside it.
+      pos += LPAREN.length;
+    } else {
+      // Doesn't start with a parenthesis, so add it to the start.
+      str += LPAREN;
+    }
+    patcher.insert(pos, str);
+  }
+}
+
+/**
+ * Wraps throw expressions in an IIFE.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+export function patchThrowEnd(node, patcher) {
+  if (isThrowExpression(node)) {
+    let pos = node.range[1];
+    let str = '; })(';
+    if (patcher.slice(pos - RPAREN.length, pos) === RPAREN) {
+      // Already ends with a parenthesis, so insert inside it.
+      pos -= RPAREN.length;
+    } else {
+      // Doesn't end with a parenthesis, so add it to the end.
+      str += RPAREN;
+    }
+    patcher.insert(pos, str);
+  }
+}
+
+/**
+ * Determines whether a node is a `throw` used in an expression context.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isThrowExpression(node) {
+  return node.type === 'Throw' && node.parent.type !== 'Block';
+}
