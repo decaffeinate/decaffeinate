@@ -428,5 +428,26 @@ describe('automatic conversions', function() {
       check('a? or b?', '(typeof a !== "undefined" && a !== null) || (typeof b !== "undefined" && b !== null);');
       check('0? or 1?', '(0 != null) || (1 != null);');
     });
+
+    it('converts named classes without bodies', function() {
+      check('class A', 'class A {}');
+    });
+
+    it('converts anonymous classes without bodies wrapped in parentheses', function() {
+      check('class', '(class {});');
+    });
+
+    it('preserves class body functions as method definitions', function() {
+      check('class A\n  a: ->\n    1', 'class A {\n  a() {\n    return 1;\n  }\n}');
+      check('->\n  class A\n    a: ->\n      1', '(function() {\n  return class A {\n    a() {\n      return 1;\n    }\n  };\n});');
+    });
+
+    it('preserves class constructors without arguments', function() {
+      check('class A\n  constructor: ->\n    @a = 1', 'class A {\n  constructor() {\n    return this.a = 1;\n  }\n}');
+    });
+
+    it('preserves class constructors with arguments', function() {
+      check('class A\n  constructor: (a) ->\n    @a = a', 'class A {\n  constructor(a) {\n    return this.a = a;\n  }\n}');
+    });
   });
 });

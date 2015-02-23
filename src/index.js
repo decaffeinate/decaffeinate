@@ -14,6 +14,7 @@ import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
 import traverse from './utils/traverse';
 import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
+import { patchClassStart, patchClassEnd } from './patchers/patchClass';
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
 
@@ -37,12 +38,14 @@ export function convert(source) {
     patchDeclarations(node, patcher);
     patchReturns(node, patcher);
     patchFunctionStart(node, patcher);
+    patchClassStart(node, patcher);
     patchEquality(node, patcher);
 
     descend(node);
 
     patchExistentialOperator(node, patcher);
     patchFunctionEnd(node, patcher);
+    patchClassEnd(node, patcher);
     patchObjectBraceClosing(node, patcher);
     patchCallClosing(node, patcher);
     patchSemicolons(node, patcher);
