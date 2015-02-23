@@ -101,6 +101,7 @@ const ORDER = {
   MemberAccessOp: ['expression'],
   NEQOp: ['left', 'right'],
   NewOp: ['ctor', 'arguments'],
+  Null: [],
   ObjectInitialiser: ['members'],
   ObjectInitialiserMember: ['key', 'expression'],
   PlusOp: ['left', 'right'],
