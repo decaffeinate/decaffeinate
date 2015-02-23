@@ -457,5 +457,9 @@ describe('automatic conversions', function() {
     it('wraps `throw` in an IIFE when used in an expression context', function() {
       check('doSomething() or (throw err)', 'doSomething() || (() => { throw err; })();');
     });
+
+    it('passes `null` through as-is', function() {
+      check('null', 'null;');
+    });
   });
 });
