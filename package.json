@@ -36,7 +36,7 @@
   ],
   "devDependencies": {
     "gobble": "^0.7.2",
-    "gobble-6to5": "^1.0.3",
+    "gobble-babel": "^4.0.0",
     "mocha": "^2.1.0"
   }
 }

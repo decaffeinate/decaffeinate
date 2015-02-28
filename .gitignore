@@ -1,3 +1,5 @@
 .tmp
 lib
 .gobble-build
+.gobble
+node_modules
