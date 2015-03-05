@@ -41,6 +41,14 @@ function shouldHaveTrailingSemicolon(node) {
     case 'Class':
       return false;
 
+    case 'Conditional':
+      if (node.type === 'Block') {
+        return false;
+      } else if (node.parent.condition === node) {
+        return false;
+      }
+      break;
+
     default:
       return false;
   }

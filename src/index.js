@@ -15,6 +15,7 @@ import patchThis from './patchers/patchThis';
 import traverse from './utils/traverse';
 import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
+import { patchConditionalStart, patchConditionalEnd } from './patchers/patchConditional';
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
 import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
@@ -44,9 +45,11 @@ export function convert(source) {
     patchEquality(node, patcher);
     patchThrowStart(node, patcher);
     patchSpreadStart(node, patcher);
+    patchConditionalStart(node, patcher);
 
     descend(node);
 
+    patchConditionalEnd(node, patcher);
     patchThrowEnd(node, patcher);
     patchExistentialOperator(node, patcher);
     patchFunctionEnd(node, patcher);

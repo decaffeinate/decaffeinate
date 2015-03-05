@@ -307,7 +307,7 @@ describe('automatic conversions', function() {
     });
 
     it('does not add them after `if` statements', function() {
-      check('if a\n  b', 'if a\n  b;');
+      check('if a\n  b', 'if (a) {\n  b;\n}');
     });
 
     it('does not add them after `for` loops', function() {
@@ -470,6 +470,26 @@ describe('automatic conversions', function() {
     it('converts spread by moving ellipsis to beginning in array literals', function() {
       check('[b...]', '[...b];');
       check('[1, 2, makeArray(arguments...)...]', '[1, 2, ...makeArray(...arguments)];');
+    });
+
+    it('surrounds `if` conditions in parentheses and bodies in curly braces', function() {
+      check('if a\n  b', 'if (a) {\n  b;\n}');
+    });
+
+    it('handles indented `if` statements correctly', function() {
+      check('if a\n  if b\n    c', 'if (a) {\n  if (b) {\n    c;\n  }\n}');
+    });
+
+    it('surrounds the `else` clause of an `if` statement in curly braces', function() {
+      check('if a\n  b\nelse\n  c', 'if (a) {\n  b;\n} else {\n  c;\n}');
+    });
+
+    it('surrounds the `else if` condition in parentheses', function() {
+      check('if a\n  b\nelse if c\n  d', 'if (a) {\n  b;\n} else if (c) {\n  d;\n}');
+    });
+
+    it('keeps single-line `if` statements on one line', function() {
+      check('if a then b', 'if (a) { b; }');
     });
   });
 });
