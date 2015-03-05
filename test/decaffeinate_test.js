@@ -488,6 +488,10 @@ describe('automatic conversions', function() {
       check('if a\n  b\nelse if c\n  d', 'if (a) {\n  b;\n} else if (c) {\n  d;\n}');
     });
 
+    it('works with several `else if` clauses and an `else`', function() {
+      check('if a\n  b\nelse if c\n  d\nelse if e\n  f\nelse\n  g', 'if (a) {\n  b;\n} else if (c) {\n  d;\n} else if (e) {\n  f;\n} else {\n  g;\n}');
+    });
+
     it('keeps single-line `if` statements on one line', function() {
       check('if a then b', 'if (a) { b; }');
     });
