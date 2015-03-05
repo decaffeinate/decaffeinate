@@ -491,5 +491,9 @@ describe('automatic conversions', function() {
     it('keeps single-line `if` statements on one line', function() {
       check('if a then b', 'if (a) { b; }');
     });
+
+    it('keeps single-line `if` with `else` on one line', function() {
+      check('if a then b else c', 'if (a) { b; } else { c; }');
+    });
   });
 });
