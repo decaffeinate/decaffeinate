@@ -1,6 +1,9 @@
 import getIndent from '../utils/getIndent';
 import replaceBetween from '../utils/replaceBetween';
+import requiresParentheses from '../utils/requiresParentheses';
 import sourceBetween from '../utils/sourceBetween';
+
+const UNLESS = 'unless';
 
 /**
  * Adds punctuation to `if` statements and converts `if` expressions.
@@ -9,8 +12,17 @@ import sourceBetween from '../utils/sourceBetween';
  * @param {MagicString} patcher
  */
 export function patchConditionalStart(node, patcher) {
-  if (isCondition(node)) {
-    patcher.insert(node.range[0], '(');
+  if (isUnlessConditional(node, patcher.original)) {
+    patcher.replace(node.range[0], node.range[0] + UNLESS.length, 'if');
+  } else if (isCondition(node)) {
+    let inserted = '(';
+    if (isUnlessConditional(node.parent, patcher.original)) {
+      inserted += '!';
+      if (requiresParentheses(node.expression)) {
+        inserted += '(';
+      }
+    }
+    patcher.insert(node.range[0], inserted);
   }
 }
 
@@ -24,7 +36,11 @@ export function patchConditionalEnd(node, patcher) {
   if (isCondition(node)) {
     replaceBetween(patcher, node, node.parent.consequent, 'then ', '') ||
       replaceBetween(patcher, node, node.parent.consequent, 'then', '');
-    patcher.insert(node.range[1], ') {');
+    let inserted = ') {';
+    if (isUnlessConditional(node.parent, patcher.original) && requiresParentheses(node.expression)) {
+      inserted = `)${inserted}`;
+    }
+    patcher.insert(node.range[1], inserted);
   } else if (isConsequent(node) && node.parent.alternate) {
     // Only add the opening curly for the alternate if it is not a conditional,
     // otherwise the handler for the end of its condition will add it.
@@ -53,6 +69,15 @@ export function patchConditionalEnd(node, patcher) {
  */
 function isCondition(node) {
   return node.parent ? node.parent.type === 'Conditional' && node.parent.condition === node : false;
+}
+
+/**
+ * @param {Object} node
+ * @param {string} source
+ * @returns {boolean}
+ */
+function isUnlessConditional(node, source) {
+  return node.type === 'Conditional' && source.slice(node.range[0], node.range[0] + UNLESS.length) === UNLESS;
 }
 
 /**

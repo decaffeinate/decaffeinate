@@ -476,6 +476,14 @@ describe('automatic conversions', function() {
       check('if a\n  b', 'if (a) {\n  b;\n}');
     });
 
+    it('surrounds `unless` conditions in parentheses and precedes it with a `!` operator', function() {
+      check('unless a\n  b', 'if (!a) {\n  b;\n}');
+    });
+
+    it('surrounds `unless` conditions in additional parentheses if needed for the `!` operator', function() {
+      check('unless a == b\n  c', 'if (!(a === b)) {\n  c;\n}');
+    });
+
     it('handles indented `if` statements correctly', function() {
       check('if a\n  if b\n    c', 'if (a) {\n  if (b) {\n    c;\n  }\n}');
     });
