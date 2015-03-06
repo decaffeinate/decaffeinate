@@ -484,6 +484,15 @@ describe('automatic conversions', function() {
       check('unless a == b\n  c', 'if (!(a === b)) {\n  c;\n}');
     });
 
+    it('does not add parentheses if the condition is already surrounded by them', function() {
+      check('if (a)\n  b', 'if (a) {\n  b;\n}');
+      check('unless (a)\n  b', 'if (!a) {\n  b;\n}');
+    });
+
+    it('correctly inserts parentheses when an `unless` condition requires them when it was surrounded by parentheses', function() {
+      check('unless (a == b)\n  c', 'if (!(a === b)) {\n  c;\n}');
+    });
+
     it('handles indented `if` statements correctly', function() {
       check('if a\n  if b\n    c', 'if (a) {\n  if (b) {\n    c;\n  }\n}');
     });
