@@ -114,5 +114,7 @@ const ORDER = {
   This: [],
   Throw: ['expression'],
   UnaryExistsOp: ['expression'],
+  UnaryNegateOp: ['expression'],
+  UnaryPlusOp: ['expression'],
   While: ['condition', 'body']
 };
