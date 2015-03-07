@@ -516,5 +516,14 @@ describe('automatic conversions', function() {
     it('keeps single-line `if` with `else` on one line', function() {
       check('if a then b else c', 'if (a) { b; } else { c; }');
     });
+
+    it('keeps single-line POST-`if`', function() {
+      check('a if b', 'if (b) { a; }');
+      check('->\n  return if a is b\n  null', '(function() {\n  if (a === b) { return; }\n  return null;\n});');
+    });
+
+    it('keeps single-line POST-`unless`', function() {
+      check('a unless b', 'if (!b) { a; }');
+    });
   });
 });

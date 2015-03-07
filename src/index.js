@@ -12,6 +12,7 @@ import patchSemicolons from './patchers/patchSemicolons';
 import patchSequences from './patchers/patchSequences';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
+import preprocessConditional from './preprocessors/preprocessConditional';
 import traverse from './utils/traverse';
 import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
@@ -31,7 +32,20 @@ export function convert(source) {
   const ast = parse(source, { raw: true });
   const patcher = new MagicString(source);
 
-  traverse(ast, function(node, descend) {
+  let wasRewritten = false;
+
+  traverse(ast, (node) => {
+    if (wasRewritten) {
+      return false;
+    }
+    wasRewritten = preprocessConditional(node, patcher);
+  });
+
+  if (wasRewritten) {
+    return convert(patcher.toString());
+  }
+
+  traverse(ast, (node, descend) => {
     patchKeywords(node, patcher);
     patchThis(node, patcher);
     patchPrototypeAccess(node, patcher);

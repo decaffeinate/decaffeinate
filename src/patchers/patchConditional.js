@@ -79,7 +79,7 @@ export function patchConditionalEnd(node, patcher) {
     );
   } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
     // Close the conditional if it isn't handled by closing an `else if`.
-    if (node.condition.line === node.consequent.line) {
+    if (isOneLineConditionAndConsequent(node, patcher.original)) {
       patcher.insert(node.range[1], ' }');
     } else {
       patcher.insert(node.range[1], `\n${getIndent(patcher.original, node.range[0])}}`);
@@ -124,4 +124,21 @@ function isConsequent(node) {
  */
 function isAlternate(node) {
   return node.parent ? node.parent.type === 'Conditional' && node.parent.alternate === node : false;
+}
+
+/**
+ * Determines whether the condition and consequent are on the same line.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isOneLineConditionAndConsequent(node, source) {
+  let condition = node.condition;
+  let consequent = node.consequent;
+
+  if (isUnlessConditional(node, source)) {
+    condition = condition.expression;
+  }
+
+  return condition.line === consequent.line;
 }
