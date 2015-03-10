@@ -517,6 +517,28 @@ describe('automatic conversions', function() {
     it('keeps single-line POST-`unless`', function() {
       check('a unless b', 'if (!b) { a; }');
     });
+
+    it('pushes returns into `if` statements', function() {
+      check('->\n  if a\n    b', '(function() {\n  if (a) {\n    return b;\n  }\n});');
+    });
+
+    it('pushes returns `else if` blocks', function() {
+      check(`
+        ->
+          if a
+            b
+          else if c
+            d
+      `, `
+        (function() {
+          if (a) {
+            return b;
+          } else if (c) {
+            return d;
+          }
+        });
+      `);
+    });
   });
 
   function check(source, expected) {
