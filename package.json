@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "coffee-script-redux": "git://github.com/michaelficarra/CoffeeScriptRedux",
-    "magic-string": "^0.3.1"
+    "magic-string": "^0.4.5"
   },
   "files": [
     "bin/decaffeinate",
@@ -35,9 +35,9 @@
     "src/**/*.js"
   ],
   "devDependencies": {
-    "gobble": "^0.7.2",
-    "gobble-babel": "^4.0.0",
+    "gobble": "^0.7.6",
+    "gobble-babel": "^4.0.1",
     "gobble-cli": "^0.3.5",
-    "mocha": "^2.1.0"
+    "mocha": "^2.2.1"
   }
 }
