@@ -44,4 +44,16 @@ describe('isImplicitlyReturned', function() {
     strictEqual(node.type, 'Return');
     ok(!isImplicitlyReturned(node));
   });
+
+  it('is false for an `if` statement', function() {
+    const node = parse('->\n  if a\n    b').body.statements[0].body.statements[0];
+    strictEqual(node.type, 'Conditional');
+    ok(!isImplicitlyReturned(node));
+  });
+
+  it('is true for the last expression of an `if` block that is the last statement in a function', function() {
+    const node = parse('->\n  if a\n    b').body.statements[0].body.statements[0].consequent.statements[0];
+    strictEqual(node.type, 'Identifier');
+    ok(isImplicitlyReturned(node));
+  });
 });
