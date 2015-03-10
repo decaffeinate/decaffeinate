@@ -1,16 +1,6 @@
-const assert = require('assert');
-const withBuiltLibrary = require('../support/withBuiltLibrary');
-
-var trimmedNodeRange;
-var parse;
-
-withBuiltLibrary('utils/trimmedNodeRange', function(required) {
-  trimmedNodeRange = required;
-});
-
-withBuiltLibrary('utils/parse', function(required) {
-  parse = required;
-});
+import { deepEqual } from 'assert';
+import parse from '../../src/utils/parse';
+import trimmedNodeRange from '../../src/utils/trimmedNodeRange';
 
 describe('trimmedNodeRange', function() {
   it('discounts trailing whitespace on a function node', function() {
@@ -18,7 +8,7 @@ describe('trimmedNodeRange', function() {
     const ast = parse(source);
     const fnNode = ast.body.statements[0].arguments[0].members[0].expression;
     const nodeRange = trimmedNodeRange(fnNode, source);
-    assert.deepEqual(nodeRange, [7, 15]);
+    deepEqual(nodeRange, [7, 15]);
   });
 
   it('discounts trailing comments on a function node', function() {
@@ -26,7 +16,7 @@ describe('trimmedNodeRange', function() {
     const ast = parse(source);
     const fnNode = ast.body.statements[0].arguments[0].members[0].expression;
     const nodeRange = trimmedNodeRange(fnNode, source);
-    assert.deepEqual(nodeRange, [7, 15]);
+    deepEqual(nodeRange, [7, 15]);
   });
 
   it('does not identify hash marks in strings as comments', function() {
@@ -34,7 +24,7 @@ describe('trimmedNodeRange', function() {
     const ast = parse(source);
     const stringNode = ast.body.statements[0].arguments[0].members[0];
     const nodeRange = trimmedNodeRange(stringNode, source);
-    assert.deepEqual(nodeRange, [4, 13]);
+    deepEqual(nodeRange, [4, 13]);
   });
 
   it('does not trim an identifier range', function() {
@@ -42,7 +32,7 @@ describe('trimmedNodeRange', function() {
     const ast = parse(source);
     const identifierNode = ast.body.statements[0];
     const nodeRange = trimmedNodeRange(identifierNode, source);
-    assert.deepEqual(nodeRange, [0, 1]);
+    deepEqual(nodeRange, [0, 1]);
   });
 
   it('does not count whitespace and comments after a function application containing a function', function() {
@@ -50,6 +40,6 @@ describe('trimmedNodeRange', function() {
     const ast = parse(source);
     const callNode = ast.body.statements[0];
     const nodeRange = trimmedNodeRange(callNode, source);
-    assert.deepEqual(nodeRange, [0, 15]);
+    deepEqual(nodeRange, [0, 15]);
   });
 });

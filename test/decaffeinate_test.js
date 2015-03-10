@@ -1,11 +1,6 @@
-const assert = require('assert');
-const withBuiltLibrary = require('./support/withBuiltLibrary');
+import { convert } from '../src/index';
+import { strictEqual } from 'assert';
 
-var convert;
-
-withBuiltLibrary('index', function(index) {
-  convert = index.convert;
-});
 
 describe('automatic conversions', function() {
   function check(source, expected) {

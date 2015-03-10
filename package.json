@@ -8,7 +8,7 @@
     "decaffeinate": "./bin/decaffeinate"
   },
   "scripts": {
-    "test": "mocha --recursive test",
+    "test": "mocha --recursive --compilers js:babel/register test",
     "build": "gobble build lib -f",
     "prepublish": "gobble build lib -f"
   },
@@ -35,6 +35,7 @@
     "src/**/*.js"
   ],
   "devDependencies": {
+    "babel": "^4.7.7",
     "gobble": "^0.7.6",
     "gobble-babel": "^4.0.1",
     "gobble-cli": "^0.3.5",
