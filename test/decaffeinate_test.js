@@ -6,264 +6,490 @@ const WHITESPACE = /^\s*$/;
 describe('automatic conversions', function() {
   describe('inserting commas', function() {
     it('does not add commas after block comments', function() {
-      check(
-        '{\n  a: b\n  ###\n  # no comma\n  ###\n  c: d\n}',
-        '({\n  a: b,\n  /**\n  * no comma\n   */\n  c: d\n});'
+      check(`
+        {
+          a: b
+          ###
+          # no comma
+          ###
+          c: d
+        }
+      `, `
+        ({
+          a: b,
+          /**
+          * no comma
+           */
+          c: d
+        });
+      `
       );
     });
 
     describe('in arrays', function() {
       it('inserts commas at the end of lines that would have them in JavaScript', function() {
-        check('[\n  1\n  2\n]', '[\n  1,\n  2\n];');
+        check(`
+          [
+            1
+            2
+          ]
+        `, `
+          [
+            1,
+            2
+          ];
+        `);
       });
 
       it('does not insert commas if there already is one', function() {
-        check('[\n  1,\n  2\n]', '[\n  1,\n  2\n];');
+        check(`
+          [
+            1,
+            2
+          ]
+        `, `
+          [
+            1,
+            2
+          ];
+        `);
       });
 
       it('does not insert commas in single-line arrays', function() {
-        check('[ 1, 2 ]\n', '[ 1, 2 ];\n');
+        check(`[ 1, 2 ]`, `[ 1, 2 ];\n`);
       });
 
       it('inserts commas only for objects that end a line', function() {
-        check('[\n  1, 2\n  3\n  4\n]', '[\n  1, 2,\n  3,\n  4\n];');
+        check(`
+          [
+            1, 2
+            3
+            4
+          ]
+        `, `
+          [
+            1, 2,
+            3,
+            4
+          ];
+        `);
       });
 
       it('inserts commas immediately after the element if followed by a comment', function() {
-        check('[\n  1 # hi!\n  2\n]', '[\n  1, // hi!\n  2\n];');
+        check(`
+          [
+            1 # hi!
+            2
+          ]
+        `, `
+          [
+            1, // hi!
+            2
+          ];
+        `);
       });
 
       it('inserts commas in nested arrays', function() {
-        check('[\n  [\n    1\n    2\n  ]\n  3\n]', '[\n  [\n    1,\n    2\n  ],\n  3\n];');
+        check(`
+          [
+            [
+              1
+              2
+            ]
+            3
+          ]
+        `, `
+          [
+            [
+              1,
+              2
+            ],
+            3
+          ];
+        `);
       });
     });
 
     describe('in objects', function() {
       it('inserts commas after properties if they are not there', function() {
-        check('{\n  a: b\n  c: d\n}', '({\n  a: b,\n  c: d\n});');
+        check(`
+          {
+            a: b
+            c: d
+          }
+        `, `
+          ({
+            a: b,
+            c: d
+          });
+        `);
       });
 
       it('does not insert commas if there already is one', function() {
-        check('{\n  a: b,\n  c: d\n}', '({\n  a: b,\n  c: d\n});');
+        check(`
+          {
+            a: b,
+            c: d
+          }
+        `, `
+          ({
+            a: b,
+            c: d
+          });
+        `);
       });
 
       it('does not insert commas in single-line objects', function() {
-        check('{ a: b, c: d }\n', '({ a: b, c: d });\n');
+        check(`{ a: b, c: d }`, `({ a: b, c: d });`);
       });
 
       it('inserts commas only for objects that end a line', function() {
-        check('{\n  a: b, c: d\n  e: f\n  g: h\n}', '({\n  a: b, c: d,\n  e: f,\n  g: h\n});');
+        check(`
+          {
+            a: b, c: d
+            e: f
+            g: h
+          }
+        `, `
+          ({
+            a: b, c: d,
+            e: f,
+            g: h
+          });
+        `);
       });
 
       it('inserts commas immediately after the element if followed by a comment', function() {
-        check('{\n  a: b # hi!\n  c: d\n}', '({\n  a: b, // hi!\n  c: d\n});');
+        check(`
+          {
+            a: b # hi!
+            c: d
+          }
+        `, `
+          ({
+            a: b, // hi!
+            c: d
+          });
+        `);
       });
 
       it('inserts commas after shorthand properties', function() {
-        check('{\n  a\n  c\n}', '({\n  a,\n  c\n});');
+        check(`
+          {
+            a
+            c
+          }
+        `, `
+          ({
+            a,
+            c
+          });
+        `);
       });
 
       it('inserts commas for braceless objects', function() {
-        check('a: b\nc: d', '({a: b,\nc: d});');
+        check(`
+          a: b
+          c: d
+        `, `
+          ({a: b,
+          c: d});
+        `);
       });
     });
 
     describe('in function calls', function() {
       it('inserts commas after arguments if they are not there', function() {
-        check('a(\n  1\n  2\n)', 'a(\n  1,\n  2\n);');
+        check(`
+          a(
+            1
+            2
+          )
+        `, `
+          a(
+            1,
+            2
+          );
+        `);
       });
 
       it('does not insert commas in single-line calls', function() {
-        check('a(1, 2)', 'a(1, 2);');
+        check(`a(1, 2)`, `a(1, 2);`);
       });
 
       it('inserts commas only for arguments that end a line', function() {
-        check('a(\n  1, 2\n  3, 4)', 'a(\n  1, 2,\n  3, 4);');
+        check(`
+          a(
+            1, 2
+            3, 4)
+        `, `
+          a(
+            1, 2,
+            3, 4);
+        `);
       });
 
       it('inserts commas immediately after the element if followed by a comment', function() {
-        check('a(\n  1 # hi\n  2\n)', 'a(\n  1, // hi\n  2\n);');
+        check(`
+          a(
+            1 # hi
+            2
+          )
+        `, `
+          a(
+            1, // hi
+            2
+          );
+        `);
       });
 
       it('inserts commas on the same line when the property value is an interpolated string', function() {
-        check('a\n  b: "#{c}"\n  d: e', 'a({\n  b: `${c}`,\n  d: e\n});');
+        check(`
+          a
+            b: "#{c}"
+            d: e
+        `, `
+          a({
+            b: \`\${c}\`,
+            d: e
+          });
+        `);
       });
     });
   });
 
   describe('inserting function call parentheses', function() {
     it('replaces the space between the callee and the first argument for first arg on same line', function() {
-      check('a 1, 2\n',  'a(1, 2);\n');
+      check(`a 1, 2`,  `a(1, 2);`);
     });
 
     it('does not add anything if there are already parens', function() {
-      check('a()\n', 'a();\n');
-      check('a(1, 2)\n', 'a(1, 2);\n');
+      check(`a()`, `a();`);
+      check(`a(1, 2)`, `a(1, 2);`);
     });
 
     it('adds parens for nested function calls', function() {
-      check('a   b  c d     e\n', 'a(b(c(d(e))));\n');
+      check(`a   b  c d     e`, `a(b(c(d(e))));`);
     });
 
     it('adds parens for a new expression with args', function() {
-      check('new Foo 1\n', 'new Foo(1);\n');
+      check(`new Foo 1`, `new Foo(1);`);
     });
 
     it('adds parens for a new expression without args', function() {
-      check('new Foo\n', 'new Foo();\n');
+      check(`new Foo`, `new Foo();`);
     });
 
     it('adds parens after the properties of a member expression', function() {
-      check('a.b c\n', 'a.b(c);\n');
+      check(`a.b c`, `a.b(c);`);
     });
 
     it('adds parens after the brackets on a computed member expression', function() {
-      check('a b[c]\n', 'a(b[c]);\n');
+      check(`a b[c]`, `a(b[c]);`);
     });
 
     it('adds parens without messing up multi-line calls', function() {
-      check('a\n  b: c', 'a({\n  b: c\n});');
+      check(`
+        a
+          b: c
+      `, `
+        a({
+          b: c
+        });
+      `);
     });
 
     it('adds parens to multi-line calls with the right indentation', function() {
-      check('->\n  a\n    b: c', '(function() {\n  return a({\n    b: c\n  });\n});');
+      check(`
+        ->
+          a
+            b: c
+      `, `
+        (function() {
+          return a({
+            b: c
+          });
+        });
+      `);
     });
   });
 
   describe('changing shorthand this to longhand this', function() {
     it('changes shorthand member expressions to longhand member expressions', function() {
-      check('a = @a', 'var a = this.a;');
+      check(`a = @a`, `var a = this.a;`);
     });
 
     it('changes shorthand computed member expressions to longhand computed member expressions', function() {
-      check('a = @[a]', 'var a = this[a];');
+      check(`a = @[a]`, `var a = this[a];`);
     });
 
     it('changes shorthand standalone this to longhand standalone this', function() {
-      check('bind(@)', 'bind(this);');
+      check(`bind(@)`, `bind(this);`);
     });
 
     it('does not change longhand this', function() {
-      check('this.a', 'this.a;');
+      check(`this.a`, `this.a;`);
     });
 
     it('does not change "@" in strings', function() {
-      check('"@"', '"@";');
+      check(`"@"`, `"@";`);
     });
 
     it('does not add a dot to the shorthand prototype operator', function() {
-      check('@::a', 'this.prototype.a;');
+      check(`@::a`, `this.prototype.a;`);
     });
 
     it('does not double-expand nested member expressions', function() {
-      check('@a.b', 'this.a.b;');
+      check(`@a.b`, `this.a.b;`);
     });
 
     it('does not double-expand nested computed member expressions', function() {
-      check('@[a].b', 'this[a].b;');
+      check(`@[a].b`, `this[a].b;`);
     });
 
     it('does not double-expand nested prototype access member expressions', function() {
-      check('@::a.b', 'this.prototype.a.b;');
+      check(`@::a.b`, `this.prototype.a.b;`);
     });
   });
 
   describe('changing prototype member access into normal member access', function() {
     it('replaces prototype member access', function() {
-      check('A::b', 'A.prototype.b;');
+      check(`A::b`, `A.prototype.b;`);
     });
 
     it('works in combination with the shorthand this patcher', function() {
-      check('@::b', 'this.prototype.b;');
+      check(`@::b`, `this.prototype.b;`);
     });
   });
 
   describe('adding variable declarations', function() {
     it('adds variable declarations for assignments', function() {
-      check('a = 1', 'var a = 1;');
+      check(`a = 1`, `var a = 1;`);
     });
 
     it('adds variable declarations for only the creating binding', function() {
-      check('a = 1\na = 2', 'var a = 1;\na = 2;');
+      check(`
+        a = 1
+        a = 2
+      `, `
+        var a = 1;
+        a = 2;
+      `);
     });
 
     it('does not add variable declarations for reassignments in functions', function() {
-      check('a = 1\n->\n  a = 2', 'var a = 1;\n(function() {\n  return a = 2;\n});');
+      check(`
+        a = 1
+        ->
+          a = 2
+      `, `
+        var a = 1;
+        (function() {
+          return a = 2;
+        });
+      `);
     });
 
     it('does not add variable declarations for reassignments of function params', function() {
-      check('(a) -> a = 1', '(function(a) { return a = 1; });');
+      check(`(a) -> a = 1`, `(function(a) { return a = 1; });`);
     });
 
     it('does not add variable declarations when the LHS is a member expression', function() {
-      check('a.b = 1', 'a.b = 1;');
+      check(`a.b = 1`, `a.b = 1;`);
     });
 
     it('adds variable declarations for destructuring array assignment', function() {
-      check('[a] = b', 'var [a] = b;');
+      check(`[a] = b`, `var [a] = b;`);
     });
 
     it('adds variable declarations for destructuring object assignment', function() {
-      check('{a} = b', 'var {a} = b;');
+      check(`{a} = b`, `var {a} = b;`);
     });
 
     it('does not add variable declarations for destructuring array assignment with previously declared bindings', function() {
-      check('a = 1\n[a] = b', 'var a = 1;\n[a] = b;');
+      check(`
+        a = 1
+        [a] = b
+      `, `
+        var a = 1;
+        [a] = b;
+      `);
     });
 
     it('wraps object destructuring that is not part of a variable declaration in parentheses', function() {
-      check('a = 1\n{a} = b', 'var a = 1;\n({a}) = b;');
+      check(`
+        a = 1
+        {a} = b
+      `, `
+        var a = 1;
+        ({a}) = b;
+      `);
     });
 
     it('adds variable declarations when the destructuring is mixed', function() {
       // FIXME: Is this a good idea? Should we be marking this as an error?
-      check('a = 1\n[a, b] = c', 'var a = 1;\nvar [a, b] = c;');
+      check(`
+        a = 1
+        [a, b] = c
+      `, `
+        var a = 1;
+        var [a, b] = c;
+      `);
     })
   });
 
   describe('adding explicit returns', function() {
     it('adds a return for the only expression in functions', function() {
-      check('a = -> 1', 'var a = function() { return 1; };');
+      check(`a = -> 1`, `var a = function() { return 1; };`);
     });
 
     it('does not add a return when one is already there', function() {
-      check('a = -> return 1', 'var a = function() { return 1; };');
+      check(`a = -> return 1`, `var a = function() { return 1; };`);
     });
 
     it('adds a return for the final expression in functions', function() {
-      check('a = ->\n  1\n  2', 'var a = function() {\n  1;\n  return 2;\n};');
+      check(`
+        a = ->
+          1
+          2
+      `, `
+        var a = function() {
+          1;
+          return 2;
+        };
+      `);
     });
   });
 
   describe('changing keywords', function() {
     it('renames "yes" to "true"', function() {
-      check('a = yes', 'var a = true;');
+      check(`a = yes`, `var a = true;`);
     });
 
     it('renames "no" to "false"', function() {
-      check('a = no', 'var a = false;');
+      check(`a = no`, `var a = false;`);
     });
 
     it('renames "and" to "&&"', function() {
-      check('a and b', 'a && b;');
+      check(`a and b`, `a && b;`);
     });
 
     it('renames "or" to "||"', function() {
-      check('a or b', 'a || b;');
+      check(`a or b`, `a || b;`);
     });
 
     it('renames "not" to "!" and removes the space if one is present', function() {
-      check('not a', '!a;');
+      check(`not a`, `!a;`);
     });
 
     it('renames "not" to "!"', function() {
-      check('not(a)', '!(a);');
+      check(`not(a)`, `!(a);`);
     });
 
     it.skip('handles chained "not"s', function() {
       // This seems to trigger a CoffeeScriptRedux bug.
       // The inner LogicalNotOp has no raw/range.
-      check('not not a', '!!a;');
+      check(`not not a`, `!!a;`);
     });
   });
 
@@ -279,74 +505,119 @@ describe('automatic conversions', function() {
 
   describe('adding semi-colons', function() {
     it('adds them after call expressions as statements', function() {
-      check('a b', 'a(b);');
+      check(`a b`, `a(b);`);
     });
 
     it('does not add them when they are already present', function() {
-      check('a b; c d', 'a(b), c(d);');
+      check(`a b; c d`, `a(b), c(d);`);
     });
 
     it('does not add them when they are already present following whitespace', function() {
-      check('a b ; c d', 'a(b) , c(d);');
+      check(`a b ; c d`, `a(b) , c(d);`);
     });
 
     it('adds them after identifiers as statements', function() {
-      check('a', 'a;');
+      check(`a`, `a;`);
     });
 
     it('adds them after assignments', function() {
-      check('a = 1', 'var a = 1;');
+      check(`a = 1`, `var a = 1;`);
     });
 
     it('does not add them after `if` statements', function() {
-      check('if a\n  b', 'if (a) {\n  b;\n}');
+      check(`
+        if a
+          b
+      `, `
+        if (a) {
+          b;
+        }
+      `);
     });
 
     it('does not add them after `for` loops', function() {
-      check('for a in b\n  a', 'for a in b\n  a;');
-      check('for a of b\n  a', 'for a of b\n  a;');
+      check(`
+        for a in b
+          a
+      `, `
+          for a in b
+            a;
+      `);
+      check(`
+        for a of b
+          a
+      `, `
+        for a of b
+          a;
+      `);
     });
 
     it('does not add them after `while` loops', function() {
-      check('while a\n  a', 'while a\n  a;');
+      check(`
+        while a
+          a
+      `, `
+        while a
+          a;
+      `);
     });
 
     it('does not add them after `loop` loops', function() {
-      check('loop\n  a', 'loop\n  a;');
+      check(`
+        loop
+          a
+      `, `
+        loop
+          a;
+      `);
     });
   });
 
   describe('converting all at once', function() {
     it('adds semicolons after call parentheses', function() {
-      check('Ember = require "ember"', 'var Ember = require("ember");');
+      check(`Ember = require "ember"`, `var Ember = require("ember");`);
     });
 
     it('adds braces to implicit object literals', function() {
-      check('a b: c', 'a({b: c});');
+      check(`a b: c`, `a({b: c});`);
     });
 
     it('adds parentheses around implicit bare object literals', function() {
-      check('a: b', '({a: b});');
+      check(`a: b`, `({a: b});`);
     });
 
     it('adds parentheses around explicit bare object literals', function() {
-      check('{a}', '({a});');
+      check(`{a}`, `({a});`);
     });
 
     it('adds object braces to the last function argument even if there are parentheses', function() {
-      check('a(b: c)', 'a({b: c});');
+      check(`a(b: c)`, `a({b: c});`);
     });
 
     it('does not add parentheses to objects that are implicit returns', function() {
-      check('->\n  {a: b}', '(function() {\n  return {a: b};\n});');
+      check(`
+        ->
+          {a: b}
+      `, `
+        (function() {
+          return {a: b};
+        });
+      `);
     });
 
     it('leaves fat arrow functions as arrow functions', function() {
-      check('add = (a, b) => a + b', 'var add = (a, b) => a + b;');
+      check(`add = (a, b) => a + b`, `var add = (a, b) => a + b;`);
     });
 
     it('adds a block to fat arrow functions if their body is a block', function() {
-      check('add = (a, b) =>\n  a + b', 'var add = (a, b) => {\n  return a + b;\n};');
+      check(`
+        add = (a, b) =>
+          a + b
+      `, `
+        var add = (a, b) => {
+          return a + b;
+        };
+      `);
     });
 
     it('turns `;`-separated sequences into `,`-separated sequences', function() {
@@ -354,172 +625,391 @@ describe('automatic conversions', function() {
     });
 
     it('wraps the body of fat arrow functions if the body is a sequence', function() {
-      check('=> a; b', '() => (a, b);');
+      check(`=> a; b`, `() => (a, b);`);
     });
 
     it('handles functions without a body', function() {
-      check('->', '(function() {});');
+      check(`->`, `(function() {});`);
     });
 
     it('handles object literals with function property values', function() {
-      check('a\n  b: ->\n    c\n\n  d: 1\n', 'a({\n  b: function() {\n    return c;\n  },\n\n  d: 1\n});\n');
+      check(`
+        a
+          b: ->
+            c
+
+          d: 1
+      `, `
+        a({
+          b: function() {
+            return c;
+          },
+
+          d: 1
+        });
+      `);
     });
 
     it('handles object literals with function property values followed by comments', function() {
-      check('a\n  b: ->\n    c\n\n# FOO\nd e', 'a({\n  b: function() {\n    return c;\n  }\n});\n\n// FOO\nd(e);');
+      check(`
+        a
+          b: ->
+            c
+
+        # FOO
+        d e
+      `, `
+        a({
+          b: function() {
+            return c;
+          }
+        });
+
+        // FOO
+        d(e);
+      `);
     });
 
     it('converts line comments to // form', function() {
-      check('# foo\n1', '// foo\n1;');
+      check(`
+        # foo
+        1
+      `, `
+        // foo
+        1;
+      `);
     });
 
     it('converts non-doc block comments to /* */', function() {
-      check('a(\n  ###\n  HEY\n  ###\n  1\n)', 'a(\n  /*\n  HEY\n  */\n  1\n);');
+      check(`
+        a(
+          ###
+          HEY
+          ###
+          1
+        )
+      `, `
+        a(
+          /*
+          HEY
+          */
+          1
+        );
+      `);
     });
 
     it('converts doc block comments to /** */', function() {
-      check('a(\n  ###\n  # HEY\n  ###\n  1\n)', 'a(\n  /**\n  * HEY\n   */\n  1\n);');
+      check(`
+        a(
+          ###
+          # HEY
+          ###
+          1
+        )
+      `, `
+        a(
+          /**
+          * HEY
+           */
+          1
+        );
+      `);
     });
 
     it('converts equality operator to triple-equal operator', function() {
-      check('a == b', 'a === b;');
-      check('a is b', 'a === b;');
+      check(`a == b`, `a === b;`);
+      check(`a is b`, `a === b;`);
     });
 
     it('converts negative equality operator to triple-not-equal operator', function() {
-      check('a != b', 'a !== b;');
-      check('a isnt b', 'a !== b;');
+      check(`a != b`, `a !== b;`);
+      check(`a isnt b`, `a !== b;`);
     });
 
     it('leaves less-than operators alone', function() {
-      check('a < b', 'a < b;');
-      check('a <= b', 'a <= b;');
+      check(`a < b`, `a < b;`);
+      check(`a <= b`, `a <= b;`);
     });
 
     it('leaves greater-than operators alone', function() {
-      check('a > b', 'a > b;');
-      check('a >= b', 'a >= b;');
+      check(`a > b`, `a > b;`);
+      check(`a >= b`, `a >= b;`);
     });
 
     it('leaves bitwise operators alone', function() {
-      check('a & b', 'a & b;');
-      check('a | b', 'a | b;');
-      check('a ^ b', 'a ^ b;');
+      check(`a & b`, `a & b;`);
+      check(`a | b`, `a | b;`);
+      check(`a ^ b`, `a ^ b;`);
     });
 
     it('converts unary existential identifier checks to typeof + null check', function() {
-      check('a?', 'typeof a !== "undefined" && a !== null;');
+      check(`a?`, `typeof a !== "undefined" && a !== null;`);
     });
 
     it('converts unary existential non-identifier to non-strict null check', function() {
-      check('a.b?', 'a.b != null;');
-      check('0?', '0 != null;');
+      check(`a.b?`, `a.b != null;`);
+      check(`0?`, `0 != null;`);
     });
 
     it('surrounds unary existential operator results if needed', function() {
-      check('a? or b?', '(typeof a !== "undefined" && a !== null) || (typeof b !== "undefined" && b !== null);');
-      check('0? or 1?', '(0 != null) || (1 != null);');
+      check(`a? or b?`, `(typeof a !== "undefined" && a !== null) || (typeof b !== "undefined" && b !== null);`);
+      check(`0? or 1?`, `(0 != null) || (1 != null);`);
     });
 
     it('converts named classes without bodies', function() {
-      check('class A', 'class A {}');
+      check(`class A`, `class A {}`);
     });
 
     it('converts anonymous classes without bodies wrapped in parentheses', function() {
-      check('class', '(class {});');
+      check(`class`, `(class {});`);
     });
 
     it('preserves class body functions as method definitions', function() {
-      check('class A\n  a: ->\n    1', 'class A {\n  a() {\n    return 1;\n  }\n}');
-      check('->\n  class A\n    a: ->\n      1', '(function() {\n  return class A {\n    a() {\n      return 1;\n    }\n  };\n});');
+      check(`
+        class A
+          a: ->
+            1
+      `, `
+        class A {
+          a() {
+            return 1;
+          }
+        }
+      `);
+      check(`
+        ->
+          class A
+            a: ->
+              1
+      `, `
+        (function() {
+          return class A {
+            a() {
+              return 1;
+            }
+          };
+        });
+      `);
     });
 
     it('preserves class constructors without arguments', function() {
-      check('class A\n  constructor: ->\n    @a = 1', 'class A {\n  constructor() {\n    return this.a = 1;\n  }\n}');
+      check(`
+        class A
+          constructor: ->
+            @a = 1
+      `, `
+        class A {
+          constructor() {
+            return this.a = 1;
+          }
+        }
+      `);
     });
 
     it('preserves class constructors with arguments', function() {
-      check('class A\n  constructor: (a) ->\n    @a = a', 'class A {\n  constructor(a) {\n    return this.a = a;\n  }\n}');
+      check(`
+        class A
+          constructor: (a) ->
+            @a = a
+      `, `
+        class A {
+          constructor(a) {
+            return this.a = a;
+          }
+        }
+      `);
     });
 
     it('preserves `throw` when used in a statement context', function() {
-      check('throw new Error()', 'throw new Error();');
+      check(`throw new Error()`, `throw new Error();`);
     });
 
     it('wraps `throw` in an IIFE when used in an expression context', function() {
-      check('doSomething() or (throw err)', 'doSomething() || (() => { throw err; })();');
+      check(`doSomething() or (throw err)`, `doSomething() || (() => { throw err; })();`);
     });
 
     it('passes `null` through as-is', function() {
-      check('null', 'null;');
+      check(`null`, `null;`);
     });
 
     it('converts spread by moving ellipsis to beginning in function calls', function() {
-      check('a(b...)', 'a(...b);');
-      check('a(1, 2, makeArray(arguments...)...)', 'a(1, 2, ...makeArray(...arguments));');
+      check(`a(b...)`, `a(...b);`);
+      check(`a(1, 2, makeArray(arguments...)...)`, `a(1, 2, ...makeArray(...arguments));`);
     });
 
     it('converts spread by moving ellipsis to beginning in array literals', function() {
-      check('[b...]', '[...b];');
-      check('[1, 2, makeArray(arguments...)...]', '[1, 2, ...makeArray(...arguments)];');
+      check(`[b...]`, `[...b];`);
+      check(`[1, 2, makeArray(arguments...)...]`, `[1, 2, ...makeArray(...arguments)];`);
     });
 
     it('surrounds `if` conditions in parentheses and bodies in curly braces', function() {
-      check('if a\n  b', 'if (a) {\n  b;\n}');
+      check(`
+        if a
+          b
+      `, `
+        if (a) {
+          b;
+        }
+      `);
     });
 
     it('surrounds `unless` conditions in parentheses and precedes it with a `!` operator', function() {
-      check('unless a\n  b', 'if (!a) {\n  b;\n}');
+      check(`
+        unless a
+          b
+      `, `
+        if (!a) {
+          b;
+        }
+      `);
     });
 
     it('surrounds `unless` conditions in additional parentheses if needed for the `!` operator', function() {
-      check('unless a == b\n  c', 'if (!(a === b)) {\n  c;\n}');
+      check(`
+        unless a == b
+          c
+      `, `
+        if (!(a === b)) {
+          c;
+        }
+      `);
     });
 
     it('does not add parentheses if the condition is already surrounded by them', function() {
-      check('if (a)\n  b', 'if (a) {\n  b;\n}');
-      check('unless (a)\n  b', 'if (!a) {\n  b;\n}');
+      check(`
+        if (a)
+          b
+      `, `
+        if (a) {
+          b;
+        }
+      `);
+      check(`
+        unless (a)
+          b
+      `, `
+        if (!a) {
+          b;
+        }
+      `);
     });
 
     it('correctly inserts parentheses when an `unless` condition requires them when it was surrounded by parentheses', function() {
-      check('unless (a == b)\n  c', 'if (!(a === b)) {\n  c;\n}');
+      check(`
+        unless (a == b)
+          c
+      `, `
+        if (!(a === b)) {
+          c;
+        }
+      `);
     });
 
     it('handles indented `if` statements correctly', function() {
-      check('if a\n  if b\n    c', 'if (a) {\n  if (b) {\n    c;\n  }\n}');
+      check(`
+        if a
+          if b
+            c
+      `, `
+        if (a) {
+          if (b) {
+            c;
+          }
+        }
+      `);
     });
 
     it('surrounds the `else` clause of an `if` statement in curly braces', function() {
-      check('if a\n  b\nelse\n  c', 'if (a) {\n  b;\n} else {\n  c;\n}');
+      check(`
+        if a
+          b
+        else
+          c
+      `, `
+        if (a) {
+          b;
+        } else {
+          c;
+        }
+      `);
     });
 
     it('surrounds the `else if` condition in parentheses', function() {
-      check('if a\n  b\nelse if c\n  d', 'if (a) {\n  b;\n} else if (c) {\n  d;\n}');
+      check(`
+        if a
+          b
+        else if c
+          d
+      `, `
+        if (a) {
+          b;
+        } else if (c) {
+          d;
+        }
+      `);
     });
 
     it('works with several `else if` clauses and an `else`', function() {
-      check('if a\n  b\nelse if c\n  d\nelse if e\n  f\nelse\n  g', 'if (a) {\n  b;\n} else if (c) {\n  d;\n} else if (e) {\n  f;\n} else {\n  g;\n}');
+      check(`
+        if a
+          b
+        else if c
+          d
+        else if e
+          f
+        else
+          g
+      `, `
+        if (a) {
+          b;
+        } else if (c) {
+          d;
+        } else if (e) {
+          f;
+        } else {
+          g;
+        }
+      `);
     });
 
     it('keeps single-line `if` statements on one line', function() {
-      check('if a then b', 'if (a) { b; }');
+      check(`if a then b`, `if (a) { b; }`);
     });
 
     it('keeps single-line `if` with `else` on one line', function() {
-      check('if a then b else c', 'if (a) { b; } else { c; }');
+      check(`if a then b else c`, `if (a) { b; } else { c; }`);
     });
 
     it('keeps single-line POST-`if`', function() {
-      check('a if b', 'if (b) { a; }');
-      check('->\n  return if a is b\n  null', '(function() {\n  if (a === b) { return; }\n  return null;\n});');
+      check(`a if b`, `if (b) { a; }`);
+      check(`
+        ->
+          return if a is b
+          null
+        `, `
+          (function() {
+            if (a === b) { return; }
+            return null;
+          });
+      `);
     });
 
     it('keeps single-line POST-`unless`', function() {
-      check('a unless b', 'if (!b) { a; }');
+      check(`a unless b`, `if (!b) { a; }`);
     });
 
     it('pushes returns into `if` statements', function() {
-      check('->\n  if a\n    b', '(function() {\n  if (a) {\n    return b;\n  }\n});');
+      check(`
+        ->
+          if a
+            b
+      `, `
+        (function() {
+          if (a) {
+            return b;
+          }
+        });
+      `);
     });
 
     it('pushes returns `else if` blocks', function() {
