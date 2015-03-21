@@ -55,8 +55,8 @@ function runWithPaths(paths, callback) {
   function processPath(path) {
     const outputPath = join(dirname(path), basename(path, extname(path))) + '.js';
     runWithStream(
-      createReadStream(path, 'utf8'),
-      createWriteStream(outputPath, 'utf8'),
+      createReadStream(path, { encoding: 'utf8' }),
+      createWriteStream(outputPath, { encoding: 'utf8' }),
       function(err) {
         if (err) { errors.push(err); }
         processNext();
