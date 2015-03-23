@@ -1024,7 +1024,7 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('pushes returns `else if` blocks', function() {
+    it('pushes returns into `else if` blocks', function() {
       check(`
         ->
           if a
