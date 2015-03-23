@@ -435,7 +435,19 @@ describe('automatic conversions', function() {
         var a = 1;
         var [a, b] = c;
       `);
-    })
+    });
+
+    it('adds pre-declarations when the assignment is in an expression context', function() {
+      check(`a(b = c)`, `var b;\na(b = c);`);
+    });
+
+    it('adds pre-declarations when the assignment would be implicitly returned', function() {
+      check('->\n  a = 1', '(function() {\n  var a;\n  return a = 1;\n});');
+    });
+
+    it('adds pre-declarations at the right indent level when the assignment is in an expression context', function() {
+      check(`->\n  a(b = c)`, `(function() {\n  var b;\n  return a(b = c);\n});`);
+    });
   });
 
   describe('adding explicit returns', function() {

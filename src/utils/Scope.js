@@ -21,6 +21,13 @@ export default class Scope {
   }
 
   /**
+   * @returns {string[]}
+   */
+  getOwnNames() {
+    return Object.getOwnPropertyNames(this.bindings).map(key => this.unkey(key));
+  }
+
+  /**
    * @param {string} name
    * @param {Object} node
    */
@@ -84,7 +91,7 @@ export default class Scope {
    * @returns {string}
    */
   toString() {
-    const parts = Object.getOwnPropertyNames(this.bindings).map(key => this.unkey(key));
+    const parts = this.getOwnNames();
     if (this.parent) {
       parts.push(`parent = ${this.parent}`);
     }
