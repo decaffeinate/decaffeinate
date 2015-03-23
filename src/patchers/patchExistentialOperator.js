@@ -27,8 +27,7 @@ export default function patchExistentialOperator(node, patcher) {
 }
 
 /**
- * Wraps the given string unless the node, normally needing parens, would be
- * unambiguous without them.
+ * Determines whether the given node needs parentheses.
  *
  * @param {Object} node
  * @returns {boolean}
