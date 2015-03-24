@@ -1,6 +1,8 @@
 # decaffeinate
 
-Move your CoffeeScript source to JavaScript using ES6 syntax.
+CoffeeScript in, ES6 out.
+
+JavaScript is the future, in part thanks to CoffeeScript. Now that it has served its purpose, it's time to move on. Convert your CoffeeScript source to ES6 JavaScript with decaffeinate.
 
 ## Install
 
