@@ -1,4 +1,5 @@
 import getIndent from '../utils/getIndent';
+import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import isSurroundedBy from '../utils/isSurroundedBy';
 import replaceBetween from '../utils/replaceBetween';
 import requiresParentheses from '../utils/requiresParentheses';
@@ -13,8 +14,13 @@ const UNLESS = 'unless';
  * @param {MagicString} patcher
  */
 export function patchConditionalStart(node, patcher) {
-  if (isUnlessConditional(node, patcher.original)) {
+  if (node.type === 'Conditional' && isExpressionResultUsed(node)) {
+    // i.e. remove "if" or "unless"
+    patcher.replace(node.range[0], node.condition.range[0], '');
+  } else if (isUnlessConditional(node, patcher.original)) {
     patcher.replace(node.range[0], node.range[0] + UNLESS.length, 'if');
+  } else if (isCondition(node) && isExpressionResultUsed(node.parent)) {
+    // nothing to do
   } else if (isCondition(node)) {
     const isSurroundedByParens = isSurroundedBy(node.raw, '(');
     const isUnless = isUnlessConditional(node.parent, patcher.original);
@@ -60,29 +66,47 @@ export function patchConditionalStart(node, patcher) {
  */
 export function patchConditionalEnd(node, patcher) {
   if (isCondition(node)) {
-    replaceBetween(patcher, node, node.parent.consequent, 'then ', '') ||
-      replaceBetween(patcher, node, node.parent.consequent, 'then', '');
-    let inserted = isSurroundedBy(node.raw, '(') ? ' {' : ') {';
-    if (isUnlessConditional(node.parent, patcher.original) && requiresParentheses(node.expression)) {
-      inserted = `)${inserted}`;
-    }
-    patcher.insert(node.range[1], inserted);
-  } else if (isConsequent(node) && node.parent.alternate) {
-    // Only add the opening curly for the alternate if it is not a conditional,
-    // otherwise the handler for the end of its condition will add it.
-    replaceBetween(
-      patcher,
-      node,
-      node.parent.alternate,
-      'else',
-      `} else${node.parent.alternate.type === 'Conditional' ? '' : ' {'}`
-    );
-  } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
-    // Close the conditional if it isn't handled by closing an `else if`.
-    if (isOneLineConditionAndConsequent(node, patcher.original)) {
-      patcher.insert(node.range[1], ' }');
+    if (isExpressionResultUsed(node.parent)) {
+      replaceBetween(patcher, node, node.parent.consequent, 'then', '?');
     } else {
-      patcher.insert(node.range[1], `\n${getIndent(patcher.original, node.range[0])}}`);
+      replaceBetween(patcher, node, node.parent.consequent, 'then ', '') ||
+      replaceBetween(patcher, node, node.parent.consequent, 'then', '');
+      let inserted = isSurroundedBy(node.raw, '(') ? ' {' : ') {';
+      if (isUnlessConditional(node.parent, patcher.original) && requiresParentheses(node.expression)) {
+        inserted = `)${inserted}`;
+      }
+      patcher.insert(node.range[1], inserted);
+    }
+  } else if (isConsequent(node)) {
+    if (isExpressionResultUsed(node.parent)) {
+      if (node.parent.alternate) {
+        // e.g. `a(if b then c else d)` -> `a(b ? c : d)`
+        //                     ^^^^                 ^
+        replaceBetween(patcher, node, node.parent.alternate, 'else', ':');
+      } else {
+        // e.g. `a(if b then c)` -> `a(b ? c : undefined)
+        //                                  ^^^^^^^^^^^^
+        patcher.insert(node.range[1], ' : undefined');
+      }
+    } else if (node.parent.alternate) {
+      // Only add the opening curly for the alternate if it is not a conditional,
+      // otherwise the handler for the end of its condition will add it.
+      replaceBetween(
+        patcher,
+        node,
+        node.parent.alternate,
+        'else',
+        `} else${node.parent.alternate.type === 'Conditional' ? '' : ' {'}`
+      );
+    }
+  } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
+    if (!isExpressionResultUsed(node)) {
+      // Close the conditional if it isn't handled by closing an `else if`.
+      if (isOneLineConditionAndConsequent(node, patcher.original)) {
+        patcher.insert(node.range[1], ' }');
+      } else {
+        patcher.insert(node.range[1], `\n${getIndent(patcher.original, node.range[0])}}`);
+      }
     }
   }
 }

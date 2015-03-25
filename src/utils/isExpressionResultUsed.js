@@ -11,6 +11,10 @@ export default function isExpressionResultUsed(node) {
     return false;
   }
 
+  if (node.parent.type === 'Conditional' && node.parent.alternate === node) {
+    return false;
+  }
+
   if (node.parent.type !== 'Block') {
     return true;
   }

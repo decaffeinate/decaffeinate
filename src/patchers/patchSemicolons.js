@@ -1,4 +1,5 @@
 import isFollowedBy from '../utils/isFollowedBy';
+import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import isImplicitlyReturned from '../utils/isImplicitlyReturned';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 
@@ -45,6 +46,9 @@ function shouldHaveTrailingSemicolon(node) {
       if (node.type === 'Block') {
         return false;
       } else if (node.parent.condition === node) {
+        return false;
+      } else if (isExpressionResultUsed(node.parent)) {
+        // No semicolons in "a ? b : c" from "if a then b else c".
         return false;
       }
       break;

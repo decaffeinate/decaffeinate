@@ -992,6 +992,14 @@ describe('automatic conversions', function() {
       check(`if a then b else c`, `if (a) { b; } else { c; }`);
     });
 
+    it('turns simple `if` with `else` as an expression into a ternary operator', function() {
+      check(`a(if b then c else d)`, `a(b ? c : d);`);
+    });
+
+    it('turns simple `if` without `else` as an expression into a ternary operator with undefined', function() {
+      check(`a(if b then c)`, `a(b ? c : undefined);`);
+    });
+
     it('keeps single-line POST-`if`', function() {
       check(`a if b`, `if (b) { a; }`);
       check(`
