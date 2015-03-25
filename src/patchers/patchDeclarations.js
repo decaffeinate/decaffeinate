@@ -1,5 +1,6 @@
 import getIndent from '../utils/getIndent';
 import isImplicitlyReturned from '../utils/isImplicitlyReturned';
+import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import leftHandIdentifiers from '../utils/leftHandIdentifiers';
 
 /**
@@ -46,19 +47,11 @@ export default function patchDeclarations(node, patcher) {
  * @returns {boolean}
  */
 function isExpressionAssignment(node) {
-  if (!node) {
+  if (!node || node.type !== 'AssignOp') {
     return false;
   }
 
-  if (node.type !== 'AssignOp') {
-    return false;
-  }
-
-  if (node.parent.type !== 'Block') {
-    return true;
-  }
-
-  return isImplicitlyReturned(node);
+  return isExpressionResultUsed(node);
 }
 
 /**
