@@ -85,6 +85,7 @@ const ORDER = {
   Constructor: ['expression'],
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
   EQOp: ['left', 'right'],
+  ExistsOp: ['left', 'right'],
   ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
   Function: ['parameters', 'body'],
