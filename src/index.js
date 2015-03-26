@@ -3,6 +3,7 @@ import parse from './utils/parse';
 import patchCommas from './patchers/patchCommas';
 import patchComments from './patchers/patchComments';
 import patchDeclarations from './patchers/patchDeclarations';
+import patchEmbeddedJavaScript from './patchers/patchEmbeddedJavaScript';
 import patchEquality from './patchers/patchEquality';
 import patchExistentialOperator from './patchers/patchExistentialOperator';
 import patchKeywords from './patchers/patchKeywords';
@@ -60,6 +61,7 @@ export function convert(source) {
     patchThrowStart(node, patcher);
     patchSpreadStart(node, patcher);
     patchConditionalStart(node, patcher);
+    patchEmbeddedJavaScript(node, patcher);
 
     descend(node);
 

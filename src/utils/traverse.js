@@ -94,6 +94,7 @@ const ORDER = {
   GTOp: ['left', 'right'],
   Identifier: [],
   Int: [],
+  JavaScript: [],
   LTEOp: ['left', 'right'],
   LTOp: ['left', 'right'],
   LogicalAndOp: ['left', 'right'],

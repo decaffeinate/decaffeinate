@@ -65,6 +65,7 @@ function shouldHaveTrailingSemicolon(node) {
     case 'Block':
     case 'ClassProtoAssignOp':
     case 'Constructor':
+    case 'JavaScript':
       return false;
 
     case 'Class':

@@ -1049,6 +1049,14 @@ describe('automatic conversions', function() {
         });
       `);
     });
+
+    it('strips the backticks off interpolated JavaScript in a statement context', function() {
+      check('`var a = 1;`', 'var a = 1;');
+    });
+
+    it('strips the backticks off interpolated JavaScript in an expression context', function() {
+      check('a = `void 0`', 'var a = void 0;');
+    });
   });
 
   function check(source, expected) {
