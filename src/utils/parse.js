@@ -1,7 +1,8 @@
-import { parse as coffeeScriptParse } from 'coffee-script-redux';
-import traverse from './traverse';
 import Scope from './Scope';
 import buildLineAndColumnMap from './buildLineAndColumnMap';
+import findCounterpartCharacter from './findCounterpartCharacter';
+import traverse from './traverse';
+import { parse as coffeeScriptParse } from 'coffee-script-redux';
 
 /**
  * Parses a CoffeeScript program and cleans up and annotates the AST.
@@ -77,6 +78,20 @@ function fixRange(node, map, source) {
     if (node.parent && node.parent.step === node) {
       // Ignore invalid `step` parameters, they're auto-generated if left out.
       return;
+    }
+
+    // Work around a bug with parentheses.
+    // Sometimes parentheses end up as part of a node's raw value even though
+    // they probably shouldn't, like with `if (ref = a) then b else c`, the node
+    // for the assignment has a raw value of "(ref = a)", but its line and
+    // column information indicate that it should only encompass "ref = a".
+    if (node.raw[0] === '(') {
+      let counterpart = findCounterpartCharacter('(', node.raw);
+      if (counterpart === node.raw.length - 1) {
+        node.raw = node.raw.slice(1, -1);
+        fixRange(node, map, source);
+        return;
+      }
     }
 
     throw new Error(
