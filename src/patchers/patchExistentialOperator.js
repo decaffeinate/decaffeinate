@@ -1,10 +1,25 @@
 /**
- * Replaces existential operators with a defined check.
+ * Prepares the start of an existential operator node.
  *
  * @param {Object} node
  * @param {MagicString} patcher
  */
-export default function patchExistentialOperator(node, patcher) {
+export function patchExistentialOperatorStart(node, patcher) {
+  if (node.type === 'UnaryExistsOp') {
+    const expression = node.expression;
+    if (expression.type !== 'Identifier' && needsParens(node)) {
+      patcher.insert(node.range[0], '(');
+    }
+  }
+}
+
+/**
+ * Prepares the start of an existential operator node.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+export function patchExistentialOperatorEnd(node, patcher) {
   if (node.type === 'UnaryExistsOp') {
     const expression = node.expression;
     const parens = needsParens(node);
@@ -17,10 +32,7 @@ export default function patchExistentialOperator(node, patcher) {
       patcher.replace(node.range[0], node.range[1], replacement);
     } else {
       let replacement = ` != null`;
-      if (parens) {
-        patcher.insert(node.range[0], '(');
-        replacement += ')';
-      }
+      if (parens) { replacement += ')'; }
       patcher.replace(node.range[1] - 1, node.range[1], replacement);
     }
   }
