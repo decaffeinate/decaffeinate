@@ -30,7 +30,7 @@ import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
  * @returns {string}
  */
 export function convert(source) {
-  const ast = parse(source, { raw: true });
+  const ast = parse(source);
   const patcher = new MagicString(source);
 
   let wasRewritten = false;
