@@ -5,7 +5,6 @@ import patchComments from './patchers/patchComments';
 import patchDeclarations from './patchers/patchDeclarations';
 import patchEmbeddedJavaScript from './patchers/patchEmbeddedJavaScript';
 import patchEquality from './patchers/patchEquality';
-import patchExistentialOperator from './patchers/patchExistentialOperator';
 import patchKeywords from './patchers/patchKeywords';
 import patchPrototypeAccess from './patchers/patchPrototypeAccess';
 import patchReturns from './patchers/patchReturns';
@@ -13,11 +12,13 @@ import patchSemicolons from './patchers/patchSemicolons';
 import patchSequences from './patchers/patchSequences';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
+import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
 import preprocessConditional from './preprocessors/preprocessConditional';
 import traverse from './utils/traverse';
 import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
 import { patchConditionalStart, patchConditionalEnd } from './patchers/patchConditional';
+import { patchExistentialOperatorStart, patchExistentialOperatorEnd } from './patchers/patchExistentialOperator';
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
 import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
@@ -39,7 +40,8 @@ export function convert(source) {
     if (wasRewritten) {
       return false;
     }
-    wasRewritten = preprocessConditional(node, patcher);
+    wasRewritten = preprocessConditional(node, patcher) ||
+      preprocessBinaryExistentialOperator(node, patcher);
   });
 
   if (wasRewritten) {
@@ -62,12 +64,13 @@ export function convert(source) {
     patchSpreadStart(node, patcher);
     patchConditionalStart(node, patcher);
     patchEmbeddedJavaScript(node, patcher);
+    patchExistentialOperatorStart(node, patcher);
 
     descend(node);
 
     patchConditionalEnd(node, patcher);
     patchThrowEnd(node, patcher);
-    patchExistentialOperator(node, patcher);
+    patchExistentialOperatorEnd(node, patcher);
     patchFunctionEnd(node, patcher);
     patchClassEnd(node, patcher);
     patchObjectBraceClosing(node, patcher);

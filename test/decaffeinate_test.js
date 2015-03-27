@@ -1057,6 +1057,19 @@ describe('automatic conversions', function() {
     it('strips the backticks off interpolated JavaScript in an expression context', function() {
       check('a = `void 0`', 'var a = void 0;');
     });
+
+    it('handles simple binary existential operators', function() {
+      check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
+    });
+
+    it('handles complex binary existential operators', function() {
+      check(
+        `@a ? @b`,
+      `
+        var ref;
+        if (((ref = this.a) != null)) { ref; } else { this.b; }
+      `);
+    });
   });
 
   function check(source, expected) {
