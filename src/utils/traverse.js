@@ -110,6 +110,8 @@ const ORDER = {
   ProtoMemberAccessOp: ['expression'],
   Return: ['expression'],
   SeqOp: ['left', 'right'],
+  SoakedDynamicMemberAccessOp: ['expression', 'indexingExpr'],
+  SoakedMemberAccessOp: ['expression'],
   Spread: ['expression'],
   String: [],
   SubtractOp: ['left', 'right'],

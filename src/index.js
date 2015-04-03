@@ -14,6 +14,7 @@ import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
 import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
 import preprocessConditional from './preprocessors/preprocessConditional';
+import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
 import traverse from './utils/traverse';
 import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
@@ -41,7 +42,8 @@ export function convert(source) {
       return false;
     }
     wasRewritten = preprocessConditional(node, patcher) ||
-      preprocessBinaryExistentialOperator(node, patcher);
+      preprocessBinaryExistentialOperator(node, patcher) ||
+      preprocessSoakedMemberAccessOp(node, patcher);
   });
 
   if (wasRewritten) {
