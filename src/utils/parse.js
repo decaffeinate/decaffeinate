@@ -61,6 +61,8 @@ function fixRange(node, map, source) {
     } else if (node.type === 'LogicalNotOp' && node.parent.type === 'Conditional' && node.parent.condition === node) {
       node.raw = node.expression.raw;
       node.range = node.expression.range;
+      node.line = node.expression.line;
+      node.column = node.expression.column;
     } else {
       throw new Error(
         'BUG! Could not fix range for ' + node.type +
