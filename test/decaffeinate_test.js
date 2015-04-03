@@ -448,6 +448,10 @@ describe('automatic conversions', function() {
     it('adds pre-declarations at the right indent level when the assignment is in an expression context', function() {
       check(`->\n  a(b = c)`, `(function() {\n  var b;\n  return a(b = c);\n});`);
     });
+
+    it('adds pre-declarations and regular declarations together properly', function() {
+      check('a = 1\nb = c = 2', 'var c;\nvar a = 1;\nvar b = c = 2;');
+    });
   });
 
   describe('adding explicit returns', function() {
