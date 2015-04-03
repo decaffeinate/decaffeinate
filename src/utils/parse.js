@@ -82,23 +82,45 @@ function fixRange(node, map, source) {
       return;
     }
 
-    // Work around a bug with parentheses.
-    // Sometimes parentheses end up as part of a node's raw value even though
-    // they probably shouldn't, like with `if (ref = a) then b else c`, the node
-    // for the assignment has a raw value of "(ref = a)", but its line and
-    // column information indicate that it should only encompass "ref = a".
-    if (node.raw[0] === '(') {
-      let counterpart = findCounterpartCharacter('(', node.raw);
-      if (counterpart === node.raw.length - 1) {
-        node.raw = node.raw.slice(1, -1);
-        fixRange(node, map, source);
-        return;
-      }
+    if (shrinkPastParentheses(node, map, source, false)) {
+      return;
     }
 
     throw new Error(
       'BUG! Could not fix range for ' + node.type +
       ' at line ' + node.line + ', column ' + node.column
     );
+  } else {
+    shrinkPastParentheses(node, map, source, true);
   }
+}
+
+/**
+ * Work around a bug with parentheses.
+ *
+ * Sometimes parentheses end up as part of a node's raw value even though they
+ * probably shouldn't, like with `if (ref = a) then b else c`, the node for the
+ * assignment has a raw value of "(ref = a)".
+ *
+ * @param {Object} node
+ * @param {LineAndColumnMap} map
+ * @param {string} source
+ * @param {boolean} adjustPosition
+ * @returns {boolean}
+ */
+function shrinkPastParentheses(node, map, source, adjustPosition) {
+  if (node.raw[0] === '(') {
+    let counterpart = findCounterpartCharacter('(', node.raw);
+    if (counterpart === node.raw.length - 1) {
+      node.raw = node.raw.slice(1, -1);
+      if (adjustPosition) {
+        node.range = [node.range[0] + 1, node.range[1] - 1];
+        node.column -= 1;
+      }
+      fixRange(node, map, source);
+      return true;
+    }
+  }
+
+  return false;
 }

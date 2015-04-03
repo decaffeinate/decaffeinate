@@ -1119,7 +1119,7 @@ describe('automatic conversions', function() {
       check(`
         a(b?.c)
       `, `
-        a((typeof b !== "undefined" && b !== null) ? b.c : undefined);
+        a(((typeof b !== "undefined" && b !== null) ? b.c : undefined));
       `);
     });
 
@@ -1128,6 +1128,14 @@ describe('automatic conversions', function() {
         a?[b]()
       `, `
         if ((typeof a !== "undefined" && a !== null)) { a[b](); }
+      `);
+    });
+
+    it('wraps soaked member access if necessary', function() {
+      check(`
+        if a?.b then c
+      `, `
+        if ((typeof a !== "undefined" && a !== null) ? a.b : undefined) { c; }
       `);
     });
   });

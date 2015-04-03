@@ -20,7 +20,17 @@ export default function preprocessSoakedMemberAccessOp(node, patcher) {
     // `a.b?.c` -> `if (ref = a.b)? then ref.c`
     //              ^^^^^^^^^^   ^ ^^^^^^^^^
     let expression = node.expression;
+    let conditional;
+    if (node.parent.type === 'FunctionApplication' && node.parent.function === node) {
+      conditional = node.parent;
+    } else {
+      conditional = node;
+    }
+    let parens = conditional.parent.type !== 'Block';
     let consequent;
+    if (parens) {
+      patcher.insert(conditional.range[0], '(');
+    }
     patcher.insert(expression.range[0], 'if ');
     if (expression.type === 'Identifier') {
       consequent = ` then ${expression.raw}`;
@@ -31,6 +41,9 @@ export default function preprocessSoakedMemberAccessOp(node, patcher) {
       consequent = ` then ${tmp}`;
     }
     patcher.insert(expression.range[1] + 1, consequent);
+    if (parens) {
+      patcher.insert(conditional.range[1], ')');
+    }
     return true;
   }
 }

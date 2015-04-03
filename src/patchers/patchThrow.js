@@ -11,10 +11,7 @@ export function patchThrowStart(node, patcher) {
   if (isThrowExpression(node)) {
     let pos = node.range[0];
     let str = '() => { ';
-    if (patcher.slice(pos, pos + LPAREN.length) === LPAREN) {
-      // Already starts with a parenthesis, so insert inside it.
-      pos += LPAREN.length;
-    } else {
+    if (patcher.slice(pos - LPAREN.length, pos) !== LPAREN) {
       // Doesn't start with a parenthesis, so add it to the start.
       str += LPAREN;
     }
@@ -32,10 +29,7 @@ export function patchThrowEnd(node, patcher) {
   if (isThrowExpression(node)) {
     let pos = node.range[1];
     let str = '; })(';
-    if (patcher.slice(pos - RPAREN.length, pos) === RPAREN) {
-      // Already ends with a parenthesis, so insert inside it.
-      pos -= RPAREN.length;
-    } else {
+    if (patcher.slice(pos, pos + RPAREN.length) !== RPAREN) {
       // Doesn't end with a parenthesis, so add it to the end.
       str += RPAREN;
     }

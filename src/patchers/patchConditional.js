@@ -22,7 +22,7 @@ export function patchConditionalStart(node, patcher) {
   } else if (isCondition(node) && isExpressionResultUsed(node.parent)) {
     // nothing to do
   } else if (isCondition(node)) {
-    const isSurroundedByParens = isSurroundedBy(node.raw, '(');
+    const isSurroundedByParens = isSurroundedBy(node, '(', patcher.original);
     const isUnless = isUnlessConditional(node.parent, patcher.original);
     let inserted = '';
     let offset = node.range[0];
@@ -32,7 +32,7 @@ export function patchConditionalStart(node, patcher) {
       if (conditionNeedsParens) {
         if (isSurroundedByParens) {
           // e.g. `unless (a + b)` -> `if (!(a + b)) {`
-          inserted += '(!';
+          inserted += '!(';
         } else {
           // e.g. `unless a + b` -> `if (!(a + b)) {`
           inserted += '(!(';
@@ -41,7 +41,6 @@ export function patchConditionalStart(node, patcher) {
         if (isSurroundedByParens) {
           // e.g. `unless (a)` -> `if (!a) {`
           inserted += '!';
-          offset += '('.length;
         } else {
           // e.g. `unless a` -> `if (!a) {`
           inserted += '(!';
@@ -71,11 +70,12 @@ export function patchConditionalEnd(node, patcher) {
     } else {
       replaceBetween(patcher, node, node.parent.consequent, 'then ', '') ||
       replaceBetween(patcher, node, node.parent.consequent, 'then', '');
-      let inserted = isSurroundedBy(node.raw, '(') ? ' {' : ') {';
+      let parens = isSurroundedBy(node, '(', patcher.original);
+      let inserted = parens ? ' {' : ') {';
       if (isUnlessConditional(node.parent, patcher.original) && requiresParentheses(node.expression)) {
         inserted = `)${inserted}`;
       }
-      patcher.insert(node.range[1], inserted);
+      patcher.insert(node.range[1] + (parens ? ')'.length : 0), inserted);
     }
   } else if (isConsequent(node)) {
     if (isExpressionResultUsed(node.parent)) {
