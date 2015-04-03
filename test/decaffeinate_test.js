@@ -1074,6 +1074,29 @@ describe('automatic conversions', function() {
         if (((ref = this.a) != null)) { ref; } else { this.b; }
       `);
     });
+
+    it('prevents using temporary variables that clash with existing bindings', function() {
+      check(`
+        ref = 1
+        @a ? @b
+      `, `
+        var ref1;
+        var ref = 1;
+        if (((ref1 = this.a) != null)) { ref1; } else { this.b; }
+      `);
+    });
+
+    it('prevents using temporary variables that clash with existing temporary variables', function() {
+      check(`
+        @a ? @b
+        @c ? @d
+      `, `
+        var ref;
+        var ref1;
+        if (((ref = this.a) != null)) { ref; } else { this.b; }
+        if (((ref1 = this.c) != null)) { ref1; } else { this.d; }
+      `);
+    });
   });
 
   function check(source, expected) {

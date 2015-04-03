@@ -1,3 +1,5 @@
+import getFreeBinding from '../utils/getFreeBinding';
+
 /**
  * Convert binary existential operators, e.g. `a ? b` into `if` expressions
  * using unary existential operators, e.g. `if a? then a else b`.
@@ -16,9 +18,10 @@ export default function preprocessBinaryExistentialOperator(node, patcher) {
       //        ^^^           ^^^^^^^^^^^^^^
       patcher.replace(node.left.range[1], node.right.range[0], `? then ${node.left.raw} else `);
     } else {
+      let tmp = getFreeBinding(node.scope);
       // e.g. `@a ? @b` -> `if (ref = @a)? then ref else @b`
       //       ^^^^^           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-      patcher.replace(node.left.range[0], node.right.range[0], `(ref = ${node.left.raw})? then ref else `);
+      patcher.replace(node.left.range[0], node.right.range[0], `(${tmp} = ${node.left.raw})? then ${tmp} else `);
     }
 
     return true;
