@@ -1066,6 +1066,10 @@ describe('automatic conversions', function() {
       check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });
 
+    it('deals gracefully with extra parens in simple binary existential operators', function() {
+      check(`a ? (b)`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
+    });
+
     it('handles complex binary existential operators', function() {
       check(
         `@a ? @b`,
@@ -1073,6 +1077,16 @@ describe('automatic conversions', function() {
         var ref;
         if (((ref = this.a) != null)) { ref; } else { this.b; }
       `);
+    });
+
+    it('deals gracefully with extra parens in complex binary existential operators', function() {
+      check(
+        `@a ? (@b)`,
+        `
+         var ref;
+         if (((ref = this.a) != null)) { ref; } else { this.b; }
+        `
+      );
     });
 
     it('prevents using temporary variables that clash with existing bindings', function() {
