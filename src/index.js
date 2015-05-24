@@ -51,6 +51,7 @@ export function convert(source) {
   }
 
   traverse(ast, (node, descend) => {
+    patchReturns(node, patcher);
     patchKeywords(node, patcher);
     patchThis(node, patcher);
     patchPrototypeAccess(node, patcher);
@@ -58,7 +59,6 @@ export function convert(source) {
     patchCallOpening(node, patcher);
     patchObjectBraceOpening(node, patcher);
     patchDeclarations(node, patcher);
-    patchReturns(node, patcher);
     patchFunctionStart(node, patcher);
     patchClassStart(node, patcher);
     patchEquality(node, patcher);
