@@ -1138,6 +1138,14 @@ describe('automatic conversions', function() {
         if ((typeof a !== "undefined" && a !== null) ? a.b : undefined) { c; }
       `);
     });
+
+    it('', function() {
+      check(`
+         (-> 42).observes('model')
+      `, `
+         (function() { return 42; }).observes('model');
+      `);
+    });
   });
 
   function check(source, expected) {
