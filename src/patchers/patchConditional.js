@@ -4,6 +4,7 @@ import isSurroundedBy from '../utils/isSurroundedBy';
 import replaceBetween from '../utils/replaceBetween';
 import requiresParentheses from '../utils/requiresParentheses';
 import sourceBetween from '../utils/sourceBetween';
+import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 const UNLESS = 'unless';
 
@@ -75,7 +76,8 @@ export function patchConditionalEnd(node, patcher) {
       if (isUnlessConditional(node.parent, patcher.original) && requiresParentheses(node.expression)) {
         inserted = `)${inserted}`;
       }
-      patcher.insert(node.range[1] + (parens ? ')'.length : 0), inserted);
+      let nodeRange = trimmedNodeRange(node, patcher.original);
+      patcher.insert(nodeRange[1] + (parens ? ')'.length : 0), inserted);
     }
   } else if (isConsequent(node)) {
     if (isExpressionResultUsed(node.parent)) {
@@ -86,7 +88,8 @@ export function patchConditionalEnd(node, patcher) {
       } else {
         // e.g. `a(if b then c)` -> `a(b ? c : undefined)
         //                                  ^^^^^^^^^^^^
-        patcher.insert(node.range[1], ' : undefined');
+        let nodeRange = trimmedNodeRange(node, patcher.original);
+        patcher.insert(nodeRange[1], ' : undefined');
       }
     } else if (node.parent.alternate) {
       // Only add the opening curly for the alternate if it is not a conditional,
@@ -101,11 +104,12 @@ export function patchConditionalEnd(node, patcher) {
     }
   } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
     if (!isExpressionResultUsed(node)) {
+      let nodeRange = trimmedNodeRange(node, patcher.original);
       // Close the conditional if it isn't handled by closing an `else if`.
       if (isOneLineConditionAndConsequent(node, patcher.original)) {
-        patcher.insert(node.range[1], ' }');
+        patcher.insert(nodeRange[1], ' }');
       } else {
-        patcher.insert(node.range[1], `\n${getIndent(patcher.original, node.range[0])}}`);
+        patcher.insert(nodeRange[1], `\n${getIndent(patcher.original, nodeRange[0])}}`);
       }
     }
   }

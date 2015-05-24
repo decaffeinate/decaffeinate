@@ -988,6 +988,22 @@ describe('automatic conversions', function() {
       `);
     });
 
+    it('works with `if` with immediate return', function() {
+      check(`
+        ->
+          if a
+            b
+        c
+      `,`
+        (function() {
+          if (a) {
+            return b;
+          }
+        });
+        c;
+      `);
+    });
+
     it('keeps single-line `if` statements on one line', function() {
       check(`if a then b`, `if (a) { b; }`);
     });
