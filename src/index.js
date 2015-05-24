@@ -23,6 +23,7 @@ import { patchExistentialOperatorStart, patchExistentialOperatorEnd } from './pa
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
 import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
+import { patchRestStart, patchRestEnd } from './patchers/patchRest';
 import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
 
 /**
@@ -64,6 +65,7 @@ export function convert(source) {
     patchEquality(node, patcher);
     patchThrowStart(node, patcher);
     patchSpreadStart(node, patcher);
+    patchRestStart(node, patcher);
     patchConditionalStart(node, patcher);
     patchEmbeddedJavaScript(node, patcher);
     patchExistentialOperatorStart(node, patcher);
@@ -81,6 +83,7 @@ export function convert(source) {
     patchSequences(node, patcher);
     patchCommas(node, patcher);
     patchSpreadEnd(node, patcher);
+    patchRestEnd(node, patcher);
   });
 
   patchComments(patcher);
