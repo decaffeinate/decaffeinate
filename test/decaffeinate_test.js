@@ -1139,7 +1139,8 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('', function() {
+    it('handles bad range information provided by CoffeeScriptRedux', function() {
+      // This source code creates bad range information for the MemberAccessOp.
       check(`
          (-> 42).observes('model')
       `, `
