@@ -862,6 +862,10 @@ describe('automatic conversions', function() {
       check(`[1, 2, makeArray(arguments...)...]`, `[1, 2, ...makeArray(...arguments)];`);
     });
 
+    it('converts rest params in function calls', function() {
+      check(`(a,b...)->b[0]`, `(function(a,...b){return b[0]; });`);
+    });
+
     it('surrounds `if` conditions in parentheses and bodies in curly braces', function() {
       check(`
         if a

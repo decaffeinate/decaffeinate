@@ -108,6 +108,7 @@ const ORDER = {
   ObjectInitialiserMember: ['key', 'expression'],
   PlusOp: ['left', 'right'],
   ProtoMemberAccessOp: ['expression'],
+  Rest: ['expression'],
   Return: ['expression'],
   SeqOp: ['left', 'right'],
   SoakedDynamicMemberAccessOp: ['expression', 'indexingExpr'],
