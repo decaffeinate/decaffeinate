@@ -1176,6 +1176,15 @@ describe('automatic conversions', function() {
         if ((typeof a !== "undefined" && a !== null) ? a.b : undefined) { c; }
       `);
     });
+
+    it('handles bad range information provided by CoffeeScriptRedux', function() {
+      // This source code creates bad range information for the MemberAccessOp.
+      check(`
+         (-> 42).observes('model')
+      `, `
+         (function() { return 42; }).observes('model');
+      `);
+    });
   });
 
   function check(source, expected) {

@@ -70,10 +70,12 @@ function fixRange(node, map, source) {
       );
     }
   }
-
   const fixed = map.getOffset(node.line - 1, node.column - 1);
-  if (source.slice(fixed, fixed + node.raw.length) === node.raw) {
-    node.range = [fixed, fixed + node.raw.length];
+  for (var slide = 0; slide < 3; slide++) {
+    if (source.slice(fixed - slide, fixed - slide + node.raw.length) === node.raw) {
+      node.range = [fixed - slide, fixed - slide + node.raw.length];
+      break;
+    }
   }
 
   if (!node.range || node.raw !== source.slice(node.range[0], node.range[1])) {
