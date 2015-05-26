@@ -15,13 +15,13 @@ export default function preprocessBinaryExistentialOperator(node, patcher) {
 
     if (node.left.type === 'Identifier') {
       // e.g. `a ? b` -> `if a? then a else b`
-      //        ^^^           ^^^^^^^^^^^^^^
-      patcher.replace(node.left.range[1], node.right.range[0], `? then ${node.left.raw} else `);
+      //       ^^^^^         ^^^^^^^^^^^^^^^^
+      patcher.replace(node.range[0], node.range[1], `${node.left.raw}? then ${node.left.raw} else ${node.right.raw}`);
     } else {
       let tmp = getFreeBinding(node.scope);
       // e.g. `@a ? @b` -> `if (ref = @a)? then ref else @b`
-      //       ^^^^^           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-      patcher.replace(node.left.range[0], node.right.range[0], `(${tmp} = ${node.left.raw})? then ${tmp} else `);
+      //       ^^^^^^^         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      patcher.replace(node.range[0], node.range[1], `(${tmp} = ${node.left.raw})? then ${tmp} else ${node.right.raw}`);
     }
 
     return true;
