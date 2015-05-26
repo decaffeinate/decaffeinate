@@ -517,6 +517,10 @@ describe('automatic conversions', function() {
     it('rewrites interpolations with spaces after the "{"', function() {
       check('"a#{ b }c"', '`a${ b }c`;');
     });
+
+    it('can return interpolated strings', function() {
+      check(`-> "#{a}"`, `(function() { return \`\${a}\`; });`);
+    });
   });
 
   describe('adding semi-colons', function() {
