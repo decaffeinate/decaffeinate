@@ -77,6 +77,8 @@ const ORDER = {
   BitXorOp: ['left', 'right'],
   Block: ['statements'],
   Bool: [],
+  Undefined: [],
+  Float: [],
   BoundFunction: ['parameters', 'body'],
   Class: ['nameAssignee', 'body'],
   ClassProtoAssignOp: ['assignee', 'expression'],
