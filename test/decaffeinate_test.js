@@ -523,6 +523,18 @@ describe('automatic conversions', function() {
     });
   });
 
+  describe('dealing with `undefined`', function() {
+    it('leaves as-is', function() {
+      check(`undefined`, `undefined;`);
+    });
+  });
+
+  describe('dealing with floating point numbers', function() {
+    it('leaves as-is', function() {
+      check(`1.0`, `1.0;`);
+    });
+  });
+
   describe('adding semi-colons', function() {
     it('adds them after call expressions as statements', function() {
       check(`a b`, `a(b);`);
