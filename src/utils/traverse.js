@@ -69,7 +69,6 @@ function childPropertyNames(node) {
 }
 
 const ORDER = {
-  Program: ['body'],
   ArrayInitialiser: ['members'],
   AssignOp: ['assignee', 'expression'],
   BitAndOp: ['left', 'right'],
@@ -77,8 +76,6 @@ const ORDER = {
   BitXorOp: ['left', 'right'],
   Block: ['statements'],
   Bool: [],
-  Undefined: [],
-  Float: [],
   BoundFunction: ['parameters', 'body'],
   Class: ['nameAssignee', 'body'],
   ClassProtoAssignOp: ['assignee', 'expression'],
@@ -88,6 +85,7 @@ const ORDER = {
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
   EQOp: ['left', 'right'],
   ExistsOp: ['left', 'right'],
+  Float: [],
   ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
   Function: ['parameters', 'body'],
@@ -109,6 +107,7 @@ const ORDER = {
   ObjectInitialiser: ['members'],
   ObjectInitialiserMember: ['key', 'expression'],
   PlusOp: ['left', 'right'],
+  Program: ['body'],
   ProtoMemberAccessOp: ['expression'],
   Rest: ['expression'],
   Return: ['expression'],
@@ -123,5 +122,6 @@ const ORDER = {
   UnaryExistsOp: ['expression'],
   UnaryNegateOp: ['expression'],
   UnaryPlusOp: ['expression'],
+  Undefined: [],
   While: ['condition', 'body']
 };
