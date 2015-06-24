@@ -1216,6 +1216,10 @@ describe('automatic conversions', function() {
     it('preserves slash escapes in regular expressions', function() {
       check(`a = /foo\\/bar/`, `var a = /foo\\/bar/;`);
     });
+
+    it('preserves regular expression flags', function() {
+      check(`a = /a/ig`, `var a = /a/ig;`);
+    });
   });
 
   function check(source, expected) {
