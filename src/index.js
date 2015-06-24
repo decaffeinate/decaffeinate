@@ -7,6 +7,7 @@ import patchEmbeddedJavaScript from './patchers/patchEmbeddedJavaScript';
 import patchEquality from './patchers/patchEquality';
 import patchKeywords from './patchers/patchKeywords';
 import patchPrototypeAccess from './patchers/patchPrototypeAccess';
+import patchRegularExpressions from './patchers/patchRegularExpressions';
 import patchReturns from './patchers/patchReturns';
 import patchSemicolons from './patchers/patchSemicolons';
 import patchSequences from './patchers/patchSequences';
@@ -52,6 +53,7 @@ export function convert(source) {
   }
 
   traverse(ast, (node, descend) => {
+    patchRegularExpressions(node, patcher);
     patchReturns(node, patcher);
     patchKeywords(node, patcher);
     patchThis(node, patcher);

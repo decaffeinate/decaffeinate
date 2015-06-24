@@ -109,6 +109,7 @@ const ORDER = {
   PlusOp: ['left', 'right'],
   Program: ['body'],
   ProtoMemberAccessOp: ['expression'],
+  RegExp: [],
   Rest: ['expression'],
   Return: ['expression'],
   SeqOp: ['left', 'right'],
