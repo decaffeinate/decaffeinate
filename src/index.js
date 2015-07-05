@@ -16,6 +16,7 @@ import patchThis from './patchers/patchThis';
 import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
 import preprocessConditional from './preprocessors/preprocessConditional';
 import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
+import preprocessTry from './preprocessors/preprocessTry';
 import traverse from './utils/traverse';
 import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
@@ -26,6 +27,7 @@ import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/pat
 import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
 import { patchRestStart, patchRestEnd } from './patchers/patchRest';
 import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
+import { patchTryStart, patchTryEnd } from './patchers/patchTry';
 
 /**
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
@@ -45,7 +47,8 @@ export function convert(source) {
     }
     wasRewritten = preprocessConditional(node, patcher) ||
       preprocessBinaryExistentialOperator(node, patcher) ||
-      preprocessSoakedMemberAccessOp(node, patcher);
+      preprocessSoakedMemberAccessOp(node, patcher) ||
+      preprocessTry(node, patcher);
   });
 
   if (wasRewritten) {
@@ -69,11 +72,13 @@ export function convert(source) {
     patchSpreadStart(node, patcher);
     patchRestStart(node, patcher);
     patchConditionalStart(node, patcher);
+    patchTryStart(node, patcher);
     patchEmbeddedJavaScript(node, patcher);
     patchExistentialOperatorStart(node, patcher);
 
     descend(node);
 
+    patchTryEnd(node, patcher);
     patchConditionalEnd(node, patcher);
     patchThrowEnd(node, patcher);
     patchExistentialOperatorEnd(node, patcher);

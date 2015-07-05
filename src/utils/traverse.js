@@ -120,6 +120,7 @@ const ORDER = {
   SubtractOp: ['left', 'right'],
   This: [],
   Throw: ['expression'],
+  Try: ['body', 'catchAssignee', 'catchBody', 'finallyBody'],
   TypeofOp: ['expression'],
   UnaryExistsOp: ['expression'],
   UnaryNegateOp: ['expression'],

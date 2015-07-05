@@ -13,6 +13,7 @@ export default function isImplicitlyReturned(node) {
     case 'Return':
     case 'Block':
     case 'Conditional':
+    case 'Try':
       return false;
   }
 
@@ -44,6 +45,10 @@ export default function isImplicitlyReturned(node) {
         if (ancestor.parent.type === 'Conditional' && ancestor.parent.alternate === ancestor) {
           ancestor = ancestor.parent;
         }
+        break;
+
+      case 'Try':
+        ancestor = ancestor.parent.parent;
         break;
 
       default:

@@ -58,14 +58,15 @@ function shouldHaveTrailingSemicolon(node) {
   }
 
   switch (node.type) {
-    case 'Conditional':
-    case 'ForIn':
-    case 'ForOf':
-    case 'While':
     case 'Block':
     case 'ClassProtoAssignOp':
+    case 'Conditional':
     case 'Constructor':
+    case 'ForIn':
+    case 'ForOf':
     case 'JavaScript':
+    case 'Try':
+    case 'While':
       return false;
 
     case 'Class':

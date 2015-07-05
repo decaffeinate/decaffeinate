@@ -56,4 +56,34 @@ describe('isImplicitlyReturned', function() {
     strictEqual(node.type, 'Identifier');
     ok(isImplicitlyReturned(node));
   });
+
+  it('is false for a `try` statement', function() {
+    const node = parse('->\n  try\n    a').body.statements[0].body.statements[0];
+    strictEqual(node.type, 'Try');
+    ok(!isImplicitlyReturned(node));
+  });
+
+  it('is true for the last expression of a `try` body that is the last statement in a function', function() {
+    const node = parse('->\n  try\n    a').body.statements[0].body.statements[0].body.statements[0];
+    strictEqual(node.type, 'Identifier');
+    ok(isImplicitlyReturned(node));
+  });
+
+  it('is false for the catch assignee of a `try` that is the last statement in a function', function() {
+    const node = parse('->\n  try\n    a\n  catch err').body.statements[0].body.statements[0].catchAssignee;
+    strictEqual(node.type, 'Identifier');
+    ok(!isImplicitlyReturned(node));
+  });
+
+  it('is true for the last expression of a `try` catch body that is the last statement in a function', function() {
+    const node = parse('->\n  try\n    a\n  catch\n    b').body.statements[0].body.statements[0].catchBody.statements[0];
+    strictEqual(node.type, 'Identifier');
+    ok(isImplicitlyReturned(node));
+  });
+
+  it('is true for the last expression of a `try` finally body that is the last statement in a function', function() {
+    const node = parse('->\n  try\n    a\n  finally\n    b').body.statements[0].body.statements[0].finallyBody.statements[0];
+    strictEqual(node.type, 'Identifier');
+    ok(isImplicitlyReturned(node));
+  });
 });
