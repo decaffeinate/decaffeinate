@@ -1220,6 +1220,10 @@ describe('automatic conversions', function() {
     it('preserves regular expression flags', function() {
       check(`a = /a/ig`, `var a = /a/ig;`);
     });
+
+    it('preserves typeof operators', function() {
+      check(`typeof a`, `typeof a;`);
+    });
   });
 
   function check(source, expected) {

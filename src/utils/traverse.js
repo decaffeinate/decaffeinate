@@ -120,6 +120,7 @@ const ORDER = {
   SubtractOp: ['left', 'right'],
   This: [],
   Throw: ['expression'],
+  TypeofOp: ['expression'],
   UnaryExistsOp: ['expression'],
   UnaryNegateOp: ['expression'],
   UnaryPlusOp: ['expression'],
