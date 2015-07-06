@@ -48,7 +48,7 @@ export default function preprocessTry(node, patcher) {
           );
           return true;
         } else {
-          // Insert " catch _error" after node.body
+          // TODO: Insert " catch _error" after node.body
         }
       }
     }
