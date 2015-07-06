@@ -10,8 +10,10 @@ const SQUOTE_CODE = 39;
 const SLASH_CODE = 92;
 
 /**
+ * Returns the ranges of the sections of source code that are not comments.
+ *
  * @param {string} source
- * @returns {number[][]}
+ * @returns {Array.<{start: number, end: number, type: string}>}
  */
 export default function rangesOfComments(source) {
   var result = [];
