@@ -6,10 +6,10 @@
  * function if they wish to prevent usage of the free binding identified.
  *
  * @param {Scope} scope
+ * @param {string=} base
  * @returns {string}
  */
-export default function getFreeBinding(scope) {
-  let base = 'ref';
+export default function getFreeBinding(scope, base='ref') {
   let binding = base;
 
   if (scope.getBinding(binding)) {
