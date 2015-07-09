@@ -852,6 +852,28 @@ describe('automatic conversions', function() {
       `);
     });
 
+    it('preserves class constructors extending superclasses', function() {
+      check(`
+        class A extends B
+          constructor: ->
+      `, `
+        class A extends B {
+          constructor() {}
+        }
+      `);
+    });
+
+    it('preserves class constructors extending non-identifier superclasses', function() {
+      check(`
+        class A extends (class B extends C)
+          constructor: ->
+      `, `
+        class A extends (class B extends C {}) {
+          constructor() {}
+        }
+      `);
+    });
+
     it('preserves `throw` when used in a statement context', function() {
       check(`throw new Error()`, `throw new Error();`);
     });

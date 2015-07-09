@@ -1,4 +1,5 @@
 import getIndent from '../utils/getIndent';
+import isSurroundedBy from '../utils/isSurroundedBy';
 
 /**
  * Patches the start of class-related nodes.
@@ -9,7 +10,19 @@ import getIndent from '../utils/getIndent';
 export function patchClassStart(node, patcher) {
   if (node.type === 'Class') {
     if (node.body) {
-      patcher.insert(node.nameAssignee.range[1], ' {');
+      let braceIndex;
+      const superclass = node.parent;
+
+      if (superclass) {
+        braceIndex = superclass.range[1];
+        if (isSurroundedBy(superclass, '(', patcher.original)) {
+          braceIndex += '('.length;
+        }
+      } else {
+        braceIndex = node.nameAssignee.range[1];
+      }
+
+      patcher.insert(braceIndex, ' {');
     }
   }
 }
