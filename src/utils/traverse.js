@@ -77,7 +77,7 @@ const ORDER = {
   Block: ['statements'],
   Bool: [],
   BoundFunction: ['parameters', 'body'],
-  Class: ['nameAssignee', 'body'],
+  Class: ['nameAssignee', 'parent', 'body'],
   ClassProtoAssignOp: ['assignee', 'expression'],
   ConcatOp: ['left', 'right'],
   Conditional: ['condition', 'consequent', 'alternate'],
