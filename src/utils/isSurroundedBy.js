@@ -6,6 +6,7 @@ import findCounterpartCharacter from './findCounterpartCharacter';
  *
  * @param {Object} node
  * @param {string} left
+ * @param {string} source
  * @returns {boolean}
  */
 export default function isSurroundedBy(node, left, source) {
