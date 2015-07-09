@@ -1,7 +1,7 @@
 import isPrecededBy from '../utils/isPrecededBy';
 
 export function patchObjectBraceOpening(node, patcher) {
-  if (node.type === 'ObjectInitialiser' && node.parent.type !== 'FunctionApplication') {
+  if (node.type === 'ObjectInitialiser' && node.parentNode.type !== 'FunctionApplication') {
     if (patcher.original[node.range[0]] !== '{') {
       patcher.insert(node.range[0], isObjectAsStatement(node) ? '({' : '{');
     } else if (isObjectAsStatement(node)) {
@@ -15,7 +15,7 @@ export function patchObjectBraceOpening(node, patcher) {
  * @param patcher
  */
 export function patchObjectBraceClosing(node, patcher) {
-  if (node.type === 'ObjectInitialiser' && node.parent.type !== 'FunctionApplication') {
+  if (node.type === 'ObjectInitialiser' && node.parentNode.type !== 'FunctionApplication') {
     if (patcher.original[node.range[0]] !== '{') {
       patcher.insert(node.range[1], isObjectAsStatement(node) ? '})' : '}');
     } else if (isObjectAsStatement(node)) {
@@ -29,13 +29,13 @@ export function patchObjectBraceClosing(node, patcher) {
  * @returns {boolean}
  */
 function isObjectAsStatement(node) {
-  if (node.parent.type !== 'Block') {
+  if (node.parentNode.type !== 'Block') {
     return false;
   }
 
-  if (node.parent.parent.type === 'Function' || node.parent.parent.type === 'BoundFunction') {
+  if (node.parentNode.parentNode.type === 'Function' || node.parentNode.parentNode.type === 'BoundFunction') {
     // If it's the last statement then it's an implicit return.
-    const statements = node.parent.statements;
+    const statements = node.parentNode.statements;
     return statements[statements.length - 1] !== node;
   }
 

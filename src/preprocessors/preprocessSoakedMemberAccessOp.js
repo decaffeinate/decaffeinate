@@ -21,12 +21,12 @@ export default function preprocessSoakedMemberAccessOp(node, patcher) {
     //              ^^^^^^^^^^   ^ ^^^^^^^^^
     let expression = node.expression;
     let conditional;
-    if (node.parent.type === 'FunctionApplication' && node.parent.function === node) {
-      conditional = node.parent;
+    if (node.parentNode.type === 'FunctionApplication' && node.parentNode.function === node) {
+      conditional = node.parentNode;
     } else {
       conditional = node;
     }
-    let parens = conditional.parent.type !== 'Block';
+    let parens = conditional.parentNode.type !== 'Block';
     let consequent;
     if (parens) {
       patcher.insert(conditional.range[0], '(');

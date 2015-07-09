@@ -64,7 +64,7 @@ function findAssignmentForBinding(binding) {
   let assignment = binding;
 
   while (assignment && assignment.type !== 'AssignOp') {
-    assignment = assignment.parent;
+    assignment = assignment.parentNode;
   }
 
   return assignment;

@@ -45,5 +45,5 @@ export function patchExistentialOperatorEnd(node, patcher) {
  * @returns {boolean}
  */
 function needsParens(node) {
-  return node.parent.type !== 'Block';
+  return node.parentNode.type !== 'Block';
 }

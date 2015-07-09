@@ -15,11 +15,11 @@ export default function traverse(node, callback) {
       const value = node[property];
       if (Array.isArray(value)) {
         value.forEach(child => {
-          child.parent = node;
+          child.parentNode = node;
           traverse(child, callback);
         });
       } else if (value) {
-        value.parent = node;
+        value.parentNode = node;
         traverse(value, callback);
       }
     });

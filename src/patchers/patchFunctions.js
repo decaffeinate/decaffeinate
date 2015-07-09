@@ -38,7 +38,7 @@ export function patchFunctionStart(node, patcher) {
  */
 function isMethodDeclaration(node) {
   return (node.type === 'Function' || node.type === 'BoundFunction') &&
-    (node.parent.type === 'ClassProtoAssignOp' || node.parent.type === 'Constructor');
+    (node.parentNode.type === 'ClassProtoAssignOp' || node.parentNode.type === 'Constructor');
 }
 
 /**

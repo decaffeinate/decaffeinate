@@ -20,11 +20,11 @@ export function patchConditionalStart(node, patcher) {
     patcher.replace(node.range[0], node.condition.range[0], '');
   } else if (isUnlessConditional(node, patcher.original)) {
     patcher.replace(node.range[0], node.range[0] + UNLESS.length, 'if');
-  } else if (isCondition(node) && isExpressionResultUsed(node.parent)) {
+  } else if (isCondition(node) && isExpressionResultUsed(node.parentNode)) {
     // nothing to do
   } else if (isCondition(node)) {
     const isSurroundedByParens = isSurroundedBy(node, '(', patcher.original);
-    const isUnless = isUnlessConditional(node.parent, patcher.original);
+    const isUnless = isUnlessConditional(node.parentNode, patcher.original);
     let inserted = '';
     let offset = node.range[0];
 
@@ -66,40 +66,40 @@ export function patchConditionalStart(node, patcher) {
  */
 export function patchConditionalEnd(node, patcher) {
   if (isCondition(node)) {
-    if (isExpressionResultUsed(node.parent)) {
-      replaceBetween(patcher, node, node.parent.consequent, 'then', '?');
+    if (isExpressionResultUsed(node.parentNode)) {
+      replaceBetween(patcher, node, node.parentNode.consequent, 'then', '?');
     } else {
-      replaceBetween(patcher, node, node.parent.consequent, 'then ', '') ||
-      replaceBetween(patcher, node, node.parent.consequent, 'then', '');
+      replaceBetween(patcher, node, node.parentNode.consequent, 'then ', '') ||
+      replaceBetween(patcher, node, node.parentNode.consequent, 'then', '');
       let parens = isSurroundedBy(node, '(', patcher.original);
       let inserted = parens ? ' {' : ') {';
-      if (isUnlessConditional(node.parent, patcher.original) && requiresParentheses(node.expression)) {
+      if (isUnlessConditional(node.parentNode, patcher.original) && requiresParentheses(node.expression)) {
         inserted = `)${inserted}`;
       }
       let nodeRange = trimmedNodeRange(node, patcher.original);
       patcher.insert(nodeRange[1] + (parens ? ')'.length : 0), inserted);
     }
   } else if (isConsequent(node)) {
-    if (isExpressionResultUsed(node.parent)) {
-      if (node.parent.alternate) {
+    if (isExpressionResultUsed(node.parentNode)) {
+      if (node.parentNode.alternate) {
         // e.g. `a(if b then c else d)` -> `a(b ? c : d)`
         //                     ^^^^                 ^
-        replaceBetween(patcher, node, node.parent.alternate, 'else', ':');
+        replaceBetween(patcher, node, node.parentNode.alternate, 'else', ':');
       } else {
         // e.g. `a(if b then c)` -> `a(b ? c : undefined)
         //                                  ^^^^^^^^^^^^
         let nodeRange = trimmedNodeRange(node, patcher.original);
         patcher.insert(nodeRange[1], ' : undefined');
       }
-    } else if (node.parent.alternate) {
+    } else if (node.parentNode.alternate) {
       // Only add the opening curly for the alternate if it is not a conditional,
       // otherwise the handler for the end of its condition will add it.
       replaceBetween(
         patcher,
         node,
-        node.parent.alternate,
+        node.parentNode.alternate,
         'else',
-        `} else${node.parent.alternate.type === 'Conditional' ? '' : ' {'}`
+        `} else${node.parentNode.alternate.type === 'Conditional' ? '' : ' {'}`
       );
     }
   } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
@@ -122,7 +122,7 @@ export function patchConditionalEnd(node, patcher) {
  * @returns {boolean}
  */
 function isCondition(node) {
-  return node.parent ? node.parent.type === 'Conditional' && node.parent.condition === node : false;
+  return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.condition === node : false;
 }
 
 /**
@@ -141,7 +141,7 @@ function isUnlessConditional(node, source) {
  * @returns {boolean}
  */
 function isConsequent(node) {
-  return node.parent ? node.parent.type === 'Conditional' && node.parent.consequent === node : false;
+  return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.consequent === node : false;
 }
 
 /**
@@ -151,7 +151,7 @@ function isConsequent(node) {
  * @returns {boolean}
  */
 function isAlternate(node) {
-  return node.parent ? node.parent.type === 'Conditional' && node.parent.alternate === node : false;
+  return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.alternate === node : false;
 }
 
 /**

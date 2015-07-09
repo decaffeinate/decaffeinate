@@ -8,7 +8,7 @@ import { parse as coffeeScriptParse } from 'coffee-script-redux';
  * Parses a CoffeeScript program and cleans up and annotates the AST.
  *
  * @param {string} source
- * @returns {Object} An AST from CoffeeScriptRedux with `scope` and `parent`.
+ * @returns {Object} An AST from CoffeeScriptRedux with `scope` and `parentNode`.
  */
 export default function parse(source) {
   const ast = coffeeScriptParse(source, { raw: true }).toBasicObject();
@@ -34,11 +34,11 @@ function attachScope(node) {
 
     case 'Function':
     case 'BoundFunction':
-      node.scope = new Scope(node.parent.scope);
+      node.scope = new Scope(node.parentNode.scope);
       break;
 
     default:
-      node.scope = node.parent.scope;
+      node.scope = node.parentNode.scope;
       break;
   }
 
@@ -55,13 +55,13 @@ function fixRange(node, map, source) {
   if (!node.range && node.type === 'ConcatOp') { return; }
 
   if (!('raw' in node)) {
-    if (node.parent && node.parent.type === 'While' && node.parent.condition === node) {
+    if (node.parentNode && node.parentNode.type === 'While' && node.parentNode.condition === node) {
       // Ignore `while` condition without raw
       return;
-    } else if (node.type === 'Block' && node.parent && node.parent.type === 'Try') {
+    } else if (node.type === 'Block' && node.parentNode && node.parentNode.type === 'Try') {
       // Ignore missing blocks in try/catch
       return;
-    } else if (node.type === 'LogicalNotOp' && node.parent.type === 'Conditional' && node.parent.condition === node) {
+    } else if (node.type === 'LogicalNotOp' && node.parentNode.type === 'Conditional' && node.parentNode.condition === node) {
       node.raw = node.expression.raw;
       node.range = node.expression.range;
       node.line = node.expression.line;
@@ -82,7 +82,7 @@ function fixRange(node, map, source) {
   }
 
   if (!node.range || node.raw !== source.slice(node.range[0], node.range[1])) {
-    if (node.parent && node.parent.step === node) {
+    if (node.parentNode && node.parentNode.step === node) {
       // Ignore invalid `step` parameters, they're auto-generated if left out.
       return;
     }

@@ -44,5 +44,5 @@ export function patchThrowEnd(node, patcher) {
  * @returns {boolean}
  */
 function isThrowExpression(node) {
-  return node.type === 'Throw' && node.parent.type !== 'Block';
+  return node.type === 'Throw' && node.parentNode.type !== 'Block';
 }

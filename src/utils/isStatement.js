@@ -5,17 +5,17 @@
  * @returns {boolean}
  */
 export default function isStatement(node) {
-  if (!node || !node.parent) {
+  if (!node || !node.parentNode) {
     return false;
   }
 
-  if (node.parent.type !== 'Block') {
+  if (node.parentNode.type !== 'Block') {
     return false;
   }
 
-  if (node.parent.parent.type === 'Function' || node.parent.parent.type === 'BoundFunction') {
+  if (node.parentNode.parentNode.type === 'Function' || node.parentNode.parentNode.type === 'BoundFunction') {
     // If it's the last statement then it's an implicit return.
-    const statements = node.parent.statements;
+    const statements = node.parentNode.statements;
     return statements[statements.length - 1] !== node;
   }
 

@@ -10,7 +10,7 @@
  */
 export default function patchStringInterpolation(node, patcher) {
   if (node.type === 'ConcatOp') {
-    if (node.parent.type !== 'ConcatOp') {
+    if (node.parentNode.type !== 'ConcatOp') {
       patcher.replace(node.range[0], node.range[0] + 1, '`');
       patcher.replace(node.range[1] - 1, node.range[1], '`');
     }

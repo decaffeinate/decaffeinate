@@ -25,16 +25,16 @@ export default function patchSemicolons(node, patcher) {
  * @returns {boolean}
  */
 function shouldHaveTrailingSemicolon(node) {
-  if (!node.parent) {
+  if (!node.parentNode) {
     return false;
   }
 
-  switch (node.parent.type) {
+  switch (node.parentNode.type) {
     case 'Block':
       break;
 
     case 'Function':
-      if (node.parent.body !== node) {
+      if (node.parentNode.body !== node) {
         return false;
       }
       break;
@@ -45,9 +45,9 @@ function shouldHaveTrailingSemicolon(node) {
     case 'Conditional':
       if (node.type === 'Block') {
         return false;
-      } else if (node.parent.condition === node) {
+      } else if (node.parentNode.condition === node) {
         return false;
-      } else if (isExpressionResultUsed(node.parent)) {
+      } else if (isExpressionResultUsed(node.parentNode)) {
         // No semicolons in "a ? b : c" from "if a then b else c".
         return false;
       }

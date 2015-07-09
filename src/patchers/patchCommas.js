@@ -8,15 +8,15 @@ import trimmedNodeRange from '../utils/trimmedNodeRange';
  * @param {MagicString} patcher
  */
 export default function patchCommas(node, patcher) {
-  switch (node.parent && node.parent.type) {
+  switch (node.parentNode && node.parentNode.type) {
     case 'ObjectInitialiser':
     case 'ArrayInitialiser':
-      patchCommaAfterNode(node, node.parent.members, patcher);
+      patchCommaAfterNode(node, node.parentNode.members, patcher);
       break;
 
     case 'FunctionApplication':
-      if (node.parent.arguments.indexOf(node) >= 0) {
-        patchCommaAfterNode(node, node.parent.arguments, patcher);
+      if (node.parentNode.arguments.indexOf(node) >= 0) {
+        patchCommaAfterNode(node, node.parentNode.arguments, patcher);
       }
       break;
   }

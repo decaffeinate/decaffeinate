@@ -8,7 +8,7 @@ import isImplicitlyReturned from '../utils/isImplicitlyReturned';
  */
 export default function patchReturns(node, patcher) {
   if (isImplicitlyReturned(node)) {
-    if (node.parent.type === 'Block' || node.parent.type === 'Function') {
+    if (node.parentNode.type === 'Block' || node.parentNode.type === 'Function') {
       patcher.insert(node.range[0], 'return ');
     }
   }

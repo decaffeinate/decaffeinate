@@ -5,7 +5,7 @@
  * @returns {boolean}
  */
 export default function isImplicitlyReturned(node) {
-  if (!node.parent) {
+  if (!node.parentNode) {
     return false;
   }
 
@@ -18,8 +18,8 @@ export default function isImplicitlyReturned(node) {
   }
 
   // Look for one-expression function return values, e.g. `-> 1`.
-  if (node.parent.type === 'Function' || node.parent.type === 'BoundFunction') {
-    if (node.parent.body === node) {
+  if (node.parentNode.type === 'Function' || node.parentNode.type === 'BoundFunction') {
+    if (node.parentNode.body === node) {
       return true;
     }
   }
@@ -34,21 +34,21 @@ export default function isImplicitlyReturned(node) {
   let ancestor = node;
 
   while (isLastStatement(ancestor)) {
-    // ancestor.parent is a Block
-    switch (ancestor.parent.parent.type) {
+    // ancestor.parentNode is a Block
+    switch (ancestor.parentNode.parentNode.type) {
       case 'Function':
       case 'BoundFunction':
         return true;
 
       case 'Conditional':
-        ancestor = ancestor.parent.parent;
-        if (ancestor.parent.type === 'Conditional' && ancestor.parent.alternate === ancestor) {
-          ancestor = ancestor.parent;
+        ancestor = ancestor.parentNode.parentNode;
+        if (ancestor.parentNode.type === 'Conditional' && ancestor.parentNode.alternate === ancestor) {
+          ancestor = ancestor.parentNode;
         }
         break;
 
       case 'Try':
-        ancestor = ancestor.parent.parent;
+        ancestor = ancestor.parentNode.parentNode;
         break;
 
       default:
@@ -64,11 +64,11 @@ export default function isImplicitlyReturned(node) {
  * @returns {boolean}
  */
 function isLastStatement(node) {
-  if (node.parent && node.parent.type !== 'Block') {
+  if (node.parentNode && node.parentNode.type !== 'Block') {
     return false;
   }
 
-  let statements = node.parent.statements;
+  let statements = node.parentNode.statements;
   let index = statements.indexOf(node);
 
   if (index < 0) {

@@ -11,11 +11,11 @@ export default function isExpressionResultUsed(node) {
     return false;
   }
 
-  if (node.parent.type === 'Conditional' && node.parent.alternate === node) {
+  if (node.parentNode.type === 'Conditional' && node.parentNode.alternate === node) {
     return false;
   }
 
-  if (node.parent.type !== 'Block') {
+  if (node.parentNode.type !== 'Block') {
     return true;
   }
 
