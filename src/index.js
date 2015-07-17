@@ -56,6 +56,7 @@ export function convert(source) {
   }
 
   traverse(ast, (node, descend) => {
+    patchConditionalStart(node, patcher);
     patchRegularExpressions(node, patcher);
     patchReturns(node, patcher);
     patchKeywords(node, patcher);
@@ -71,7 +72,6 @@ export function convert(source) {
     patchThrowStart(node, patcher);
     patchSpreadStart(node, patcher);
     patchRestStart(node, patcher);
-    patchConditionalStart(node, patcher);
     patchTryStart(node, patcher);
     patchEmbeddedJavaScript(node, patcher);
     patchExistentialOperatorStart(node, patcher);

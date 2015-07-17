@@ -498,6 +498,17 @@ describe('automatic conversions', function() {
       check(`not a`, `!a;`);
     });
 
+    it('renames "not" to "!" when used in a condition', function() {
+      check(`
+        if not 0
+          1
+      `, `
+        if (!0) {
+          1;
+        }
+      `);
+    });
+
     it('renames "not" to "!"', function() {
       check(`not(a)`, `!(a);`);
     });
