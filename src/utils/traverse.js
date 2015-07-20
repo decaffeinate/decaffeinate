@@ -79,6 +79,7 @@ const ORDER = {
   BoundFunction: ['parameters', 'body'],
   Class: ['nameAssignee', 'parent', 'body'],
   ClassProtoAssignOp: ['assignee', 'expression'],
+  CompoundAssignOp: ['assignee', 'expression'],
   ConcatOp: ['left', 'right'],
   Conditional: ['condition', 'consequent', 'alternate'],
   Constructor: ['expression'],
