@@ -18,6 +18,6 @@ export default function replaceBetween(patcher, left, right, search, replacement
     return false;
   }
 
-  patcher.replace(left.range[1] + offset, left.range[1] + offset + search.length, replacement);
+  patcher.overwrite(left.range[1] + offset, left.range[1] + offset + search.length, replacement);
   return true;
 }

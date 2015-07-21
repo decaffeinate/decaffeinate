@@ -29,11 +29,11 @@ export function patchExistentialOperatorEnd(node, patcher) {
       if (parens) {
         replacement = `(${replacement})`;
       }
-      patcher.replace(node.range[0], node.range[1], replacement);
+      patcher.overwrite(node.range[0], node.range[1], replacement);
     } else {
       let replacement = ` != null`;
       if (parens) { replacement += ')'; }
-      patcher.replace(node.range[1] - 1, node.range[1], replacement);
+      patcher.overwrite(node.range[1] - 1, node.range[1], replacement);
     }
   }
 }

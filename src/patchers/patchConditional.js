@@ -17,9 +17,9 @@ const UNLESS = 'unless';
 export function patchConditionalStart(node, patcher) {
   if (node.type === 'Conditional' && isExpressionResultUsed(node)) {
     // i.e. remove "if" or "unless"
-    patcher.replace(node.range[0], node.condition.range[0], '');
+    patcher.overwrite(node.range[0], node.condition.range[0], '');
   } else if (isUnlessConditional(node, patcher.original)) {
-    patcher.replace(node.range[0], node.range[0] + UNLESS.length, 'if');
+    patcher.overwrite(node.range[0], node.range[0] + UNLESS.length, 'if');
   } else if (isCondition(node) && isExpressionResultUsed(node.parentNode)) {
     // nothing to do
   } else if (isCondition(node)) {

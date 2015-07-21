@@ -50,7 +50,7 @@ function isMethodDeclaration(node) {
 function patchUnboundFunctionStart(node, patcher) {
   const start = node.range[0];
   if (patcher.slice(start, start + 2) === '->') {
-    patcher.replace(start, start + 2, `${isStatement(node) ? '(' : ''}function() {`);
+    patcher.overwrite(start, start + 2, `${isStatement(node) ? '(' : ''}function() {`);
   } else {
     patcher.insert(start, isStatement(node) ? '(function' : 'function');
 
@@ -63,7 +63,7 @@ function patchUnboundFunctionStart(node, patcher) {
       );
     }
 
-    patcher.replace(arrowStart, arrowStart + 2, '{');
+    patcher.overwrite(arrowStart, arrowStart + 2, '{');
   }
 }
 
@@ -112,9 +112,9 @@ function patchConciseUnboundFunctionStart(node, patcher) {
   const fn = node.expression;
   const start = fn.range[0];
   if (patcher.slice(start, start + 2) === '->') {
-    patcher.replace(keyRange[1], start + 2, '() {');
+    patcher.overwrite(keyRange[1], start + 2, '() {');
   } else {
-    patcher.replace(keyRange[1], fn.range[0], '');
+    patcher.overwrite(keyRange[1], fn.range[0], '');
 
     let arrowStart = patcher.original.indexOf('->', start);
 
@@ -125,7 +125,7 @@ function patchConciseUnboundFunctionStart(node, patcher) {
       );
     }
 
-    patcher.replace(arrowStart, arrowStart + 2, '{');
+    patcher.overwrite(arrowStart, arrowStart + 2, '{');
   }
 }
 

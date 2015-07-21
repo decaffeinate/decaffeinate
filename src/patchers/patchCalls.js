@@ -55,7 +55,7 @@ export function patchCallOpening(node, patcher) {
       const lastArgument = callArguments[callArguments.length - 1];
 
       if (callee.line === lastArgument.line) {
-        patcher.replace(
+        patcher.overwrite(
           callee.range[1],
           firstArgument.range[0],
           isImplicitObject(firstArgument, patcher.original) ? '({' : '('

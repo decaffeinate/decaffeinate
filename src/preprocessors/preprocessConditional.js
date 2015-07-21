@@ -19,7 +19,7 @@ export default function preprocessConditional(node, patcher) {
     if (condition.range[0] > consequent.range[0]) {
       // Found a POST-if/unless, transform it.
       let ifOrUnlessToken = sourceBetween(patcher.original, consequent, condition).trim();
-      patcher.replace(node.range[0], node.range[1], `${ifOrUnlessToken} ${condition.raw.trim()} then ${consequent.raw.trim()}`);
+      patcher.overwrite(node.range[0], node.range[1], `${ifOrUnlessToken} ${condition.raw.trim()} then ${consequent.raw.trim()}`);
       return true;
     }
   }

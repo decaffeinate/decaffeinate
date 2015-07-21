@@ -11,8 +11,8 @@
 export default function patchStringInterpolation(node, patcher) {
   if (node.type === 'ConcatOp') {
     if (node.parentNode.type !== 'ConcatOp') {
-      patcher.replace(node.range[0], node.range[0] + 1, '`');
-      patcher.replace(node.range[1] - 1, node.range[1], '`');
+      patcher.overwrite(node.range[0], node.range[0] + 1, '`');
+      patcher.overwrite(node.range[1] - 1, node.range[1], '`');
     }
     patchInterpolation(node.left, patcher);
     patchInterpolation(node.right, patcher);
@@ -42,7 +42,7 @@ function patchInterpolation(node, patcher) {
     );
   }
 
-  patcher.replace(interpolationStart, interpolationStart + 1, '$');
+  patcher.overwrite(interpolationStart, interpolationStart + 1, '$');
 }
 
 /**

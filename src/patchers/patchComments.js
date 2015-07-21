@@ -26,7 +26,7 @@ export default function patchComments(patcher) {
  * @private
  */
 function patchLineComment(patcher, range) {
-  patcher.replace(range.start, range.start + '#'.length, '//');
+  patcher.overwrite(range.start, range.start + '#'.length, '//');
 }
 
 /**
@@ -42,17 +42,17 @@ function patchBlockComment(patcher, range) {
   const comment = parseBlockComment(commentBody);
 
   if (comment.doc) {
-    patcher.replace(start, start + comment.head.length, '/**\n');
+    patcher.overwrite(start, start + comment.head.length, '/**\n');
     let index = start + comment.head.length;
     comment.lines.forEach(line => {
       let indent = line.indexOf('#');
-      patcher.replace(index + indent, index + indent + '#'.length, '*');
+      patcher.overwrite(index + indent, index + indent + '#'.length, '*');
       index += line.length;
     });
-    patcher.replace(end - comment.tail.length, end, ' */');
+    patcher.overwrite(end - comment.tail.length, end, ' */');
   } else {
-    patcher.replace(start, start + comment.head.length, '/*\n');
-    patcher.replace(end - comment.tail.length, end, '*/');
+    patcher.overwrite(start, start + comment.head.length, '/*\n');
+    patcher.overwrite(end - comment.tail.length, end, '*/');
   }
 }
 

@@ -18,6 +18,6 @@ export function patchSpreadStart(node, patcher) {
  */
 export function patchSpreadEnd(node, patcher) {
   if (node.type === 'Spread') {
-    patcher.replace(node.range[1] - '...'.length, node.range[1], '');
+    patcher.overwrite(node.range[1] - '...'.length, node.range[1], '');
   }
 }

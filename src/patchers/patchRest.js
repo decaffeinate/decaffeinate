@@ -18,6 +18,6 @@ export function patchRestStart(node, patcher) {
  */
 export function patchRestEnd(node, patcher) {
   if (node.type === 'Rest') {
-    patcher.replace(node.range[1] - '...'.length, node.range[1], '');
+    patcher.overwrite(node.range[1] - '...'.length, node.range[1], '');
   }
 }
