@@ -14,6 +14,7 @@ import patchSequences from './patchers/patchSequences';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
 import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
+import preprocessCompoundAssignment from './preprocessors/preprocessCompoundAssignment';
 import preprocessConditional from './preprocessors/preprocessConditional';
 import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
 import preprocessTry from './preprocessors/preprocessTry';
@@ -45,7 +46,8 @@ export function convert(source) {
     if (wasRewritten) {
       return false;
     }
-    wasRewritten = preprocessConditional(node, patcher) ||
+    wasRewritten = preprocessCompoundAssignment(node, patcher) ||
+      preprocessConditional(node, patcher) ||
       preprocessBinaryExistentialOperator(node, patcher) ||
       preprocessSoakedMemberAccessOp(node, patcher) ||
       preprocessTry(node, patcher);
