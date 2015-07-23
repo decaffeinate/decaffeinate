@@ -403,6 +403,34 @@ describe('automatic conversions', function() {
       check(`if (a? and a!="") then 1`, ``);
     });
 
+    it('should work with multiple pluses', function() {
+      check(`a="b"+"c"+"d"`, ``);
+    });
+
+    // it('should work with objects', function() {
+    //   check(`a={}`, ``);
+    // });
+
+    it('should work with star multiply', function() {
+      check(`a=1*2`, `var a=1*2;`);
+    });
+
+    it('should work with star multiply', function() {
+      check(`
+          b=2
+          c=3
+          a=b*c
+          `, `
+          var b=2;
+          var c=3;
+          var a=b*c;
+          `);
+    });
+
+    it('should work with multiple star multiply', function() {
+      check(`a=1*2*3`, `var a=1*2*3;`);
+    });
+
     it('does not add variable declarations when the LHS is a member expression', function() {
       check(`a.b = 1`, `a.b = 1;`);
     });
