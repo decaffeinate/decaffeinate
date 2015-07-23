@@ -395,6 +395,14 @@ describe('automatic conversions', function() {
       check(`(a=2) -> a`, `(function(a=2) { return a; });`);
     });
 
+    it('does work with if then', function() {
+      check(`if a then throw new Error "Error"`, `(function(a=2) { return a; });`);
+    });
+
+    it('does work with blabla', function() {
+      check(`if (a? and a!="") then 1`, ``);
+    });
+
     it('does not add variable declarations when the LHS is a member expression', function() {
       check(`a.b = 1`, `a.b = 1;`);
     });

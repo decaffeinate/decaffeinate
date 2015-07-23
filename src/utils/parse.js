@@ -67,6 +67,7 @@ function fixRange(node, map, source) {
       node.line = node.expression.line;
       node.column = node.expression.column;
     } else {
+      console.log(node);
       throw new Error(
         'BUG! Could not fix range for ' + node.type +
         ' because it has no raw value'
