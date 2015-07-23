@@ -391,6 +391,10 @@ describe('automatic conversions', function() {
       check(`(a) -> a = 1`, `(function(a) { return a = 1; });`);
     });
 
+    it('does add the default value when they is any', function() {
+      check(`(a=2) -> a`, `(function(a=2) { return a; });`);
+    });
+
     it('does not add variable declarations when the LHS is a member expression', function() {
       check(`a.b = 1`, `a.b = 1;`);
     });
