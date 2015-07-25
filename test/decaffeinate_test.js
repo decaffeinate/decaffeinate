@@ -391,6 +391,91 @@ describe('automatic conversions', function() {
       check(`(a) -> a = 1`, `(function(a) { return a = 1; });`);
     });
 
+    it('does add the default value when they is any', function() {
+      check(`(a=2) -> a`, `(function(a=2) { return a; });`);
+    });
+
+    it.skip('does work with if then throw inline', function() {
+      check(`if a then throw new Error "Error"`, `(function(a=2) { return a; });`);
+    });
+
+    it.skip('does work with switch case', function() {
+      check(`
+        switch a
+          when 1
+            hi()
+          when '2'
+            ho()
+          else
+            hu()
+      `, ``);
+    });
+
+    it.skip('does work with for in range ', function() {
+      check(`
+        for i in [1..10]
+          console.log(i);
+      `, ``);
+    });
+
+    it.skip('does work with continue statement', function() {
+      check(`
+        for i in [1..10]
+          j=1
+          continue
+      `, ``);
+    });
+
+    it('does work with spreads', function() {
+      check(`
+        a=(b,c...,d)->
+          2
+      `, `
+      var a=function(b,...c,d){
+        return 2;
+      };`);
+    });
+
+    it('does work with conditions and NEQOp', function() {
+      check(`b = if (a? and a!="") then 1`, `var b = (typeof a !== \"undefined\" && a !== null) && a!==\"\") ? 1 : undefined;`);
+    });
+
+    it('should work with multiple pluses', function() {
+      check(`a="b"+"c"+"d"`, `var a="b"+"c"+"d";`);
+    });
+
+    it('does work with 4 ands in a row', function() {
+      check(`a = b && !c && d && e()`, `var a = b && !c && d && e();`);
+    });
+
+    it('should work with 4 pluses in a row', function() {
+      check(`a="b"+"c"+"d"+"e"`, `var a="b"+"c"+"d"+"e";`);
+    });
+
+    it('should work with star multiply', function() {
+      check(`a=1*2`, `var a=1*2;`);
+    });
+
+    it('should work with star multiply', function() {
+      check(`
+          b=2
+          c=3
+          a=b*c
+          `, `
+          var b=2;
+          var c=3;
+          var a=b*c;
+          `);
+    });
+
+    it('should work with multiple star multiply', function() {
+      check(`a=1*2*3`, `var a=1*2*3;`);
+    });
+
+    it('should work with triple quotes', function() {
+      check(`a="""hello #{world}"""`, "var a=`hello ${world}`;");
+    });
+
     it('does not add variable declarations when the LHS is a member expression', function() {
       check(`a.b = 1`, `a.b = 1;`);
     });
