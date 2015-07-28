@@ -103,6 +103,7 @@ const ORDER = {
   LogicalNotOp: ['expression'],
   LogicalOrOp: ['left', 'right'],
   MemberAccessOp: ['expression'],
+  MultiplyOp: ['left', 'right'],
   NEQOp: ['left', 'right'],
   NewOp: ['ctor', 'arguments'],
   Null: [],

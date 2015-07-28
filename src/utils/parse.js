@@ -58,6 +58,19 @@ function fixRange(node, map, source) {
     if (node.parentNode && node.parentNode.type === 'While' && node.parentNode.condition === node) {
       // Ignore `while` condition without raw
       return;
+    } else if ( ['LogicalAndOp','NEQOp','MultiplyOp','PlusOp'].indexOf(node.type)!==-1  && node.left) {
+      if (node.left.raw) {
+        node.raw = node.left.raw;
+        node.range = node.left.range;
+        node.line = node.left.line;
+        node.column = node.left.column;
+      }
+      else {
+        node.raw = node.parentNode.raw;
+        node.range = node.parentNode.range;
+        node.line = node.parentNode.line;
+        node.column = node.parentNode.column;
+      }
     } else if (node.type === 'Block' && node.parentNode && node.parentNode.type === 'Try') {
       // Ignore missing blocks in try/catch
       return;
