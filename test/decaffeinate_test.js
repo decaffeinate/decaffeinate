@@ -395,11 +395,11 @@ describe('automatic conversions', function() {
       check(`(a=2) -> a`, `(function(a=2) { return a; });`);
     });
 
-    it.skip('does work with if then throw inline', function() {
+    it.skip('works with if then throw inline', function() {
       check(`if a then throw new Error "Error"`, `(function(a=2) { return a; });`);
     });
 
-    it.skip('does work with switch case', function() {
+    it.skip('works with switch case', function() {
       check(`
         switch a
           when 1
@@ -408,59 +408,67 @@ describe('automatic conversions', function() {
             ho()
           else
             hu()
-      `, ``);
+      `, `
+      `);
     });
 
-    it.skip('does work with for in range ', function() {
+    it.skip('works with for in range ', function() {
       check(`
         for i in [1..10]
           console.log(i);
-      `, ``);
+      `, `
+      `);
     });
 
-    it.skip('does work with continue statement', function() {
+    it.skip('works with continue statement', function() {
       check(`
         for i in [1..10]
           j=1
           continue
-      `, ``);
+      `, `
+      `);
     });
 
-    it('does work with spreads', function() {
+    it('works with spreads', function() {
       check(`
         a=(b,c...,d)->
           2
       `, `
-      var a=function(b,...c,d){
-        return 2;
-      };`);
+        var a=function(b,...c,d){
+          return 2;
+        };
+      `);
     });
 
-    it('does work with conditions and NEQOp', function() {
-      check(`b = if (a? and a!="") then 1`, `var b = (typeof a !== \"undefined\" && a !== null) && a!==\"\") ? 1 : undefined;`);
+    it('works with conditions and NEQOp', function() {
+      check(`
+        b = if (a? and a!="") then 1
+      `, `
+        var b = (typeof a !== "undefined" && a !== null) && a!=="") ? 1 : undefined;
+      `);
     });
 
-    it('should work with multiple pluses', function() {
+    it('works with multiple pluses', function() {
       check(`a="b"+"c"+"d"`, `var a="b"+"c"+"d";`);
     });
 
-    it('does work with 4 ands in a row', function() {
+    it('works with 4 ands in a row', function() {
       check(`a = b && !c && d && e()`, `var a = b && !c && d && e();`);
     });
 
-    it('should work with 4 pluses in a row', function() {
+    it('works with 4 pluses in a row', function() {
       check(`a="b"+"c"+"d"+"e"`, `var a="b"+"c"+"d"+"e";`);
     });
 
-    it('should work with star multiply', function() {
+    it('works with star multiply', function() {
       check(`a=1*2`, `var a=1*2;`);
     });
 
-    it('should work with multiple star multiply', function() {
+    it('works with multiple star multiply', function() {
       check(`a=1*2*3`, `var a=1*2*3;`);
     });
 
-    it('should work with triple quotes', function() {
+    it('works with triple quotes', function() {
       check(`a="""hello #{world}"""`, "var a=`hello ${world}`;");
     });
 
