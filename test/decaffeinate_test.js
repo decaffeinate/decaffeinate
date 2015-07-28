@@ -391,6 +391,10 @@ describe('automatic conversions', function() {
       check(`(a) -> a = 1`, `(function(a) { return a = 1; });`);
     });
 
+    it('should work with triple quotes', function() {
+      check(`a="""hello #{world}"""`, "var a=`hello ${world}`;");
+    });
+
     it('does not add variable declarations when the LHS is a member expression', function() {
       check(`a.b = 1`, `a.b = 1;`);
     });

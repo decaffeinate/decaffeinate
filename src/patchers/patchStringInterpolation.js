@@ -11,8 +11,9 @@
 export default function patchStringInterpolation(node, patcher) {
   if (node.type === 'ConcatOp') {
     if (node.parentNode.type !== 'ConcatOp') {
-      patcher.overwrite(node.range[0], node.range[0] + 1, '`');
-      patcher.overwrite(node.range[1] - 1, node.range[1], '`');
+      let cutLength = (node.raw.slice(0,3)=='"""') ? 3 : 1;
+      patcher.overwrite(node.range[0], node.range[0] + cutLength, '`');
+      patcher.overwrite(node.range[1] - cutLength, node.range[1], '`');
     }
     patchInterpolation(node.left, patcher);
     patchInterpolation(node.right, patcher);
