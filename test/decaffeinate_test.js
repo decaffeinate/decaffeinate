@@ -456,18 +456,6 @@ describe('automatic conversions', function() {
       check(`a=1*2`, `var a=1*2;`);
     });
 
-    it('should work with star multiply', function() {
-      check(`
-          b=2
-          c=3
-          a=b*c
-          `, `
-          var b=2;
-          var c=3;
-          var a=b*c;
-          `);
-    });
-
     it('should work with multiple star multiply', function() {
       check(`a=1*2*3`, `var a=1*2*3;`);
     });
