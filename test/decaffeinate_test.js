@@ -391,6 +391,87 @@ describe('automatic conversions', function() {
       check(`(a) -> a = 1`, `(function(a) { return a = 1; });`);
     });
 
+    it('does add the default value when they is any', function() {
+      check(`(a=2) -> a`, `(function(a=2) { return a; });`);
+    });
+
+    it.skip('works with if then throw inline', function() {
+      check(`if a then throw new Error "Error"`, `(function(a=2) { return a; });`);
+    });
+
+    it.skip('works with switch case', function() {
+      check(`
+        switch a
+          when 1
+            hi()
+          when '2'
+            ho()
+          else
+            hu()
+      `, `
+      `);
+    });
+
+    it.skip('works with for in range ', function() {
+      check(`
+        for i in [1..10]
+          console.log(i);
+      `, `
+      `);
+    });
+
+    it.skip('works with continue statement', function() {
+      check(`
+        for i in [1..10]
+          j=1
+          continue
+      `, `
+      `);
+    });
+
+    it('works with spreads', function() {
+      check(`
+        a=(b,c...,d)->
+          2
+      `, `
+        var a=function(b,...c,d){
+          return 2;
+        };
+      `);
+    });
+
+    it('works with conditions and NEQOp', function() {
+      check(`
+        b = if (a? and a!="") then 1
+      `, `
+        var b = (typeof a !== "undefined" && a !== null) && a!=="") ? 1 : undefined;
+      `);
+    });
+
+    it('works with multiple pluses', function() {
+      check(`a="b"+"c"+"d"`, `var a="b"+"c"+"d";`);
+    });
+
+    it('works with 4 ands in a row', function() {
+      check(`a = b && !c && d && e()`, `var a = b && !c && d && e();`);
+    });
+
+    it('works with 4 pluses in a row', function() {
+      check(`a="b"+"c"+"d"+"e"`, `var a="b"+"c"+"d"+"e";`);
+    });
+
+    it('works with star multiply', function() {
+      check(`a=1*2`, `var a=1*2;`);
+    });
+
+    it('works with multiple star multiply', function() {
+      check(`a=1*2*3`, `var a=1*2*3;`);
+    });
+
+    it('works with triple quotes', function() {
+      check(`a="""hello #{world}"""`, "var a=`hello ${world}`;");
+    });
+
     it('does not add variable declarations when the LHS is a member expression', function() {
       check(`a.b = 1`, `a.b = 1;`);
     });
