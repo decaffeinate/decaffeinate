@@ -83,6 +83,7 @@ const ORDER = {
   ConcatOp: ['left', 'right'],
   Conditional: ['condition', 'consequent', 'alternate'],
   Constructor: ['expression'],
+  DefaultParam: ['expression'],
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
   EQOp: ['left', 'right'],
   ExistsOp: ['left', 'right'],
