@@ -55,22 +55,11 @@ function fixRange(node, map, source) {
   if (!node.range && node.type === 'ConcatOp') { return; }
 
   if (!('raw' in node)) {
-    if (node.parentNode && node.parentNode.type === 'While' && node.parentNode.condition === node) {
+    if (fixBinaryOperator(node, map, source)) {
+      return;
+    } else if (node.parentNode && node.parentNode.type === 'While' && node.parentNode.condition === node) {
       // Ignore `while` condition without raw
       return;
-    } else if ( ['LogicalAndOp','NEQOp','MultiplyOp','PlusOp'].indexOf(node.type)!==-1  && node.left) {
-      if (node.left.raw) {
-        node.raw = node.left.raw;
-        node.range = node.left.range;
-        node.line = node.left.line;
-        node.column = node.left.column;
-      }
-      else {
-        node.raw = node.parentNode.raw;
-        node.range = node.parentNode.range;
-        node.line = node.parentNode.line;
-        node.column = node.parentNode.column;
-      }
     } else if (node.type === 'Block' && node.parentNode && node.parentNode.type === 'Try') {
       // Ignore missing blocks in try/catch
       return;
@@ -110,6 +99,52 @@ function fixRange(node, map, source) {
     );
   } else {
     shrinkPastParentheses(node, map, source, true);
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {LineAndColumnMap} map
+ * @param {string} source
+ * @returns {boolean}
+ * @private
+ */
+function fixBinaryOperator(node, map, source) {
+  if (!isBinaryOperator(node)) {
+    return false;
+  }
+
+  const { left, right } = node;
+
+  fixBinaryOperator(left, map, source);
+  fixBinaryOperator(right, map, source);
+
+  if (!node.range) {
+    node.range = [left.range[0], right.range[1]];
+  }
+
+  node.raw = source.slice(node.range[0], node.range[1]);
+  node.line = left.line;
+  node.column = left.column;
+
+  return true;
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ * @private
+ */
+function isBinaryOperator(node) {
+  switch (node.type) {
+    case 'LogicalAndOp':
+    case 'NEQOp':
+    case 'MultiplyOp':
+    case 'PlusOp':
+      return true;
+
+    default:
+      return false;
   }
 }
 
