@@ -426,6 +426,16 @@ describe('automatic conversions', function() {
       `, ``);
     });
 
+    it('does work with spreads', function() {
+      check(`
+        a=(b,c...,d)->
+          2
+      `, `
+      var a=function(b,...c,d){
+        return 2;
+      };`);
+    });
+
     it('does work with conditions and NEQOp', function() {
       check(`b = if (a? and a!="") then 1`, `var b = (typeof a !== \"undefined\" && a !== null) && a!==\"\") ? 1 : undefined;`);
     });
