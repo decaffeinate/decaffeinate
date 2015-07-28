@@ -257,7 +257,7 @@ describe('automatic conversions', function() {
 
   describe('inserting function call parentheses', function() {
     it('replaces the space between the callee and the first argument for first arg on same line', function() {
-      check(`a 1, 2`,  `a(1, 2);`);
+      check(`a 1, 2`, `a(1, 2);`);
     });
 
     it('does not add anything if there are already parens', function() {
@@ -469,7 +469,7 @@ describe('automatic conversions', function() {
     });
 
     it('works with triple quotes', function() {
-      check(`a="""hello #{world}"""`, "var a=`hello ${world}`;");
+      check(`a="""hello #{world}"""`, 'var a=`hello ${world}`;');
     });
 
     it('does not add variable declarations when the LHS is a member expression', function() {
@@ -1125,7 +1125,7 @@ describe('automatic conversions', function() {
           if a
             b
         c
-      `,`
+      `, `
         (function() {
           if (a) {
             return b;

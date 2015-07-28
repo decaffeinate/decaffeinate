@@ -9,23 +9,22 @@ import trimmedNodeRange from '../utils/trimmedNodeRange';
  */
 export function patchCallOpening(node, patcher) {
   if (node.type === 'FunctionApplication') {
-    addTokensIfNeeded(patcher, node.function, node.arguments);
+    addTokensIfNeeded(node.function, node.arguments);
   } else if (node.type === 'NewOp') {
-    addTokensIfNeeded(patcher, node.ctor, node.arguments);
+    addTokensIfNeeded(node.ctor, node.arguments);
   }
 
   /**
-   * @param {MagicString} patcher
    * @param {Object} callee
    * @param {Object[]} callArguments
    */
-  function addTokensIfNeeded(patcher, callee, callArguments) {
+  function addTokensIfNeeded(callee, callArguments) {
     if (!callHasParentheses(callee, patcher.original)) {
-      addTokens(patcher, callee, callArguments);
+      addTokens(callee, callArguments);
     } else {
       const lastArgument = callArguments[callArguments.length - 1];
       if (isImplicitObject(lastArgument, patcher.original)) {
-        addObjectBrace(patcher, lastArgument);
+        addObjectBrace(lastArgument);
       }
     }
   }
@@ -33,21 +32,19 @@ export function patchCallOpening(node, patcher) {
   /**
    * Adds an opening object brace at the start of the given node.
    *
-   * @param {MagicString} patcher
-   * @param {Object} node
+   * @param {Object} n
    */
-  function addObjectBrace(patcher, node) {
-    patcher.insert(node.range[0], '{');
+  function addObjectBrace(n) {
+    patcher.insert(n.range[0], '{');
   }
 
   /**
    * Adds an opening parenthesis and, if necessary, an object brace.
    *
-   * @param {MagicString} patcher
    * @param {Object} callee
    * @param {Object[]} callArguments
    */
-  function addTokens(patcher, callee, callArguments) {
+  function addTokens(callee, callArguments) {
     if (callArguments.length === 0) {
       patcher.insert(callee.range[1], '(');
     } else {
@@ -78,43 +75,40 @@ export function patchCallOpening(node, patcher) {
  */
 export function patchCallClosing(node, patcher) {
   if (node.type === 'FunctionApplication') {
-    addTokensIfNeeded(patcher, node.function, node.arguments);
+    addTokensIfNeeded(node.function, node.arguments);
   } else if (node.type === 'NewOp') {
-    addTokensIfNeeded(patcher, node.ctor, node.arguments);
+    addTokensIfNeeded(node.ctor, node.arguments);
   }
 
   /**
-   * @param {MagicString} patcher
    * @param {Object} callee
    * @param {Object[]} callArguments
    */
-  function addTokensIfNeeded(patcher, callee, callArguments) {
+  function addTokensIfNeeded(callee, callArguments) {
     if (!callHasParentheses(callee, patcher.original)) {
-      addTokens(patcher, callee, callArguments);
+      addTokens(callee, callArguments);
     } else {
       const lastArgument = callArguments[callArguments.length - 1];
       if (isImplicitObject(lastArgument, patcher.original)) {
-        addObjectBrace(patcher, lastArgument);
+        addObjectBrace(lastArgument);
       }
     }
   }
 
   /**
-   * @param {MagicString} patcher
-   * @param {Object} node
+   * @param {Object} n
    */
-  function addObjectBrace(patcher, node) {
-    patcher.insert(trimmedNodeRange(node, patcher.original)[1], '}');
+  function addObjectBrace(n) {
+    patcher.insert(trimmedNodeRange(n, patcher.original)[1], '}');
   }
 
   /**
    * Adds a closing parenthesis and, if necessary, an object brace.
    *
-   * @param {MagicString} patcher
    * @param {Object} callee
    * @param {Object[]} callArguments
    */
-  function addTokens(patcher, callee, callArguments) {
+  function addTokens(callee, callArguments) {
     if (callArguments.length === 0) {
       patcher.insert(callee.range[1], ')');
     } else {

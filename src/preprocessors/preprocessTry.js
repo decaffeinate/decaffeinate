@@ -33,7 +33,7 @@ export default function preprocessTry(node, patcher) {
             `unable to find catch between try block body ` +
             `(${nodeBeforeCatchClause.line}:${nodeBeforeCatchClause.column}) and catch body ` +
             `(${nodeAfterCatchClause.line}:${nodeAfterCatchClause.column})`
-          )
+          );
         }
         patcher.insert(
           nodeBeforeCatchClause.range[1] + catchIndex + 'catch'.length,
@@ -49,6 +49,7 @@ export default function preprocessTry(node, patcher) {
           return true;
         } else {
           // TODO: Insert " catch _error" after node.body
+          return false;
         }
       }
     }

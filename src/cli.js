@@ -1,4 +1,6 @@
-import { createReadStream, createWriteStream, renameSync } from 'fs';
+/* eslint no-process-exit: 0 */
+
+import { createReadStream, createWriteStream } from 'fs';
 import { join, dirname, basename, extname } from 'path';
 import { convert } from './index';
 

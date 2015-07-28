@@ -13,8 +13,9 @@ export default function getFreeBinding(scope, base='ref') {
   let binding = base;
 
   if (scope.getBinding(binding)) {
-    for (let counter = 1; scope.getBinding(binding = `${base}${counter}`); counter++) {
-      // nothing to do
+    let counter = 1;
+    while (scope.getBinding(binding = `${base}${counter}`)) {
+      counter++;
     }
   }
 

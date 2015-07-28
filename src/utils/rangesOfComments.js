@@ -18,7 +18,6 @@ const SLASH_CODE = 92;
 export default function rangesOfComments(source) {
   var result = [];
   var index = 0;
-  var lastLineStart = 0;
   var end = source.length;
   var state = 0;
 
@@ -92,10 +91,6 @@ export default function rangesOfComments(source) {
           index++;
         }
         break;
-    }
-
-    if (source.charCodeAt(index) === NEWLINE_CODE) {
-      lastLineStart = index + 1;
     }
 
     index++;

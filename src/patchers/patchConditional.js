@@ -3,7 +3,6 @@ import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import isSurroundedBy from '../utils/isSurroundedBy';
 import replaceBetween from '../utils/replaceBetween';
 import requiresParentheses from '../utils/requiresParentheses';
-import sourceBetween from '../utils/sourceBetween';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 const UNLESS = 'unless';
@@ -22,6 +21,7 @@ export function patchConditionalStart(node, patcher) {
     patcher.overwrite(node.range[0], node.range[0] + UNLESS.length, 'if');
   } else if (isCondition(node) && isExpressionResultUsed(node.parentNode)) {
     // nothing to do
+    return;
   } else if (isCondition(node)) {
     const isSurroundedByParens = isSurroundedBy(node, '(', patcher.original);
     const isUnless = isUnlessConditional(node.parentNode, patcher.original);
@@ -49,6 +49,7 @@ export function patchConditionalStart(node, patcher) {
       }
     } else if (isSurroundedByParens) {
       // e.g. `if (a)` -> `if (a) {`
+      inserted = '';
     } else {
       // e.g. `if a` -> `if (a) {`
       inserted += '(';
@@ -69,8 +70,9 @@ export function patchConditionalEnd(node, patcher) {
     if (isExpressionResultUsed(node.parentNode)) {
       replaceBetween(patcher, node, node.parentNode.consequent, 'then', '?');
     } else {
-      replaceBetween(patcher, node, node.parentNode.consequent, 'then ', '') ||
-      replaceBetween(patcher, node, node.parentNode.consequent, 'then', '');
+      if (!replaceBetween(patcher, node, node.parentNode.consequent, 'then ', '')) {
+        replaceBetween(patcher, node, node.parentNode.consequent, 'then', '');
+      }
       let parens = isSurroundedBy(node, '(', patcher.original);
       let inserted = parens ? ' {' : ') {';
       if (isUnlessConditional(node.parentNode, patcher.original) && requiresParentheses(node.expression)) {
@@ -142,16 +144,6 @@ function isUnlessConditional(node, source) {
  */
 function isConsequent(node) {
   return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.consequent === node : false;
-}
-
-/**
- * Determines whether a node is a Conditional node's alternate.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-function isAlternate(node) {
-  return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.alternate === node : false;
 }
 
 /**

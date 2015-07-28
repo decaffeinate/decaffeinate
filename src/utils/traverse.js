@@ -8,18 +8,18 @@
 export default function traverse(node, callback) {
   var descended = false;
 
-  function descend(node) {
+  function descend(parent) {
     descended = true;
 
-    childPropertyNames(node).forEach(property => {
-      const value = node[property];
+    childPropertyNames(parent).forEach(property => {
+      const value = parent[property];
       if (Array.isArray(value)) {
         value.forEach(child => {
-          child.parentNode = node;
+          child.parentNode = parent;
           traverse(child, callback);
         });
       } else if (value) {
-        value.parentNode = node;
+        value.parentNode = parent;
         traverse(value, callback);
       }
     });
@@ -44,28 +44,14 @@ export default function traverse(node, callback) {
  * @param {function(Object, boolean): ?boolean} callback
  */
 export function depthFirstTraverse(node, callback) {
-  traverse(node, (node, descend, isLeaf) => {
+  traverse(node, (n, descend, isLeaf) => {
     if (isLeaf) {
-      return callback(node, isLeaf);
+      return callback(n, isLeaf);
     } else {
-      descend(node);
-      return callback(node, isLeaf);
+      descend(n);
+      return callback(n, isLeaf);
     }
   });
-}
-
-/**
- * @param {Object} node
- * @returns {string[]}
- */
-function childPropertyNames(node) {
-  const names = ORDER[node.type];
-
-  if (!names) {
-    throw new Error('cannot traverse unknown node type: ' + node.type);
-  }
-
-  return names;
 }
 
 const ORDER = {
@@ -135,3 +121,17 @@ const ORDER = {
   Undefined: [],
   While: ['condition', 'body']
 };
+
+/**
+ * @param {Object} node
+ * @returns {string[]}
+ */
+function childPropertyNames(node) {
+  const names = ORDER[node.type];
+
+  if (!names) {
+    throw new Error('cannot traverse unknown node type: ' + node.type);
+  }
+
+  return names;
+}

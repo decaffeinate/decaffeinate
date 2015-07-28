@@ -1,5 +1,4 @@
 import getIndent from '../utils/getIndent';
-import isImplicitlyReturned from '../utils/isImplicitlyReturned';
 import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import leftHandIdentifiers from '../utils/leftHandIdentifiers';
 

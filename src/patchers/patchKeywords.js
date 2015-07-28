@@ -7,8 +7,6 @@ import replaceBetween from '../utils/replaceBetween';
  * @param {MagicString} patcher
  */
 export default function patchKeywords(node, patcher) {
-  const source = patcher.original;
-
   switch (node.type) {
     case 'Bool':
       switch (node.raw) {

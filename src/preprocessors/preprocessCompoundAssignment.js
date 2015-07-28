@@ -1,5 +1,4 @@
 import getFreeBinding from '../utils/getFreeBinding';
-import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import replaceBetween from '../utils/replaceBetween';
 
 /**

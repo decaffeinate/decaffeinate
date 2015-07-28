@@ -1,13 +1,3 @@
-/**
- * Builds a mapper between line/column pairs and offsets for the given source.
- *
- * @param {string} source
- * @returns {LineAndColumnMap}
- */
-export default function buildLineAndColumnMap(source) {
-  return new LineAndColumnMap(source);
-}
-
 const CR = 10; // \r
 const LF = 13; // \n
 
@@ -96,4 +86,14 @@ class LineAndColumnMap {
       }
     }
   }
+}
+
+/**
+ * Builds a mapper between line/column pairs and offsets for the given source.
+ *
+ * @param {string} source
+ * @returns {LineAndColumnMap}
+ */
+export default function buildLineAndColumnMap(source) {
+  return new LineAndColumnMap(source);
 }

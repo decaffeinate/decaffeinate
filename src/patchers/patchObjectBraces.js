@@ -1,5 +1,3 @@
-import isPrecededBy from '../utils/isPrecededBy';
-
 export function patchObjectBraceOpening(node, patcher) {
   if (node.type === 'ObjectInitialiser' && node.parentNode.type !== 'FunctionApplication') {
     if (patcher.original[node.range[0]] !== '{') {

@@ -8,6 +8,8 @@
     "decaffeinate": "./bin/decaffeinate"
   },
   "scripts": {
+    "lint": "eslint src test",
+    "pretest": "npm run lint",
     "test": "mocha --recursive --compilers js:babel/register test",
     "build": "gobble build lib -f",
     "prepublish": "gobble build lib -f",
@@ -28,6 +30,7 @@
   "license": "MIT",
   "dependencies": {
     "coffee-script-redux": "git://github.com/michaelficarra/CoffeeScriptRedux",
+    "eslint-plugin-babel": "^1.2.0",
     "magic-string": "^0.6.3"
   },
   "files": [
@@ -37,6 +40,8 @@
   ],
   "devDependencies": {
     "babel": "^5.8.2",
+    "babel-eslint": "^4.0.5",
+    "eslint": "^0.24.1",
     "gobble": "^0.10.2",
     "gobble-babel": "^5.5.8",
     "gobble-cli": "^0.4.2",

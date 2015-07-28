@@ -9,13 +9,15 @@ import replaceBetween from '../utils/replaceBetween';
 export default function patchEquality(node, patcher) {
   switch (node.type) {
     case 'EQOp':
-      replaceBetween(patcher, node.left, node.right, '==', '===') ||
+      if (!replaceBetween(patcher, node.left, node.right, '==', '===')) {
         replaceBetween(patcher, node.left, node.right, 'is', '===');
+      }
       break;
 
     case 'NEQOp':
-      replaceBetween(patcher, node.left, node.right, '!=', '!==') ||
+      if (!replaceBetween(patcher, node.left, node.right, '!=', '!==')) {
         replaceBetween(patcher, node.left, node.right, 'isnt', '!==');
+      }
       break;
   }
 }
