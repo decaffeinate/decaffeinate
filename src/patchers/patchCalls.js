@@ -1,4 +1,5 @@
 import getIndent from '../utils/getIndent';
+import rangeIncludingParentheses from '../utils/rangeIncludingParentheses';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 /**
@@ -137,7 +138,8 @@ export function patchCallClosing(node, patcher) {
  * @returns {boolean}
  */
 function callHasParentheses(callee, source) {
-  return source[callee.range[1]] === '(';
+  const calleeRangeIncludingParentheses = rangeIncludingParentheses(callee, source);
+  return source[calleeRangeIncludingParentheses[1]] === '(';
 }
 
 /**

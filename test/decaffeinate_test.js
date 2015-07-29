@@ -265,6 +265,10 @@ describe('automatic conversions', function() {
       check(`a(1, 2)`, `a(1, 2);`);
     });
 
+    it('does not add them when present and the callee is surrounded by parentheses', function() {
+      check(`(a)()`, `(a)();`);
+    });
+
     it('adds parens for nested function calls', function() {
       check(`a   b  c d     e`, `a(b(c(d(e))));`);
     });
