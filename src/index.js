@@ -16,6 +16,7 @@ import patchThis from './patchers/patchThis';
 import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
 import preprocessCompoundAssignment from './preprocessors/preprocessCompoundAssignment';
 import preprocessConditional from './preprocessors/preprocessConditional';
+import preprocessDo from './preprocessors/preprocessDo';
 import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
 import preprocessTry from './preprocessors/preprocessTry';
 import traverse from './utils/traverse';
@@ -47,6 +48,7 @@ export function convert(source) {
       return false;
     }
     wasRewritten = preprocessCompoundAssignment(node, patcher) ||
+      preprocessDo(node, patcher) ||
       preprocessConditional(node, patcher) ||
       preprocessBinaryExistentialOperator(node, patcher) ||
       preprocessSoakedMemberAccessOp(node, patcher) ||
