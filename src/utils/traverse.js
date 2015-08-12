@@ -69,6 +69,7 @@ const ORDER = {
   ConcatOp: ['left', 'right'],
   Conditional: ['condition', 'consequent', 'alternate'],
   Constructor: ['expression'],
+  Continue: [],
   DoOp: ['expression'],
   DefaultParam: ['expression'],
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
