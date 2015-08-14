@@ -12,8 +12,7 @@
     "pretest": "npm run lint",
     "test": "mocha --recursive --compilers js:babel/register test",
     "build": "gobble build lib -f",
-    "prepublish": "gobble build lib -f",
-    "publish": "npm publish --registry http://registry.npmjs.org/"
+    "prepublish": "gobble build lib -f"
   },
   "repository": {
     "type": "git",
