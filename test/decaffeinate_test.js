@@ -524,8 +524,9 @@ describe('automatic conversions', function() {
         while a
           a
       `, `
-        while a
+        while (a) {
           a;
+        }
       `);
     });
 
@@ -534,8 +535,9 @@ describe('automatic conversions', function() {
         loop
           a
       `, `
-        loop
+        while (true) {
           a;
+        }
       `);
     });
   });
