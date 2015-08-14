@@ -38,46 +38,48 @@ describe('Scope', function() {
     strictEqual(scope.getBinding('a'), A);
   });
 
-  describe('#processNode', function() {
-    it('processes assignments by binding all LHS identifiers', function() {
-      const scope = new Scope();
+  it('processes assignments by binding all LHS identifiers', function() {
+    const scope = new Scope();
 
-      scope.processNode(parse('a = 1').toBasicObject().body.statements[0]);
-      ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
+    scope.processNode(statement('a = 1'));
+    ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
 
-      scope.processNode(parse('{b, c} = this').toBasicObject().body.statements[0]);
-      ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
-      ok(scope.getBinding('c'), '`c` should be bound in: ' + scope);
-    });
+    scope.processNode(statement('{b, c} = this'));
+    ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
+    ok(scope.getBinding('c'), '`c` should be bound in: ' + scope);
+  });
 
-    it('processes functions by binding all its parameters', function() {
-      const scope = new Scope();
-      scope.processNode(parse('(a, b) ->').toBasicObject().body.statements[0]);
-      ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
-      ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
-    });
+  it('processes functions by binding all its parameters', function() {
+    const scope = new Scope();
+    scope.processNode(statement('(a, b) ->'));
+    ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
+    ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
+  });
 
-    it('processes bound functions by binding all its parameters', function() {
-      const scope = new Scope();
-      scope.processNode(parse('(a, b) =>').toBasicObject().body.statements[0]);
-      ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
-      ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
-    });
+  it('processes bound functions by binding all its parameters', function() {
+    const scope = new Scope();
+    scope.processNode(statement('(a, b) =>'));
+    ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
+    ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
+  });
 
-    it('processes for-of loops by binding key and value assignees', function() {
-      const scope = new Scope();
-      scope.processNode(parse('for key, {a, b, c: [d, e]} of object\n  key').toBasicObject().body.statements[0]);
-      ['key', 'a', 'b', 'd', 'e'].forEach(name =>
+  it('processes for-of loops by binding key and value assignees', function() {
+    const scope = new Scope();
+    scope.processNode(statement('for key, {a, b, c: [d, e]} of object\n  key'));
+    ['key', 'a', 'b', 'd', 'e'].forEach(name =>
         ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`)
-      );
-    });
+    );
+  });
 
-    it('processes for-in loops by binding value assignees', function() {
-      const scope = new Scope();
-      scope.processNode(parse('for [a, {b, c}, d] in array\n  a').toBasicObject().body.statements[0]);
-      ['a', 'b', 'c', 'd'].forEach(name =>
+  it('processes for-in loops by binding value assignees', function() {
+    const scope = new Scope();
+    scope.processNode(statement('for [a, {b, c}, d] in array\n  a'));
+    ['a', 'b', 'c', 'd'].forEach(name =>
         ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`)
-      );
-    });
+    );
   });
 });
+
+function statement(code) {
+  return parse(code).toBasicObject().body.statements[0];
+}
