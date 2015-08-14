@@ -63,5 +63,21 @@ describe('Scope', function() {
       ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
       ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
     });
+
+    it('processes for-of loops by binding key and value assignees', function() {
+      const scope = new Scope();
+      scope.processNode(parse('for key, {a, b, c: [d, e]} of object\n  key').toBasicObject().body.statements[0]);
+      ['key', 'a', 'b', 'd', 'e'].forEach(name =>
+        ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`)
+      );
+    });
+
+    it('processes for-in loops by binding value assignees', function() {
+      const scope = new Scope();
+      scope.processNode(parse('for [a, {b, c}, d] in array\n  a').toBasicObject().body.statements[0]);
+      ['a', 'b', 'c', 'd'].forEach(name =>
+        ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`)
+      );
+    });
   });
 });

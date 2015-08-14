@@ -84,6 +84,17 @@ export default class Scope {
           this.declares(parameter.data, parameter)
         );
         break;
+
+      case 'ForIn':
+      case 'ForOf':
+        [node.keyAssignee, node.valAssignee].forEach(assignee => {
+          if (assignee) {
+            leftHandIdentifiers(assignee).forEach(identifier =>
+              this.assigns(identifier.data, identifier)
+            )
+          }
+        });
+        break;
     }
   }
 
