@@ -345,15 +345,6 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it.skip('works with continue statement', function() {
-      check(`
-        for i in [1..10]
-          j=1
-          continue
-      `, `
-      `);
-    });
-
     it('works with conditions and NEQOp', function() {
       check(`
         b = if (a? and a!="") then 1
