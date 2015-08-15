@@ -37,6 +37,8 @@ export default function isImplicitlyReturned(node) {
     // ancestor.parentNode is a Block
     switch (ancestor.parentNode.parentNode.type) {
       case 'Function':
+        return ancestor.parentNode.parentNode.parentNode.type !== 'Constructor';
+
       case 'BoundFunction':
         return true;
 

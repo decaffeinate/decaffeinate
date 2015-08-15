@@ -769,7 +769,7 @@ describe('automatic conversions', function() {
       `, `
         class A {
           constructor() {
-            return this.a = 1;
+            this.a = 1;
           }
         }
       `);
@@ -783,7 +783,7 @@ describe('automatic conversions', function() {
       `, `
         class A {
           constructor(a) {
-            return this.a = a;
+            this.a = a;
           }
         }
       `);

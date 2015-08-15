@@ -86,4 +86,10 @@ describe('isImplicitlyReturned', function() {
     strictEqual(node.type, 'Identifier');
     ok(isImplicitlyReturned(node));
   });
+
+  it('is false for the last expression of a class constructor method', function() {
+    const node = parse('class A\n  constructor: ->\n    @a = 1').body.statements[0].body.statements[0].expression.body.statements[0];
+    strictEqual(node.type, 'AssignOp');
+    ok(!isImplicitlyReturned(node));
+  });
 });
