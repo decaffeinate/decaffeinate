@@ -71,7 +71,7 @@ const ORDER = {
   Constructor: ['expression'],
   Continue: [],
   DoOp: ['expression'],
-  DefaultParam: ['expression'],
+  DefaultParam: ['param', 'default'],
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
   EQOp: ['left', 'right'],
   ExistsOp: ['left', 'right'],
