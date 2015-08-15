@@ -45,5 +45,8 @@
     "gobble-babel": "^5.5.8",
     "gobble-cli": "^0.4.2",
     "mocha": "^2.2.5"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   }
 }
