@@ -48,6 +48,8 @@ export function patchSliceEnd(node, patcher) {
         'last character of Slice node must be "]"'
       );
       patcher.overwrite(parentNode.range[1] - 1, parentNode.range[1], ')');
+    } else if (parentNode.expression === node && !parentNode.left && !parentNode.right) {
+      patcher.overwrite(node.range[1], parentNode.range[1], '.slice()');
     }
   }
 }

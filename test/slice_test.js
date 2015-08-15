@@ -22,4 +22,9 @@ describe('slice', () => {
   it('changes inclusive slices with a variable end of range to exclusive by inserting `+ 1`', () => {
     check(`a[0..b]`, `a.slice(0, b + 1);`);
   });
+
+  it('changes slices with no begin or end of the range to a bare call to `.slice`', () => {
+    check(`a[..]`, `a.slice();`);
+    check(`a[...]`, `a.slice();`);
+  });
 });
