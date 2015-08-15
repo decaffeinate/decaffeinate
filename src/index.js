@@ -27,8 +27,9 @@ import { patchConditionalStart, patchConditionalEnd } from './patchers/patchCond
 import { patchExistentialOperatorStart, patchExistentialOperatorEnd } from './patchers/patchExistentialOperator';
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
-import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
 import { patchRestStart, patchRestEnd } from './patchers/patchRest';
+import { patchSliceStart, patchSliceEnd } from './patchers/patchSlice';
+import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
 import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
 import { patchTryStart, patchTryEnd } from './patchers/patchTry';
 import { patchWhileStart, patchWhileEnd } from './patchers/patchWhile';
@@ -71,6 +72,7 @@ export function convert(source) {
     patchThis(node, patcher);
     patchPrototypeAccess(node, patcher);
     patchStringInterpolation(node, patcher);
+    patchSliceStart(node, patcher);
     patchCallOpening(node, patcher);
     patchObjectBraceOpening(node, patcher);
     patchDeclarations(node, patcher);
@@ -94,6 +96,7 @@ export function convert(source) {
     patchFunctionEnd(node, patcher);
     patchClassEnd(node, patcher);
     patchObjectBraceClosing(node, patcher);
+    patchSliceEnd(node, patcher);
     patchCallClosing(node, patcher);
     patchSemicolons(node, patcher);
     patchSequences(node, patcher);

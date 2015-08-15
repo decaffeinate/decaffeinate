@@ -108,6 +108,7 @@ const ORDER = {
   Rest: ['expression'],
   Return: ['expression'],
   SeqOp: ['left', 'right'],
+  Slice: ['expression', 'left', 'right'],
   SoakedDynamicMemberAccessOp: ['expression', 'indexingExpr'],
   SoakedMemberAccessOp: ['expression'],
   Spread: ['expression'],
