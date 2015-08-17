@@ -41,4 +41,18 @@ describe('do', () => {
   it('creates an IIFE for `do` used in an expression context', () => {
     check(`a(do -> 1)`, `a((function() { return 1; })());`);
   });
+
+  it('creates a multi-line IIFE surrounded by parentheses', () => {
+    check(`
+      (do ->
+        a = 1
+        b = a) + 1
+    `, `
+      ((function() {
+        var b;
+        var a = 1;
+        return b = a;
+      })()) + 1;
+    `);
+  });
 });

@@ -13,6 +13,10 @@ export default function patchSemicolons(node, patcher) {
   if (shouldHaveTrailingSemicolon(node)) {
     if (!isFollowedBy(node, patcher.original, ';')) {
       const nodeRange = trimmedNodeRange(node, patcher.original);
+      while (patcher.original[nodeRange[0]] === '(' && patcher.original[nodeRange[1]] === ')') {
+        nodeRange[0]--;
+        nodeRange[1]++;
+      }
       patcher.insert(nodeRange[1], ';');
     }
   }
