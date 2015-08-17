@@ -104,6 +104,7 @@ const ORDER = {
   PreIncrementOp: ['expression'],
   Program: ['body'],
   ProtoMemberAccessOp: ['expression'],
+  Range: ['left', 'right'],
   RegExp: [],
   Rest: ['expression'],
   Return: ['expression'],
