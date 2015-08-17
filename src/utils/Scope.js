@@ -91,7 +91,7 @@ export default class Scope {
           if (assignee) {
             leftHandIdentifiers(assignee).forEach(identifier =>
               this.assigns(identifier.data, identifier)
-            )
+            );
           }
         });
         break;

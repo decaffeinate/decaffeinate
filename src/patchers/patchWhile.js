@@ -54,19 +54,3 @@ function isWhileCondition(node) {
     return parentNode.condition === node;
   }
 }
-
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-function isWhileBlock(node) {
-  let { parentNode } = node;
-
-  if (!parentNode) {
-    return false;
-  } else if (parentNode.type !== 'While') {
-    return false;
-  } else {
-    return parentNode.body === node;
-  }
-}

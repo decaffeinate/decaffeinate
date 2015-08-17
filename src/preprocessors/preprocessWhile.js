@@ -1,7 +1,6 @@
 import getIndent from '../utils/getIndent';
 import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import requiresParentheses from '../utils/requiresParentheses';
-import sourceBetween from '../utils/sourceBetween';
 import { ok } from 'assert';
 
 /**
