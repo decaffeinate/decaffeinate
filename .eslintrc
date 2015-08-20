@@ -1,11 +1,13 @@
 {
   "parser": "babel-eslint",
+  "extends": "eslint:recommended",
   "env": {
     "node": true,
     "mocha": true
   },
   "rules": {
     "strict": 0,
+    "no-console": 0,
     "quotes": [2, "single", "avoid-escape"],
     "no-use-before-define": [2, "nofunc"],
     "babel/object-shorthand": 1,
