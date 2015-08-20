@@ -29,7 +29,7 @@
   "license": "MIT",
   "dependencies": {
     "coffee-script-redux": "git://github.com/michaelficarra/CoffeeScriptRedux",
-    "magic-string": "^0.6.3"
+    "magic-string": "^0.6.4"
   },
   "files": [
     "bin/decaffeinate",
@@ -37,10 +37,10 @@
     "src/**/*.js"
   ],
   "devDependencies": {
-    "babel": "^5.8.2",
-    "babel-eslint": "^4.0.5",
-    "eslint": "^0.24.1",
-    "eslint-plugin-babel": "^1.2.0",
+    "babel": "^5.8.21",
+    "babel-eslint": "^4.0.10",
+    "eslint": "^1.2.0",
+    "eslint-plugin-babel": "^2.1.1",
     "gobble": "^0.10.2",
     "gobble-babel": "^5.5.8",
     "gobble-cli": "^0.4.2",
