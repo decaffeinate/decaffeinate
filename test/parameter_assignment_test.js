@@ -82,4 +82,13 @@ describe('parameter assignment', () => {
       }
     `);
   });
+
+  it('works with default parameters', () => {
+    // FIXME: This should not return the assignment value.
+    check(`
+      (@a=1) ->
+    `, `
+      (function(a=1) { return this.a = a; });
+    `);
+  });
 });

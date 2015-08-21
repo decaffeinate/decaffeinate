@@ -13,11 +13,12 @@ export default function preprocessParameters(node, patcher) {
     const assignments = [];
 
     node.parameters.forEach(param => {
-      if (isThisDotParameter(param)) {
+      let thisDotParameter = getThisDotParameter(param);
+      if (thisDotParameter) {
         // `@a` -> `a`
-        const paramName = getFreeBinding(node.scope, param.memberName);
-        patcher.overwrite(param.range[0], param.range[1], paramName);
-        assignments.push(`this.${param.memberName} = ${paramName}`);
+        const paramName = getFreeBinding(node.scope, thisDotParameter.memberName);
+        patcher.overwrite(thisDotParameter.range[0], thisDotParameter.range[1], paramName);
+        assignments.push(`this.${thisDotParameter.memberName} = ${paramName}`);
       }
     });
 
@@ -42,12 +43,20 @@ export default function preprocessParameters(node, patcher) {
  * Determines whether this is a `@foo` in the place of a function parameter.
  *
  * @param {Object} node
- * @returns {boolean}
+ * @returns {?Object}
  */
-function isThisDotParameter(node) {
+function getThisDotParameter(node) {
   if (!isParameter(node)) {
     return false;
   }
 
-  return node.type === 'MemberAccessOp' && node.expression.type === 'This';
+  if (node.type === 'DefaultParam') {
+    node = node.param;
+  }
+
+  if (node.type === 'MemberAccessOp' && node.expression.type === 'This') {
+    return node;
+  } else {
+    return null;
+  }
 }
