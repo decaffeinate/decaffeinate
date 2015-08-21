@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" class="babel-fullscreen">
-
   <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Babel · The transpiler for writing next generation JavaScript</title>
-  <meta name="description" content="The transpiler for writing next generation JavaScript">
+  <title>Decaffeinate · CoffeeScript in, ES6 out</title>
+  <meta name="description" content="CoffeeScript in, ES6 out">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="/css/main.css?t=2015-03-09T08:30:22-07:00">
-  <link rel="canonical" href="https://babeljs.io/repl/">
-  <link rel="alternate" type="application/rss+xml" title="Babel" href="https://babeljs.io/feed.xml" />
 
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
@@ -27,28 +24,12 @@
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="msapplication-TileImage" content="/mstile-144x144.png">
 
-  <meta name="og:url" content="https://babeljs.io/">
-  <meta name="og:image" content="website">
-  <meta name="og:title" content="Babel · The transpiler for writing next generation JavaScript">
-  <meta name="og:description" content="The transpiler for writing next generation JavaScript">
-  <meta name="og:image" content="https://babeljs.io/images/share-image.png">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@babeljs">
-  <meta name="twitter:title" content="Babel · The transpiler for writing next generation JavaScript">
-  <meta name="twitter:description" content="The transpiler for writing next generation JavaScript">
-  <meta name="twitter:image:src" content="https://babeljs.io/images/share-image.png">
-  <meta name="twitter:url" content="https://babeljs.io/repl/">
-
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
 </head>
-
-
-  <body>
-
-    <nav role="navigation" id="header" class="navbar navbar-default navbar-fixed-top">
+<body>
+  <nav role="navigation" id="header" class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
       <button type="button" data-toggle="collapse" data-target="#navigation" class="navbar-toggle collapsed">
@@ -61,110 +42,89 @@
     </div>
     <div id="navigation" class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
-        
-          
-            <li >
-              <a href="/docs/learn-es6/">Learn ES6</a>
+        <li>
+          <a href="/docs/learn-es6/">Learn ES6</a>
+        </li>
+        <li>
+          <a href="/docs/using-babel/">Using Babel</a>
+        </li>
+        <li class="dropdown ">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Docs <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li>
+              <a href="/docs/usage/cli/">CLI</a>
             </li>
-          
-        
-          
-            <li >
-              <a href="/docs/using-babel/">Using Babel</a>
+
+            <li>
+              <a href="/docs/usage/require/">Require Hook</a>
             </li>
-          
-        
-          
-            <li class="dropdown ">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Docs <span class="caret"></span></a>
-              <ul class="dropdown-menu" role="menu">
-                
-                  <li >
-                    <a href="/docs/usage/cli/">CLI</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/require/">Require Hook</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/api/">API</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/options/">Options</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/transformers/">Transformers</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/polyfill/">Polyfill</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/runtime/">Runtime</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/caveats/">Caveats</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/modules/">Modules</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/loose/">Loose mode</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/browser/">Browser</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/experimental/">Experimental</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/playground/">Playground</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/jsx/">JSX</a>
-                  </li>
-                
-                  <li >
-                    <a href="/docs/usage/external-helpers/">External helpers</a>
-                  </li>
-                
-              </ul>
+
+            <li>
+              <a href="/docs/usage/api/">API</a>
             </li>
-          
-        
-          
-            <li >
-              <a href="/docs/compare/">Compare</a>
+
+            <li>
+              <a href="/docs/usage/options/">Options</a>
             </li>
-          
-        
-          
-            <li class="active">
-              <a href="/repl/">Try it out</a>
+
+            <li>
+              <a href="/docs/usage/transformers/">Transformers</a>
             </li>
-          
-        
-          
-            <li >
-              <a href="/docs/faq/">FAQ</a>
+
+            <li>
+              <a href="/docs/usage/polyfill/">Polyfill</a>
             </li>
-          
-        
+
+            <li>
+              <a href="/docs/usage/runtime/">Runtime</a>
+            </li>
+
+            <li>
+              <a href="/docs/usage/caveats/">Caveats</a>
+            </li>
+
+            <li>
+              <a href="/docs/usage/modules/">Modules</a>
+            </li>
+
+            <li>
+              <a href="/docs/usage/loose/">Loose mode</a>
+            </li>
+
+            <li>
+              <a href="/docs/usage/browser/">Browser</a>
+            </li>
+
+            <li>
+              <a href="/docs/usage/experimental/">Experimental</a>
+            </li>
+
+            <li>
+              <a href="/docs/usage/playground/">Playground</a>
+            </li>
+
+            <li>
+              <a href="/docs/usage/jsx/">JSX</a>
+            </li>
+
+            <li>
+              <a href="/docs/usage/external-helpers/">External helpers</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a href="/docs/compare/">Compare</a>
+        </li>
+        <li class="active">
+          <a href="/repl/">Try it out</a>
+        </li>
+        <li>
+          <a href="/docs/faq/">FAQ</a>
+        </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="https://gitter.im/babel/babel">Support</a></li>
-        <li >
+        <li>
           <a href="/blog/">Blog</a>
         </li>
         <li>
@@ -177,26 +137,21 @@
     </div>
   </div>
 </nav>
-
-
-    <div class="babel-repl">
+<div class="babel-repl">
   <form class="form babel-repl-toolbar">
     <div class="pull-left">
-
       <div class="form-group">
         <label for="option-experimental">
           <input id="option-experimental" type="checkbox">
           Experimental
         </label>
       </div>
-
       <div class="form-group">
         <label for="option-playground">
           <input id="option-playground" type="checkbox">
           Playground
         </label>
       </div>
-
       <div class="form-group">
         <label for="option-loose-mode">
           <input id="option-loose-mode" type="checkbox">
@@ -258,17 +213,14 @@
   <div class="babel-repl-reporter babel-repl-console"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js"></script>
-  <script src="/scripts/babel.js?t=2015-03-09T08:30:22-07:00"></script>
+  <script src="/scripts/decaffeinate.js?t=2015-03-09T08:30:22-07:00"></script>
   <script src="/scripts/repl.js?t=2015-03-09T08:30:22-07:00"></script>
 </div>
 
 
-    <div class="footer text-center">
+<div class="footer text-center">
   <a href="https://github.com/babel/babel">Babel</a> · v4.7.3
  · Distributed under MIT License
 </div>
-
-
-  </body>
-
+</body>
 </html>

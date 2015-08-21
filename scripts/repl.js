@@ -1,4 +1,4 @@
-(function(babel, $, _, ace, window) {
+(function(decaffeinate, $, _, ace, window) {
 
   /* Throw meaningful errors for getters of commonjs. */
   ["module", "exports", "require"].forEach(function(commonVar){
@@ -78,11 +78,10 @@
   /*
    * Decorating the ACE editor
    */
-  function Editor(selector) {
+  function Editor(selector, mode) {
     this.$el = $(selector);
     this.editor = ace.edit(this.$el[0]);
     this.session = this.editor.getSession();
-    this.document = this.session.getDocument();
 
     this.editor.setTheme('ace/theme/tomorrow');
     this.editor.setShowPrintMargin(false);
@@ -91,7 +90,7 @@
       lineHeight: 'inherit'
     });
 
-    this.session.setMode('ace/mode/javascript');
+    this.session.setMode(mode);
     this.session.setUseSoftTabs(true);
     this.session.setTabSize(2);
     this.session.setUseWorker(false);
@@ -159,10 +158,10 @@
 
     this.options = _.assign(new Options(), state);
 
-    this.input = new Editor('.babel-repl-input .ace_editor').editor;
+    this.input = new Editor('.babel-repl-input .ace_editor', 'ace/mode/coffee').editor;
     this.input.setValue(UriUtils.decode(state.code || ''));
 
-    this.output = new Editor('.babel-repl-output .ace_editor').editor;
+    this.output = new Editor('.babel-repl-output .ace_editor', 'ace/mode/javascript').editor;
     this.output.setReadOnly(true);
     this.output.setHighlightActiveLine(false);
     this.output.setHighlightGutterLine(false);
@@ -196,22 +195,16 @@
     this.clearOutput();
 
     try {
-      transformed = babel.transform(code, {
-        experimental: this.options.experimental,
-        playground: this.options.playground,
-        loose: this.options.loose && "all",
-        optional: this.options.spec && ["spec.typeofSymbol", "es6.blockScopingTDZ"],
-        filename: 'repl'
-      });
+      transformed = decaffeinate.convert(code);
     } catch (err) {
       this.printError(err.message);
       throw err;
     }
 
-    this.setOutput(transformed.code);
+    this.setOutput(transformed);
 
     if (this.options.evaluate) {
-      this.evaluate(transformed.code);
+      this.evaluate(transformed);
     }
   };
 
@@ -303,4 +296,4 @@
 
 
 
-}(babel, $, _, ace, window));
+}(decaffeinate, $, _, ace, window));
