@@ -17,6 +17,7 @@ import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinar
 import preprocessCompoundAssignment from './preprocessors/preprocessCompoundAssignment';
 import preprocessConditional from './preprocessors/preprocessConditional';
 import preprocessDo from './preprocessors/preprocessDo';
+import preprocessParameters from './preprocessors/preprocessParameters';
 import preprocessRange from './preprocessors/preprocessRange';
 import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
 import preprocessTry from './preprocessors/preprocessTry';
@@ -55,6 +56,7 @@ export function convert(source) {
       preprocessDo(node, patcher) ||
       preprocessConditional(node, patcher) ||
       preprocessBinaryExistentialOperator(node, patcher) ||
+      preprocessParameters(node, patcher) ||
       preprocessRange(node, patcher) ||
       preprocessSoakedMemberAccessOp(node, patcher) ||
       preprocessTry(node, patcher) ||
