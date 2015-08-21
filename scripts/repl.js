@@ -158,17 +158,17 @@
 
     this.options = _.assign(new Options(), state);
 
-    this.input = new Editor('.babel-repl-input .ace_editor', 'ace/mode/coffee').editor;
+    this.input = new Editor('.decaffeinate-repl-input .ace_editor', 'ace/mode/coffee').editor;
     this.input.setValue(UriUtils.decode(state.code || ''));
 
-    this.output = new Editor('.babel-repl-output .ace_editor', 'ace/mode/javascript').editor;
+    this.output = new Editor('.decaffeinate-repl-output .ace_editor', 'ace/mode/javascript').editor;
     this.output.setReadOnly(true);
     this.output.setHighlightActiveLine(false);
     this.output.setHighlightGutterLine(false);
 
-    this.$errorReporter = $('.babel-repl-errors');
-    this.$consoleReporter = $('.babel-repl-console');
-    this.$toolBar = $('.babel-repl-toolbar');
+    this.$errorReporter = $('.decaffeinate-repl-errors');
+    this.$consoleReporter = $('.decaffeinate-repl-console');
+    this.$toolBar = $('.decaffeinate-repl-toolbar');
   }
 
   REPL.prototype.clearOutput = function () {
