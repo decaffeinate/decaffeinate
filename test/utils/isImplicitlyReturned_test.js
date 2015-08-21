@@ -92,4 +92,10 @@ describe('isImplicitlyReturned', function() {
     strictEqual(node.type, 'AssignOp');
     ok(!isImplicitlyReturned(node));
   });
+
+  it('is false for the single expression of a block-less class constructor method', function() {
+    const node = parse('class A\n  constructor: -> @a = 1').body.statements[0].body.statements[0].expression.body;
+    strictEqual(node.type, 'AssignOp');
+    ok(!isImplicitlyReturned(node));
+  });
 });

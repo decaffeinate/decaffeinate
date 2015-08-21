@@ -20,7 +20,7 @@ export default function isImplicitlyReturned(node) {
   // Look for one-expression function return values, e.g. `-> 1`.
   if (node.parentNode.type === 'Function' || node.parentNode.type === 'BoundFunction') {
     if (node.parentNode.body === node) {
-      return true;
+      return node.parentNode.parentNode.type !== 'Constructor';
     }
   }
 
