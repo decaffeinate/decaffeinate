@@ -47,4 +47,17 @@ describe('implicit return', () => {
       }
     `);
   });
+
+  it('is not added for throws as the last statement', () => {
+    check(`
+      ->
+        throw 1
+    `, `
+      (function() {
+        throw 1;
+      });
+    `);
+
+    check(`-> throw 1`, `(function() { throw 1; });`);
+  });
 });

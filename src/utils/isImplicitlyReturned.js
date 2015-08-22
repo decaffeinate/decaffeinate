@@ -14,6 +14,7 @@ export default function isImplicitlyReturned(node) {
     case 'Block':
     case 'Conditional':
     case 'Try':
+    case 'Throw':
       return false;
   }
 

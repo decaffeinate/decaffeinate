@@ -98,4 +98,10 @@ describe('isImplicitlyReturned', function() {
     strictEqual(node.type, 'AssignOp');
     ok(!isImplicitlyReturned(node));
   });
+
+  it('is false for a `throw` statement as the last statement of a function block', function() {
+    const node = parse('->\n  throw 1').body.statements[0].body.statements[0];
+    strictEqual(node.type, 'Throw');
+    ok(!isImplicitlyReturned(node));
+  });
 });
