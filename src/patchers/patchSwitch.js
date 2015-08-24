@@ -1,4 +1,5 @@
 import getIndent from '../utils/getIndent';
+import isImplicitlyReturned from '../utils/isImplicitlyReturned';
 import isMultiline from '../utils/isMultiline';
 import replaceBetween from '../utils/replaceBetween';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
@@ -73,12 +74,14 @@ export function patchSwitchEnd(node, patcher) {
       patcher.insert(node.range[1], ':');
     } else if (node === parentNode.consequent) {
       if (isMultiline(patcher.original, parentNode)) {
-        // adds `break;` on a new line
-        let trimmedRange = trimmedNodeRange(node, patcher.original);
-        patcher.insert(trimmedRange[1], `\n${getIndent(patcher.original, parentNode.range[0])}  break;`);
+        if (!isImplicitlyReturned(node.statements[node.statements.length - 1])) {
+          // adds `break;` on a new line
+          let trimmedRange = trimmedNodeRange(node, patcher.original);
+          patcher.insert(trimmedRange[1], `\n${getIndent(patcher.original, parentNode.range[0])}  break;`);
+        }
       } else {
         // e.g. in `when a then b` adds `; break;` after `b`
-        patcher.insert(node.range[1], '; break;');
+        patcher.insert(node.range[1], isImplicitlyReturned(node) ? ';' : '; break;');
       }
     }
   }

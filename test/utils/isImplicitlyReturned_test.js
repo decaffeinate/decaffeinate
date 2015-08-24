@@ -21,16 +21,22 @@ describe('isImplicitlyReturned', function() {
     ok(isImplicitlyReturned(node));
   });
 
+  it('is true for the last expression of a bound function block', function() {
+    const node = parse('=>\n  0').body.statements[0].body.statements[0];
+    strictEqual(node.type, 'Int');
+    ok(isImplicitlyReturned(node));
+  });
+
   it('is true for the body of a block-less function', function() {
     const node = parse('-> 0').body.statements[0].body;
     strictEqual(node.type, 'Int');
     ok(isImplicitlyReturned(node));
   });
 
-  it('is true for the body of a block-less bound function', function() {
+  it('is false for the body of a block-less bound function', function() {
     const node = parse('=> 0').body.statements[0].body;
     strictEqual(node.type, 'Int');
-    ok(isImplicitlyReturned(node));
+    ok(!isImplicitlyReturned(node));
   });
 
   it('is false for non-last expressions in a function block', function() {
@@ -103,5 +109,46 @@ describe('isImplicitlyReturned', function() {
     const node = parse('->\n  throw 1').body.statements[0].body.statements[0];
     strictEqual(node.type, 'Throw');
     ok(!isImplicitlyReturned(node));
+  });
+
+  it('is false for `switch` statements', function() {
+    const node = parse('->\n  switch 1\n    when 2 then 3').body.statements[0].body.statements[0];
+    strictEqual(node.type, 'Switch');
+    ok(!isImplicitlyReturned(node));
+  });
+
+  it('is true for the non-block consequent of a `switch` case', function() {
+    const node = parse('->\n  switch 1\n    when 2 then 3').body.statements[0].body.statements[0].cases[0].consequent;
+    strictEqual(node.type, 'Int');
+    strictEqual(node.data, 3);
+    ok(isImplicitlyReturned(node));
+  });
+
+  it('is true for the last statement in a `case` block', function() {
+    const node = parse('->\n  switch 1\n    when 2\n      3').body.statements[0].body.statements[0].cases[0].consequent.statements[0];
+    strictEqual(node.type, 'Int');
+    strictEqual(node.data, 3);
+    ok(isImplicitlyReturned(node));
+  });
+
+  it('is false for the non-block consequent of a `case` when the `switch` is not the last statement in a function', function() {
+    const node = parse('switch 1\n  when 2 then 3').body.statements[0].cases[0].consequent;
+    strictEqual(node.type, 'Int');
+    strictEqual(node.data, 3);
+    ok(!isImplicitlyReturned(node));
+  });
+
+  it('is false for the last statement in a `case` block when the `switch` is not the last statement in a function', function() {
+    const node = parse('switch 1\n  when 2\n    3').body.statements[0].cases[0].consequent.statements[0];
+    strictEqual(node.type, 'Int');
+    strictEqual(node.data, 3);
+    ok(!isImplicitlyReturned(node));
+  });
+
+  it('is true for the non-block alternate of a `switch`', function() {
+    const node = parse('->\n  switch 1\n    when 2\n      3\n    else 4').body.statements[0].body.statements[0].alternate;
+    strictEqual(node.type, 'Int');
+    strictEqual(node.data, 4);
+    ok(isImplicitlyReturned(node));
   });
 });

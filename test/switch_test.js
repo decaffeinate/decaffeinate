@@ -107,6 +107,46 @@ describe('switch', () => {
     `);
   });
 
+  it('works with implicit returns', () => {
+    check(`
+      ->
+        switch a
+          when b then c
+          when d
+            e
+            f
+          else g
+    `, `
+      (function() {
+        switch (a) {
+          case b: return c;
+          case d:
+            e;
+            return f;
+          default: return g;
+        }
+      });
+    `);
+  });
+
+  it('works with implicit returns with the default case on another line', () => {
+    check(`
+      ->
+        switch a
+          when b then c
+          else
+            d
+    `, `
+      (function() {
+        switch (a) {
+          case b: return c;
+          default:
+            return d;
+        }
+      });
+    `);
+  });
+
   it('works with the switch from the CoffeeScript demo page', () => {
     check(`
     switch day
