@@ -71,6 +71,7 @@ function shouldHaveTrailingSemicolon(node) {
     case 'JavaScript':
     case 'Try':
     case 'While':
+    case 'Switch':
       return false;
 
     case 'Class':

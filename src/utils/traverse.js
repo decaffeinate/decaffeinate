@@ -115,6 +115,8 @@ const ORDER = {
   Spread: ['expression'],
   String: [],
   SubtractOp: ['left', 'right'],
+  Switch: ['expression', 'cases', 'alternate'],
+  SwitchCase: ['conditions', 'consequent'],
   This: [],
   Throw: ['expression'],
   Try: ['body', 'catchAssignee', 'catchBody', 'finallyBody'],

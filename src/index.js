@@ -32,6 +32,7 @@ import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/pat
 import { patchRestStart, patchRestEnd } from './patchers/patchRest';
 import { patchSliceStart, patchSliceEnd } from './patchers/patchSlice';
 import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
+import { patchSwitchStart, patchSwitchEnd } from './patchers/patchSwitch';
 import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
 import { patchTryStart, patchTryEnd } from './patchers/patchTry';
 import { patchWhileStart, patchWhileEnd } from './patchers/patchWhile';
@@ -85,6 +86,7 @@ export function convert(source) {
     patchEquality(node, patcher);
     patchThrowStart(node, patcher);
     patchSpreadStart(node, patcher);
+    patchSwitchStart(node, patcher);
     patchRestStart(node, patcher);
     patchTryStart(node, patcher);
     patchEmbeddedJavaScript(node, patcher);
@@ -106,6 +108,7 @@ export function convert(source) {
     patchSequences(node, patcher);
     patchCommas(node, patcher);
     patchSpreadEnd(node, patcher);
+    patchSwitchEnd(node, patcher);
     patchRestEnd(node, patcher);
   });
 
