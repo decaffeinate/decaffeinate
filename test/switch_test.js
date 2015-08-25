@@ -167,6 +167,25 @@ describe('switch', () => {
     `);
   });
 
+  it('converts a switch without an expression properly', () => {
+    check(`
+      switch
+        when score < 60 then 'F'
+        when score < 70 then 'D'
+        when score < 80 then 'C'
+        when score < 90 then 'B'
+        else 'A'
+    `, `
+      switch (false) {
+        case !(score < 60): 'F'; break;
+        case !(score < 70): 'D'; break;
+        case !(score < 80): 'C'; break;
+        case !(score < 90): 'B'; break;
+        default: 'A';
+      }
+    `);
+  });
+
   it('works with the switch from the CoffeeScript demo page', () => {
     check(`
     switch day

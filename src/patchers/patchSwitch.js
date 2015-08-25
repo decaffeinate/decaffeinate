@@ -14,7 +14,10 @@ import trimmedNodeRange from '../utils/trimmedNodeRange';
 export function patchSwitchStart(node, patcher) {
   const { parentNode } = node;
 
-  if (parentNode && parentNode.type === 'Switch' && node === parentNode.expression) {
+  if (isExpressionlessSwitch(node)) {
+    // e.g. `switch` by itself. we add '{' here because there's no expression to add it after in patchSwitchEnd.
+    patcher.insert(node.range[0] + 'switch'.length, ' (false) {');
+  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.expression) {
     // e.g. `switch a` -> `switch (a`
     patcher.insert(node.range[0], '(');
   } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.alternate) {
@@ -23,14 +26,16 @@ export function patchSwitchStart(node, patcher) {
     replaceBetween(patcher, lastCase, node, 'else', 'default:');
   } else if (node.type === 'SwitchCase') {
     // e.g. `when a` -> `case a`
-    patcher.overwrite(node.range[0], node.range[0] + 'when'.length, 'case');
+    const caseString = isExpressionlessSwitch(parentNode) ? 'case !(' : 'case ';
+    patcher.overwrite(node.range[0], node.range[0] + 'when '.length, caseString);
   } else if (parentNode && parentNode.type === 'SwitchCase') {
     const conditionIndex = parentNode.conditions.indexOf(node);
     if (conditionIndex >= 1) {
       // e.g. in `when a, b` changes `, b` -> ` case b`
       const previousCondition = parentNode.conditions[conditionIndex - 1];
-      if (!replaceBetween(patcher, previousCondition, node, ', ', ' case ')) {
-        replaceBetween(patcher, previousCondition, node, ',', ' case ');
+      const caseString = isExpressionlessSwitch(parentNode.parentNode) ? ' case !(' : ' case ';
+      if (!replaceBetween(patcher, previousCondition, node, ', ', caseString)) {
+        replaceBetween(patcher, previousCondition, node, ',', caseString);
       }
     } else if (conditionIndex < 0) {
       // `when` body
@@ -73,7 +78,8 @@ export function patchSwitchEnd(node, patcher) {
     const conditionIndex = parentNode.conditions.indexOf(node);
     if (conditionIndex >= 0) {
       // e.g. in `when a, b` adds `:` after `a` and `b`
-      patcher.insert(node.range[1], ':');
+      //      or, for expression-less switches, closes the negating parentheses too
+      patcher.insert(node.range[1], isExpressionlessSwitch(parentNode.parentNode) ? '):' : ':');
     } else if (node === parentNode.consequent) {
       if (isMultiline(patcher.original, parentNode)) {
         if (!isImplicitlyReturned(node.statements[node.statements.length - 1])) {
@@ -87,4 +93,12 @@ export function patchSwitchEnd(node, patcher) {
       }
     }
   }
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isExpressionlessSwitch(node) {
+  return node.type === 'Switch' && !node.expression;
 }
