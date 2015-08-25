@@ -58,7 +58,8 @@ export function patchSwitchEnd(node, patcher) {
 
   if (node.type === 'Switch') {
     // close the switch block
-    patcher.insert(node.range[1], `\n${getIndent(patcher.original, node.range[0])}}`);
+    let trimmedRange = trimmedNodeRange(node, patcher.original);
+    patcher.insert(trimmedRange[1], `\n${getIndent(patcher.original, trimmedRange[0])}}`);
   } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.expression) {
     // close the switch expression and start the switch block
     patcher.insert(node.range[1], ') {');

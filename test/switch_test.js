@@ -147,6 +147,26 @@ describe('switch', () => {
     `);
   });
 
+  it('writes the closing curly brace inside a function closing brace', () => {
+    check(`
+      a = ->
+        switch b
+          when c
+            d
+
+      e
+    `, `
+      var a = function() {
+        switch (b) {
+          case c:
+            return d;
+        }
+      };
+
+      e;
+    `);
+  });
+
   it('works with the switch from the CoffeeScript demo page', () => {
     check(`
     switch day
