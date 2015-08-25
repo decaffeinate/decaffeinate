@@ -20,6 +20,7 @@ import preprocessDo from './preprocessors/preprocessDo';
 import preprocessParameters from './preprocessors/preprocessParameters';
 import preprocessRange from './preprocessors/preprocessRange';
 import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
+import preprocessSwitch from './preprocessors/preprocessSwitch';
 import preprocessTry from './preprocessors/preprocessTry';
 import preprocessWhile from './preprocessors/preprocessWhile';
 import traverse from './utils/traverse';
@@ -59,6 +60,7 @@ export function convert(source) {
       preprocessBinaryExistentialOperator(node, patcher) ||
       preprocessParameters(node, patcher) ||
       preprocessRange(node, patcher) ||
+      preprocessSwitch(node, patcher) ||
       preprocessSoakedMemberAccessOp(node, patcher) ||
       preprocessTry(node, patcher) ||
       preprocessWhile(node, patcher);
