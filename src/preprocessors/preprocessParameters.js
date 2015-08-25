@@ -1,4 +1,3 @@
-import { strictEqual } from 'assert';
 import getFreeBinding from '../utils/getFreeBinding';
 import getIndent from '../utils/getIndent';
 import isMultiline from '../utils/isMultiline';
