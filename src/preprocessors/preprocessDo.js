@@ -1,3 +1,5 @@
+import trimmedNodeRange from '../utils/trimmedNodeRange';
+
 /**
  * Preprocesses `do` expressions by turning them into IIFEs.
  *
@@ -8,6 +10,7 @@ export default function preprocessDo(node, patcher) {
   if (node.type === 'DoOp') {
     const { expression, range } = node;
     const { parameters } = expression;
+    const trimmedRange = trimmedNodeRange(node, patcher.original)
 
     // Remove initializers from default params.
     parameters.forEach(param => {
@@ -18,8 +21,8 @@ export default function preprocessDo(node, patcher) {
 
     // Collect the arguments that should be used for the IIFE call.
     let args = parameters.map(argumentForDoParameter);
-    patcher.overwrite(range[0], expression.range[0], `(`);
-    patcher.overwrite(range[1], range[1], `)(${args.join(', ')})`);
+    patcher.overwrite(trimmedRange[0], expression.range[0], `(`);
+    patcher.overwrite(trimmedRange[1], trimmedRange[1], `)(${args.join(', ')})`);
     return true;
   }
 }

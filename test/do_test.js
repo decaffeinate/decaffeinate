@@ -55,4 +55,19 @@ describe('do', () => {
       })()) + 1;
     `);
   });
+
+  it('puts the close of the IIFE as close to the block body as possible', () => {
+    check(`
+      do ->
+        a
+
+      b
+    `, `
+      (function() {
+        return a;
+      })();
+
+      b;
+    `);
+  });
 });
