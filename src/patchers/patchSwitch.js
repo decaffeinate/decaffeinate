@@ -1,3 +1,4 @@
+import adjustIndent from '../utils/adjustIndent';
 import getIndent from '../utils/getIndent';
 import isImplicitlyReturned from '../utils/isImplicitlyReturned';
 import isMultiline from '../utils/isMultiline';
@@ -78,7 +79,7 @@ export function patchSwitchEnd(node, patcher) {
         if (!isImplicitlyReturned(node.statements[node.statements.length - 1])) {
           // adds `break;` on a new line
           let trimmedRange = trimmedNodeRange(node, patcher.original);
-          patcher.insert(trimmedRange[1], `\n${getIndent(patcher.original, parentNode.range[0])}  break;`);
+          patcher.insert(trimmedRange[1], `\n${adjustIndent(patcher.original, parentNode.range[0], 1)}break;`);
         }
       } else {
         // e.g. in `when a then b` adds `; break;` after `b`

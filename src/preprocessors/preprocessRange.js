@@ -1,3 +1,5 @@
+import adjustIndent from '../utils/adjustIndent';
+import determineIndent from '../utils/determineIndent';
 import getIndent from '../utils/getIndent';
 import getFreeBinding from '../utils/getFreeBinding';
 import isSafeToRepeat from '../utils/isSafeToRepeat';
@@ -34,24 +36,26 @@ export default function preprocessRange(node, patcher) {
         patcher.overwrite(left.range[0], right.range[1], numbers.join(', '));
         return true;
       } else {
-        const indent = getIndent(patcher.original, node.range[0]);
+        const indent0 = adjustIndent(patcher.original, node.range[0], 0);
+        const indent1 = adjustIndent(patcher.original, node.range[0], 1);
         patcher.overwrite(
           node.range[0],
           node.range[1],
           stripSharedIndent(`
             (do ->
-              ${indent}${resultBinding} = []
-              ${indent}${iBinding} = ${left.raw}
-              ${indent}while ${iBinding} ${isAscending ? (node.isInclusive ? '<=' : '<') : (node.isInclusive ? '>=' : '>')} ${right.raw}
-              ${indent}  ${resultBinding}.push(${iBinding}${isAscending ? '++' : '--'})
-              ${indent}${resultBinding})
+              ${indent0}${resultBinding} = []
+              ${indent0}${iBinding} = ${left.raw}
+              ${indent0}while ${iBinding} ${isAscending ? (node.isInclusive ? '<=' : '<') : (node.isInclusive ? '>=' : '>')} ${right.raw}
+              ${indent1}${resultBinding}.push(${iBinding}${isAscending ? '++' : '--'})
+              ${indent0}${resultBinding})
           `)
         );
         return true;
       }
     }
 
-    const indent = `  ${getIndent(patcher.original, node.range[0])}`;
+    const indent = determineIndent(patcher.original);
+    const lead = getIndent(patcher.original, node.range[0]) + indent;
     const isStartSafeToRepeat = isSafeToRepeat(left);
     const isEndSafeToRepeat = isSafeToRepeat(right);
     const start = isStartSafeToRepeat ? left.raw : getFreeBinding(node.scope, 'start');
@@ -69,18 +73,18 @@ export default function preprocessRange(node, patcher) {
     lines.push(
       `${iBinding} = ${start}`,
       `if ${start} <= ${end}`,
-      `  while ${iBinding} ${node.isInclusive ? '<=' : '<'} ${end}`,
-      `    ${resultBinding}.push(${iBinding}++)`,
+      `${indent}while ${iBinding} ${node.isInclusive ? '<=' : '<'} ${end}`,
+      `${indent}${indent}${resultBinding}.push(${iBinding}++)`,
       `else`,
-      `  while ${iBinding} ${node.isInclusive ? '>=' : '>'} ${end}`,
-      `    ${resultBinding}.push(${iBinding}--)`,
+      `${indent}while ${iBinding} ${node.isInclusive ? '>=' : '>'} ${end}`,
+      `${indent}${indent}${resultBinding}.push(${iBinding}--)`,
       `${resultBinding}`
     );
 
     patcher.overwrite(
       node.range[0],
       node.range[1],
-      `(do ->\n${lines.map(line => indent + line).join('\n')})`
+      `(do ->\n${lines.map(line => lead + line).join('\n')})`
     );
     return true;
   }

@@ -1,5 +1,5 @@
+import adjustIndent from '../utils/adjustIndent';
 import getFreeBinding from '../utils/getFreeBinding';
-import getIndent from '../utils/getIndent';
 import isMultiline from '../utils/isMultiline';
 import isParameter from '../utils/isParameter';
 
@@ -22,12 +22,12 @@ export default function preprocessParameters(node, patcher) {
     });
 
     if (assignments.length > 0) {
-      const indent = getIndent(patcher.original, node.range[0]);
+      const indent = adjustIndent(patcher.original, node.range[0], 1);
       const insertionPoint = node.body ? node.body.range[0] : node.range[1];
 
       if (isMultiline(patcher.original, node)) {
         // put each assignment on its own line
-        patcher.insert(insertionPoint, assignments.map(assignment => `${assignment}\n${indent}  `).join(''));
+        patcher.insert(insertionPoint, assignments.map(assignment => `${assignment}\n${indent}`).join(''));
       } else {
         // put the assignments all on one line
         patcher.insert(insertionPoint, ` ${assignments.join('; ')}`);

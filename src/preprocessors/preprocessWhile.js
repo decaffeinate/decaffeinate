@@ -1,4 +1,4 @@
-import getIndent from '../utils/getIndent';
+import adjustIndent from '../utils/adjustIndent';
 import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import requiresParentheses from '../utils/requiresParentheses';
 import { ok } from 'assert';
@@ -23,7 +23,7 @@ export default function preprocessWhile(node, patcher) {
       );
       const body = node.body.raw;
       patcher.remove(node.body.range[0], whileIndex);
-      patcher.insert(node.condition.range[1], `\n${getIndent(patcher.original, node.range[0])}  ${body}`);
+      patcher.insert(node.condition.range[1], `\n${adjustIndent(patcher.original, node.range[0], 1)}${body}`);
       return true;
     } else if (patcher.slice(node.range[0], node.range[0] + 'until'.length) === 'until') {
       // Handle "until" loops.
