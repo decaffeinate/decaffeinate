@@ -11,8 +11,9 @@
     "lint": "eslint src test",
     "pretest": "npm run lint",
     "test": "mocha --recursive --compilers js:babel/register test",
+    "prebuild": "npm run lint",
     "build": "gobble build lib -f",
-    "prepublish": "gobble build lib -f"
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
