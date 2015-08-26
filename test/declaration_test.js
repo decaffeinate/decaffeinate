@@ -74,6 +74,18 @@ describe('declarations', () => {
     `);
   });
 
+  it('does not add multiple declarations when the assignment happens at the top of a block', () => {
+    check(`
+      if a = 1
+        b
+    `, `
+      var a;
+      if (a = 1) {
+        b;
+      }
+    `);
+  });
+
   it('does not add variable declarations when the LHS is a member expression', function() {
     check(`a.b = 1`, `a.b = 1;`);
   });

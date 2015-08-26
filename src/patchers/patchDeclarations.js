@@ -26,7 +26,7 @@ export default function patchDeclarations(node, patcher) {
     node.scope.getOwnNames().forEach(name => {
       const binding = node.scope.getBinding(name);
       const assignment = findAssignmentForBinding(binding);
-      if (isExpressionAssignment(assignment)) {
+      if (isExpressionAssignment(assignment) && isFirstParentBlock(node, assignment)) {
         names.push(name);
       }
     });
@@ -67,4 +67,19 @@ function findAssignmentForBinding(binding) {
   }
 
   return assignment;
+}
+
+/**
+ * Determines whether a node's first containing block is the given block.
+ *
+ * @param {Object} block
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isFirstParentBlock(block, node) {
+  while (node && node.type !== 'Block') {
+    node = node.parentNode;
+  }
+
+  return node === block;
 }
