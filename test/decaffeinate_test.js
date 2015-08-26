@@ -423,15 +423,16 @@ describe('automatic conversions', function() {
         for a in b
           a
       `, `
-          for a in b
-            a;
+        for a in b
+          a;
       `);
       check(`
         for a of b
           a
       `, `
-        for a of b
+        for (var a in b) {
           a;
+        }
       `);
     });
 

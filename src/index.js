@@ -18,6 +18,7 @@ import preprocessChainedComparison from './preprocessors/preprocessChainedCompar
 import preprocessCompoundAssignment from './preprocessors/preprocessCompoundAssignment';
 import preprocessConditional from './preprocessors/preprocessConditional';
 import preprocessDo from './preprocessors/preprocessDo';
+import preprocessFor from './preprocessors/preprocessFor';
 import preprocessParameters from './preprocessors/preprocessParameters';
 import preprocessRange from './preprocessors/preprocessRange';
 import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
@@ -29,6 +30,7 @@ import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
 import { patchConditionalStart, patchConditionalEnd } from './patchers/patchConditional';
 import { patchExistentialOperatorStart, patchExistentialOperatorEnd } from './patchers/patchExistentialOperator';
+import { patchForStart, patchForEnd } from './patchers/patchFor';
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectBraceOpening, patchObjectBraceClosing } from './patchers/patchObjectBraces';
 import { patchRestStart, patchRestEnd } from './patchers/patchRest';
@@ -56,6 +58,7 @@ export function convert(source) {
       return false;
     }
     wasRewritten = preprocessCompoundAssignment(node, patcher) ||
+      preprocessFor(node, patcher) ||
       preprocessDo(node, patcher) ||
       preprocessConditional(node, patcher) ||
       preprocessBinaryExistentialOperator(node, patcher) ||
@@ -81,6 +84,7 @@ export function convert(source) {
     patchThis(node, patcher);
     patchPrototypeAccess(node, patcher);
     patchStringInterpolation(node, patcher);
+    patchForStart(node, patcher);
     patchSliceStart(node, patcher);
     patchCallOpening(node, patcher);
     patchObjectBraceOpening(node, patcher);
@@ -105,6 +109,7 @@ export function convert(source) {
     patchExistentialOperatorEnd(node, patcher);
     patchFunctionEnd(node, patcher);
     patchClassEnd(node, patcher);
+    patchForEnd(node, patcher);
     patchObjectBraceClosing(node, patcher);
     patchSliceEnd(node, patcher);
     patchCallClosing(node, patcher);
