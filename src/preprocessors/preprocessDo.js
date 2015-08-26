@@ -8,7 +8,7 @@ import trimmedNodeRange from '../utils/trimmedNodeRange';
  */
 export default function preprocessDo(node, patcher) {
   if (node.type === 'DoOp') {
-    const { expression, range } = node;
+    const { expression } = node;
     const { parameters } = expression;
     const trimmedRange = trimmedNodeRange(node, patcher.original)
 
