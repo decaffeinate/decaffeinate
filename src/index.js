@@ -14,6 +14,7 @@ import patchSequences from './patchers/patchSequences';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
 import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
+import preprocessChainedComparison from './preprocessors/preprocessChainedComparison';
 import preprocessCompoundAssignment from './preprocessors/preprocessCompoundAssignment';
 import preprocessConditional from './preprocessors/preprocessConditional';
 import preprocessDo from './preprocessors/preprocessDo';
@@ -63,7 +64,8 @@ export function convert(source) {
       preprocessSwitch(node, patcher) ||
       preprocessSoakedMemberAccessOp(node, patcher) ||
       preprocessTry(node, patcher) ||
-      preprocessWhile(node, patcher);
+      preprocessWhile(node, patcher) ||
+      preprocessChainedComparison(node, patcher);
   });
 
   if (wasRewritten) {

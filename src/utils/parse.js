@@ -141,6 +141,10 @@ function isBinaryOperator(node) {
     case 'NEQOp':
     case 'MultiplyOp':
     case 'PlusOp':
+    case 'LTOp':
+    case 'LTEOp':
+    case 'GTOp':
+    case 'GTEOp':
       return true;
 
     default:
