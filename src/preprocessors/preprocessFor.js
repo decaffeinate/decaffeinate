@@ -31,5 +31,11 @@ export default function preprocessFor(node, patcher) {
       prependLinesToBlock(patcher, assignments, node.body);
       return true;
     }
+  } else if (node.type === 'ForIn') {
+    // Make all for-in loops have a key assignee.
+    if (!node.keyAssignee) {
+      patcher.insert(node.valAssignee.range[1], `, ${getFreeBinding(node.scope, 'i')}`);
+      return true;
+    }
   }
 }

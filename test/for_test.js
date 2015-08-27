@@ -74,4 +74,52 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('transforms for-in loops to typical `for` loops', () => {
+    check(`
+      for a in b
+        a
+    `, `
+      for (var a, i = 0; i < b.length; i++) {
+        a = b[i];
+        a;
+      }
+    `);
+  });
+
+  it('allows iterating with for-in by a specific step size', () => {
+    check(`
+      for a in b by 2
+        a
+    `, `
+      for (var a, i = 0; i < b.length; i += 2) {
+        a = b[i];
+        a;
+      }
+    `);
+  });
+
+  it('allows iterating with for-in in reverse', () => {
+    check(`
+      for a in b by -1
+        a
+    `, `
+      for (var a, i = b.length - 1; i >= 0; i--) {
+        a = b[i];
+        a;
+      }
+    `);
+  });
+
+  it('allows iterating with for-in in reverse with a specific step size', () => {
+    check(`
+      for a in b by -2
+        a
+    `, `
+      for (var a, i = b.length - 1; i >= 0; i -= 2) {
+        a = b[i];
+        a;
+      }
+    `);
+  });
 });

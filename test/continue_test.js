@@ -6,8 +6,10 @@ describe('continue', () => {
       for a in b
         continue
     `, `
-      for a in b
+      for (var a, i = 0; i < b.length; i++) {
+        a = b[i];
         continue;
+      }
     `);
   });
 });

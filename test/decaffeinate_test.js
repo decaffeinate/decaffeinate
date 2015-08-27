@@ -423,8 +423,10 @@ describe('automatic conversions', function() {
         for a in b
           a
       `, `
-        for a in b
+        for (var a, i = 0; i < b.length; i++) {
+          a = b[i];
           a;
+        }
       `);
       check(`
         for a of b
