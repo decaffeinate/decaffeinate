@@ -7,8 +7,14 @@ import getIndent from './getIndent';
  */
 export default function prependLinesToBlock(patcher, lines, node) {
   const indent = getIndent(patcher.original, node.range[0]);
-  patcher.insert(
-    node.range[0],
-    lines.map(line => `${line}\n${indent}`).join('')
-  );
+  let string = '';
+
+  for (let i = 0; i < lines.length; i++) {
+    string += `${lines[i]}\n`;
+    if (i + 1 === lines.length || lines[i + 1].length > 0) {
+      string += indent;
+    }
+  }
+
+  patcher.insert(node.range[0], string);
 }
