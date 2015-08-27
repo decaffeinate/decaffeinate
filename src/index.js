@@ -15,6 +15,7 @@ import patchStringInterpolation from './patchers/patchStringInterpolation';
 import patchThis from './patchers/patchThis';
 import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
 import preprocessChainedComparison from './preprocessors/preprocessChainedComparison';
+import preprocessClass from './preprocessors/preprocessClass';
 import preprocessCompoundAssignment from './preprocessors/preprocessCompoundAssignment';
 import preprocessConditional from './preprocessors/preprocessConditional';
 import preprocessDo from './preprocessors/preprocessDo';
@@ -57,7 +58,9 @@ export function convert(source) {
     if (wasRewritten) {
       return false;
     }
-    wasRewritten = preprocessCompoundAssignment(node, patcher) ||
+    wasRewritten =
+      preprocessClass(node, patcher) ||
+      preprocessCompoundAssignment(node, patcher) ||
       preprocessFor(node, patcher) ||
       preprocessDo(node, patcher) ||
       preprocessConditional(node, patcher) ||

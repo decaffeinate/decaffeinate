@@ -24,6 +24,11 @@ export function patchFunctionStart(node, patcher) {
       break;
 
     case 'ClassProtoAssignOp':
+      if (node.expression.type === 'Function') {
+        patchConciseUnboundFunctionStart(node, patcher);
+      }
+      break;
+
     case 'Constructor':
       patchConciseUnboundFunctionStart(node, patcher);
       break;
