@@ -1,5 +1,6 @@
 import getIndent from '../utils/getIndent';
 import isSurroundedBy from '../utils/isSurroundedBy';
+import replaceBetween from '../utils/replaceBetween';
 
 /**
  * Patches the start of class-related nodes.
@@ -8,6 +9,8 @@ import isSurroundedBy from '../utils/isSurroundedBy';
  * @param {MagicString} patcher
  */
 export function patchClassStart(node, patcher) {
+  const { parentNode } = node;
+
   if (node.type === 'Class') {
     if (node.body) {
       let braceIndex;
@@ -23,6 +26,12 @@ export function patchClassStart(node, patcher) {
       }
 
       patcher.insert(braceIndex, ' {');
+    }
+  } else if (isClassProtoAssignExpression(node)) {
+    if (!replaceBetween(patcher, parentNode.assignee, node, ' : ', ' = ')) {
+      if (!replaceBetween(patcher, parentNode.assignee, node, ': ', ' = ')) {
+        replaceBetween(patcher, parentNode.assignee, node, ':', ' = ');
+      }
     }
   }
 }
@@ -45,5 +54,19 @@ export function patchClassEnd(node, patcher) {
         patcher.insert(node.range[1], ' {}');
       }
     }
+  } else if (isClassProtoAssignExpression(node)) {
+    patcher.insert(node.range[1], ';');
   }
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isClassProtoAssignExpression(node) {
+  const { parentNode } = node;
+  return parentNode &&
+    parentNode.type === 'ClassProtoAssignOp' &&
+    node === parentNode.expression &&
+    node.type !== 'Function';
 }
