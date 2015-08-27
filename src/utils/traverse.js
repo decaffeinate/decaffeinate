@@ -71,6 +71,7 @@ const ORDER = {
   Conditional: ['condition', 'consequent', 'alternate'],
   Constructor: ['expression'],
   Continue: [],
+  DeleteOp: ['expression'],
   DoOp: ['expression'],
   DefaultParam: ['param', 'default'],
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
