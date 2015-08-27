@@ -63,6 +63,7 @@ const ORDER = {
   Block: ['statements'],
   Bool: [],
   BoundFunction: ['parameters', 'body'],
+  Break: [],
   ChainedComparisonOp: ['expression'],
   Class: ['nameAssignee', 'parent', 'body'],
   ClassProtoAssignOp: ['assignee', 'expression'],

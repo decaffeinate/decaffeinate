@@ -122,4 +122,17 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('extracts unsafe-to-repeat iteration targets before the for-in loop', () => {
+    check(`
+      for e in list()
+        break
+    `, `
+      var iterable = list();
+      for (var e, i = 0; i < iterable.length; i++) {
+        e = iterable[i];
+        break;
+      }
+    `);
+  });
 });

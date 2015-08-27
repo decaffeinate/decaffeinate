@@ -1,4 +1,5 @@
 import getFreeBinding from '../utils/getFreeBinding';
+import getIndent from '../utils/getIndent';
 import isSafeToRepeat from '../utils/isSafeToRepeat';
 import prependLinesToBlock from '../utils/prependLinesToBlock';
 
@@ -32,10 +33,24 @@ export default function preprocessFor(node, patcher) {
       return true;
     }
   } else if (node.type === 'ForIn') {
+    let rewritten = false;
+
     // Make all for-in loops have a key assignee.
     if (!node.keyAssignee) {
       patcher.insert(node.valAssignee.range[1], `, ${getFreeBinding(node.scope, 'i')}`);
-      return true;
+      rewritten = true;
     }
+
+    if (!isSafeToRepeat(node.target)) {
+      let iterableBinding = getFreeBinding(node.scope, 'iterable');
+      patcher.insert(
+        node.range[0],
+        `${iterableBinding} = ${node.target.raw}\n${getIndent(patcher.original, node.range[0])}`
+      );
+      patcher.overwrite(node.target.range[0], node.target.range[1], iterableBinding);
+      rewritten = true;
+    }
+
+    return rewritten;
   }
 }
