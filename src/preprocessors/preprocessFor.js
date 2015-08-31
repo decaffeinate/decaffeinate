@@ -1,5 +1,5 @@
 import adjustIndent from '../utils/adjustIndent';
-import getFreeBinding from '../utils/getFreeBinding';
+import getFreeBinding, { getFreeLoopBinding } from '../utils/getFreeBinding';
 import getIndent from '../utils/getIndent';
 import indentNode from '../utils/indentNode';
 import isExpressionResultUsed from '../utils/isExpressionResultUsed';
@@ -55,7 +55,7 @@ export default function preprocessFor(node, patcher) {
 
     // Make all for-in loops have a key assignee.
     if (!node.keyAssignee && node.target.type !== 'Range') {
-      patcher.insert(node.valAssignee.range[1], `, ${getFreeBinding(node.scope, 'i')}`);
+      patcher.insert(node.valAssignee.range[1], `, ${getFreeLoopBinding(node.scope)}`);
       rewritten = true;
     }
 

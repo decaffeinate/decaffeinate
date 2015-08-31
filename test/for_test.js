@@ -264,4 +264,20 @@ describe('for loops', () => {
       })());
     `);
   });
+
+  it('generates counters for nested loops that follow typical convention', () => {
+    check(`
+      for a in b
+        for c in d
+          a + c
+    `, `
+      for (var i = 0, a; i < b.length; i++) {
+        a = b[i];
+        for (var j = 0, c; j < d.length; j++) {
+          c = d[j];
+          a + c;
+        }
+      }
+    `);
+  });
 });

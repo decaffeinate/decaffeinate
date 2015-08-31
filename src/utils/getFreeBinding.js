@@ -21,3 +21,21 @@ export default function getFreeBinding(scope, base='ref') {
 
   return binding;
 }
+
+const LOOP_BINDINGS = ['i', 'j', 'k'];
+
+/**
+ * Gets a free binding for the purpose of a loop counter.
+ *
+ * @param {Scope} scope
+ * @returns {string}
+ */
+export function getFreeLoopBinding(scope) {
+  for (let binding of LOOP_BINDINGS) {
+    if (!scope.getBinding(binding)) {
+      return binding;
+    }
+  }
+
+  return getFreeBinding(scope, LOOP_BINDINGS[0]);
+}
