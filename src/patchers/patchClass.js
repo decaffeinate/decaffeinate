@@ -1,5 +1,4 @@
 import appendClosingBrace from '../utils/appendClosingBrace';
-import getIndent from '../utils/getIndent';
 import isSurroundedBy from '../utils/isSurroundedBy';
 import replaceBetween from '../utils/replaceBetween';
 

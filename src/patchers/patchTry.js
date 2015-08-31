@@ -1,5 +1,4 @@
 import appendClosingBrace from '../utils/appendClosingBrace';
-import getIndent from '../utils/getIndent';
 import lastIndexOfIgnoringComments from '../utils/lastIndexOfIgnoringComments';
 
 /**

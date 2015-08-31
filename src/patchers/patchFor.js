@@ -1,9 +1,7 @@
 import appendClosingBrace from '../utils/appendClosingBrace';
-import getIndent from '../utils/getIndent';
 import prependLinesToBlock from '../utils/prependLinesToBlock';
 import rangeIncludingParentheses from '../utils/rangeIncludingParentheses';
 import replaceBetween from '../utils/replaceBetween';
-import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 /**
  * @param {Object} node

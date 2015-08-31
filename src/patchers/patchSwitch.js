@@ -1,6 +1,5 @@
 import adjustIndent from '../utils/adjustIndent';
 import appendClosingBrace from '../utils/appendClosingBrace';
-import getIndent from '../utils/getIndent';
 import isImplicitlyReturned from '../utils/isImplicitlyReturned';
 import isMultiline from '../utils/isMultiline';
 import replaceBetween from '../utils/replaceBetween';
