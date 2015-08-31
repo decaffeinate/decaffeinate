@@ -1,3 +1,5 @@
+import appendClosingBrace from '../utils/appendClosingBrace';
+import getIndent from '../utils/getIndent';
 import prependLinesToBlock from '../utils/prependLinesToBlock';
 import rangeIncludingParentheses from '../utils/rangeIncludingParentheses';
 import replaceBetween from '../utils/replaceBetween';
@@ -10,7 +12,13 @@ import trimmedNodeRange from '../utils/trimmedNodeRange';
 export function patchForStart(node, patcher) {
   const { parentNode } = node;
 
-  if (node.type === 'ForOf') {
+  if (node.type === 'ForIn') {
+    patcher.overwrite(
+      node.range[0] + 'for '.length,
+      (node.step.range || node.target.range)[1],
+      `(${loopHeader(node)}) {`
+    );
+  } else if (node.type === 'ForOf') {
     // e.g. `for key of object` -> `for (var key in object)`
     //                                  ^^^^^
     patcher.insert(node.range[0] + 'for '.length, '(var ');
@@ -18,19 +26,6 @@ export function patchForStart(node, patcher) {
     // e.g. `for key of object` -> `for (var key in object)`
     //              ^^^^                        ^^^^
     replaceBetween(patcher, parentNode.keyAssignee, node, ' of ', ' in ');
-  } else if (node.type === 'ForIn') {
-    // e.g. `for element in object` -> `for (var element…`
-    //                                      ^^^^^
-    patcher.insert(node.range[0] + 'for '.length, '(var ');
-  } else if (parentNode && parentNode.type === 'ForIn' && node === parentNode.target) {
-    patcher.overwrite(
-      parentNode.keyAssignee.range[1],
-      node.range[1],
-      ` = ${initialValueForLoopCounter(parentNode)}; ${loopCondition(parentNode)}; ${loopIncrement(parentNode)}) {`
-    );
-  } else if (parentNode && parentNode.type === 'ForIn' && node === parentNode.step && node.range) {
-    // remove e.g. `by 2` from for-in loops
-    patcher.remove(parentNode.target.range[1], node.range[1]);
   }
 }
 
@@ -42,13 +37,7 @@ export function patchForEnd(node, patcher) {
   const { parentNode } = node;
 
   if (isForLoopTarget(node)) {
-    if (parentNode.type === 'ForIn') {
-      //// e.g. `for element, i in list` -> `for (var element, i = 0; i < object.length; i++) {`
-      ////                                                                      ^^^^^^^^^^^^^^^
-      //patcher.insert(
-      //  rangeIncludingParentheses(node, patcher.original)[1],
-      //  `.length; ${loopIncrement(parentNode)}) {`
-      //);
+    if (parentNode.type === 'ForIn' && node.type !== 'Range') {
       prependLinesToBlock(
         patcher,
         [`${parentNode.valAssignee.raw} = ${node.raw}[${parentNode.keyAssignee.raw}];`],
@@ -59,12 +48,19 @@ export function patchForEnd(node, patcher) {
       //                                                    ^^^
       patcher.insert(rangeIncludingParentheses(node, patcher.original)[1], ') {');
     }
-  } else if (node.type === 'ForOf' || node.type === 'ForIn') {
-    // add closing brace for `for` loop block
-    patcher.insert(trimmedNodeRange(node, patcher.original)[1], '\n}');
+  }
+
+  if (node.type === 'ForOf' || node.type === 'ForIn') {
+    appendClosingBrace(node, patcher);
   }
 }
 
+/**
+ * Determines whether the given node is the target of a `for` loop.
+ *
+ * @param {Object} node ForOf|ForIn
+ * @returns {boolean}
+ */
 function isForLoopTarget(node) {
   const { parentNode } = node;
 
@@ -82,43 +78,85 @@ function isForLoopTarget(node) {
   }
 }
 
-function loopIncrement(node) {
-  const stepCount = loopStepCount(node);
-  const key = node.keyAssignee.raw;
+/**
+ * Generates the init, test, and update components for a JavaScript `for` loop.
+ *
+ * @param {Object} node ForIn
+ * @returns {string}
+ */
+function loopHeader(node) {
+  const { valAssignee, target } = node;
+
+  if (target.type === 'Range') {
+    // i.e. `for i in [a..b]`
+    const { left, right, isInclusive } = target;
+    const counter = valAssignee.raw;
+    let result = `var ${counter} = ${left.raw}; `;
+    if (left.type === 'Int' && right.type === 'Int') {
+      // i.e. `for i in [0..10]`
+      if (left.data < right.data) {
+        result += `${counter} ${isInclusive ? '<=' : '<'} ${right.raw}; ${loopUpdate(node, counter)}`;
+      } else {
+        result += `${counter} ${isInclusive ? '>=' : '>'} ${right.raw}; ${loopUpdate(node, counter, true)}`;
+      }
+    } else {
+      // i.e. `for i in [a..b]`
+      result += `${left.raw} < ${right.raw} ? ${counter} ${isInclusive ? '<=' : '<'} ${right.raw} : ${counter} ${isInclusive ? '>=' : '>'} ${right.raw}; `;
+      result += `${left.raw} < ${right.raw} ? ${loopUpdate(node, counter)} : ${loopUpdate(node, counter, true)}`;
+    }
+
+    return result;
+  } else {
+    // i.e. `for element in list`
+    const valueBinding = valAssignee.raw;
+    const counter = node.keyAssignee.raw;
+    let result = `var ${counter} = `;
+    if (loopStepCount(node) > 0) {
+      result += `0, ${valueBinding}; ${counter} < ${target.raw}.length; ${loopUpdate(node, counter)}`;
+    } else {
+      result += `${target.raw}.length - 1, ${valueBinding}; ${counter} >= 0; ${loopUpdate(node, counter, true)}`;
+    }
+    return result;
+  }
+}
+
+/**
+ * Generates an update expression of a JavaScript `for` loop.
+ *
+ * @param {Object} node
+ * @param {string} counter
+ * @param {boolean} descending
+ * @returns {string}
+ */
+function loopUpdate(node, counter, descending=false) {
+  let hasExplicitStep = !!node.step.range;
+  let stepCount = loopStepCount(node);
+
+  if (descending && !hasExplicitStep) {
+    stepCount = -stepCount;
+  }
 
   if (stepCount === 1) {
-    return `${key}++`;
+    return `${counter}++`;
   }
 
   if (stepCount === -1) {
-    return `${key}--`;
+    return `${counter}--`;
   }
 
   if (stepCount > 0) {
-    return `${key} += ${stepCount}`;
+    return `${counter} += ${stepCount}`;
   }
 
-  return `${key} -= ${-stepCount}`;
+  return `${counter} -= ${-stepCount}`;
 }
 
-function initialValueForLoopCounter(node) {
-  const stepCount = loopStepCount(node);
-  if (stepCount > 0) {
-    return '0';
-  } else {
-    return `${node.target.raw}.length - 1`;
-  }
-}
-
-function loopCondition(node) {
-  let stepCount = loopStepCount(node);
-  if (stepCount > 0) {
-    return `${node.keyAssignee.raw} < ${node.target.raw}.length`;
-  } else {
-    return `${node.keyAssignee.raw} >= 0`;
-  }
-}
-
+/**
+ * Determines the step count of a for-in loop, e.g. `for a in b by 2` returns 2.
+ *
+ * @param {Object} node ForIn
+ * @returns {number}
+ */
 function loopStepCount(node) {
   if (node.step.type === 'UnaryNegateOp') {
     return -node.step.expression.data;

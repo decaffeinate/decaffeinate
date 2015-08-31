@@ -423,7 +423,7 @@ describe('automatic conversions', function() {
         for a in b
           a
       `, `
-        for (var a, i = 0; i < b.length; i++) {
+        for (var i = 0, a; i < b.length; i++) {
           a = b[i];
           a;
         }
