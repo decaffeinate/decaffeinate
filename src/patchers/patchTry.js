@@ -1,3 +1,4 @@
+import appendClosingBrace from '../utils/appendClosingBrace';
 import getIndent from '../utils/getIndent';
 import lastIndexOfIgnoringComments from '../utils/lastIndexOfIgnoringComments';
 
@@ -33,7 +34,7 @@ export function patchTryStart(node, patcher) {
  */
 export function patchTryEnd(node, patcher) {
   if (node.type === 'Try') {
-    patcher.insert(node.range[1], `\n${getIndent(patcher.original, node.range[0])}}`);
+    appendClosingBrace(node, patcher);
   } else if (node.parentNode && node.parentNode.type === 'Try') {
     if (node.parentNode.body === node) {
       let closeBraceIndex;
