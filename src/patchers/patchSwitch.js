@@ -1,4 +1,5 @@
 import adjustIndent from '../utils/adjustIndent';
+import appendClosingBrace from '../utils/appendClosingBrace';
 import getIndent from '../utils/getIndent';
 import isImplicitlyReturned from '../utils/isImplicitlyReturned';
 import isMultiline from '../utils/isMultiline';
@@ -64,8 +65,7 @@ export function patchSwitchEnd(node, patcher) {
 
   if (node.type === 'Switch') {
     // close the switch block
-    let trimmedRange = trimmedNodeRange(node, patcher.original);
-    patcher.insert(trimmedRange[1], `\n${getIndent(patcher.original, trimmedRange[0])}}`);
+    appendClosingBrace(node, patcher);
   } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.expression) {
     // close the switch expression and start the switch block
     patcher.insert(node.range[1], ') {');

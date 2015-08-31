@@ -15,6 +15,11 @@ const MAX_RANGE_LITERAL_VALUES = 20;
  */
 export default function preprocessRange(node, patcher) {
   if (node.type === 'Range') {
+    const { parentNode } = node;
+    if (parentNode.type === 'ForIn' && parentNode.target === node) {
+      // Don't re-write the range in `for n in [0..5]`
+      return false;
+    }
     const resultBinding = getFreeBinding(node.scope, 'result');
     const iBinding = getFreeBinding(node.scope, 'i');
     const { left, right } = node;

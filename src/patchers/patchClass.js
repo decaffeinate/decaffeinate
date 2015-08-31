@@ -1,3 +1,4 @@
+import appendClosingBrace from '../utils/appendClosingBrace';
 import getIndent from '../utils/getIndent';
 import isSurroundedBy from '../utils/isSurroundedBy';
 import replaceBetween from '../utils/replaceBetween';
@@ -45,7 +46,7 @@ export function patchClassStart(node, patcher) {
 export function patchClassEnd(node, patcher) {
   if (node.type === 'Class') {
     if (node.body) {
-      patcher.insert(node.range[1], `\n${getIndent(patcher.original, node.range[0])}}`);
+      appendClosingBrace(node, patcher);
     } else {
       if (!node.nameAssignee) {
         patcher.insert(node.range[0], '(');

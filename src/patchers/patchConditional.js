@@ -1,3 +1,4 @@
+import appendClosingBrace from '../utils/appendClosingBrace';
 import getIndent from '../utils/getIndent';
 import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import isSurroundedBy from '../utils/isSurroundedBy';
@@ -106,12 +107,12 @@ export function patchConditionalEnd(node, patcher) {
     }
   } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
     if (!isExpressionResultUsed(node)) {
-      let nodeRange = trimmedNodeRange(node, patcher.original);
       // Close the conditional if it isn't handled by closing an `else if`.
       if (isOneLineConditionAndConsequent(node, patcher.original)) {
+        let nodeRange = trimmedNodeRange(node, patcher.original);
         patcher.insert(nodeRange[1], ' }');
       } else {
-        patcher.insert(nodeRange[1], `\n${getIndent(patcher.original, nodeRange[0])}}`);
+        appendClosingBrace(node, patcher);
       }
     }
   }

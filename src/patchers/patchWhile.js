@@ -1,3 +1,4 @@
+import appendClosingBrace from '../utils/appendClosingBrace';
 import getIndent from '../utils/getIndent';
 import isSurroundedBy from '../utils/isSurroundedBy';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
@@ -26,17 +27,8 @@ export function patchWhileEnd(node, patcher) {
       patcher.insert(node.range[1], ') {');
     }
   } else if (node.type === 'While') {
-    insertClosingBraceForNode(node, patcher);
+    appendClosingBrace(node, patcher);
   }
-}
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-function insertClosingBraceForNode(node, patcher) {
-  const nodeRange = trimmedNodeRange(node, patcher.original);
-  patcher.insert(nodeRange[1], `\n${getIndent(patcher.original, node.range[0])}}`);
 }
 
 /**
