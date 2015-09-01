@@ -1,7 +1,9 @@
-import getIndent from '../utils/getIndent';
+import appendClosingBrace from '../utils/appendClosingBrace';
 import isMultiline from '../utils/isMultiline';
 import isStatement from '../utils/isStatement';
+import shouldHaveTrailingSemicolon from '../utils/shouldHaveTrailingSemicolon';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
+import { isFunction } from '../utils/types';
 
 /**
  * Patches the start of arrow functions to make them into JavaScript functions.
@@ -42,7 +44,7 @@ export function patchFunctionStart(node, patcher) {
  * @returns {boolean}
  */
 function isMethodDeclaration(node) {
-  return (node.type === 'Function' || node.type === 'BoundFunction') &&
+  return isFunction(node) &&
     (node.parentNode.type === 'ClassProtoAssignOp' || node.parentNode.type === 'Constructor');
 }
 
@@ -141,12 +143,12 @@ function patchConciseUnboundFunctionStart(node, patcher) {
  * @param {MagicString} patcher
  */
 export function patchFunctionEnd(node, patcher) {
-  if (node.type === 'Function' || node.type === 'BoundFunction') {
-    let nodeRange = trimmedNodeRange(node, patcher.original);
+  if (isFunction(node)) {
+    let insertionPoint = trimmedNodeRange(node, patcher.original)[1];
     let functionClose = '';
 
     if (isMultiline(patcher.original, node)) {
-      functionClose = `\n${getIndent(patcher.original, nodeRange[0])}}`;
+      insertionPoint = appendClosingBrace(node, patcher);
     } else if (node.type === 'Function') {
       functionClose = node.body ? ' }' : '}';
     }
@@ -158,8 +160,14 @@ export function patchFunctionEnd(node, patcher) {
       functionClose += ')';
     }
 
+    if (shouldHaveTrailingSemicolon(node)) {
+      // Handle the closing semicolon here because otherwise it's difficult to
+      // reproduce the insertion position in `patchSemicolons`.
+      functionClose += ';';
+    }
+
     if (functionClose) {
-      patcher.insert(nodeRange[1], functionClose);
+      patcher.insert(insertionPoint, functionClose);
     }
   }
 }
