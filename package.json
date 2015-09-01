@@ -1,6 +1,6 @@
 {
   "name": "decaffeinate",
-  "version": "1.33.2",
+  "version": "1.33.3",
   "description": "Move your CoffeeScript source to JavaScript using ES6 syntax.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
