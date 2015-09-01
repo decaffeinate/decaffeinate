@@ -46,7 +46,7 @@ function patchBlockComment(patcher, range) {
     let index = start + comment.head.length;
     comment.lines.forEach(line => {
       let indent = line.indexOf('#');
-      patcher.overwrite(index + indent, index + indent + '#'.length, '*');
+      patcher.overwrite(index + indent, index + indent + '#'.length, ' *');
       index += line.length;
     });
     patcher.overwrite(end - comment.tail.length, end, ' */');
@@ -73,9 +73,10 @@ function parseBlockComment(blockComment) {
   let newlineIndex = endOfHead - 1;
   while (newlineIndex + 1 < startOfTail) {
     let nextNewlineIndex = blockComment.indexOf('\n', newlineIndex + 1);
-    if (nextNewlineIndex > newlineIndex) {
-      lines.push(blockComment.slice(newlineIndex + 1, nextNewlineIndex + 1));
+    if (nextNewlineIndex < 0) {
       break;
+    } else if (nextNewlineIndex > newlineIndex) {
+      lines.push(blockComment.slice(newlineIndex + 1, nextNewlineIndex + 1));
     }
     newlineIndex = nextNewlineIndex;
   }
