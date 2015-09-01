@@ -145,6 +145,7 @@ function isBinaryOperator(node) {
     case 'LTEOp':
     case 'GTOp':
     case 'GTEOp':
+    case 'RemOp':
       return true;
 
     default:
