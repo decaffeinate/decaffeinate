@@ -2,19 +2,12 @@
 
 set -e
 
-PATH="$(npm bin):$PATH"
+source $(dirname $0)/helpers.sh
+
 RELEASE_TYPE=$1
 
 usage() {
   echo "$(basename $0) (major | minor | patch)"
-}
-
-hasChanges() {
-  if git diff-index --quiet HEAD --; then
-    return 1
-  else
-    return 0
-  fi
 }
 
 if hasChanges; then
