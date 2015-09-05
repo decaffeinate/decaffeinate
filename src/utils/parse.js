@@ -54,16 +54,25 @@ function attachScope(node) {
 function fixRange(node, map, source) {
   if (!node.range && node.type === 'ConcatOp') { return; }
 
+  const { parentNode } = node;
+
+  if (node.type === 'MemberAccessOp' && parentNode.type === 'FunctionApplication') {
+    let firstArgument = parentNode.arguments[0];
+    let startOfArguments = firstArgument ? firstArgument.range[0] - '('.length : parentNode.range[1] - '()'.length;
+    node.raw = parentNode.raw.slice(0, startOfArguments - parentNode.range[0]);
+    node.range = [parentNode.range[0], startOfArguments];
+  }
+
   if (!('raw' in node)) {
     if (fixBinaryOperator(node, map, source)) {
       return;
-    } else if (node.parentNode && node.parentNode.type === 'While' && node.parentNode.condition === node) {
+    } else if (parentNode && parentNode.type === 'While' && parentNode.condition === node) {
       // Ignore `while` condition without raw
       return;
-    } else if (node.type === 'Block' && node.parentNode && node.parentNode.type === 'Try') {
+    } else if (node.type === 'Block' && parentNode && parentNode.type === 'Try') {
       // Ignore missing blocks in try/catch
       return;
-    } else if (node.type === 'LogicalNotOp' && node.parentNode.type === 'Conditional' && node.parentNode.condition === node) {
+    } else if (node.type === 'LogicalNotOp' && parentNode.type === 'Conditional' && parentNode.condition === node) {
       node.raw = node.expression.raw;
       node.range = node.expression.range;
       node.line = node.expression.line;
@@ -84,7 +93,7 @@ function fixRange(node, map, source) {
   }
 
   if (!node.range || node.raw !== source.slice(node.range[0], node.range[1])) {
-    if (node.parentNode && node.parentNode.step === node) {
+    if (parentNode && parentNode.step === node) {
       // Ignore invalid `step` parameters, they're auto-generated if left out.
       return;
     }
@@ -93,6 +102,7 @@ function fixRange(node, map, source) {
       return;
     }
 
+    console.log(node);
     throw new Error(
       'BUG! Could not fix range for ' + node.type +
       ' at line ' + node.line + ', column ' + node.column
