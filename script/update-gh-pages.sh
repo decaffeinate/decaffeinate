@@ -15,6 +15,7 @@ git reset --hard origin/gh-pages
 # Update the script in the gh-pages branch.
 mv decaffeinate.js scripts/
 git commit -av -m "Update decaffeinate.js."
+git push origin gh-pages
 
 # Go back to the master branch.
 git checkout master
