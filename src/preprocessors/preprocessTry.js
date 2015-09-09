@@ -2,6 +2,7 @@ import getFreeBinding from '../utils/getFreeBinding';
 import getIndent from '../utils/getIndent';
 import indexOfIgnoringComments from '../utils/indexOfIgnoringComments';
 import sourceBetween from '../utils/sourceBetween';
+import trimmedNodeRange from '../utils/trimmedNodeRange';
 
 /**
  * Rewrites `try` expressions by wrapping them in an IIFE. Ensures catch
@@ -43,7 +44,7 @@ export default function preprocessTry(node, patcher) {
       } else if (!node.finallyBody) {
         if (node.body.type === 'Block') {
           patcher.insert(
-            node.body.range[1],
+            trimmedNodeRange(node.body, patcher.original)[1],
             `\n${getIndent(patcher.original, node.range[0])}catch ${getFreeBinding(node.scope, '_error')}`
           );
           return true;
