@@ -56,7 +56,7 @@ function fixRange(node, map, source) {
 
   const { parentNode } = node;
 
-  if (node.type === 'MemberAccessOp' && parentNode.type === 'FunctionApplication') {
+  if (!rawMatchesRange(node, source) && node.type === 'MemberAccessOp' && parentNode.type === 'FunctionApplication') {
     let firstArgument = parentNode.arguments[0];
     let startOfArguments = firstArgument ? firstArgument.range[0] - '('.length : parentNode.range[1] - '()'.length;
     node.raw = parentNode.raw.slice(0, startOfArguments - parentNode.range[0]);
@@ -92,7 +92,7 @@ function fixRange(node, map, source) {
     }
   }
 
-  if (!node.range || node.raw !== source.slice(node.range[0], node.range[1])) {
+  if (!rawMatchesRange(node, source)) {
     if (parentNode && parentNode.step === node) {
       // Ignore invalid `step` parameters, they're auto-generated if left out.
       return;
@@ -110,6 +110,18 @@ function fixRange(node, map, source) {
   } else {
     shrinkPastParentheses(node, map, source, true);
   }
+}
+
+/**
+ * Determines whether the `raw` source reported for the node matches the section
+ * of the original source the node's reported `range` describes.
+ *
+ * @param {Object} node
+ * @param {string} source
+ * @returns {boolean}
+ */
+function rawMatchesRange(node, source) {
+  return node.range && node.raw === source.slice(node.range[0], node.range[1]);
 }
 
 /**
