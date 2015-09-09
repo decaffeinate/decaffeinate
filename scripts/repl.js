@@ -99,7 +99,7 @@
   }
 
   /*
-   * Options exposed for the REPL that will influence Babel's transpiling
+   * Options exposed for the REPL that will influence Decaffeinate's transpiling
    */
   function $checkbox($element){
     return {
@@ -116,31 +116,19 @@
   }
 
   /*
-   * Babel options for transpilation as used by the REPL
+   * Decaffeinate options for transpilation as used by the REPL
    */
   function Options () {
-    var $experimental = $('#option-experimental');
-    var $playground = $('#option-playground');
     var $evaluate = $('#option-evaluate');
-    var $loose = $('#option-loose-mode');
-    var $spec = $('#option-spec');
 
     var options = {};
     Object.defineProperties(options, {
-      'experimental': $checkbox($experimental),
-      'playground': $checkbox($playground),
-      'evaluate': $checkbox($evaluate),
-      'loose': $checkbox($loose),
-      'spec': $checkbox($spec)
+      'evaluate': $checkbox($evaluate)
     });
 
     // Merge in defaults
     var defaults = {
-      experimental : true,
-      playground : false,
-      loose : false,
-      spec : false,
-      evaluate : true
+      evaluate: true
     };
 
     _.assign(options, defaults);
@@ -149,7 +137,7 @@
   }
 
   /*
-   * Babel Web REPL
+   * Decaffeinate Web REPL
    */
   function REPL () {
     this.storage = new StorageService();
