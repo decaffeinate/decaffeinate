@@ -24,6 +24,7 @@ import preprocessIn from './preprocessors/preprocessIn';
 import preprocessParameters from './preprocessors/preprocessParameters';
 import preprocessRange from './preprocessors/preprocessRange';
 import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
+import preprocessSoakedFunctionApplication from './preprocessors/preprocessSoakedFunctionApplication';
 import preprocessSwitch from './preprocessors/preprocessSwitch';
 import preprocessTry from './preprocessors/preprocessTry';
 import preprocessWhile from './preprocessors/preprocessWhile';
@@ -70,6 +71,7 @@ export function convert(source) {
       preprocessParameters(node, patcher) ||
       preprocessRange(node, patcher) ||
       preprocessSwitch(node, patcher) ||
+      preprocessSoakedFunctionApplication(node, patcher) ||
       preprocessSoakedMemberAccessOp(node, patcher) ||
       preprocessTry(node, patcher) ||
       preprocessWhile(node, patcher) ||

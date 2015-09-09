@@ -116,6 +116,7 @@ const ORDER = {
   SeqOp: ['left', 'right'],
   Slice: ['expression', 'left', 'right'],
   SoakedDynamicMemberAccessOp: ['expression', 'indexingExpr'],
+  SoakedFunctionApplication: ['function', 'arguments'],
   SoakedMemberAccessOp: ['expression'],
   Spread: ['expression'],
   String: [],
