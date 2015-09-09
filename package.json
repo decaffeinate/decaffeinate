@@ -30,7 +30,8 @@
   "license": "MIT",
   "dependencies": {
     "coffee-script-redux": "git://github.com/michaelficarra/CoffeeScriptRedux",
-    "magic-string": "^0.6.5"
+    "magic-string": "^0.6.5",
+    "repeat-string": "^1.5.2"
   },
   "files": [
     "bin/decaffeinate",

@@ -265,6 +265,24 @@ describe('for loops', () => {
     `);
   });
 
+  it('saves the list of results when for-in loops are used as an implicit return', () => {
+    check(`
+      ->
+        a for a in b
+    `, `
+      (function() {
+        return (() => {
+          var result = [];
+          for (var i = 0, a; i < b.length; i++) {
+            a = b[i];
+            result.push(a);
+          }
+          return result;
+        })();
+      });
+    `);
+  });
+
   it('generates counters for nested loops that follow typical convention', () => {
     check(`
       for a in b
