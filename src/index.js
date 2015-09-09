@@ -20,6 +20,7 @@ import preprocessCompoundAssignment from './preprocessors/preprocessCompoundAssi
 import preprocessConditional from './preprocessors/preprocessConditional';
 import preprocessDo from './preprocessors/preprocessDo';
 import preprocessFor from './preprocessors/preprocessFor';
+import preprocessIn from './preprocessors/preprocessIn';
 import preprocessParameters from './preprocessors/preprocessParameters';
 import preprocessRange from './preprocessors/preprocessRange';
 import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
@@ -62,6 +63,7 @@ export function convert(source) {
       preprocessClass(node, patcher) ||
       preprocessCompoundAssignment(node, patcher) ||
       preprocessFor(node, patcher) ||
+      preprocessIn(node, patcher) ||
       preprocessDo(node, patcher) ||
       preprocessConditional(node, patcher) ||
       preprocessBinaryExistentialOperator(node, patcher) ||

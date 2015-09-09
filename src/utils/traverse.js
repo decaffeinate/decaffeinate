@@ -86,6 +86,7 @@ const ORDER = {
   GTEOp: ['left', 'right'],
   GTOp: ['left', 'right'],
   Identifier: [],
+  InOp: ['left', 'right'],
   Int: [],
   JavaScript: [],
   LTEOp: ['left', 'right'],
