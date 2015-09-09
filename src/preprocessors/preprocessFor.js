@@ -19,6 +19,8 @@ export default function preprocessFor(node, patcher) {
     return true;
   } else if (wrapForLoopInIIFE(node, patcher)) {
     return true;
+  } else if (convertFilterIntoBodyConditional(node, patcher)) {
+    return true;
   }
 
   const { keyAssignee, valAssignee, target, scope } = node;
@@ -126,8 +128,8 @@ function ensureMultilineForLoop(node, patcher) {
 /**
  * If the `for` loop is used as an expression we wrap it in an IIFE.
  *
- * @param node
- * @param patcher
+ * @param {Object} node
+ * @param {MagicString} patcher
  * @returns {boolean}
  */
 function wrapForLoopInIIFE(node, patcher) {
@@ -150,5 +152,29 @@ function wrapForLoopInIIFE(node, patcher) {
   patcher.insert(lastStatement.range[1], `)`);
   patcher.insert(trimmedNodeRange(node, patcher.original)[1], `\n${nextIndent}${result}`);
 
+  return true;
+}
+
+/**
+ * If the `for` loop contains a `when` clause we turn it into an `if` in the
+ * body of the `for` loop.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function convertFilterIntoBodyConditional(node, patcher) {
+  if (node.type !== 'ForIn' && node.type !== 'ForOf') {
+    return false;
+  }
+
+  if (!node.filter) {
+    return false;
+  }
+
+  const indent = getIndent(patcher.original, node.body.range[0]);
+  patcher.insert(node.body.range[0], `if ${node.filter.raw}\n${indent}`);
+  patcher.remove(node.filter.range[0] - ' when '.length, node.filter.range[1]);
+  indentNode(node.body, patcher);
   return true;
 }

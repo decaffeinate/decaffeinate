@@ -123,6 +123,34 @@ describe('for loops', () => {
     `);
   });
 
+  it('allows filtering using a `when` clause', () => {
+    check(`
+      for a in b when a.c
+        a
+    `, `
+      for (var i = 0, a; i < b.length; i++) {
+        a = b[i];
+        if (a.c) {
+          a;
+        }
+      }
+    `);
+  });
+
+  it('allows using both `when` and `by` clauses', () => {
+    check(`
+      for a in b by 2 when a.c
+        a
+    `, `
+      for (var i = 0, a; i < b.length; i += 2) {
+        a = b[i];
+        if (a.c) {
+          a;
+        }
+      }
+    `);
+  });
+
   it('extracts unsafe-to-repeat iteration targets before the for-in loop', () => {
     check(`
       for e in list()
