@@ -2667,6 +2667,8 @@ function preprocessFor(node, patcher) {
     return true;
   } else if (wrapForLoopInIIFE(node, patcher)) {
     return true;
+  } else if (convertFilterIntoBodyConditional(node, patcher)) {
+    return true;
   }
 
   var keyAssignee = node.keyAssignee;
@@ -2771,8 +2773,8 @@ function ensureMultilineForLoop(node, patcher) {
 /**
  * If the `for` loop is used as an expression we wrap it in an IIFE.
  *
- * @param node
- * @param patcher
+ * @param {Object} node
+ * @param {MagicString} patcher
  * @returns {boolean}
  */
 function wrapForLoopInIIFE(node, patcher) {
@@ -2795,6 +2797,30 @@ function wrapForLoopInIIFE(node, patcher) {
   patcher.insert(lastStatement.range[1], ')');
   patcher.insert((0, _utilsTrimmedNodeRange2['default'])(node, patcher.original)[1], '\n' + nextIndent + result);
 
+  return true;
+}
+
+/**
+ * If the `for` loop contains a `when` clause we turn it into an `if` in the
+ * body of the `for` loop.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function convertFilterIntoBodyConditional(node, patcher) {
+  if (node.type !== 'ForIn' && node.type !== 'ForOf') {
+    return false;
+  }
+
+  if (!node.filter) {
+    return false;
+  }
+
+  var indent = (0, _utilsGetIndent2['default'])(patcher.original, node.body.range[0]);
+  patcher.insert(node.body.range[0], 'if ' + node.filter.raw + '\n' + indent);
+  patcher.remove(node.filter.range[0] - ' when '.length, node.filter.range[1]);
+  (0, _utilsIndentNode2['default'])(node.body, patcher);
   return true;
 }
 module.exports = exports['default'];
@@ -3252,6 +3278,10 @@ var _utilsSourceBetween = require('../utils/sourceBetween');
 
 var _utilsSourceBetween2 = _interopRequireDefault(_utilsSourceBetween);
 
+var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
+
+var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
+
 /**
  * Rewrites `try` expressions by wrapping them in an IIFE. Ensures catch
  * exists with an error assignee if needed.
@@ -3285,7 +3315,7 @@ function preprocessTry(node, patcher) {
         return true;
       } else if (!node.finallyBody) {
         if (node.body.type === 'Block') {
-          patcher.insert(node.body.range[1], '\n' + (0, _utilsGetIndent2['default'])(patcher.original, node.range[0]) + 'catch ' + (0, _utilsGetFreeBinding2['default'])(node.scope, '_error'));
+          patcher.insert((0, _utilsTrimmedNodeRange2['default'])(node.body, patcher.original)[1], '\n' + (0, _utilsGetIndent2['default'])(patcher.original, node.range[0]) + 'catch ' + (0, _utilsGetFreeBinding2['default'])(node.scope, '_error'));
           return true;
         } else {
           // TODO: Insert " catch _error" after node.body
@@ -3297,7 +3327,7 @@ function preprocessTry(node, patcher) {
 }
 
 module.exports = exports['default'];
-},{"../utils/getFreeBinding":50,"../utils/getIndent":51,"../utils/indexOfIgnoringComments":53,"../utils/sourceBetween":72}],43:[function(require,module,exports){
+},{"../utils/getFreeBinding":50,"../utils/getIndent":51,"../utils/indexOfIgnoringComments":53,"../utils/sourceBetween":72,"../utils/trimmedNodeRange":76}],43:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
