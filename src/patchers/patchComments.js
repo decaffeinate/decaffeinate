@@ -10,10 +10,18 @@ export default function patchComments(patcher) {
   const ranges = rangesOfComments(source);
 
   ranges.forEach(comment => {
-    if (comment.type === 'line') {
-      patchLineComment(patcher, comment);
-    } else if (comment.type === 'block') {
-      patchBlockComment(patcher, comment);
+    switch (comment.type) {
+      case 'line':
+        patchLineComment(patcher, comment);
+        break;
+
+      case 'block':
+        patchBlockComment(patcher, comment);
+        break;
+
+      case 'shebang':
+        patchShebangComment(patcher, comment);
+        break;
     }
   });
 }
@@ -30,7 +38,7 @@ function patchLineComment(patcher, range) {
 }
 
 /**
- * Patches a single-line comment.
+ * Patches a block comment.
  *
  * @param {MagicString} patcher
  * @param {{start: number, end: number, type: string}} range
@@ -84,4 +92,25 @@ function parseBlockComment(blockComment) {
   const doc = lines.every(line => /^ *#/.test(line));
 
   return { head, tail, body, lines, doc };
+}
+
+/**
+ * Patches a shebang comment.
+ *
+ * @param {MagicString} patcher
+ * @param {{start: number, end: number, type: string}} range
+ * @private
+ */
+function patchShebangComment(patcher, range) {
+  const { start, end } = range;
+  const commentBody = patcher.slice(start, end);
+  const coffeeIndex = commentBody.indexOf('coffee');
+
+  if (coffeeIndex >= 0) {
+    patcher.overwrite(
+      start + coffeeIndex,
+      start + coffeeIndex + 'coffee'.length,
+      'node'
+    );
+  }
 }

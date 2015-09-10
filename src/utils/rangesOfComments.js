@@ -45,11 +45,7 @@ export default function rangesOfComments(source) {
 
       case LINE_COMMENT:
         if (c === NEWLINE_CODE) {
-          result.push({
-            start: rangeStart,
-            end: index,
-            type: 'line'
-          });
+          addComment();
           state = NORMAL;
         }
         break;
@@ -58,20 +54,12 @@ export default function rangesOfComments(source) {
         if (c === HASH_CODE) {
           if (source.slice(index, index + 4) === '###\n') {
             index += 3;
+            addComment();
             state = NORMAL;
-            result.push({
-              start: rangeStart,
-              end: index,
-              type: 'block'
-            });
           } else if (source.slice(index, index + 4) === '###' /* EOF */) {
             index += 3;
+            addComment();
             state = NORMAL;
-            result.push({
-              start: rangeStart,
-              end: index,
-              type: 'block'
-            });
           }
         }
         break;
@@ -97,11 +85,22 @@ export default function rangesOfComments(source) {
   }
 
   if (state === LINE_COMMENT || state === BLOCK_COMMENT) {
-    result.push({
-      start: rangeStart,
-      end: index,
-      type: state === LINE_COMMENT ? 'line' : 'block'
-    });
+    addComment();
+  }
+
+  function addComment() {
+    let type;
+
+    // Check for shebang lines.
+    if (state === BLOCK_COMMENT) {
+      type = 'block';
+    } else if (rangeStart === 0 && source[1] === '!') {
+      type = 'shebang';
+    } else {
+      type = 'line';
+    }
+
+    result.push({ start: rangeStart, end: index, type });
   }
 
   return result;
