@@ -101,6 +101,7 @@ const ORDER = {
   Null: [],
   ObjectInitialiser: ['members'],
   ObjectInitialiserMember: ['key', 'expression'],
+  OfOp: ['left', 'right'],
   PlusOp: ['left', 'right'],
   PostDecrementOp: ['expression'],
   PostIncrementOp: ['expression'],

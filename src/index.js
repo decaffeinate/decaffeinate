@@ -6,6 +6,7 @@ import patchDeclarations from './patchers/patchDeclarations';
 import patchEmbeddedJavaScript from './patchers/patchEmbeddedJavaScript';
 import patchEquality from './patchers/patchEquality';
 import patchKeywords from './patchers/patchKeywords';
+import patchOf from './patchers/patchOf';
 import patchPrototypeAccess from './patchers/patchPrototypeAccess';
 import patchRegularExpressions from './patchers/patchRegularExpressions';
 import patchReturns from './patchers/patchReturns';
@@ -87,6 +88,7 @@ export function convert(source) {
     patchWhileStart(node, patcher);
     patchRegularExpressions(node, patcher);
     patchReturns(node, patcher);
+    patchOf(node, patcher);
     patchKeywords(node, patcher);
     patchThis(node, patcher);
     patchPrototypeAccess(node, patcher);
