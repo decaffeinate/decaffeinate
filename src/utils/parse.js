@@ -168,6 +168,8 @@ function isBinaryOperator(node) {
     case 'GTOp':
     case 'GTEOp':
     case 'RemOp':
+    case 'InOp':
+    case 'OfOp':
       return true;
 
     default:
