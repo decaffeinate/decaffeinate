@@ -45,4 +45,12 @@ describe('objects', () => {
       });
     `);
   });
+
+  it.skip('handles quoted strings as keys', () => {
+    check(`
+      write 301, '', 'Location': pathname+'/'
+    `, `
+      write(301, '', {'Location': pathname+'/'});
+    `);
+  });
 });
