@@ -1460,7 +1460,7 @@ tbody.collapse.in { display: table-row-group; }
 @media (min-width: 992px) { .navbar-left { float: left !important; }
   .navbar-right { float: right !important; margin-right: -15px; }
   .navbar-right ~ .navbar-right { margin-right: 0; } }
-.navbar-default { background-color: #f5da55; border-color: #323330; }
+.navbar-default { background-color: #fff; border-color: #323330; }
 .navbar-default .navbar-brand { color: #323330; }
 .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus { color: #181917; background-color: transparent; }
 .navbar-default .navbar-text { color: #323330; }
@@ -2268,7 +2268,7 @@ body { position: relative; padding-top: 50px; }
 /* Literal.Number.Integer.Long */
 .jumbotron { position: relative; margin: 20px 0; border-radius: 0; padding: 5em 0; position: relative; overflow: hidden; }
 .navbar + .jumbotron { margin-top: 0; }
-.jumbotron::before { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; background: url(../images/logo.svg) no-repeat; background-position: center center; background-size: 150% auto; opacity: 0.3; }
+.jumbotron::before { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; background: url(../images/logo.png) no-repeat; background-position: center center; background-size: 150% auto; opacity: 0.3; }
 .jumbotron * { position: relative; z-index: 1; }
 .jumbotron h1 { font-weight: 700; letter-spacing: -0.02em; }
 .jumbotron p { font-size: 28px; font-weight: 600; }
@@ -2284,7 +2284,7 @@ body { position: relative; padding-top: 50px; }
 .jumbotron-inverse h1 { color: inherit; }
 .jumbotron-inverse .jumbotron-brand { color: #f2d025; }
 
-.logo { background: url(../images/logo.svg) no-repeat center; background-size: auto 35px; width: 120px; height: 50px; }
+.logo { background: url(../images/logo.png) no-repeat center; background-size: auto 35px; width: 250px; height: 50px; }
 .logo.navbar-brand { font: 0/0 a; color: transparent; text-shadow: none; background-color: transparent; border: 0; }
 
 .navbar { font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 600; border-bottom-width: 2px; }

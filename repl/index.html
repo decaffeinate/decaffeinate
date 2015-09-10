@@ -29,7 +29,23 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
 </head>
 <body>
+<nav role="navigation" id="header" class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="." class="navbar-brand logo">decaffeinate</a>
+    </div>
+  </div>
+</nav>
 <div class="decaffeinate-repl">
+  <form class="form decaffeinate-repl-toolbar">
+    <div class="pull-left">
+      <div class="form-group">
+        <label for="option-evaluate">
+          <input id="option-evaluate" type="checkbox"> Evaluate
+        </label>
+      </div>
+    </div>
+  </form>
   <div class="decaffeinate-repl-editor decaffeinate-repl-input"><div class="ace_editor"></div></div>
   <div class="decaffeinate-repl-editor decaffeinate-repl-output"><div class="ace_editor"></div></div>
   <div class="decaffeinate-repl-reporter decaffeinate-repl-errors"></div>

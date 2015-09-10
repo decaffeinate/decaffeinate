@@ -98,6 +98,10 @@
     this.editor.setOption('scrollPastEnd', 0.33);
   }
 
+  Editor.prototype.focus = function () {
+    this.editor.focus();
+  };
+
   /*
    * Options exposed for the REPL that will influence Decaffeinate's transpiling
    */
@@ -158,6 +162,14 @@
     this.$consoleReporter = $('.decaffeinate-repl-console');
     this.$toolBar = $('.decaffeinate-repl-toolbar');
   }
+
+  REPL.prototype.focusInput = function () {
+    this.input.focus();
+  };
+
+  REPL.prototype.focusOutput = function () {
+    this.output.focus();
+  };
 
   REPL.prototype.clearOutput = function () {
     this.$errorReporter.text('');
@@ -261,6 +273,7 @@
    * Initialize the REPL
    */
   var repl = new REPL();
+  repl.focusInput();
 
   function onSourceChange () {
     var error;
