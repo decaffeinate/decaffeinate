@@ -587,10 +587,18 @@ function patchComments(patcher) {
   var ranges = (0, _utilsRangesOfComments2['default'])(source);
 
   ranges.forEach(function (comment) {
-    if (comment.type === 'line') {
-      patchLineComment(patcher, comment);
-    } else if (comment.type === 'block') {
-      patchBlockComment(patcher, comment);
+    switch (comment.type) {
+      case 'line':
+        patchLineComment(patcher, comment);
+        break;
+
+      case 'block':
+        patchBlockComment(patcher, comment);
+        break;
+
+      case 'shebang':
+        patchShebangComment(patcher, comment);
+        break;
     }
   });
 }
@@ -607,7 +615,7 @@ function patchLineComment(patcher, range) {
 }
 
 /**
- * Patches a single-line comment.
+ * Patches a block comment.
  *
  * @param {MagicString} patcher
  * @param {{start: number, end: number, type: string}} range
@@ -668,6 +676,25 @@ function parseBlockComment(blockComment) {
   });
 
   return { head: head, tail: tail, body: body, lines: lines, doc: doc };
+}
+
+/**
+ * Patches a shebang comment.
+ *
+ * @param {MagicString} patcher
+ * @param {{start: number, end: number, type: string}} range
+ * @private
+ */
+function patchShebangComment(patcher, range) {
+  var start = range.start;
+  var end = range.end;
+
+  var commentBody = patcher.slice(start, end);
+  var coffeeIndex = commentBody.indexOf('coffee');
+
+  if (coffeeIndex >= 0) {
+    patcher.overwrite(start + coffeeIndex, start + coffeeIndex + 'coffee'.length, 'node');
+  }
 }
 module.exports = exports['default'];
 },{"../utils/rangesOfComments":68}],6:[function(require,module,exports){
@@ -5050,11 +5077,7 @@ function rangesOfComments(source) {
 
       case LINE_COMMENT:
         if (c === NEWLINE_CODE) {
-          result.push({
-            start: rangeStart,
-            end: index,
-            type: 'line'
-          });
+          addComment();
           state = NORMAL;
         }
         break;
@@ -5063,20 +5086,12 @@ function rangesOfComments(source) {
         if (c === HASH_CODE) {
           if (source.slice(index, index + 4) === '###\n') {
             index += 3;
+            addComment();
             state = NORMAL;
-            result.push({
-              start: rangeStart,
-              end: index,
-              type: 'block'
-            });
           } else if (source.slice(index, index + 4) === '###' /* EOF */) {
               index += 3;
+              addComment();
               state = NORMAL;
-              result.push({
-                start: rangeStart,
-                end: index,
-                type: 'block'
-              });
             }
         }
         break;
@@ -5102,11 +5117,22 @@ function rangesOfComments(source) {
   }
 
   if (state === LINE_COMMENT || state === BLOCK_COMMENT) {
-    result.push({
-      start: rangeStart,
-      end: index,
-      type: state === LINE_COMMENT ? 'line' : 'block'
-    });
+    addComment();
+  }
+
+  function addComment() {
+    var type = undefined;
+
+    // Check for shebang lines.
+    if (state === BLOCK_COMMENT) {
+      type = 'block';
+    } else if (rangeStart === 0 && source[1] === '!') {
+      type = 'shebang';
+    } else {
+      type = 'line';
+    }
+
+    result.push({ start: rangeStart, end: index, type: type });
   }
 
   return result;
