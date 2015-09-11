@@ -5,7 +5,6 @@ import getIndent from '../utils/getIndent';
 import indentNode from '../utils/indentNode';
 import isSafeToRepeat from '../utils/isSafeToRepeat';
 import prependLinesToBlock from '../utils/prependLinesToBlock';
-import trimmedNodeRange from '../utils/trimmedNodeRange';
 import { isForLoop } from '../utils/types';
 
 /**
@@ -16,12 +15,14 @@ import { isForLoop } from '../utils/types';
  * @returns {boolean}
  */
 export default function preprocessFor(node, patcher) {
-  if (isForLoop(node) && ensureMultilineLoop(node, patcher)) {
-    return true;
-  } else if (isForLoop(node) && convertLoopExpressionIntoIIFE(node, patcher)) {
-    return true;
-  } else if (isForLoop(node) && convertFilterIntoBodyConditional(node, patcher)) {
-    return true;
+  if (isForLoop(node)) {
+    if (ensureMultilineLoop(node, patcher)) {
+      return true;
+    } else if (convertLoopExpressionIntoIIFE(node, patcher)) {
+      return true;
+    } else if (convertFilterIntoBodyConditional(node, patcher)) {
+      return true;
+    }
   }
 
   const { keyAssignee, valAssignee, target, scope } = node;

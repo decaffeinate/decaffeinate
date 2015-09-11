@@ -17,3 +17,13 @@ export function isFunction(node) {
 export function isForLoop(node) {
   return node.type === 'ForIn' || node.type === 'ForOf';
 }
+
+/**
+ * Determines whether a node represents a `while` loop.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isWhile(node) {
+  return node.type === 'While';
+}

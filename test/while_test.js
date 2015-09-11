@@ -93,17 +93,17 @@ describe('while', () => {
     `);
   });
 
-  it.skip('handles `while` loops used as an expression', () => {
+  it('handles `while` loops used as an expression', () => {
     check(`
       a(b while c)
     `, `
-      a(() => {
-        var results = [];
+      a((() => {
+        var result = [];
         while (c) {
-          results.push(b);
+          result.push(b);
         }
-        return results;
-      }());
+        return result;
+      })());
     `);
   });
 });

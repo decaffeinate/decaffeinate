@@ -10,11 +10,23 @@ import adjustIndent from '../utils/adjustIndent';
 export default function ensureMultilineLoop(node, patcher) {
   const { keyAssignee, valAssignee, body } = node;
   let firstAssignee = null;
+  let keyword = null;
 
-  if (node.type === 'ForOf') {
-    firstAssignee = keyAssignee;
-  } else if (node.type === 'ForIn') {
-    firstAssignee = valAssignee;
+  switch (node.type) {
+    case 'ForOf':
+      firstAssignee = keyAssignee;
+      keyword = 'for';
+      break;
+
+    case 'ForIn':
+      firstAssignee = valAssignee;
+      keyword = 'for';
+      break;
+
+    case 'While':
+      firstAssignee = node.condition;
+      keyword = 'while';
+      break;
   }
 
   if (!firstAssignee) {
@@ -26,7 +38,7 @@ export default function ensureMultilineLoop(node, patcher) {
   }
 
   // e.g. `k for k of o` -> `for k of o\n  k`
-  patcher.remove(body.range[0], firstAssignee.range[0] - 'for '.length);
+  patcher.remove(body.range[0], firstAssignee.range[0] - `${keyword} `.length);
   patcher.insert(node.range[1], `\n${adjustIndent(patcher.original, node.range[0], 1)}${body.raw}`);
   return true;
 }
