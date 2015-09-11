@@ -1,11 +1,12 @@
-import adjustIndent from '../utils/adjustIndent';
+import convertLoopExpressionIntoIIFE from '../utils/convertLoopExpressionIntoIIFE';
+import ensureMultilineLoop from '../utils/ensureMultilineLoop';
 import getFreeBinding, { getFreeLoopBinding } from '../utils/getFreeBinding';
 import getIndent from '../utils/getIndent';
 import indentNode from '../utils/indentNode';
-import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import isSafeToRepeat from '../utils/isSafeToRepeat';
 import prependLinesToBlock from '../utils/prependLinesToBlock';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
+import { isForLoop } from '../utils/types';
 
 /**
  * Normalize `for` loops for easier patching.
@@ -15,11 +16,11 @@ import trimmedNodeRange from '../utils/trimmedNodeRange';
  * @returns {boolean}
  */
 export default function preprocessFor(node, patcher) {
-  if (ensureMultilineForLoop(node, patcher)) {
+  if (isForLoop(node) && ensureMultilineLoop(node, patcher)) {
     return true;
-  } else if (wrapForLoopInIIFE(node, patcher)) {
+  } else if (isForLoop(node) && convertLoopExpressionIntoIIFE(node, patcher)) {
     return true;
-  } else if (convertFilterIntoBodyConditional(node, patcher)) {
+  } else if (isForLoop(node) && convertFilterIntoBodyConditional(node, patcher)) {
     return true;
   }
 
@@ -95,67 +96,6 @@ export default function preprocessFor(node, patcher) {
 }
 
 /**
- * Re-order `for` loop parts if the body precedes the rest.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-function ensureMultilineForLoop(node, patcher) {
-  const { keyAssignee, valAssignee, body } = node;
-  let firstAssignee = null;
-
-  if (node.type === 'ForOf') {
-    firstAssignee = keyAssignee;
-  } else if (node.type === 'ForIn') {
-   firstAssignee = valAssignee;
-  }
-
-  if (!firstAssignee) {
-    return false;
-  }
-
-  if (body.range[0] >= firstAssignee.range[0]) {
-    return false;
-  }
-
-  // e.g. `k for k of o` -> `for k of o\n  k`
-  patcher.remove(body.range[0], firstAssignee.range[0] - 'for '.length);
-  patcher.insert(node.range[1], `\n${adjustIndent(patcher.original, node.range[0], 1)}${body.raw}`);
-  return true;
-}
-
-/**
- * If the `for` loop is used as an expression we wrap it in an IIFE.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-function wrapForLoopInIIFE(node, patcher) {
-  if (node.type !== 'ForIn' && node.type !== 'ForOf') {
-    return false;
-  }
-
-  if (!isExpressionResultUsed(node)) {
-    return false;
-  }
-
-  const result = getFreeBinding(node.scope, 'result');
-
-  let thisIndent = getIndent(patcher.original, node.range[0]);
-  let nextIndent = adjustIndent(patcher.original, node.range[0], 1);
-  patcher.insert(node.range[0], `do =>\n${nextIndent}${result} = []\n${thisIndent}`);
-  indentNode(node, patcher);
-  let lastStatement = node.body.statements[node.body.statements.length - 1];
-  patcher.insert(lastStatement.range[0], `${result}.push(`);
-  patcher.insert(lastStatement.range[1], `)`);
-  patcher.insert(trimmedNodeRange(node, patcher.original)[1], `\n${nextIndent}${result}`);
-
-  return true;
-}
-
-/**
  * If the `for` loop contains a `when` clause we turn it into an `if` in the
  * body of the `for` loop.
  *
@@ -164,10 +104,6 @@ function wrapForLoopInIIFE(node, patcher) {
  * @returns {boolean}
  */
 function convertFilterIntoBodyConditional(node, patcher) {
-  if (node.type !== 'ForIn' && node.type !== 'ForOf') {
-    return false;
-  }
-
   if (!node.filter) {
     return false;
   }
