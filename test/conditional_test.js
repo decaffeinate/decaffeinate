@@ -212,4 +212,8 @@ describe('conditionals', () => {
       });
     `);
   });
+
+  it('works with if then throw inline', () => {
+    check(`if a then throw new Error "Error"`, `if (a) { throw new Error("Error"); }`);
+  });
 });

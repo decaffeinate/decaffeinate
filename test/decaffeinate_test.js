@@ -236,10 +236,6 @@ describe('automatic conversions', function() {
       check(`(a=2) -> a`, `(function(a=2) { return a; });`);
     });
 
-    it.skip('works with if then throw inline', function() {
-      check(`if a then throw new Error "Error"`, `(function(a=2) { return a; });`);
-    });
-
     it.skip('works with switch case', function() {
       check(`
         switch a

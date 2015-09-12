@@ -1,3 +1,5 @@
+import isExpressionResultUsed from '../utils/isExpressionResultUsed';
+
 const LPAREN = '(';
 const RPAREN = ')';
 
@@ -11,7 +13,7 @@ export function patchThrowStart(node, patcher) {
   if (isThrowExpression(node)) {
     let pos = node.range[0];
     let str = '() => { ';
-    if (patcher.slice(pos - LPAREN.length, pos) !== LPAREN) {
+    if (patcher.original.slice(pos - LPAREN.length, pos) !== LPAREN) {
       // Doesn't start with a parenthesis, so add it to the start.
       str += LPAREN;
     }
@@ -55,6 +57,9 @@ function isThrowExpression(node) {
     case 'Function':
     case 'BoundFunction':
       return node.parentNode.body !== node;
+
+    case 'Conditional':
+      return isExpressionResultUsed(node.parentNode);
 
     default:
       return true;
