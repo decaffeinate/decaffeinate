@@ -102,7 +102,6 @@ function fixRange(node, map, source) {
       return;
     }
 
-    console.log(node);
     throw new Error(
       'BUG! Could not fix range for ' + node.type +
       ' at line ' + node.line + ', column ' + node.column
@@ -170,6 +169,7 @@ function isBinaryOperator(node) {
     case 'RemOp':
     case 'InOp':
     case 'OfOp':
+    case 'InstanceofOp':
       return true;
 
     default:

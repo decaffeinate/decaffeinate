@@ -16,4 +16,12 @@ describe('of operator', () => {
       a(b, c.d in e);
     `);
   });
+
+  it('works with negated `of`', () => {
+    check(`
+      a not of b
+    `, `
+      !(a in b);
+    `);
+  });
 });

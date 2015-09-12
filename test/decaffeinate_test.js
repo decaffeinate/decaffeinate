@@ -236,27 +236,6 @@ describe('automatic conversions', function() {
       check(`(a=2) -> a`, `(function(a=2) { return a; });`);
     });
 
-    it.skip('works with switch case', function() {
-      check(`
-        switch a
-          when 1
-            hi()
-          when '2'
-            ho()
-          else
-            hu()
-      `, `
-      `);
-    });
-
-    it.skip('works with for in range ', function() {
-      check(`
-        for i in [1..10]
-          console.log(i);
-      `, `
-      `);
-    });
-
     it('works with conditions and NEQOp', function() {
       check(`
         b = if (a? and a!="") then 1
