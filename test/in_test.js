@@ -46,4 +46,12 @@ describe('in operator', () => {
       }
     `);
   });
+
+  it('works with negated `in`', () => {
+    check(`
+      a not in b
+    `, `
+      b.indexOf(a) < 0;
+    `);
+  });
 });

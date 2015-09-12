@@ -27,7 +27,8 @@ export default function preprocessIn(node, patcher) {
       indexable = `(${indexable})`;
     }
 
-    let replacement = `${prefix}${indexable}.indexOf(${element}) >= 0`;
+    let isNegated = patcher.original.slice(node.left.range[1], node.right.range[0]).indexOf('not in') >= 0;
+    let replacement = `${prefix}${indexable}.indexOf(${element}) ${isNegated ? '<' : '>='} 0`;
 
     if (needsParentheses) {
       replacement = `(${replacement})`;
