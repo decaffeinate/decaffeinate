@@ -1351,7 +1351,7 @@ function patchFunctionStart(node, patcher) {
   switch (node.type) {
     case 'Function':
       if (!isMethodDeclaration(node)) {
-        patchUnboundFunctionStart(node, patcher);
+        patchUnboundFunctionStart(node, patcher, isConciseObjectMethod(node));
       }
       break;
 
@@ -1376,7 +1376,7 @@ function patchFunctionStart(node, patcher) {
 /**
  * Determines whether a node is a method declaration.
  *
- * @param node
+ * @param {Object} node
  * @returns {boolean}
  */
 function isMethodDeclaration(node) {
@@ -1384,17 +1384,31 @@ function isMethodDeclaration(node) {
 }
 
 /**
+ * Determines whether a node is a concise method declaration.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isConciseObjectMethod(node) {
+  return (0, _utilsTypes.isFunction)(node) && node.parentNode.type === 'ObjectInitialiserMember';
+}
+
+/**
  * Converts unbound functions into regular functions.
  *
  * @param {Object} node Function
  * @param {MagicString} patcher
+ * @param {boolean=} concise
  */
 function patchUnboundFunctionStart(node, patcher) {
+  var concise = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+
   var start = node.range[0];
+  var fn = concise ? '' : 'function';
   if (patcher.slice(start, start + 2) === '->') {
-    patcher.overwrite(start, start + 2, ((0, _utilsIsStatement2['default'])(node) ? '(' : '') + 'function() {');
+    patcher.overwrite(start, start + 2, '' + ((0, _utilsIsStatement2['default'])(node) ? '(' : '') + fn + '() {');
   } else {
-    patcher.insert(start, (0, _utilsIsStatement2['default'])(node) ? '(function' : 'function');
+    patcher.insert(start, (0, _utilsIsStatement2['default'])(node) ? '(' + fn : fn);
 
     var arrowStart = patcher.original.indexOf('->', start);
 
@@ -1564,6 +1578,8 @@ function patchObjectBraceOpening(node, patcher) {
     } else if (isObjectAsStatement(node)) {
       patcher.insert(node.range[0], '(');
     }
+  } else if (node.type === 'ObjectInitialiserMember' && node.expression.type === 'Function') {
+    patcher.overwrite(node.key.range[1], node.expression.range[0], '');
   }
 }
 
