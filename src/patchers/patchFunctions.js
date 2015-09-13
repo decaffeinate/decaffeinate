@@ -15,7 +15,7 @@ export function patchFunctionStart(node, patcher) {
   switch (node.type) {
     case 'Function':
       if (!isMethodDeclaration(node)) {
-        patchUnboundFunctionStart(node, patcher);
+        patchUnboundFunctionStart(node, patcher, isConciseObjectMethod(node));
       }
       break;
 
@@ -40,7 +40,7 @@ export function patchFunctionStart(node, patcher) {
 /**
  * Determines whether a node is a method declaration.
  *
- * @param node
+ * @param {Object} node
  * @returns {boolean}
  */
 function isMethodDeclaration(node) {
@@ -49,17 +49,29 @@ function isMethodDeclaration(node) {
 }
 
 /**
+ * Determines whether a node is a concise method declaration.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isConciseObjectMethod(node) {
+  return isFunction(node) && node.parentNode.type === 'ObjectInitialiserMember';
+}
+
+/**
  * Converts unbound functions into regular functions.
  *
  * @param {Object} node Function
  * @param {MagicString} patcher
+ * @param {boolean=} concise
  */
-function patchUnboundFunctionStart(node, patcher) {
+function patchUnboundFunctionStart(node, patcher, concise=false) {
   const start = node.range[0];
+  const fn = concise ? '' : 'function';
   if (patcher.slice(start, start + 2) === '->') {
-    patcher.overwrite(start, start + 2, `${isStatement(node) ? '(' : ''}function() {`);
+    patcher.overwrite(start, start + 2, `${isStatement(node) ? '(' : ''}${fn}() {`);
   } else {
-    patcher.insert(start, isStatement(node) ? '(function' : 'function');
+    patcher.insert(start, isStatement(node) ? `(${fn}` : fn);
 
     let arrowStart = patcher.original.indexOf('->', start);
 

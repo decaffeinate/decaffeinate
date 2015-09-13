@@ -34,15 +34,13 @@ describe('objects', () => {
     `);
   });
 
-  it.skip('uses concise methods for functions in objects', () => {
+  it('uses concise methods for functions in objects', () => {
     check(`
       a: -> true
       b  :  -> false
     `, `
-      ({
-        a() { return true; },
-        b() { return false; }
-      });
+      ({a() { return true; },
+      b() { return false; }});
     `);
   });
 

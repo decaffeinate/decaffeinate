@@ -504,7 +504,7 @@ describe('automatic conversions', function() {
           d: 1
       `, `
         a({
-          b: function() {
+          b() {
             return c;
           },
 
@@ -523,7 +523,7 @@ describe('automatic conversions', function() {
         d e
       `, `
         a({
-          b: function() {
+          b() {
             return c;
           }
         });

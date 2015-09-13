@@ -5,6 +5,8 @@ export function patchObjectBraceOpening(node, patcher) {
     } else if (isObjectAsStatement(node)) {
       patcher.insert(node.range[0], '(');
     }
+  } else if (node.type === 'ObjectInitialiserMember' && node.expression.type === 'Function') {
+    patcher.overwrite(node.key.range[1], node.expression.range[0], '');
   }
 }
 
