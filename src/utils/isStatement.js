@@ -1,3 +1,5 @@
+import { isFunction } from './types';
+
 /**
  * Determines whether the given node is a statement.
  *
@@ -13,7 +15,7 @@ export default function isStatement(node) {
     return false;
   }
 
-  if (node.parentNode.parentNode.type === 'Function' || node.parentNode.parentNode.type === 'BoundFunction') {
+  if (isFunction(node.parentNode.parentNode)) {
     // If it's the last statement then it's an implicit return.
     const statements = node.parentNode.statements;
     return statements[statements.length - 1] !== node;

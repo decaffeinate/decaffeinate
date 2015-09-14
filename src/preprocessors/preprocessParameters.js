@@ -2,13 +2,14 @@ import adjustIndent from '../utils/adjustIndent';
 import getFreeBinding from '../utils/getFreeBinding';
 import isMultiline from '../utils/isMultiline';
 import isParameter from '../utils/isParameter';
+import { isFunction } from '../utils/types';
 
 /**
  * @param {Object} node
  * @param {MagicString} patcher
  */
 export default function preprocessParameters(node, patcher) {
-  if (node.type === 'Function' || node.type === 'BoundFunction') {
+  if (isFunction(node)) {
     const assignments = [];
 
     node.parameters.forEach(param => {

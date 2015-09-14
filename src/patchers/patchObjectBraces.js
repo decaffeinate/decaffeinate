@@ -1,3 +1,5 @@
+import { isFunction } from '../utils/types';
+
 export function patchObjectBraceOpening(node, patcher) {
   if (node.type === 'ObjectInitialiser' && node.parentNode.type !== 'FunctionApplication') {
     if (patcher.original[node.range[0]] !== '{') {
@@ -33,7 +35,7 @@ function isObjectAsStatement(node) {
     return false;
   }
 
-  if (node.parentNode.parentNode.type === 'Function' || node.parentNode.parentNode.type === 'BoundFunction') {
+  if (isFunction(node.parentNode.parentNode)) {
     // If it's the last statement then it's an implicit return.
     const statements = node.parentNode.statements;
     return statements[statements.length - 1] !== node;
