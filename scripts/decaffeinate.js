@@ -231,13 +231,13 @@ function convert(_x) {
 
       (0, _patchersPatchTry.patchTryEnd)(node, patcher);
       (0, _patchersPatchWhile.patchWhileEnd)(node, patcher);
-      (0, _patchersPatchConditional.patchConditionalEnd)(node, patcher);
       (0, _patchersPatchThrow.patchThrowEnd)(node, patcher);
       (0, _patchersPatchExistentialOperator.patchExistentialOperatorEnd)(node, patcher);
       (0, _patchersPatchFunctions.patchFunctionEnd)(node, patcher);
       (0, _patchersPatchClass.patchClassEnd)(node, patcher);
       (0, _patchersPatchFor.patchForEnd)(node, patcher);
       (0, _patchersPatchObjectBraces.patchObjectBraceClosing)(node, patcher);
+      (0, _patchersPatchConditional.patchConditionalEnd)(node, patcher);
       (0, _patchersPatchSlice.patchSliceEnd)(node, patcher);
       (0, _patchersPatchCalls.patchCallClosing)(node, patcher);
       (0, _patchersPatchSemicolons2['default'])(node, patcher);
