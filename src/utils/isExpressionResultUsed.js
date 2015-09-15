@@ -1,4 +1,5 @@
 import isImplicitlyReturned from './isImplicitlyReturned';
+import { isConsequentOrAlternate } from './types';
 
 /**
  * Determines whether a node's resulting value could be used.
@@ -11,11 +12,16 @@ export default function isExpressionResultUsed(node) {
     return false;
   }
 
-  if (node.parentNode.type === 'Conditional' && node.parentNode.alternate === node) {
+  if (isConsequentOrAlternate(node)) {
     return false;
   }
 
-  if (node.parentNode.type !== 'Block') {
+  const parentNode = node.parentNode;
+  if (parentNode.type === 'Function' && parentNode.parameters.indexOf(node) >= 0) {
+    return false;
+  }
+
+  if (parentNode.type !== 'Block') {
     return true;
   }
 

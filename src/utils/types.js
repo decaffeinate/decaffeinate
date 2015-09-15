@@ -27,3 +27,15 @@ export function isForLoop(node) {
 export function isWhile(node) {
   return node.type === 'While';
 }
+
+/**
+ * Determines whether a node is the true-part or false-part of a conditional.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isConsequentOrAlternate(node) {
+  const parentNode = node.parentNode;
+  return parentNode.type === 'Conditional' && (
+    parentNode.consequent === node || parentNode.alternate === node);
+}

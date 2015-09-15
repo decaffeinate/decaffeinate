@@ -9,6 +9,22 @@ describe('objects', () => {
     `);
   });
 
+  it('allows objects as conditional consequents', () => {
+    check(`
+      if a then { b: c }
+    `, `
+      if (a) { ({ b: c }); }
+    `);
+  });
+
+  it('allows objects as conditional alternates', () => {
+    check(`
+      if a then b else { c: d }
+    `, `
+      if (a) { b; } else { ({ c: d }); }
+    `);
+  });
+
   it.skip('indents and loosely wraps multi-line objects if needed', () => {
     check(`
       a: b

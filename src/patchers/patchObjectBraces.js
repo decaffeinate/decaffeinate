@@ -1,5 +1,10 @@
-import { isFunction } from '../utils/types';
+import isImplicitlyReturned from '../utils/isImplicitlyReturned';
+import { isConsequentOrAlternate } from '../utils/types';
 
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
 export function patchObjectBraceOpening(node, patcher) {
   if (node.type === 'ObjectInitialiser' && node.parentNode.type !== 'FunctionApplication') {
     if (patcher.original[node.range[0]] !== '{') {
@@ -13,8 +18,8 @@ export function patchObjectBraceOpening(node, patcher) {
 }
 
 /**
- * @param node
- * @param patcher
+ * @param {Object} node
+ * @param {MagicString} patcher
  */
 export function patchObjectBraceClosing(node, patcher) {
   if (node.type === 'ObjectInitialiser' && node.parentNode.type !== 'FunctionApplication') {
@@ -31,15 +36,9 @@ export function patchObjectBraceClosing(node, patcher) {
  * @returns {boolean}
  */
 function isObjectAsStatement(node) {
-  if (node.parentNode.type !== 'Block') {
+  if (node.parentNode.type !== 'Block' && !isConsequentOrAlternate(node)) {
     return false;
   }
 
-  if (isFunction(node.parentNode.parentNode)) {
-    // If it's the last statement then it's an implicit return.
-    const statements = node.parentNode.statements;
-    return statements[statements.length - 1] !== node;
-  }
-
-  return true;
+  return !isImplicitlyReturned(node);
 }
