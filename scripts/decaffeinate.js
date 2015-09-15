@@ -1571,6 +1571,19 @@ Object.defineProperty(exports, '__esModule', {
 exports.patchObjectBraceOpening = patchObjectBraceOpening;
 exports.patchObjectBraceClosing = patchObjectBraceClosing;
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _utilsIsImplicitlyReturned = require('../utils/isImplicitlyReturned');
+
+var _utilsIsImplicitlyReturned2 = _interopRequireDefault(_utilsIsImplicitlyReturned);
+
+var _utilsTypes = require('../utils/types');
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+
 function patchObjectBraceOpening(node, patcher) {
   if (node.type === 'ObjectInitialiser' && node.parentNode.type !== 'FunctionApplication') {
     if (patcher.original[node.range[0]] !== '{') {
@@ -1584,8 +1597,8 @@ function patchObjectBraceOpening(node, patcher) {
 }
 
 /**
- * @param node
- * @param patcher
+ * @param {Object} node
+ * @param {MagicString} patcher
  */
 
 function patchObjectBraceClosing(node, patcher) {
@@ -1603,19 +1616,13 @@ function patchObjectBraceClosing(node, patcher) {
  * @returns {boolean}
  */
 function isObjectAsStatement(node) {
-  if (node.parentNode.type !== 'Block') {
+  if (node.parentNode.type !== 'Block' && !(0, _utilsTypes.isConsequentOrAlternate)(node)) {
     return false;
   }
 
-  if (node.parentNode.parentNode.type === 'Function' || node.parentNode.parentNode.type === 'BoundFunction') {
-    // If it's the last statement then it's an implicit return.
-    var statements = node.parentNode.statements;
-    return statements[statements.length - 1] !== node;
-  }
-
-  return true;
+  return !(0, _utilsIsImplicitlyReturned2['default'])(node);
 }
-},{}],15:[function(require,module,exports){
+},{"../utils/isImplicitlyReturned":60,"../utils/types":81}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -2982,13 +2989,15 @@ var _utilsIsParameter = require('../utils/isParameter');
 
 var _utilsIsParameter2 = _interopRequireDefault(_utilsIsParameter);
 
+var _utilsTypes = require('../utils/types');
+
 /**
  * @param {Object} node
  * @param {MagicString} patcher
  */
 
 function preprocessParameters(node, patcher) {
-  if (node.type === 'Function' || node.type === 'BoundFunction') {
+  if ((0, _utilsTypes.isFunction)(node)) {
     var _ret = (function () {
       var assignments = [];
 
@@ -3054,7 +3063,7 @@ function getThisDotParameter(node) {
   }
 }
 module.exports = exports['default'];
-},{"../utils/adjustIndent":47,"../utils/getFreeBinding":54,"../utils/isMultiline":61,"../utils/isParameter":62}],40:[function(require,module,exports){
+},{"../utils/adjustIndent":47,"../utils/getFreeBinding":54,"../utils/isMultiline":61,"../utils/isParameter":62,"../utils/types":81}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -4367,6 +4376,8 @@ var _isImplicitlyReturned = require('./isImplicitlyReturned');
 
 var _isImplicitlyReturned2 = _interopRequireDefault(_isImplicitlyReturned);
 
+var _types = require('./types');
+
 /**
  * Determines whether a node's resulting value could be used.
  *
@@ -4379,11 +4390,16 @@ function isExpressionResultUsed(node) {
     return false;
   }
 
-  if (node.parentNode.type === 'Conditional' && node.parentNode.alternate === node) {
+  if ((0, _types.isConsequentOrAlternate)(node)) {
     return false;
   }
 
-  if (node.parentNode.type !== 'Block') {
+  var parentNode = node.parentNode;
+  if (parentNode.type === 'Function' && parentNode.parameters.indexOf(node) >= 0) {
+    return false;
+  }
+
+  if (parentNode.type !== 'Block') {
     return true;
   }
 
@@ -4391,7 +4407,7 @@ function isExpressionResultUsed(node) {
 }
 
 module.exports = exports['default'];
-},{"./isImplicitlyReturned":60}],59:[function(require,module,exports){
+},{"./isImplicitlyReturned":60,"./types":81}],59:[function(require,module,exports){
 /**
  * Determines whether a node is followed by a particular token.
  *
@@ -4735,18 +4751,21 @@ function isSafeToRepeat(_x) {
 
 module.exports = exports['default'];
 },{}],64:[function(require,module,exports){
-/**
- * Determines whether the given node is a statement.
- *
- * @param {Object} node
- * @returns {boolean}
- */
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports['default'] = isStatement;
+
+var _types = require('./types');
+
+/**
+ * Determines whether the given node is a statement.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
 
 function isStatement(node) {
   if (!node || !node.parentNode) {
@@ -4757,7 +4776,7 @@ function isStatement(node) {
     return false;
   }
 
-  if (node.parentNode.parentNode.type === 'Function' || node.parentNode.parentNode.type === 'BoundFunction') {
+  if ((0, _types.isFunction)(node.parentNode.parentNode)) {
     // If it's the last statement then it's an implicit return.
     var statements = node.parentNode.statements;
     return statements[statements.length - 1] !== node;
@@ -4769,7 +4788,7 @@ function isStatement(node) {
 }
 
 module.exports = exports['default'];
-},{}],65:[function(require,module,exports){
+},{"./types":81}],65:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -5864,6 +5883,7 @@ Object.defineProperty(exports, '__esModule', {
 exports.isFunction = isFunction;
 exports.isForLoop = isForLoop;
 exports.isWhile = isWhile;
+exports.isConsequentOrAlternate = isConsequentOrAlternate;
 
 function isFunction(node) {
   return node.type === 'Function' || node.type === 'BoundFunction';
@@ -5889,6 +5909,18 @@ function isForLoop(node) {
 
 function isWhile(node) {
   return node.type === 'While';
+}
+
+/**
+ * Determines whether a node is the true-part or false-part of a conditional.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+
+function isConsequentOrAlternate(node) {
+  var parentNode = node.parentNode;
+  return parentNode.type === 'Conditional' && (parentNode.consequent === node || parentNode.alternate === node);
 }
 },{}],82:[function(require,module,exports){
 
@@ -41127,6 +41159,7 @@ module.exports={
 		};
 
 		MagicString.prototype.insert = function insert(index, content) {
+			console.log('INSERT %d %s', index, JSON.stringify(content));
 			if (typeof content !== 'string') {
 				throw new TypeError('inserted content must be a string');
 			}
@@ -41178,6 +41211,7 @@ module.exports={
 		};
 
 		MagicString.prototype.overwrite = function overwrite(start, end, content) {
+			console.log('OVERWRITE %d %d %s', start, end, JSON.stringify(content));
 			if (typeof content !== 'string') {
 				throw new TypeError('replacement content must be a string');
 			}
@@ -41211,6 +41245,7 @@ module.exports={
 		};
 
 		MagicString.prototype.remove = function remove(start, end) {
+			console.log('REMOVE %d %d', start, end);
 			if (start < 0 || end > this.mappings.length) {
 				throw new Error('Character is out of bounds');
 			}
