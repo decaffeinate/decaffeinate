@@ -115,13 +115,13 @@ export function convert(source) {
 
     patchTryEnd(node, patcher);
     patchWhileEnd(node, patcher);
-    patchConditionalEnd(node, patcher);
     patchThrowEnd(node, patcher);
     patchExistentialOperatorEnd(node, patcher);
     patchFunctionEnd(node, patcher);
     patchClassEnd(node, patcher);
     patchForEnd(node, patcher);
     patchObjectBraceClosing(node, patcher);
+    patchConditionalEnd(node, patcher);
     patchSliceEnd(node, patcher);
     patchCallClosing(node, patcher);
     patchSemicolons(node, patcher);

@@ -163,6 +163,10 @@ describe('conditionals', () => {
     check(`a(if b then c)`, `a(b ? c : undefined);`);
   });
 
+  it('adds ternary operator code after any insertions for the consequent', () => {
+    check(`a(if b then c: d)`, `a(b ? ({c: d}) : undefined);`);
+  });
+
   it('keeps single-line POST-`if`', () => {
     check(`a if b`, `if (b) { a; }`);
     check(`
