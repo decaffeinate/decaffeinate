@@ -2,6 +2,7 @@ import Scope from './Scope';
 import buildLineAndColumnMap from './buildLineAndColumnMap';
 import findCounterpartCharacter from './findCounterpartCharacter';
 import traverse from './traverse';
+import { isBinaryOperator } from './types';
 import { parse as coffeeScriptParse } from 'coffee-script-redux';
 
 /**
@@ -149,32 +150,6 @@ function fixBinaryOperator(node, map, source) {
   node.column = left.column;
 
   return true;
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- * @private
- */
-function isBinaryOperator(node) {
-  switch (node.type) {
-    case 'LogicalAndOp':
-    case 'NEQOp':
-    case 'MultiplyOp':
-    case 'PlusOp':
-    case 'LTOp':
-    case 'LTEOp':
-    case 'GTOp':
-    case 'GTEOp':
-    case 'RemOp':
-    case 'InOp':
-    case 'OfOp':
-    case 'InstanceofOp':
-      return true;
-
-    default:
-      return false;
-  }
 }
 
 /**

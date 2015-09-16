@@ -39,3 +39,30 @@ export function isConsequentOrAlternate(node) {
   return parentNode.type === 'Conditional' && (
     parentNode.consequent === node || parentNode.alternate === node);
 }
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isBinaryOperator(node) {
+  switch (node.type) {
+    case 'DivideOp':
+    case 'EQOp':
+    case 'GTEOp':
+    case 'GTOp':
+    case 'InOp':
+    case 'InstanceofOp':
+    case 'LTEOp':
+    case 'LTOp':
+    case 'LogicalAndOp':
+    case 'MultiplyOp':
+    case 'NEQOp':
+    case 'OfOp':
+    case 'PlusOp':
+    case 'RemOp':
+      return true;
+
+    default:
+      return false;
+  }
+}
