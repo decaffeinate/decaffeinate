@@ -73,6 +73,7 @@ const ORDER = {
   Constructor: ['expression'],
   Continue: [],
   DeleteOp: ['expression'],
+  DivideOp: ['left', 'right'],
   DoOp: ['expression'],
   DefaultParam: ['param', 'default'],
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
