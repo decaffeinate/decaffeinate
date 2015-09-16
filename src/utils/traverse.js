@@ -36,24 +36,6 @@ export default function traverse(node, callback) {
   }
 }
 
-/**
- * Traverses an AST node, calling a callback for each node in the hierarchy
- * depth-first in source order.
- *
- * @param {Object} node
- * @param {function(Object, boolean): ?boolean} callback
- */
-export function depthFirstTraverse(node, callback) {
-  traverse(node, (n, descend, isLeaf) => {
-    if (isLeaf) {
-      return callback(n, isLeaf);
-    } else {
-      descend(n);
-      return callback(n, isLeaf);
-    }
-  });
-}
-
 const ORDER = {
   ArrayInitialiser: ['members'],
   AssignOp: ['assignee', 'expression'],
