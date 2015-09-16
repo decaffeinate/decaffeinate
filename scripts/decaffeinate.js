@@ -4933,6 +4933,8 @@ var _traverse = require('./traverse');
 
 var _traverse2 = _interopRequireDefault(_traverse);
 
+var _types = require('./types');
+
 var _coffeeScriptRedux = require('coffee-script-redux');
 
 /**
@@ -5059,7 +5061,7 @@ function rawMatchesRange(node, source) {
  * @private
  */
 function fixBinaryOperator(node, map, source) {
-  if (!isBinaryOperator(node)) {
+  if (!(0, _types.isBinaryOperator)(node)) {
     return false;
   }
 
@@ -5078,32 +5080,6 @@ function fixBinaryOperator(node, map, source) {
   node.column = left.column;
 
   return true;
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- * @private
- */
-function isBinaryOperator(node) {
-  switch (node.type) {
-    case 'LogicalAndOp':
-    case 'NEQOp':
-    case 'MultiplyOp':
-    case 'PlusOp':
-    case 'LTOp':
-    case 'LTEOp':
-    case 'GTOp':
-    case 'GTEOp':
-    case 'RemOp':
-    case 'InOp':
-    case 'OfOp':
-    case 'InstanceofOp':
-      return true;
-
-    default:
-      return false;
-  }
 }
 
 /**
@@ -5136,7 +5112,7 @@ function shrinkPastParentheses(node, map, source, adjustPosition) {
   return false;
 }
 module.exports = exports['default'];
-},{"./Scope":46,"./buildLineAndColumnMap":49,"./findCounterpartCharacter":53,"./traverse":79,"coffee-script-redux":97}],69:[function(require,module,exports){
+},{"./Scope":46,"./buildLineAndColumnMap":49,"./findCounterpartCharacter":53,"./traverse":79,"./types":81,"coffee-script-redux":97}],69:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -5645,7 +5621,6 @@ Object.defineProperty(exports, '__esModule', {
   value: true
 });
 exports['default'] = traverse;
-exports.depthFirstTraverse = depthFirstTraverse;
 
 function traverse(node, callback) {
   var descended = false;
@@ -5672,25 +5647,6 @@ function traverse(node, callback) {
   if (!descended && shouldDescend !== false) {
     descend(node);
   }
-}
-
-/**
- * Traverses an AST node, calling a callback for each node in the hierarchy
- * depth-first in source order.
- *
- * @param {Object} node
- * @param {function(Object, boolean): ?boolean} callback
- */
-
-function depthFirstTraverse(node, callback) {
-  traverse(node, function (n, descend, isLeaf) {
-    if (isLeaf) {
-      return callback(n, isLeaf);
-    } else {
-      descend(n);
-      return callback(n, isLeaf);
-    }
-  });
 }
 
 var ORDER = {
@@ -5789,6 +5745,7 @@ function childPropertyNames(node) {
 
   return names;
 }
+module.exports = exports['default'];
 },{}],80:[function(require,module,exports){
 'use strict';
 
@@ -5885,6 +5842,7 @@ exports.isFunction = isFunction;
 exports.isForLoop = isForLoop;
 exports.isWhile = isWhile;
 exports.isConsequentOrAlternate = isConsequentOrAlternate;
+exports.isBinaryOperator = isBinaryOperator;
 
 function isFunction(node) {
   return node.type === 'Function' || node.type === 'BoundFunction';
@@ -5922,6 +5880,34 @@ function isWhile(node) {
 function isConsequentOrAlternate(node) {
   var parentNode = node.parentNode;
   return parentNode.type === 'Conditional' && (parentNode.consequent === node || parentNode.alternate === node);
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+
+function isBinaryOperator(node) {
+  switch (node.type) {
+    case 'DivideOp':
+    case 'EQOp':
+    case 'GTEOp':
+    case 'GTOp':
+    case 'InOp':
+    case 'InstanceofOp':
+    case 'LTEOp':
+    case 'LTOp':
+    case 'LogicalAndOp':
+    case 'MultiplyOp':
+    case 'NEQOp':
+    case 'OfOp':
+    case 'PlusOp':
+    case 'RemOp':
+      return true;
+
+    default:
+      return false;
+  }
 }
 },{}],82:[function(require,module,exports){
 
