@@ -60,11 +60,19 @@ describe('objects', () => {
     `);
   });
 
-  it.skip('handles quoted strings as keys', () => {
+  it('handles quoted strings as keys', () => {
     check(`
       write 301, '', 'Location': pathname+'/'
     `, `
       write(301, '', {'Location': pathname+'/'});
+    `);
+  });
+
+  it('adds braces to implicit objects that are not the first argument', () => {
+    check(`
+      a b, c: d
+    `, `
+      a(b, {c: d});
     `);
   });
 });

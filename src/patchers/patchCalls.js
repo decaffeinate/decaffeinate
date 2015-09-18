@@ -64,6 +64,10 @@ export function patchCallOpening(node, patcher) {
           isImplicitObject(firstArgument, patcher.original) ? '({' : '('
         );
       }
+
+      if (firstArgument !== lastArgument && isImplicitObject(lastArgument, patcher.original)) {
+        patcher.insert(lastArgument.range[0], '{');
+      }
     }
   }
 }
