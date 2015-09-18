@@ -332,6 +332,10 @@ function patchCallOpening(node, patcher) {
       } else {
         patcher.insert(callee.range[1], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
       }
+
+      if (firstArgument !== lastArgument && isImplicitObject(lastArgument, patcher.original)) {
+        patcher.insert(lastArgument.range[0], '{');
+      }
     }
   }
 }
