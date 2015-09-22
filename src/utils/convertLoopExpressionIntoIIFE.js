@@ -24,8 +24,9 @@ export default function convertLoopExpressionIntoIIFE(node, patcher) {
   patcher.insert(node.range[0], `do =>\n${nextIndent}${result} = []\n${thisIndent}`);
   indentNode(node, patcher);
   let lastStatement = node.body.statements[node.body.statements.length - 1];
-  patcher.insert(lastStatement.range[0], `${result}.push(`);
-  patcher.insert(lastStatement.range[1], `)`);
+  let lastStatementRange = trimmedNodeRange(lastStatement, patcher.original);
+  patcher.insert(lastStatementRange[0], `${result}.push(`);
+  patcher.insert(lastStatementRange[1], `)`);
   patcher.insert(trimmedNodeRange(node, patcher.original)[1], `\n${nextIndent}${result}`);
 
   return true;

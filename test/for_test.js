@@ -311,6 +311,36 @@ describe('for loops', () => {
     `);
   });
 
+  it('closes the call to `result.push()` at the right position', () => {
+    check(`
+      ->
+        for a in b
+          if a
+            b
+
+      # this is here to make the real end of "a" be much later
+      stuff
+    `, `
+      (function() {
+        return (() => {
+          var result = [];
+          for (var i = 0, a; i < b.length; i++) {
+            a = b[i];
+            result.push((() => {
+              if (a) {
+                return b;
+              }
+            })());
+          }
+          return result;
+        })();
+      });
+
+      // this is here to make the real end of "a" be much later
+      stuff;
+    `);
+  });
+
   it('generates counters for nested loops that follow typical convention', () => {
     check(`
       for a in b

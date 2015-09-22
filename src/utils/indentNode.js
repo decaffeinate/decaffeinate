@@ -1,5 +1,6 @@
 import determineIndent from './determineIndent';
 import repeat from 'repeat-string';
+import trimmedNodeRange from './trimmedNodeRange';
 
 /**
  * Indent a node by the given number of levels.
@@ -14,10 +15,11 @@ export default function indentNode(node, patcher, levels=1) {
   }
 
   const source = patcher.original;
-  let offset = node.range[0];
+  const range = trimmedNodeRange(node, source);
+  let offset = range[0];
   const indent = repeat(determineIndent(source), levels);
 
-  while (offset < node.range[1]) {
+  while (offset < range[1]) {
     patcher.insert(offset, indent);
     offset = source.indexOf('\n', offset + '\n'.length);
     if (offset < 0) {
