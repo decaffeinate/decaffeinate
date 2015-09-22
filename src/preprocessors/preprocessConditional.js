@@ -1,3 +1,6 @@
+import makeIIFE from '../utils/makeIIFE';
+import isExpressionResultUsed from '../utils/isExpressionResultUsed';
+import isMultiline from '../utils/isMultiline';
 import sourceBetween from '../utils/sourceBetween';
 
 /**
@@ -20,6 +23,9 @@ export default function preprocessConditional(node, patcher) {
       // Found a POST-if/unless, transform it.
       let ifOrUnlessToken = sourceBetween(patcher.original, consequent, condition).trim();
       patcher.overwrite(node.range[0], node.range[1], `${ifOrUnlessToken} ${condition.raw.trim()} then ${consequent.raw.trim()}`);
+      return true;
+    } else if (isExpressionResultUsed(node) && isMultiline(patcher.original, node)) {
+      makeIIFE(node, patcher);
       return true;
     }
   }

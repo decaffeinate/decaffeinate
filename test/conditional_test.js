@@ -167,6 +167,30 @@ describe('conditionals', () => {
     check(`a(if b then c: d)`, `a(b ? ({c: d}) : undefined);`);
   });
 
+  it('wraps multi-line conditionals used as expressions in an IIFE', () => {
+    check(`
+      ->
+        z(if a
+          c = a
+          a + c
+        else
+          d = a
+          a - d)
+    `, `
+      (function() {
+        return z((() => {
+          if (a) {
+            var c = a;
+            return a + c;
+          } else {
+            var d = a;
+            return a - d;
+          }
+        })());
+      });
+    `);
+  });
+
   it('keeps single-line POST-`if`', () => {
     check(`a if b`, `if (b) { a; }`);
     check(`
