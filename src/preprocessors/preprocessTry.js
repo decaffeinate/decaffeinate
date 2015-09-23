@@ -1,7 +1,9 @@
 import getFreeBinding from '../utils/getFreeBinding';
 import getIndent from '../utils/getIndent';
 import indexOfIgnoringComments from '../utils/indexOfIgnoringComments';
+import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import isMultiline from '../utils/isMultiline';
+import makeIIFE from '../utils/makeIIFE';
 import sourceBetween from '../utils/sourceBetween';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 
@@ -24,6 +26,11 @@ import trimmedNodeRange from '../utils/trimmedNodeRange';
  */
 export default function preprocessTry(node, patcher) {
   if (node.type === 'Try') {
+    if (isExpressionResultUsed(node)) {
+      makeIIFE(node, patcher);
+      return true;
+    }
+
     if (!node.catchAssignee) {
       if (node.catchBody) {
         let nodeBeforeCatchClause = node.body;

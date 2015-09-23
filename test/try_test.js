@@ -112,4 +112,14 @@ describe('try', () => {
       try { a; } catch (_error) {}
     `);
   });
+
+  it('works with single-line try used as an expression', () => {
+    check(`
+      a = try b()
+    `, `
+      var a = (() => {
+        try { return b(); } catch (_error) {}
+      })();
+    `);
+  });
 });
