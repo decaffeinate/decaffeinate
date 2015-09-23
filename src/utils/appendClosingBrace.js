@@ -1,5 +1,6 @@
-import getIndent from '../utils/getIndent';
-import trimmedNodeRange from '../utils/trimmedNodeRange';
+import getIndent from './getIndent';
+import isMultiline from './isMultiline';
+import trimmedNodeRange from './trimmedNodeRange';
 
 const NEWLINE = '\n';
 const SPACE = ' ';
@@ -16,6 +17,12 @@ const HASH = '#';
 export default function appendClosingBrace(node, patcher) {
   const source = patcher.original;
   const originalInsertionPoint = trimmedNodeRange(node, source)[1];
+
+  if (!isMultiline(source, node)) {
+    patcher.insert(originalInsertionPoint, '}');
+    return originalInsertionPoint;
+  }
+
   let insertionPoint = seekToEndOfStatementOrLine(source, originalInsertionPoint);
 
   patcher.insert(

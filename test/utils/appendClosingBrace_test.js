@@ -35,4 +35,12 @@ describe('appendClosingBrace', () => {
     appendClosingBrace(node, patcher);
     strictEqual(patcher.toString(), 'class A\n  b: null  # HEY\n}\na');
   });
+
+  it('appends a closing brace without a newline if the thing to append after is on one line', () => {
+    const source = 'try a catch err';
+    const node = parse(source).body.statements[0];
+    const patcher = new MagicString(source);
+    appendClosingBrace(node, patcher);
+    strictEqual(patcher.toString(), 'try a catch err}');
+  });
 });

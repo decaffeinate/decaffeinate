@@ -1,6 +1,7 @@
 import getFreeBinding from '../utils/getFreeBinding';
 import getIndent from '../utils/getIndent';
 import indexOfIgnoringComments from '../utils/indexOfIgnoringComments';
+import isMultiline from '../utils/isMultiline';
 import sourceBetween from '../utils/sourceBetween';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 
@@ -48,9 +49,9 @@ export default function preprocessTry(node, patcher) {
             `\n${getIndent(patcher.original, node.range[0])}catch ${getFreeBinding(node.scope, '_error')}`
           );
           return true;
-        } else {
-          // TODO: Insert " catch _error" after node.body
-          return false;
+        } else if (!isMultiline(patcher.original, node)) {
+          patcher.insert(trimmedNodeRange(node, patcher.original)[1], ` catch ${getFreeBinding(node.scope, '_error')}`);
+          return true;
         }
       }
     }

@@ -90,6 +90,7 @@ describe('try', () => {
       }
     `);
   });
+
   it('works with statements immediately following a catch-less try block', () => {
     check(`
       try
@@ -101,6 +102,14 @@ describe('try', () => {
       } catch (_error) {
       }
       b;
+    `);
+  });
+
+  it('works with single-line try', () => {
+    check(`
+      try a
+    `, `
+      try { a; } catch (_error) {}
     `);
   });
 });
