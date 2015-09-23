@@ -13,11 +13,11 @@ import trimmedNodeRange from '../utils/trimmedNodeRange';
  *
  * @example
  *
- *   (try a)(b) # => (=> try a catch _error)(b)
+ *   (try a)(b) # => (=> try a catch error)(b)
  *
  *   try
  *     a
- *   catch # => catch _error
+ *   catch # => catch error
  *     b
  *
  * @param {Object} node
@@ -46,18 +46,18 @@ export default function preprocessTry(node, patcher) {
         }
         patcher.insert(
           nodeBeforeCatchClause.range[1] + catchIndex + 'catch'.length,
-          ` ${getFreeBinding(node.scope, '_error')}`
+          ` ${getFreeBinding(node.scope, 'error')}`
         );
         return true;
       } else if (!node.finallyBody) {
         if (node.body.type === 'Block') {
           patcher.insert(
             trimmedNodeRange(node.body, patcher.original)[1],
-            `\n${getIndent(patcher.original, node.range[0])}catch ${getFreeBinding(node.scope, '_error')}`
+            `\n${getIndent(patcher.original, node.range[0])}catch ${getFreeBinding(node.scope, 'error')}`
           );
           return true;
         } else if (!isMultiline(patcher.original, node)) {
-          patcher.insert(trimmedNodeRange(node, patcher.original)[1], ` catch ${getFreeBinding(node.scope, '_error')}`);
+          patcher.insert(trimmedNodeRange(node, patcher.original)[1], ` catch ${getFreeBinding(node.scope, 'error')}`);
           return true;
         }
       }

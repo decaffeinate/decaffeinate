@@ -43,7 +43,7 @@ describe('try', () => {
     `, `
       try {
         a();
-      } catch (_error) {
+      } catch (error) {
         b();
       }
     `);
@@ -56,7 +56,7 @@ describe('try', () => {
     `, `
       try {
         a();
-      } catch (_error) {
+      } catch (error) {
       }
     `);
   });
@@ -70,7 +70,7 @@ describe('try', () => {
       (function() {
         try {
           return a();
-        } catch (_error) {
+        } catch (error) {
         }
       });
     `);
@@ -99,7 +99,7 @@ describe('try', () => {
     `, `
       try {
         a;
-      } catch (_error) {
+      } catch (error) {
       }
       b;
     `);
@@ -109,7 +109,7 @@ describe('try', () => {
     check(`
       try a
     `, `
-      try { a; } catch (_error) {}
+      try { a; } catch (error) {}
     `);
   });
 
@@ -118,8 +118,22 @@ describe('try', () => {
       a = try b()
     `, `
       var a = (() => {
-        try { return b(); } catch (_error) {}
+        try { return b(); } catch (error) {}
       })();
+    `);
+  });
+
+  it('ensures the name of the catch assignee is unique', () => {
+    check(`
+      error = null
+      try
+        foo()
+    `, `
+      var error = null;
+      try {
+        foo();
+      } catch (error1) {
+      }
     `);
   });
 });
