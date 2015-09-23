@@ -15,7 +15,7 @@ export default function ensureMultilineLoop(node, patcher) {
   switch (node.type) {
     case 'ForOf':
       firstAssignee = keyAssignee;
-      keyword = 'for';
+      keyword = node.isOwn ? 'for own' : 'for';
       break;
 
     case 'ForIn':

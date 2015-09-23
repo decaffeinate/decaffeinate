@@ -412,4 +412,16 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles single-line `for own`', () => {
+    check(`
+      a for own a of b
+    `, `
+      for (var a in b) {
+        if (Object.prototype.hasOwnProperty.call(b, a)) {
+          a;
+        }
+      }
+    `);
+  });
 });
