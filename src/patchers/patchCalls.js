@@ -1,4 +1,5 @@
 import getIndent from '../utils/getIndent';
+import isImplicitObject from '../utils/isImplicitObject';
 import rangeIncludingParentheses from '../utils/rangeIncludingParentheses';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 
@@ -23,9 +24,9 @@ export function patchCallOpening(node, patcher) {
     if (!callHasParentheses(callee, patcher.original)) {
       addTokens(callee, callArguments);
     } else {
-      const lastArgument = callArguments[callArguments.length - 1];
-      if (isImplicitObject(lastArgument, patcher.original)) {
-        addObjectBrace(lastArgument);
+      const firstArgument = callArguments[0];
+      if (isImplicitObject(firstArgument, patcher.original)) {
+        addObjectBrace(firstArgument);
       }
     }
   }
@@ -63,10 +64,6 @@ export function patchCallOpening(node, patcher) {
           callee.range[1],
           isImplicitObject(firstArgument, patcher.original) ? '({' : '('
         );
-      }
-
-      if (firstArgument !== lastArgument && isImplicitObject(lastArgument, patcher.original)) {
-        patcher.insert(lastArgument.range[0], '{');
       }
     }
   }
@@ -144,13 +141,4 @@ export function patchCallClosing(node, patcher) {
 function callHasParentheses(callee, source) {
   const calleeRangeIncludingParentheses = rangeIncludingParentheses(callee, source);
   return source[calleeRangeIncludingParentheses[1]] === '(';
-}
-
-/**
- * @param {Object} node
- * @param {string} source
- * @returns {boolean}
- */
-function isImplicitObject(node, source) {
-  return node && node.type === 'ObjectInitialiser' && source[node.range[0]] !== '{';
 }

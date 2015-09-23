@@ -75,4 +75,28 @@ describe('objects', () => {
       a(b, {c: d});
     `);
   });
+
+  it('adds braces to implicit objects that are not the last argument', () => {
+    check(`
+      a b: c, d
+    `, `
+      a({b: c}, d);
+    `);
+  });
+
+  it('adds braces to implicit objects that are in the middle of the arguments', () => {
+    check(`
+      a b, c: d, e
+    `, `
+      a(b, {c: d}, e);
+    `);
+  });
+
+  it('does not add braces to explicit object arguments', () => {
+    check(`
+      a {b}, {c}, {d}
+    `, `
+      a({b}, {c}, {d});
+    `);
+  });
 });
