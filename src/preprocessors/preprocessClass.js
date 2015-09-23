@@ -1,8 +1,6 @@
 import convertBoundFunctionToUnboundFunction from '../utils/convertBoundFunctionToUnboundFunction';
 import determineIndent from '../utils/determineIndent';
 import prependLinesToBlock from '../utils/prependLinesToBlock';
-import replaceBetween from '../utils/replaceBetween';
-import sourceBetween from '../utils/sourceBetween';
 
 export default function preprocessClass(node, patcher) {
   if (node.type === 'Class') {
