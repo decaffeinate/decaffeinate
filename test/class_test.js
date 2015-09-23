@@ -116,6 +116,21 @@ describe('classes', () => {
     `);
   });
 
+  it('handles bound methods with parameters', () => {
+    check(`
+      class a
+        b: (c) =>
+    `, `
+      class a {
+        constructor() {
+          this.b = this.b.bind(this);
+        }
+
+        b(c) {}
+      }
+    `);
+  });
+
   it('adds to an existing constructor for bound methods', () => {
     check(`
       class A
