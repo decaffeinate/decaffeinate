@@ -356,4 +356,60 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles `for own`', () => {
+    check(`
+      for own key of list
+        console.log key
+    `, `
+      for (var key in list) {
+        if (Object.prototype.hasOwnProperty.call(list, key)) {
+          console.log(key);
+        }
+      }
+    `);
+  });
+
+  it('handles `for own` with an unsafe-to-repeat iterable', () => {
+    check(`
+      for own key of getList()
+        console.log key
+    `, `
+      var iterable;
+      for (var key in (iterable = getList())) {
+        if (Object.prototype.hasOwnProperty.call(iterable, key)) {
+          console.log(key);
+        }
+      }
+    `);
+  });
+
+  it('handles `for own` with both key and value', () => {
+    check(`
+      for own key, value of list
+        console.log key, value
+    `, `
+      for (var key in list) {
+        if (Object.prototype.hasOwnProperty.call(list, key)) {
+          var value = list[key];
+          console.log(key, value);
+        }
+      }
+    `);
+  });
+
+  it('handles `for own` with a filter', () => {
+    check(`
+      for own key of list when key[0] is '_'
+        console.log key
+    `, `
+      for (var key in list) {
+        if (Object.prototype.hasOwnProperty.call(list, key)) {
+          if (key[0] === '_') {
+            console.log(key);
+          }
+        }
+      }
+    `);
+  });
 });
