@@ -2,13 +2,13 @@
 
   /* Throw meaningful errors for getters of commonjs. */
   ["module", "exports", "require"].forEach(function(commonVar){
-    Object.defineProperty(window, commonVar, { 
-      get: function () { 
+    Object.defineProperty(window, commonVar, {
+      get: function () {
         throw new Error(commonVar + " is not supported in the browser, you need a commonjs environment such as node.js/io.js, browserify/webpack etc");
       }
     });
   });
-  
+
   /*
    * Utils for working with the browser's URI (e.g. the query params)
    */
@@ -96,6 +96,9 @@
     this.session.setUseWorker(false);
 
     this.editor.setOption('scrollPastEnd', 0.33);
+
+    // Prevent editor from stealing Cmd+L.
+    this.editor.commands.removeCommand('gotoline');
   }
 
   Editor.prototype.focus = function () {
@@ -229,8 +232,8 @@
       flush();
     };
 
-    capturingConsole.log = 
-    capturingConsole.info = 
+    capturingConsole.log =
+    capturingConsole.info =
     capturingConsole.debug = function() {
       if (this !== capturingConsole) { return; }
 
