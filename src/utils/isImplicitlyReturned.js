@@ -1,3 +1,6 @@
+import traverse from './traverse';
+import { isFunction } from './types';
+
 /**
  * Determines whether the given node is implicitly returned.
  *
@@ -17,6 +20,11 @@ export default function isImplicitlyReturned(node) {
     case 'Throw':
     case 'Switch':
       return false;
+
+    case 'ForIn':
+    case 'ForOf':
+    case 'While':
+      return couldContainImplicitReturn(node) && !explicitlyReturns(node);
 
     default:
       return couldContainImplicitReturn(node);
@@ -169,4 +177,25 @@ function isLastStatement(node) {
   }
 
   return index === statements.length - 1;
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function explicitlyReturns(node) {
+  let result = false;
+  traverse(node, child => {
+    if (result) {
+      // Already found a return, just bail.
+      return false;
+    } else if (isFunction(child)) {
+      // Don't look inside functions.
+      return false;
+    } else if (child.type === 'Return') {
+      result = true;
+      return false;
+    }
+  });
+  return result;
 }

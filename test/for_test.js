@@ -424,4 +424,38 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('does not consider a `for` loop as an implicit return if it returns itself', () => {
+    check(`
+      ->
+        for a in b
+          return a
+    `, `
+      (function() {
+        for (var i = 0, a; i < b.length; i++) {
+          a = b[i];
+          return a;
+        }
+      });
+    `);
+  });
+
+  it('considers a `for` loop as an implicit return if it only returns within a function', () => {
+    check(`
+      ->
+        for a in b
+          -> return a
+    `, `
+      (function() {
+        return (() => {
+          var result = [];
+          for (var i = 0, a; i < b.length; i++) {
+            a = b[i];
+            result.push(function() { return a; });
+          }
+          return result;
+        })();
+      });
+    `);
+  });
 });

@@ -106,4 +106,36 @@ describe('while', () => {
       })());
     `);
   });
+
+  it('does not consider a `while` loop as an implicit return if it returns itself', () => {
+    check(`
+      ->
+        while true
+          return a
+    `, `
+      (function() {
+        while (true) {
+          return a;
+        }
+      });
+    `);
+  });
+
+  it('considers a `while` loop as an implicit return if it only returns within a function', () => {
+    check(`
+      ->
+        while true
+          -> return a
+    `, `
+      (function() {
+        return (() => {
+          var result = [];
+          while (true) {
+            result.push(function() { return a; });
+          }
+          return result;
+        })();
+      });
+    `);
+  });
 });
