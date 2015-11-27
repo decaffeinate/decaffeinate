@@ -13,6 +13,7 @@ import patchReturns from './patchers/patchReturns';
 import patchSemicolons from './patchers/patchSemicolons';
 import patchSequences from './patchers/patchSequences';
 import patchStringInterpolation from './patchers/patchStringInterpolation';
+import patchString from './patchers/patchString';
 import patchThis from './patchers/patchThis';
 import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
 import preprocessChainedComparison from './preprocessors/preprocessChainedComparison';
@@ -95,6 +96,7 @@ export function convert(source) {
     patchThis(node, patcher);
     patchPrototypeAccess(node, patcher);
     patchStringInterpolation(node, patcher);
+    patchString(node, patcher);
     patchForStart(node, patcher);
     patchSliceStart(node, patcher);
     patchCallOpening(node, patcher);

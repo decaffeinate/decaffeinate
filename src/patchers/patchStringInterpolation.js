@@ -1,3 +1,5 @@
+import escape from '../utils/escape';
+
 /**
  * Replaces string interpolation with template strings.
  *
@@ -18,11 +20,7 @@ export default function patchStringInterpolation(node, patcher) {
     patchInterpolation(node.left, patcher);
     patchInterpolation(node.right, patcher);
   } else if (node.type === 'String' && node.parentNode.type === 'ConcatOp') {
-    for (let i = 0; i < node.data.length; i++) {
-      if (node.data[i] === '`') {
-        patcher.insert(node.range[0] + i, '\\');
-      }
-    }
+    escape(patcher, ['`'], node.range[0], node.range[1]);
   }
 }
 
