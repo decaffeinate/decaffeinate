@@ -3,11 +3,14 @@ const LINE_COMMENT = 1;
 const BLOCK_COMMENT = 2;
 const DQUOTE = 3;
 const SQUOTE = 4;
+const FORWARD_SLASH = 5;
+
 const NEWLINE_CODE = 10;
 const HASH_CODE = 35;
 const DQUOTE_CODE = 34;
 const SQUOTE_CODE = 39;
-const SLASH_CODE = 92;
+const BACKWARD_SLASH = 92;
+const FORWARD_SLASH_CODE = 47;
 
 /**
  * Returns the ranges of the sections of source code that are not comments.
@@ -40,6 +43,14 @@ export default function rangesOfComments(source) {
           state = DQUOTE;
         } else if (c === SQUOTE_CODE) {
           state = SQUOTE;
+        } else if (
+          c === FORWARD_SLASH_CODE &&
+          (source.slice(index, index + 3) === '///'
+            // Heuristic to differentiate from division operator
+            || !source.slice(index).match(/^\/=?\s/)
+          )
+        ) {
+          state = FORWARD_SLASH;
         }
         break;
 
@@ -67,7 +78,7 @@ export default function rangesOfComments(source) {
       case DQUOTE:
         if (c === DQUOTE_CODE) {
           state = NORMAL;
-        } else if (c === SLASH_CODE) {
+        } else if (c === BACKWARD_SLASH) {
           index++;
         }
         break;
@@ -75,8 +86,14 @@ export default function rangesOfComments(source) {
       case SQUOTE:
         if (c === SQUOTE_CODE) {
           state = NORMAL;
-        } else if (c === SLASH_CODE) {
+        } else if (c === BACKWARD_SLASH) {
           index++;
+        }
+        break;
+
+      case FORWARD_SLASH:
+        if (c === FORWARD_SLASH_CODE) {
+          state = NORMAL;
         }
         break;
     }

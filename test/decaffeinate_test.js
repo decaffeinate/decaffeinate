@@ -693,6 +693,14 @@ describe('automatic conversions', function() {
       check(`a = /foo\s/`, `var a = /foo\s/;`);
     });
 
+    it('passes regular expressions with hash through as-is in an assignment context', function() {
+      check(`a = /foo#\s/`, `var a = /foo#\s/;`);
+    });
+
+    it('passes regular expressions with hash through as-is in a function call context', function() {
+      check(`a.a(/#/)`, `a.a(/#/);`);
+    });
+
     it('rewrites block regular expressions as normal regular expressions', function() {
       check(`
         a = ///

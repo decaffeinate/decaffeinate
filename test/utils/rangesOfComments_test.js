@@ -10,6 +10,15 @@ describe('rangesOfComments', function() {
     deepEqual(rangesOfComments('a\n  b: "#{c}"\n  d: e'), []);
   });
 
+  it('does not confuse regular expression with comments', function() {
+    deepEqual(rangesOfComments('a = /#/'), []);
+  });
+
+  it('does not confuse division operator + regular expression with comments', function() {
+    deepEqual(rangesOfComments('b = 2 / 5\na = /#/'), []);
+    deepEqual(rangesOfComments('b /= 2\na = /#/'), []);
+  });
+
   it('correctly identifies escaped double quotes', function() {
     deepEqual(rangesOfComments('a\n  b: "\\"#{c}"\n  d: e # E!'), [{ start: 23, end: 27, type: 'line' }]);
   });

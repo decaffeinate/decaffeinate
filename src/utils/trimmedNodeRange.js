@@ -1,7 +1,8 @@
-const COMMENT = {};
-const DSTRING = {};
-const NORMAL = {};
-const SSTRING = {};
+const COMMENT = 1;
+const DSTRING = 2;
+const NORMAL = 3;
+const SSTRING = 4;
+const REGEXP = 5;
 
 /**
  * Gets the range of the node by trimming whitespace and comments off the end.
@@ -18,7 +19,6 @@ export default function trimmedNodeRange(node, source) {
   let index = range[0];
   let state = NORMAL;
   let lastSignificantIndex;
-
   while (range[0] <= index && index < range[1]) {
     switch (source[index]) {
       case ' ':
@@ -54,6 +54,22 @@ export default function trimmedNodeRange(node, source) {
           state = NORMAL;
           lastSignificantIndex = index;
         }
+        break;
+
+      case '/':
+          if (state === NORMAL) {
+            // Heuristic to differentiate from division operator
+            if (source.slice(index, index + 3) === '///'
+              || !source.slice(index).match(/^\/=?\s/)) {
+              state = REGEXP;
+            }
+            lastSignificantIndex = index;
+          } else if (state === REGEXP) {
+            state = NORMAL;
+            lastSignificantIndex = index;
+          } else if (state === NORMAL) {
+            lastSignificantIndex = index;
+          }
         break;
 
       default:
