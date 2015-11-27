@@ -78,6 +78,9 @@ function fixRange(node, map, source) {
       node.range = node.expression.range;
       node.line = node.expression.line;
       node.column = node.expression.column;
+    } else if (node.type === 'LogicalNotOp' && node.expression && node.expression.type === 'InOp') {
+      // Ignore `not` operator within `in` operator
+      return;
     } else {
       throw new Error(
         'BUG! Could not fix range for ' + node.type +

@@ -54,4 +54,20 @@ describe('in operator', () => {
       b.indexOf(a) < 0;
     `);
   });
+
+  it('works with negated `in` in compound `or` expression', () => {
+    check(`
+      a or a not in b
+    `, `
+      a || b.indexOf(a) < 0;
+    `);
+  });
+
+  it('works with negated `in` in compound `and` expression', () => {
+    check(`
+      a and a not in b
+    `, `
+      a && b.indexOf(a) < 0;
+    `);
+  });
 });
