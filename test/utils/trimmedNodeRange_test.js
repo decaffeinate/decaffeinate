@@ -27,6 +27,14 @@ describe('trimmedNodeRange', function() {
     deepEqual(nodeRange, [4, 13]);
   });
 
+  it('does not identify hash marks in regular expressions as comments and does not confuse with division operator', function() {
+    const source = 'z = y / x\na = /#/';
+    const ast = parse(source);
+    const regExpNode = ast.body.statements[1].expression;
+    const nodeRange = trimmedNodeRange(regExpNode, source);
+    deepEqual(nodeRange, [14, 17]);
+  });
+
   it('does not trim an identifier range', function() {
     const source = 'a';
     const ast = parse(source);
