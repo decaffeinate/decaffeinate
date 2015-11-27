@@ -66,3 +66,18 @@ export function isBinaryOperator(node) {
       return false;
   }
 }
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isCall(node) {
+  switch (node && node.type) {
+    case 'FunctionApplication':
+    case 'NewOp':
+      return true;
+
+    default:
+      return false;
+  }
+}

@@ -1,5 +1,6 @@
 import stripComments from '../utils/stripComments';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
+import { isCallArgument } from '../utils/types';
 
 /**
  * Inserts missing commas in objects, arrays, and calls.
@@ -14,8 +15,8 @@ export default function patchCommas(node, patcher) {
       patchCommaAfterNode(node, node.parentNode.members, patcher);
       break;
 
-    case 'FunctionApplication':
-      if (node.parentNode.arguments.indexOf(node) >= 0) {
+    default:
+      if (isCallArgument(node)) {
         patchCommaAfterNode(node, node.parentNode.arguments, patcher);
       }
       break;
