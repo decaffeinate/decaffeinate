@@ -99,4 +99,32 @@ describe('objects', () => {
       a({b}, {c}, {d});
     `);
   });
+
+  it('does not add braces to leading arguments in multi-line calls', () => {
+    check(`
+      new a(
+        b: c
+        d
+      )
+    `, `
+      new a(
+        {b: c},
+        d
+      );
+    `);
+  });
+
+  it('does not add braces to trailing arguments in multi-line calls', () => {
+    check(`
+      new a(
+        b
+        c: d
+      )
+    `, `
+      new a(
+        b,
+        {c: d}
+      );
+    `);
+  });
 });

@@ -1,6 +1,6 @@
 import isImplicitObject from '../utils/isImplicitObject';
 import isImplicitlyReturned from '../utils/isImplicitlyReturned';
-import { isConsequentOrAlternate } from '../utils/types';
+import { isCall, isConsequentOrAlternate } from '../utils/types';
 
 /**
  * @param {Object} node
@@ -8,7 +8,7 @@ import { isConsequentOrAlternate } from '../utils/types';
  */
 export function patchObjectBraceOpening(node, patcher) {
   if (node.type === 'ObjectInitialiser') {
-    if (node.parentNode.type !== 'FunctionApplication') {
+    if (!isCall(node.parentNode)) {
       if (isObjectAsStatement(node)) {
         patcher.insert(node.range[0], '(');
       }
@@ -34,7 +34,7 @@ export function patchObjectBraceOpening(node, patcher) {
  */
 export function patchObjectBraceClosing(node, patcher) {
   if (node.type === 'ObjectInitialiser') {
-    if (node.parentNode.type !== 'FunctionApplication') {
+    if (!isCall(node.parentNode)) {
       if (patcher.original[node.range[0]] !== '{') {
         patcher.insert(node.range[1], isObjectAsStatement(node) ? '})' : '}');
       } else if (isObjectAsStatement(node)) {

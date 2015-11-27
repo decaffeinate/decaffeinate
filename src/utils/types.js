@@ -81,3 +81,15 @@ export function isCall(node) {
       return false;
   }
 }
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isCallArgument(node) {
+  if (node && isCall(node.parentNode)) {
+    return node.parentNode.arguments.indexOf(node) >= 0;
+  } else {
+    return false;
+  }
+}
