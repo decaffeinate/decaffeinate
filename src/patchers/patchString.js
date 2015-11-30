@@ -1,5 +1,6 @@
 import escape from '../utils/escape';
 import isMultiline from '../utils/isMultiline';
+import { indentRanges, sharedIndentSize } from '../utils/stripSharedIndent';
 
 const TRIPLE_DOUBLE_QUOTE = '"""';
 const TRIPLE_SINGLE_QUOTE = "'''";
@@ -35,23 +36,43 @@ export default function patchString(node, patcher) {
  * @param {MagicString} patcher
  */
 function replaceTripleQuotes(node, patcher) {
+  const [start, end] = node.range;
   const source = patcher.original;
   let quoteCharacter;
 
   if (isMultiline(source, node)) {
     quoteCharacter = '`';
-    patcher.overwrite(node.range[0], node.range[0] + TRIPLE_QUOTE_LENGTH, '`');
-    patcher.overwrite(node.range[1] - TRIPLE_QUOTE_LENGTH, node.range[1], '`');
+    if (source[start + TRIPLE_QUOTE_LENGTH] === '\n') {
+      patcher.remove(
+        start + TRIPLE_QUOTE_LENGTH,
+        start + TRIPLE_QUOTE_LENGTH + '\n'.length
+      );
+    }
+    const ranges = indentRanges(source, start + TRIPLE_QUOTE_LENGTH, end - TRIPLE_QUOTE_LENGTH);
+    const indentSize = sharedIndentSize(ranges);
+    ranges.forEach(([start, end]) => {
+      if (end - start >= indentSize) {
+        patcher.remove(start, start + indentSize);
+      }
+    });
+    if (source[end - TRIPLE_QUOTE_LENGTH - '\n'.length] === '\n') {
+      patcher.remove(
+        end - TRIPLE_QUOTE_LENGTH - '\n'.length,
+        end - TRIPLE_QUOTE_LENGTH
+      );
+    }
+    patcher.overwrite(start, start + TRIPLE_QUOTE_LENGTH, '`');
+    patcher.overwrite(end - TRIPLE_QUOTE_LENGTH, end, '`');
   } else {
-    quoteCharacter = patcher.original[node.range[0]];
-    patcher.remove(node.range[0], node.range[0] + TRIPLE_QUOTE_LENGTH - 1);
-    patcher.remove(node.range[1] - TRIPLE_QUOTE_LENGTH + 1, node.range[1]);
+    quoteCharacter = patcher.original[start];
+    patcher.remove(start, start + TRIPLE_QUOTE_LENGTH - 1);
+    patcher.remove(end - TRIPLE_QUOTE_LENGTH + 1, end);
   }
 
   escape(
     patcher,
     [quoteCharacter],
-    node.range[0] + TRIPLE_QUOTE_LENGTH,
-    node.range[1] - TRIPLE_QUOTE_LENGTH
+    start + TRIPLE_QUOTE_LENGTH,
+    end - TRIPLE_QUOTE_LENGTH
   );
 }

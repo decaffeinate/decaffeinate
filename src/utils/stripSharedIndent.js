@@ -16,27 +16,46 @@ export default function stripSharedIndent(source) {
     lines.pop();
   }
 
-  const minimumIndent = lines.reduce((indent, line) => {
-    if (line.length === 0) {
-      return indent;
-    } else {
-      return Math.min(getIndent(line), indent);
-    }
-  }, Infinity);
-
+  const minimumIndent = sharedIndentSize(indentRanges(lines.join('\n')));
   return lines.map(line => line.slice(minimumIndent)).join('\n');
 }
 
 /**
- * Determines the indentation in number of spaces of a line.
- *
- * @param {string} line
+ * @param {string} source
+ * @param {number=} start
+ * @param {number=} end
+ * @returns {Array<Array<number>>}
+ */
+export function indentRanges(source, start=0, end=source.length) {
+  const ranges = [];
+
+  for (let index = start; index < end; index++) {
+    if (index === start || source[index - 1] === '\n') {
+      if (source[index] !== '\n') {
+        let start = index;
+        while (source[index] === ' ') {
+          index++;
+        }
+        ranges.push([start, index]);
+      }
+    }
+  }
+
+  return ranges;
+}
+
+/**
+ * @param {Array<Array<number>>} ranges
  * @returns {number}
  */
-function getIndent(line) {
-  let index = 0;
-  while (line[index] === ' ') {
-    index++;
-  }
-  return index;
+export function sharedIndentSize(ranges) {
+  let size = null;
+
+  ranges.forEach(([start, end]) => {
+    if (size === null || (start !== end && end - start < size)) {
+      size = end - start;
+    }
+  });
+
+  return size === null ? 0 : size;
 }
