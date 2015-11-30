@@ -8,4 +8,8 @@ describe('string interpolation', () => {
   it('does not double-escape backticks', () => {
     check('"\\`#{name}\\` is required"', '`\\`${name}\\` is required`;');
   });
+
+  it('handles multi-line triple-quoted strings correctly', () => {
+    check('a = """\n     #{b}\n     c\n    """', 'var a = `${b}\nc`;')
+  });
 });

@@ -1,4 +1,5 @@
 import escape from '../utils/escape';
+import replaceTripleQuotes from '../utils/replaceTripleQuotes';
 
 /**
  * Replaces string interpolation with template strings.
@@ -13,9 +14,12 @@ import escape from '../utils/escape';
 export default function patchStringInterpolation(node, patcher) {
   if (node.type === 'ConcatOp') {
     if (node.parentNode.type !== 'ConcatOp') {
-      let cutLength = (node.raw.slice(0, 3) === '"""') ? 3 : 1;
-      patcher.overwrite(node.range[0], node.range[0] + cutLength, '`');
-      patcher.overwrite(node.range[1] - cutLength, node.range[1], '`');
+      if (node.raw.slice(0, 3) === '"""') {
+        replaceTripleQuotes(node, patcher);
+      } else {
+        patcher.overwrite(node.range[0], node.range[0] + 1, '`');
+        patcher.overwrite(node.range[1] - 1, node.range[1], '`');
+      }
     }
     patchInterpolation(node.left, patcher);
     patchInterpolation(node.right, patcher);
@@ -42,8 +46,8 @@ function patchInterpolation(node, patcher) {
 
   if (interpolationStart < 0) {
     throw new Error(
-      'unable to find interpolation start, i.e. "#{", before ' + node.type +
-      ' at line ' + node.line + ', column ' + node.column
+      `unable to find interpolation start, i.e. "#{", before ${node.type}` +
+      ` at line ${node.line}, column ${node.column}`
     );
   }
 
