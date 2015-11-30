@@ -52,4 +52,16 @@ describe('strings', () => {
   it('works with multi-line strings containing all empty lines by stripping the first and last', () => {
     check('"""\n\n\n\n"""', '`\n\n`;');
   });
+
+  it('works when the triple-quoted string is indented', () => {
+    check(`
+      a = """
+           foo
+           bar
+          """
+    `, `
+      var a = \`foo
+      bar\`;
+    `);
+  });
 });

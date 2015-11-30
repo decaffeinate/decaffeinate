@@ -1,5 +1,3 @@
-const WHITESPACE = /^\s*$/;
-
 /**
  * Removes indentation shared by all lines.
  *
@@ -7,16 +5,9 @@ const WHITESPACE = /^\s*$/;
  * @returns {string}
  */
 export default function stripSharedIndent(source) {
-  const lines = source.split('\n');
-
-  while (lines.length > 0 && WHITESPACE.test(lines[0])) {
-    lines.shift();
-  }
-  while (lines.length > 0 && WHITESPACE.test(lines[lines.length - 1])) {
-    lines.pop();
-  }
-
-  const minimumIndent = sharedIndentSize(indentRanges(lines.join('\n')));
+  const indents = getIndentInfo(source);
+  const minimumIndent = sharedIndentSize(indents.ranges);
+  const lines = source.slice(indents.leadingMargin, source.length - indents.trailingMargin).split('\n');
   return lines.map(line => line.slice(minimumIndent)).join('\n');
 }
 
@@ -24,10 +15,28 @@ export default function stripSharedIndent(source) {
  * @param {string} source
  * @param {number=} start
  * @param {number=} end
- * @returns {Array<Array<number>>}
+ * @returns {{leadingMargin: number, trailingMargin: number, ranges: Array<Array<number>>}}
  */
-export function indentRanges(source, start=0, end=source.length) {
+export function getIndentInfo(source, start=0, end=source.length) {
   const ranges = [];
+
+  let leadingMargin = 0;
+  while (source[start + leadingMargin] === ' ') {
+    leadingMargin += ' '.length;
+  }
+  if (source[start + leadingMargin] === '\n') {
+    leadingMargin += '\n'.length;
+    start += leadingMargin;
+  }
+
+  let trailingMargin = 0;
+  while (source[end - trailingMargin - ' '.length] === ' ') {
+    trailingMargin += ' '.length;
+  }
+  if (source[end - trailingMargin - '\n'.length] === '\n') {
+    trailingMargin += '\n'.length;
+    end -= trailingMargin;
+  }
 
   for (let index = start; index < end; index++) {
     if (index === start || source[index - 1] === '\n') {
@@ -41,7 +50,11 @@ export function indentRanges(source, start=0, end=source.length) {
     }
   }
 
-  return ranges;
+  return {
+    leadingMargin,
+    trailingMargin,
+    ranges
+  };
 }
 
 /**
