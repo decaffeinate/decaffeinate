@@ -93,3 +93,11 @@ export function isCallArgument(node) {
     return false;
   }
 }
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isShorthandThisObjectMember(node) {
+  return node.type === 'ObjectInitialiserMember' && /^@\w+$/.test(node.raw);
+}
