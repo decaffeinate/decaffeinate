@@ -127,4 +127,12 @@ describe('objects', () => {
       );
     `);
   });
+
+  it('transforms shorthand-this key-values to the appropriate key-value pair', () => {
+    check(`
+      {@a}
+    `, `
+      ({a: this.a});
+    `);
+  });
 });
