@@ -72,6 +72,22 @@ describe('parameter assignment', () => {
     `);
   });
 
+  it('inserts all assignments with the right indentation', () => {
+    check(`
+      z()
+
+      a: (@b) ->
+          @b
+    `, `
+      z();
+
+      ({a(b) {
+          this.b = b;
+          return this.b;
+      }});
+    `);
+  });
+
   it('works as expected for struct-like class constructors', () => {
     check(`
       class Point
