@@ -85,8 +85,8 @@ function fixRange(node, map, source) {
       return;
     } else {
       throw new Error(
-        'BUG! Could not fix range for ' + node.type +
-        ' because it has no raw value'
+        `BUG! Could not fix range for ${node.type}` +
+        ` because it has no raw value`
       );
     }
   }
