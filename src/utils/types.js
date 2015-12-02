@@ -46,6 +46,8 @@ export function isConsequentOrAlternate(node) {
  */
 export function isBinaryOperator(node) {
   switch (node.type) {
+    case 'BitAndOp':
+    case 'BitOrOp':
     case 'DivideOp':
     case 'EQOp':
     case 'GTEOp':
@@ -60,6 +62,7 @@ export function isBinaryOperator(node) {
     case 'OfOp':
     case 'PlusOp':
     case 'RemOp':
+    case 'SubtractOp':
       return true;
 
     default:
