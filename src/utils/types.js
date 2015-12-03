@@ -104,3 +104,28 @@ export function isCallArgument(node) {
 export function isShorthandThisObjectMember(node) {
   return node.type === 'ObjectInitialiserMember' && /^@\w+$/.test(node.raw);
 }
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isStaticMethod(node) {
+  if (node.type !== 'AssignOp') {
+    return false;
+  }
+
+  const { assignee } = node;
+
+  if (assignee.type !== 'MemberAccessOp') {
+    return false;
+  }
+
+  if (node.expression.type !== 'Function') {
+    return false;
+  }
+
+  return assignee.expression.type === 'This' || (
+    assignee.expression.type === 'Identifier' &&
+    assignee.expression.data === node.parentNode.parentNode.name.data
+  );
+}

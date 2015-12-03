@@ -1,5 +1,6 @@
 import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 import isImplicitlyReturned from '../utils/isImplicitlyReturned';
+import { isStaticMethod } from '../utils/types';
 
 /**
  * Determines whether a node should have a semicolon after it.
@@ -63,6 +64,9 @@ export default function shouldHaveTrailingSemicolon(node) {
 
     case 'Class':
       return !node.nameAssignee || isImplicitlyReturned(node);
+
+    case 'AssignOp':
+      return !isStaticMethod(node);
 
     default:
       return true;
