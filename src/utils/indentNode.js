@@ -1,5 +1,5 @@
 import determineIndent from './determineIndent';
-import repeat from 'repeat-string';
+import repeat from 'repeating';
 import trimmedNodeRange from './trimmedNodeRange';
 
 /**
