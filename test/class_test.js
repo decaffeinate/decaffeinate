@@ -173,4 +173,46 @@ describe('classes', () => {
       }
     `);
   });
+
+  it('converts shorthand-this static methods correctly', () => {
+    check(`
+      class A
+        @a: ->
+          1
+    `, `
+      class A {
+        static a() {
+          return 1;
+        }
+      }
+    `);
+  });
+
+  it('converts longhand-this static methods correctly', () => {
+    check(`
+      class A
+        this.a = ->
+          1
+    `, `
+      class A {
+        static a() {
+          return 1;
+        }
+      }
+    `);
+  });
+
+  it('converts longhand static methods correctly', () => {
+    check(`
+      class A
+        A.a = ->
+          1
+    `, `
+      class A {
+        static a() {
+          return 1;
+        }
+      }
+    `);
+  });
 });

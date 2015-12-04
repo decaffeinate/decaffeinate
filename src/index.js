@@ -87,6 +87,10 @@ export function convert(source) {
   }
 
   traverse(ast, (node, descend) => {
+    if (node._rewritten) {
+      return;
+    }
+
     patchConditionalStart(node, patcher);
     patchWhileStart(node, patcher);
     patchRegularExpressions(node, patcher);

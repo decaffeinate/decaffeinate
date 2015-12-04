@@ -3,7 +3,7 @@ import isMultiline from '../utils/isMultiline';
 import isStatement from '../utils/isStatement';
 import shouldHaveTrailingSemicolon from '../utils/shouldHaveTrailingSemicolon';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
-import { isFunction } from '../utils/types';
+import { isFunction, isStaticMethod } from '../utils/types';
 
 /**
  * Patches the start of arrow functions to make them into JavaScript functions.
@@ -31,6 +31,12 @@ export function patchFunctionStart(node, patcher) {
       }
       break;
 
+    case 'AssignOp':
+      if (isStaticMethod(node)) {
+        patchConciseUnboundFunctionStart(node, patcher);
+      }
+      break;
+
     case 'Constructor':
       patchConciseUnboundFunctionStart(node, patcher);
       break;
@@ -44,8 +50,11 @@ export function patchFunctionStart(node, patcher) {
  * @returns {boolean}
  */
 function isMethodDeclaration(node) {
-  return isFunction(node) &&
-    (node.parentNode.type === 'ClassProtoAssignOp' || node.parentNode.type === 'Constructor');
+  return isFunction(node) && (
+    node.parentNode.type === 'ClassProtoAssignOp' ||
+    node.parentNode.type === 'Constructor' ||
+    isStaticMethod(node.parentNode)
+  );
 }
 
 /**

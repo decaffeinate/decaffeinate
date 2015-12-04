@@ -1,6 +1,7 @@
 import appendClosingBrace from '../utils/appendClosingBrace';
 import isSurroundedBy from '../utils/isSurroundedBy';
 import replaceBetween from '../utils/replaceBetween';
+import { isStaticMethod } from '../utils/types';
 
 /**
  * Patches the start of class-related nodes.
@@ -33,6 +34,19 @@ export function patchClassStart(node, patcher) {
         replaceBetween(patcher, parentNode.assignee, node, ':', ' = ');
       }
     }
+  } else if (isStaticMethod(node)) {
+    const { assignee } = node;
+    assignee._rewritten = true;
+    assignee.expression._rewritten = true;
+    patcher.overwrite(
+      assignee.expression.range[0],
+      assignee.range[1] - assignee.memberName.length,
+      'static '
+    );
+    patcher.remove(
+      assignee.range[1],
+      node.expression.range[0]
+    );
   }
 }
 
