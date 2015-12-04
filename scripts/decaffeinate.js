@@ -206,6 +206,10 @@ function convert(_x) {
     }
 
     (0, _utilsTraverse2['default'])(ast, function (node, descend) {
+      if (node._rewritten) {
+        return;
+      }
+
       (0, _patchersPatchConditional.patchConditionalStart)(node, patcher);
       (0, _patchersPatchWhile.patchWhileStart)(node, patcher);
       (0, _patchersPatchRegularExpressions2['default'])(node, patcher);
@@ -436,6 +440,8 @@ var _utilsReplaceBetween = require('../utils/replaceBetween');
 
 var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
 
+var _utilsTypes = require('../utils/types');
+
 /**
  * Patches the start of class-related nodes.
  *
@@ -468,6 +474,13 @@ function patchClassStart(node, patcher) {
         (0, _utilsReplaceBetween2['default'])(patcher, parentNode.assignee, node, ':', ' = ');
       }
     }
+  } else if ((0, _utilsTypes.isStaticMethod)(node)) {
+    var assignee = node.assignee;
+
+    assignee._rewritten = true;
+    assignee.expression._rewritten = true;
+    patcher.overwrite(assignee.expression.range[0], assignee.range[1] - assignee.memberName.length, 'static ');
+    patcher.remove(assignee.range[1], node.expression.range[0]);
   }
 }
 
@@ -504,7 +517,7 @@ function isClassProtoAssignExpression(node) {
 
   return parentNode && parentNode.type === 'ClassProtoAssignOp' && node === parentNode.expression && node.type !== 'Function';
 }
-},{"../utils/appendClosingBrace":49,"../utils/isSurroundedBy":69,"../utils/replaceBetween":78}],4:[function(require,module,exports){
+},{"../utils/appendClosingBrace":49,"../utils/isSurroundedBy":69,"../utils/replaceBetween":78,"../utils/types":87}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -578,6 +591,10 @@ exports['default'] = patchComments;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+var _utilsGetIndent = require('../utils/getIndent');
+
+var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
+
 var _utilsRangesOfComments = require('../utils/rangesOfComments');
 
 var _utilsRangesOfComments2 = _interopRequireDefault(_utilsRangesOfComments);
@@ -620,6 +637,8 @@ function patchLineComment(patcher, range) {
   patcher.overwrite(range.start, range.start + '#'.length, '//');
 }
 
+var BLOCK_COMMENT_DELIMITER = '###';
+
 /**
  * Patches a block comment.
  *
@@ -631,57 +650,52 @@ function patchBlockComment(patcher, range) {
   var start = range.start;
   var end = range.end;
 
-  var commentBody = patcher.slice(start, end);
-  var comment = parseBlockComment(commentBody);
+  patcher.overwrite(start, start + BLOCK_COMMENT_DELIMITER.length, '/*');
 
-  if (comment.doc) {
-    (function () {
-      patcher.overwrite(start, start + comment.head.length, '/**\n');
-      var index = start + comment.head.length;
-      comment.lines.forEach(function (line) {
-        var indent = line.indexOf('#');
-        patcher.overwrite(index + indent, index + indent + '#'.length, ' *');
-        index += line.length;
-      });
-      patcher.overwrite(end - comment.tail.length, end, ' */');
-    })();
-  } else {
-    patcher.overwrite(start, start + comment.head.length, '/*\n');
-    patcher.overwrite(end - comment.tail.length, end, '*/');
-  }
-}
+  var atStartOfLine = false;
+  var lastStartOfLine = null;
+  var lineUpAsterisks = true;
+  var isMultiline = false;
+  var source = patcher.original;
+  var expectedIndent = (0, _utilsGetIndent2['default'])(source, start);
+  var leadingHashIndexes = [];
 
-/**
- * @param blockComment
- * @returns {{head: string, tail: string, body: string, lines: string[], doc: boolean}}
- * @private
- */
-function parseBlockComment(blockComment) {
-  var endOfHead = blockComment.indexOf('\n') + 1;
-  var lastLineStart = blockComment.lastIndexOf('\n') + 1;
-  var startOfTail = blockComment.indexOf('#', lastLineStart);
-  var head = blockComment.slice(0, endOfHead);
-  var tail = blockComment.slice(startOfTail);
-  var body = blockComment.slice(endOfHead, startOfTail);
-  var lines = [];
+  for (var index = start + BLOCK_COMMENT_DELIMITER.length; index < end - BLOCK_COMMENT_DELIMITER.length; index++) {
+    switch (source[index]) {
+      case '\n':
+        isMultiline = true;
+        atStartOfLine = true;
+        lastStartOfLine = index + '\n'.length;
+        break;
 
-  var newlineIndex = endOfHead - 1;
-  while (newlineIndex + 1 < startOfTail) {
-    var nextNewlineIndex = blockComment.indexOf('\n', newlineIndex + 1);
-    if (nextNewlineIndex < 0) {
-      break;
-    } else if (nextNewlineIndex > newlineIndex) {
-      lines.push(blockComment.slice(newlineIndex + 1, nextNewlineIndex + 1));
+      case ' ':
+      case '\t':
+        break;
+
+      case '#':
+        if (atStartOfLine) {
+          leadingHashIndexes.push(index);
+          atStartOfLine = false;
+          if (source.slice(lastStartOfLine, index) !== expectedIndent) {
+            lineUpAsterisks = false;
+          }
+        }
+        break;
+
+      default:
+        if (atStartOfLine) {
+          atStartOfLine = false;
+          lineUpAsterisks = false;
+        }
+        break;
     }
-    newlineIndex = nextNewlineIndex;
   }
 
-  var doc = lines.every(function (line) {
-    return (/^ *#/.test(line)
-    );
+  leadingHashIndexes.forEach(function (index) {
+    patcher.overwrite(index, index + '#'.length, lineUpAsterisks ? ' *' : '*');
   });
 
-  return { head: head, tail: tail, body: body, lines: lines, doc: doc };
+  patcher.overwrite(end - BLOCK_COMMENT_DELIMITER.length, end, isMultiline && lineUpAsterisks ? ' */' : '*/');
 }
 
 /**
@@ -703,7 +717,7 @@ function patchShebangComment(patcher, range) {
   }
 }
 module.exports = exports['default'];
-},{"../utils/rangesOfComments":76}],6:[function(require,module,exports){
+},{"../utils/getIndent":58,"../utils/rangesOfComments":76}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1369,6 +1383,12 @@ function patchFunctionStart(node, patcher) {
       }
       break;
 
+    case 'AssignOp':
+      if ((0, _utilsTypes.isStaticMethod)(node)) {
+        patchConciseUnboundFunctionStart(node, patcher);
+      }
+      break;
+
     case 'Constructor':
       patchConciseUnboundFunctionStart(node, patcher);
       break;
@@ -1382,7 +1402,7 @@ function patchFunctionStart(node, patcher) {
  * @returns {boolean}
  */
 function isMethodDeclaration(node) {
-  return (0, _utilsTypes.isFunction)(node) && (node.parentNode.type === 'ClassProtoAssignOp' || node.parentNode.type === 'Constructor');
+  return (0, _utilsTypes.isFunction)(node) && (node.parentNode.type === 'ClassProtoAssignOp' || node.parentNode.type === 'Constructor' || (0, _utilsTypes.isStaticMethod)(node.parentNode));
 }
 
 /**
@@ -5547,6 +5567,8 @@ var SQUOTE_CODE = 39;
 var BACKWARD_SLASH = 92;
 var FORWARD_SLASH_CODE = 47;
 
+var BLOCK_COMMENT_DELIMITER = '###';
+
 /**
  * Returns the ranges of the sections of source code that are not comments.
  *
@@ -5569,9 +5591,9 @@ function rangesOfComments(source) {
       case NORMAL:
         if (c === HASH_CODE) {
           rangeStart = index;
-          if (source.slice(index, index + 4) === '###\n') {
+          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER.length) === BLOCK_COMMENT_DELIMITER) {
             state = BLOCK_COMMENT;
-            index += 3;
+            index += BLOCK_COMMENT_DELIMITER.length;
           } else {
             state = LINE_COMMENT;
           }
@@ -5595,15 +5617,11 @@ function rangesOfComments(source) {
 
       case BLOCK_COMMENT:
         if (c === HASH_CODE) {
-          if (source.slice(index, index + 4) === '###\n') {
-            index += 3;
+          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER.length) === BLOCK_COMMENT_DELIMITER) {
+            index += BLOCK_COMMENT_DELIMITER.length;
             addComment();
             state = NORMAL;
-          } else if (source.slice(index, index + 4) === '###' /* EOF */) {
-              index += 3;
-              addComment();
-              state = NORMAL;
-            }
+          }
         }
         break;
 
@@ -5648,7 +5666,6 @@ function rangesOfComments(source) {
     } else {
       type = 'line';
     }
-
     result.push({ start: rangeStart, end: index, type: type });
   }
 
@@ -5862,6 +5879,8 @@ var _utilsIsImplicitlyReturned = require('../utils/isImplicitlyReturned');
 
 var _utilsIsImplicitlyReturned2 = _interopRequireDefault(_utilsIsImplicitlyReturned);
 
+var _utilsTypes = require('../utils/types');
+
 /**
  * Determines whether a node should have a semicolon after it.
  *
@@ -5926,13 +5945,16 @@ function shouldHaveTrailingSemicolon(node) {
     case 'Class':
       return !node.nameAssignee || (0, _utilsIsImplicitlyReturned2['default'])(node);
 
+    case 'AssignOp':
+      return !(0, _utilsTypes.isStaticMethod)(node);
+
     default:
       return true;
   }
 }
 
 module.exports = exports['default'];
-},{"../utils/isExpressionResultUsed":61,"../utils/isImplicitlyReturned":64}],82:[function(require,module,exports){
+},{"../utils/isExpressionResultUsed":61,"../utils/isImplicitlyReturned":64,"../utils/types":87}],82:[function(require,module,exports){
 /**
  * Get the source between the two given nodes.
  *
@@ -6343,6 +6365,7 @@ exports.isBinaryOperator = isBinaryOperator;
 exports.isCall = isCall;
 exports.isCallArgument = isCallArgument;
 exports.isShorthandThisObjectMember = isShorthandThisObjectMember;
+exports.isStaticMethod = isStaticMethod;
 
 function isFunction(node) {
   return node.type === 'Function' || node.type === 'BoundFunction';
@@ -6449,6 +6472,29 @@ function isCallArgument(node) {
 
 function isShorthandThisObjectMember(node) {
   return node.type === 'ObjectInitialiserMember' && /^@\w+$/.test(node.raw);
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+
+function isStaticMethod(node) {
+  if (node.type !== 'AssignOp') {
+    return false;
+  }
+
+  var assignee = node.assignee;
+
+  if (assignee.type !== 'MemberAccessOp') {
+    return false;
+  }
+
+  if (node.expression.type !== 'Function') {
+    return false;
+  }
+
+  return assignee.expression.type === 'This' || assignee.expression.type === 'Identifier' && assignee.expression.data === node.parentNode.parentNode.name.data;
 }
 },{}],88:[function(require,module,exports){
 (function() {
@@ -38784,6 +38830,7 @@ module.exports = Number.isFinite || function (val) {
 		};
 
 		MagicString.prototype.insert = function insert(index, content) {
+			console.log('INSERT %s %s', index, JSON.stringify(content));
 			if (typeof content !== 'string') {
 				throw new TypeError('inserted content must be a string');
 			}
@@ -38835,6 +38882,7 @@ module.exports = Number.isFinite || function (val) {
 		};
 
 		MagicString.prototype.overwrite = function overwrite(start, end, content) {
+			console.log('OVERWRITE %s %s %s -> %s', start, end, JSON.stringify(this.original.slice(start, end)), JSON.stringify(content));
 			if (typeof content !== 'string') {
 				throw new TypeError('replacement content must be a string');
 			}
@@ -38868,6 +38916,7 @@ module.exports = Number.isFinite || function (val) {
 		};
 
 		MagicString.prototype.remove = function remove(start, end) {
+			console.log('REMOVE %s %s %s', start, end, JSON.stringify(this.original.slice(start, end)));
 			if (start < 0 || end > this.mappings.length) {
 				throw new Error('Character is out of bounds');
 			}
