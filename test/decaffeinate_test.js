@@ -14,7 +14,7 @@ describe('automatic conversions', function() {
       `, `
         ({
           a: b,
-          /**
+          /*
            * no comma
            */
           c: d

@@ -1,3 +1,4 @@
+import getIndent from '../utils/getIndent';
 import rangesOfComments from '../utils/rangesOfComments';
 
 /**
@@ -37,6 +38,8 @@ function patchLineComment(patcher, range) {
   patcher.overwrite(range.start, range.start + '#'.length, '//');
 }
 
+const BLOCK_COMMENT_DELIMITER = '###';
+
 /**
  * Patches a block comment.
  *
@@ -46,52 +49,53 @@ function patchLineComment(patcher, range) {
  */
 function patchBlockComment(patcher, range) {
   const { start, end } = range;
-  const commentBody = patcher.slice(start, end);
-  const comment = parseBlockComment(commentBody);
 
-  if (comment.doc) {
-    patcher.overwrite(start, start + comment.head.length, '/**\n');
-    let index = start + comment.head.length;
-    comment.lines.forEach(line => {
-      let indent = line.indexOf('#');
-      patcher.overwrite(index + indent, index + indent + '#'.length, ' *');
-      index += line.length;
-    });
-    patcher.overwrite(end - comment.tail.length, end, ' */');
-  } else {
-    patcher.overwrite(start, start + comment.head.length, '/*\n');
-    patcher.overwrite(end - comment.tail.length, end, '*/');
-  }
-}
+  patcher.overwrite(start, start + BLOCK_COMMENT_DELIMITER.length, '/*');
 
-/**
- * @param blockComment
- * @returns {{head: string, tail: string, body: string, lines: string[], doc: boolean}}
- * @private
- */
-function parseBlockComment(blockComment) {
-  const endOfHead = blockComment.indexOf('\n') + 1;
-  const lastLineStart = blockComment.lastIndexOf('\n') + 1;
-  const startOfTail = blockComment.indexOf('#', lastLineStart);
-  const head = blockComment.slice(0, endOfHead);
-  const tail = blockComment.slice(startOfTail);
-  const body = blockComment.slice(endOfHead, startOfTail);
-  const lines = [];
+  let atStartOfLine = false;
+  let lastStartOfLine = null;
+  let lineUpAsterisks = true;
+  let isMultiline = false;
+  const source = patcher.original;
+  const expectedIndent = getIndent(source, start);
+  const leadingHashIndexes = [];
 
-  let newlineIndex = endOfHead - 1;
-  while (newlineIndex + 1 < startOfTail) {
-    let nextNewlineIndex = blockComment.indexOf('\n', newlineIndex + 1);
-    if (nextNewlineIndex < 0) {
-      break;
-    } else if (nextNewlineIndex > newlineIndex) {
-      lines.push(blockComment.slice(newlineIndex + 1, nextNewlineIndex + 1));
+  for (let index = start + BLOCK_COMMENT_DELIMITER.length; index < end - BLOCK_COMMENT_DELIMITER.length; index++) {
+    switch (source[index]) {
+      case '\n':
+        isMultiline = true;
+        atStartOfLine = true;
+        lastStartOfLine = index + '\n'.length;
+        break;
+
+      case ' ':
+      case '\t':
+        break;
+
+      case '#':
+        if (atStartOfLine) {
+          leadingHashIndexes.push(index);
+          atStartOfLine = false;
+          if (source.slice(lastStartOfLine, index) !== expectedIndent) {
+            lineUpAsterisks = false;
+          }
+        }
+        break;
+
+      default:
+        if (atStartOfLine) {
+          atStartOfLine = false;
+          lineUpAsterisks = false;
+        }
+        break;
     }
-    newlineIndex = nextNewlineIndex;
   }
 
-  const doc = lines.every(line => /^ *#/.test(line));
+  leadingHashIndexes.forEach(index => {
+    patcher.overwrite(index, index + '#'.length, lineUpAsterisks ? ' *' : '*');
+  });
 
-  return { head, tail, body, lines, doc };
+  patcher.overwrite(end - BLOCK_COMMENT_DELIMITER.length, end, isMultiline && lineUpAsterisks ? ' */' : '*/');
 }
 
 /**

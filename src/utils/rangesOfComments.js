@@ -12,6 +12,8 @@ const SQUOTE_CODE = 39;
 const BACKWARD_SLASH = 92;
 const FORWARD_SLASH_CODE = 47;
 
+const BLOCK_COMMENT_DELIMITER = '###';
+
 /**
  * Returns the ranges of the sections of source code that are not comments.
  *
@@ -33,9 +35,9 @@ export default function rangesOfComments(source) {
       case NORMAL:
         if (c === HASH_CODE) {
           rangeStart = index;
-          if (source.slice(index, index + 4) === '###\n') {
+          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER.length) === BLOCK_COMMENT_DELIMITER) {
             state = BLOCK_COMMENT;
-            index += 3;
+            index += BLOCK_COMMENT_DELIMITER.length;
           } else {
             state = LINE_COMMENT;
           }
@@ -63,12 +65,8 @@ export default function rangesOfComments(source) {
 
       case BLOCK_COMMENT:
         if (c === HASH_CODE) {
-          if (source.slice(index, index + 4) === '###\n') {
-            index += 3;
-            addComment();
-            state = NORMAL;
-          } else if (source.slice(index, index + 4) === '###' /* EOF */) {
-            index += 3;
+          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER.length) === BLOCK_COMMENT_DELIMITER) {
+            index += BLOCK_COMMENT_DELIMITER.length;
             addComment();
             state = NORMAL;
           }
@@ -116,7 +114,6 @@ export default function rangesOfComments(source) {
     } else {
       type = 'line';
     }
-
     result.push({ start: rangeStart, end: index, type });
   }
 

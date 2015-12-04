@@ -11,7 +11,7 @@ describe('comments', () => {
     `);
   });
 
-  it('converts non-doc block comments to /* */', function() {
+  it('converts block comments to /* */', function() {
     check(`
       a(
         ###
@@ -29,7 +29,7 @@ describe('comments', () => {
     `);
   });
 
-  it('converts doc block comments to /** */', function() {
+  it('turns leading hashes on block comment lines to leading asterisks', function() {
     check(`
       a(
         ###
@@ -39,11 +39,35 @@ describe('comments', () => {
       )
     `, `
       a(
-        /**
+        /*
          * HEY
          */
         1
       );
+    `);
+  });
+
+  it('converts mixed doc block comments to /** */', function() {
+    check(`
+      ###*
+      @param {Buffer} un-hashed
+      ###
+      (buffer) ->
+    `, `
+      /**
+      @param {Buffer} un-hashed
+      */
+      (function(buffer) {});
+    `);
+  });
+
+  it('converts single-line block comments to /* */', () => {
+    check(`
+      ### HEX ###
+      a0
+    `, `
+      /* HEX */
+      a0;
     `);
   });
 
