@@ -8,7 +8,7 @@ source $(dirname $0)/helpers.sh
 VERSION=$(node -e 'console.log(require("./package.json").version)')
 
 # Build the browser version.
-browserify -e lib/index.js -s decaffeinate -o decaffeinate.js
+browserify -e dist/decaffeinate.cjs.js -s decaffeinate -o decaffeinate.js
 
 # Switch to gh-pages branch.
 git fetch origin
