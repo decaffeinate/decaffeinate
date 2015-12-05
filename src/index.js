@@ -47,6 +47,8 @@ import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
 import { patchTryStart, patchTryEnd } from './patchers/patchTry';
 import { patchWhileStart, patchWhileEnd } from './patchers/patchWhile';
 
+export { default as run } from './cli';
+
 /**
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
  *
