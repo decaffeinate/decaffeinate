@@ -1,3696 +1,125 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.decaffeinate = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (process){
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.convert = convert;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _magicString = require('magic-string');
-
-var _magicString2 = _interopRequireDefault(_magicString);
-
-var _utilsParse = require('./utils/parse');
-
-var _utilsParse2 = _interopRequireDefault(_utilsParse);
-
-var _patchersPatchCommas = require('./patchers/patchCommas');
-
-var _patchersPatchCommas2 = _interopRequireDefault(_patchersPatchCommas);
-
-var _patchersPatchComments = require('./patchers/patchComments');
-
-var _patchersPatchComments2 = _interopRequireDefault(_patchersPatchComments);
-
-var _patchersPatchDeclarations = require('./patchers/patchDeclarations');
-
-var _patchersPatchDeclarations2 = _interopRequireDefault(_patchersPatchDeclarations);
-
-var _patchersPatchEmbeddedJavaScript = require('./patchers/patchEmbeddedJavaScript');
-
-var _patchersPatchEmbeddedJavaScript2 = _interopRequireDefault(_patchersPatchEmbeddedJavaScript);
-
-var _patchersPatchEquality = require('./patchers/patchEquality');
-
-var _patchersPatchEquality2 = _interopRequireDefault(_patchersPatchEquality);
-
-var _patchersPatchKeywords = require('./patchers/patchKeywords');
-
-var _patchersPatchKeywords2 = _interopRequireDefault(_patchersPatchKeywords);
-
-var _patchersPatchOf = require('./patchers/patchOf');
-
-var _patchersPatchOf2 = _interopRequireDefault(_patchersPatchOf);
-
-var _patchersPatchPrototypeAccess = require('./patchers/patchPrototypeAccess');
-
-var _patchersPatchPrototypeAccess2 = _interopRequireDefault(_patchersPatchPrototypeAccess);
-
-var _patchersPatchRegularExpressions = require('./patchers/patchRegularExpressions');
-
-var _patchersPatchRegularExpressions2 = _interopRequireDefault(_patchersPatchRegularExpressions);
-
-var _patchersPatchReturns = require('./patchers/patchReturns');
-
-var _patchersPatchReturns2 = _interopRequireDefault(_patchersPatchReturns);
-
-var _patchersPatchSemicolons = require('./patchers/patchSemicolons');
-
-var _patchersPatchSemicolons2 = _interopRequireDefault(_patchersPatchSemicolons);
-
-var _patchersPatchSequences = require('./patchers/patchSequences');
-
-var _patchersPatchSequences2 = _interopRequireDefault(_patchersPatchSequences);
-
-var _patchersPatchStringInterpolation = require('./patchers/patchStringInterpolation');
-
-var _patchersPatchStringInterpolation2 = _interopRequireDefault(_patchersPatchStringInterpolation);
-
-var _patchersPatchString = require('./patchers/patchString');
-
-var _patchersPatchString2 = _interopRequireDefault(_patchersPatchString);
-
-var _patchersPatchThis = require('./patchers/patchThis');
-
-var _patchersPatchThis2 = _interopRequireDefault(_patchersPatchThis);
-
-var _preprocessorsPreprocessBinaryExistentialOperator = require('./preprocessors/preprocessBinaryExistentialOperator');
-
-var _preprocessorsPreprocessBinaryExistentialOperator2 = _interopRequireDefault(_preprocessorsPreprocessBinaryExistentialOperator);
-
-var _preprocessorsPreprocessChainedComparison = require('./preprocessors/preprocessChainedComparison');
-
-var _preprocessorsPreprocessChainedComparison2 = _interopRequireDefault(_preprocessorsPreprocessChainedComparison);
-
-var _preprocessorsPreprocessClass = require('./preprocessors/preprocessClass');
-
-var _preprocessorsPreprocessClass2 = _interopRequireDefault(_preprocessorsPreprocessClass);
-
-var _preprocessorsPreprocessCompoundAssignment = require('./preprocessors/preprocessCompoundAssignment');
-
-var _preprocessorsPreprocessCompoundAssignment2 = _interopRequireDefault(_preprocessorsPreprocessCompoundAssignment);
-
-var _preprocessorsPreprocessConditional = require('./preprocessors/preprocessConditional');
-
-var _preprocessorsPreprocessConditional2 = _interopRequireDefault(_preprocessorsPreprocessConditional);
-
-var _preprocessorsPreprocessDo = require('./preprocessors/preprocessDo');
-
-var _preprocessorsPreprocessDo2 = _interopRequireDefault(_preprocessorsPreprocessDo);
-
-var _preprocessorsPreprocessFor = require('./preprocessors/preprocessFor');
-
-var _preprocessorsPreprocessFor2 = _interopRequireDefault(_preprocessorsPreprocessFor);
-
-var _preprocessorsPreprocessIn = require('./preprocessors/preprocessIn');
-
-var _preprocessorsPreprocessIn2 = _interopRequireDefault(_preprocessorsPreprocessIn);
-
-var _preprocessorsPreprocessNegatableOps = require('./preprocessors/preprocessNegatableOps');
-
-var _preprocessorsPreprocessNegatableOps2 = _interopRequireDefault(_preprocessorsPreprocessNegatableOps);
-
-var _preprocessorsPreprocessParameters = require('./preprocessors/preprocessParameters');
-
-var _preprocessorsPreprocessParameters2 = _interopRequireDefault(_preprocessorsPreprocessParameters);
-
-var _preprocessorsPreprocessRange = require('./preprocessors/preprocessRange');
-
-var _preprocessorsPreprocessRange2 = _interopRequireDefault(_preprocessorsPreprocessRange);
-
-var _preprocessorsPreprocessSoakedMemberAccessOp = require('./preprocessors/preprocessSoakedMemberAccessOp');
-
-var _preprocessorsPreprocessSoakedMemberAccessOp2 = _interopRequireDefault(_preprocessorsPreprocessSoakedMemberAccessOp);
-
-var _preprocessorsPreprocessSoakedFunctionApplication = require('./preprocessors/preprocessSoakedFunctionApplication');
-
-var _preprocessorsPreprocessSoakedFunctionApplication2 = _interopRequireDefault(_preprocessorsPreprocessSoakedFunctionApplication);
-
-var _preprocessorsPreprocessSwitch = require('./preprocessors/preprocessSwitch');
-
-var _preprocessorsPreprocessSwitch2 = _interopRequireDefault(_preprocessorsPreprocessSwitch);
-
-var _preprocessorsPreprocessTry = require('./preprocessors/preprocessTry');
-
-var _preprocessorsPreprocessTry2 = _interopRequireDefault(_preprocessorsPreprocessTry);
-
-var _preprocessorsPreprocessWhile = require('./preprocessors/preprocessWhile');
-
-var _preprocessorsPreprocessWhile2 = _interopRequireDefault(_preprocessorsPreprocessWhile);
-
-var _utilsTraverse = require('./utils/traverse');
-
-var _utilsTraverse2 = _interopRequireDefault(_utilsTraverse);
-
-var _patchersPatchCalls = require('./patchers/patchCalls');
-
-var _patchersPatchClass = require('./patchers/patchClass');
-
-var _patchersPatchConditional = require('./patchers/patchConditional');
-
-var _patchersPatchExistentialOperator = require('./patchers/patchExistentialOperator');
-
-var _patchersPatchFor = require('./patchers/patchFor');
-
-var _patchersPatchFunctions = require('./patchers/patchFunctions');
-
-var _patchersPatchObject = require('./patchers/patchObject');
-
-var _patchersPatchRest = require('./patchers/patchRest');
-
-var _patchersPatchSlice = require('./patchers/patchSlice');
-
-var _patchersPatchSpread = require('./patchers/patchSpread');
-
-var _patchersPatchSwitch = require('./patchers/patchSwitch');
-
-var _patchersPatchThrow = require('./patchers/patchThrow');
-
-var _patchersPatchTry = require('./patchers/patchTry');
-
-var _patchersPatchWhile = require('./patchers/patchWhile');
-
-/**
- * Decaffeinate CoffeeScript source code by adding optional punctuation.
- *
- * @param source
- * @returns {string}
- */
-
-function convert(_x) {
-  var _again = true;
-
-  _function: while (_again) {
-    var source = _x;
-    _again = false;
-
-    var ast = (0, _utilsParse2['default'])(source);
-    var patcher = new _magicString2['default'](source);
-
-    var wasRewritten = false;
-
-    (0, _utilsTraverse2['default'])(ast, function (node) {
-      if (wasRewritten) {
-        return false;
+var MagicString = require('magic-string');
+MagicString = 'default' in MagicString ? MagicString['default'] : MagicString;
+var coffeeScriptRedux = require('coffee-script-redux');
+var assert = require('assert');
+var fs = require('fs');
+var path = require('path');
+var detectIndent = require('detect-indent');
+detectIndent = 'default' in detectIndent ? detectIndent['default'] : detectIndent;
+var repeat = require('repeating');
+repeat = 'default' in repeat ? repeat['default'] : repeat;
+
+var babelHelpers = {};
+
+babelHelpers.typeof = function (obj) {
+  return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
+};
+
+babelHelpers.classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+babelHelpers.createClass = (function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+})();
+
+babelHelpers.slicedToArray = (function () {
+  function sliceIterator(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
       }
-      wasRewritten = (0, _preprocessorsPreprocessClass2['default'])(node, patcher) || (0, _preprocessorsPreprocessCompoundAssignment2['default'])(node, patcher) || (0, _preprocessorsPreprocessFor2['default'])(node, patcher) || (0, _preprocessorsPreprocessIn2['default'])(node, patcher) || (0, _preprocessorsPreprocessNegatableOps2['default'])(node, patcher) || (0, _preprocessorsPreprocessDo2['default'])(node, patcher) || (0, _preprocessorsPreprocessConditional2['default'])(node, patcher) || (0, _preprocessorsPreprocessBinaryExistentialOperator2['default'])(node, patcher) || (0, _preprocessorsPreprocessParameters2['default'])(node, patcher) || (0, _preprocessorsPreprocessRange2['default'])(node, patcher) || (0, _preprocessorsPreprocessSwitch2['default'])(node, patcher) || (0, _preprocessorsPreprocessSoakedFunctionApplication2['default'])(node, patcher) || (0, _preprocessorsPreprocessSoakedMemberAccessOp2['default'])(node, patcher) || (0, _preprocessorsPreprocessTry2['default'])(node, patcher) || (0, _preprocessorsPreprocessWhile2['default'])(node, patcher) || (0, _preprocessorsPreprocessChainedComparison2['default'])(node, patcher);
-    });
-
-    if (wasRewritten) {
-      _x = patcher.toString();
-      _again = true;
-      ast = patcher = wasRewritten = undefined;
-      continue _function;
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"]) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
     }
 
-    (0, _utilsTraverse2['default'])(ast, function (node, descend) {
-      if (node._rewritten) {
-        return;
-      }
-
-      (0, _patchersPatchConditional.patchConditionalStart)(node, patcher);
-      (0, _patchersPatchWhile.patchWhileStart)(node, patcher);
-      (0, _patchersPatchRegularExpressions2['default'])(node, patcher);
-      (0, _patchersPatchReturns2['default'])(node, patcher);
-      (0, _patchersPatchOf2['default'])(node, patcher);
-      (0, _patchersPatchKeywords2['default'])(node, patcher);
-      (0, _patchersPatchThis2['default'])(node, patcher);
-      (0, _patchersPatchPrototypeAccess2['default'])(node, patcher);
-      (0, _patchersPatchStringInterpolation2['default'])(node, patcher);
-      (0, _patchersPatchString2['default'])(node, patcher);
-      (0, _patchersPatchFor.patchForStart)(node, patcher);
-      (0, _patchersPatchSlice.patchSliceStart)(node, patcher);
-      (0, _patchersPatchCalls.patchCallOpening)(node, patcher);
-      (0, _patchersPatchObject.patchObjectStart)(node, patcher);
-      (0, _patchersPatchDeclarations2['default'])(node, patcher);
-      (0, _patchersPatchFunctions.patchFunctionStart)(node, patcher);
-      (0, _patchersPatchClass.patchClassStart)(node, patcher);
-      (0, _patchersPatchEquality2['default'])(node, patcher);
-      (0, _patchersPatchThrow.patchThrowStart)(node, patcher);
-      (0, _patchersPatchSpread.patchSpreadStart)(node, patcher);
-      (0, _patchersPatchSwitch.patchSwitchStart)(node, patcher);
-      (0, _patchersPatchRest.patchRestStart)(node, patcher);
-      (0, _patchersPatchTry.patchTryStart)(node, patcher);
-      (0, _patchersPatchEmbeddedJavaScript2['default'])(node, patcher);
-      (0, _patchersPatchExistentialOperator.patchExistentialOperatorStart)(node, patcher);
-
-      descend(node);
-
-      (0, _patchersPatchTry.patchTryEnd)(node, patcher);
-      (0, _patchersPatchWhile.patchWhileEnd)(node, patcher);
-      (0, _patchersPatchThrow.patchThrowEnd)(node, patcher);
-      (0, _patchersPatchExistentialOperator.patchExistentialOperatorEnd)(node, patcher);
-      (0, _patchersPatchFunctions.patchFunctionEnd)(node, patcher);
-      (0, _patchersPatchClass.patchClassEnd)(node, patcher);
-      (0, _patchersPatchFor.patchForEnd)(node, patcher);
-      (0, _patchersPatchObject.patchObjectEnd)(node, patcher);
-      (0, _patchersPatchConditional.patchConditionalEnd)(node, patcher);
-      (0, _patchersPatchSlice.patchSliceEnd)(node, patcher);
-      (0, _patchersPatchCalls.patchCallClosing)(node, patcher);
-      (0, _patchersPatchSemicolons2['default'])(node, patcher);
-      (0, _patchersPatchSequences2['default'])(node, patcher);
-      (0, _patchersPatchCommas2['default'])(node, patcher);
-      (0, _patchersPatchSpread.patchSpreadEnd)(node, patcher);
-      (0, _patchersPatchSwitch.patchSwitchEnd)(node, patcher);
-      (0, _patchersPatchRest.patchRestEnd)(node, patcher);
-    });
-
-    (0, _patchersPatchComments2['default'])(patcher);
-
-    return patcher.toString();
-  }
-}
-},{"./patchers/patchCalls":2,"./patchers/patchClass":3,"./patchers/patchCommas":4,"./patchers/patchComments":5,"./patchers/patchConditional":6,"./patchers/patchDeclarations":7,"./patchers/patchEmbeddedJavaScript":8,"./patchers/patchEquality":9,"./patchers/patchExistentialOperator":10,"./patchers/patchFor":11,"./patchers/patchFunctions":12,"./patchers/patchKeywords":13,"./patchers/patchObject":14,"./patchers/patchOf":15,"./patchers/patchPrototypeAccess":16,"./patchers/patchRegularExpressions":17,"./patchers/patchRest":18,"./patchers/patchReturns":19,"./patchers/patchSemicolons":20,"./patchers/patchSequences":21,"./patchers/patchSlice":22,"./patchers/patchSpread":23,"./patchers/patchString":24,"./patchers/patchStringInterpolation":25,"./patchers/patchSwitch":26,"./patchers/patchThis":27,"./patchers/patchThrow":28,"./patchers/patchTry":29,"./patchers/patchWhile":30,"./preprocessors/preprocessBinaryExistentialOperator":31,"./preprocessors/preprocessChainedComparison":32,"./preprocessors/preprocessClass":33,"./preprocessors/preprocessCompoundAssignment":34,"./preprocessors/preprocessConditional":35,"./preprocessors/preprocessDo":36,"./preprocessors/preprocessFor":37,"./preprocessors/preprocessIn":38,"./preprocessors/preprocessNegatableOps":39,"./preprocessors/preprocessParameters":40,"./preprocessors/preprocessRange":41,"./preprocessors/preprocessSoakedFunctionApplication":42,"./preprocessors/preprocessSoakedMemberAccessOp":43,"./preprocessors/preprocessSwitch":44,"./preprocessors/preprocessTry":45,"./preprocessors/preprocessWhile":46,"./utils/parse":73,"./utils/traverse":85,"magic-string":118}],2:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchCallOpening = patchCallOpening;
-exports.patchCallClosing = patchCallClosing;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetIndent = require('../utils/getIndent');
-
-var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
-
-var _utilsIsImplicitObject = require('../utils/isImplicitObject');
-
-var _utilsIsImplicitObject2 = _interopRequireDefault(_utilsIsImplicitObject);
-
-var _utilsRangeIncludingParentheses = require('../utils/rangeIncludingParentheses');
-
-var _utilsRangeIncludingParentheses2 = _interopRequireDefault(_utilsRangeIncludingParentheses);
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-/**
- * Adds tokens necessary to open a function call.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchCallOpening(node, patcher) {
-  if (node.type === 'FunctionApplication') {
-    addTokensIfNeeded(node['function'], node.arguments);
-  } else if (node.type === 'NewOp') {
-    addTokensIfNeeded(node.ctor, node.arguments);
+    return _arr;
   }
 
-  /**
-   * @param {Object} callee
-   * @param {Object[]} callArguments
-   */
-  function addTokensIfNeeded(callee, callArguments) {
-    if (!callHasParentheses(callee, patcher.original)) {
-      addTokens(callee, callArguments);
+  return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if (Symbol.iterator in Object(arr)) {
+      return sliceIterator(arr, i);
     } else {
-      var firstArgument = callArguments[0];
-      if ((0, _utilsIsImplicitObject2['default'])(firstArgument, patcher.original)) {
-        addObjectBrace(firstArgument);
-      }
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
     }
-  }
+  };
+})();
 
-  /**
-   * Adds an opening object brace at the start of the given node.
-   *
-   * @param {Object} n
-   */
-  function addObjectBrace(n) {
-    patcher.insert(n.range[0], '{');
-  }
+babelHelpers.toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
 
-  /**
-   * Adds an opening parenthesis and, if necessary, an object brace.
-   *
-   * @param {Object} callee
-   * @param {Object[]} callArguments
-   */
-  function addTokens(callee, callArguments) {
-    if (callArguments.length === 0) {
-      patcher.insert(callee.range[1], '(');
-    } else {
-      var firstArgument = callArguments[0];
-      var lastArgument = callArguments[callArguments.length - 1];
-
-      if (callee.line === lastArgument.line) {
-        patcher.overwrite(callee.range[1], firstArgument.range[0], (0, _utilsIsImplicitObject2['default'])(firstArgument, patcher.original) ? '({' : '(');
-      } else {
-        patcher.insert(callee.range[1], (0, _utilsIsImplicitObject2['default'])(firstArgument, patcher.original) ? '({' : '(');
-      }
-    }
-  }
-}
-
-/**
- * Adds tokens necessary to close the given function call.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchCallClosing(node, patcher) {
-  if (node.type === 'FunctionApplication') {
-    addTokensIfNeeded(node['function'], node.arguments);
-  } else if (node.type === 'NewOp') {
-    addTokensIfNeeded(node.ctor, node.arguments);
-  }
-
-  /**
-   * @param {Object} callee
-   * @param {Object[]} callArguments
-   */
-  function addTokensIfNeeded(callee, callArguments) {
-    if (!callHasParentheses(callee, patcher.original)) {
-      addTokens(callee, callArguments);
-    } else {
-      var lastArgument = callArguments[callArguments.length - 1];
-      if ((0, _utilsIsImplicitObject2['default'])(lastArgument, patcher.original)) {
-        addObjectBrace(lastArgument);
-      }
-    }
-  }
-
-  /**
-   * @param {Object} n
-   */
-  function addObjectBrace(n) {
-    patcher.insert((0, _utilsTrimmedNodeRange2['default'])(n, patcher.original)[1], '}');
-  }
-
-  /**
-   * Adds a closing parenthesis and, if necessary, an object brace.
-   *
-   * @param {Object} callee
-   * @param {Object[]} callArguments
-   */
-  function addTokens(callee, callArguments) {
-    if (callArguments.length === 0) {
-      patcher.insert(callee.range[1], ')');
-    } else {
-      var lastArgument = callArguments[callArguments.length - 1];
-      var lastArgumentRange = (0, _utilsTrimmedNodeRange2['default'])(lastArgument, patcher.original);
-
-      if (callee.line === lastArgument.line) {
-        patcher.insert(lastArgumentRange[1], (0, _utilsIsImplicitObject2['default'])(lastArgument, patcher.original) ? '})' : ')');
-      } else {
-        var indent = (0, _utilsGetIndent2['default'])(patcher.original, callee.range[1]);
-        patcher.insert(lastArgumentRange[1], (0, _utilsIsImplicitObject2['default'])(lastArgument, patcher.original) ? '\n' + indent + '})' : '\n' + indent + ')');
-      }
-    }
-  }
-}
-
-/**
- * @param {Object} callee
- * @param {string} source
- * @returns {boolean}
- */
-function callHasParentheses(callee, source) {
-  var calleeRangeIncludingParentheses = (0, _utilsRangeIncludingParentheses2['default'])(callee, source);
-  return source[calleeRangeIncludingParentheses[1]] === '(';
-}
-},{"../utils/getIndent":58,"../utils/isImplicitObject":63,"../utils/rangeIncludingParentheses":75,"../utils/trimmedNodeRange":86}],3:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchClassStart = patchClassStart;
-exports.patchClassEnd = patchClassEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAppendClosingBrace = require('../utils/appendClosingBrace');
-
-var _utilsAppendClosingBrace2 = _interopRequireDefault(_utilsAppendClosingBrace);
-
-var _utilsIsSurroundedBy = require('../utils/isSurroundedBy');
-
-var _utilsIsSurroundedBy2 = _interopRequireDefault(_utilsIsSurroundedBy);
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-var _utilsTypes = require('../utils/types');
-
-/**
- * Patches the start of class-related nodes.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchClassStart(node, patcher) {
-  var parentNode = node.parentNode;
-
-  if (node.type === 'Class') {
-    if (node.body) {
-      var braceIndex = undefined;
-      var superclass = node.parent;
-
-      if (superclass) {
-        braceIndex = superclass.range[1];
-        if ((0, _utilsIsSurroundedBy2['default'])(superclass, '(', patcher.original)) {
-          braceIndex += '('.length;
-        }
-      } else {
-        braceIndex = node.nameAssignee.range[1];
-      }
-
-      patcher.insert(braceIndex, ' {');
-    }
-  } else if (isClassProtoAssignExpression(node)) {
-    if (!(0, _utilsReplaceBetween2['default'])(patcher, parentNode.assignee, node, ' : ', ' = ')) {
-      if (!(0, _utilsReplaceBetween2['default'])(patcher, parentNode.assignee, node, ': ', ' = ')) {
-        (0, _utilsReplaceBetween2['default'])(patcher, parentNode.assignee, node, ':', ' = ');
-      }
-    }
-  } else if ((0, _utilsTypes.isStaticMethod)(node)) {
-    var assignee = node.assignee;
-
-    assignee._rewritten = true;
-    assignee.expression._rewritten = true;
-    patcher.overwrite(assignee.expression.range[0], assignee.range[1] - assignee.memberName.length, 'static ');
-    patcher.remove(assignee.range[1], node.expression.range[0]);
-  }
-}
-
-/**
- * Patches the end of class-related nodes.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchClassEnd(node, patcher) {
-  if (node.type === 'Class') {
-    if (node.body) {
-      (0, _utilsAppendClosingBrace2['default'])(node, patcher);
-    } else {
-      if (!node.nameAssignee) {
-        patcher.insert(node.range[0], '(');
-        patcher.insert(node.range[1], ' {})');
-      } else {
-        patcher.insert(node.range[1], ' {}');
-      }
-    }
-  } else if (isClassProtoAssignExpression(node)) {
-    patcher.insert(node.range[1], ';');
-  }
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-function isClassProtoAssignExpression(node) {
-  var parentNode = node.parentNode;
-
-  return parentNode && parentNode.type === 'ClassProtoAssignOp' && node === parentNode.expression && node.type !== 'Function';
-}
-},{"../utils/appendClosingBrace":49,"../utils/isSurroundedBy":69,"../utils/replaceBetween":78,"../utils/types":87}],4:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchCommas;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsStripComments = require('../utils/stripComments');
-
-var _utilsStripComments2 = _interopRequireDefault(_utilsStripComments);
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-var _utilsTypes = require('../utils/types');
-
-/**
- * Inserts missing commas in objects, arrays, and calls.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchCommas(node, patcher) {
-  switch (node.parentNode && node.parentNode.type) {
-    case 'ObjectInitialiser':
-    case 'ArrayInitialiser':
-      patchCommaAfterNode(node, node.parentNode.members, patcher);
-      break;
-
-    default:
-      if ((0, _utilsTypes.isCallArgument)(node)) {
-        patchCommaAfterNode(node, node.parentNode.arguments, patcher);
-      }
-      break;
-  }
-}
-
-/**
- * Inserts missing commas between member and its next sibling.
- *
- * @param {Object} member
- * @param {Object[]} members
- * @param {MagicString} patcher
- */
-function patchCommaAfterNode(member, members, patcher) {
-  var memberIndex = members.indexOf(member);
-  var nextMember = members[memberIndex + 1];
-
-  if (!nextMember) {
-    return;
-  }
-
-  var nodeRange = (0, _utilsTrimmedNodeRange2['default'])(member, patcher.original);
-  var sourceBetween = (0, _utilsStripComments2['default'])(patcher.original.slice(member.range[1], nextMember.range[0]));
-  if (sourceBetween.indexOf(',') < 0) {
-    patcher.insert(nodeRange[1], ',');
-  }
-}
-module.exports = exports['default'];
-},{"../utils/stripComments":83,"../utils/trimmedNodeRange":86,"../utils/types":87}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchComments;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetIndent = require('../utils/getIndent');
-
-var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
-
-var _utilsRangesOfComments = require('../utils/rangesOfComments');
-
-var _utilsRangesOfComments2 = _interopRequireDefault(_utilsRangesOfComments);
-
-/**
- * Replaces CoffeeScript style comments with JavaScript style comments.
- *
- * @param {MagicString} patcher
- */
-
-function patchComments(patcher) {
-  var source = patcher.original;
-  var ranges = (0, _utilsRangesOfComments2['default'])(source);
-
-  ranges.forEach(function (comment) {
-    switch (comment.type) {
-      case 'line':
-        patchLineComment(patcher, comment);
-        break;
-
-      case 'block':
-        patchBlockComment(patcher, comment);
-        break;
-
-      case 'shebang':
-        patchShebangComment(patcher, comment);
-        break;
-    }
-  });
-}
-
-/**
- * Patches a single-line comment.
- *
- * @param {MagicString} patcher
- * @param {{start: number, end: number, type: string}} range
- * @private
- */
-function patchLineComment(patcher, range) {
-  patcher.overwrite(range.start, range.start + '#'.length, '//');
-}
-
-var BLOCK_COMMENT_DELIMITER = '###';
-
-/**
- * Patches a block comment.
- *
- * @param {MagicString} patcher
- * @param {{start: number, end: number, type: string}} range
- * @private
- */
-function patchBlockComment(patcher, range) {
-  var start = range.start;
-  var end = range.end;
-
-  patcher.overwrite(start, start + BLOCK_COMMENT_DELIMITER.length, '/*');
-
-  var atStartOfLine = false;
-  var lastStartOfLine = null;
-  var lineUpAsterisks = true;
-  var isMultiline = false;
-  var source = patcher.original;
-  var expectedIndent = (0, _utilsGetIndent2['default'])(source, start);
-  var leadingHashIndexes = [];
-
-  for (var index = start + BLOCK_COMMENT_DELIMITER.length; index < end - BLOCK_COMMENT_DELIMITER.length; index++) {
-    switch (source[index]) {
-      case '\n':
-        isMultiline = true;
-        atStartOfLine = true;
-        lastStartOfLine = index + '\n'.length;
-        break;
-
-      case ' ':
-      case '\t':
-        break;
-
-      case '#':
-        if (atStartOfLine) {
-          leadingHashIndexes.push(index);
-          atStartOfLine = false;
-          if (source.slice(lastStartOfLine, index) !== expectedIndent) {
-            lineUpAsterisks = false;
-          }
-        }
-        break;
-
-      default:
-        if (atStartOfLine) {
-          atStartOfLine = false;
-          lineUpAsterisks = false;
-        }
-        break;
-    }
-  }
-
-  leadingHashIndexes.forEach(function (index) {
-    patcher.overwrite(index, index + '#'.length, lineUpAsterisks ? ' *' : '*');
-  });
-
-  patcher.overwrite(end - BLOCK_COMMENT_DELIMITER.length, end, isMultiline && lineUpAsterisks ? ' */' : '*/');
-}
-
-/**
- * Patches a shebang comment.
- *
- * @param {MagicString} patcher
- * @param {{start: number, end: number, type: string}} range
- * @private
- */
-function patchShebangComment(patcher, range) {
-  var start = range.start;
-  var end = range.end;
-
-  var commentBody = patcher.slice(start, end);
-  var coffeeIndex = commentBody.indexOf('coffee');
-
-  if (coffeeIndex >= 0) {
-    patcher.overwrite(start + coffeeIndex, start + coffeeIndex + 'coffee'.length, 'node');
-  }
-}
-module.exports = exports['default'];
-},{"../utils/getIndent":58,"../utils/rangesOfComments":76}],6:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchConditionalStart = patchConditionalStart;
-exports.patchConditionalEnd = patchConditionalEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAppendClosingBrace = require('../utils/appendClosingBrace');
-
-var _utilsAppendClosingBrace2 = _interopRequireDefault(_utilsAppendClosingBrace);
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-var _utilsIsSurroundedBy = require('../utils/isSurroundedBy');
-
-var _utilsIsSurroundedBy2 = _interopRequireDefault(_utilsIsSurroundedBy);
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-var _utilsRequiresParentheses = require('../utils/requiresParentheses');
-
-var _utilsRequiresParentheses2 = _interopRequireDefault(_utilsRequiresParentheses);
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-var UNLESS = 'unless';
-
-/**
- * Adds punctuation to `if` statements and converts `if` expressions.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchConditionalStart(node, patcher) {
-  if (node.type === 'Conditional' && (0, _utilsIsExpressionResultUsed2['default'])(node)) {
-    // i.e. remove "if" or "unless"
-    patcher.overwrite(node.range[0], node.condition.range[0], '');
-  } else if (isUnlessConditional(node, patcher.original)) {
-    patcher.overwrite(node.range[0], node.range[0] + UNLESS.length, 'if');
-  } else if (isCondition(node) && (0, _utilsIsExpressionResultUsed2['default'])(node.parentNode)) {
-    // nothing to do
-    return;
-  } else if (isCondition(node)) {
-    var isSurroundedByParens = (0, _utilsIsSurroundedBy2['default'])(node, '(', patcher.original);
-    var isUnless = isUnlessConditional(node.parentNode, patcher.original);
-    var inserted = '';
-    var offset = node.range[0];
-
-    if (isUnless) {
-      var conditionNeedsParens = (0, _utilsRequiresParentheses2['default'])(node.expression);
-      if (conditionNeedsParens) {
-        if (isSurroundedByParens) {
-          // e.g. `unless (a + b)` -> `if (!(a + b)) {`
-          inserted += '!(';
-        } else {
-          // e.g. `unless a + b` -> `if (!(a + b)) {`
-          inserted += '(!(';
-        }
-      } else {
-        if (isSurroundedByParens) {
-          // e.g. `unless (a)` -> `if (!a) {`
-          inserted += '!';
-        } else {
-          // e.g. `unless a` -> `if (!a) {`
-          inserted += '(!';
-        }
-      }
-    } else if (isSurroundedByParens) {
-      // e.g. `if (a)` -> `if (a) {`
-      inserted = '';
-    } else {
-      // e.g. `if a` -> `if (a) {`
-      inserted += '(';
-    }
-
-    patcher.insert(offset, inserted);
-  }
-}
-
-/**
- * Adds punctuation to `if` statements and converts `if` expressions.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchConditionalEnd(node, patcher) {
-  if (isCondition(node)) {
-    if ((0, _utilsIsExpressionResultUsed2['default'])(node.parentNode)) {
-      (0, _utilsReplaceBetween2['default'])(patcher, node, node.parentNode.consequent, 'then', '?');
-    } else {
-      if (!(0, _utilsReplaceBetween2['default'])(patcher, node, node.parentNode.consequent, 'then ', '')) {
-        (0, _utilsReplaceBetween2['default'])(patcher, node, node.parentNode.consequent, 'then', '');
-      }
-      var parens = (0, _utilsIsSurroundedBy2['default'])(node, '(', patcher.original);
-      var inserted = parens ? ' {' : ') {';
-      if (isUnlessConditional(node.parentNode, patcher.original) && (0, _utilsRequiresParentheses2['default'])(node.expression)) {
-        inserted = ')' + inserted;
-      }
-      var nodeRange = (0, _utilsTrimmedNodeRange2['default'])(node, patcher.original);
-      patcher.insert(nodeRange[1] + (parens ? ')'.length : 0), inserted);
-    }
-  } else if (isConsequent(node)) {
-    if ((0, _utilsIsExpressionResultUsed2['default'])(node.parentNode)) {
-      if (node.parentNode.alternate) {
-        // e.g. `a(if b then c else d)` -> `a(b ? c : d)`
-        //                     ^^^^                 ^
-        (0, _utilsReplaceBetween2['default'])(patcher, node, node.parentNode.alternate, 'else', ':');
-      } else {
-        // e.g. `a(if b then c)` -> `a(b ? c : undefined)
-        //                                  ^^^^^^^^^^^^
-        var nodeRange = (0, _utilsTrimmedNodeRange2['default'])(node, patcher.original);
-        patcher.insert(nodeRange[1], ' : undefined');
-      }
-    } else if (node.parentNode.alternate) {
-      // Only add the opening curly for the alternate if it is not a conditional,
-      // otherwise the handler for the end of its condition will add it.
-      (0, _utilsReplaceBetween2['default'])(patcher, node, node.parentNode.alternate, 'else', '} else' + (node.parentNode.alternate.type === 'Conditional' ? '' : ' {'));
-    }
-  } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
-    if (!(0, _utilsIsExpressionResultUsed2['default'])(node)) {
-      // Close the conditional if it isn't handled by closing an `else if`.
-      if (isOneLineConditionAndConsequent(node, patcher.original)) {
-        var nodeRange = (0, _utilsTrimmedNodeRange2['default'])(node, patcher.original);
-        patcher.insert(nodeRange[1], ' }');
-      } else {
-        (0, _utilsAppendClosingBrace2['default'])(node, patcher);
-      }
-    }
-  }
-}
-
-/**
- * Determines whether a node is a Conditional node's condition.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-function isCondition(node) {
-  return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.condition === node : false;
-}
-
-/**
- * @param {Object} node
- * @param {string} source
- * @returns {boolean}
- */
-function isUnlessConditional(node, source) {
-  return node.type === 'Conditional' && source.slice(node.range[0], node.range[0] + UNLESS.length) === UNLESS;
-}
-
-/**
- * Determines whether a node is a Conditional node's consequent.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-function isConsequent(node) {
-  return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.consequent === node : false;
-}
-
-/**
- * Determines whether the condition and consequent are on the same line.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-function isOneLineConditionAndConsequent(node, source) {
-  var condition = node.condition;
-  var consequent = node.consequent;
-
-  if (isUnlessConditional(node, source)) {
-    condition = condition.expression;
-  }
-
-  return condition.line === consequent.line;
-}
-},{"../utils/appendClosingBrace":49,"../utils/isExpressionResultUsed":61,"../utils/isSurroundedBy":69,"../utils/replaceBetween":78,"../utils/requiresParentheses":80,"../utils/trimmedNodeRange":86}],7:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchDeclarations;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetIndent = require('../utils/getIndent');
-
-var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-var _utilsLeftHandIdentifiers = require('../utils/leftHandIdentifiers');
-
-var _utilsLeftHandIdentifiers2 = _interopRequireDefault(_utilsLeftHandIdentifiers);
-
-/**
- * Adds declarations for variable assignments.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchDeclarations(node, patcher) {
-  if (node.type === 'AssignOp' && !isExpressionAssignment(node)) {
-    var identifiers = (0, _utilsLeftHandIdentifiers2['default'])(node.assignee);
-    var requiresDeclaration = identifiers.some(function (identifier) {
-      return node.scope.getBinding(identifier.data) === identifier;
-    });
-
-    if (requiresDeclaration) {
-      patcher.insert(node.range[0], 'var ');
-    } else if (node.assignee.type === 'ObjectInitialiser') {
-      // Object destructuring not part of a variable declaration needs parens.
-      patcher.insert(node.assignee.range[0], '(').insert(node.assignee.range[1], ')');
-    }
-  } else if (node.type === 'Block') {
-    (function () {
-      var names = [];
-      node.scope.getOwnNames().forEach(function (name) {
-        var binding = node.scope.getBinding(name);
-        var assignment = findAssignmentForBinding(binding);
-        if (isExpressionAssignment(assignment) && isFirstParentBlock(node, assignment)) {
-          names.push(name);
-        }
-      });
-      if (names.length > 0) {
-        (function () {
-          var firstStatementStart = node.statements[0].range[0];
-          var indent = (0, _utilsGetIndent2['default'])(patcher.original, firstStatementStart);
-          var declarations = names.map(function (name) {
-            return 'var ' + name + ';\n' + indent;
-          }).join('');
-          patcher.insert(firstStatementStart, declarations);
-        })();
-      }
-    })();
-  }
-}
-
-/**
- * Determines whether a node is an assignment in an expression context.
- *
- * @param {Object?} node
- * @returns {boolean}
- */
-function isExpressionAssignment(node) {
-  if (!node || node.type !== 'AssignOp') {
-    return false;
-  }
-
-  return (0, _utilsIsExpressionResultUsed2['default'])(node);
-}
-
-/**
- * Finds the AssignOp node associated with a binding identifier.
- *
- * @param {Object} binding Identifier
- * @returns {Object} AssignOp
- */
-function findAssignmentForBinding(binding) {
-  var assignment = binding;
-
-  while (assignment && assignment.type !== 'AssignOp') {
-    assignment = assignment.parentNode;
-  }
-
-  return assignment;
-}
-
-/**
- * Determines whether a node's first containing block is the given block.
- *
- * @param {Object} block
- * @param {Object} node
- * @returns {boolean}
- */
-function isFirstParentBlock(block, node) {
-  while (node && node.type !== 'Block') {
-    node = node.parentNode;
-  }
-
-  return node === block;
-}
-module.exports = exports['default'];
-},{"../utils/getIndent":58,"../utils/isExpressionResultUsed":61,"../utils/leftHandIdentifiers":71}],8:[function(require,module,exports){
-/**
- * Removes the backticks surrounding embedded JavaScript.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchEmbeddedJavaScript;
-
-function patchEmbeddedJavaScript(node, patcher) {
-  if (node.type === 'JavaScript') {
-    patcher.overwrite(node.range[0], node.range[0] + 1, '');
-    patcher.overwrite(node.range[1] - 1, node.range[1], '');
-  }
-}
-
-module.exports = exports['default'];
-},{}],9:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchEquality;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-/**
- * Replaces equality operators with strict equality operators.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchEquality(node, patcher) {
-  switch (node.type) {
-    case 'EQOp':
-      if (!(0, _utilsReplaceBetween2['default'])(patcher, node.left, node.right, '==', '===')) {
-        (0, _utilsReplaceBetween2['default'])(patcher, node.left, node.right, 'is', '===');
-      }
-      break;
-
-    case 'NEQOp':
-      if (!(0, _utilsReplaceBetween2['default'])(patcher, node.left, node.right, '!=', '!==')) {
-        (0, _utilsReplaceBetween2['default'])(patcher, node.left, node.right, 'isnt', '!==');
-      }
-      break;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/replaceBetween":78}],10:[function(require,module,exports){
-/**
- * Prepares the start of an existential operator node.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchExistentialOperatorStart = patchExistentialOperatorStart;
-exports.patchExistentialOperatorEnd = patchExistentialOperatorEnd;
-
-function patchExistentialOperatorStart(node, patcher) {
-  if (node.type === 'UnaryExistsOp') {
-    var expression = node.expression;
-    if (expression.type !== 'Identifier' && needsParens(node)) {
-      patcher.insert(node.range[0], '(');
-    }
-  }
-}
-
-/**
- * Prepares the start of an existential operator node.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchExistentialOperatorEnd(node, patcher) {
-  if (node.type === 'UnaryExistsOp') {
-    var expression = node.expression;
-    var parens = needsParens(node);
-    if (expression.type === 'Identifier') {
-      var checked = expression.data;
-      var replacement = 'typeof ' + checked + ' !== "undefined" && ' + checked + ' !== null';
-      if (parens) {
-        replacement = '(' + replacement + ')';
-      }
-      patcher.overwrite(node.range[0], node.range[1], replacement);
-    } else {
-      var replacement = ' != null';
-      if (parens) {
-        replacement += ')';
-      }
-      patcher.overwrite(node.range[1] - 1, node.range[1], replacement);
-    }
-  }
-}
-
-/**
- * Determines whether the given node needs parentheses.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-function needsParens(node) {
-  return node.parentNode.type !== 'Block';
-}
-},{}],11:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchForStart = patchForStart;
-exports.patchForEnd = patchForEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAppendClosingBrace = require('../utils/appendClosingBrace');
-
-var _utilsAppendClosingBrace2 = _interopRequireDefault(_utilsAppendClosingBrace);
-
-var _utilsPrependLinesToBlock = require('../utils/prependLinesToBlock');
-
-var _utilsPrependLinesToBlock2 = _interopRequireDefault(_utilsPrependLinesToBlock);
-
-var _utilsRangeIncludingParentheses = require('../utils/rangeIncludingParentheses');
-
-var _utilsRangeIncludingParentheses2 = _interopRequireDefault(_utilsRangeIncludingParentheses);
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchForStart(node, patcher) {
-  var parentNode = node.parentNode;
-
-  if (node.type === 'ForIn') {
-    patcher.overwrite(node.range[0] + 'for '.length, (node.step.range || node.target.range)[1], '(' + loopHeader(node) + ') {');
-  } else if (node.type === 'ForOf') {
-    // e.g. `for key of object` -> `for (var key in object)`
-    //                                  ^^^^^
-    patcher.insert(node.range[0] + 'for '.length, '(var ');
-  } else if (parentNode && parentNode.type === 'ForOf' && node === parentNode.target) {
-    // e.g. `for key of object` -> `for (var key in object)`
-    //              ^^^^                        ^^^^
-    (0, _utilsReplaceBetween2['default'])(patcher, parentNode.keyAssignee, node, ' of ', ' in ');
-  }
-}
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchForEnd(node, patcher) {
-  var parentNode = node.parentNode;
-
-  if (isForLoopTarget(node)) {
-    if (parentNode.type === 'ForIn' && node.type !== 'Range') {
-      (0, _utilsPrependLinesToBlock2['default'])(patcher, [parentNode.valAssignee.raw + ' = ' + node.raw + '[' + parentNode.keyAssignee.raw + '];'], parentNode.body);
-    } else if (parentNode.type === 'ForOf') {
-      // e.g. `for key of object` -> `for (var key in object) {`
-      //                                                    ^^^
-      patcher.insert((0, _utilsRangeIncludingParentheses2['default'])(node, patcher.original)[1], ') {');
-    }
-  }
-
-  if (node.type === 'ForOf' || node.type === 'ForIn') {
-    (0, _utilsAppendClosingBrace2['default'])(node, patcher);
-  }
-}
-
-/**
- * Determines whether the given node is the target of a `for` loop.
- *
- * @param {Object} node ForOf|ForIn
- * @returns {boolean}
- */
-function isForLoopTarget(node) {
-  var parentNode = node.parentNode;
-
-  if (!parentNode) {
-    return false;
-  }
-
-  switch (parentNode.type) {
-    case 'ForOf':
-    case 'ForIn':
-      return node === parentNode.target;
-
-    default:
-      return false;
-  }
-}
-
-/**
- * Generates the init, test, and update components for a JavaScript `for` loop.
- *
- * @param {Object} node ForIn
- * @returns {string}
- */
-function loopHeader(node) {
-  var valAssignee = node.valAssignee;
-  var target = node.target;
-
-  if (target.type === 'Range') {
-    // i.e. `for i in [a..b]`
-    var left = target.left;
-    var right = target.right;
-    var isInclusive = target.isInclusive;
-
-    var counter = valAssignee.raw;
-    var result = 'var ' + counter + ' = ' + left.raw + '; ';
-    if (left.type === 'Int' && right.type === 'Int') {
-      // i.e. `for i in [0..10]`
-      if (left.data < right.data) {
-        result += counter + ' ' + (isInclusive ? '<=' : '<') + ' ' + right.raw + '; ' + loopUpdate(node, counter);
-      } else {
-        result += counter + ' ' + (isInclusive ? '>=' : '>') + ' ' + right.raw + '; ' + loopUpdate(node, counter, true);
-      }
-    } else {
-      // i.e. `for i in [a..b]`
-      result += left.raw + ' < ' + right.raw + ' ? ' + counter + ' ' + (isInclusive ? '<=' : '<') + ' ' + right.raw + ' : ' + counter + ' ' + (isInclusive ? '>=' : '>') + ' ' + right.raw + '; ';
-      result += left.raw + ' < ' + right.raw + ' ? ' + loopUpdate(node, counter) + ' : ' + loopUpdate(node, counter, true);
-    }
-
-    return result;
+    return arr2;
   } else {
-    // i.e. `for element in list`
-    var valueBinding = valAssignee.raw;
-    var counter = node.keyAssignee.raw;
-    var result = 'var ' + counter + ' = ';
-    if (loopStepCount(node) > 0) {
-      result += '0, ' + valueBinding + '; ' + counter + ' < ' + target.raw + '.length; ' + loopUpdate(node, counter);
-    } else {
-      result += target.raw + '.length - 1, ' + valueBinding + '; ' + counter + ' >= 0; ' + loopUpdate(node, counter, true);
-    }
-    return result;
+    return Array.from(arr);
   }
-}
+};
 
+babelHelpers;
 /**
- * Generates an update expression of a JavaScript `for` loop.
- *
- * @param {Object} node
- * @param {string} counter
- * @param {boolean} descending
- * @returns {string}
- */
-function loopUpdate(node, counter) {
-  var descending = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-
-  var hasExplicitStep = !!node.step.range;
-  var stepCount = loopStepCount(node);
-
-  if (descending && !hasExplicitStep) {
-    stepCount = -stepCount;
-  }
-
-  if (stepCount === 1) {
-    return counter + '++';
-  }
-
-  if (stepCount === -1) {
-    return counter + '--';
-  }
-
-  if (stepCount > 0) {
-    return counter + ' += ' + stepCount;
-  }
-
-  return counter + ' -= ' + -stepCount;
-}
-
-/**
- * Determines the step count of a for-in loop, e.g. `for a in b by 2` returns 2.
- *
- * @param {Object} node ForIn
- * @returns {number}
- */
-function loopStepCount(node) {
-  if (node.step.type === 'UnaryNegateOp') {
-    return -node.step.expression.data;
-  } else {
-    return node.step.data;
-  }
-}
-},{"../utils/appendClosingBrace":49,"../utils/prependLinesToBlock":74,"../utils/rangeIncludingParentheses":75,"../utils/replaceBetween":78}],12:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchFunctionStart = patchFunctionStart;
-exports.patchFunctionEnd = patchFunctionEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAppendClosingBrace = require('../utils/appendClosingBrace');
-
-var _utilsAppendClosingBrace2 = _interopRequireDefault(_utilsAppendClosingBrace);
-
-var _utilsIsMultiline = require('../utils/isMultiline');
-
-var _utilsIsMultiline2 = _interopRequireDefault(_utilsIsMultiline);
-
-var _utilsIsStatement = require('../utils/isStatement');
-
-var _utilsIsStatement2 = _interopRequireDefault(_utilsIsStatement);
-
-var _utilsShouldHaveTrailingSemicolon = require('../utils/shouldHaveTrailingSemicolon');
-
-var _utilsShouldHaveTrailingSemicolon2 = _interopRequireDefault(_utilsShouldHaveTrailingSemicolon);
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-var _utilsTypes = require('../utils/types');
-
-/**
- * Patches the start of arrow functions to make them into JavaScript functions.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchFunctionStart(node, patcher) {
-  switch (node.type) {
-    case 'Function':
-      if (!isMethodDeclaration(node)) {
-        patchUnboundFunctionStart(node, patcher, isConciseObjectMethod(node));
-      }
-      break;
-
-    case 'BoundFunction':
-      if (!isMethodDeclaration(node)) {
-        patchBoundFunctionStart(node, patcher);
-      }
-      break;
-
-    case 'ClassProtoAssignOp':
-      if (node.expression.type === 'Function') {
-        patchConciseUnboundFunctionStart(node, patcher);
-      }
-      break;
-
-    case 'AssignOp':
-      if ((0, _utilsTypes.isStaticMethod)(node)) {
-        patchConciseUnboundFunctionStart(node, patcher);
-      }
-      break;
-
-    case 'Constructor':
-      patchConciseUnboundFunctionStart(node, patcher);
-      break;
-  }
-}
-
-/**
- * Determines whether a node is a method declaration.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-function isMethodDeclaration(node) {
-  return (0, _utilsTypes.isFunction)(node) && (node.parentNode.type === 'ClassProtoAssignOp' || node.parentNode.type === 'Constructor' || (0, _utilsTypes.isStaticMethod)(node.parentNode));
-}
-
-/**
- * Determines whether a node is a concise method declaration.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-function isConciseObjectMethod(node) {
-  return (0, _utilsTypes.isFunction)(node) && node.parentNode.type === 'ObjectInitialiserMember';
-}
-
-/**
- * Converts unbound functions into regular functions.
- *
- * @param {Object} node Function
- * @param {MagicString} patcher
- * @param {boolean=} concise
- */
-function patchUnboundFunctionStart(node, patcher) {
-  var concise = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
-
-  var start = node.range[0];
-  var fn = concise ? '' : 'function';
-  if (patcher.slice(start, start + 2) === '->') {
-    patcher.overwrite(start, start + 2, '' + ((0, _utilsIsStatement2['default'])(node) ? '(' : '') + fn + '() {');
-  } else {
-    patcher.insert(start, (0, _utilsIsStatement2['default'])(node) ? '(' + fn : fn);
-
-    var arrowStart = patcher.original.indexOf('->', start);
-
-    if (arrowStart < 0) {
-      throw new Error('unable to find `->` for function starting at line ' + node.line + ', column ' + node.column);
-    }
-
-    patcher.overwrite(arrowStart, arrowStart + 2, '{');
-  }
-}
-
-/**
- * Converts bound functions into arrow functions.
- *
- * @param {Object} node BoundFunction
- * @param {MagicString} patcher
- */
-function patchBoundFunctionStart(node, patcher) {
-  if (patcher.slice(node.range[0], node.range[0] + 1) !== '(') {
-    patcher.insert(node.range[0], '() ');
-  }
-
-  if (node.body.type === 'Block') {
-    var arrowStart = node.parameters.length > 0 ? node.parameters[node.parameters.length - 1].range[1] : node.range[0];
-
-    arrowStart = patcher.original.indexOf('=>', arrowStart);
-
-    if (arrowStart < 0) {
-      throw new Error('unable to find `=>` for function starting at line ' + node.line + ', column ' + node.column);
-    }
-
-    patcher.insert(arrowStart + 2, ' {');
-  } else if (node.body.type === 'SeqOp') {
-    // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
-    patcher.insert(node.body.range[0], '(');
-  }
-}
-
-/**
- * Converts bound functions into arrow functions.
- *
- * @param {Object} node ClassProtoAssignOp|Constructor
- * @param {MagicString} patcher
- */
-function patchConciseUnboundFunctionStart(node, patcher) {
-  var keyRange = node.type === 'Constructor' ? [node.range[0], node.range[0] + 'constructor'.length] : node.assignee.range;
-  var fn = node.expression;
-  var start = fn.range[0];
-  if (patcher.slice(start, start + 2) === '->') {
-    patcher.overwrite(keyRange[1], start + 2, '() {');
-  } else {
-    patcher.overwrite(keyRange[1], fn.range[0], '');
-
-    var arrowStart = patcher.original.indexOf('->', start);
-
-    if (arrowStart < 0) {
-      throw new Error('unable to find `->` for function starting at line ' + fn.line + ', column ' + fn.column);
-    }
-
-    patcher.overwrite(arrowStart, arrowStart + 2, '{');
-  }
-}
-
-/**
- * Patches the end of arrow functions to make them into JavaScript functions.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchFunctionEnd(node, patcher) {
-  if ((0, _utilsTypes.isFunction)(node)) {
-    var insertionPoint = (0, _utilsTrimmedNodeRange2['default'])(node, patcher.original)[1];
-    var functionClose = '';
-
-    if ((0, _utilsIsMultiline2['default'])(patcher.original, node)) {
-      insertionPoint = (0, _utilsAppendClosingBrace2['default'])(node, patcher);
-    } else if (node.type === 'Function') {
-      functionClose = node.body ? ' }' : '}';
-    }
-
-    if (node.type === 'Function' && (0, _utilsIsStatement2['default'])(node)) {
-      functionClose += ')';
-    } else if (node.type === 'BoundFunction' && node.body.type === 'SeqOp') {
-      // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
-      functionClose += ')';
-    }
-
-    if ((0, _utilsShouldHaveTrailingSemicolon2['default'])(node)) {
-      // Handle the closing semicolon here because otherwise it's difficult to
-      // reproduce the insertion position in `patchSemicolons`.
-      functionClose += ';';
-    }
-
-    if (functionClose) {
-      patcher.insert(insertionPoint, functionClose);
-    }
-  }
-}
-},{"../utils/appendClosingBrace":49,"../utils/isMultiline":65,"../utils/isStatement":68,"../utils/shouldHaveTrailingSemicolon":81,"../utils/trimmedNodeRange":86,"../utils/types":87}],13:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchKeywords;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-/**
- * Renames keywords to the JavaScript equivalent.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchKeywords(node, patcher) {
-  switch (node.type) {
-    case 'Bool':
-      switch (node.raw) {
-        case 'yes':
-          patcher.overwrite(node.range[0], node.range[1], 'true');
-          break;
-
-        case 'no':
-          patcher.overwrite(node.range[0], node.range[1], 'false');
-          break;
-      }
-      break;
-
-    case 'LogicalAndOp':
-      (0, _utilsReplaceBetween2['default'])(patcher, node.left, node.right, 'and', '&&');
-      break;
-
-    case 'LogicalOrOp':
-      (0, _utilsReplaceBetween2['default'])(patcher, node.left, node.right, 'or', '||');
-      break;
-
-    case 'LogicalNotOp':
-      if (node.raw.slice(0, 4) === 'not ') {
-        patcher.overwrite(node.range[0], node.range[0] + 4, '!');
-      } else if (node.raw.slice(0, 3) === 'not') {
-        patcher.overwrite(node.range[0], node.range[0] + 3, '!');
-      }
-      break;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/replaceBetween":78}],14:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchObjectStart = patchObjectStart;
-exports.patchObjectEnd = patchObjectEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsIsImplicitObject = require('../utils/isImplicitObject');
-
-var _utilsIsImplicitObject2 = _interopRequireDefault(_utilsIsImplicitObject);
-
-var _utilsIsImplicitlyReturned = require('../utils/isImplicitlyReturned');
-
-var _utilsIsImplicitlyReturned2 = _interopRequireDefault(_utilsIsImplicitlyReturned);
-
-var _utilsTypes = require('../utils/types');
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchObjectStart(node, patcher) {
-  if (node.type === 'ObjectInitialiser') {
-    if (!(0, _utilsTypes.isCall)(node.parentNode)) {
-      if (isObjectAsStatement(node)) {
-        patcher.insert(node.range[0], '(');
-      }
-      if ((0, _utilsIsImplicitObject2['default'])(node, patcher.original)) {
-        patcher.insert(node.range[0], '{');
-      }
-    } else {
-      if (node !== node.parentNode.arguments[0]) {
-        // Not the first argument, which is handled by `patchCalls`, so we handle it.
-        if ((0, _utilsIsImplicitObject2['default'])(node, patcher.original)) {
-          patcher.insert(node.range[0], '{');
-        }
-      }
-    }
-  } else if (node.type === 'ObjectInitialiserMember' && node.expression.type === 'Function') {
-    patcher.overwrite(node.key.range[1], node.expression.range[0], '');
-  } else if ((0, _utilsTypes.isShorthandThisObjectMember)(node)) {
-    // `{ @a }` -> `{ a: @a }`
-    patcher.insert(node.range[0], node.key.data + ': ');
-  }
-}
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchObjectEnd(node, patcher) {
-  if (node.type === 'ObjectInitialiser') {
-    if (!(0, _utilsTypes.isCall)(node.parentNode)) {
-      if (patcher.original[node.range[0]] !== '{') {
-        patcher.insert(node.range[1], isObjectAsStatement(node) ? '})' : '}');
-      } else if (isObjectAsStatement(node)) {
-        patcher.insert(node.range[1], ')');
-      }
-    } else {
-      if (node !== node.parentNode.arguments[node.parentNode.arguments.length - 1]) {
-        // Not the last argument, which is handled by `patchCalls`, so we handle it.
-        if ((0, _utilsIsImplicitObject2['default'])(node, patcher.original)) {
-          patcher.insert(node.range[1], '}');
-        }
-      }
-    }
-  }
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-function isObjectAsStatement(node) {
-  if (node.parentNode.type !== 'Block' && !(0, _utilsTypes.isConsequentOrAlternate)(node)) {
-    return false;
-  }
-
-  return !(0, _utilsIsImplicitlyReturned2['default'])(node);
-}
-},{"../utils/isImplicitObject":63,"../utils/isImplicitlyReturned":64,"../utils/types":87}],15:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchOf;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchOf(node, patcher) {
-  if (node.type === 'OfOp') {
-    (0, _utilsReplaceBetween2['default'])(patcher, node.left, node.right, 'of', 'in');
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/replaceBetween":78}],16:[function(require,module,exports){
-/**
- * Replaces shorthand `::` with longhand prototype access.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchPrototypeAccess;
-
-function patchPrototypeAccess(node, patcher) {
-  if (node.type === 'ProtoMemberAccessOp') {
-    var opStart = node.expression.range[1];
-    patcher.overwrite(opStart, opStart + '::'.length, '.prototype.');
-  }
-}
-
-module.exports = exports['default'];
-},{}],17:[function(require,module,exports){
-/**
- * Replaces block regexes with single-line regexes.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchRegularExpressions;
-
-function patchRegularExpressions(node, patcher) {
-  if (node.type === 'RegExp') {
-    patcher.overwrite(node.range[0], node.range[1], '/' + node.data + '/' + flagStringForRegularExpressionNode(node));
-  }
-}
-
-/**
- * @param {Object} node
- * @returns {string}
- * @private
- */
-function flagStringForRegularExpressionNode(node) {
-  var flags = '';
-  if (node.flags.i) {
-    flags += 'i';
-  }
-  if (node.flags.g) {
-    flags += 'g';
-  }
-  if (node.flags.m) {
-    flags += 'm';
-  }
-  if (node.flags.y) {
-    flags += 'y';
-  }
-  return flags;
-}
-module.exports = exports['default'];
-},{}],18:[function(require,module,exports){
-/**
- * Patches rest parameters.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchRestStart = patchRestStart;
-exports.patchRestEnd = patchRestEnd;
-
-function patchRestStart(node, patcher) {
-  if (node.type === 'Rest') {
-    patcher.insert(node.range[0], '...');
-  }
-}
-
-/**
- * Patches rest parameters.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchRestEnd(node, patcher) {
-  if (node.type === 'Rest') {
-    patcher.overwrite(node.range[1] - '...'.length, node.range[1], '');
-  }
-}
-},{}],19:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchReturns;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsIsImplicitlyReturned = require('../utils/isImplicitlyReturned');
-
-var _utilsIsImplicitlyReturned2 = _interopRequireDefault(_utilsIsImplicitlyReturned);
-
-/**
- * Inserts return keywords
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchReturns(node, patcher) {
-  if ((0, _utilsIsImplicitlyReturned2['default'])(node)) {
-    patcher.insert(node.range[0], 'return ');
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/isImplicitlyReturned":64}],20:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchSemicolons;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsIsFollowedBy = require('../utils/isFollowedBy');
-
-var _utilsIsFollowedBy2 = _interopRequireDefault(_utilsIsFollowedBy);
-
-var _utilsShouldHaveTrailingSemicolon = require('../utils/shouldHaveTrailingSemicolon');
-
-var _utilsShouldHaveTrailingSemicolon2 = _interopRequireDefault(_utilsShouldHaveTrailingSemicolon);
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-var _utilsTypes = require('../utils/types');
-
-/**
- * Adds semicolons after statements that should have semicolons.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchSemicolons(node, patcher) {
-  if ((0, _utilsShouldHaveTrailingSemicolon2['default'])(node) && !(0, _utilsTypes.isFunction)(node)) {
-    if (!(0, _utilsIsFollowedBy2['default'])(node, patcher.original, ';')) {
-      var nodeRange = (0, _utilsTrimmedNodeRange2['default'])(node, patcher.original);
-      while (patcher.original[nodeRange[0]] === '(' && patcher.original[nodeRange[1]] === ')') {
-        nodeRange[0]--;
-        nodeRange[1]++;
-      }
-      patcher.insert(nodeRange[1], ';');
-    }
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/isFollowedBy":62,"../utils/shouldHaveTrailingSemicolon":81,"../utils/trimmedNodeRange":86,"../utils/types":87}],21:[function(require,module,exports){
-/**
- * Patches sequences by replacing the character used to align with JavaScript.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchSequences;
-
-function patchSequences(node, patcher) {
-  if (node.type === 'SeqOp') {
-    var sourceBetween = patcher.slice(node.left.range[1], node.right.range[0]);
-    var sequenceCharacterIndex = sourceBetween.indexOf(';');
-    patcher.overwrite(node.left.range[1] + sequenceCharacterIndex, node.left.range[1] + sequenceCharacterIndex + ';'.length, ',');
-  }
-}
-
-module.exports = exports['default'];
-},{}],22:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchSliceStart = patchSliceStart;
-exports.patchSliceEnd = patchSliceEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-var _assert = require('assert');
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchSliceStart(node, patcher) {
-  var parentNode = node.parentNode;
-
-  if (parentNode && parentNode.type === 'Slice') {
-    if (parentNode.left === node) {
-      (0, _utilsReplaceBetween2['default'])(patcher, parentNode.expression, node, '[', '.slice(');
-    } else if (parentNode.right === node) {
-      (0, _utilsReplaceBetween2['default'])(patcher, parentNode.left, node, parentNode.isInclusive ? '..' : '...', ', ');
-
-      if (parentNode.isInclusive) {
-        if (node.type === 'Int') {
-          patcher.overwrite(node.range[0], node.range[1], '' + (node.data + 1));
-        } else {
-          patcher.insert(node.range[1], ' + 1');
-        }
-      }
-    }
-  }
-}
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchSliceEnd(node, patcher) {
-  var parentNode = node.parentNode;
-
-  if (parentNode && parentNode.type === 'Slice') {
-    if (parentNode.left === node) {
-      if (!parentNode.right) {
-        patcher.overwrite(node.range[1], parentNode.range[1], ')');
-      }
-    } else if (parentNode.right === node) {
-      (0, _assert.strictEqual)(patcher.original[parentNode.range[1] - 1], ']', 'last character of Slice node must be "]"');
-      patcher.overwrite(parentNode.range[1] - 1, parentNode.range[1], ')');
-    } else if (parentNode.expression === node && !parentNode.left && !parentNode.right) {
-      patcher.overwrite(node.range[1], parentNode.range[1], '.slice()');
-    }
-  }
-}
-},{"../utils/replaceBetween":78,"assert":90}],23:[function(require,module,exports){
-/**
- * Patches spread arguments.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchSpreadStart = patchSpreadStart;
-exports.patchSpreadEnd = patchSpreadEnd;
-
-function patchSpreadStart(node, patcher) {
-  if (node.type === 'Spread') {
-    patcher.insert(node.range[0], '...');
-  }
-}
-
-/**
- * Patches spread arguments.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchSpreadEnd(node, patcher) {
-  if (node.type === 'Spread') {
-    patcher.overwrite(node.range[1] - '...'.length, node.range[1], '');
-  }
-}
-},{}],24:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchString;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsReplaceTripleQuotes = require('../utils/replaceTripleQuotes');
-
-var _utilsReplaceTripleQuotes2 = _interopRequireDefault(_utilsReplaceTripleQuotes);
-
-var TRIPLE_DOUBLE_QUOTE = '"""';
-var TRIPLE_SINGLE_QUOTE = "'''";
-var TRIPLE_QUOTE_LENGTH = 3;
-
-/**
- * Replaces multi-quote strings with one-quote strings or template strings.
+ * Gets the identifiers for the given LHS value.
  *
  * @example
  *
- *   """abc"""  ->  "abc"
- *   '''abc'''  ->  'abc'
- *
- *   '''ab      ->  `ab
- *   c'''           c`
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchString(node, patcher) {
-  if (node.type === 'String') {
-    switch (node.raw.slice(0, TRIPLE_QUOTE_LENGTH)) {
-      case TRIPLE_DOUBLE_QUOTE:
-      case TRIPLE_SINGLE_QUOTE:
-        (0, _utilsReplaceTripleQuotes2['default'])(node, patcher);
-        break;
-    }
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/replaceTripleQuotes":79}],25:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchStringInterpolation;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsEscape = require('../utils/escape');
-
-var _utilsEscape2 = _interopRequireDefault(_utilsEscape);
-
-var _utilsReplaceTripleQuotes = require('../utils/replaceTripleQuotes');
-
-var _utilsReplaceTripleQuotes2 = _interopRequireDefault(_utilsReplaceTripleQuotes);
-
-/**
- * Replaces string interpolation with template strings.
- *
- * @example
- *
- *   "a#{b}c"  ->  `a${b}c`
+ *   Given `a`, returns [`a`].
+ *   Given `[a, b]`, returns [`a`, `b`].
+ *   Given `{a, b: c}`, returns [`a`, `c`].
+ *   Given `[a, {b, c: d}]`, returns [`a`, `b`, `d`].
  *
  * @param {Object} node
- * @param {MagicString} patcher
+ * @returns {Object[]}
  */
-
-function patchStringInterpolation(node, patcher) {
-  if (node.type === 'ConcatOp') {
-    if (node.parentNode.type !== 'ConcatOp') {
-      if (node.raw.slice(0, 3) === '"""') {
-        (0, _utilsReplaceTripleQuotes2['default'])(node, patcher);
-      } else {
-        patcher.overwrite(node.range[0], node.range[0] + 1, '`');
-        patcher.overwrite(node.range[1] - 1, node.range[1], '`');
-      }
-    }
-    patchInterpolation(node.left, patcher);
-    patchInterpolation(node.right, patcher);
-  } else if (node.type === 'String' && node.parentNode.type === 'ConcatOp') {
-    (0, _utilsEscape2['default'])(patcher, ['`'], node.range[0], node.range[1]);
-  }
-}
-
-/**
- * Patches the interpolation surrounding a node, if it is an interpolated value.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @private
- */
-function patchInterpolation(node, patcher) {
-  switch (node.type) {
-    case 'String':
-    case 'ConcatOp':
-      return;
-  }
-
-  var interpolationStart = findInterpolationStart(node, patcher.original);
-
-  if (interpolationStart < 0) {
-    throw new Error('unable to find interpolation start, i.e. "#{", before ' + node.type + (' at line ' + node.line + ', column ' + node.column));
-  }
-
-  patcher.overwrite(interpolationStart, interpolationStart + 1, '$');
-}
-
-/**
- * Find the start of the interpolation that contains an expression.
- *
- * @param {Object} expression
- * @param {string} source
- * @returns {number}
- * @private
- */
-function findInterpolationStart(expression, source) {
-  var index = expression.range[0] - 2;
-
-  while (index >= 0) {
-    if (source.slice(index, index + '#{'.length) === '#{') {
-      break;
-    }
-
-    index--;
-  }
-
-  return index;
-}
-module.exports = exports['default'];
-},{"../utils/escape":55,"../utils/replaceTripleQuotes":79}],26:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchSwitchStart = patchSwitchStart;
-exports.patchSwitchEnd = patchSwitchEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAdjustIndent = require('../utils/adjustIndent');
-
-var _utilsAdjustIndent2 = _interopRequireDefault(_utilsAdjustIndent);
-
-var _utilsAppendClosingBrace = require('../utils/appendClosingBrace');
-
-var _utilsAppendClosingBrace2 = _interopRequireDefault(_utilsAppendClosingBrace);
-
-var _utilsIsImplicitlyReturned = require('../utils/isImplicitlyReturned');
-
-var _utilsIsImplicitlyReturned2 = _interopRequireDefault(_utilsIsImplicitlyReturned);
-
-var _utilsIsMultiline = require('../utils/isMultiline');
-
-var _utilsIsMultiline2 = _interopRequireDefault(_utilsIsMultiline);
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-/**
- * Patches rest parameters.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchSwitchStart(node, patcher) {
-  var parentNode = node.parentNode;
-
-  if (isExpressionlessSwitch(node)) {
-    // e.g. `switch` by itself. we add '{' here because there's no expression to add it after in patchSwitchEnd.
-    patcher.insert(node.range[0] + 'switch'.length, ' (false) {');
-  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.expression) {
-    // e.g. `switch a` -> `switch (a`
-    patcher.insert(node.range[0], '(');
-  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.alternate) {
-    // e.g. `else` -> `default:`
-    var lastCase = parentNode.cases[parentNode.cases.length - 1];
-    (0, _utilsReplaceBetween2['default'])(patcher, lastCase, node, 'else', 'default:');
-  } else if (node.type === 'SwitchCase') {
-    // e.g. `when a` -> `case a`
-    var caseString = isExpressionlessSwitch(parentNode) ? 'case !(' : 'case ';
-    patcher.overwrite(node.range[0], node.range[0] + 'when '.length, caseString);
-  } else if (parentNode && parentNode.type === 'SwitchCase') {
-    var conditionIndex = parentNode.conditions.indexOf(node);
-    if (conditionIndex >= 1) {
-      // e.g. in `when a, b` changes `, b` -> ` case b`
-      var previousCondition = parentNode.conditions[conditionIndex - 1];
-      var caseString = isExpressionlessSwitch(parentNode.parentNode) ? ' case !(' : ' case ';
-      if (!(0, _utilsReplaceBetween2['default'])(patcher, previousCondition, node, ', ', caseString)) {
-        (0, _utilsReplaceBetween2['default'])(patcher, previousCondition, node, ',', caseString);
-      }
-    } else if (conditionIndex < 0) {
-      // `when` body
-      if (!(0, _utilsIsMultiline2['default'])(patcher.original, parentNode)) {
-        // e.g. removes `then ` in `when a then b`
-        (0, _utilsReplaceBetween2['default'])(patcher, parentNode.conditions[parentNode.conditions.length - 1], node, 'then ', '');
-      }
-    }
-  }
-}
-
-/**
- * Patches rest parameters.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchSwitchEnd(node, patcher) {
-  var parentNode = node.parentNode;
-
-  if (node.type === 'Switch') {
-    // close the switch block
-    (0, _utilsAppendClosingBrace2['default'])(node, patcher);
-  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.expression) {
-    // close the switch expression and start the switch block
-    patcher.insert(node.range[1], ') {');
-  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.alternate) {
-    if (node.type !== 'Block') {
-      // e.g. in `else a` adds `;` after `a`
-      patcher.insert(node.range[1], ';');
-    }
-  } else if (parentNode && parentNode.type === 'SwitchCase') {
-    var conditionIndex = parentNode.conditions.indexOf(node);
-    if (conditionIndex >= 0) {
-      // e.g. in `when a, b` adds `:` after `a` and `b`
-      //      or, for expression-less switches, closes the negating parentheses too
-      patcher.insert(node.range[1], isExpressionlessSwitch(parentNode.parentNode) ? '):' : ':');
-    } else if (node === parentNode.consequent) {
-      if ((0, _utilsIsMultiline2['default'])(patcher.original, parentNode)) {
-        if (!(0, _utilsIsImplicitlyReturned2['default'])(node.statements[node.statements.length - 1])) {
-          // adds `break;` on a new line
-          var trimmedRange = (0, _utilsTrimmedNodeRange2['default'])(node, patcher.original);
-          patcher.insert(trimmedRange[1], '\n' + (0, _utilsAdjustIndent2['default'])(patcher.original, parentNode.range[0], 1) + 'break;');
-        }
-      } else {
-        // e.g. in `when a then b` adds `; break;` after `b`
-        patcher.insert(node.range[1], (0, _utilsIsImplicitlyReturned2['default'])(node) ? ';' : '; break;');
-      }
-    }
-  }
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-function isExpressionlessSwitch(node) {
-  return node.type === 'Switch' && !node.expression;
-}
-},{"../utils/adjustIndent":48,"../utils/appendClosingBrace":49,"../utils/isImplicitlyReturned":64,"../utils/isMultiline":65,"../utils/replaceBetween":78,"../utils/trimmedNodeRange":86}],27:[function(require,module,exports){
-/**
- * Replaces shorthand `this` (i.e. `@`) with longhand `this`.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = patchThis;
-
-function patchThis(node, patcher) {
-  if (node.type === 'This' && node.raw === '@') {
-    patcher.overwrite(node.range[0], node.range[1], 'this');
-  } else if (node.type === 'MemberAccessOp' && node.raw[0] === '@' && node.expression.type === 'This' && node.raw[1] !== '.') {
-    patcher.insert(node.range[0] + 1, '.');
-  }
-}
-
-module.exports = exports['default'];
-},{}],28:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchThrowStart = patchThrowStart;
-exports.patchThrowEnd = patchThrowEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-var LPAREN = '(';
-var RPAREN = ')';
-
-/**
- * Wraps throw expressions in an IIFE.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchThrowStart(node, patcher) {
-  if (isThrowExpression(node)) {
-    var pos = node.range[0];
-    var str = '() => { ';
-    if (patcher.original.slice(pos - LPAREN.length, pos) !== LPAREN) {
-      // Doesn't start with a parenthesis, so add it to the start.
-      str += LPAREN;
-    }
-    patcher.insert(pos, str);
-  }
-}
-
-/**
- * Wraps throw expressions in an IIFE.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchThrowEnd(node, patcher) {
-  if (isThrowExpression(node)) {
-    var pos = node.range[1];
-    var str = '; })(';
-    if (patcher.slice(pos, pos + RPAREN.length) !== RPAREN) {
-      // Doesn't end with a parenthesis, so add it to the end.
-      str += RPAREN;
-    }
-    patcher.insert(pos, str);
-  }
-}
-
-/**
- * Determines whether a node is a `throw` used in an expression context.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-function isThrowExpression(node) {
-  if (node.type !== 'Throw') {
-    return false;
-  }
-
-  switch (node.parentNode.type) {
-    case 'Block':
-      return false;
-
-    case 'Function':
-    case 'BoundFunction':
-      return node.parentNode.body !== node;
-
-    case 'Conditional':
-      return (0, _utilsIsExpressionResultUsed2['default'])(node.parentNode);
-
-    default:
-      return true;
-  }
-}
-},{"../utils/isExpressionResultUsed":61}],29:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchTryStart = patchTryStart;
-exports.patchTryEnd = patchTryEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAppendClosingBrace = require('../utils/appendClosingBrace');
-
-var _utilsAppendClosingBrace2 = _interopRequireDefault(_utilsAppendClosingBrace);
-
-var _utilsLastIndexOfIgnoringComments = require('../utils/lastIndexOfIgnoringComments');
-
-var _utilsLastIndexOfIgnoringComments2 = _interopRequireDefault(_utilsLastIndexOfIgnoringComments);
-
-/**
- * Adds punctuation to `try` statements.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchTryStart(node, patcher) {
-  if (node.type === 'Try') {
-    patcher.insert(node.range[0] + 'try'.length, ' {');
-  } else if (node.parentNode && node.parentNode.type === 'Try') {
-    if (node.parentNode.catchAssignee === node) {
-      patcher.insert(node.range[0], '(');
-      patcher.insert(node.range[1], ') {');
-    } else if (node.parentNode.finallyBody === node) {
-      var finallyIndex = (0, _utilsLastIndexOfIgnoringComments2['default'])(patcher.original, 'finally', node.parentNode.finallyBody.range[0] - 1);
-      patcher.insert(finallyIndex + 'finally'.length, ' {');
-    }
-  }
-}
-
-/**
- * Adds punctuation to `try` statements.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchTryEnd(node, patcher) {
-  if (node.type === 'Try') {
-    (0, _utilsAppendClosingBrace2['default'])(node, patcher);
-  } else if (node.parentNode && node.parentNode.type === 'Try') {
-    if (node.parentNode.body === node) {
-      var closeBraceIndex = undefined;
-      var source = patcher.original;
-      if (node.parentNode.catchAssignee) {
-        closeBraceIndex = (0, _utilsLastIndexOfIgnoringComments2['default'])(source, 'catch', node.parentNode.catchAssignee.range[0] - 1);
-      } else {
-        closeBraceIndex = (0, _utilsLastIndexOfIgnoringComments2['default'])(source, 'finally', node.parentNode.finallyBody.range[0] - 1);
-      }
-      patcher.insert(closeBraceIndex, '} ');
-    }
-  }
-}
-},{"../utils/appendClosingBrace":49,"../utils/lastIndexOfIgnoringComments":70}],30:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.patchWhileStart = patchWhileStart;
-exports.patchWhileEnd = patchWhileEnd;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAppendClosingBrace = require('../utils/appendClosingBrace');
-
-var _utilsAppendClosingBrace2 = _interopRequireDefault(_utilsAppendClosingBrace);
-
-var _utilsIsSurroundedBy = require('../utils/isSurroundedBy');
-
-var _utilsIsSurroundedBy2 = _interopRequireDefault(_utilsIsSurroundedBy);
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchWhileStart(node, patcher) {
-  if (isWhileCondition(node)) {
-    if (!(0, _utilsIsSurroundedBy2['default'])(node, '(', patcher.original)) {
-      patcher.insert(node.range[0], '(');
-    }
-  }
-}
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function patchWhileEnd(node, patcher) {
-  if (isWhileCondition(node)) {
-    if ((0, _utilsIsSurroundedBy2['default'])(node, '(', patcher.original)) {
-      patcher.insert(node.range[1] + ')'.length, ' {');
-    } else {
-      patcher.insert(node.range[1], ') {');
-    }
-  } else if (node.type === 'While') {
-    (0, _utilsAppendClosingBrace2['default'])(node, patcher);
-  }
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-function isWhileCondition(node) {
-  var parentNode = node.parentNode;
-
-  if (!parentNode) {
-    return false;
-  } else if (parentNode.type !== 'While') {
-    return false;
+function leftHandIdentifiers(node) {
+  if (node.type === 'Identifier') {
+    return [node];
+  } else if (node.type === 'ArrayInitialiser') {
+    return node.members.reduce(function (acc, member) {
+      return acc.concat(leftHandIdentifiers(member));
+    }, []);
+  } else if (node.type === 'ObjectInitialiser') {
+    return node.members.reduce(function (acc, member) {
+      return acc.concat(leftHandIdentifiers(member.expression));
+    }, []);
   } else {
-    return parentNode.condition === node;
+    return [];
   }
 }
-},{"../utils/appendClosingBrace":49,"../utils/isSurroundedBy":69}],31:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessBinaryExistentialOperator;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-/**
- * Convert binary existential operators, e.g. `a ? b` into `if` expressions
- * using unary existential operators, e.g. `if a? then a else b`.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function preprocessBinaryExistentialOperator(node, patcher) {
-  if (node.type === 'ExistsOp') {
-    // e.g. `if a? then a else b`
-    //       ^^^
-    patcher.insert(node.range[0], 'if ');
-
-    if (node.left.type === 'Identifier') {
-      // e.g. `a ? b` -> `if a? then a else b`
-      //       ^^^^^         ^^^^^^^^^^^^^^^^
-      patcher.overwrite(node.range[0], node.range[1], node.left.raw + '? then ' + node.left.raw + ' else ' + node.right.raw);
-    } else {
-      var tmp = (0, _utilsGetFreeBinding2['default'])(node.scope);
-      // e.g. `@a ? @b` -> `if (ref = @a)? then ref else @b`
-      //       ^^^^^^^         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      patcher.overwrite(node.range[0], node.range[1], '(' + tmp + ' = ' + node.left.raw + ')? then ' + tmp + ' else ' + node.right.raw);
-    }
-
-    return true;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/getFreeBinding":57}],32:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessChainedComparison;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsIsSafeToRepeat = require('../utils/isSafeToRepeat');
-
-var _utilsIsSafeToRepeat2 = _interopRequireDefault(_utilsIsSafeToRepeat);
-
-/**
- * Expands chained comparisons, i.e. `a < b < c` to `a < b && b < c`.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function preprocessChainedComparison(node, patcher) {
-  if (node.type === 'ChainedComparisonOp') {
-    var middle = node.expression.left.right;
-    if ((0, _utilsIsSafeToRepeat2['default'])(middle)) {
-      patcher.insert(middle.range[1], ' && ' + middle.raw);
-    } else {
-      var temp = (0, _utilsGetFreeBinding2['default'])(node.scope);
-      patcher.overwrite(middle.range[0], middle.range[1], '(' + temp + ' = ' + middle.raw + ') && ' + temp);
-    }
-    return true;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/getFreeBinding":57,"../utils/isSafeToRepeat":67}],33:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessClass;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
-
-var _utilsConvertBoundFunctionToUnboundFunction = require('../utils/convertBoundFunctionToUnboundFunction');
-
-var _utilsConvertBoundFunctionToUnboundFunction2 = _interopRequireDefault(_utilsConvertBoundFunctionToUnboundFunction);
-
-var _utilsDetermineIndent = require('../utils/determineIndent');
-
-var _utilsDetermineIndent2 = _interopRequireDefault(_utilsDetermineIndent);
-
-var _utilsPrependLinesToBlock = require('../utils/prependLinesToBlock');
-
-var _utilsPrependLinesToBlock2 = _interopRequireDefault(_utilsPrependLinesToBlock);
-
-function preprocessClass(node, patcher) {
-  if (node.type === 'Class') {
-    var _ret = (function () {
-      var bindings = [];
-
-      if (node.boundMembers.length > 0) {
-        var _ret2 = (function () {
-          var indent = (0, _utilsDetermineIndent2['default'])(patcher.original);
-
-          node.body.statements.forEach(function (statement) {
-            if (statement.type === 'ClassProtoAssignOp' && statement.expression.type === 'BoundFunction') {
-              var assignee = statement.assignee;
-              var expression = statement.expression;
-
-              bindings.push('this.' + assignee.data + ' = this.' + assignee.data + '.bind(this)');
-              (0, _utilsConvertBoundFunctionToUnboundFunction2['default'])(expression, patcher);
-            }
-          });
-
-          if (node.ctor) {
-            (0, _utilsPrependLinesToBlock2['default'])(patcher, bindings, node.ctor.expression.body);
-          } else {
-            var _constructor = ['constructor: ->'];
-            if (node.parent) {
-              // FIXME: CSR does not actually support `super` yet!
-              _constructor.push(indent + 'super()');
-            }
-            _constructor.push.apply(_constructor, _toConsumableArray(bindings.map(function (binding) {
-              return indent + binding;
-            })).concat(['']));
-            (0, _utilsPrependLinesToBlock2['default'])(patcher, _constructor, node.body);
-          }
-
-          return {
-            v: {
-              v: true
-            }
-          };
-        })();
-
-        if (typeof _ret2 === 'object') return _ret2.v;
-      }
-    })();
-
-    if (typeof _ret === 'object') return _ret.v;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/convertBoundFunctionToUnboundFunction":51,"../utils/determineIndent":53,"../utils/prependLinesToBlock":74}],34:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessCompoundAssignment;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsIsSafeToRepeat = require('../utils/isSafeToRepeat');
-
-var _utilsIsSafeToRepeat2 = _interopRequireDefault(_utilsIsSafeToRepeat);
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-/**
- * Convert special compound assigns that are not direct passthroughs to
- * JavaScript such as `a ||= b`.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function preprocessCompoundAssignment(node, patcher) {
-  if (node.type === 'CompoundAssignOp') {
-    var assignee = node.assignee;
-    var expression = node.expression;
-
-    switch (node.op) {
-      case 'LogicalOrOp':
-      case 'LogicalAndOp':
-        var isMemberAccess = /MemberAccessOp$/.test(assignee.type);
-        var isDynamicMemberAccess = assignee.type === 'DynamicMemberAccessOp';
-        var lhs = undefined;
-        var base = isMemberAccess ? assignee.expression.raw : assignee.raw;
-        var name = isDynamicMemberAccess ? assignee.indexingExpr.raw : isMemberAccess ? assignee.memberName : null;
-
-        if (isMemberAccess && !(0, _utilsIsSafeToRepeat2['default'])(assignee.expression)) {
-          base = (0, _utilsGetFreeBinding2['default'])(node.scope, 'base');
-          patcher.insert(assignee.expression.range[0], '(' + base + ' = ');
-          patcher.insert(assignee.expression.range[1], ')');
-        }
-
-        if (isDynamicMemberAccess && !(0, _utilsIsSafeToRepeat2['default'])(assignee.indexingExpr)) {
-          name = (0, _utilsGetFreeBinding2['default'])(node.scope, 'name');
-          patcher.insert(assignee.indexingExpr.range[0], name + ' = ');
-        }
-
-        if (isDynamicMemberAccess) {
-          lhs = base + '[' + name + ']';
-        } else if (isMemberAccess) {
-          lhs = base + '.' + name;
-        } else {
-          lhs = base;
-        }
-
-        (0, _utilsReplaceBetween2['default'])(patcher, assignee, expression, '=', ' (' + lhs + ' =');
-        patcher.insert(expression.range[1], ')');
-        return true;
-    }
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/getFreeBinding":57,"../utils/isSafeToRepeat":67,"../utils/replaceBetween":78}],35:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessConditional;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsMakeIIFE = require('../utils/makeIIFE');
-
-var _utilsMakeIIFE2 = _interopRequireDefault(_utilsMakeIIFE);
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-var _utilsIsMultiline = require('../utils/isMultiline');
-
-var _utilsIsMultiline2 = _interopRequireDefault(_utilsIsMultiline);
-
-var _utilsSourceBetween = require('../utils/sourceBetween');
-
-var _utilsSourceBetween2 = _interopRequireDefault(_utilsSourceBetween);
-
-/**
- * Rewrites POST `if` and `unless` conditionals to be PRE conditionals. Returns
- * whether or not any rewrites happened for the given node.
- *
- * @example
- *
- *   a if b  # => if b then a
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function preprocessConditional(node, patcher) {
-  if (node.type === 'Conditional') {
-    var condition = node.condition;
-    var consequent = node.consequent;
-    if (condition.range[0] > consequent.range[0]) {
-      // Found a POST-if/unless, transform it.
-      var ifOrUnlessToken = (0, _utilsSourceBetween2['default'])(patcher.original, consequent, condition).trim();
-      patcher.overwrite(node.range[0], node.range[1], ifOrUnlessToken + ' ' + condition.raw.trim() + ' then ' + consequent.raw.trim());
-      return true;
-    } else if ((0, _utilsIsExpressionResultUsed2['default'])(node) && (0, _utilsIsMultiline2['default'])(patcher.original, node)) {
-      (0, _utilsMakeIIFE2['default'])(node, patcher);
-      return true;
-    }
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/isExpressionResultUsed":61,"../utils/isMultiline":65,"../utils/makeIIFE":72,"../utils/sourceBetween":82}],36:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessDo;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-/**
- * Preprocesses `do` expressions by turning them into IIFEs.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function preprocessDo(node, patcher) {
-  if (node.type === 'DoOp') {
-    var expression = node.expression;
-    var parameters = expression.parameters;
-
-    var trimmedRange = (0, _utilsTrimmedNodeRange2['default'])(node, patcher.original);
-
-    // Remove initializers from default params.
-    parameters.forEach(function (param) {
-      if (param.type === 'DefaultParam') {
-        patcher.remove(param.param.range[1], param['default'].range[1]);
-      }
-    });
-
-    // Collect the arguments that should be used for the IIFE call.
-    var args = parameters.map(argumentForDoParameter);
-    patcher.overwrite(trimmedRange[0], expression.range[0], '(');
-    patcher.overwrite(trimmedRange[1], trimmedRange[1], ')(' + args.join(', ') + ')');
-    return true;
-  }
-}
-
-function argumentForDoParameter(node) {
-  switch (node.type) {
-    case 'DefaultParam':
-      return node['default'].raw;
-
-    default:
-      return node.raw;
-  }
-}
-module.exports = exports['default'];
-},{"../utils/trimmedNodeRange":86}],37:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessFor;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsConvertLoopExpressionIntoIIFE = require('../utils/convertLoopExpressionIntoIIFE');
-
-var _utilsConvertLoopExpressionIntoIIFE2 = _interopRequireDefault(_utilsConvertLoopExpressionIntoIIFE);
-
-var _utilsEnsureMultilineLoop = require('../utils/ensureMultilineLoop');
-
-var _utilsEnsureMultilineLoop2 = _interopRequireDefault(_utilsEnsureMultilineLoop);
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsGetIndent = require('../utils/getIndent');
-
-var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
-
-var _utilsIndentNode = require('../utils/indentNode');
-
-var _utilsIndentNode2 = _interopRequireDefault(_utilsIndentNode);
-
-var _utilsIsSafeToRepeat = require('../utils/isSafeToRepeat');
-
-var _utilsIsSafeToRepeat2 = _interopRequireDefault(_utilsIsSafeToRepeat);
-
-var _utilsPrependLinesToBlock = require('../utils/prependLinesToBlock');
-
-var _utilsPrependLinesToBlock2 = _interopRequireDefault(_utilsPrependLinesToBlock);
-
-var _utilsTypes = require('../utils/types');
-
-/**
- * Normalize `for` loops for easier patching.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function preprocessFor(node, patcher) {
-  if ((0, _utilsTypes.isForLoop)(node)) {
-    if ((0, _utilsEnsureMultilineLoop2['default'])(node, patcher)) {
-      return true;
-    } else if ((0, _utilsConvertLoopExpressionIntoIIFE2['default'])(node, patcher)) {
-      return true;
-    } else if (convertFilterIntoBodyConditional(node, patcher)) {
-      return true;
-    } else if (moveValueAssignmentIntoBody(node, patcher)) {
-      return true;
-    } else if (convertForOwnIntoBodyConditional(node, patcher)) {
-      return true;
-    }
-  }
-
-  var target = node.target;
-  var scope = node.scope;
-
-  if (node.type === 'ForIn') {
-    var rewritten = false;
-
-    // Make all for-in loops have a key assignee.
-    if (!node.keyAssignee && target.type !== 'Range') {
-      patcher.insert(node.valAssignee.range[1], ', ' + (0, _utilsGetFreeBinding.getFreeLoopBinding)(scope));
-      rewritten = true;
-    }
-
-    if (target.type === 'Range') {
-      if (!(0, _utilsIsSafeToRepeat2['default'])(target.left)) {
-        var startBinding = (0, _utilsGetFreeBinding2['default'])(scope, 'start');
-        patcher.insert(node.range[0], startBinding + ' = ' + target.left.raw + '\n' + (0, _utilsGetIndent2['default'])(patcher.original, node.range[0]));
-        patcher.overwrite(target.left.range[0], target.left.range[1], startBinding);
-        rewritten = true;
-      }
-      if (!(0, _utilsIsSafeToRepeat2['default'])(target.right)) {
-        var endBinding = (0, _utilsGetFreeBinding2['default'])(scope, 'end');
-        patcher.insert(node.range[0], endBinding + ' = ' + target.right.raw + '\n' + (0, _utilsGetIndent2['default'])(patcher.original, node.range[0]));
-        patcher.overwrite(target.right.range[0], target.right.range[1], endBinding);
-        rewritten = true;
-      }
-    } else if (!(0, _utilsIsSafeToRepeat2['default'])(target)) {
-      var iterableBinding = (0, _utilsGetFreeBinding2['default'])(scope, 'iterable');
-      patcher.insert(node.range[0], iterableBinding + ' = ' + target.raw + '\n' + (0, _utilsGetIndent2['default'])(patcher.original, node.range[0]));
-      patcher.overwrite(target.range[0], target.range[1], iterableBinding);
-      rewritten = true;
-    }
-
-    return rewritten;
-  }
-}
-
-/**
- * Turn for-of loops with a value assignee into one with just a key assignee by
- * moving the value assignment into the loop body.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-function moveValueAssignmentIntoBody(node, patcher) {
-  var keyAssignee = node.keyAssignee;
-  var valAssignee = node.valAssignee;
-  var scope = node.scope;
-
-  if (node.type === 'ForOf') {
-    if (valAssignee) {
-      // e.g. `for k, v of o` -> `for k of o` and `v = o[k]`
-      var iterable = extractIterableIfNeeded(node, patcher);
-      var assignments = [];
-      var key = keyAssignee.raw;
-
-      if (keyAssignee.type !== 'Identifier') {
-        // destructured key, use a temporary variable for the key
-        key = (0, _utilsGetFreeBinding2['default'])(scope, 'key');
-        patcher.overwrite(keyAssignee.range[0], keyAssignee.range[1], key);
-        assignments.push(keyAssignee.raw + ' = ' + key);
-      }
-
-      // e.g. `for k, v of o` -> `for k in o`
-      //            ^^^
-      patcher.remove(keyAssignee.range[1], valAssignee.range[1]);
-      assignments.push(valAssignee.raw + ' = ' + iterable + '[' + key + ']');
-      (0, _utilsPrependLinesToBlock2['default'])(patcher, assignments, node.body);
-      return true;
-    }
-  }
-}
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {string}
- */
-function extractIterableIfNeeded(node, patcher) {
-  var scope = node.scope;
-  var target = node.target;
-
-  var canRepeatIterable = (0, _utilsIsSafeToRepeat2['default'])(target);
-  var iterable = canRepeatIterable ? target.raw : (0, _utilsGetFreeBinding2['default'])(scope, 'iterable');
-
-  if (!canRepeatIterable) {
-    patcher.overwrite(target.range[0], target.range[1], '(' + iterable + ' = ' + target.raw + ')');
-  }
-
-  return iterable;
-}
-
-/**
- * If the `for` loop contains a `when` clause we turn it into an `if` in the
- * body of the `for` loop.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-function convertFilterIntoBodyConditional(node, patcher) {
-  if (!node.filter) {
-    return false;
-  }
-
-  var indent = (0, _utilsGetIndent2['default'])(patcher.original, node.body.range[0]);
-  patcher.insert(node.body.range[0], 'if ' + node.filter.raw + '\n' + indent);
-  patcher.remove(node.filter.range[0] - ' when '.length, node.filter.range[1]);
-  (0, _utilsIndentNode2['default'])(node.body, patcher);
-  return true;
-}
-
-/**
- * Converts a `for` loop with the `own` flag to one without the `own` flag whose
- * body is wrapped in a conditional checking that the key is an own property.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-function convertForOwnIntoBodyConditional(node, patcher) {
-  if (!node.isOwn) {
-    return false;
-  }
-
-  var iterable = extractIterableIfNeeded(node, patcher);
-  var indent = (0, _utilsGetIndent2['default'])(patcher.original, node.body.range[0]);
-  patcher.insert(node.body.range[0], 'if Object::hasOwnProperty.call(' + iterable + ', ' + node.keyAssignee.raw + ')\n' + indent);
-  patcher.remove(node.range[0] + 'for '.length, node.range[0] + 'for own '.length);
-  (0, _utilsIndentNode2['default'])(node.body, patcher);
-  return true;
-}
-module.exports = exports['default'];
-},{"../utils/convertLoopExpressionIntoIIFE":52,"../utils/ensureMultilineLoop":54,"../utils/getFreeBinding":57,"../utils/getIndent":58,"../utils/indentNode":59,"../utils/isSafeToRepeat":67,"../utils/prependLinesToBlock":74,"../utils/types":87}],38:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessIn;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-var _utilsRequiresParentheses = require('../utils/requiresParentheses');
-
-var _utilsRequiresParentheses2 = _interopRequireDefault(_utilsRequiresParentheses);
-
-/**
- * Replace `in` infix operators with a call to `indexOf`.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function preprocessIn(node, patcher) {
-  if (node.type === 'InOp') {
-    var indexable = node.right.raw;
-    var element = node.left.raw;
-    var needsParentheses = false;
-    var prefix = '';
-
-    if (node.left.type !== 'Identifier') {
-      var temp = (0, _utilsGetFreeBinding2['default'])(node.scope);
-      needsParentheses = (0, _utilsIsExpressionResultUsed2['default'])(node);
-      prefix += temp + ' = ' + element + '; ';
-      element = temp;
-    }
-
-    if ((0, _utilsRequiresParentheses2['default'])(node.right)) {
-      indexable = '(' + indexable + ')';
-    }
-
-    var isNegated = patcher.original.slice(node.left.range[1], node.right.range[0]).indexOf('not in') >= 0;
-    var replacement = '' + prefix + indexable + '.indexOf(' + element + ') ' + (isNegated ? '<' : '>=') + ' 0';
-
-    if (needsParentheses) {
-      replacement = '(' + replacement + ')';
-    }
-
-    patcher.overwrite(node.range[0], node.range[1], replacement);
-    return true;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/getFreeBinding":57,"../utils/isExpressionResultUsed":61,"../utils/requiresParentheses":80}],39:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessNegatableOps;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsReplaceBetween = require('../utils/replaceBetween');
-
-var _utilsReplaceBetween2 = _interopRequireDefault(_utilsReplaceBetween);
-
-/**
- * Turn negated `of` and `instanceof` operators into standard ones.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function preprocessNegatableOps(node, patcher) {
-  switch (node.type) {
-    case 'OfOp':
-      return standardizeNegatableOp(node, patcher, 'of');
-
-    case 'InstanceofOp':
-      return standardizeNegatableOp(node, patcher, 'instanceof');
-  }
-}
-
-/**
- * Turn negated operators with a given keyword into operators surrounded by a
- * logical `not` operator.
- *
- * @param node
- * @param patcher
- * @param keyword
- * @returns {boolean}
- */
-function standardizeNegatableOp(node, patcher, keyword) {
-  if ((0, _utilsReplaceBetween2['default'])(patcher, node.left, node.right, 'not ' + keyword, keyword)) {
-    patcher.insert(node.left.range[0], '!(');
-    patcher.insert(node.right.range[1], ')');
-    return true;
-  } else {
-    return false;
-  }
-}
-module.exports = exports['default'];
-},{"../utils/replaceBetween":78}],40:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessParameters;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAdjustIndent = require('../utils/adjustIndent');
-
-var _utilsAdjustIndent2 = _interopRequireDefault(_utilsAdjustIndent);
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsIsMultiline = require('../utils/isMultiline');
-
-var _utilsIsMultiline2 = _interopRequireDefault(_utilsIsMultiline);
-
-var _utilsIsParameter = require('../utils/isParameter');
-
-var _utilsIsParameter2 = _interopRequireDefault(_utilsIsParameter);
-
-var _utilsTypes = require('../utils/types');
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function preprocessParameters(node, patcher) {
-  if ((0, _utilsTypes.isFunction)(node)) {
-    var _ret = (function () {
-      var assignments = [];
-
-      node.parameters.forEach(function (param) {
-        var thisDotParameter = getThisDotParameter(param);
-        if (thisDotParameter) {
-          // `@a` -> `a`
-          var paramName = (0, _utilsGetFreeBinding2['default'])(node.scope, thisDotParameter.memberName);
-          patcher.overwrite(thisDotParameter.range[0], thisDotParameter.range[1], paramName);
-          assignments.push('this.' + thisDotParameter.memberName + ' = ' + paramName);
-        }
-      });
-
-      if (assignments.length > 0) {
-        var _ret2 = (function () {
-          var indent = (0, _utilsAdjustIndent2['default'])(patcher.original, node.range[0], 1);
-          var insertionPoint = node.body ? node.body.range[0] : node.range[1];
-
-          if ((0, _utilsIsMultiline2['default'])(patcher.original, node)) {
-            // put each assignment on its own line
-            patcher.insert(insertionPoint, assignments.map(function (assignment) {
-              return assignment + '\n' + indent;
-            }).join(''));
-          } else {
-            // put the assignments all on one line
-            patcher.insert(insertionPoint, ' ' + assignments.join('; '));
-          }
-
-          return {
-            v: {
-              v: true
-            }
-          };
-        })();
-
-        if (typeof _ret2 === 'object') return _ret2.v;
-      }
-    })();
-
-    if (typeof _ret === 'object') return _ret.v;
-  }
-}
-
-/**
- * Determines whether this is a `@foo` in the place of a function parameter.
- *
- * @param {Object} node
- * @returns {?Object}
- */
-function getThisDotParameter(node) {
-  if (!(0, _utilsIsParameter2['default'])(node)) {
-    return false;
-  }
-
-  if (node.type === 'DefaultParam') {
-    node = node.param;
-  }
-
-  if (node.type === 'MemberAccessOp' && node.expression.type === 'This') {
-    return node;
-  } else {
-    return null;
-  }
-}
-module.exports = exports['default'];
-},{"../utils/adjustIndent":48,"../utils/getFreeBinding":57,"../utils/isMultiline":65,"../utils/isParameter":66,"../utils/types":87}],41:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessRange;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAdjustIndent = require('../utils/adjustIndent');
-
-var _utilsAdjustIndent2 = _interopRequireDefault(_utilsAdjustIndent);
-
-var _utilsDetermineIndent = require('../utils/determineIndent');
-
-var _utilsDetermineIndent2 = _interopRequireDefault(_utilsDetermineIndent);
-
-var _utilsGetIndent = require('../utils/getIndent');
-
-var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsIsSafeToRepeat = require('../utils/isSafeToRepeat');
-
-var _utilsIsSafeToRepeat2 = _interopRequireDefault(_utilsIsSafeToRepeat);
-
-var _utilsStripSharedIndent = require('../utils/stripSharedIndent');
-
-var _utilsStripSharedIndent2 = _interopRequireDefault(_utilsStripSharedIndent);
-
-var MAX_RANGE_LITERAL_VALUES = 20;
-
-/**
- * Patches ranges.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function preprocessRange(node, patcher) {
-  if (node.type === 'Range') {
-    var _ret = (function () {
-      var parentNode = node.parentNode;
-
-      if (parentNode.type === 'ForIn' && parentNode.target === node) {
-        // Don't re-write the range in `for n in [0..5]`
-        return {
-          v: false
-        };
-      }
-      var resultBinding = (0, _utilsGetFreeBinding2['default'])(node.scope, 'result');
-      var iBinding = (0, _utilsGetFreeBinding2['default'])(node.scope, 'i');
-      var left = node.left;
-      var right = node.right;
-
-      if (left.type === 'Int' && right.type === 'Int') {
-        var isAscending = left.data <= right.data;
-        var lastValue = node.isInclusive ? right.data : right.data + (isAscending ? -1 : 1);
-        if (Math.abs(lastValue - left.data) <= MAX_RANGE_LITERAL_VALUES) {
-          var numbers = [];
-          if (isAscending) {
-            for (var i = left.data; i <= lastValue; i++) {
-              numbers.push(i);
-            }
-          } else {
-            for (var i = left.data; i >= lastValue; i--) {
-              numbers.push(i);
-            }
-          }
-          patcher.overwrite(left.range[0], right.range[1], numbers.join(', '));
-          return {
-            v: true
-          };
-        } else {
-          var indent0 = (0, _utilsAdjustIndent2['default'])(patcher.original, node.range[0], 0);
-          var indent1 = (0, _utilsAdjustIndent2['default'])(patcher.original, node.range[0], 1);
-          patcher.overwrite(node.range[0], node.range[1], (0, _utilsStripSharedIndent2['default'])('\n            (do ->\n              ' + indent0 + resultBinding + ' = []\n              ' + indent0 + iBinding + ' = ' + left.raw + '\n              ' + indent0 + 'while ' + iBinding + ' ' + (isAscending ? node.isInclusive ? '<=' : '<' : node.isInclusive ? '>=' : '>') + ' ' + right.raw + '\n              ' + indent1 + resultBinding + '.push(' + iBinding + (isAscending ? '++' : '--') + ')\n              ' + indent0 + resultBinding + ')\n          '));
-          return {
-            v: true
-          };
-        }
-      }
-
-      var indent = (0, _utilsDetermineIndent2['default'])(patcher.original);
-      var lead = (0, _utilsGetIndent2['default'])(patcher.original, node.range[0]) + indent;
-      var isStartSafeToRepeat = (0, _utilsIsSafeToRepeat2['default'])(left);
-      var isEndSafeToRepeat = (0, _utilsIsSafeToRepeat2['default'])(right);
-      var start = isStartSafeToRepeat ? left.raw : (0, _utilsGetFreeBinding2['default'])(node.scope, 'start');
-      var end = isEndSafeToRepeat ? right.raw : (0, _utilsGetFreeBinding2['default'])(node.scope, 'end');
-
-      var lines = [];
-
-      lines.push(resultBinding + ' = []');
-      if (!isStartSafeToRepeat) {
-        lines.push(start + ' = ' + left.raw);
-      }
-      if (!isEndSafeToRepeat) {
-        lines.push(end + ' = ' + right.raw);
-      }
-      lines.push(iBinding + ' = ' + start, 'if ' + start + ' <= ' + end, indent + 'while ' + iBinding + ' ' + (node.isInclusive ? '<=' : '<') + ' ' + end, '' + indent + indent + resultBinding + '.push(' + iBinding + '++)', 'else', indent + 'while ' + iBinding + ' ' + (node.isInclusive ? '>=' : '>') + ' ' + end, '' + indent + indent + resultBinding + '.push(' + iBinding + '--)', '' + resultBinding);
-
-      patcher.overwrite(node.range[0], node.range[1], '(do ->\n' + lines.map(function (line) {
-        return lead + line;
-      }).join('\n') + ')');
-      return {
-        v: true
-      };
-    })();
-
-    if (typeof _ret === 'object') return _ret.v;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/adjustIndent":48,"../utils/determineIndent":53,"../utils/getFreeBinding":57,"../utils/getIndent":58,"../utils/isSafeToRepeat":67,"../utils/stripSharedIndent":84}],42:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessSoakedFunctionApplication;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsIsSafeToRepeat = require('../utils/isSafeToRepeat');
-
-var _utilsIsSafeToRepeat2 = _interopRequireDefault(_utilsIsSafeToRepeat);
-
-function preprocessSoakedFunctionApplication(node, patcher) {
-  if (node.type === 'SoakedFunctionApplication') {
-    var args = patcher.original.slice(node['function'].range[1] + '?'.length, node.range[1]);
-    var typeofArgument = undefined;
-    var fn = undefined;
-
-    if ((0, _utilsIsSafeToRepeat2['default'])(node['function'])) {
-      // `a?()` -> `if typeof a == "function" then a()`
-      typeofArgument = node['function'].raw;
-      fn = node['function'].raw;
-    } else {
-      // `a(1)?()` -> `if typeof (fn = a(1)) == "function" then fn()`
-      fn = (0, _utilsGetFreeBinding2['default'])(node.scope, 'fn');
-      typeofArgument = '(' + fn + ' = ' + node['function'].raw + ')';
-    }
-
-    patcher.overwrite(node.range[0], node.range[1], 'if typeof ' + typeofArgument + ' == "function" then ' + fn + args);
-
-    return true;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/getFreeBinding":57,"../utils/isSafeToRepeat":67}],43:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessSoakedMemberAccessOp;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-/**
- * Re-writes soaked member expressions into CoffeeScript that does not use
- * soaked member expressions.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function preprocessSoakedMemberAccessOp(node, patcher) {
-  if (node.type === 'SoakedMemberAccessOp' || node.type === 'SoakedDynamicMemberAccessOp') {
-    // For member access with identifier object:
-    //
-    // `a?.b()` -> `if a? then a.b()`
-    //              ^^^  ^^^^^^^
-    //
-    // For member access with complex object:
-    //
-    // `a.b?.c` -> `if (ref = a.b)? then ref.c`
-    //              ^^^^^^^^^^   ^ ^^^^^^^^^
-    var expression = node.expression;
-    var conditional = undefined;
-    if (node.parentNode.type === 'FunctionApplication' && node.parentNode['function'] === node) {
-      conditional = node.parentNode;
-    } else {
-      conditional = node;
-    }
-    var parens = conditional.parentNode.type !== 'Block';
-    var consequent = undefined;
-    if (parens) {
-      patcher.insert(conditional.range[0], '(');
-    }
-    patcher.insert(expression.range[0], 'if ');
-    if (expression.type === 'Identifier') {
-      consequent = ' then ' + expression.raw;
-    } else {
-      var tmp = (0, _utilsGetFreeBinding2['default'])(node.scope);
-      patcher.insert(expression.range[0], '(' + tmp + ' = ');
-      patcher.insert(expression.range[1], ')');
-      consequent = ' then ' + tmp;
-    }
-    patcher.insert(expression.range[1] + 1, consequent);
-    if (parens) {
-      patcher.insert(conditional.range[1], ')');
-    }
-    return true;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/getFreeBinding":57}],44:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessSwitch;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsDetermineIndent = require('../utils/determineIndent');
-
-var _utilsDetermineIndent2 = _interopRequireDefault(_utilsDetermineIndent);
-
-var _utilsGetIndent = require('../utils/getIndent');
-
-var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-/**
- * Converts `switch` used as an expression to `switch` inside an IIFE.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function preprocessSwitch(node, patcher) {
-  if (node.type === 'Switch' && (0, _utilsIsExpressionResultUsed2['default'])(node)) {
-    var source = patcher.original;
-    var indent = (0, _utilsDetermineIndent2['default'])(source);
-    patcher.insert(node.range[0], 'do ->\n' + ((0, _utilsGetIndent2['default'])(source, node.range[0]) + indent));
-
-    var index = source.indexOf('\n', node.range[0]);
-
-    while (0 <= index && index < node.range[1]) {
-      patcher.insert(index + '\n'.length, indent);
-      index = source.indexOf('\n', index + '\n'.length);
-    }
-
-    return true;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/determineIndent":53,"../utils/getIndent":58,"../utils/isExpressionResultUsed":61}],45:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessTry;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsGetIndent = require('../utils/getIndent');
-
-var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
-
-var _utilsIndexOfIgnoringComments = require('../utils/indexOfIgnoringComments');
-
-var _utilsIndexOfIgnoringComments2 = _interopRequireDefault(_utilsIndexOfIgnoringComments);
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-var _utilsIsMultiline = require('../utils/isMultiline');
-
-var _utilsIsMultiline2 = _interopRequireDefault(_utilsIsMultiline);
-
-var _utilsMakeIIFE = require('../utils/makeIIFE');
-
-var _utilsMakeIIFE2 = _interopRequireDefault(_utilsMakeIIFE);
-
-var _utilsSourceBetween = require('../utils/sourceBetween');
-
-var _utilsSourceBetween2 = _interopRequireDefault(_utilsSourceBetween);
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-/**
- * Rewrites `try` expressions by wrapping them in an IIFE. Ensures catch
- * exists with an error assignee if needed.
- *
- * @example
- *
- *   (try a)(b) # => (=> try a catch error)(b)
- *
- *   try
- *     a
- *   catch # => catch error
- *     b
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function preprocessTry(node, patcher) {
-  if (node.type === 'Try') {
-    if ((0, _utilsIsExpressionResultUsed2['default'])(node)) {
-      (0, _utilsMakeIIFE2['default'])(node, patcher);
-      return true;
-    }
-
-    if (!node.catchAssignee) {
-      if (node.catchBody) {
-        var nodeBeforeCatchClause = node.body;
-        var nodeAfterCatchClause = node.catchBody;
-        var source = (0, _utilsSourceBetween2['default'])(patcher.original, nodeBeforeCatchClause, nodeAfterCatchClause);
-        var catchIndex = (0, _utilsIndexOfIgnoringComments2['default'])(source, 'catch');
-        if (catchIndex === -1) {
-          throw new Error('unable to find catch between try block body ' + ('(' + nodeBeforeCatchClause.line + ':' + nodeBeforeCatchClause.column + ') and catch body ') + ('(' + nodeAfterCatchClause.line + ':' + nodeAfterCatchClause.column + ')'));
-        }
-        patcher.insert(nodeBeforeCatchClause.range[1] + catchIndex + 'catch'.length, ' ' + (0, _utilsGetFreeBinding2['default'])(node.scope, 'error'));
-        return true;
-      } else if (!node.finallyBody) {
-        if (node.body.type === 'Block') {
-          patcher.insert((0, _utilsTrimmedNodeRange2['default'])(node.body, patcher.original)[1], '\n' + (0, _utilsGetIndent2['default'])(patcher.original, node.range[0]) + 'catch ' + (0, _utilsGetFreeBinding2['default'])(node.scope, 'error'));
-          return true;
-        } else if (!(0, _utilsIsMultiline2['default'])(patcher.original, node)) {
-          patcher.insert((0, _utilsTrimmedNodeRange2['default'])(node, patcher.original)[1], ' catch ' + (0, _utilsGetFreeBinding2['default'])(node.scope, 'error'));
-          return true;
-        }
-      }
-    }
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/getFreeBinding":57,"../utils/getIndent":58,"../utils/indexOfIgnoringComments":60,"../utils/isExpressionResultUsed":61,"../utils/isMultiline":65,"../utils/makeIIFE":72,"../utils/sourceBetween":82,"../utils/trimmedNodeRange":86}],46:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = preprocessWhile;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsConvertLoopExpressionIntoIIFE = require('../utils/convertLoopExpressionIntoIIFE');
-
-var _utilsConvertLoopExpressionIntoIIFE2 = _interopRequireDefault(_utilsConvertLoopExpressionIntoIIFE);
-
-var _utilsEnsureMultilineLoop = require('../utils/ensureMultilineLoop');
-
-var _utilsEnsureMultilineLoop2 = _interopRequireDefault(_utilsEnsureMultilineLoop);
-
-var _utilsRequiresParentheses = require('../utils/requiresParentheses');
-
-var _utilsRequiresParentheses2 = _interopRequireDefault(_utilsRequiresParentheses);
-
-var _utilsTypes = require('../utils/types');
-
-var LOOP_KEYWORD = 'loop';
-var UNTIL_KEYWORD = 'until';
-var WHILE_KEYWORD = 'while';
-
-/**
- * Convert non-standard `while` loops into typical loops.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function preprocessWhile(node, patcher) {
-  if ((0, _utilsTypes.isWhile)(node)) {
-    if (convertLoopToWhileTrue(node, patcher)) {
-      return true;
-    } else if (convertUntilToWhile(node, patcher)) {
-      return true;
-    } else if ((0, _utilsEnsureMultilineLoop2['default'])(node, patcher)) {
-      return true;
-    } else if ((0, _utilsConvertLoopExpressionIntoIIFE2['default'])(node, patcher)) {
-      return true;
-    }
-  }
-}
-
-/**
- * Convert `loop` into `while true`.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-function convertLoopToWhileTrue(node, patcher) {
-  if ((0, _utilsTypes.isWhile)(node) && patcher.slice(node.range[0], node.range[0] + LOOP_KEYWORD.length) === LOOP_KEYWORD) {
-    patcher.overwrite(node.range[0], node.range[0] + LOOP_KEYWORD.length, 'while true');
-    return true;
-  }
-
-  return false;
-}
-
-/**
- * Convert `until` into a negated `while`.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-function convertUntilToWhile(node, patcher) {
-  if ((0, _utilsTypes.isWhile)(node) && patcher.slice(node.range[0], node.range[0] + UNTIL_KEYWORD.length) === UNTIL_KEYWORD) {
-    // Handle "until" loops.
-    patcher.overwrite(node.range[0], node.range[0] + UNTIL_KEYWORD.length, WHILE_KEYWORD);
-    var condition = node.condition.expression;
-    if ((0, _utilsRequiresParentheses2['default'])(condition)) {
-      patcher.insert(condition.range[0], '!(');
-      patcher.insert(condition.range[1], ')');
-    } else {
-      patcher.insert(condition.range[0], '!');
-    }
-    return true;
-  }
-}
-module.exports = exports['default'];
-},{"../utils/convertLoopExpressionIntoIIFE":52,"../utils/ensureMultilineLoop":54,"../utils/requiresParentheses":80,"../utils/types":87}],47:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-var _leftHandIdentifiers = require('./leftHandIdentifiers');
-
-var _leftHandIdentifiers2 = _interopRequireDefault(_leftHandIdentifiers);
 
 /**
  * Represents a CoffeeScript scope and its bindings.
@@ -3701,7 +130,7 @@ var _leftHandIdentifiers2 = _interopRequireDefault(_leftHandIdentifiers);
 
 var Scope = (function () {
   function Scope(parent) {
-    _classCallCheck(this, Scope);
+    babelHelpers.classCallCheck(this, Scope);
 
     this.parent = parent;
     this.bindings = Object.create(parent ? parent.bindings : null);
@@ -3712,7 +141,7 @@ var Scope = (function () {
    * @returns {?Object}
    */
 
-  _createClass(Scope, [{
+  babelHelpers.createClass(Scope, [{
     key: 'getBinding',
     value: function getBinding(name) {
       return this.bindings[this.key(name)] || null;
@@ -3721,6 +150,7 @@ var Scope = (function () {
     /**
      * @returns {string[]}
      */
+
   }, {
     key: 'getOwnNames',
     value: function getOwnNames() {
@@ -3735,6 +165,7 @@ var Scope = (function () {
      * @param {string} name
      * @param {Object} node
      */
+
   }, {
     key: 'declares',
     value: function declares(name, node) {
@@ -3746,6 +177,7 @@ var Scope = (function () {
      * @param {string} name
      * @param {Object} node
      */
+
   }, {
     key: 'assigns',
     value: function assigns(name, node) {
@@ -3760,6 +192,7 @@ var Scope = (function () {
      * @returns {string}
      * @private
      */
+
   }, {
     key: 'key',
     value: function key(name) {
@@ -3771,6 +204,7 @@ var Scope = (function () {
      * @returns {string}
      * @private
      */
+
   }, {
     key: 'unkey',
     value: function unkey(key) {
@@ -3782,6 +216,7 @@ var Scope = (function () {
      *
      * @param {Object} node
      */
+
   }, {
     key: 'processNode',
     value: function processNode(node) {
@@ -3789,7 +224,7 @@ var Scope = (function () {
 
       switch (node.type) {
         case 'AssignOp':
-          (0, _leftHandIdentifiers2['default'])(node.assignee).forEach(function (identifier) {
+          leftHandIdentifiers(node.assignee).forEach(function (identifier) {
             return _this2.assigns(identifier.data, identifier);
           });
           break;
@@ -3805,7 +240,7 @@ var Scope = (function () {
         case 'ForOf':
           [node.keyAssignee, node.valAssignee].forEach(function (assignee) {
             if (assignee) {
-              (0, _leftHandIdentifiers2['default'])(assignee).forEach(function (identifier) {
+              leftHandIdentifiers(assignee).forEach(function (identifier) {
                 return _this2.assigns(identifier.data, identifier);
               });
             }
@@ -3817,6 +252,7 @@ var Scope = (function () {
     /**
      * @returns {string}
      */
+
   }, {
     key: 'toString',
     value: function toString() {
@@ -3830,152 +266,15 @@ var Scope = (function () {
     /**
      * @returns {string}
      */
+
   }, {
     key: 'inspect',
     value: function inspect() {
       return this.toString();
     }
   }]);
-
   return Scope;
 })();
-
-exports['default'] = Scope;
-module.exports = exports['default'];
-},{"./leftHandIdentifiers":71}],48:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = adjustIndent;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _determineIndent = require('./determineIndent');
-
-var _determineIndent2 = _interopRequireDefault(_determineIndent);
-
-var _getIndent = require('./getIndent');
-
-var _getIndent2 = _interopRequireDefault(_getIndent);
-
-/**
- * Adjust an indent in source at a specific offset by an amount.
- *
- * @param {string} source
- * @param {number} offset
- * @param {number} adjustment
- * @returns {string}
- */
-
-function adjustIndent(source, offset, adjustment) {
-  var currentIndent = (0, _getIndent2['default'])(source, offset);
-  var determinedIndent = (0, _determineIndent2['default'])(source);
-
-  if (adjustment > 0) {
-    while (adjustment--) {
-      currentIndent += determinedIndent;
-    }
-  } else if (adjustment < 0) {
-    currentIndent = currentIndent.slice(determinedIndent.length * -adjustment);
-  }
-
-  return currentIndent;
-}
-
-module.exports = exports['default'];
-},{"./determineIndent":53,"./getIndent":58}],49:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = appendClosingBrace;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _getIndent = require('./getIndent');
-
-var _getIndent2 = _interopRequireDefault(_getIndent);
-
-var _isMultiline = require('./isMultiline');
-
-var _isMultiline2 = _interopRequireDefault(_isMultiline);
-
-var _trimmedNodeRange = require('./trimmedNodeRange');
-
-var _trimmedNodeRange2 = _interopRequireDefault(_trimmedNodeRange);
-
-var NEWLINE = '\n';
-var SPACE = ' ';
-var TAB = '\t';
-var HASH = '#';
-
-/**
- * Adds a closing curly brace on a new line after a node with the proper indent.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {number}
- */
-
-function appendClosingBrace(node, patcher) {
-  var source = patcher.original;
-  var originalInsertionPoint = (0, _trimmedNodeRange2['default'])(node, source)[1];
-
-  if (!(0, _isMultiline2['default'])(source, node)) {
-    patcher.insert(originalInsertionPoint, '}');
-    return originalInsertionPoint;
-  }
-
-  var insertionPoint = seekToEndOfStatementOrLine(source, originalInsertionPoint);
-
-  patcher.insert(insertionPoint, '\n' + (0, _getIndent2['default'])(source, node.range[0]) + '}');
-
-  return insertionPoint;
-}
-
-/**
- * Finds the last character of a statement or, if there is a comment or
- * whitespace following it on the same line, finds the end of the line.
- *
- * @param {string} source
- * @param {number} index
- * @returns {number}
- */
-function seekToEndOfStatementOrLine(source, index) {
-  var insideComment = false;
-
-  while (index < source.length) {
-    var char = source[index];
-
-    if (char === NEWLINE) {
-      break;
-    } else if (char === HASH) {
-      insideComment = true;
-    } else if (!insideComment && char !== SPACE && char !== TAB) {
-      break;
-    }
-
-    index++;
-  }
-
-  return index;
-}
-module.exports = exports['default'];
-},{"./getIndent":58,"./isMultiline":65,"./trimmedNodeRange":86}],50:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-exports["default"] = buildLineAndColumnMap;
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var CR = 10; // \r
 var LF = 13; // \n
@@ -3990,7 +289,7 @@ var LineAndColumnMap = (function () {
    */
 
   function LineAndColumnMap(source) {
-    _classCallCheck(this, LineAndColumnMap);
+    babelHelpers.classCallCheck(this, LineAndColumnMap);
 
     var offsets = [0];
 
@@ -4025,13 +324,6 @@ var LineAndColumnMap = (function () {
   }
 
   /**
-   * Builds a mapper between line/column pairs and offsets for the given source.
-   *
-   * @param {string} source
-   * @returns {LineAndColumnMap}
-   */
-
-  /**
    * Gets the absolute character offset for the position at line & column.
    *
    * @param {number} line
@@ -4039,7 +331,7 @@ var LineAndColumnMap = (function () {
    * @returns {?number}
    */
 
-  _createClass(LineAndColumnMap, [{
+  babelHelpers.createClass(LineAndColumnMap, [{
     key: "getOffset",
     value: function getOffset(line, column) {
       if (line + 1 >= this.offsets.length) {
@@ -4064,6 +356,7 @@ var LineAndColumnMap = (function () {
      * @param {number} offset
      * @returns {?number[]}
      */
+
   }, {
     key: "getLocation",
     value: function getLocation(offset) {
@@ -4082,241 +375,20 @@ var LineAndColumnMap = (function () {
       }
     }
   }]);
-
   return LineAndColumnMap;
 })();
+
+/**
+ * Builds a mapper between line/column pairs and offsets for the given source.
+ *
+ * @param {string} source
+ * @returns {LineAndColumnMap}
+ */
 
 function buildLineAndColumnMap(source) {
   return new LineAndColumnMap(source);
 }
 
-module.exports = exports["default"];
-},{}],51:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-exports['default'] = convertBoundFunctionToUnboundFunction;
-var BOUND_ARROW = '=>';
-var UNBOUND_ARROW = '->';
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function convertBoundFunctionToUnboundFunction(node, patcher) {
-  var source = patcher.original;
-
-  var _node$range = _slicedToArray(node.range, 2);
-
-  var start = _node$range[0];
-  var end = _node$range[1];
-
-  var offset = start;
-
-  if (node.parameters.length > 0) {
-    offset = node.parameters[node.parameters.length - 1].range[1];
-  }
-
-  var index = source.indexOf(BOUND_ARROW, offset);
-
-  if (index < offset && index >= end) {
-    throw new Error('unable to locate arrow in bound function: ' + JSON.stringify(node.raw));
-  }
-
-  patcher.overwrite(index, index + BOUND_ARROW.length, UNBOUND_ARROW);
-}
-
-module.exports = exports['default'];
-},{}],52:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = convertLoopExpressionIntoIIFE;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAdjustIndent = require('../utils/adjustIndent');
-
-var _utilsAdjustIndent2 = _interopRequireDefault(_utilsAdjustIndent);
-
-var _utilsGetFreeBinding = require('../utils/getFreeBinding');
-
-var _utilsGetFreeBinding2 = _interopRequireDefault(_utilsGetFreeBinding);
-
-var _utilsGetIndent = require('../utils/getIndent');
-
-var _utilsGetIndent2 = _interopRequireDefault(_utilsGetIndent);
-
-var _utilsIndentNode = require('../utils/indentNode');
-
-var _utilsIndentNode2 = _interopRequireDefault(_utilsIndentNode);
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-var _utilsTrimmedNodeRange = require('../utils/trimmedNodeRange');
-
-var _utilsTrimmedNodeRange2 = _interopRequireDefault(_utilsTrimmedNodeRange);
-
-/**
- * If the `for` loop is used as an expression we wrap it in an IIFE.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function convertLoopExpressionIntoIIFE(node, patcher) {
-  if (!(0, _utilsIsExpressionResultUsed2['default'])(node)) {
-    return false;
-  }
-
-  var result = (0, _utilsGetFreeBinding2['default'])(node.scope, 'result');
-
-  var thisIndent = (0, _utilsGetIndent2['default'])(patcher.original, node.range[0]);
-  var nextIndent = (0, _utilsAdjustIndent2['default'])(patcher.original, node.range[0], 1);
-  patcher.insert(node.range[0], 'do =>\n' + nextIndent + result + ' = []\n' + thisIndent);
-  (0, _utilsIndentNode2['default'])(node, patcher);
-  var lastStatement = node.body.statements[node.body.statements.length - 1];
-  var lastStatementRange = (0, _utilsTrimmedNodeRange2['default'])(lastStatement, patcher.original);
-  patcher.insert(lastStatementRange[0], result + '.push(');
-  patcher.insert(lastStatementRange[1], ')');
-  patcher.insert((0, _utilsTrimmedNodeRange2['default'])(node, patcher.original)[1], '\n' + nextIndent + result);
-
-  return true;
-}
-
-module.exports = exports['default'];
-},{"../utils/adjustIndent":48,"../utils/getFreeBinding":57,"../utils/getIndent":58,"../utils/indentNode":59,"../utils/isExpressionResultUsed":61,"../utils/trimmedNodeRange":86}],53:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = determineIndent;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _detectIndent = require('detect-indent');
-
-var _detectIndent2 = _interopRequireDefault(_detectIndent);
-
-var DEFAULT_INDENT = '  ';
-
-/**
- * @param {string} source
- * @returns {string}
- */
-
-function determineIndent(source) {
-  var indent = (0, _detectIndent2['default'])(source);
-  if (indent.type === 'space' && indent.amount % 2 === 1) {
-    return DEFAULT_INDENT;
-  }
-  return indent.indent || DEFAULT_INDENT;
-}
-
-module.exports = exports['default'];
-},{"detect-indent":107}],54:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = ensureMultilineLoop;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsAdjustIndent = require('../utils/adjustIndent');
-
-var _utilsAdjustIndent2 = _interopRequireDefault(_utilsAdjustIndent);
-
-/**
- * Re-order `for` loop parts if the body precedes the rest.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @returns {boolean}
- */
-
-function ensureMultilineLoop(node, patcher) {
-  var keyAssignee = node.keyAssignee;
-  var valAssignee = node.valAssignee;
-  var body = node.body;
-
-  var firstAssignee = null;
-  var keyword = null;
-
-  switch (node.type) {
-    case 'ForOf':
-      firstAssignee = keyAssignee;
-      keyword = node.isOwn ? 'for own' : 'for';
-      break;
-
-    case 'ForIn':
-      firstAssignee = valAssignee;
-      keyword = 'for';
-      break;
-
-    case 'While':
-      firstAssignee = node.condition;
-      keyword = 'while';
-      break;
-  }
-
-  if (!firstAssignee) {
-    return false;
-  }
-
-  if (body.range[0] >= firstAssignee.range[0]) {
-    return false;
-  }
-
-  // e.g. `k for k of o` -> `for k of o\n  k`
-  patcher.remove(body.range[0], firstAssignee.range[0] - (keyword + ' ').length);
-  patcher.insert(node.range[1], '\n' + (0, _utilsAdjustIndent2['default'])(patcher.original, node.range[0], 1) + body.raw);
-  return true;
-}
-
-module.exports = exports['default'];
-},{"../utils/adjustIndent":48}],55:[function(require,module,exports){
-/**
- * Inserts string escape characters before certain characters to be escaped.
- *
- * @param {MagicString} patcher
- * @param {string[]} characters
- * @param {number} start
- * @param {number} end
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = escape;
-
-function escape(patcher, characters, start, end) {
-  var source = patcher.original;
-  for (var i = start; i < end; i++) {
-    if (source[i] === '\\') {
-      i++;
-    } else if (characters.indexOf(source[i]) >= 0) {
-      patcher.insert(i, '\\');
-    }
-  }
-}
-
-module.exports = exports['default'];
-},{}],56:[function(require,module,exports){
 /**
  * Finds the counterpart character index to balance out the character at index.
  *
@@ -4329,13 +401,6 @@ module.exports = exports['default'];
  * @param {number} index
  * @returns {number}
  */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = findCounterpartCharacter;
-
 function findCounterpartCharacter(character, source) {
   var index = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
 
@@ -4379,1739 +444,7 @@ function getCounterpart(character) {
       throw new Error('No known counterpart for character: ' + character);
   }
 }
-module.exports = exports['default'];
-},{}],57:[function(require,module,exports){
-/**
- * Gets a free binding suitable for a temporary variable.
- *
- * Note that this does *not* prevent using the same binding again, so users of
- * this should call `scope.assigns` or `scope.declares` with the result of this
- * function if they wish to prevent usage of the free binding identified.
- *
- * @param {Scope} scope
- * @param {string=} base
- * @returns {string}
- */
-'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = getFreeBinding;
-exports.getFreeLoopBinding = getFreeLoopBinding;
-
-function getFreeBinding(scope) {
-  var base = arguments.length <= 1 || arguments[1] === undefined ? 'ref' : arguments[1];
-
-  var binding = base;
-
-  if (scope.getBinding(binding)) {
-    var counter = 1;
-    while (scope.getBinding(binding = '' + base + counter)) {
-      counter++;
-    }
-  }
-
-  return binding;
-}
-
-var LOOP_BINDINGS = ['i', 'j', 'k'];
-
-/**
- * Gets a free binding for the purpose of a loop counter.
- *
- * @param {Scope} scope
- * @returns {string}
- */
-
-function getFreeLoopBinding(scope) {
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = LOOP_BINDINGS[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var binding = _step.value;
-
-      if (!scope.getBinding(binding)) {
-        return binding;
-      }
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator['return']) {
-        _iterator['return']();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  return getFreeBinding(scope, LOOP_BINDINGS[0]);
-}
-},{}],58:[function(require,module,exports){
-/**
- * Gets the indent string for the line containing offset.
- *
- * @param {string} source
- * @param {number} offset
- * @returns {string}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = getIndent;
-
-function getIndent(source, offset) {
-  var startOfLine = getStartOfLine(source, offset);
-  var indentOffset = startOfLine;
-  var indentCharacter;
-
-  switch (source[indentOffset]) {
-    case ' ':
-    case '\t':
-      indentCharacter = source[indentOffset];
-      break;
-
-    default:
-      return '';
-  }
-
-  while (source[indentOffset] === indentCharacter) {
-    indentOffset++;
-  }
-
-  return source.slice(startOfLine, indentOffset);
-}
-
-/**
- * Finds the start of the line for the character at offset.
- *
- * @param {string} source
- * @param {number} offset
- * @returns {number}
- */
-function getStartOfLine(source, offset) {
-  var lfIndex = source.lastIndexOf('\n', offset - 1);
-
-  if (lfIndex < 0) {
-    var crIndex = source.lastIndexOf('\r', offset - 1);
-
-    if (crIndex < 0) {
-      return 0;
-    }
-
-    return crIndex + 1;
-  }
-
-  return lfIndex + 1;
-}
-module.exports = exports['default'];
-},{}],59:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = indentNode;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _determineIndent = require('./determineIndent');
-
-var _determineIndent2 = _interopRequireDefault(_determineIndent);
-
-var _repeating = require('repeating');
-
-var _repeating2 = _interopRequireDefault(_repeating);
-
-var _trimmedNodeRange = require('./trimmedNodeRange');
-
-var _trimmedNodeRange2 = _interopRequireDefault(_trimmedNodeRange);
-
-/**
- * Indent a node by the given number of levels.
- *
- * @param {Object} node
- * @param {MagicString} patcher
- * @param {number=} levels
- */
-
-function indentNode(node, patcher) {
-  var levels = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
-
-  if (levels === 0) {
-    return;
-  }
-
-  var source = patcher.original;
-  var range = (0, _trimmedNodeRange2['default'])(node, source);
-  var offset = range[0];
-  var indent = (0, _repeating2['default'])((0, _determineIndent2['default'])(source), levels);
-
-  while (offset < range[1]) {
-    patcher.insert(offset, indent);
-    offset = source.indexOf('\n', offset + '\n'.length);
-    if (offset < 0) {
-      break;
-    }
-    offset += '\n'.length;
-  }
-}
-
-module.exports = exports['default'];
-},{"./determineIndent":53,"./trimmedNodeRange":86,"repeating":122}],60:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = indexOfIgnoringComments;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _rangesOfNonComments = require('./rangesOfNonComments');
-
-var _rangesOfNonComments2 = _interopRequireDefault(_rangesOfNonComments);
-
-/**
- * Finds a string within source, ignoring any comment strings. Returns -1 if
- * no matching substring can be found.
- *
- * @param {string} source
- * @param {string} string
- * @returns {number}
- */
-
-function indexOfIgnoringComments(source, string) {
-  var ranges = (0, _rangesOfNonComments2['default'])(source);
-
-  for (var i = 0; i < ranges.length; i++) {
-    var _ranges$i = ranges[i];
-    var start = _ranges$i.start;
-    var end = _ranges$i.end;
-
-    var index = source.slice(start, end).indexOf(string);
-    if (index !== -1) {
-      return start + index;
-    }
-  }
-
-  return -1;
-}
-
-module.exports = exports['default'];
-},{"./rangesOfNonComments":77}],61:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isExpressionResultUsed;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _isImplicitlyReturned = require('./isImplicitlyReturned');
-
-var _isImplicitlyReturned2 = _interopRequireDefault(_isImplicitlyReturned);
-
-var _types = require('./types');
-
-/**
- * Determines whether a node's resulting value could be used.
- *
- * @param {Object?} node
- * @returns {boolean}
- */
-
-function isExpressionResultUsed(node) {
-  if (!node) {
-    return false;
-  }
-
-  if ((0, _types.isConsequentOrAlternate)(node)) {
-    return false;
-  }
-
-  var parentNode = node.parentNode;
-  if (parentNode.type === 'Function' && parentNode.parameters.indexOf(node) >= 0) {
-    return false;
-  }
-
-  if (parentNode.type !== 'Block') {
-    return true;
-  }
-
-  return (0, _isImplicitlyReturned2['default'])(node);
-}
-
-module.exports = exports['default'];
-},{"./isImplicitlyReturned":64,"./types":87}],62:[function(require,module,exports){
-/**
- * Determines whether a node is followed by a particular token.
- *
- * @param {Object} node
- * @param {string} source
- * @param {string} token
- * @returns {boolean}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isFollowedBy;
-
-function isFollowedBy(node, source, token) {
-  var index = node.range[1];
-
-  while (index < source.length) {
-    if (source.slice(index, index + token.length) === token) {
-      return true;
-    } else if (source[index] === ' ' || source[index] === '\n' || source[index] === '\t') {
-      index++;
-    } else {
-      break;
-    }
-  }
-
-  return false;
-}
-
-module.exports = exports['default'];
-},{}],63:[function(require,module,exports){
-/**
- * @param {Object} node
- * @param {string} source
- * @returns {boolean}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isImplicitObject;
-
-function isImplicitObject(node, source) {
-  return node && node.type === 'ObjectInitialiser' && source[node.range[0]] !== '{';
-}
-
-module.exports = exports['default'];
-},{}],64:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isImplicitlyReturned;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _traverse = require('./traverse');
-
-var _traverse2 = _interopRequireDefault(_traverse);
-
-var _types = require('./types');
-
-/**
- * Determines whether the given node is implicitly returned.
- *
- * @param node
- * @returns {boolean}
- */
-
-function isImplicitlyReturned(node) {
-  if (!node.parentNode) {
-    return false;
-  }
-
-  switch (node.type) {
-    case 'Return':
-    case 'Block':
-    case 'Conditional':
-    case 'Try':
-    case 'Throw':
-    case 'Switch':
-      return false;
-
-    case 'ForIn':
-    case 'ForOf':
-    case 'While':
-      return couldContainImplicitReturn(node) && !explicitlyReturns(node);
-
-    default:
-      return couldContainImplicitReturn(node);
-  }
-}
-
-/**
- * Determines whether the given node could contain an implicit return.
- *
- * @param {Object} node
- * @returns {boolean}
- * @private
- */
-function couldContainImplicitReturn(_x) {
-  var _left;
-
-  var _again = true;
-
-  _function: while (_again) {
-    var node = _x;
-    _again = false;
-    var parentNode = node.parentNode;
-
-    if (!parentNode) {
-      /*
-       * Program is only one without a parent, and is not in return position.
-       */
-      return false;
-    }
-
-    if (parentNode.type === 'Function' && node === parentNode.body) {
-      /*
-       * Function body is nearly always in return position, whether it's a block:
-       *
-       *   ->
-       *     implicitlyReturned
-       *
-       * or not:
-       *
-       *   -> implicitlyReturned
-       *
-       * The one exception is class constructors, which should not have implicit
-       * returns:
-       *
-       *   class Foo
-       *     constructor: ->
-       *       notImplicitlyReturned
-       */
-      return parentNode.parentNode.type !== 'Constructor';
-    }
-
-    if (parentNode.type === 'BoundFunction' && node.type === 'Block') {
-      /*
-       * Blocks in bound functions are in a return position:
-       *
-       *   =>
-       *     implicitlyReturned
-       *
-       * Note that if the body of a bound function is not a block then we do not
-       * consider it in a return position because no "return" statements need
-       * to be created:
-       *
-       *   => notImplicitlyReturned
-       */
-      return true;
-    }
-
-    if (parentNode.type === 'Block') {
-      /*
-       * Block statements are implicitly returned only if they are the last
-       * statement:
-       *
-       *   neverImplicitlyReturned
-       *   mightBeImplicitlyReturned
-       *
-       * In addition, the block itself must be in a position is part of the
-       * implicit return chain, such as a function body:
-       *
-       *   ->
-       *     notImplicitlyReturned
-       *     implicitlyReturned
-       */
-
-      if (!(_left = isLastStatement(node))) {
-        return _left;
-      }
-
-      _x = parentNode;
-      _again = true;
-      parentNode = undefined;
-      continue _function;
-    }
-
-    if (parentNode.type === 'Conditional' && node !== parentNode.condition) {
-      /*
-       * A consequent or alternate is in return position iff its parent
-       * conditional is:
-       *
-       *   if notImplicitlyReturned
-       *     mightBeImplicitlyReturned
-       *   else
-       *     mightBeImplicitlyReturned
-       */
-      _x = parentNode;
-      _again = true;
-      parentNode = undefined;
-      continue _function;
-    }
-
-    if (parentNode.type === 'Try' && node !== parentNode.catchAssignee) {
-      /*
-       * All of the try/catch/finally blocks under a `try` are in return position
-       * iff the `try` itself is:
-       *
-       *   try
-       *     mightBeImplicitlyReturned
-       *   catch notImplicitlyReturned
-       *     mightBeImplicitlyReturned
-       *   finally
-       *     mightBeImplicitlyReturned
-       */
-      _x = parentNode;
-      _again = true;
-      parentNode = undefined;
-      continue _function;
-    }
-
-    if (parentNode.type === 'SwitchCase' && node === parentNode.consequent) {
-      /*
-       * Consequents for a `switch` case are in return position iff the `switch`
-       * itself is:
-       *
-       *   switch notImplicitlyReturned
-       *     when notImplicitlyReturned then mightBeImplicitlyReturned
-       *     when notImplicitlyReturned
-       *       mightBeImplicitlyReturned
-       */
-      _x = /* Switch */parentNode.parentNode;
-      _again = true;
-      parentNode = undefined;
-      continue _function;
-    }
-
-    if (parentNode.type === 'Switch' && node === parentNode.alternate) {
-      /*
-       * Alternates for `switch` statements are in return position iff the
-       * `switch` itself is:
-       *
-       *   switch notImplicitlyReturned
-       *     …
-       *     else mightBeImplicitlyReturned
-       */
-      _x = parentNode;
-      _again = true;
-      parentNode = undefined;
-      continue _function;
-    }
-
-    return false;
-  }
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- * @private
- */
-function isLastStatement(node) {
-  if (node.parentNode && node.parentNode.type !== 'Block') {
-    return false;
-  }
-
-  var statements = node.parentNode.statements;
-  var index = statements.indexOf(node);
-
-  if (index < 0) {
-    return false;
-  }
-
-  return index === statements.length - 1;
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-function explicitlyReturns(node) {
-  var result = false;
-  (0, _traverse2['default'])(node, function (child) {
-    if (result) {
-      // Already found a return, just bail.
-      return false;
-    } else if ((0, _types.isFunction)(child)) {
-      // Don't look inside functions.
-      return false;
-    } else if (child.type === 'Return') {
-      result = true;
-      return false;
-    }
-  });
-  return result;
-}
-module.exports = exports['default'];
-},{"./traverse":85,"./types":87}],65:[function(require,module,exports){
-/**
- * Determines whether the given node spans multiple lines.
- *
- * @param {string} source
- * @param {Object} node
- * @returns {boolean}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isMultiline;
-
-function isMultiline(source, node) {
-  var newlineIndex = source.indexOf('\n', node.range[0]);
-  return newlineIndex >= 0 && newlineIndex < node.range[1];
-}
-
-module.exports = exports['default'];
-},{}],66:[function(require,module,exports){
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isParameter;
-
-function isParameter(node) {
-  if (!node) {
-    return false;
-  }
-
-  var parentNode = node.parentNode;
-
-  if (!parentNode) {
-    return false;
-  }
-
-  if (parentNode.type !== 'Function' && parentNode.type !== 'BoundFunction') {
-    return false;
-  }
-
-  return parentNode.parameters.indexOf(node) >= 0;
-}
-
-module.exports = exports['default'];
-},{}],67:[function(require,module,exports){
-/**
- * Determine whether CoffeeScript would consider repeating the given node to be
- * safe. The reality is that CoffeeScript is a little more cavalier than I would
- * be since even a reference to an unbound variable can have side effects. This
- * reflects what CoffeeScript does so as to maintain behavioral compatibility.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isSafeToRepeat;
-
-function isSafeToRepeat(_x) {
-  var _left;
-
-  var _again = true;
-
-  _function: while (_again) {
-    var node = _x;
-    _again = false;
-
-    switch (node.type) {
-      case 'Identifier':
-      case 'Int':
-      case 'Float':
-        return true;
-
-      case 'MemberAccessOp':
-        _x = node.expression;
-        _again = true;
-        continue _function;
-
-      case 'DynamicMemberAccessOp':
-        if (!(_left = isSafeToRepeat(node.expression))) {
-          return _left;
-        }
-
-        _x = node.indexingExpr;
-        _again = true;
-        continue _function;
-
-      default:
-        return false;
-    }
-  }
-}
-
-module.exports = exports['default'];
-},{}],68:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isStatement;
-
-var _types = require('./types');
-
-/**
- * Determines whether the given node is a statement.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-
-function isStatement(node) {
-  if (!node || !node.parentNode) {
-    return false;
-  }
-
-  if (node.parentNode.type !== 'Block') {
-    return false;
-  }
-
-  if ((0, _types.isFunction)(node.parentNode.parentNode)) {
-    // If it's the last statement then it's an implicit return.
-    var statements = node.parentNode.statements;
-    return statements[statements.length - 1] !== node;
-  }
-
-  // It's inside a block, but not the last statement of a function,
-  // so it's a statement.
-  return true;
-}
-
-module.exports = exports['default'];
-},{"./types":87}],69:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = isSurroundedBy;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _findCounterpartCharacter = require('./findCounterpartCharacter');
-
-var _findCounterpartCharacter2 = _interopRequireDefault(_findCounterpartCharacter);
-
-/**
- * Determines whether a node is surrounded by a matching pair of grouping
- * characters.
- *
- * @param {Object} node
- * @param {string} left
- * @param {string} source
- * @returns {boolean}
- */
-
-function isSurroundedBy(node, left, source) {
-  if (source[node.range[0] - 1] !== left) {
-    return false;
-  }
-
-  return (0, _findCounterpartCharacter2['default'])(left, source, node.range[0] - 1) === node.range[1];
-}
-
-module.exports = exports['default'];
-},{"./findCounterpartCharacter":56}],70:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = lastIndexOfIgnoringComments;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _rangesOfNonComments = require('./rangesOfNonComments');
-
-var _rangesOfNonComments2 = _interopRequireDefault(_rangesOfNonComments);
-
-/**
- * Finds the last index of a string inside source code ignoring comments.
- * Returns -1 if no match is found.
- *
- * @param {string} source
- * @param {string} string
- * @param {number=} fromIndex
- * @returns {number}
- */
-
-function lastIndexOfIgnoringComments(source, string) {
-  var fromIndex = arguments.length <= 2 || arguments[2] === undefined ? source.length : arguments[2];
-  return (function () {
-    var ranges = (0, _rangesOfNonComments2['default'])(source);
-
-    for (var i = ranges.length - 1; i >= 0; i--) {
-      var _ranges$i = ranges[i];
-      var start = _ranges$i.start;
-      var end = _ranges$i.end;
-
-      if (fromIndex < start) {
-        continue;
-      }
-      var index = source.slice(start, end).lastIndexOf(string, fromIndex - start);
-      if (index !== -1) {
-        return start + index;
-      }
-    }
-
-    return -1;
-  })();
-}
-
-module.exports = exports['default'];
-},{"./rangesOfNonComments":77}],71:[function(require,module,exports){
-/**
- * Gets the identifiers for the given LHS value.
- *
- * @example
- *
- *   Given `a`, returns [`a`].
- *   Given `[a, b]`, returns [`a`, `b`].
- *   Given `{a, b: c}`, returns [`a`, `c`].
- *   Given `[a, {b, c: d}]`, returns [`a`, `b`, `d`].
- *
- * @param {Object} node
- * @returns {Object[]}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = leftHandIdentifiers;
-
-function leftHandIdentifiers(node) {
-  if (node.type === 'Identifier') {
-    return [node];
-  } else if (node.type === 'ArrayInitialiser') {
-    return node.members.reduce(function (acc, member) {
-      return acc.concat(leftHandIdentifiers(member));
-    }, []);
-  } else if (node.type === 'ObjectInitialiser') {
-    return node.members.reduce(function (acc, member) {
-      return acc.concat(leftHandIdentifiers(member.expression));
-    }, []);
-  } else {
-    return [];
-  }
-}
-
-module.exports = exports['default'];
-},{}],72:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = makeIIFE;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _getIndent = require('./getIndent');
-
-var _getIndent2 = _interopRequireDefault(_getIndent);
-
-var _indentNode = require('./indentNode');
-
-var _indentNode2 = _interopRequireDefault(_indentNode);
-
-var _trimmedNodeRange = require('./trimmedNodeRange');
-
-var _trimmedNodeRange2 = _interopRequireDefault(_trimmedNodeRange);
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function makeIIFE(node, patcher) {
-  var range = (0, _trimmedNodeRange2['default'])(node, patcher.original);
-  var indent = (0, _getIndent2['default'])(patcher.original, range[0]);
-  patcher.insert(range[0], '(=>\n' + indent);
-  (0, _indentNode2['default'])(node, patcher);
-  patcher.insert(range[1], ')()');
-}
-
-module.exports = exports['default'];
-},{"./getIndent":58,"./indentNode":59,"./trimmedNodeRange":86}],73:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = parse;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _Scope = require('./Scope');
-
-var _Scope2 = _interopRequireDefault(_Scope);
-
-var _buildLineAndColumnMap = require('./buildLineAndColumnMap');
-
-var _buildLineAndColumnMap2 = _interopRequireDefault(_buildLineAndColumnMap);
-
-var _findCounterpartCharacter = require('./findCounterpartCharacter');
-
-var _findCounterpartCharacter2 = _interopRequireDefault(_findCounterpartCharacter);
-
-var _traverse = require('./traverse');
-
-var _traverse2 = _interopRequireDefault(_traverse);
-
-var _types = require('./types');
-
-var _coffeeScriptRedux = require('coffee-script-redux');
-
-/**
- * Parses a CoffeeScript program and cleans up and annotates the AST.
- *
- * @param {string} source
- * @returns {Object} An AST from CoffeeScriptRedux with `scope` and `parentNode`.
- */
-
-function parse(source) {
-  var ast = (0, _coffeeScriptRedux.parse)(source, { raw: true }).toBasicObject();
-  var map = (0, _buildLineAndColumnMap2['default'])(source);
-
-  (0, _traverse2['default'])(ast, function (node) {
-    attachScope(node);
-    fixRange(node, map, source);
-  });
-
-  return ast;
-}
-
-/**
- * @param {Object} node
- * @private
- */
-function attachScope(node) {
-  switch (node.type) {
-    case 'Program':
-      node.scope = new _Scope2['default']();
-      break;
-
-    case 'Function':
-    case 'BoundFunction':
-      node.scope = new _Scope2['default'](node.parentNode.scope);
-      break;
-
-    default:
-      node.scope = node.parentNode.scope;
-      break;
-  }
-
-  node.scope.processNode(node);
-}
-
-/**
- * @param {Object} node
- * @param {LineAndColumnMap} map
- * @param {string} source
- * @private
- */
-function fixRange(node, map, source) {
-  if (!node.range && node.type === 'ConcatOp') {
-    return;
-  }
-
-  var parentNode = node.parentNode;
-
-  if (!rawMatchesRange(node, source) && node.type === 'MemberAccessOp' && parentNode.type === 'FunctionApplication') {
-    var firstArgument = parentNode.arguments[0];
-    var startOfArguments = firstArgument ? firstArgument.range[0] - '('.length : parentNode.range[1] - '()'.length;
-    node.raw = parentNode.raw.slice(0, startOfArguments - parentNode.range[0]);
-    node.range = [parentNode.range[0], startOfArguments];
-  }
-
-  if (!('raw' in node)) {
-    if (fixBinaryOperator(node, map, source)) {
-      return;
-    } else if (parentNode && parentNode.type === 'While' && parentNode.condition === node) {
-      // Ignore `while` condition without raw
-      return;
-    } else if (node.type === 'Block' && parentNode && parentNode.type === 'Try') {
-      // Ignore missing blocks in try/catch
-      return;
-    } else if (node.type === 'LogicalNotOp' && parentNode.type === 'Conditional' && parentNode.condition === node) {
-      node.raw = node.expression.raw;
-      node.range = node.expression.range;
-      node.line = node.expression.line;
-      node.column = node.expression.column;
-    } else if (node.type === 'LogicalNotOp' && node.expression && node.expression.type === 'InOp') {
-      // Ignore `not` operator within `in` operator
-      return;
-    } else if (fixShorthandThisObjectMember(node)) {
-      return;
-    } else {
-      throw new Error('BUG! Could not fix range for ' + node.type + ' because it has no raw value');
-    }
-  }
-  var fixed = map.getOffset(node.line - 1, node.column - 1);
-  for (var slide = 0; slide < 3; slide++) {
-    if (source.slice(fixed - slide, fixed - slide + node.raw.length) === node.raw) {
-      node.range = [fixed - slide, fixed - slide + node.raw.length];
-      break;
-    }
-  }
-
-  if (!rawMatchesRange(node, source)) {
-    if (parentNode && parentNode.step === node) {
-      // Ignore invalid `step` parameters, they're auto-generated if left out.
-      return;
-    }
-
-    if (shrinkPastParentheses(node, map, source, false)) {
-      return;
-    }
-
-    throw new Error('BUG! Could not fix range for ' + node.type + ' at line ' + node.line + ', column ' + node.column);
-  } else {
-    shrinkPastParentheses(node, map, source, true);
-  }
-}
-
-/**
- * Determines whether the `raw` source reported for the node matches the section
- * of the original source the node's reported `range` describes.
- *
- * @param {Object} node
- * @param {string} source
- * @returns {boolean}
- */
-function rawMatchesRange(node, source) {
-  return node.range && node.raw === source.slice(node.range[0], node.range[1]);
-}
-
-/**
- * @param {Object} node
- * @param {LineAndColumnMap} map
- * @param {string} source
- * @returns {boolean}
- * @private
- */
-function fixBinaryOperator(node, map, source) {
-  if (!(0, _types.isBinaryOperator)(node)) {
-    return false;
-  }
-
-  var left = node.left;
-  var right = node.right;
-
-  fixBinaryOperator(left, map, source);
-  fixBinaryOperator(right, map, source);
-
-  if (!node.range) {
-    node.range = [left.range[0], right.range[1]];
-  }
-
-  node.raw = source.slice(node.range[0], node.range[1]);
-  node.line = left.line;
-  node.column = left.column;
-
-  return true;
-}
-
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-function fixShorthandThisObjectMember(node) {
-  if (node.type !== 'String') {
-    return false;
-  }
-
-  var parentNode = node.parentNode;
-
-  if (!(0, _types.isShorthandThisObjectMember)(parentNode)) {
-    return false;
-  }
-
-  node.type = 'Identifier';
-  node.raw = node.data;
-  node.range = [parentNode.range[0] + '@'.length, parentNode.range[1]];
-
-  return true;
-}
-
-/**
- * Work around a bug with parentheses.
- *
- * Sometimes parentheses end up as part of a node's raw value even though they
- * probably shouldn't, like with `if (ref = a) then b else c`, the node for the
- * assignment has a raw value of "(ref = a)".
- *
- * @param {Object} node
- * @param {LineAndColumnMap} map
- * @param {string} source
- * @param {boolean} adjustPosition
- * @returns {boolean}
- */
-function shrinkPastParentheses(node, map, source, adjustPosition) {
-  if (node.raw[0] === '(') {
-    var counterpart = (0, _findCounterpartCharacter2['default'])('(', node.raw);
-    if (counterpart === node.raw.length - 1) {
-      node.raw = node.raw.slice(1, -1);
-      if (adjustPosition) {
-        node.range = [node.range[0] + 1, node.range[1] - 1];
-        node.column -= 1;
-      }
-      fixRange(node, map, source);
-      return true;
-    }
-  }
-
-  return false;
-}
-module.exports = exports['default'];
-},{"./Scope":47,"./buildLineAndColumnMap":50,"./findCounterpartCharacter":56,"./traverse":85,"./types":87,"coffee-script-redux":98}],74:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = prependLinesToBlock;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _getIndent = require('./getIndent');
-
-var _getIndent2 = _interopRequireDefault(_getIndent);
-
-/**
- * @param {MagicString} patcher
- * @param {string[]} lines
- * @param {Object} node
- */
-
-function prependLinesToBlock(patcher, lines, node) {
-  var indent = (0, _getIndent2['default'])(patcher.original, node.range[0]);
-  var string = '';
-
-  for (var i = 0; i < lines.length; i++) {
-    string += lines[i] + '\n';
-    if (i + 1 === lines.length || lines[i + 1].length > 0) {
-      string += indent;
-    }
-  }
-
-  patcher.insert(node.range[0], string);
-}
-
-module.exports = exports['default'];
-},{"./getIndent":58}],75:[function(require,module,exports){
-/**
- * Gets the range of a node when including the parentheses surrounding it.
- *
- * @param {Object} node
- * @param {string} source
- * @returns {number[]}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-exports['default'] = rangeIncludingParentheses;
-
-function rangeIncludingParentheses(node, source) {
-  var _node$range = _slicedToArray(node.range, 2);
-
-  var start = _node$range[0];
-  var end = _node$range[1];
-
-  while (source[start - 1] === '(' && source[end] === ')') {
-    start--;
-    end++;
-  }
-
-  return [start, end];
-}
-
-module.exports = exports['default'];
-},{}],76:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = rangesOfComments;
-var NORMAL = 0;
-var LINE_COMMENT = 1;
-var BLOCK_COMMENT = 2;
-var DQUOTE = 3;
-var SQUOTE = 4;
-var FORWARD_SLASH = 5;
-
-var NEWLINE_CODE = 10;
-var HASH_CODE = 35;
-var DQUOTE_CODE = 34;
-var SQUOTE_CODE = 39;
-var BACKWARD_SLASH = 92;
-var FORWARD_SLASH_CODE = 47;
-
-var BLOCK_COMMENT_DELIMITER = '###';
-
-/**
- * Returns the ranges of the sections of source code that are not comments.
- *
- * @param {string} source
- * @returns {Array.<{start: number, end: number, type: string}>}
- */
-
-function rangesOfComments(source) {
-  var result = [];
-  var index = 0;
-  var end = source.length;
-  var state = 0;
-
-  var rangeStart = 0;
-
-  while (index < end) {
-    var c = source.charCodeAt(index);
-
-    switch (state) {
-      case NORMAL:
-        if (c === HASH_CODE) {
-          rangeStart = index;
-          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER.length) === BLOCK_COMMENT_DELIMITER) {
-            state = BLOCK_COMMENT;
-            index += BLOCK_COMMENT_DELIMITER.length;
-          } else {
-            state = LINE_COMMENT;
-          }
-        } else if (c === DQUOTE_CODE) {
-          state = DQUOTE;
-        } else if (c === SQUOTE_CODE) {
-          state = SQUOTE;
-        } else if (c === FORWARD_SLASH_CODE && (source.slice(index, index + 3) === '///'
-        // Heuristic to differentiate from division operator
-         || !source.slice(index).match(/^\/=?\s/))) {
-          state = FORWARD_SLASH;
-        }
-        break;
-
-      case LINE_COMMENT:
-        if (c === NEWLINE_CODE) {
-          addComment();
-          state = NORMAL;
-        }
-        break;
-
-      case BLOCK_COMMENT:
-        if (c === HASH_CODE) {
-          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER.length) === BLOCK_COMMENT_DELIMITER) {
-            index += BLOCK_COMMENT_DELIMITER.length;
-            addComment();
-            state = NORMAL;
-          }
-        }
-        break;
-
-      case DQUOTE:
-        if (c === DQUOTE_CODE) {
-          state = NORMAL;
-        } else if (c === BACKWARD_SLASH) {
-          index++;
-        }
-        break;
-
-      case SQUOTE:
-        if (c === SQUOTE_CODE) {
-          state = NORMAL;
-        } else if (c === BACKWARD_SLASH) {
-          index++;
-        }
-        break;
-
-      case FORWARD_SLASH:
-        if (c === FORWARD_SLASH_CODE) {
-          state = NORMAL;
-        }
-        break;
-    }
-
-    index++;
-  }
-
-  if (state === LINE_COMMENT || state === BLOCK_COMMENT) {
-    addComment();
-  }
-
-  function addComment() {
-    var type = undefined;
-
-    // Check for shebang lines.
-    if (state === BLOCK_COMMENT) {
-      type = 'block';
-    } else if (rangeStart === 0 && source[1] === '!') {
-      type = 'shebang';
-    } else {
-      type = 'line';
-    }
-    result.push({ start: rangeStart, end: index, type: type });
-  }
-
-  return result;
-}
-
-module.exports = exports['default'];
-},{}],77:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = rangesOfNonComments;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _rangesOfComments = require('./rangesOfComments');
-
-var _rangesOfComments2 = _interopRequireDefault(_rangesOfComments);
-
-/**
- * Returns the ranges of the sections of source code that are not comments.
- *
- * @param {string} source
- * @returns {Array.<{start: number, end: number}>}
- */
-
-function rangesOfNonComments(source) {
-  var index = 0;
-  var ranges = [];
-
-  (0, _rangesOfComments2['default'])(source).forEach(function (_ref) {
-    var start = _ref.start;
-    var end = _ref.end;
-
-    if (start !== index) {
-      ranges.push({ start: index, end: start });
-    }
-    index = end;
-  });
-
-  if (index < source.length) {
-    ranges.push({ start: index, end: source.length });
-  }
-
-  return ranges;
-}
-
-module.exports = exports['default'];
-},{"./rangesOfComments":76}],78:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = replaceBetween;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _sourceBetween = require('./sourceBetween');
-
-var _sourceBetween2 = _interopRequireDefault(_sourceBetween);
-
-/**
- * Replace part of the text between the given nodes with a new string.
- *
- * @param {MagicString} patcher
- * @param {Object} left
- * @param {Object} right
- * @param {string} search
- * @param {string} replacement
- * @returns {boolean}
- */
-
-function replaceBetween(patcher, left, right, search, replacement) {
-  var between = (0, _sourceBetween2['default'])(patcher.original, left, right);
-  var offset = between.indexOf(search);
-
-  if (offset < 0) {
-    return false;
-  }
-
-  patcher.overwrite(left.range[1] + offset, left.range[1] + offset + search.length, replacement);
-  return true;
-}
-
-module.exports = exports['default'];
-},{"./sourceBetween":82}],79:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-exports['default'] = replaceTripleQuotes;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsEscape = require('../utils/escape');
-
-var _utilsEscape2 = _interopRequireDefault(_utilsEscape);
-
-var _utilsIsMultiline = require('../utils/isMultiline');
-
-var _utilsIsMultiline2 = _interopRequireDefault(_utilsIsMultiline);
-
-var _utilsStripSharedIndent = require('../utils/stripSharedIndent');
-
-var TRIPLE_QUOTE_LENGTH = 3;
-
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-
-function replaceTripleQuotes(node, patcher) {
-  var _node$range = _slicedToArray(node.range, 2);
-
-  var start = _node$range[0];
-  var end = _node$range[1];
-
-  var contentStart = start + TRIPLE_QUOTE_LENGTH;
-  var contentEnd = end - TRIPLE_QUOTE_LENGTH;
-  var source = patcher.original;
-  var quoteCharacter = undefined;
-
-  if (node.type === 'ConcatOp' || (0, _utilsIsMultiline2['default'])(source, node)) {
-    (function () {
-      quoteCharacter = '`';
-      var indents = (0, _utilsStripSharedIndent.getIndentInfo)(source, contentStart, contentEnd);
-      var indentSize = (0, _utilsStripSharedIndent.sharedIndentSize)(indents.ranges);
-      indents.ranges.forEach(function (_ref) {
-        var _ref2 = _slicedToArray(_ref, 2);
-
-        var start = _ref2[0];
-        var end = _ref2[1];
-
-        if (end - start >= indentSize) {
-          patcher.remove(start, start + indentSize);
-        }
-      });
-      patcher.remove(contentStart, contentStart + indents.leadingMargin).remove(contentEnd - indents.trailingMargin, contentEnd).overwrite(start, start + TRIPLE_QUOTE_LENGTH, '`').overwrite(end - TRIPLE_QUOTE_LENGTH, end, '`');
-    })();
-  } else {
-    quoteCharacter = patcher.original[start];
-    patcher.remove(start, contentStart - quoteCharacter.length);
-    patcher.remove(contentEnd + quoteCharacter.length, end);
-  }
-
-  (0, _utilsEscape2['default'])(patcher, [quoteCharacter], start + TRIPLE_QUOTE_LENGTH, end - TRIPLE_QUOTE_LENGTH);
-}
-
-module.exports = exports['default'];
-},{"../utils/escape":55,"../utils/isMultiline":65,"../utils/stripSharedIndent":84}],80:[function(require,module,exports){
-/**
- * Determines whether the given node, when used as part of a larger expression
- * node, would require parentheses around it.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = requiresParentheses;
-
-function requiresParentheses(node) {
-  switch (node.type) {
-    case 'AssignOp':
-    case 'BitAndOp':
-    case 'BitOrOp':
-    case 'BitXorOp':
-    case 'EQOp':
-    case 'GTEOp':
-    case 'GTOp':
-    case 'LTEOp':
-    case 'LTOp':
-    case 'LogicalAndOp':
-    case 'LogicalOrOp':
-    case 'NEQOp':
-    case 'PlusOp':
-    case 'SubtractOp':
-      return true;
-
-    default:
-      return false;
-  }
-}
-
-module.exports = exports['default'];
-},{}],81:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = shouldHaveTrailingSemicolon;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _utilsIsExpressionResultUsed = require('../utils/isExpressionResultUsed');
-
-var _utilsIsExpressionResultUsed2 = _interopRequireDefault(_utilsIsExpressionResultUsed);
-
-var _utilsIsImplicitlyReturned = require('../utils/isImplicitlyReturned');
-
-var _utilsIsImplicitlyReturned2 = _interopRequireDefault(_utilsIsImplicitlyReturned);
-
-var _utilsTypes = require('../utils/types');
-
-/**
- * Determines whether a node should have a semicolon after it.
- *
- * @param {Object} node
- * @returns {boolean}
- */
-
-function shouldHaveTrailingSemicolon(node) {
-  var parentNode = node.parentNode;
-
-  if (!parentNode) {
-    return false;
-  }
-
-  switch (parentNode.type) {
-    case 'Block':
-      break;
-
-    case 'Function':
-      if (parentNode.body !== node) {
-        return false;
-      }
-      break;
-
-    case 'Class':
-      return false;
-
-    case 'Conditional':
-      if (node.type === 'Block') {
-        return false;
-      } else if (parentNode.condition === node) {
-        return false;
-      } else if ((0, _utilsIsExpressionResultUsed2['default'])(parentNode)) {
-        // No semicolons in "a ? b : c" from "if a then b else c".
-        return false;
-      }
-      break;
-
-    default:
-      if (parentNode && parentNode.type === 'Try') {
-        if (node === parentNode.body && node.type !== 'Block') {
-          // Add a semicolon after the single-statement `try` body.
-          return true;
-        }
-      }
-      return false;
-  }
-
-  switch (node.type) {
-    case 'Block':
-    case 'ClassProtoAssignOp':
-    case 'Conditional':
-    case 'Constructor':
-    case 'ForIn':
-    case 'ForOf':
-    case 'JavaScript':
-    case 'Try':
-    case 'While':
-    case 'Switch':
-      return false;
-
-    case 'Class':
-      return !node.nameAssignee || (0, _utilsIsImplicitlyReturned2['default'])(node);
-
-    case 'AssignOp':
-      return !(0, _utilsTypes.isStaticMethod)(node);
-
-    default:
-      return true;
-  }
-}
-
-module.exports = exports['default'];
-},{"../utils/isExpressionResultUsed":61,"../utils/isImplicitlyReturned":64,"../utils/types":87}],82:[function(require,module,exports){
-/**
- * Get the source between the two given nodes.
- *
- * @param {string} source
- * @param {Object} left
- * @param {Object} right
- */
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = sourceBetween;
-
-function sourceBetween(source, left, right) {
-  return source.slice(left.range[1], right.range[0]);
-}
-
-module.exports = exports["default"];
-},{}],83:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = stripComments;
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _rangesOfComments = require('./rangesOfComments');
-
-var _rangesOfComments2 = _interopRequireDefault(_rangesOfComments);
-
-/**
- * @param {string} source
- * @returns {string}
- */
-
-function stripComments(source) {
-  var result = '';
-  var lastCommentEnd = 0;
-
-  (0, _rangesOfComments2['default'])(source).forEach(function (_ref) {
-    var start = _ref.start;
-    var end = _ref.end;
-
-    result += source.slice(lastCommentEnd, start);
-    lastCommentEnd = end;
-  });
-
-  result += source.slice(lastCommentEnd);
-
-  return result;
-}
-
-module.exports = exports['default'];
-},{"./rangesOfComments":76}],84:[function(require,module,exports){
-/**
- * Removes indentation shared by all lines.
- *
- * @param {string} source
- * @returns {string}
- */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
-
-exports['default'] = stripSharedIndent;
-exports.getIndentInfo = getIndentInfo;
-exports.sharedIndentSize = sharedIndentSize;
-
-function stripSharedIndent(source) {
-  var indents = getIndentInfo(source);
-  var minimumIndent = sharedIndentSize(indents.ranges);
-  var lines = source.slice(indents.leadingMargin, source.length - indents.trailingMargin).split('\n');
-  return lines.map(function (line) {
-    return line.slice(minimumIndent);
-  }).join('\n');
-}
-
-/**
- * @param {string} source
- * @param {number=} start
- * @param {number=} end
- * @returns {{leadingMargin: number, trailingMargin: number, ranges: Array<Array<number>>}}
- */
-
-function getIndentInfo(source) {
-  var start = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-  var end = arguments.length <= 2 || arguments[2] === undefined ? source.length : arguments[2];
-  return (function () {
-    var ranges = [];
-
-    var leadingMargin = 0;
-    while (source[start + leadingMargin] === ' ') {
-      leadingMargin += ' '.length;
-    }
-    if (source[start + leadingMargin] === '\n') {
-      leadingMargin += '\n'.length;
-      start += leadingMargin;
-    }
-
-    var trailingMargin = 0;
-    while (source[end - trailingMargin - ' '.length] === ' ') {
-      trailingMargin += ' '.length;
-    }
-    if (source[end - trailingMargin - '\n'.length] === '\n') {
-      trailingMargin += '\n'.length;
-      end -= trailingMargin;
-    }
-
-    for (var index = start; index < end; index++) {
-      if (index === start || source[index - 1] === '\n') {
-        if (source[index] !== '\n') {
-          var _start = index;
-          while (source[index] === ' ') {
-            index++;
-          }
-          ranges.push([_start, index]);
-        }
-      }
-    }
-
-    return {
-      leadingMargin: leadingMargin,
-      trailingMargin: trailingMargin,
-      ranges: ranges
-    };
-  })();
-}
-
-/**
- * @param {Array<Array<number>>} ranges
- * @returns {number}
- */
-
-function sharedIndentSize(ranges) {
-  var size = null;
-
-  ranges.forEach(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2);
-
-    var start = _ref2[0];
-    var end = _ref2[1];
-
-    if (size === null || start !== end && end - start < size) {
-      size = end - start;
-    }
-  });
-
-  return size === null ? 0 : size;
-}
-},{}],85:[function(require,module,exports){
 /**
  * Traverses an AST node, calling a callback for each node in the hierarchy in
  * source order.
@@ -6119,13 +452,6 @@ function sharedIndentSize(ranges) {
  * @param {Object} node
  * @param {function(Object, function(Object), boolean): ?boolean} callback
  */
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = traverse;
-
 function traverse(node, callback) {
   var descended = false;
 
@@ -6249,14 +575,475 @@ function childPropertyNames(node) {
 
   return names;
 }
-module.exports = exports['default'];
-},{}],86:[function(require,module,exports){
-'use strict';
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports['default'] = trimmedNodeRange;
+/**
+ * Determines whether a node represents a function, i.e. `->` or `=>`.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isFunction(node) {
+  return node.type === 'Function' || node.type === 'BoundFunction';
+}
+
+/**
+ * Determines whether a node represents a `for` loop.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isForLoop(node) {
+  return node.type === 'ForIn' || node.type === 'ForOf';
+}
+
+/**
+ * Determines whether a node represents a `while` loop.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isWhile(node) {
+  return node.type === 'While';
+}
+
+/**
+ * Determines whether a node is the true-part or false-part of a conditional.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isConsequentOrAlternate(node) {
+  var parentNode = node.parentNode;
+  return parentNode.type === 'Conditional' && (parentNode.consequent === node || parentNode.alternate === node);
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isBinaryOperator(node) {
+  switch (node.type) {
+    case 'BitAndOp':
+    case 'BitOrOp':
+    case 'DivideOp':
+    case 'EQOp':
+    case 'GTEOp':
+    case 'GTOp':
+    case 'InOp':
+    case 'InstanceofOp':
+    case 'LTEOp':
+    case 'LTOp':
+    case 'LogicalAndOp':
+    case 'MultiplyOp':
+    case 'NEQOp':
+    case 'OfOp':
+    case 'PlusOp':
+    case 'RemOp':
+    case 'SubtractOp':
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isCall(node) {
+  switch (node && node.type) {
+    case 'FunctionApplication':
+    case 'NewOp':
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isCallArgument(node) {
+  if (node && isCall(node.parentNode)) {
+    return node.parentNode.arguments.indexOf(node) >= 0;
+  } else {
+    return false;
+  }
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isShorthandThisObjectMember(node) {
+  return node.type === 'ObjectInitialiserMember' && /^@\w+$/.test(node.raw);
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isStaticMethod(node) {
+  if (node.type !== 'AssignOp') {
+    return false;
+  }
+
+  var assignee = node.assignee;
+
+  if (assignee.type !== 'MemberAccessOp') {
+    return false;
+  }
+
+  if (node.expression.type !== 'Function') {
+    return false;
+  }
+
+  return assignee.expression.type === 'This' || assignee.expression.type === 'Identifier' && assignee.expression.data === node.parentNode.parentNode.name.data;
+}
+
+/**
+ * Parses a CoffeeScript program and cleans up and annotates the AST.
+ *
+ * @param {string} source
+ * @returns {Object} An AST from CoffeeScriptRedux with `scope` and `parentNode`.
+ */
+function parse(source) {
+  var ast = coffeeScriptRedux.parse(source, { raw: true }).toBasicObject();
+  var map = buildLineAndColumnMap(source);
+
+  traverse(ast, function (node) {
+    attachScope(node);
+    fixRange(node, map, source);
+  });
+
+  return ast;
+}
+
+/**
+ * @param {Object} node
+ * @private
+ */
+function attachScope(node) {
+  switch (node.type) {
+    case 'Program':
+      node.scope = new Scope();
+      break;
+
+    case 'Function':
+    case 'BoundFunction':
+      node.scope = new Scope(node.parentNode.scope);
+      break;
+
+    default:
+      node.scope = node.parentNode.scope;
+      break;
+  }
+
+  node.scope.processNode(node);
+}
+
+/**
+ * @param {Object} node
+ * @param {LineAndColumnMap} map
+ * @param {string} source
+ * @private
+ */
+function fixRange(node, map, source) {
+  if (!node.range && node.type === 'ConcatOp') {
+    return;
+  }
+
+  var parentNode = node.parentNode;
+
+  if (!rawMatchesRange(node, source) && node.type === 'MemberAccessOp' && parentNode.type === 'FunctionApplication') {
+    var firstArgument = parentNode.arguments[0];
+    var startOfArguments = firstArgument ? firstArgument.range[0] - '('.length : parentNode.range[1] - '()'.length;
+    node.raw = parentNode.raw.slice(0, startOfArguments - parentNode.range[0]);
+    node.range = [parentNode.range[0], startOfArguments];
+  }
+
+  if (!('raw' in node)) {
+    if (fixBinaryOperator(node, map, source)) {
+      return;
+    } else if (parentNode && parentNode.type === 'While' && parentNode.condition === node) {
+      // Ignore `while` condition without raw
+      return;
+    } else if (node.type === 'Block' && parentNode && parentNode.type === 'Try') {
+      // Ignore missing blocks in try/catch
+      return;
+    } else if (node.type === 'LogicalNotOp' && parentNode.type === 'Conditional' && parentNode.condition === node) {
+      node.raw = node.expression.raw;
+      node.range = node.expression.range;
+      node.line = node.expression.line;
+      node.column = node.expression.column;
+    } else if (node.type === 'LogicalNotOp' && node.expression && node.expression.type === 'InOp') {
+      // Ignore `not` operator within `in` operator
+      return;
+    } else if (fixShorthandThisObjectMember(node)) {
+      return;
+    } else {
+      throw new Error('BUG! Could not fix range for ' + node.type + ' because it has no raw value');
+    }
+  }
+  var fixed = map.getOffset(node.line - 1, node.column - 1);
+  for (var slide = 0; slide < 3; slide++) {
+    if (source.slice(fixed - slide, fixed - slide + node.raw.length) === node.raw) {
+      node.range = [fixed - slide, fixed - slide + node.raw.length];
+      break;
+    }
+  }
+
+  if (!rawMatchesRange(node, source)) {
+    if (parentNode && parentNode.step === node) {
+      // Ignore invalid `step` parameters, they're auto-generated if left out.
+      return;
+    }
+
+    if (shrinkPastParentheses(node, map, source, false)) {
+      return;
+    }
+
+    throw new Error('BUG! Could not fix range for ' + node.type + ' at line ' + node.line + ', column ' + node.column);
+  } else {
+    shrinkPastParentheses(node, map, source, true);
+  }
+}
+
+/**
+ * Determines whether the `raw` source reported for the node matches the section
+ * of the original source the node's reported `range` describes.
+ *
+ * @param {Object} node
+ * @param {string} source
+ * @returns {boolean}
+ */
+function rawMatchesRange(node, source) {
+  return node.range && node.raw === source.slice(node.range[0], node.range[1]);
+}
+
+/**
+ * @param {Object} node
+ * @param {LineAndColumnMap} map
+ * @param {string} source
+ * @returns {boolean}
+ * @private
+ */
+function fixBinaryOperator(node, map, source) {
+  if (!isBinaryOperator(node)) {
+    return false;
+  }
+
+  var left = node.left;
+  var right = node.right;
+
+  fixBinaryOperator(left, map, source);
+  fixBinaryOperator(right, map, source);
+
+  if (!node.range) {
+    node.range = [left.range[0], right.range[1]];
+  }
+
+  node.raw = source.slice(node.range[0], node.range[1]);
+  node.line = left.line;
+  node.column = left.column;
+
+  return true;
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function fixShorthandThisObjectMember(node) {
+  if (node.type !== 'String') {
+    return false;
+  }
+
+  var parentNode = node.parentNode;
+
+  if (!isShorthandThisObjectMember(parentNode)) {
+    return false;
+  }
+
+  node.type = 'Identifier';
+  node.raw = node.data;
+  node.range = [parentNode.range[0] + '@'.length, parentNode.range[1]];
+
+  return true;
+}
+
+/**
+ * Work around a bug with parentheses.
+ *
+ * Sometimes parentheses end up as part of a node's raw value even though they
+ * probably shouldn't, like with `if (ref = a) then b else c`, the node for the
+ * assignment has a raw value of "(ref = a)".
+ *
+ * @param {Object} node
+ * @param {LineAndColumnMap} map
+ * @param {string} source
+ * @param {boolean} adjustPosition
+ * @returns {boolean}
+ */
+function shrinkPastParentheses(node, map, source, adjustPosition) {
+  if (node.raw[0] === '(') {
+    var counterpart = findCounterpartCharacter('(', node.raw);
+    if (counterpart === node.raw.length - 1) {
+      node.raw = node.raw.slice(1, -1);
+      if (adjustPosition) {
+        node.range = [node.range[0] + 1, node.range[1] - 1];
+        node.column -= 1;
+      }
+      fixRange(node, map, source);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+var NORMAL$1 = 0;
+var LINE_COMMENT = 1;
+var BLOCK_COMMENT = 2;
+var DQUOTE = 3;
+var SQUOTE = 4;
+var FORWARD_SLASH = 5;
+
+var NEWLINE_CODE = 10;
+var HASH_CODE = 35;
+var DQUOTE_CODE = 34;
+var SQUOTE_CODE = 39;
+var BACKWARD_SLASH = 92;
+var FORWARD_SLASH_CODE = 47;
+
+var BLOCK_COMMENT_DELIMITER$1 = '###';
+
+/**
+ * Returns the ranges of the sections of source code that are not comments.
+ *
+ * @param {string} source
+ * @returns {Array.<{start: number, end: number, type: string}>}
+ */
+function rangesOfComments(source) {
+  var result = [];
+  var index = 0;
+  var end = source.length;
+  var state = 0;
+
+  var rangeStart = 0;
+
+  while (index < end) {
+    var c = source.charCodeAt(index);
+
+    switch (state) {
+      case NORMAL$1:
+        if (c === HASH_CODE) {
+          rangeStart = index;
+          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER$1.length) === BLOCK_COMMENT_DELIMITER$1) {
+            state = BLOCK_COMMENT;
+            index += BLOCK_COMMENT_DELIMITER$1.length;
+          } else {
+            state = LINE_COMMENT;
+          }
+        } else if (c === DQUOTE_CODE) {
+          state = DQUOTE;
+        } else if (c === SQUOTE_CODE) {
+          state = SQUOTE;
+        } else if (c === FORWARD_SLASH_CODE && (source.slice(index, index + 3) === '///'
+        // Heuristic to differentiate from division operator
+         || !source.slice(index).match(/^\/=?\s/))) {
+          state = FORWARD_SLASH;
+        }
+        break;
+
+      case LINE_COMMENT:
+        if (c === NEWLINE_CODE) {
+          addComment();
+          state = NORMAL$1;
+        }
+        break;
+
+      case BLOCK_COMMENT:
+        if (c === HASH_CODE) {
+          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER$1.length) === BLOCK_COMMENT_DELIMITER$1) {
+            index += BLOCK_COMMENT_DELIMITER$1.length;
+            addComment();
+            state = NORMAL$1;
+          }
+        }
+        break;
+
+      case DQUOTE:
+        if (c === DQUOTE_CODE) {
+          state = NORMAL$1;
+        } else if (c === BACKWARD_SLASH) {
+          index++;
+        }
+        break;
+
+      case SQUOTE:
+        if (c === SQUOTE_CODE) {
+          state = NORMAL$1;
+        } else if (c === BACKWARD_SLASH) {
+          index++;
+        }
+        break;
+
+      case FORWARD_SLASH:
+        if (c === FORWARD_SLASH_CODE) {
+          state = NORMAL$1;
+        }
+        break;
+    }
+
+    index++;
+  }
+
+  if (state === LINE_COMMENT || state === BLOCK_COMMENT) {
+    addComment();
+  }
+
+  function addComment() {
+    var type = undefined;
+
+    // Check for shebang lines.
+    if (state === BLOCK_COMMENT) {
+      type = 'block';
+    } else if (rangeStart === 0 && source[1] === '!') {
+      type = 'shebang';
+    } else {
+      type = 'line';
+    }
+    result.push({ start: rangeStart, end: index, type: type });
+  }
+
+  return result;
+}
+
+/**
+ * @param {string} source
+ * @returns {string}
+ */
+function stripComments(source) {
+  var result = '';
+  var lastCommentEnd = 0;
+
+  rangesOfComments(source).forEach(function (_ref) {
+    var start = _ref.start;
+    var end = _ref.end;
+
+    result += source.slice(lastCommentEnd, start);
+    lastCommentEnd = end;
+  });
+
+  result += source.slice(lastCommentEnd);
+
+  return result;
+}
+
 var COMMENT = 1;
 var DSTRING = 2;
 var NORMAL = 3;
@@ -6273,7 +1060,6 @@ var REGEXP = 5;
  * @param {string} source
  * @returns {number[]}
  */
-
 function trimmedNodeRange(node, source) {
   var range = node.range;
   var index = range[0];
@@ -6344,90 +1130,1787 @@ function trimmedNodeRange(node, source) {
   return [range[0], lastSignificantIndex + 1];
 }
 
-module.exports = exports['default'];
-},{}],87:[function(require,module,exports){
 /**
- * Determines whether a node represents a function, i.e. `->` or `=>`.
+ * Inserts missing commas in objects, arrays, and calls.
  *
  * @param {Object} node
- * @returns {boolean}
+ * @param {MagicString} patcher
  */
-'use strict';
+function patchCommas(node, patcher) {
+  switch (node.parentNode && node.parentNode.type) {
+    case 'ObjectInitialiser':
+    case 'ArrayInitialiser':
+      patchCommaAfterNode(node, node.parentNode.members, patcher);
+      break;
 
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
-exports.isFunction = isFunction;
-exports.isForLoop = isForLoop;
-exports.isWhile = isWhile;
-exports.isConsequentOrAlternate = isConsequentOrAlternate;
-exports.isBinaryOperator = isBinaryOperator;
-exports.isCall = isCall;
-exports.isCallArgument = isCallArgument;
-exports.isShorthandThisObjectMember = isShorthandThisObjectMember;
-exports.isStaticMethod = isStaticMethod;
-
-function isFunction(node) {
-  return node.type === 'Function' || node.type === 'BoundFunction';
+    default:
+      if (isCallArgument(node)) {
+        patchCommaAfterNode(node, node.parentNode.arguments, patcher);
+      }
+      break;
+  }
 }
 
 /**
- * Determines whether a node represents a `for` loop.
+ * Inserts missing commas between member and its next sibling.
  *
- * @param {Object} node
- * @returns {boolean}
+ * @param {Object} member
+ * @param {Object[]} members
+ * @param {MagicString} patcher
  */
+function patchCommaAfterNode(member, members, patcher) {
+  var memberIndex = members.indexOf(member);
+  var nextMember = members[memberIndex + 1];
 
-function isForLoop(node) {
-  return node.type === 'ForIn' || node.type === 'ForOf';
+  if (!nextMember) {
+    return;
+  }
+
+  var nodeRange = trimmedNodeRange(member, patcher.original);
+  var sourceBetween = stripComments(patcher.original.slice(member.range[1], nextMember.range[0]));
+  if (sourceBetween.indexOf(',') < 0) {
+    patcher.insert(nodeRange[1], ',');
+  }
 }
 
 /**
- * Determines whether a node represents a `while` loop.
+ * Gets the indent string for the line containing offset.
  *
- * @param {Object} node
- * @returns {boolean}
+ * @param {string} source
+ * @param {number} offset
+ * @returns {string}
  */
+function getIndent(source, offset) {
+  var startOfLine = getStartOfLine(source, offset);
+  var indentOffset = startOfLine;
+  var indentCharacter;
 
-function isWhile(node) {
-  return node.type === 'While';
+  switch (source[indentOffset]) {
+    case ' ':
+    case '\t':
+      indentCharacter = source[indentOffset];
+      break;
+
+    default:
+      return '';
+  }
+
+  while (source[indentOffset] === indentCharacter) {
+    indentOffset++;
+  }
+
+  return source.slice(startOfLine, indentOffset);
 }
 
 /**
- * Determines whether a node is the true-part or false-part of a conditional.
+ * Finds the start of the line for the character at offset.
  *
- * @param {Object} node
- * @returns {boolean}
+ * @param {string} source
+ * @param {number} offset
+ * @returns {number}
  */
+function getStartOfLine(source, offset) {
+  var lfIndex = source.lastIndexOf('\n', offset - 1);
 
-function isConsequentOrAlternate(node) {
-  var parentNode = node.parentNode;
-  return parentNode.type === 'Conditional' && (parentNode.consequent === node || parentNode.alternate === node);
+  if (lfIndex < 0) {
+    var crIndex = source.lastIndexOf('\r', offset - 1);
+
+    if (crIndex < 0) {
+      return 0;
+    }
+
+    return crIndex + 1;
+  }
+
+  return lfIndex + 1;
 }
 
 /**
- * @param {Object} node
+ * Replaces CoffeeScript style comments with JavaScript style comments.
+ *
+ * @param {MagicString} patcher
+ */
+function patchComments(patcher) {
+  var source = patcher.original;
+  var ranges = rangesOfComments(source);
+
+  ranges.forEach(function (comment) {
+    switch (comment.type) {
+      case 'line':
+        patchLineComment(patcher, comment);
+        break;
+
+      case 'block':
+        patchBlockComment(patcher, comment);
+        break;
+
+      case 'shebang':
+        patchShebangComment(patcher, comment);
+        break;
+    }
+  });
+}
+
+/**
+ * Patches a single-line comment.
+ *
+ * @param {MagicString} patcher
+ * @param {{start: number, end: number, type: string}} range
+ * @private
+ */
+function patchLineComment(patcher, range) {
+  patcher.overwrite(range.start, range.start + '#'.length, '//');
+}
+
+var BLOCK_COMMENT_DELIMITER = '###';
+
+/**
+ * Patches a block comment.
+ *
+ * @param {MagicString} patcher
+ * @param {{start: number, end: number, type: string}} range
+ * @private
+ */
+function patchBlockComment(patcher, range) {
+  var start = range.start;
+  var end = range.end;
+
+  patcher.overwrite(start, start + BLOCK_COMMENT_DELIMITER.length, '/*');
+
+  var atStartOfLine = false;
+  var lastStartOfLine = null;
+  var lineUpAsterisks = true;
+  var isMultiline = false;
+  var source = patcher.original;
+  var expectedIndent = getIndent(source, start);
+  var leadingHashIndexes = [];
+
+  for (var index = start + BLOCK_COMMENT_DELIMITER.length; index < end - BLOCK_COMMENT_DELIMITER.length; index++) {
+    switch (source[index]) {
+      case '\n':
+        isMultiline = true;
+        atStartOfLine = true;
+        lastStartOfLine = index + '\n'.length;
+        break;
+
+      case ' ':
+      case '\t':
+        break;
+
+      case '#':
+        if (atStartOfLine) {
+          leadingHashIndexes.push(index);
+          atStartOfLine = false;
+          if (source.slice(lastStartOfLine, index) !== expectedIndent) {
+            lineUpAsterisks = false;
+          }
+        }
+        break;
+
+      default:
+        if (atStartOfLine) {
+          atStartOfLine = false;
+          lineUpAsterisks = false;
+        }
+        break;
+    }
+  }
+
+  leadingHashIndexes.forEach(function (index) {
+    patcher.overwrite(index, index + '#'.length, lineUpAsterisks ? ' *' : '*');
+  });
+
+  patcher.overwrite(end - BLOCK_COMMENT_DELIMITER.length, end, isMultiline && lineUpAsterisks ? ' */' : '*/');
+}
+
+/**
+ * Patches a shebang comment.
+ *
+ * @param {MagicString} patcher
+ * @param {{start: number, end: number, type: string}} range
+ * @private
+ */
+function patchShebangComment(patcher, range) {
+  var start = range.start;
+  var end = range.end;
+
+  var commentBody = patcher.slice(start, end);
+  var coffeeIndex = commentBody.indexOf('coffee');
+
+  if (coffeeIndex >= 0) {
+    patcher.overwrite(start + coffeeIndex, start + coffeeIndex + 'coffee'.length, 'node');
+  }
+}
+
+/**
+ * Determines whether the given node is implicitly returned.
+ *
+ * @param node
  * @returns {boolean}
  */
+function isImplicitlyReturned(node) {
+  if (!node.parentNode) {
+    return false;
+  }
 
-function isBinaryOperator(node) {
   switch (node.type) {
+    case 'Return':
+    case 'Block':
+    case 'Conditional':
+    case 'Try':
+    case 'Throw':
+    case 'Switch':
+      return false;
+
+    case 'ForIn':
+    case 'ForOf':
+    case 'While':
+      return couldContainImplicitReturn(node) && !explicitlyReturns(node);
+
+    default:
+      return couldContainImplicitReturn(node);
+  }
+}
+
+/**
+ * Determines whether the given node could contain an implicit return.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ * @private
+ */
+function couldContainImplicitReturn(node) {
+  var parentNode = node.parentNode;
+
+  if (!parentNode) {
+    /*
+     * Program is only one without a parent, and is not in return position.
+     */
+    return false;
+  }
+
+  if (parentNode.type === 'Function' && node === parentNode.body) {
+    /*
+     * Function body is nearly always in return position, whether it's a block:
+     *
+     *   ->
+     *     implicitlyReturned
+     *
+     * or not:
+     *
+     *   -> implicitlyReturned
+     *
+     * The one exception is class constructors, which should not have implicit
+     * returns:
+     *
+     *   class Foo
+     *     constructor: ->
+     *       notImplicitlyReturned
+     */
+    return parentNode.parentNode.type !== 'Constructor';
+  }
+
+  if (parentNode.type === 'BoundFunction' && node.type === 'Block') {
+    /*
+     * Blocks in bound functions are in a return position:
+     *
+     *   =>
+     *     implicitlyReturned
+     *
+     * Note that if the body of a bound function is not a block then we do not
+     * consider it in a return position because no "return" statements need
+     * to be created:
+     *
+     *   => notImplicitlyReturned
+     */
+    return true;
+  }
+
+  if (parentNode.type === 'Block') {
+    /*
+     * Block statements are implicitly returned only if they are the last
+     * statement:
+     *
+     *   neverImplicitlyReturned
+     *   mightBeImplicitlyReturned
+     *
+     * In addition, the block itself must be in a position is part of the
+     * implicit return chain, such as a function body:
+     *
+     *   ->
+     *     notImplicitlyReturned
+     *     implicitlyReturned
+     */
+    return isLastStatement(node) && couldContainImplicitReturn(parentNode);
+  }
+
+  if (parentNode.type === 'Conditional' && node !== parentNode.condition) {
+    /*
+     * A consequent or alternate is in return position iff its parent
+     * conditional is:
+     *
+     *   if notImplicitlyReturned
+     *     mightBeImplicitlyReturned
+     *   else
+     *     mightBeImplicitlyReturned
+     */
+    return couldContainImplicitReturn(parentNode);
+  }
+
+  if (parentNode.type === 'Try' && node !== parentNode.catchAssignee) {
+    /*
+     * All of the try/catch/finally blocks under a `try` are in return position
+     * iff the `try` itself is:
+     *
+     *   try
+     *     mightBeImplicitlyReturned
+     *   catch notImplicitlyReturned
+     *     mightBeImplicitlyReturned
+     *   finally
+     *     mightBeImplicitlyReturned
+     */
+    return couldContainImplicitReturn(parentNode);
+  }
+
+  if (parentNode.type === 'SwitchCase' && node === parentNode.consequent) {
+    /*
+     * Consequents for a `switch` case are in return position iff the `switch`
+     * itself is:
+     *
+     *   switch notImplicitlyReturned
+     *     when notImplicitlyReturned then mightBeImplicitlyReturned
+     *     when notImplicitlyReturned
+     *       mightBeImplicitlyReturned
+     */
+    return couldContainImplicitReturn( /* Switch */parentNode.parentNode);
+  }
+
+  if (parentNode.type === 'Switch' && node === parentNode.alternate) {
+    /*
+     * Alternates for `switch` statements are in return position iff the
+     * `switch` itself is:
+     *
+     *   switch notImplicitlyReturned
+     *     …
+     *     else mightBeImplicitlyReturned
+     */
+    return couldContainImplicitReturn(parentNode);
+  }
+
+  return false;
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ * @private
+ */
+function isLastStatement(node) {
+  if (node.parentNode && node.parentNode.type !== 'Block') {
+    return false;
+  }
+
+  var statements = node.parentNode.statements;
+  var index = statements.indexOf(node);
+
+  if (index < 0) {
+    return false;
+  }
+
+  return index === statements.length - 1;
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function explicitlyReturns(node) {
+  var result = false;
+  traverse(node, function (child) {
+    if (result) {
+      // Already found a return, just bail.
+      return false;
+    } else if (isFunction(child)) {
+      // Don't look inside functions.
+      return false;
+    } else if (child.type === 'Return') {
+      result = true;
+      return false;
+    }
+  });
+  return result;
+}
+
+/**
+ * Determines whether a node's resulting value could be used.
+ *
+ * @param {Object?} node
+ * @returns {boolean}
+ */
+function isExpressionResultUsed(node) {
+  if (!node) {
+    return false;
+  }
+
+  if (isConsequentOrAlternate(node)) {
+    return false;
+  }
+
+  var parentNode = node.parentNode;
+  if (parentNode.type === 'Function' && parentNode.parameters.indexOf(node) >= 0) {
+    return false;
+  }
+
+  if (parentNode.type !== 'Block') {
+    return true;
+  }
+
+  return isImplicitlyReturned(node);
+}
+
+/**
+ * Adds declarations for variable assignments.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchDeclarations(node, patcher) {
+  if (node.type === 'AssignOp' && !isExpressionAssignment(node)) {
+    var identifiers = leftHandIdentifiers(node.assignee);
+    var requiresDeclaration = identifiers.some(function (identifier) {
+      return node.scope.getBinding(identifier.data) === identifier;
+    });
+
+    if (requiresDeclaration) {
+      patcher.insert(node.range[0], 'var ');
+    } else if (node.assignee.type === 'ObjectInitialiser') {
+      // Object destructuring not part of a variable declaration needs parens.
+      patcher.insert(node.assignee.range[0], '(').insert(node.assignee.range[1], ')');
+    }
+  } else if (node.type === 'Block') {
+    (function () {
+      var names = [];
+      node.scope.getOwnNames().forEach(function (name) {
+        var binding = node.scope.getBinding(name);
+        var assignment = findAssignmentForBinding(binding);
+        if (isExpressionAssignment(assignment) && isFirstParentBlock(node, assignment)) {
+          names.push(name);
+        }
+      });
+      if (names.length > 0) {
+        (function () {
+          var firstStatementStart = node.statements[0].range[0];
+          var indent = getIndent(patcher.original, firstStatementStart);
+          var declarations = names.map(function (name) {
+            return 'var ' + name + ';\n' + indent;
+          }).join('');
+          patcher.insert(firstStatementStart, declarations);
+        })();
+      }
+    })();
+  }
+}
+
+/**
+ * Determines whether a node is an assignment in an expression context.
+ *
+ * @param {Object?} node
+ * @returns {boolean}
+ */
+function isExpressionAssignment(node) {
+  if (!node || node.type !== 'AssignOp') {
+    return false;
+  }
+
+  return isExpressionResultUsed(node);
+}
+
+/**
+ * Finds the AssignOp node associated with a binding identifier.
+ *
+ * @param {Object} binding Identifier
+ * @returns {Object} AssignOp
+ */
+function findAssignmentForBinding(binding) {
+  var assignment = binding;
+
+  while (assignment && assignment.type !== 'AssignOp') {
+    assignment = assignment.parentNode;
+  }
+
+  return assignment;
+}
+
+/**
+ * Determines whether a node's first containing block is the given block.
+ *
+ * @param {Object} block
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isFirstParentBlock(block, node) {
+  while (node && node.type !== 'Block') {
+    node = node.parentNode;
+  }
+
+  return node === block;
+}
+
+/**
+ * Removes the backticks surrounding embedded JavaScript.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchEmbeddedJavaScript(node, patcher) {
+  if (node.type === 'JavaScript') {
+    patcher.overwrite(node.range[0], node.range[0] + 1, '');
+    patcher.overwrite(node.range[1] - 1, node.range[1], '');
+  }
+}
+
+/**
+ * Get the source between the two given nodes.
+ *
+ * @param {string} source
+ * @param {Object} left
+ * @param {Object} right
+ */
+function sourceBetween(source, left, right) {
+  return source.slice(left.range[1], right.range[0]);
+}
+
+/**
+ * Replace part of the text between the given nodes with a new string.
+ *
+ * @param {MagicString} patcher
+ * @param {Object} left
+ * @param {Object} right
+ * @param {string} search
+ * @param {string} replacement
+ * @returns {boolean}
+ */
+function replaceBetween(patcher, left, right, search, replacement) {
+  var between = sourceBetween(patcher.original, left, right);
+  var offset = between.indexOf(search);
+
+  if (offset < 0) {
+    return false;
+  }
+
+  patcher.overwrite(left.range[1] + offset, left.range[1] + offset + search.length, replacement);
+  return true;
+}
+
+/**
+ * Replaces equality operators with strict equality operators.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchEquality(node, patcher) {
+  switch (node.type) {
+    case 'EQOp':
+      if (!replaceBetween(patcher, node.left, node.right, '==', '===')) {
+        replaceBetween(patcher, node.left, node.right, 'is', '===');
+      }
+      break;
+
+    case 'NEQOp':
+      if (!replaceBetween(patcher, node.left, node.right, '!=', '!==')) {
+        replaceBetween(patcher, node.left, node.right, 'isnt', '!==');
+      }
+      break;
+  }
+}
+
+/**
+ * Renames keywords to the JavaScript equivalent.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchKeywords(node, patcher) {
+  switch (node.type) {
+    case 'Bool':
+      switch (node.raw) {
+        case 'yes':
+          patcher.overwrite(node.range[0], node.range[1], 'true');
+          break;
+
+        case 'no':
+          patcher.overwrite(node.range[0], node.range[1], 'false');
+          break;
+      }
+      break;
+
+    case 'LogicalAndOp':
+      replaceBetween(patcher, node.left, node.right, 'and', '&&');
+      break;
+
+    case 'LogicalOrOp':
+      replaceBetween(patcher, node.left, node.right, 'or', '||');
+      break;
+
+    case 'LogicalNotOp':
+      if (node.raw.slice(0, 4) === 'not ') {
+        patcher.overwrite(node.range[0], node.range[0] + 4, '!');
+      } else if (node.raw.slice(0, 3) === 'not') {
+        patcher.overwrite(node.range[0], node.range[0] + 3, '!');
+      }
+      break;
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchOf(node, patcher) {
+  if (node.type === 'OfOp') {
+    replaceBetween(patcher, node.left, node.right, 'of', 'in');
+  }
+}
+
+/**
+ * Replaces shorthand `::` with longhand prototype access.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchPrototypeAccess(node, patcher) {
+  if (node.type === 'ProtoMemberAccessOp') {
+    var opStart = node.expression.range[1];
+    patcher.overwrite(opStart, opStart + '::'.length, '.prototype.');
+  }
+}
+
+/**
+ * Replaces block regexes with single-line regexes.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchRegularExpressions(node, patcher) {
+  if (node.type === 'RegExp') {
+    patcher.overwrite(node.range[0], node.range[1], '/' + node.data + '/' + flagStringForRegularExpressionNode(node));
+  }
+}
+
+/**
+ * @param {Object} node
+ * @returns {string}
+ * @private
+ */
+function flagStringForRegularExpressionNode(node) {
+  var flags = '';
+  if (node.flags.i) {
+    flags += 'i';
+  }
+  if (node.flags.g) {
+    flags += 'g';
+  }
+  if (node.flags.m) {
+    flags += 'm';
+  }
+  if (node.flags.y) {
+    flags += 'y';
+  }
+  return flags;
+}
+
+/**
+ * Inserts return keywords
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchReturns(node, patcher) {
+  if (isImplicitlyReturned(node)) {
+    patcher.insert(node.range[0], 'return ');
+  }
+}
+
+/**
+ * Determines whether a node is followed by a particular token.
+ *
+ * @param {Object} node
+ * @param {string} source
+ * @param {string} token
+ * @returns {boolean}
+ */
+function isFollowedBy(node, source, token) {
+  var index = node.range[1];
+
+  while (index < source.length) {
+    if (source.slice(index, index + token.length) === token) {
+      return true;
+    } else if (source[index] === ' ' || source[index] === '\n' || source[index] === '\t') {
+      index++;
+    } else {
+      break;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Determines whether a node should have a semicolon after it.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function shouldHaveTrailingSemicolon(node) {
+  var parentNode = node.parentNode;
+
+  if (!parentNode) {
+    return false;
+  }
+
+  switch (parentNode.type) {
+    case 'Block':
+      break;
+
+    case 'Function':
+      if (parentNode.body !== node) {
+        return false;
+      }
+      break;
+
+    case 'Class':
+      return false;
+
+    case 'Conditional':
+      if (node.type === 'Block') {
+        return false;
+      } else if (parentNode.condition === node) {
+        return false;
+      } else if (isExpressionResultUsed(parentNode)) {
+        // No semicolons in "a ? b : c" from "if a then b else c".
+        return false;
+      }
+      break;
+
+    default:
+      if (parentNode && parentNode.type === 'Try') {
+        if (node === parentNode.body && node.type !== 'Block') {
+          // Add a semicolon after the single-statement `try` body.
+          return true;
+        }
+      }
+      return false;
+  }
+
+  switch (node.type) {
+    case 'Block':
+    case 'ClassProtoAssignOp':
+    case 'Conditional':
+    case 'Constructor':
+    case 'ForIn':
+    case 'ForOf':
+    case 'JavaScript':
+    case 'Try':
+    case 'While':
+    case 'Switch':
+      return false;
+
+    case 'Class':
+      return !node.nameAssignee || isImplicitlyReturned(node);
+
+    case 'AssignOp':
+      return !isStaticMethod(node);
+
+    default:
+      return true;
+  }
+}
+
+/**
+ * Adds semicolons after statements that should have semicolons.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchSemicolons(node, patcher) {
+  if (shouldHaveTrailingSemicolon(node) && !isFunction(node)) {
+    if (!isFollowedBy(node, patcher.original, ';')) {
+      var nodeRange = trimmedNodeRange(node, patcher.original);
+      while (patcher.original[nodeRange[0]] === '(' && patcher.original[nodeRange[1]] === ')') {
+        nodeRange[0]--;
+        nodeRange[1]++;
+      }
+      patcher.insert(nodeRange[1], ';');
+    }
+  }
+}
+
+/**
+ * Patches sequences by replacing the character used to align with JavaScript.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchSequences(node, patcher) {
+  if (node.type === 'SeqOp') {
+    var sourceBetween = patcher.slice(node.left.range[1], node.right.range[0]);
+    var sequenceCharacterIndex = sourceBetween.indexOf(';');
+    patcher.overwrite(node.left.range[1] + sequenceCharacterIndex, node.left.range[1] + sequenceCharacterIndex + ';'.length, ',');
+  }
+}
+
+/**
+ * Inserts string escape characters before certain characters to be escaped.
+ *
+ * @param {MagicString} patcher
+ * @param {string[]} characters
+ * @param {number} start
+ * @param {number} end
+ */
+function escape(patcher, characters, start, end) {
+  var source = patcher.original;
+  for (var i = start; i < end; i++) {
+    if (source[i] === '\\') {
+      i++;
+    } else if (characters.indexOf(source[i]) >= 0) {
+      patcher.insert(i, '\\');
+    }
+  }
+}
+
+/**
+ * Determines whether the given node spans multiple lines.
+ *
+ * @param {string} source
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isMultiline(source, node) {
+  var newlineIndex = source.indexOf('\n', node.range[0]);
+  return newlineIndex >= 0 && newlineIndex < node.range[1];
+}
+
+/**
+ * Removes indentation shared by all lines.
+ *
+ * @param {string} source
+ * @returns {string}
+ */
+function stripSharedIndent(source) {
+  var indents = getIndentInfo(source);
+  var minimumIndent = sharedIndentSize(indents.ranges);
+  var lines = source.slice(indents.leadingMargin, source.length - indents.trailingMargin).split('\n');
+  return lines.map(function (line) {
+    return line.slice(minimumIndent);
+  }).join('\n');
+}
+
+/**
+ * @param {string} source
+ * @param {number=} start
+ * @param {number=} end
+ * @returns {{leadingMargin: number, trailingMargin: number, ranges: Array<Array<number>>}}
+ */
+function getIndentInfo(source) {
+  var start = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+  var end = arguments.length <= 2 || arguments[2] === undefined ? source.length : arguments[2];
+
+  var ranges = [];
+
+  var leadingMargin = 0;
+  while (source[start + leadingMargin] === ' ') {
+    leadingMargin += ' '.length;
+  }
+  if (source[start + leadingMargin] === '\n') {
+    leadingMargin += '\n'.length;
+    start += leadingMargin;
+  }
+
+  var trailingMargin = 0;
+  while (source[end - trailingMargin - ' '.length] === ' ') {
+    trailingMargin += ' '.length;
+  }
+  if (source[end - trailingMargin - '\n'.length] === '\n') {
+    trailingMargin += '\n'.length;
+    end -= trailingMargin;
+  }
+
+  for (var index = start; index < end; index++) {
+    if (index === start || source[index - 1] === '\n') {
+      if (source[index] !== '\n') {
+        var _start = index;
+        while (source[index] === ' ') {
+          index++;
+        }
+        ranges.push([_start, index]);
+      }
+    }
+  }
+
+  return {
+    leadingMargin: leadingMargin,
+    trailingMargin: trailingMargin,
+    ranges: ranges
+  };
+}
+
+/**
+ * @param {Array<Array<number>>} ranges
+ * @returns {number}
+ */
+function sharedIndentSize(ranges) {
+  var size = null;
+
+  ranges.forEach(function (_ref) {
+    var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+
+    var start = _ref2[0];
+    var end = _ref2[1];
+
+    if (size === null || start !== end && end - start < size) {
+      size = end - start;
+    }
+  });
+
+  return size === null ? 0 : size;
+}
+
+var TRIPLE_QUOTE_LENGTH$1 = 3;
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function replaceTripleQuotes(node, patcher) {
+  var _node$range = babelHelpers.slicedToArray(node.range, 2);
+
+  var start = _node$range[0];
+  var end = _node$range[1];
+
+  var contentStart = start + TRIPLE_QUOTE_LENGTH$1;
+  var contentEnd = end - TRIPLE_QUOTE_LENGTH$1;
+  var source = patcher.original;
+  var quoteCharacter = undefined;
+
+  if (node.type === 'ConcatOp' || isMultiline(source, node)) {
+    (function () {
+      quoteCharacter = '`';
+      var indents = getIndentInfo(source, contentStart, contentEnd);
+      var indentSize = sharedIndentSize(indents.ranges);
+      indents.ranges.forEach(function (_ref) {
+        var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+
+        var start = _ref2[0];
+        var end = _ref2[1];
+
+        if (end - start >= indentSize) {
+          patcher.remove(start, start + indentSize);
+        }
+      });
+      patcher.remove(contentStart, contentStart + indents.leadingMargin).remove(contentEnd - indents.trailingMargin, contentEnd).overwrite(start, start + TRIPLE_QUOTE_LENGTH$1, '`').overwrite(end - TRIPLE_QUOTE_LENGTH$1, end, '`');
+    })();
+  } else {
+    quoteCharacter = patcher.original[start];
+    patcher.remove(start, contentStart - quoteCharacter.length);
+    patcher.remove(contentEnd + quoteCharacter.length, end);
+  }
+
+  escape(patcher, [quoteCharacter], start + TRIPLE_QUOTE_LENGTH$1, end - TRIPLE_QUOTE_LENGTH$1);
+}
+
+/**
+ * Replaces string interpolation with template strings.
+ *
+ * @example
+ *
+ *   "a#{b}c"  ->  `a${b}c`
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchStringInterpolation(node, patcher) {
+  if (node.type === 'ConcatOp') {
+    if (node.parentNode.type !== 'ConcatOp') {
+      if (node.raw.slice(0, 3) === '"""') {
+        replaceTripleQuotes(node, patcher);
+      } else {
+        patcher.overwrite(node.range[0], node.range[0] + 1, '`');
+        patcher.overwrite(node.range[1] - 1, node.range[1], '`');
+      }
+    }
+    patchInterpolation(node.left, patcher);
+    patchInterpolation(node.right, patcher);
+  } else if (node.type === 'String' && node.parentNode.type === 'ConcatOp') {
+    escape(patcher, ['`'], node.range[0], node.range[1]);
+  }
+}
+
+/**
+ * Patches the interpolation surrounding a node, if it is an interpolated value.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @private
+ */
+function patchInterpolation(node, patcher) {
+  switch (node.type) {
+    case 'String':
+    case 'ConcatOp':
+      return;
+  }
+
+  var interpolationStart = findInterpolationStart(node, patcher.original);
+
+  if (interpolationStart < 0) {
+    throw new Error('unable to find interpolation start, i.e. "#{", before ' + node.type + (' at line ' + node.line + ', column ' + node.column));
+  }
+
+  patcher.overwrite(interpolationStart, interpolationStart + 1, '$');
+}
+
+/**
+ * Find the start of the interpolation that contains an expression.
+ *
+ * @param {Object} expression
+ * @param {string} source
+ * @returns {number}
+ * @private
+ */
+function findInterpolationStart(expression, source) {
+  var index = expression.range[0] - 2;
+
+  while (index >= 0) {
+    if (source.slice(index, index + '#{'.length) === '#{') {
+      break;
+    }
+
+    index--;
+  }
+
+  return index;
+}
+
+var TRIPLE_DOUBLE_QUOTE = '"""';
+var TRIPLE_SINGLE_QUOTE = "'''";
+var TRIPLE_QUOTE_LENGTH = 3;
+
+/**
+ * Replaces multi-quote strings with one-quote strings or template strings.
+ *
+ * @example
+ *
+ *   """abc"""  ->  "abc"
+ *   '''abc'''  ->  'abc'
+ *
+ *   '''ab      ->  `ab
+ *   c'''           c`
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchString(node, patcher) {
+  if (node.type === 'String') {
+    switch (node.raw.slice(0, TRIPLE_QUOTE_LENGTH)) {
+      case TRIPLE_DOUBLE_QUOTE:
+      case TRIPLE_SINGLE_QUOTE:
+        replaceTripleQuotes(node, patcher);
+        break;
+    }
+  }
+}
+
+/**
+ * Replaces shorthand `this` (i.e. `@`) with longhand `this`.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchThis(node, patcher) {
+  if (node.type === 'This' && node.raw === '@') {
+    patcher.overwrite(node.range[0], node.range[1], 'this');
+  } else if (node.type === 'MemberAccessOp' && node.raw[0] === '@' && node.expression.type === 'This' && node.raw[1] !== '.') {
+    patcher.insert(node.range[0] + 1, '.');
+  }
+}
+
+/**
+ * Gets a free binding suitable for a temporary variable.
+ *
+ * Note that this does *not* prevent using the same binding again, so users of
+ * this should call `scope.assigns` or `scope.declares` with the result of this
+ * function if they wish to prevent usage of the free binding identified.
+ *
+ * @param {Scope} scope
+ * @param {string=} base
+ * @returns {string}
+ */
+function getFreeBinding(scope) {
+  var base = arguments.length <= 1 || arguments[1] === undefined ? 'ref' : arguments[1];
+
+  var binding = base;
+
+  if (scope.getBinding(binding)) {
+    var counter = 1;
+    while (scope.getBinding(binding = '' + base + counter)) {
+      counter++;
+    }
+  }
+
+  return binding;
+}
+
+var LOOP_BINDINGS = ['i', 'j', 'k'];
+
+/**
+ * Gets a free binding for the purpose of a loop counter.
+ *
+ * @param {Scope} scope
+ * @returns {string}
+ */
+function getFreeLoopBinding(scope) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = LOOP_BINDINGS[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var binding = _step.value;
+
+      if (!scope.getBinding(binding)) {
+        return binding;
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return getFreeBinding(scope, LOOP_BINDINGS[0]);
+}
+
+/**
+ * Convert binary existential operators, e.g. `a ? b` into `if` expressions
+ * using unary existential operators, e.g. `if a? then a else b`.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function preprocessBinaryExistentialOperator(node, patcher) {
+  if (node.type === 'ExistsOp') {
+    // e.g. `if a? then a else b`
+    //       ^^^
+    patcher.insert(node.range[0], 'if ');
+
+    if (node.left.type === 'Identifier') {
+      // e.g. `a ? b` -> `if a? then a else b`
+      //       ^^^^^         ^^^^^^^^^^^^^^^^
+      patcher.overwrite(node.range[0], node.range[1], node.left.raw + '? then ' + node.left.raw + ' else ' + node.right.raw);
+    } else {
+      var tmp = getFreeBinding(node.scope);
+      // e.g. `@a ? @b` -> `if (ref = @a)? then ref else @b`
+      //       ^^^^^^^         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      patcher.overwrite(node.range[0], node.range[1], '(' + tmp + ' = ' + node.left.raw + ')? then ' + tmp + ' else ' + node.right.raw);
+    }
+
+    return true;
+  }
+}
+
+/**
+ * Determine whether CoffeeScript would consider repeating the given node to be
+ * safe. The reality is that CoffeeScript is a little more cavalier than I would
+ * be since even a reference to an unbound variable can have side effects. This
+ * reflects what CoffeeScript does so as to maintain behavioral compatibility.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isSafeToRepeat(node) {
+  switch (node.type) {
+    case 'Identifier':
+    case 'Int':
+    case 'Float':
+      return true;
+
+    case 'MemberAccessOp':
+      return isSafeToRepeat(node.expression);
+
+    case 'DynamicMemberAccessOp':
+      return isSafeToRepeat(node.expression) && isSafeToRepeat(node.indexingExpr);
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * Expands chained comparisons, i.e. `a < b < c` to `a < b && b < c`.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function preprocessChainedComparison(node, patcher) {
+  if (node.type === 'ChainedComparisonOp') {
+    var middle = node.expression.left.right;
+    if (isSafeToRepeat(middle)) {
+      patcher.insert(middle.range[1], ' && ' + middle.raw);
+    } else {
+      var temp = getFreeBinding(node.scope);
+      patcher.overwrite(middle.range[0], middle.range[1], '(' + temp + ' = ' + middle.raw + ') && ' + temp);
+    }
+    return true;
+  }
+}
+
+var BOUND_ARROW = '=>';
+var UNBOUND_ARROW = '->';
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function convertBoundFunctionToUnboundFunction(node, patcher) {
+  var source = patcher.original;
+
+  var _node$range = babelHelpers.slicedToArray(node.range, 2);
+
+  var start = _node$range[0];
+  var end = _node$range[1];
+
+  var offset = start;
+
+  if (node.parameters.length > 0) {
+    offset = node.parameters[node.parameters.length - 1].range[1];
+  }
+
+  var index = source.indexOf(BOUND_ARROW, offset);
+
+  if (index < offset && index >= end) {
+    throw new Error('unable to locate arrow in bound function: ' + JSON.stringify(node.raw));
+  }
+
+  patcher.overwrite(index, index + BOUND_ARROW.length, UNBOUND_ARROW);
+}
+
+var DEFAULT_INDENT = '  ';
+
+/**
+ * @param {string} source
+ * @returns {string}
+ */
+function determineIndent(source) {
+  var indent = detectIndent(source);
+  if (indent.type === 'space' && indent.amount % 2 === 1) {
+    return DEFAULT_INDENT;
+  }
+  return indent.indent || DEFAULT_INDENT;
+}
+
+/**
+ * @param {MagicString} patcher
+ * @param {string[]} lines
+ * @param {Object} node
+ */
+function prependLinesToBlock(patcher, lines, node) {
+  var indent = getIndent(patcher.original, node.range[0]);
+  var string = '';
+
+  for (var i = 0; i < lines.length; i++) {
+    string += lines[i] + '\n';
+    if (i + 1 === lines.length || lines[i + 1].length > 0) {
+      string += indent;
+    }
+  }
+
+  patcher.insert(node.range[0], string);
+}
+
+function preprocessClass(node, patcher) {
+  if (node.type === 'Class') {
+    var _ret = (function () {
+      var bindings = [];
+
+      if (node.boundMembers.length > 0) {
+        var _ret2 = (function () {
+          var indent = determineIndent(patcher.original);
+
+          node.body.statements.forEach(function (statement) {
+            if (statement.type === 'ClassProtoAssignOp' && statement.expression.type === 'BoundFunction') {
+              var assignee = statement.assignee;
+              var expression = statement.expression;
+
+              bindings.push('this.' + assignee.data + ' = this.' + assignee.data + '.bind(this)');
+              convertBoundFunctionToUnboundFunction(expression, patcher);
+            }
+          });
+
+          if (node.ctor) {
+            prependLinesToBlock(patcher, bindings, node.ctor.expression.body);
+          } else {
+            var constructor = ['constructor: ->'];
+            if (node.parent) {
+              // FIXME: CSR does not actually support `super` yet!
+              constructor.push(indent + 'super()');
+            }
+            constructor.push.apply(constructor, babelHelpers.toConsumableArray(bindings.map(function (binding) {
+              return indent + binding;
+            })).concat(['']));
+            prependLinesToBlock(patcher, constructor, node.body);
+          }
+
+          return {
+            v: {
+              v: true
+            }
+          };
+        })();
+
+        if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret2)) === "object") return _ret2.v;
+      }
+    })();
+
+    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+  }
+}
+
+/**
+ * Convert special compound assigns that are not direct passthroughs to
+ * JavaScript such as `a ||= b`.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function preprocessCompoundAssignment(node, patcher) {
+  if (node.type === 'CompoundAssignOp') {
+    var assignee = node.assignee;
+    var expression = node.expression;
+
+    switch (node.op) {
+      case 'LogicalOrOp':
+      case 'LogicalAndOp':
+        var isMemberAccess = /MemberAccessOp$/.test(assignee.type);
+        var isDynamicMemberAccess = assignee.type === 'DynamicMemberAccessOp';
+        var lhs = undefined;
+        var base = isMemberAccess ? assignee.expression.raw : assignee.raw;
+        var name = isDynamicMemberAccess ? assignee.indexingExpr.raw : isMemberAccess ? assignee.memberName : null;
+
+        if (isMemberAccess && !isSafeToRepeat(assignee.expression)) {
+          base = getFreeBinding(node.scope, 'base');
+          patcher.insert(assignee.expression.range[0], '(' + base + ' = ');
+          patcher.insert(assignee.expression.range[1], ')');
+        }
+
+        if (isDynamicMemberAccess && !isSafeToRepeat(assignee.indexingExpr)) {
+          name = getFreeBinding(node.scope, 'name');
+          patcher.insert(assignee.indexingExpr.range[0], name + ' = ');
+        }
+
+        if (isDynamicMemberAccess) {
+          lhs = base + '[' + name + ']';
+        } else if (isMemberAccess) {
+          lhs = base + '.' + name;
+        } else {
+          lhs = base;
+        }
+
+        replaceBetween(patcher, assignee, expression, '=', ' (' + lhs + ' =');
+        patcher.insert(expression.range[1], ')');
+        return true;
+    }
+  }
+}
+
+/**
+ * Indent a node by the given number of levels.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @param {number=} levels
+ */
+function indentNode(node, patcher) {
+  var levels = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+
+  if (levels === 0) {
+    return;
+  }
+
+  var source = patcher.original;
+  var range = trimmedNodeRange(node, source);
+  var offset = range[0];
+  var indent = repeat(determineIndent(source), levels);
+
+  while (offset < range[1]) {
+    patcher.insert(offset, indent);
+    offset = source.indexOf('\n', offset + '\n'.length);
+    if (offset < 0) {
+      break;
+    }
+    offset += '\n'.length;
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function makeIIFE(node, patcher) {
+  var range = trimmedNodeRange(node, patcher.original);
+  var indent = getIndent(patcher.original, range[0]);
+  patcher.insert(range[0], '(=>\n' + indent);
+  indentNode(node, patcher);
+  patcher.insert(range[1], ')()');
+}
+
+/**
+ * Rewrites POST `if` and `unless` conditionals to be PRE conditionals. Returns
+ * whether or not any rewrites happened for the given node.
+ *
+ * @example
+ *
+ *   a if b  # => if b then a
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function preprocessConditional(node, patcher) {
+  if (node.type === 'Conditional') {
+    var condition = node.condition;
+    var consequent = node.consequent;
+    if (condition.range[0] > consequent.range[0]) {
+      // Found a POST-if/unless, transform it.
+      var ifOrUnlessToken = sourceBetween(patcher.original, consequent, condition).trim();
+      patcher.overwrite(node.range[0], node.range[1], ifOrUnlessToken + ' ' + condition.raw.trim() + ' then ' + consequent.raw.trim());
+      return true;
+    } else if (isExpressionResultUsed(node) && isMultiline(patcher.original, node)) {
+      makeIIFE(node, patcher);
+      return true;
+    }
+  }
+}
+
+/**
+ * Preprocesses `do` expressions by turning them into IIFEs.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function preprocessDo(node, patcher) {
+  if (node.type === 'DoOp') {
+    var expression = node.expression;
+    var parameters = expression.parameters;
+
+    var trimmedRange = trimmedNodeRange(node, patcher.original);
+
+    // Remove initializers from default params.
+    parameters.forEach(function (param) {
+      if (param.type === 'DefaultParam') {
+        patcher.remove(param.param.range[1], param.default.range[1]);
+      }
+    });
+
+    // Collect the arguments that should be used for the IIFE call.
+    var args = parameters.map(argumentForDoParameter);
+    patcher.overwrite(trimmedRange[0], expression.range[0], '(');
+    patcher.overwrite(trimmedRange[1], trimmedRange[1], ')(' + args.join(', ') + ')');
+    return true;
+  }
+}
+
+function argumentForDoParameter(node) {
+  switch (node.type) {
+    case 'DefaultParam':
+      return node.default.raw;
+
+    default:
+      return node.raw;
+  }
+}
+
+/**
+ * Adjust an indent in source at a specific offset by an amount.
+ *
+ * @param {string} source
+ * @param {number} offset
+ * @param {number} adjustment
+ * @returns {string}
+ */
+function adjustIndent(source, offset, adjustment) {
+  var currentIndent = getIndent(source, offset);
+  var determinedIndent = determineIndent(source);
+
+  if (adjustment > 0) {
+    while (adjustment--) {
+      currentIndent += determinedIndent;
+    }
+  } else if (adjustment < 0) {
+    currentIndent = currentIndent.slice(determinedIndent.length * -adjustment);
+  }
+
+  return currentIndent;
+}
+
+/**
+ * If the `for` loop is used as an expression we wrap it in an IIFE.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function convertLoopExpressionIntoIIFE(node, patcher) {
+  if (!isExpressionResultUsed(node)) {
+    return false;
+  }
+
+  var result = getFreeBinding(node.scope, 'result');
+
+  var thisIndent = getIndent(patcher.original, node.range[0]);
+  var nextIndent = adjustIndent(patcher.original, node.range[0], 1);
+  patcher.insert(node.range[0], 'do =>\n' + nextIndent + result + ' = []\n' + thisIndent);
+  indentNode(node, patcher);
+  var lastStatement = node.body.statements[node.body.statements.length - 1];
+  var lastStatementRange = trimmedNodeRange(lastStatement, patcher.original);
+  patcher.insert(lastStatementRange[0], result + '.push(');
+  patcher.insert(lastStatementRange[1], ')');
+  patcher.insert(trimmedNodeRange(node, patcher.original)[1], '\n' + nextIndent + result);
+
+  return true;
+}
+
+/**
+ * Re-order `for` loop parts if the body precedes the rest.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function ensureMultilineLoop(node, patcher) {
+  var keyAssignee = node.keyAssignee;
+  var valAssignee = node.valAssignee;
+  var body = node.body;
+
+  var firstAssignee = null;
+  var keyword = null;
+
+  switch (node.type) {
+    case 'ForOf':
+      firstAssignee = keyAssignee;
+      keyword = node.isOwn ? 'for own' : 'for';
+      break;
+
+    case 'ForIn':
+      firstAssignee = valAssignee;
+      keyword = 'for';
+      break;
+
+    case 'While':
+      firstAssignee = node.condition;
+      keyword = 'while';
+      break;
+  }
+
+  if (!firstAssignee) {
+    return false;
+  }
+
+  if (body.range[0] >= firstAssignee.range[0]) {
+    return false;
+  }
+
+  // e.g. `k for k of o` -> `for k of o\n  k`
+  patcher.remove(body.range[0], firstAssignee.range[0] - (keyword + ' ').length);
+  patcher.insert(node.range[1], '\n' + adjustIndent(patcher.original, node.range[0], 1) + body.raw);
+  return true;
+}
+
+/**
+ * Normalize `for` loops for easier patching.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function preprocessFor(node, patcher) {
+  if (isForLoop(node)) {
+    if (ensureMultilineLoop(node, patcher)) {
+      return true;
+    } else if (convertLoopExpressionIntoIIFE(node, patcher)) {
+      return true;
+    } else if (convertFilterIntoBodyConditional(node, patcher)) {
+      return true;
+    } else if (moveValueAssignmentIntoBody(node, patcher)) {
+      return true;
+    } else if (convertForOwnIntoBodyConditional(node, patcher)) {
+      return true;
+    }
+  }
+
+  var target = node.target;
+  var scope = node.scope;
+
+  if (node.type === 'ForIn') {
+    var rewritten = false;
+
+    // Make all for-in loops have a key assignee.
+    if (!node.keyAssignee && target.type !== 'Range') {
+      patcher.insert(node.valAssignee.range[1], ', ' + getFreeLoopBinding(scope));
+      rewritten = true;
+    }
+
+    if (target.type === 'Range') {
+      if (!isSafeToRepeat(target.left)) {
+        var startBinding = getFreeBinding(scope, 'start');
+        patcher.insert(node.range[0], startBinding + ' = ' + target.left.raw + '\n' + getIndent(patcher.original, node.range[0]));
+        patcher.overwrite(target.left.range[0], target.left.range[1], startBinding);
+        rewritten = true;
+      }
+      if (!isSafeToRepeat(target.right)) {
+        var endBinding = getFreeBinding(scope, 'end');
+        patcher.insert(node.range[0], endBinding + ' = ' + target.right.raw + '\n' + getIndent(patcher.original, node.range[0]));
+        patcher.overwrite(target.right.range[0], target.right.range[1], endBinding);
+        rewritten = true;
+      }
+    } else if (!isSafeToRepeat(target)) {
+      var iterableBinding = getFreeBinding(scope, 'iterable');
+      patcher.insert(node.range[0], iterableBinding + ' = ' + target.raw + '\n' + getIndent(patcher.original, node.range[0]));
+      patcher.overwrite(target.range[0], target.range[1], iterableBinding);
+      rewritten = true;
+    }
+
+    return rewritten;
+  }
+}
+
+/**
+ * Turn for-of loops with a value assignee into one with just a key assignee by
+ * moving the value assignment into the loop body.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function moveValueAssignmentIntoBody(node, patcher) {
+  var keyAssignee = node.keyAssignee;
+  var valAssignee = node.valAssignee;
+  var scope = node.scope;
+
+  if (node.type === 'ForOf') {
+    if (valAssignee) {
+      // e.g. `for k, v of o` -> `for k of o` and `v = o[k]`
+      var iterable = extractIterableIfNeeded(node, patcher);
+      var assignments = [];
+      var key = keyAssignee.raw;
+
+      if (keyAssignee.type !== 'Identifier') {
+        // destructured key, use a temporary variable for the key
+        key = getFreeBinding(scope, 'key');
+        patcher.overwrite(keyAssignee.range[0], keyAssignee.range[1], key);
+        assignments.push(keyAssignee.raw + ' = ' + key);
+      }
+
+      // e.g. `for k, v of o` -> `for k in o`
+      //            ^^^
+      patcher.remove(keyAssignee.range[1], valAssignee.range[1]);
+      assignments.push(valAssignee.raw + ' = ' + iterable + '[' + key + ']');
+      prependLinesToBlock(patcher, assignments, node.body);
+      return true;
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {string}
+ */
+function extractIterableIfNeeded(node, patcher) {
+  var scope = node.scope;
+  var target = node.target;
+
+  var canRepeatIterable = isSafeToRepeat(target);
+  var iterable = canRepeatIterable ? target.raw : getFreeBinding(scope, 'iterable');
+
+  if (!canRepeatIterable) {
+    patcher.overwrite(target.range[0], target.range[1], '(' + iterable + ' = ' + target.raw + ')');
+  }
+
+  return iterable;
+}
+
+/**
+ * If the `for` loop contains a `when` clause we turn it into an `if` in the
+ * body of the `for` loop.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function convertFilterIntoBodyConditional(node, patcher) {
+  if (!node.filter) {
+    return false;
+  }
+
+  var indent = getIndent(patcher.original, node.body.range[0]);
+  patcher.insert(node.body.range[0], 'if ' + node.filter.raw + '\n' + indent);
+  patcher.remove(node.filter.range[0] - ' when '.length, node.filter.range[1]);
+  indentNode(node.body, patcher);
+  return true;
+}
+
+/**
+ * Converts a `for` loop with the `own` flag to one without the `own` flag whose
+ * body is wrapped in a conditional checking that the key is an own property.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function convertForOwnIntoBodyConditional(node, patcher) {
+  if (!node.isOwn) {
+    return false;
+  }
+
+  var iterable = extractIterableIfNeeded(node, patcher);
+  var indent = getIndent(patcher.original, node.body.range[0]);
+  patcher.insert(node.body.range[0], 'if Object::hasOwnProperty.call(' + iterable + ', ' + node.keyAssignee.raw + ')\n' + indent);
+  patcher.remove(node.range[0] + 'for '.length, node.range[0] + 'for own '.length);
+  indentNode(node.body, patcher);
+  return true;
+}
+
+/**
+ * Determines whether the given node, when used as part of a larger expression
+ * node, would require parentheses around it.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function requiresParentheses(node) {
+  switch (node.type) {
+    case 'AssignOp':
     case 'BitAndOp':
     case 'BitOrOp':
-    case 'DivideOp':
+    case 'BitXorOp':
     case 'EQOp':
     case 'GTEOp':
     case 'GTOp':
-    case 'InOp':
-    case 'InstanceofOp':
     case 'LTEOp':
     case 'LTOp':
     case 'LogicalAndOp':
-    case 'MultiplyOp':
+    case 'LogicalOrOp':
     case 'NEQOp':
-    case 'OfOp':
     case 'PlusOp':
-    case 'RemOp':
     case 'SubtractOp':
       return true;
 
@@ -6437,29 +2920,73 @@ function isBinaryOperator(node) {
 }
 
 /**
+ * Replace `in` infix operators with a call to `indexOf`.
+ *
  * @param {Object} node
+ * @param {MagicString} patcher
  * @returns {boolean}
  */
+function preprocessIn(node, patcher) {
+  if (node.type === 'InOp') {
+    var indexable = node.right.raw;
+    var element = node.left.raw;
+    var needsParentheses = false;
+    var prefix = '';
 
-function isCall(node) {
-  switch (node && node.type) {
-    case 'FunctionApplication':
-    case 'NewOp':
-      return true;
+    if (node.left.type !== 'Identifier') {
+      var temp = getFreeBinding(node.scope);
+      needsParentheses = isExpressionResultUsed(node);
+      prefix += temp + ' = ' + element + '; ';
+      element = temp;
+    }
 
-    default:
-      return false;
+    if (requiresParentheses(node.right)) {
+      indexable = '(' + indexable + ')';
+    }
+
+    var isNegated = patcher.original.slice(node.left.range[1], node.right.range[0]).indexOf('not in') >= 0;
+    var replacement = '' + prefix + indexable + '.indexOf(' + element + ') ' + (isNegated ? '<' : '>=') + ' 0';
+
+    if (needsParentheses) {
+      replacement = '(' + replacement + ')';
+    }
+
+    patcher.overwrite(node.range[0], node.range[1], replacement);
+    return true;
   }
 }
 
 /**
+ * Turn negated `of` and `instanceof` operators into standard ones.
+ *
  * @param {Object} node
+ * @param {MagicString} patcher
  * @returns {boolean}
  */
+function preprocessNegatableOps(node, patcher) {
+  switch (node.type) {
+    case 'OfOp':
+      return standardizeNegatableOp(node, patcher, 'of');
 
-function isCallArgument(node) {
-  if (node && isCall(node.parentNode)) {
-    return node.parentNode.arguments.indexOf(node) >= 0;
+    case 'InstanceofOp':
+      return standardizeNegatableOp(node, patcher, 'instanceof');
+  }
+}
+
+/**
+ * Turn negated operators with a given keyword into operators surrounded by a
+ * logical `not` operator.
+ *
+ * @param node
+ * @param patcher
+ * @param keyword
+ * @returns {boolean}
+ */
+function standardizeNegatableOp(node, patcher, keyword) {
+  if (replaceBetween(patcher, node.left, node.right, 'not ' + keyword, keyword)) {
+    patcher.insert(node.left.range[0], '!(');
+    patcher.insert(node.right.range[1], ')');
+    return true;
   } else {
     return false;
   }
@@ -6469,34 +2996,1941 @@ function isCallArgument(node) {
  * @param {Object} node
  * @returns {boolean}
  */
+function isParameter(node) {
+  if (!node) {
+    return false;
+  }
 
-function isShorthandThisObjectMember(node) {
-  return node.type === 'ObjectInitialiserMember' && /^@\w+$/.test(node.raw);
+  var parentNode = node.parentNode;
+
+  if (!parentNode) {
+    return false;
+  }
+
+  if (parentNode.type !== 'Function' && parentNode.type !== 'BoundFunction') {
+    return false;
+  }
+
+  return parentNode.parameters.indexOf(node) >= 0;
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function preprocessParameters(node, patcher) {
+  if (isFunction(node)) {
+    var _ret = (function () {
+      var assignments = [];
+
+      node.parameters.forEach(function (param) {
+        var thisDotParameter = getThisDotParameter(param);
+        if (thisDotParameter) {
+          // `@a` -> `a`
+          var paramName = getFreeBinding(node.scope, thisDotParameter.memberName);
+          patcher.overwrite(thisDotParameter.range[0], thisDotParameter.range[1], paramName);
+          assignments.push('this.' + thisDotParameter.memberName + ' = ' + paramName);
+        }
+      });
+
+      if (assignments.length > 0) {
+        var _ret2 = (function () {
+          var indent = adjustIndent(patcher.original, node.range[0], 1);
+          var insertionPoint = node.body ? node.body.range[0] : node.range[1];
+
+          if (isMultiline(patcher.original, node)) {
+            // put each assignment on its own line
+            patcher.insert(insertionPoint, assignments.map(function (assignment) {
+              return assignment + '\n' + indent;
+            }).join(''));
+          } else {
+            // put the assignments all on one line
+            patcher.insert(insertionPoint, ' ' + assignments.join('; '));
+          }
+
+          return {
+            v: {
+              v: true
+            }
+          };
+        })();
+
+        if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret2)) === "object") return _ret2.v;
+      }
+    })();
+
+    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+  }
+}
+
+/**
+ * Determines whether this is a `@foo` in the place of a function parameter.
+ *
+ * @param {Object} node
+ * @returns {?Object}
+ */
+function getThisDotParameter(node) {
+  if (!isParameter(node)) {
+    return false;
+  }
+
+  if (node.type === 'DefaultParam') {
+    node = node.param;
+  }
+
+  if (node.type === 'MemberAccessOp' && node.expression.type === 'This') {
+    return node;
+  } else {
+    return null;
+  }
+}
+
+var MAX_RANGE_LITERAL_VALUES = 20;
+
+/**
+ * Patches ranges.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function preprocessRange(node, patcher) {
+  if (node.type === 'Range') {
+    var _ret = (function () {
+      var parentNode = node.parentNode;
+
+      if (parentNode.type === 'ForIn' && parentNode.target === node) {
+        // Don't re-write the range in `for n in [0..5]`
+        return {
+          v: false
+        };
+      }
+      var resultBinding = getFreeBinding(node.scope, 'result');
+      var iBinding = getFreeBinding(node.scope, 'i');
+      var left = node.left;
+      var right = node.right;
+
+      if (left.type === 'Int' && right.type === 'Int') {
+        var isAscending = left.data <= right.data;
+        var lastValue = node.isInclusive ? right.data : right.data + (isAscending ? -1 : 1);
+        if (Math.abs(lastValue - left.data) <= MAX_RANGE_LITERAL_VALUES) {
+          var numbers = [];
+          if (isAscending) {
+            for (var i = left.data; i <= lastValue; i++) {
+              numbers.push(i);
+            }
+          } else {
+            for (var i = left.data; i >= lastValue; i--) {
+              numbers.push(i);
+            }
+          }
+          patcher.overwrite(left.range[0], right.range[1], numbers.join(', '));
+          return {
+            v: true
+          };
+        } else {
+          var indent0 = adjustIndent(patcher.original, node.range[0], 0);
+          var indent1 = adjustIndent(patcher.original, node.range[0], 1);
+          patcher.overwrite(node.range[0], node.range[1], stripSharedIndent('\n            (do ->\n              ' + indent0 + resultBinding + ' = []\n              ' + indent0 + iBinding + ' = ' + left.raw + '\n              ' + indent0 + 'while ' + iBinding + ' ' + (isAscending ? node.isInclusive ? '<=' : '<' : node.isInclusive ? '>=' : '>') + ' ' + right.raw + '\n              ' + indent1 + resultBinding + '.push(' + iBinding + (isAscending ? '++' : '--') + ')\n              ' + indent0 + resultBinding + ')\n          '));
+          return {
+            v: true
+          };
+        }
+      }
+
+      var indent = determineIndent(patcher.original);
+      var lead = getIndent(patcher.original, node.range[0]) + indent;
+      var isStartSafeToRepeat = isSafeToRepeat(left);
+      var isEndSafeToRepeat = isSafeToRepeat(right);
+      var start = isStartSafeToRepeat ? left.raw : getFreeBinding(node.scope, 'start');
+      var end = isEndSafeToRepeat ? right.raw : getFreeBinding(node.scope, 'end');
+
+      var lines = [];
+
+      lines.push(resultBinding + ' = []');
+      if (!isStartSafeToRepeat) {
+        lines.push(start + ' = ' + left.raw);
+      }
+      if (!isEndSafeToRepeat) {
+        lines.push(end + ' = ' + right.raw);
+      }
+      lines.push(iBinding + ' = ' + start, 'if ' + start + ' <= ' + end, indent + 'while ' + iBinding + ' ' + (node.isInclusive ? '<=' : '<') + ' ' + end, '' + indent + indent + resultBinding + '.push(' + iBinding + '++)', 'else', indent + 'while ' + iBinding + ' ' + (node.isInclusive ? '>=' : '>') + ' ' + end, '' + indent + indent + resultBinding + '.push(' + iBinding + '--)', '' + resultBinding);
+
+      patcher.overwrite(node.range[0], node.range[1], '(do ->\n' + lines.map(function (line) {
+        return lead + line;
+      }).join('\n') + ')');
+      return {
+        v: true
+      };
+    })();
+
+    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+  }
+}
+
+/**
+ * Re-writes soaked member expressions into CoffeeScript that does not use
+ * soaked member expressions.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function preprocessSoakedMemberAccessOp(node, patcher) {
+  if (node.type === 'SoakedMemberAccessOp' || node.type === 'SoakedDynamicMemberAccessOp') {
+    // For member access with identifier object:
+    //
+    // `a?.b()` -> `if a? then a.b()`
+    //              ^^^  ^^^^^^^
+    //
+    // For member access with complex object:
+    //
+    // `a.b?.c` -> `if (ref = a.b)? then ref.c`
+    //              ^^^^^^^^^^   ^ ^^^^^^^^^
+    var expression = node.expression;
+    var conditional = undefined;
+    if (node.parentNode.type === 'FunctionApplication' && node.parentNode.function === node) {
+      conditional = node.parentNode;
+    } else {
+      conditional = node;
+    }
+    var parens = conditional.parentNode.type !== 'Block';
+    var consequent = undefined;
+    if (parens) {
+      patcher.insert(conditional.range[0], '(');
+    }
+    patcher.insert(expression.range[0], 'if ');
+    if (expression.type === 'Identifier') {
+      consequent = ' then ' + expression.raw;
+    } else {
+      var tmp = getFreeBinding(node.scope);
+      patcher.insert(expression.range[0], '(' + tmp + ' = ');
+      patcher.insert(expression.range[1], ')');
+      consequent = ' then ' + tmp;
+    }
+    patcher.insert(expression.range[1] + 1, consequent);
+    if (parens) {
+      patcher.insert(conditional.range[1], ')');
+    }
+    return true;
+  }
+}
+
+function preprocessSoakedFunctionApplication(node, patcher) {
+  if (node.type === 'SoakedFunctionApplication') {
+    var args = patcher.original.slice(node.function.range[1] + '?'.length, node.range[1]);
+    var typeofArgument = undefined;
+    var fn = undefined;
+
+    if (isSafeToRepeat(node.function)) {
+      // `a?()` -> `if typeof a == "function" then a()`
+      typeofArgument = node.function.raw;
+      fn = node.function.raw;
+    } else {
+      // `a(1)?()` -> `if typeof (fn = a(1)) == "function" then fn()`
+      fn = getFreeBinding(node.scope, 'fn');
+      typeofArgument = '(' + fn + ' = ' + node.function.raw + ')';
+    }
+
+    patcher.overwrite(node.range[0], node.range[1], 'if typeof ' + typeofArgument + ' == "function" then ' + fn + args);
+
+    return true;
+  }
+}
+
+/**
+ * Converts `switch` used as an expression to `switch` inside an IIFE.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function preprocessSwitch(node, patcher) {
+  if (node.type === 'Switch' && isExpressionResultUsed(node)) {
+    var source = patcher.original;
+    var indent = determineIndent(source);
+    patcher.insert(node.range[0], 'do ->\n' + (getIndent(source, node.range[0]) + indent));
+
+    var index = source.indexOf('\n', node.range[0]);
+
+    while (0 <= index && index < node.range[1]) {
+      patcher.insert(index + '\n'.length, indent);
+      index = source.indexOf('\n', index + '\n'.length);
+    }
+
+    return true;
+  }
+}
+
+/**
+ * Returns the ranges of the sections of source code that are not comments.
+ *
+ * @param {string} source
+ * @returns {Array.<{start: number, end: number}>}
+ */
+function rangesOfNonComments(source) {
+  var index = 0;
+  var ranges = [];
+
+  rangesOfComments(source).forEach(function (_ref) {
+    var start = _ref.start;
+    var end = _ref.end;
+
+    if (start !== index) {
+      ranges.push({ start: index, end: start });
+    }
+    index = end;
+  });
+
+  if (index < source.length) {
+    ranges.push({ start: index, end: source.length });
+  }
+
+  return ranges;
+}
+
+/**
+ * Finds a string within source, ignoring any comment strings. Returns -1 if
+ * no matching substring can be found.
+ *
+ * @param {string} source
+ * @param {string} string
+ * @returns {number}
+ */
+function indexOfIgnoringComments(source, string) {
+  var ranges = rangesOfNonComments(source);
+
+  for (var i = 0; i < ranges.length; i++) {
+    var _ranges$i = ranges[i];
+    var start = _ranges$i.start;
+    var end = _ranges$i.end;
+
+    var index = source.slice(start, end).indexOf(string);
+    if (index !== -1) {
+      return start + index;
+    }
+  }
+
+  return -1;
+}
+
+/**
+ * Rewrites `try` expressions by wrapping them in an IIFE. Ensures catch
+ * exists with an error assignee if needed.
+ *
+ * @example
+ *
+ *   (try a)(b) # => (=> try a catch error)(b)
+ *
+ *   try
+ *     a
+ *   catch # => catch error
+ *     b
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function preprocessTry(node, patcher) {
+  if (node.type === 'Try') {
+    if (isExpressionResultUsed(node)) {
+      makeIIFE(node, patcher);
+      return true;
+    }
+
+    if (!node.catchAssignee) {
+      if (node.catchBody) {
+        var nodeBeforeCatchClause = node.body;
+        var nodeAfterCatchClause = node.catchBody;
+        var source = sourceBetween(patcher.original, nodeBeforeCatchClause, nodeAfterCatchClause);
+        var catchIndex = indexOfIgnoringComments(source, 'catch');
+        if (catchIndex === -1) {
+          throw new Error('unable to find catch between try block body ' + ('(' + nodeBeforeCatchClause.line + ':' + nodeBeforeCatchClause.column + ') and catch body ') + ('(' + nodeAfterCatchClause.line + ':' + nodeAfterCatchClause.column + ')'));
+        }
+        patcher.insert(nodeBeforeCatchClause.range[1] + catchIndex + 'catch'.length, ' ' + getFreeBinding(node.scope, 'error'));
+        return true;
+      } else if (!node.finallyBody) {
+        if (node.body.type === 'Block') {
+          patcher.insert(trimmedNodeRange(node.body, patcher.original)[1], '\n' + getIndent(patcher.original, node.range[0]) + 'catch ' + getFreeBinding(node.scope, 'error'));
+          return true;
+        } else if (!isMultiline(patcher.original, node)) {
+          patcher.insert(trimmedNodeRange(node, patcher.original)[1], ' catch ' + getFreeBinding(node.scope, 'error'));
+          return true;
+        }
+      }
+    }
+  }
+}
+
+var LOOP_KEYWORD = 'loop';
+var UNTIL_KEYWORD = 'until';
+var WHILE_KEYWORD = 'while';
+
+/**
+ * Convert non-standard `while` loops into typical loops.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function preprocessWhile(node, patcher) {
+  if (isWhile(node)) {
+    if (convertLoopToWhileTrue(node, patcher)) {
+      return true;
+    } else if (convertUntilToWhile(node, patcher)) {
+      return true;
+    } else if (ensureMultilineLoop(node, patcher)) {
+      return true;
+    } else if (convertLoopExpressionIntoIIFE(node, patcher)) {
+      return true;
+    }
+  }
+}
+
+/**
+ * Convert `loop` into `while true`.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function convertLoopToWhileTrue(node, patcher) {
+  if (isWhile(node) && patcher.slice(node.range[0], node.range[0] + LOOP_KEYWORD.length) === LOOP_KEYWORD) {
+    patcher.overwrite(node.range[0], node.range[0] + LOOP_KEYWORD.length, 'while true');
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Convert `until` into a negated `while`.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {boolean}
+ */
+function convertUntilToWhile(node, patcher) {
+  if (isWhile(node) && patcher.slice(node.range[0], node.range[0] + UNTIL_KEYWORD.length) === UNTIL_KEYWORD) {
+    // Handle "until" loops.
+    patcher.overwrite(node.range[0], node.range[0] + UNTIL_KEYWORD.length, WHILE_KEYWORD);
+    var condition = node.condition.expression;
+    if (requiresParentheses(condition)) {
+      patcher.insert(condition.range[0], '!(');
+      patcher.insert(condition.range[1], ')');
+    } else {
+      patcher.insert(condition.range[0], '!');
+    }
+    return true;
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {string} source
+ * @returns {boolean}
+ */
+function isImplicitObject(node, source) {
+  return node && node.type === 'ObjectInitialiser' && source[node.range[0]] !== '{';
+}
+
+/**
+ * Gets the range of a node when including the parentheses surrounding it.
+ *
+ * @param {Object} node
+ * @param {string} source
+ * @returns {number[]}
+ */
+function rangeIncludingParentheses(node, source) {
+  var _node$range = babelHelpers.slicedToArray(node.range, 2);
+
+  var start = _node$range[0];
+  var end = _node$range[1];
+
+  while (source[start - 1] === '(' && source[end] === ')') {
+    start--;
+    end++;
+  }
+
+  return [start, end];
+}
+
+/**
+ * Adds tokens necessary to open a function call.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchCallOpening(node, patcher) {
+  if (node.type === 'FunctionApplication') {
+    addTokensIfNeeded(node.function, node.arguments);
+  } else if (node.type === 'NewOp') {
+    addTokensIfNeeded(node.ctor, node.arguments);
+  }
+
+  /**
+   * @param {Object} callee
+   * @param {Object[]} callArguments
+   */
+  function addTokensIfNeeded(callee, callArguments) {
+    if (!callHasParentheses(callee, patcher.original)) {
+      addTokens(callee, callArguments);
+    } else {
+      var firstArgument = callArguments[0];
+      if (isImplicitObject(firstArgument, patcher.original)) {
+        addObjectBrace(firstArgument);
+      }
+    }
+  }
+
+  /**
+   * Adds an opening object brace at the start of the given node.
+   *
+   * @param {Object} n
+   */
+  function addObjectBrace(n) {
+    patcher.insert(n.range[0], '{');
+  }
+
+  /**
+   * Adds an opening parenthesis and, if necessary, an object brace.
+   *
+   * @param {Object} callee
+   * @param {Object[]} callArguments
+   */
+  function addTokens(callee, callArguments) {
+    if (callArguments.length === 0) {
+      patcher.insert(callee.range[1], '(');
+    } else {
+      var firstArgument = callArguments[0];
+      var lastArgument = callArguments[callArguments.length - 1];
+
+      if (callee.line === lastArgument.line) {
+        patcher.overwrite(callee.range[1], firstArgument.range[0], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
+      } else {
+        patcher.insert(callee.range[1], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
+      }
+    }
+  }
+}
+
+/**
+ * Adds tokens necessary to close the given function call.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchCallClosing(node, patcher) {
+  if (node.type === 'FunctionApplication') {
+    addTokensIfNeeded(node.function, node.arguments);
+  } else if (node.type === 'NewOp') {
+    addTokensIfNeeded(node.ctor, node.arguments);
+  }
+
+  /**
+   * @param {Object} callee
+   * @param {Object[]} callArguments
+   */
+  function addTokensIfNeeded(callee, callArguments) {
+    if (!callHasParentheses(callee, patcher.original)) {
+      addTokens(callee, callArguments);
+    } else {
+      var lastArgument = callArguments[callArguments.length - 1];
+      if (isImplicitObject(lastArgument, patcher.original)) {
+        addObjectBrace(lastArgument);
+      }
+    }
+  }
+
+  /**
+   * @param {Object} n
+   */
+  function addObjectBrace(n) {
+    patcher.insert(trimmedNodeRange(n, patcher.original)[1], '}');
+  }
+
+  /**
+   * Adds a closing parenthesis and, if necessary, an object brace.
+   *
+   * @param {Object} callee
+   * @param {Object[]} callArguments
+   */
+  function addTokens(callee, callArguments) {
+    if (callArguments.length === 0) {
+      patcher.insert(callee.range[1], ')');
+    } else {
+      var lastArgument = callArguments[callArguments.length - 1];
+      var lastArgumentRange = trimmedNodeRange(lastArgument, patcher.original);
+
+      if (callee.line === lastArgument.line) {
+        patcher.insert(lastArgumentRange[1], isImplicitObject(lastArgument, patcher.original) ? '})' : ')');
+      } else {
+        var indent = getIndent(patcher.original, callee.range[1]);
+        patcher.insert(lastArgumentRange[1], isImplicitObject(lastArgument, patcher.original) ? '\n' + indent + '})' : '\n' + indent + ')');
+      }
+    }
+  }
+}
+
+/**
+ * @param {Object} callee
+ * @param {string} source
+ * @returns {boolean}
+ */
+function callHasParentheses(callee, source) {
+  var calleeRangeIncludingParentheses = rangeIncludingParentheses(callee, source);
+  return source[calleeRangeIncludingParentheses[1]] === '(';
+}
+
+var NEWLINE = '\n';
+var SPACE = ' ';
+var TAB = '\t';
+var HASH = '#';
+
+/**
+ * Adds a closing curly brace on a new line after a node with the proper indent.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @returns {number}
+ */
+function appendClosingBrace(node, patcher) {
+  var source = patcher.original;
+  var originalInsertionPoint = trimmedNodeRange(node, source)[1];
+
+  if (!isMultiline(source, node)) {
+    patcher.insert(originalInsertionPoint, '}');
+    return originalInsertionPoint;
+  }
+
+  var insertionPoint = seekToEndOfStatementOrLine(source, originalInsertionPoint);
+
+  patcher.insert(insertionPoint, '\n' + getIndent(source, node.range[0]) + '}');
+
+  return insertionPoint;
+}
+
+/**
+ * Finds the last character of a statement or, if there is a comment or
+ * whitespace following it on the same line, finds the end of the line.
+ *
+ * @param {string} source
+ * @param {number} index
+ * @returns {number}
+ */
+function seekToEndOfStatementOrLine(source, index) {
+  var insideComment = false;
+
+  while (index < source.length) {
+    var char = source[index];
+
+    if (char === NEWLINE) {
+      break;
+    } else if (char === HASH) {
+      insideComment = true;
+    } else if (!insideComment && char !== SPACE && char !== TAB) {
+      break;
+    }
+
+    index++;
+  }
+
+  return index;
+}
+
+/**
+ * Determines whether a node is surrounded by a matching pair of grouping
+ * characters.
+ *
+ * @param {Object} node
+ * @param {string} left
+ * @param {string} source
+ * @returns {boolean}
+ */
+function isSurroundedBy(node, left, source) {
+  if (source[node.range[0] - 1] !== left) {
+    return false;
+  }
+
+  return findCounterpartCharacter(left, source, node.range[0] - 1) === node.range[1];
+}
+
+/**
+ * Patches the start of class-related nodes.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchClassStart(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (node.type === 'Class') {
+    if (node.body) {
+      var braceIndex = undefined;
+      var superclass = node.parent;
+
+      if (superclass) {
+        braceIndex = superclass.range[1];
+        if (isSurroundedBy(superclass, '(', patcher.original)) {
+          braceIndex += '('.length;
+        }
+      } else {
+        braceIndex = node.nameAssignee.range[1];
+      }
+
+      patcher.insert(braceIndex, ' {');
+    }
+  } else if (isClassProtoAssignExpression(node)) {
+    if (!replaceBetween(patcher, parentNode.assignee, node, ' : ', ' = ')) {
+      if (!replaceBetween(patcher, parentNode.assignee, node, ': ', ' = ')) {
+        replaceBetween(patcher, parentNode.assignee, node, ':', ' = ');
+      }
+    }
+  } else if (isStaticMethod(node)) {
+    var assignee = node.assignee;
+
+    assignee._rewritten = true;
+    assignee.expression._rewritten = true;
+    patcher.overwrite(assignee.expression.range[0], assignee.range[1] - assignee.memberName.length, 'static ');
+    patcher.remove(assignee.range[1], node.expression.range[0]);
+  }
+}
+
+/**
+ * Patches the end of class-related nodes.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchClassEnd(node, patcher) {
+  if (node.type === 'Class') {
+    if (node.body) {
+      appendClosingBrace(node, patcher);
+    } else {
+      if (!node.nameAssignee) {
+        patcher.insert(node.range[0], '(');
+        patcher.insert(node.range[1], ' {})');
+      } else {
+        patcher.insert(node.range[1], ' {}');
+      }
+    }
+  } else if (isClassProtoAssignExpression(node)) {
+    patcher.insert(node.range[1], ';');
+  }
 }
 
 /**
  * @param {Object} node
  * @returns {boolean}
  */
+function isClassProtoAssignExpression(node) {
+  var parentNode = node.parentNode;
 
-function isStaticMethod(node) {
-  if (node.type !== 'AssignOp') {
-    return false;
-  }
-
-  var assignee = node.assignee;
-
-  if (assignee.type !== 'MemberAccessOp') {
-    return false;
-  }
-
-  if (node.expression.type !== 'Function') {
-    return false;
-  }
-
-  return assignee.expression.type === 'This' || assignee.expression.type === 'Identifier' && assignee.expression.data === node.parentNode.parentNode.name.data;
+  return parentNode && parentNode.type === 'ClassProtoAssignOp' && node === parentNode.expression && node.type !== 'Function';
 }
-},{}],88:[function(require,module,exports){
+
+var UNLESS = 'unless';
+
+/**
+ * Adds punctuation to `if` statements and converts `if` expressions.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchConditionalStart(node, patcher) {
+  if (node.type === 'Conditional' && isExpressionResultUsed(node)) {
+    // i.e. remove "if" or "unless"
+    patcher.overwrite(node.range[0], node.condition.range[0], '');
+  } else if (isUnlessConditional(node, patcher.original)) {
+    patcher.overwrite(node.range[0], node.range[0] + UNLESS.length, 'if');
+  } else if (isCondition(node) && isExpressionResultUsed(node.parentNode)) {
+    // nothing to do
+    return;
+  } else if (isCondition(node)) {
+    var isSurroundedByParens = isSurroundedBy(node, '(', patcher.original);
+    var isUnless = isUnlessConditional(node.parentNode, patcher.original);
+    var inserted = '';
+    var offset = node.range[0];
+
+    if (isUnless) {
+      var conditionNeedsParens = requiresParentheses(node.expression);
+      if (conditionNeedsParens) {
+        if (isSurroundedByParens) {
+          // e.g. `unless (a + b)` -> `if (!(a + b)) {`
+          inserted += '!(';
+        } else {
+          // e.g. `unless a + b` -> `if (!(a + b)) {`
+          inserted += '(!(';
+        }
+      } else {
+        if (isSurroundedByParens) {
+          // e.g. `unless (a)` -> `if (!a) {`
+          inserted += '!';
+        } else {
+          // e.g. `unless a` -> `if (!a) {`
+          inserted += '(!';
+        }
+      }
+    } else if (isSurroundedByParens) {
+      // e.g. `if (a)` -> `if (a) {`
+      inserted = '';
+    } else {
+      // e.g. `if a` -> `if (a) {`
+      inserted += '(';
+    }
+
+    patcher.insert(offset, inserted);
+  }
+}
+
+/**
+ * Adds punctuation to `if` statements and converts `if` expressions.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchConditionalEnd(node, patcher) {
+  if (isCondition(node)) {
+    if (isExpressionResultUsed(node.parentNode)) {
+      replaceBetween(patcher, node, node.parentNode.consequent, 'then', '?');
+    } else {
+      if (!replaceBetween(patcher, node, node.parentNode.consequent, 'then ', '')) {
+        replaceBetween(patcher, node, node.parentNode.consequent, 'then', '');
+      }
+      var parens = isSurroundedBy(node, '(', patcher.original);
+      var inserted = parens ? ' {' : ') {';
+      if (isUnlessConditional(node.parentNode, patcher.original) && requiresParentheses(node.expression)) {
+        inserted = ')' + inserted;
+      }
+      var nodeRange = trimmedNodeRange(node, patcher.original);
+      patcher.insert(nodeRange[1] + (parens ? ')'.length : 0), inserted);
+    }
+  } else if (isConsequent(node)) {
+    if (isExpressionResultUsed(node.parentNode)) {
+      if (node.parentNode.alternate) {
+        // e.g. `a(if b then c else d)` -> `a(b ? c : d)`
+        //                     ^^^^                 ^
+        replaceBetween(patcher, node, node.parentNode.alternate, 'else', ':');
+      } else {
+        // e.g. `a(if b then c)` -> `a(b ? c : undefined)
+        //                                  ^^^^^^^^^^^^
+        var nodeRange = trimmedNodeRange(node, patcher.original);
+        patcher.insert(nodeRange[1], ' : undefined');
+      }
+    } else if (node.parentNode.alternate) {
+      // Only add the opening curly for the alternate if it is not a conditional,
+      // otherwise the handler for the end of its condition will add it.
+      replaceBetween(patcher, node, node.parentNode.alternate, 'else', '} else' + (node.parentNode.alternate.type === 'Conditional' ? '' : ' {'));
+    }
+  } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
+    if (!isExpressionResultUsed(node)) {
+      // Close the conditional if it isn't handled by closing an `else if`.
+      if (isOneLineConditionAndConsequent(node, patcher.original)) {
+        var nodeRange = trimmedNodeRange(node, patcher.original);
+        patcher.insert(nodeRange[1], ' }');
+      } else {
+        appendClosingBrace(node, patcher);
+      }
+    }
+  }
+}
+
+/**
+ * Determines whether a node is a Conditional node's condition.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isCondition(node) {
+  return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.condition === node : false;
+}
+
+/**
+ * @param {Object} node
+ * @param {string} source
+ * @returns {boolean}
+ */
+function isUnlessConditional(node, source) {
+  return node.type === 'Conditional' && source.slice(node.range[0], node.range[0] + UNLESS.length) === UNLESS;
+}
+
+/**
+ * Determines whether a node is a Conditional node's consequent.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isConsequent(node) {
+  return node.parentNode ? node.parentNode.type === 'Conditional' && node.parentNode.consequent === node : false;
+}
+
+/**
+ * Determines whether the condition and consequent are on the same line.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isOneLineConditionAndConsequent(node, source) {
+  var condition = node.condition;
+  var consequent = node.consequent;
+
+  if (isUnlessConditional(node, source)) {
+    condition = condition.expression;
+  }
+
+  return condition.line === consequent.line;
+}
+
+/**
+ * Prepares the start of an existential operator node.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchExistentialOperatorStart(node, patcher) {
+  if (node.type === 'UnaryExistsOp') {
+    var expression = node.expression;
+    if (expression.type !== 'Identifier' && needsParens(node)) {
+      patcher.insert(node.range[0], '(');
+    }
+  }
+}
+
+/**
+ * Prepares the start of an existential operator node.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchExistentialOperatorEnd(node, patcher) {
+  if (node.type === 'UnaryExistsOp') {
+    var expression = node.expression;
+    var parens = needsParens(node);
+    if (expression.type === 'Identifier') {
+      var checked = expression.data;
+      var replacement = 'typeof ' + checked + ' !== "undefined" && ' + checked + ' !== null';
+      if (parens) {
+        replacement = '(' + replacement + ')';
+      }
+      patcher.overwrite(node.range[0], node.range[1], replacement);
+    } else {
+      var replacement = ' != null';
+      if (parens) {
+        replacement += ')';
+      }
+      patcher.overwrite(node.range[1] - 1, node.range[1], replacement);
+    }
+  }
+}
+
+/**
+ * Determines whether the given node needs parentheses.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function needsParens(node) {
+  return node.parentNode.type !== 'Block';
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchForStart(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (node.type === 'ForIn') {
+    patcher.overwrite(node.range[0] + 'for '.length, (node.step.range || node.target.range)[1], '(' + loopHeader(node) + ') {');
+  } else if (node.type === 'ForOf') {
+    // e.g. `for key of object` -> `for (var key in object)`
+    //                                  ^^^^^
+    patcher.insert(node.range[0] + 'for '.length, '(var ');
+  } else if (parentNode && parentNode.type === 'ForOf' && node === parentNode.target) {
+    // e.g. `for key of object` -> `for (var key in object)`
+    //              ^^^^                        ^^^^
+    replaceBetween(patcher, parentNode.keyAssignee, node, ' of ', ' in ');
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchForEnd(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (isForLoopTarget(node)) {
+    if (parentNode.type === 'ForIn' && node.type !== 'Range') {
+      prependLinesToBlock(patcher, [parentNode.valAssignee.raw + ' = ' + node.raw + '[' + parentNode.keyAssignee.raw + '];'], parentNode.body);
+    } else if (parentNode.type === 'ForOf') {
+      // e.g. `for key of object` -> `for (var key in object) {`
+      //                                                    ^^^
+      patcher.insert(rangeIncludingParentheses(node, patcher.original)[1], ') {');
+    }
+  }
+
+  if (node.type === 'ForOf' || node.type === 'ForIn') {
+    appendClosingBrace(node, patcher);
+  }
+}
+
+/**
+ * Determines whether the given node is the target of a `for` loop.
+ *
+ * @param {Object} node ForOf|ForIn
+ * @returns {boolean}
+ */
+function isForLoopTarget(node) {
+  var parentNode = node.parentNode;
+
+  if (!parentNode) {
+    return false;
+  }
+
+  switch (parentNode.type) {
+    case 'ForOf':
+    case 'ForIn':
+      return node === parentNode.target;
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * Generates the init, test, and update components for a JavaScript `for` loop.
+ *
+ * @param {Object} node ForIn
+ * @returns {string}
+ */
+function loopHeader(node) {
+  var valAssignee = node.valAssignee;
+  var target = node.target;
+
+  if (target.type === 'Range') {
+    // i.e. `for i in [a..b]`
+    var left = target.left;
+    var right = target.right;
+    var isInclusive = target.isInclusive;
+
+    var counter = valAssignee.raw;
+    var result = 'var ' + counter + ' = ' + left.raw + '; ';
+    if (left.type === 'Int' && right.type === 'Int') {
+      // i.e. `for i in [0..10]`
+      if (left.data < right.data) {
+        result += counter + ' ' + (isInclusive ? '<=' : '<') + ' ' + right.raw + '; ' + loopUpdate(node, counter);
+      } else {
+        result += counter + ' ' + (isInclusive ? '>=' : '>') + ' ' + right.raw + '; ' + loopUpdate(node, counter, true);
+      }
+    } else {
+      // i.e. `for i in [a..b]`
+      result += left.raw + ' < ' + right.raw + ' ? ' + counter + ' ' + (isInclusive ? '<=' : '<') + ' ' + right.raw + ' : ' + counter + ' ' + (isInclusive ? '>=' : '>') + ' ' + right.raw + '; ';
+      result += left.raw + ' < ' + right.raw + ' ? ' + loopUpdate(node, counter) + ' : ' + loopUpdate(node, counter, true);
+    }
+
+    return result;
+  } else {
+    // i.e. `for element in list`
+    var valueBinding = valAssignee.raw;
+    var counter = node.keyAssignee.raw;
+    var result = 'var ' + counter + ' = ';
+    if (loopStepCount(node) > 0) {
+      result += '0, ' + valueBinding + '; ' + counter + ' < ' + target.raw + '.length; ' + loopUpdate(node, counter);
+    } else {
+      result += target.raw + '.length - 1, ' + valueBinding + '; ' + counter + ' >= 0; ' + loopUpdate(node, counter, true);
+    }
+    return result;
+  }
+}
+
+/**
+ * Generates an update expression of a JavaScript `for` loop.
+ *
+ * @param {Object} node
+ * @param {string} counter
+ * @param {boolean} descending
+ * @returns {string}
+ */
+function loopUpdate(node, counter) {
+  var descending = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+
+  var hasExplicitStep = !!node.step.range;
+  var stepCount = loopStepCount(node);
+
+  if (descending && !hasExplicitStep) {
+    stepCount = -stepCount;
+  }
+
+  if (stepCount === 1) {
+    return counter + '++';
+  }
+
+  if (stepCount === -1) {
+    return counter + '--';
+  }
+
+  if (stepCount > 0) {
+    return counter + ' += ' + stepCount;
+  }
+
+  return counter + ' -= ' + -stepCount;
+}
+
+/**
+ * Determines the step count of a for-in loop, e.g. `for a in b by 2` returns 2.
+ *
+ * @param {Object} node ForIn
+ * @returns {number}
+ */
+function loopStepCount(node) {
+  if (node.step.type === 'UnaryNegateOp') {
+    return -node.step.expression.data;
+  } else {
+    return node.step.data;
+  }
+}
+
+/**
+ * Determines whether the given node is a statement.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isStatement(node) {
+  if (!node || !node.parentNode) {
+    return false;
+  }
+
+  if (node.parentNode.type !== 'Block') {
+    return false;
+  }
+
+  if (isFunction(node.parentNode.parentNode)) {
+    // If it's the last statement then it's an implicit return.
+    var statements = node.parentNode.statements;
+    return statements[statements.length - 1] !== node;
+  }
+
+  // It's inside a block, but not the last statement of a function,
+  // so it's a statement.
+  return true;
+}
+
+/**
+ * Patches the start of arrow functions to make them into JavaScript functions.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchFunctionStart(node, patcher) {
+  switch (node.type) {
+    case 'Function':
+      if (!isMethodDeclaration(node)) {
+        patchUnboundFunctionStart(node, patcher, isConciseObjectMethod(node));
+      }
+      break;
+
+    case 'BoundFunction':
+      if (!isMethodDeclaration(node)) {
+        patchBoundFunctionStart(node, patcher);
+      }
+      break;
+
+    case 'ClassProtoAssignOp':
+      if (node.expression.type === 'Function') {
+        patchConciseUnboundFunctionStart(node, patcher);
+      }
+      break;
+
+    case 'AssignOp':
+      if (isStaticMethod(node)) {
+        patchConciseUnboundFunctionStart(node, patcher);
+      }
+      break;
+
+    case 'Constructor':
+      patchConciseUnboundFunctionStart(node, patcher);
+      break;
+  }
+}
+
+/**
+ * Determines whether a node is a method declaration.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isMethodDeclaration(node) {
+  return isFunction(node) && (node.parentNode.type === 'ClassProtoAssignOp' || node.parentNode.type === 'Constructor' || isStaticMethod(node.parentNode));
+}
+
+/**
+ * Determines whether a node is a concise method declaration.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isConciseObjectMethod(node) {
+  return isFunction(node) && node.parentNode.type === 'ObjectInitialiserMember';
+}
+
+/**
+ * Converts unbound functions into regular functions.
+ *
+ * @param {Object} node Function
+ * @param {MagicString} patcher
+ * @param {boolean=} concise
+ */
+function patchUnboundFunctionStart(node, patcher) {
+  var concise = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+
+  var start = node.range[0];
+  var fn = concise ? '' : 'function';
+  if (patcher.slice(start, start + 2) === '->') {
+    patcher.overwrite(start, start + 2, '' + (isStatement(node) ? '(' : '') + fn + '() {');
+  } else {
+    patcher.insert(start, isStatement(node) ? '(' + fn : fn);
+
+    var arrowStart = patcher.original.indexOf('->', start);
+
+    if (arrowStart < 0) {
+      throw new Error('unable to find `->` for function starting at line ' + node.line + ', column ' + node.column);
+    }
+
+    patcher.overwrite(arrowStart, arrowStart + 2, '{');
+  }
+}
+
+/**
+ * Converts bound functions into arrow functions.
+ *
+ * @param {Object} node BoundFunction
+ * @param {MagicString} patcher
+ */
+function patchBoundFunctionStart(node, patcher) {
+  if (patcher.slice(node.range[0], node.range[0] + 1) !== '(') {
+    patcher.insert(node.range[0], '() ');
+  }
+
+  if (node.body.type === 'Block') {
+    var arrowStart = node.parameters.length > 0 ? node.parameters[node.parameters.length - 1].range[1] : node.range[0];
+
+    arrowStart = patcher.original.indexOf('=>', arrowStart);
+
+    if (arrowStart < 0) {
+      throw new Error('unable to find `=>` for function starting at line ' + node.line + ', column ' + node.column);
+    }
+
+    patcher.insert(arrowStart + 2, ' {');
+  } else if (node.body.type === 'SeqOp') {
+    // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
+    patcher.insert(node.body.range[0], '(');
+  }
+}
+
+/**
+ * Converts bound functions into arrow functions.
+ *
+ * @param {Object} node ClassProtoAssignOp|Constructor
+ * @param {MagicString} patcher
+ */
+function patchConciseUnboundFunctionStart(node, patcher) {
+  var keyRange = node.type === 'Constructor' ? [node.range[0], node.range[0] + 'constructor'.length] : node.assignee.range;
+  var fn = node.expression;
+  var start = fn.range[0];
+  if (patcher.slice(start, start + 2) === '->') {
+    patcher.overwrite(keyRange[1], start + 2, '() {');
+  } else {
+    patcher.overwrite(keyRange[1], fn.range[0], '');
+
+    var arrowStart = patcher.original.indexOf('->', start);
+
+    if (arrowStart < 0) {
+      throw new Error('unable to find `->` for function starting at line ' + fn.line + ', column ' + fn.column);
+    }
+
+    patcher.overwrite(arrowStart, arrowStart + 2, '{');
+  }
+}
+
+/**
+ * Patches the end of arrow functions to make them into JavaScript functions.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchFunctionEnd(node, patcher) {
+  if (isFunction(node)) {
+    var insertionPoint = trimmedNodeRange(node, patcher.original)[1];
+    var functionClose = '';
+
+    if (isMultiline(patcher.original, node)) {
+      insertionPoint = appendClosingBrace(node, patcher);
+    } else if (node.type === 'Function') {
+      functionClose = node.body ? ' }' : '}';
+    }
+
+    if (node.type === 'Function' && isStatement(node)) {
+      functionClose += ')';
+    } else if (node.type === 'BoundFunction' && node.body.type === 'SeqOp') {
+      // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
+      functionClose += ')';
+    }
+
+    if (shouldHaveTrailingSemicolon(node)) {
+      // Handle the closing semicolon here because otherwise it's difficult to
+      // reproduce the insertion position in `patchSemicolons`.
+      functionClose += ';';
+    }
+
+    if (functionClose) {
+      patcher.insert(insertionPoint, functionClose);
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchObjectStart(node, patcher) {
+  if (node.type === 'ObjectInitialiser') {
+    if (!isCall(node.parentNode)) {
+      if (isObjectAsStatement(node)) {
+        patcher.insert(node.range[0], '(');
+      }
+      if (isImplicitObject(node, patcher.original)) {
+        patcher.insert(node.range[0], '{');
+      }
+    } else {
+      if (node !== node.parentNode.arguments[0]) {
+        // Not the first argument, which is handled by `patchCalls`, so we handle it.
+        if (isImplicitObject(node, patcher.original)) {
+          patcher.insert(node.range[0], '{');
+        }
+      }
+    }
+  } else if (node.type === 'ObjectInitialiserMember' && node.expression.type === 'Function') {
+    patcher.overwrite(node.key.range[1], node.expression.range[0], '');
+  } else if (isShorthandThisObjectMember(node)) {
+    // `{ @a }` -> `{ a: @a }`
+    patcher.insert(node.range[0], node.key.data + ': ');
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchObjectEnd(node, patcher) {
+  if (node.type === 'ObjectInitialiser') {
+    if (!isCall(node.parentNode)) {
+      if (patcher.original[node.range[0]] !== '{') {
+        patcher.insert(node.range[1], isObjectAsStatement(node) ? '})' : '}');
+      } else if (isObjectAsStatement(node)) {
+        patcher.insert(node.range[1], ')');
+      }
+    } else {
+      if (node !== node.parentNode.arguments[node.parentNode.arguments.length - 1]) {
+        // Not the last argument, which is handled by `patchCalls`, so we handle it.
+        if (isImplicitObject(node, patcher.original)) {
+          patcher.insert(node.range[1], '}');
+        }
+      }
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isObjectAsStatement(node) {
+  if (node.parentNode.type !== 'Block' && !isConsequentOrAlternate(node)) {
+    return false;
+  }
+
+  return !isImplicitlyReturned(node);
+}
+
+/**
+ * Patches rest parameters.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchRestStart(node, patcher) {
+  if (node.type === 'Rest') {
+    patcher.insert(node.range[0], '...');
+  }
+}
+
+/**
+ * Patches rest parameters.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchRestEnd(node, patcher) {
+  if (node.type === 'Rest') {
+    patcher.overwrite(node.range[1] - '...'.length, node.range[1], '');
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchSliceStart(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (parentNode && parentNode.type === 'Slice') {
+    if (parentNode.left === node) {
+      replaceBetween(patcher, parentNode.expression, node, '[', '.slice(');
+    } else if (parentNode.right === node) {
+      replaceBetween(patcher, parentNode.left, node, parentNode.isInclusive ? '..' : '...', ', ');
+
+      if (parentNode.isInclusive) {
+        if (node.type === 'Int') {
+          patcher.overwrite(node.range[0], node.range[1], '' + (node.data + 1));
+        } else {
+          patcher.insert(node.range[1], ' + 1');
+        }
+      }
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchSliceEnd(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (parentNode && parentNode.type === 'Slice') {
+    if (parentNode.left === node) {
+      if (!parentNode.right) {
+        patcher.overwrite(node.range[1], parentNode.range[1], ')');
+      }
+    } else if (parentNode.right === node) {
+      assert.strictEqual(patcher.original[parentNode.range[1] - 1], ']', 'last character of Slice node must be "]"');
+      patcher.overwrite(parentNode.range[1] - 1, parentNode.range[1], ')');
+    } else if (parentNode.expression === node && !parentNode.left && !parentNode.right) {
+      patcher.overwrite(node.range[1], parentNode.range[1], '.slice()');
+    }
+  }
+}
+
+/**
+ * Patches spread arguments.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchSpreadStart(node, patcher) {
+  if (node.type === 'Spread') {
+    patcher.insert(node.range[0], '...');
+  }
+}
+
+/**
+ * Patches spread arguments.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchSpreadEnd(node, patcher) {
+  if (node.type === 'Spread') {
+    patcher.overwrite(node.range[1] - '...'.length, node.range[1], '');
+  }
+}
+
+/**
+ * Patches rest parameters.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchSwitchStart(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (isExpressionlessSwitch(node)) {
+    // e.g. `switch` by itself. we add '{' here because there's no expression to add it after in patchSwitchEnd.
+    patcher.insert(node.range[0] + 'switch'.length, ' (false) {');
+  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.expression) {
+    // e.g. `switch a` -> `switch (a`
+    patcher.insert(node.range[0], '(');
+  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.alternate) {
+    // e.g. `else` -> `default:`
+    var lastCase = parentNode.cases[parentNode.cases.length - 1];
+    replaceBetween(patcher, lastCase, node, 'else', 'default:');
+  } else if (node.type === 'SwitchCase') {
+    // e.g. `when a` -> `case a`
+    var caseString = isExpressionlessSwitch(parentNode) ? 'case !(' : 'case ';
+    patcher.overwrite(node.range[0], node.range[0] + 'when '.length, caseString);
+  } else if (parentNode && parentNode.type === 'SwitchCase') {
+    var conditionIndex = parentNode.conditions.indexOf(node);
+    if (conditionIndex >= 1) {
+      // e.g. in `when a, b` changes `, b` -> ` case b`
+      var previousCondition = parentNode.conditions[conditionIndex - 1];
+      var caseString = isExpressionlessSwitch(parentNode.parentNode) ? ' case !(' : ' case ';
+      if (!replaceBetween(patcher, previousCondition, node, ', ', caseString)) {
+        replaceBetween(patcher, previousCondition, node, ',', caseString);
+      }
+    } else if (conditionIndex < 0) {
+      // `when` body
+      if (!isMultiline(patcher.original, parentNode)) {
+        // e.g. removes `then ` in `when a then b`
+        replaceBetween(patcher, parentNode.conditions[parentNode.conditions.length - 1], node, 'then ', '');
+      }
+    }
+  }
+}
+
+/**
+ * Patches rest parameters.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchSwitchEnd(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (node.type === 'Switch') {
+    // close the switch block
+    appendClosingBrace(node, patcher);
+  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.expression) {
+    // close the switch expression and start the switch block
+    patcher.insert(node.range[1], ') {');
+  } else if (parentNode && parentNode.type === 'Switch' && node === parentNode.alternate) {
+    if (node.type !== 'Block') {
+      // e.g. in `else a` adds `;` after `a`
+      patcher.insert(node.range[1], ';');
+    }
+  } else if (parentNode && parentNode.type === 'SwitchCase') {
+    var conditionIndex = parentNode.conditions.indexOf(node);
+    if (conditionIndex >= 0) {
+      // e.g. in `when a, b` adds `:` after `a` and `b`
+      //      or, for expression-less switches, closes the negating parentheses too
+      patcher.insert(node.range[1], isExpressionlessSwitch(parentNode.parentNode) ? '):' : ':');
+    } else if (node === parentNode.consequent) {
+      if (isMultiline(patcher.original, parentNode)) {
+        if (!isImplicitlyReturned(node.statements[node.statements.length - 1])) {
+          // adds `break;` on a new line
+          var trimmedRange = trimmedNodeRange(node, patcher.original);
+          patcher.insert(trimmedRange[1], '\n' + adjustIndent(patcher.original, parentNode.range[0], 1) + 'break;');
+        }
+      } else {
+        // e.g. in `when a then b` adds `; break;` after `b`
+        patcher.insert(node.range[1], isImplicitlyReturned(node) ? ';' : '; break;');
+      }
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isExpressionlessSwitch(node) {
+  return node.type === 'Switch' && !node.expression;
+}
+
+var LPAREN = '(';
+var RPAREN = ')';
+
+/**
+ * Wraps throw expressions in an IIFE.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchThrowStart(node, patcher) {
+  if (isThrowExpression(node)) {
+    var pos = node.range[0];
+    var str = '() => { ';
+    if (patcher.original.slice(pos - LPAREN.length, pos) !== LPAREN) {
+      // Doesn't start with a parenthesis, so add it to the start.
+      str += LPAREN;
+    }
+    patcher.insert(pos, str);
+  }
+}
+
+/**
+ * Wraps throw expressions in an IIFE.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchThrowEnd(node, patcher) {
+  if (isThrowExpression(node)) {
+    var pos = node.range[1];
+    var str = '; })(';
+    if (patcher.slice(pos, pos + RPAREN.length) !== RPAREN) {
+      // Doesn't end with a parenthesis, so add it to the end.
+      str += RPAREN;
+    }
+    patcher.insert(pos, str);
+  }
+}
+
+/**
+ * Determines whether a node is a `throw` used in an expression context.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isThrowExpression(node) {
+  if (node.type !== 'Throw') {
+    return false;
+  }
+
+  switch (node.parentNode.type) {
+    case 'Block':
+      return false;
+
+    case 'Function':
+    case 'BoundFunction':
+      return node.parentNode.body !== node;
+
+    case 'Conditional':
+      return isExpressionResultUsed(node.parentNode);
+
+    default:
+      return true;
+  }
+}
+
+/**
+ * Finds the last index of a string inside source code ignoring comments.
+ * Returns -1 if no match is found.
+ *
+ * @param {string} source
+ * @param {string} string
+ * @param {number=} fromIndex
+ * @returns {number}
+ */
+function lastIndexOfIgnoringComments(source, string) {
+  var fromIndex = arguments.length <= 2 || arguments[2] === undefined ? source.length : arguments[2];
+
+  var ranges = rangesOfNonComments(source);
+
+  for (var i = ranges.length - 1; i >= 0; i--) {
+    var _ranges$i = ranges[i];
+    var start = _ranges$i.start;
+    var end = _ranges$i.end;
+
+    if (fromIndex < start) {
+      continue;
+    }
+    var index = source.slice(start, end).lastIndexOf(string, fromIndex - start);
+    if (index !== -1) {
+      return start + index;
+    }
+  }
+
+  return -1;
+}
+
+/**
+ * Adds punctuation to `try` statements.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchTryStart(node, patcher) {
+  if (node.type === 'Try') {
+    patcher.insert(node.range[0] + 'try'.length, ' {');
+  } else if (node.parentNode && node.parentNode.type === 'Try') {
+    if (node.parentNode.catchAssignee === node) {
+      patcher.insert(node.range[0], '(');
+      patcher.insert(node.range[1], ') {');
+    } else if (node.parentNode.finallyBody === node) {
+      var finallyIndex = lastIndexOfIgnoringComments(patcher.original, 'finally', node.parentNode.finallyBody.range[0] - 1);
+      patcher.insert(finallyIndex + 'finally'.length, ' {');
+    }
+  }
+}
+
+/**
+ * Adds punctuation to `try` statements.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchTryEnd(node, patcher) {
+  if (node.type === 'Try') {
+    appendClosingBrace(node, patcher);
+  } else if (node.parentNode && node.parentNode.type === 'Try') {
+    if (node.parentNode.body === node) {
+      var closeBraceIndex = undefined;
+      var source = patcher.original;
+      if (node.parentNode.catchAssignee) {
+        closeBraceIndex = lastIndexOfIgnoringComments(source, 'catch', node.parentNode.catchAssignee.range[0] - 1);
+      } else {
+        closeBraceIndex = lastIndexOfIgnoringComments(source, 'finally', node.parentNode.finallyBody.range[0] - 1);
+      }
+      patcher.insert(closeBraceIndex, '} ');
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchWhileStart(node, patcher) {
+  if (isWhileCondition(node)) {
+    if (!isSurroundedBy(node, '(', patcher.original)) {
+      patcher.insert(node.range[0], '(');
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchWhileEnd(node, patcher) {
+  if (isWhileCondition(node)) {
+    if (isSurroundedBy(node, '(', patcher.original)) {
+      patcher.insert(node.range[1] + ')'.length, ' {');
+    } else {
+      patcher.insert(node.range[1], ') {');
+    }
+  } else if (node.type === 'While') {
+    appendClosingBrace(node, patcher);
+  }
+}
+
+/**
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isWhileCondition(node) {
+  var parentNode = node.parentNode;
+
+  if (!parentNode) {
+    return false;
+  } else if (parentNode.type !== 'While') {
+    return false;
+  } else {
+    return parentNode.condition === node;
+  }
+}
+
+/**
+ * Run the script with the user-supplied arguments.
+ *
+ * @param {string[]} args
+ */
+function run(args) {
+  var input = parseArguments(args);
+
+  if (input.paths.length) {
+    runWithPaths(input.paths);
+  } else {
+    runWithStream(process.stdin, process.stdout);
+  }
+}
+
+/**
+ * @param {string[]} args
+ * @returns {{paths: string[]}}
+ */
+function parseArguments(args) {
+  var paths = /** @type string[] */[];
+
+  for (var i = 0; i < args.length; i++) {
+    var arg = args[i];
+    switch (arg) {
+      case '-h':
+      case '--help':
+        usage();
+        process.exit(0);
+        break;
+
+      default:
+        paths.push(arg);
+        break;
+    }
+  }
+
+  return { paths: paths };
+}
+
+/**
+ * Run decaffeinate on the given paths, changing them in place.
+ *
+ * @param {string[]} paths
+ * @param {?function(Error[])=} callback
+ */
+function runWithPaths(paths, callback) {
+  var errors = [];
+  var index = 0;
+
+  function processPath(path$$) {
+    var outputPath = path.join(path.dirname(path$$), path.basename(path$$, path.extname(path$$))) + '.js';
+    runWithStream(fs.createReadStream(path$$, { encoding: 'utf8' }), fs.createWriteStream(outputPath, { encoding: 'utf8' }), function (err) {
+      if (err) {
+        errors.push(err);
+      }
+      processNext();
+    });
+  }
+
+  function processNext() {
+    if (index < paths.length) {
+      processPath(paths[index++]);
+    } else if (callback) {
+      callback(errors);
+    }
+  }
+
+  processNext();
+}
+
+/**
+ * Run decaffeinate reading from input and writing to corresponding output.
+ *
+ * @param {ReadableStream} input
+ * @param {WritableStream} output
+ * @param {function(?Error)=} callback
+ */
+function runWithStream(input, output, callback) {
+  var error;
+  var data = '';
+
+  input.setEncoding('utf8');
+
+  input.on('data', function (chunk) {
+    data += chunk;
+  });
+
+  input.on('end', function () {
+    output.end(convert(data), function () {
+      if (callback) {
+        callback(error);
+      }
+    });
+  });
+
+  output.on('error', function (err) {
+    error = err;
+  });
+}
+
+/**
+ * Print usage help.
+ */
+function usage() {
+  var exe = path.basename(process.argv[1]);
+  console.log('%s [OPTIONS] PATH [PATH …]', exe);
+  console.log('%s [OPTIONS] < INPUT', exe);
+  console.log();
+  console.log('Move your CoffeeScript source to JavaScript using ES6 syntax.');
+  console.log();
+  console.log('OPTIONS');
+  console.log();
+  console.log('  -h, --help  Display this help message.');
+  console.log();
+  console.log('EXAMPLES');
+  console.log();
+  console.log('  # Convert a .coffee file to a .js file.');
+  console.log('  $ decaffeinate index.coffee');
+  console.log();
+  console.log('  # Pipe an example from the command-line.');
+  console.log('  $ echo "a = 1" | decaffeinate');
+  console.log();
+  console.log('  # Redirect input from a file.');
+  console.log('  $ decaffeinate < index.coffee');
+}
+
+/**
+ * Decaffeinate CoffeeScript source code by adding optional punctuation.
+ *
+ * @param source
+ * @returns {string}
+ */
+function convert(source) {
+  var ast = parse(source);
+  var patcher = new MagicString(source);
+
+  var wasRewritten = false;
+
+  traverse(ast, function (node) {
+    if (wasRewritten) {
+      return false;
+    }
+    wasRewritten = preprocessClass(node, patcher) || preprocessCompoundAssignment(node, patcher) || preprocessFor(node, patcher) || preprocessIn(node, patcher) || preprocessNegatableOps(node, patcher) || preprocessDo(node, patcher) || preprocessConditional(node, patcher) || preprocessBinaryExistentialOperator(node, patcher) || preprocessParameters(node, patcher) || preprocessRange(node, patcher) || preprocessSwitch(node, patcher) || preprocessSoakedFunctionApplication(node, patcher) || preprocessSoakedMemberAccessOp(node, patcher) || preprocessTry(node, patcher) || preprocessWhile(node, patcher) || preprocessChainedComparison(node, patcher);
+  });
+
+  if (wasRewritten) {
+    return convert(patcher.toString());
+  }
+
+  traverse(ast, function (node, descend) {
+    if (node._rewritten) {
+      return;
+    }
+
+    patchConditionalStart(node, patcher);
+    patchWhileStart(node, patcher);
+    patchRegularExpressions(node, patcher);
+    patchReturns(node, patcher);
+    patchOf(node, patcher);
+    patchKeywords(node, patcher);
+    patchThis(node, patcher);
+    patchPrototypeAccess(node, patcher);
+    patchStringInterpolation(node, patcher);
+    patchString(node, patcher);
+    patchForStart(node, patcher);
+    patchSliceStart(node, patcher);
+    patchCallOpening(node, patcher);
+    patchObjectStart(node, patcher);
+    patchDeclarations(node, patcher);
+    patchFunctionStart(node, patcher);
+    patchClassStart(node, patcher);
+    patchEquality(node, patcher);
+    patchThrowStart(node, patcher);
+    patchSpreadStart(node, patcher);
+    patchSwitchStart(node, patcher);
+    patchRestStart(node, patcher);
+    patchTryStart(node, patcher);
+    patchEmbeddedJavaScript(node, patcher);
+    patchExistentialOperatorStart(node, patcher);
+
+    descend(node);
+
+    patchTryEnd(node, patcher);
+    patchWhileEnd(node, patcher);
+    patchThrowEnd(node, patcher);
+    patchExistentialOperatorEnd(node, patcher);
+    patchFunctionEnd(node, patcher);
+    patchClassEnd(node, patcher);
+    patchForEnd(node, patcher);
+    patchObjectEnd(node, patcher);
+    patchConditionalEnd(node, patcher);
+    patchSliceEnd(node, patcher);
+    patchCallClosing(node, patcher);
+    patchSemicolons(node, patcher);
+    patchSequences(node, patcher);
+    patchCommas(node, patcher);
+    patchSpreadEnd(node, patcher);
+    patchSwitchEnd(node, patcher);
+    patchRestEnd(node, patcher);
+  });
+
+  patchComments(patcher);
+
+  return patcher.toString();
+}
+
+exports.convert = convert;
+exports.run = run;
+}).call(this,require('_process'))
+},{"_process":35,"assert":4,"coffee-script-redux":12,"detect-indent":21,"fs":6,"magic-string":32,"path":34,"repeating":36}],2:[function(require,module,exports){
 (function() {
   var StringScanner;
   StringScanner = (function() {
@@ -6664,7 +5098,7 @@ function isStaticMethod(node) {
   module.exports = StringScanner;
 }).call(this);
 
-},{}],89:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function (process,__filename){
 /** vim: et:ts=4:sw=4:sts=4
  * @license amdefine 1.0.0 Copyright (c) 2011-2015, The Dojo Foundation All Rights Reserved.
@@ -6969,7 +5403,7 @@ function amdefine(module, requireFn) {
 module.exports = amdefine;
 
 }).call(this,require('_process'),"/node_modules/amdefine/amdefine.js")
-},{"_process":121,"path":120}],90:[function(require,module,exports){
+},{"_process":35,"path":34}],4:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -7330,7 +5764,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":134}],91:[function(require,module,exports){
+},{"util/":48}],5:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -7456,9 +5890,9 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],92:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 
-},{}],93:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -9006,7 +7440,7 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":91,"ieee754":114,"is-array":116}],94:[function(require,module,exports){
+},{"base64-js":5,"ieee754":28,"is-array":30}],8:[function(require,module,exports){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var any, assignment, beingDeclared, cache$, cache$1, collectIdentifiers, concat, concatMap, CS, declarationsNeeded, declarationsNeededRecursive, defaultRules, difference, divMod, dynamicMemberAccess, enabledHelpers, envEnrichments, exports, expr, fn, foldl, foldl1, forceBlock, generateMutatingWalker, generateSoak, genSym, h, hasSoak, helperNames, helpers, inlineHelpers, intersect, isIdentifierName, isScopeBoundary, JS, jsReserved, makeReturn, makeVarDeclaration, map, mapChildNodes, memberAccess, needsCaching, nub, owns, partition, span, stmt, union, usedAsExpression, variableDeclarations;
 cache$ = require('./functional-helpers');
@@ -11465,7 +9899,7 @@ function isOwn$(o, p) {
   return {}.hasOwnProperty.call(o, p);
 }
 
-},{"./../package.json":105,"./functional-helpers":95,"./helpers":96,"./js-nodes":97,"./nodes":99}],95:[function(require,module,exports){
+},{"./../package.json":19,"./functional-helpers":9,"./helpers":10,"./js-nodes":11,"./nodes":13}],9:[function(require,module,exports){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var concat, foldl, map, nub, span;
 this.any = function (list, fn) {
@@ -11622,7 +10056,7 @@ function in$(member, list) {
   return false;
 }
 
-},{}],96:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (process){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var beingDeclared, cache$, cleanMarkers, colourise, COLOURS, concat, concatMap, CS, difference, envEnrichments, envEnrichments_, foldl, humanReadable, map, nub, numberLines, pointToErrorLocation, SUPPORTS_COLOUR, usedAsExpression, usedAsExpression_;
@@ -11823,7 +10257,7 @@ function in$(member, list) {
 }
 
 }).call(this,require('_process'))
-},{"./functional-helpers":95,"./nodes":99,"_process":121}],97:[function(require,module,exports){
+},{"./functional-helpers":9,"./nodes":13,"_process":35}],11:[function(require,module,exports){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var ArrayExpression, AssignmentExpression, BinaryExpression, BlockStatement, cache$, cache$1, CallExpression, createNode, ctor, difference, exports, FunctionDeclaration, FunctionExpression, GenSym, handleLists, handlePrimitives, Identifier, isStatement, Literal, LogicalExpression, MemberExpression, NewExpression, node, nodeData, Nodes, ObjectExpression, params, Program, SequenceExpression, SwitchCase, SwitchStatement, TryStatement, UnaryExpression, UpdateExpression, VariableDeclaration;
 difference = require('./functional-helpers').difference;
@@ -12300,7 +10734,7 @@ function in$(member, list) {
   return false;
 }
 
-},{"./functional-helpers":95}],98:[function(require,module,exports){
+},{"./functional-helpers":9}],12:[function(require,module,exports){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var CoffeeScript, Compiler, cscodegen, escodegen, escodegenFormat, ext, formatParserError, Nodes, Optimiser, Parser, pkg, Preprocessor;
 formatParserError = require('./helpers').formatParserError;
@@ -12426,7 +10860,7 @@ if (null != (null != require.extensions ? require.extensions['.node'] : void 0))
   }
 }
 
-},{"./../package.json":105,"./compiler":94,"./helpers":96,"./nodes":99,"./optimiser":100,"./parser":101,"./preprocessor":102,"./register":103,"cscodegen":106,"escodegen":108}],99:[function(require,module,exports){
+},{"./../package.json":19,"./compiler":8,"./helpers":10,"./nodes":13,"./optimiser":14,"./parser":15,"./preprocessor":16,"./register":17,"cscodegen":20,"escodegen":22}],13:[function(require,module,exports){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var ArrayInitialiser, Block, Bool, cache$, cache$1, Class, CompoundAssignOp, concat, concatMap, Conditional, createNodes, difference, exports, ForOf, FunctionApplications, Functions, GenSym, handleLists, handlePrimitives, HeregExp, Identifier, Identifiers, map, NegatedConditional, NewOp, Nodes, nub, ObjectInitialiser, Primitives, Range, RegExp, RegExps, Slice, StaticMemberAccessOps, Super, Switch, SwitchCase, union, While;
 cache$ = require('./functional-helpers');
@@ -13012,7 +11446,7 @@ function in$(member, list) {
   return false;
 }
 
-},{"./functional-helpers":95}],100:[function(require,module,exports){
+},{"./functional-helpers":9}],14:[function(require,module,exports){
 (function (global){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var all, any, beingDeclared, cache$, cache$1, concat, concatMap, CS, declarationsFor, defaultRules, difference, envEnrichments, exports, foldl, foldl1, isFalsey, isTruthy, makeDispatcher, mayHaveSideEffects, union, usedAsExpression;
@@ -13830,7 +12264,7 @@ function in$(member, list) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./functional-helpers":95,"./helpers":96,"./nodes":99}],101:[function(require,module,exports){
+},{"./functional-helpers":9,"./helpers":10,"./nodes":13}],15:[function(require,module,exports){
 module.exports = (function() {
   /*
    * Generated by PEG.js 0.8.0.
@@ -33640,7 +32074,7 @@ module.exports = (function() {
   };
 })();
 
-},{"../package.json":105,"./nodes":99}],102:[function(require,module,exports){
+},{"../package.json":19,"./nodes":13}],16:[function(require,module,exports){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var DEDENT, INDENT, pointToErrorLocation, Preprocessor, StringScanner, TERM, ws;
 pointToErrorLocation = require('./helpers').pointToErrorLocation;
@@ -33970,7 +32404,7 @@ this.Preprocessor = Preprocessor = function () {
   return Preprocessor;
 }();
 
-},{"./helpers":96,"StringScanner":88}],103:[function(require,module,exports){
+},{"./helpers":10,"StringScanner":2}],17:[function(require,module,exports){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var child_process, coffeeBinary, CoffeeScript, fork, fs, path, runModule;
 child_process = require('child_process');
@@ -34028,7 +32462,7 @@ function in$(member, list) {
   return false;
 }
 
-},{"./module":98,"./run":104,"child_process":92,"fs":92,"path":120}],104:[function(require,module,exports){
+},{"./module":12,"./run":18,"child_process":6,"fs":6,"path":34}],18:[function(require,module,exports){
 (function (process){
 // Generated by CoffeeScript 2.0.0-beta9-dev
 var CoffeeScript, formatSourcePosition, Module, patched, patchStackTrace, path, runMain, runModule, SourceMapConsumer;
@@ -34137,11 +32571,11 @@ module.exports = {
 };
 
 }).call(this,require('_process'))
-},{"./module":98,"_process":121,"module":92,"path":120,"source-map":123}],105:[function(require,module,exports){
+},{"./module":12,"_process":35,"module":6,"path":34,"source-map":37}],19:[function(require,module,exports){
 module.exports={
   "_args": [
     [
-      "coffee-script-redux@git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
+      "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
       "/Users/donovan/src/decaffeinate"
     ]
   ],
@@ -34160,8 +32594,8 @@ module.exports={
       "sshUrl": "git+ssh://git@github.com/michaelficarra/CoffeeScriptRedux.git",
       "type": "github"
     },
-    "name": "coffee-script-redux",
-    "raw": "coffee-script-redux@git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
+    "name": null,
+    "raw": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
     "rawSpec": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
     "scope": null,
     "spec": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
@@ -34171,9 +32605,9 @@ module.exports={
     "/"
   ],
   "_resolved": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git#ab93dc34c64cd11853fb8cb5a4f02c6b8fc3b26b",
-  "_shasum": "ba16d3521cbae55a493ff8bc9bc1f278f6e7416a",
+  "_shasum": "da3b016c3dc67406f8efcc53fa640b3b21d7d88c",
   "_shrinkwrap": null,
-  "_spec": "coffee-script-redux@git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
+  "_spec": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
   "_where": "/Users/donovan/src/decaffeinate",
   "author": {
     "name": "Michael Ficarra"
@@ -34241,7 +32675,7 @@ module.exports={
   "version": "2.0.0-beta9-dev"
 }
 
-},{}],106:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 // Generated by CoffeeScript 1.3.3
 (function() {
   var __hasProp = {}.hasOwnProperty,
@@ -34863,7 +33297,8 @@ module.exports={
 
 }).call(this);
 
-},{}],107:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
+/* eslint-disable guard-for-in */
 'use strict';
 var repeating = require('repeating');
 
@@ -34884,7 +33319,7 @@ function getMostUsed(indents) {
 		if (u > maxUsed || u === maxUsed && w > maxWeight) {
 			maxUsed = u;
 			maxWeight = w;
-			result = +n;
+			result = Number(n);
 		}
 	}
 
@@ -34958,7 +33393,7 @@ module.exports = function (str) {
 			}
 		} else if (current) {
 			// if the last action was an indent, increment the weight
-			current[1] += +isIndent;
+			current[1] += Number(isIndent);
 		}
 	});
 
@@ -34984,7 +33419,7 @@ module.exports = function (str) {
 	};
 };
 
-},{"repeating":122}],108:[function(require,module,exports){
+},{"repeating":36}],22:[function(require,module,exports){
 (function (global){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
@@ -37176,7 +35611,7 @@ module.exports = function (str) {
 /* vim: set sw=4 ts=4 et tw=80 : */
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./package.json":109,"estraverse":110,"esutils":113,"source-map":123}],109:[function(require,module,exports){
+},{"./package.json":23,"estraverse":24,"esutils":27,"source-map":37}],23:[function(require,module,exports){
 module.exports={
   "_args": [
     [
@@ -37279,7 +35714,7 @@ module.exports={
   "version": "1.2.0"
 }
 
-},{}],110:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
@@ -37970,7 +36405,7 @@ module.exports={
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],111:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -38062,7 +36497,7 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],112:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -38181,7 +36616,7 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"./code":111}],113:[function(require,module,exports){
+},{"./code":25}],27:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -38215,7 +36650,7 @@ module.exports={
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"./code":111,"./keyword":112}],114:[function(require,module,exports){
+},{"./code":25,"./keyword":26}],28:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -38301,7 +36736,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],115:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -38326,7 +36761,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],116:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 
 /**
  * isArray
@@ -38361,7 +36796,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],117:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 var numberIsNan = require('number-is-nan');
 
@@ -38369,946 +36804,946 @@ module.exports = Number.isFinite || function (val) {
 	return !(typeof val !== 'number' || numberIsNan(val) || val === Infinity || val === -Infinity);
 };
 
-},{"number-is-nan":119}],118:[function(require,module,exports){
+},{"number-is-nan":33}],32:[function(require,module,exports){
 (function (Buffer){
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('vlq')) :
-	typeof define === 'function' && define.amd ? define(['vlq'], factory) :
-	global.MagicString = factory(vlq);
-}(this, function (vlq) { 'use strict';
+'use strict';
 
-	function getRelativePath(from, to) {
-		var fromParts = from.split(/[\/\\]/);
-		var toParts = to.split(/[\/\\]/);
+var vlq = require('vlq');
 
-		fromParts.pop(); // get dirname
+var babelHelpers_classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
 
-		while (fromParts[0] === toParts[0]) {
-			fromParts.shift();
-			toParts.shift();
-		}
+var _btoa = undefined;
 
-		if (fromParts.length) {
-			var i = fromParts.length;
-			while (i--) fromParts[i] = '..';
-		}
+if (typeof window !== 'undefined' && typeof window.btoa === 'function') {
+	_btoa = window.btoa;
+} else if (typeof Buffer === 'function') {
+	/* global Buffer */
+	_btoa = function (str) {
+		return new Buffer(str).toString('base64');
+	};
+} else {
+	throw new Error('Unsupported environment: `window.btoa` or `Buffer` should be supported.');
+}
 
-		return fromParts.concat(toParts).join('/');
-	}
-	var _btoa;
+var btoa = _btoa;
 
-	if (typeof window !== 'undefined' && typeof window.btoa === 'function') {
-		_btoa = window.btoa;
-	} else if (typeof Buffer === 'function') {
-		_btoa = function (str) {
-			return new Buffer(str).toString('base64');
-		};
-	} else {
-		throw new Error('Unsupported environment: `window.btoa` or `Buffer` should be supported.');
-	}
+var SourceMap = (function () {
+	function SourceMap(properties) {
+		babelHelpers_classCallCheck(this, SourceMap);
 
-	var btoa = _btoa;
-	function __classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+		this.version = 3;
 
-	var SourceMap = (function () {
-		function SourceMap(properties) {
-			__classCallCheck(this, SourceMap);
-
-			this.version = 3;
-
-			this.file = properties.file;
-			this.sources = properties.sources;
-			this.sourcesContent = properties.sourcesContent;
-			this.names = properties.names;
-			this.mappings = properties.mappings;
-		}
-
-		SourceMap.prototype.toString = function toString() {
-			return JSON.stringify(this);
-		};
-
-		SourceMap.prototype.toUrl = function toUrl() {
-			return 'data:application/json;charset=utf-8;base64,' + btoa(this.toString());
-		};
-
-		return SourceMap;
-	})();
-
-	function getSemis(str) {
-		return new Array(str.split('\n').length).join(';');
+		this.file = properties.file;
+		this.sources = properties.sources;
+		this.sourcesContent = properties.sourcesContent;
+		this.names = properties.names;
+		this.mappings = properties.mappings;
 	}
 
-	function adjust(mappings, start, end, d) {
-		var i = end;
+	SourceMap.prototype.toString = function toString() {
+		return JSON.stringify(this);
+	};
 
-		if (!d) return; // replacement is same length as replaced string
+	SourceMap.prototype.toUrl = function toUrl() {
+		return 'data:application/json;charset=utf-8;base64,' + btoa(this.toString());
+	};
 
-		while (i-- > start) {
-			if (~mappings[i]) {
-				mappings[i] += d;
+	return SourceMap;
+})();
+
+function guessIndent(code) {
+	var lines = code.split('\n');
+
+	var tabbed = lines.filter(function (line) {
+		return (/^\t+/.test(line)
+		);
+	});
+	var spaced = lines.filter(function (line) {
+		return (/^ {2,}/.test(line)
+		);
+	});
+
+	if (tabbed.length === 0 && spaced.length === 0) {
+		return null;
+	}
+
+	// More lines tabbed than spaced? Assume tabs, and
+	// default to tabs in the case of a tie (or nothing
+	// to go on)
+	if (tabbed.length >= spaced.length) {
+		return '\t';
+	}
+
+	// Otherwise, we need to guess the multiple
+	var min = spaced.reduce(function (previous, current) {
+		var numSpaces = /^ +/.exec(current)[0].length;
+		return Math.min(numSpaces, previous);
+	}, Infinity);
+
+	return new Array(min + 1).join(' ');
+}
+
+function encodeMappings(original, str, mappings, hires, sourcemapLocations, sourceIndex, offsets, names, nameLocations) {
+	// store locations, for fast lookup
+	var lineStart = 0;
+	var locations = original.split('\n').map(function (line) {
+		var start = lineStart;
+		lineStart += line.length + 1; // +1 for the newline
+
+		return start;
+	});
+
+	var inverseMappings = invert(str, mappings);
+
+	var charOffset = 0;
+	var lines = str.split('\n').map(function (line) {
+		var segments = [];
+
+		var char = undefined; // TODO put these inside loop, once we've determined it's safe to do so transpilation-wise
+		var origin = undefined;
+		var lastOrigin = -1;
+		var location = undefined;
+		var nameIndex = undefined;
+
+		var i = undefined;
+
+		var len = line.length;
+		for (i = 0; i < len; i += 1) {
+			char = i + charOffset;
+			origin = inverseMappings[char];
+
+			nameIndex = -1;
+			location = null;
+
+			// if this character has no mapping, but the last one did,
+			// create a new segment
+			if (! ~origin && ~lastOrigin) {
+				location = getLocation(locations, lastOrigin + 1);
+
+				if (lastOrigin + 1 in nameLocations) nameIndex = names.indexOf(nameLocations[lastOrigin + 1]);
+			} else if (~origin && (hires || ~lastOrigin && origin !== lastOrigin + 1 || sourcemapLocations[origin])) {
+				location = getLocation(locations, origin);
 			}
-		}
-	}
 
-	var warned = false;
-
-	function blank(mappings, start, i) {
-		while (i-- > start) {
-			mappings[i] = -1;
-		}
-	}
-
-	function reverse(mappings, i) {
-		var result, location;
-
-		result = new Uint32Array(i);
-
-		while (i--) {
-			result[i] = -1;
-		}
-
-		i = mappings.length;
-		while (i--) {
-			location = mappings[i];
-
-			if (~location) {
-				result[location] = i;
+			if (location) {
+				segments.push({
+					generatedCodeColumn: i,
+					sourceIndex: sourceIndex,
+					sourceCodeLine: location.line,
+					sourceCodeColumn: location.column,
+					sourceCodeName: nameIndex
+				});
 			}
+
+			lastOrigin = origin;
 		}
 
-		return result;
-	}
+		charOffset += line.length + 1;
+		return segments;
+	});
 
-	function getLocation(locations, char) {
-		var i;
+	offsets.sourceIndex = offsets.sourceIndex || 0;
+	offsets.sourceCodeLine = offsets.sourceCodeLine || 0;
+	offsets.sourceCodeColumn = offsets.sourceCodeColumn || 0;
+	offsets.sourceCodeName = offsets.sourceCodeName || 0;
 
-		i = locations.length;
-		while (i--) {
-			if (locations[i] <= char) {
-				return {
-					line: i,
-					column: char - locations[i]
-				};
+	var encoded = lines.map(function (segments) {
+		var generatedCodeColumn = 0;
+
+		return segments.map(function (segment) {
+			var arr = [segment.generatedCodeColumn - generatedCodeColumn, segment.sourceIndex - offsets.sourceIndex, segment.sourceCodeLine - offsets.sourceCodeLine, segment.sourceCodeColumn - offsets.sourceCodeColumn];
+
+			generatedCodeColumn = segment.generatedCodeColumn;
+			offsets.sourceIndex = segment.sourceIndex;
+			offsets.sourceCodeLine = segment.sourceCodeLine;
+			offsets.sourceCodeColumn = segment.sourceCodeColumn;
+
+			if (~segment.sourceCodeName) {
+				arr.push(segment.sourceCodeName - offsets.sourceCodeName);
+				offsets.sourceCodeName = segment.sourceCodeName;
 			}
-		}
 
-		throw new Error('Character out of bounds');
+			return vlq.encode(arr);
+		}).join(',');
+	}).join(';');
+
+	return encoded;
+}
+
+function invert(str, mappings) {
+	var inverted = new Uint32Array(str.length);
+
+	// initialise everything to -1
+	var i = str.length;
+	while (i--) {
+		inverted[i] = -1;
 	}
 
-	function invert(str, mappings) {
-		var inverted = new Uint32Array(str.length),
-		    i;
-
-		// initialise everything to -1
-		i = str.length;
-		while (i--) {
-			inverted[i] = -1;
+	// then apply the actual mappings
+	i = mappings.length;
+	while (i--) {
+		if (~mappings[i]) {
+			inverted[mappings[i]] = i;
 		}
-
-		// then apply the actual mappings
-		i = mappings.length;
-		while (i--) {
-			if (~mappings[i]) {
-				inverted[mappings[i]] = i;
-			}
-		}
-
-		return inverted;
 	}
 
-	function encodeMappings(original, str, mappings, hires, sourcemapLocations, sourceIndex, offsets) {
-		// store locations, for fast lookup
-		var lineStart = 0;
-		var locations = original.split('\n').map(function (line) {
-			var start = lineStart;
-			lineStart += line.length + 1; // +1 for the newline
+	return inverted;
+}
 
-			return start;
+function getLocation(locations, char) {
+	var i = locations.length;
+	while (i--) {
+		if (locations[i] <= char) {
+			return {
+				line: i,
+				column: char - locations[i]
+			};
+		}
+	}
+
+	throw new Error('Character out of bounds');
+}
+
+function getRelativePath(from, to) {
+	var fromParts = from.split(/[\/\\]/);
+	var toParts = to.split(/[\/\\]/);
+
+	fromParts.pop(); // get dirname
+
+	while (fromParts[0] === toParts[0]) {
+		fromParts.shift();
+		toParts.shift();
+	}
+
+	if (fromParts.length) {
+		var i = fromParts.length;
+		while (i--) fromParts[i] = '..';
+	}
+
+	return fromParts.concat(toParts).join('/');
+}
+
+var warned = false;
+
+var MagicString = (function () {
+	function MagicString(string) {
+		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+		babelHelpers_classCallCheck(this, MagicString);
+
+		Object.defineProperties(this, {
+			original: { writable: true, value: string },
+			str: { writable: true, value: string },
+			mappings: { writable: true, value: initMappings(string.length) },
+			filename: { writable: true, value: options.filename },
+			indentExclusionRanges: { writable: true, value: options.indentExclusionRanges },
+			sourcemapLocations: { writable: true, value: {} },
+			nameLocations: { writable: true, value: {} },
+			indentStr: { writable: true, value: guessIndent(string) }
+		});
+	}
+
+	MagicString.prototype.addSourcemapLocation = function addSourcemapLocation(char) {
+		this.sourcemapLocations[char] = true;
+	};
+
+	MagicString.prototype.append = function append(content) {
+		if (typeof content !== 'string') {
+			throw new TypeError('appended content must be a string');
+		}
+
+		this.str += content;
+		return this;
+	};
+
+	MagicString.prototype.clone = function clone() {
+		var clone = new MagicString(this.original, { filename: this.filename });
+		clone.str = this.str;
+
+		var i = clone.mappings.length;
+		while (i--) {
+			clone.mappings[i] = this.mappings[i];
+		}
+
+		if (this.indentExclusionRanges) {
+			clone.indentExclusionRanges = typeof this.indentExclusionRanges[0] === 'number' ? [this.indentExclusionRanges[0], this.indentExclusionRanges[1]] : this.indentExclusionRanges.map(function (range) {
+				return [range.start, range.end];
+			});
+		}
+
+		Object.keys(this.sourcemapLocations).forEach(function (loc) {
+			clone.sourcemapLocations[loc] = true;
 		});
 
-		var inverseMappings = invert(str, mappings);
+		return clone;
+	};
 
-		var charOffset = 0;
-		var lines = str.split('\n').map(function (line) {
-			var segments = [];
+	MagicString.prototype.generateMap = function generateMap(options) {
+		var _this = this;
 
-			var char = undefined; // TODO put these inside loop, once we've determined it's safe to do so transpilation-wise
+		options = options || {};
+
+		var names = [];
+		Object.keys(this.nameLocations).forEach(function (location) {
+			var name = _this.nameLocations[location];
+			if (! ~names.indexOf(name)) names.push(name);
+		});
+
+		return new SourceMap({
+			file: options.file ? options.file.split(/[\/\\]/).pop() : null,
+			sources: [options.source ? getRelativePath(options.file || '', options.source) : null],
+			sourcesContent: options.includeContent ? [this.original] : [null],
+			names: names,
+			mappings: this.getMappings(options.hires, 0, {}, names)
+		});
+	};
+
+	MagicString.prototype.getIndentString = function getIndentString() {
+		return this.indentStr === null ? '\t' : this.indentStr;
+	};
+
+	MagicString.prototype.getMappings = function getMappings(hires, sourceIndex, offsets, names) {
+		return encodeMappings(this.original, this.str, this.mappings, hires, this.sourcemapLocations, sourceIndex, offsets, names, this.nameLocations);
+	};
+
+	MagicString.prototype.indent = function indent(indentStr, options) {
+		var _this2 = this;
+
+		var mappings = this.mappings;
+		var reverseMappings = reverse(mappings, this.str.length);
+		var pattern = /^[^\r\n]/gm;
+
+		if (typeof indentStr === 'object') {
+			options = indentStr;
+			indentStr = undefined;
+		}
+
+		indentStr = indentStr !== undefined ? indentStr : this.indentStr || '\t';
+
+		if (indentStr === '') return this; // noop
+
+		options = options || {};
+
+		// Process exclusion ranges
+		var exclusions = undefined;
+
+		if (options.exclude) {
+			exclusions = typeof options.exclude[0] === 'number' ? [options.exclude] : options.exclude;
+
+			exclusions = exclusions.map(function (range) {
+				var rangeStart = _this2.locate(range[0]);
+				var rangeEnd = _this2.locate(range[1]);
+
+				if (rangeStart === null || rangeEnd === null) {
+					throw new Error('Cannot use indices of replaced characters as exclusion ranges');
+				}
+
+				return [rangeStart, rangeEnd];
+			});
+
+			exclusions.sort(function (a, b) {
+				return a[0] - b[0];
+			});
+
+			// check for overlaps
+			lastEnd = -1;
+			exclusions.forEach(function (range) {
+				if (range[0] < lastEnd) {
+					throw new Error('Exclusion ranges cannot overlap');
+				}
+
+				lastEnd = range[1];
+			});
+		}
+
+		var indentStart = options.indentStart !== false;
+		var inserts = [];
+
+		if (!exclusions) {
+			this.str = this.str.replace(pattern, function (match, index) {
+				if (!indentStart && index === 0) {
+					return match;
+				}
+
+				inserts.push(index);
+				return indentStr + match;
+			});
+		} else {
+			this.str = this.str.replace(pattern, function (match, index) {
+				if (!indentStart && index === 0 || isExcluded(index - 1)) {
+					return match;
+				}
+
+				inserts.push(index);
+				return indentStr + match;
+			});
+		}
+
+		var adjustments = inserts.map(function (index) {
 			var origin = undefined;
-			var lastOrigin = undefined;
-			var location = undefined;
 
-			var i = undefined;
+			do {
+				origin = reverseMappings[index++];
+			} while (! ~origin && index < _this2.str.length);
 
-			var len = line.length;
-			for (i = 0; i < len; i += 1) {
-				char = i + charOffset;
-				origin = inverseMappings[char];
-
-				if (! ~origin) {
-					if (! ~lastOrigin) {} else {
-						segments.push({
-							generatedCodeColumn: i,
-							sourceIndex: sourceIndex,
-							sourceCodeLine: 0,
-							sourceCodeColumn: 0
-						});
-					}
-				} else {
-					if (!hires && origin === lastOrigin + 1 && !sourcemapLocations[origin]) {} else {
-						location = getLocation(locations, origin);
-
-						segments.push({
-							generatedCodeColumn: i,
-							sourceIndex: sourceIndex,
-							sourceCodeLine: location.line,
-							sourceCodeColumn: location.column
-						});
-					}
-				}
-
-				lastOrigin = origin;
-			}
-
-			charOffset += line.length + 1;
-			return segments;
+			return origin;
 		});
 
-		offsets = offsets || {};
-
-		offsets.sourceIndex = offsets.sourceIndex || 0;
-		offsets.sourceCodeLine = offsets.sourceCodeLine || 0;
-		offsets.sourceCodeColumn = offsets.sourceCodeColumn || 0;
-
-		var encoded = lines.map(function (segments) {
-			var generatedCodeColumn = 0;
-
-			return segments.map(function (segment) {
-				var arr = [segment.generatedCodeColumn - generatedCodeColumn, segment.sourceIndex - offsets.sourceIndex, segment.sourceCodeLine - offsets.sourceCodeLine, segment.sourceCodeColumn - offsets.sourceCodeColumn];
-
-				generatedCodeColumn = segment.generatedCodeColumn;
-				offsets.sourceIndex = segment.sourceIndex;
-				offsets.sourceCodeLine = segment.sourceCodeLine;
-				offsets.sourceCodeColumn = segment.sourceCodeColumn;
-
-				return vlq.encode(arr);
-			}).join(',');
-		}).join(';');
-
-		return encoded;
-	}
-
-	function guessIndent(code) {
-		var lines = code.split('\n');
-
-		var tabbed = lines.filter(function (line) {
-			return /^\t+/.test(line);
-		});
-		var spaced = lines.filter(function (line) {
-			return /^ {2,}/.test(line);
-		});
-
-		if (tabbed.length === 0 && spaced.length === 0) {
-			return null;
-		}
-
-		// More lines tabbed than spaced? Assume tabs, and
-		// default to tabs in the case of a tie (or nothing
-		// to go on)
-		if (tabbed.length >= spaced.length) {
-			return '\t';
-		}
-
-		// Otherwise, we need to guess the multiple
-		var min = spaced.reduce(function (previous, current) {
-			var numSpaces = /^ +/.exec(current)[0].length;
-			return Math.min(numSpaces, previous);
-		}, Infinity);
-
-		return new Array(min + 1).join(' ');
-	}
-
-	function initMappings(i) {
-		var mappings = new Uint32Array(i);
-
+		var i = adjustments.length;
+		var lastEnd = this.mappings.length;
 		while (i--) {
-			mappings[i] = i;
+			adjust(this.mappings, adjustments[i], lastEnd, (i + 1) * indentStr.length);
+			lastEnd = adjustments[i];
 		}
 
-		return mappings;
+		return this;
+
+		function isExcluded(index) {
+			var i = exclusions.length;
+			var range = undefined;
+
+			while (i--) {
+				range = exclusions[i];
+
+				if (range[1] < index) {
+					return false;
+				}
+
+				if (range[0] <= index) {
+					return true;
+				}
+			}
+		}
+	};
+
+	MagicString.prototype.insert = function insert(index, content) {
+		if (typeof content !== 'string') {
+			throw new TypeError('inserted content must be a string');
+		}
+
+		if (index === this.original.length) {
+			this.append(content);
+		} else {
+			var mapped = this.locate(index);
+
+			if (mapped === null) {
+				throw new Error('Cannot insert at replaced character index: ' + index);
+			}
+
+			this.str = this.str.substr(0, mapped) + content + this.str.substr(mapped);
+			adjust(this.mappings, index, this.mappings.length, content.length);
+		}
+
+		return this;
+	};
+
+	// get current location of character in original string
+
+	MagicString.prototype.locate = function locate(character) {
+		if (character < 0 || character > this.mappings.length) {
+			throw new Error('Character is out of bounds');
+		}
+
+		var loc = this.mappings[character];
+		return ~loc ? loc : null;
+	};
+
+	MagicString.prototype.locateOrigin = function locateOrigin(character) {
+		if (character < 0 || character >= this.str.length) {
+			throw new Error('Character is out of bounds');
+		}
+
+		var i = this.mappings.length;
+		while (i--) {
+			if (this.mappings[i] === character) {
+				return i;
+			}
+		}
+
+		return null;
+	};
+
+	MagicString.prototype.overwrite = function overwrite(start, end, content, storeName) {
+		if (typeof content !== 'string') {
+			throw new TypeError('replacement content must be a string');
+		}
+
+		var firstChar = this.locate(start);
+		var lastChar = this.locate(end - 1);
+
+		if (firstChar === null || lastChar === null) {
+			throw new Error('Cannot overwrite the same content twice: \'' + this.original.slice(start, end).replace(/\n/g, '\\n') + '\'');
+		}
+
+		if (firstChar > lastChar + 1) {
+			throw new Error('BUG! First character mapped to a position after the last character: ' + '[' + start + ', ' + end + '] -> [' + firstChar + ', ' + (lastChar + 1) + ']');
+		}
+
+		if (storeName) {
+			this.nameLocations[start] = this.original.slice(start, end);
+		}
+
+		this.str = this.str.substr(0, firstChar) + content + this.str.substring(lastChar + 1);
+
+		var d = content.length - (lastChar + 1 - firstChar);
+
+		blank(this.mappings, start, end);
+		adjust(this.mappings, end, this.mappings.length, d);
+		return this;
+	};
+
+	MagicString.prototype.prepend = function prepend(content) {
+		this.str = content + this.str;
+		adjust(this.mappings, 0, this.mappings.length, content.length);
+		return this;
+	};
+
+	MagicString.prototype.remove = function remove(start, end) {
+		if (start < 0 || end > this.mappings.length) {
+			throw new Error('Character is out of bounds');
+		}
+
+		var currentStart = -1;
+		var currentEnd = -1;
+		for (var i = start; i < end; i += 1) {
+			var loc = this.mappings[i];
+
+			if (~loc) {
+				if (! ~currentStart) currentStart = loc;
+
+				currentEnd = loc + 1;
+				this.mappings[i] = -1;
+			}
+		}
+
+		this.str = this.str.slice(0, currentStart) + this.str.slice(currentEnd);
+
+		adjust(this.mappings, end, this.mappings.length, currentStart - currentEnd);
+		return this;
+	};
+
+	MagicString.prototype.replace = function replace(start, end, content) {
+		if (!warned) {
+			console.warn('magicString.replace(...) is deprecated. Use magicString.overwrite(...) instead');
+			warned = true;
+		}
+
+		return this.overwrite(start, end, content);
+	};
+
+	MagicString.prototype.slice = function slice(start) {
+		var end = arguments.length <= 1 || arguments[1] === undefined ? this.original.length : arguments[1];
+
+		while (start < 0) start += this.original.length;
+		while (end < 0) end += this.original.length;
+
+		var firstChar = this.locate(start);
+		var lastChar = this.locate(end - 1);
+
+		if (firstChar === null || lastChar === null) {
+			throw new Error('Cannot use replaced characters as slice anchors');
+		}
+
+		return this.str.slice(firstChar, lastChar + 1);
+	};
+
+	MagicString.prototype.snip = function snip(start, end) {
+		var clone = this.clone();
+		clone.remove(0, start);
+		clone.remove(end, clone.original.length);
+
+		return clone;
+	};
+
+	MagicString.prototype.toString = function toString() {
+		return this.str;
+	};
+
+	MagicString.prototype.trimLines = function trimLines() {
+		return this.trim('[\\r\\n]');
+	};
+
+	MagicString.prototype.trim = function trim(charType) {
+		return this.trimStart(charType).trimEnd(charType);
+	};
+
+	MagicString.prototype.trimEnd = function trimEnd(charType) {
+		var _this3 = this;
+
+		var rx = new RegExp((charType || '\\s') + '+$');
+
+		this.str = this.str.replace(rx, function (trailing, index, str) {
+			var strLength = str.length;
+			var length = trailing.length;
+
+			var chars = [];
+
+			var i = strLength;
+			while (i-- > strLength - length) {
+				chars.push(_this3.locateOrigin(i));
+			}
+
+			i = chars.length;
+			while (i--) {
+				if (chars[i] !== null) {
+					_this3.mappings[chars[i]] = -1;
+				}
+			}
+
+			return '';
+		});
+
+		return this;
+	};
+
+	MagicString.prototype.trimStart = function trimStart(charType) {
+		var _this4 = this;
+
+		var rx = new RegExp('^' + (charType || '\\s') + '+');
+
+		this.str = this.str.replace(rx, function (leading) {
+			var length = leading.length;
+
+			var chars = [];
+			var adjustmentStart = 0;
+
+			var i = length;
+			while (i--) {
+				chars.push(_this4.locateOrigin(i));
+			}
+
+			i = chars.length;
+			while (i--) {
+				if (chars[i] !== null) {
+					_this4.mappings[chars[i]] = -1;
+					adjustmentStart += 1;
+				}
+			}
+
+			adjust(_this4.mappings, adjustmentStart, _this4.mappings.length, -length);
+
+			return '';
+		});
+
+		return this;
+	};
+
+	return MagicString;
+})();
+
+function adjust(mappings, start, end, d) {
+	if (!d) return; // replacement is same length as replaced string
+
+	var i = end;
+	while (i-- > start) {
+		if (~mappings[i]) {
+			mappings[i] += d;
+		}
+	}
+}
+
+function initMappings(i) {
+	var mappings = new Uint32Array(i);
+
+	while (i--) mappings[i] = i;
+	return mappings;
+}
+
+function blank(mappings, start, i) {
+	while (i-- > start) mappings[i] = -1;
+}
+
+function reverse(mappings, i) {
+	var result = new Uint32Array(i);
+
+	while (i--) {
+		result[i] = -1;
 	}
 
-	function ___classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	var location = undefined;
+	i = mappings.length;
+	while (i--) {
+		location = mappings[i];
 
-	var MagicString = (function () {
-		function MagicString(string) {
-			var options = arguments[1] === undefined ? {} : arguments[1];
-
-			___classCallCheck(this, MagicString);
-
-			this.original = this.str = string;
-			this.mappings = initMappings(string.length);
-
-			this.filename = options.filename;
-			this.indentExclusionRanges = options.indentExclusionRanges;
-
-			this.sourcemapLocations = {};
-
-			this.indentStr = guessIndent(string);
+		if (~location) {
+			result[location] = i;
 		}
+	}
 
-		MagicString.prototype.addSourcemapLocation = function addSourcemapLocation(char) {
-			this.sourcemapLocations[char] = true;
-		};
+	return result;
+}
 
-		MagicString.prototype.append = function append(content) {
-			if (typeof content !== 'string') {
-				throw new TypeError('appended content must be a string');
-			}
+var hasOwnProp = Object.prototype.hasOwnProperty;
 
-			this.str += content;
-			return this;
-		};
+var Bundle = (function () {
+	function Bundle() {
+		var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+		babelHelpers_classCallCheck(this, Bundle);
 
-		MagicString.prototype.clone = function clone() {
-			var clone, i;
+		this.intro = options.intro || '';
+		this.outro = options.outro || '';
+		this.separator = options.separator !== undefined ? options.separator : '\n';
 
-			clone = new MagicString(this.original, { filename: this.filename });
-			clone.str = this.str;
+		this.sources = [];
 
-			i = clone.mappings.length;
-			while (i--) {
-				clone.mappings[i] = this.mappings[i];
-			}
+		this.uniqueSources = [];
+		this.uniqueSourceIndexByFilename = {};
+	}
 
-			if (this.indentExclusionRanges) {
-				clone.indentExclusionRanges = typeof this.indentExclusionRanges[0] === 'number' ? [this.indentExclusionRanges[0], this.indentExclusionRanges[1]] : this.indentExclusionRanges.map(function (_ref) {
-					var start = _ref[0];
-					var end = _ref[1];
-					return [start, end];
-				});
-			}
-
-			Object.keys(this.sourcemapLocations).forEach(function (loc) {
-				clone.sourcemapLocations[loc] = true;
-			});
-
-			return clone;
-		};
-
-		MagicString.prototype.generateMap = function generateMap(options) {
-			options = options || {};
-
-			return new SourceMap({
-				file: options.file ? options.file.split(/[\/\\]/).pop() : null,
-				sources: [options.source ? getRelativePath(options.file || '', options.source) : null],
-				sourcesContent: options.includeContent ? [this.original] : [null],
-				names: [],
-				mappings: this.getMappings(options.hires, 0)
-			});
-		};
-
-		MagicString.prototype.getIndentString = function getIndentString() {
-			return this.indentStr === null ? '\t' : this.indentStr;
-		};
-
-		MagicString.prototype.getMappings = function getMappings(hires, sourceIndex, offsets) {
-			return encodeMappings(this.original, this.str, this.mappings, hires, this.sourcemapLocations, sourceIndex, offsets);
-		};
-
-		MagicString.prototype.indent = function indent(indentStr, options) {
-			var self = this,
-			    mappings = this.mappings,
-			    reverseMappings = reverse(mappings, this.str.length),
-			    pattern = /^[^\r\n]/gm,
-			    match,
-			    inserts = [],
-			    adjustments,
-			    exclusions,
-			    lastEnd,
-			    i;
-
-			if (typeof indentStr === 'object') {
-				options = indentStr;
-				indentStr = undefined;
-			}
-
-			indentStr = indentStr !== undefined ? indentStr : this.indentStr || '\t';
-
-			if (indentStr === '') return this; // noop
-
-			options = options || {};
-
-			// Process exclusion ranges
-			if (options.exclude) {
-				exclusions = typeof options.exclude[0] === 'number' ? [options.exclude] : options.exclude;
-
-				exclusions = exclusions.map(function (range) {
-					var rangeStart, rangeEnd;
-
-					rangeStart = self.locate(range[0]);
-					rangeEnd = self.locate(range[1]);
-
-					if (rangeStart === null || rangeEnd === null) {
-						throw new Error('Cannot use indices of replaced characters as exclusion ranges');
-					}
-
-					return [rangeStart, rangeEnd];
-				});
-
-				exclusions.sort(function (a, b) {
-					return a[0] - b[0];
-				});
-
-				// check for overlaps
-				lastEnd = -1;
-				exclusions.forEach(function (range) {
-					if (range[0] < lastEnd) {
-						throw new Error('Exclusion ranges cannot overlap');
-					}
-
-					lastEnd = range[1];
-				});
-			}
-
-			var indentStart = options.indentStart !== false;
-
-			if (!exclusions) {
-				this.str = this.str.replace(pattern, function (match, index) {
-					if (!indentStart && index === 0) {
-						return match;
-					}
-
-					inserts.push(index);
-					return indentStr + match;
-				});
-			} else {
-				this.str = this.str.replace(pattern, function (match, index) {
-					if (!indentStart && index === 0 || isExcluded(index - 1)) {
-						return match;
-					}
-
-					inserts.push(index);
-					return indentStr + match;
-				});
-			}
-
-			adjustments = inserts.map(function (index) {
-				var origin;
-
-				do {
-					origin = reverseMappings[index++];
-				} while (! ~origin && index < self.str.length);
-
-				return origin;
-			});
-
-			i = adjustments.length;
-			lastEnd = this.mappings.length;
-			while (i--) {
-				adjust(self.mappings, adjustments[i], lastEnd, (i + 1) * indentStr.length);
-				lastEnd = adjustments[i];
-			}
-
-			return this;
-
-			function isExcluded(index) {
-				var i = exclusions.length,
-				    range;
-
-				while (i--) {
-					range = exclusions[i];
-
-					if (range[1] < index) {
-						return false;
-					}
-
-					if (range[0] <= index) {
-						return true;
-					}
-				}
-			}
-		};
-
-		MagicString.prototype.insert = function insert(index, content) {
-			console.log('INSERT %s %s', index, JSON.stringify(content));
-			if (typeof content !== 'string') {
-				throw new TypeError('inserted content must be a string');
-			}
-
-			if (index === this.original.length) {
-				this.append(content);
-			} else {
-				var mapped = this.locate(index);
-
-				if (mapped === null) {
-					throw new Error('Cannot insert at replaced character index: ' + index);
-				}
-
-				this.str = this.str.substr(0, mapped) + content + this.str.substr(mapped);
-				adjust(this.mappings, index, this.mappings.length, content.length);
-			}
-
-			return this;
-		};
-
-		// get current location of character in original string
-
-		MagicString.prototype.locate = function locate(character) {
-			var loc;
-
-			if (character < 0 || character > this.mappings.length) {
-				throw new Error('Character is out of bounds');
-			}
-
-			loc = this.mappings[character];
-			return ~loc ? loc : null;
-		};
-
-		MagicString.prototype.locateOrigin = function locateOrigin(character) {
-			var i;
-
-			if (character < 0 || character >= this.str.length) {
-				throw new Error('Character is out of bounds');
-			}
-
-			i = this.mappings.length;
-			while (i--) {
-				if (this.mappings[i] === character) {
-					return i;
-				}
-			}
-
-			return null;
-		};
-
-		MagicString.prototype.overwrite = function overwrite(start, end, content) {
-			console.log('OVERWRITE %s %s %s -> %s', start, end, JSON.stringify(this.original.slice(start, end)), JSON.stringify(content));
-			if (typeof content !== 'string') {
-				throw new TypeError('replacement content must be a string');
-			}
-
-			var firstChar, lastChar, d;
-
-			firstChar = this.locate(start);
-			lastChar = this.locate(end - 1);
-
-			if (firstChar === null || lastChar === null) {
-				throw new Error('Cannot overwrite the same content twice: \'' + this.original.slice(start, end).replace(/\n/g, '\\n') + '\'');
-			}
-
-			if (firstChar > lastChar + 1) {
-				throw new Error('BUG! First character mapped to a position after the last character: ' + '[' + start + ', ' + end + '] -> [' + firstChar + ', ' + (lastChar + 1) + ']');
-			}
-
-			this.str = this.str.substr(0, firstChar) + content + this.str.substring(lastChar + 1);
-
-			d = content.length - (lastChar + 1 - firstChar);
-
-			blank(this.mappings, start, end);
-			adjust(this.mappings, end, this.mappings.length, d);
-			return this;
-		};
-
-		MagicString.prototype.prepend = function prepend(content) {
-			this.str = content + this.str;
-			adjust(this.mappings, 0, this.mappings.length, content.length);
-			return this;
-		};
-
-		MagicString.prototype.remove = function remove(start, end) {
-			console.log('REMOVE %s %s %s', start, end, JSON.stringify(this.original.slice(start, end)));
-			if (start < 0 || end > this.mappings.length) {
-				throw new Error('Character is out of bounds');
-			}
-
-			var currentStart = -1;
-			var currentEnd = -1;
-			for (var i = start; i < end; i += 1) {
-				var loc = this.mappings[i];
-
-				if (~loc) {
-					if (! ~currentStart) currentStart = loc;
-
-					currentEnd = loc + 1;
-					this.mappings[i] = -1;
-				}
-			}
-
-			this.str = this.str.slice(0, currentStart) + this.str.slice(currentEnd);
-
-			adjust(this.mappings, end, this.mappings.length, currentStart - currentEnd);
-			return this;
-		};
-
-		MagicString.prototype.replace = function replace(start, end, content) {
-			if (!warned) {
-				console.warn('magicString.replace(...) is deprecated. Use magicString.overwrite(...) instead');
-				warned = true;
-			}
-
-			return this.overwrite(start, end, content);
-		};
-
-		MagicString.prototype.slice = function slice(start) {
-			var end = arguments[1] === undefined ? this.original.length : arguments[1];
-
-			var firstChar, lastChar;
-
-			while (start < 0) start += this.original.length;
-			while (end < 0) end += this.original.length;
-
-			firstChar = this.locate(start);
-			lastChar = this.locate(end - 1);
-
-			if (firstChar === null || lastChar === null) {
-				throw new Error('Cannot use replaced characters as slice anchors');
-			}
-
-			return this.str.slice(firstChar, lastChar + 1);
-		};
-
-		MagicString.prototype.snip = function snip(start, end) {
-			var clone = this.clone();
-			clone.remove(0, start);
-			clone.remove(end, clone.original.length);
-
-			return clone;
-		};
-
-		MagicString.prototype.toString = function toString() {
-			return this.str;
-		};
-
-		MagicString.prototype.trimLines = function trimLines() {
-			return this.trim('[\\r\\n]');
-		};
-
-		MagicString.prototype.trim = function trim(charType) {
-			return this.trimStart(charType).trimEnd(charType);
-		};
-
-		MagicString.prototype.trimEnd = function trimEnd(charType) {
-			var self = this;
-			var rx = new RegExp((charType || '\\s') + '+$');
-
-			this.str = this.str.replace(rx, function (trailing, index, str) {
-				var strLength = str.length,
-				    length = trailing.length,
-				    i,
-				    chars = [];
-
-				i = strLength;
-				while (i-- > strLength - length) {
-					chars.push(self.locateOrigin(i));
-				}
-
-				i = chars.length;
-				while (i--) {
-					if (chars[i] !== null) {
-						self.mappings[chars[i]] = -1;
-					}
-				}
-
-				return '';
-			});
-
-			return this;
-		};
-
-		MagicString.prototype.trimStart = function trimStart(charType) {
-			var self = this;
-			var rx = new RegExp('^' + (charType || '\\s') + '+');
-
-			this.str = this.str.replace(rx, function (leading) {
-				var length = leading.length,
-				    i,
-				    chars = [],
-				    adjustmentStart = 0;
-
-				i = length;
-				while (i--) {
-					chars.push(self.locateOrigin(i));
-				}
-
-				i = chars.length;
-				while (i--) {
-					if (chars[i] !== null) {
-						self.mappings[chars[i]] = -1;
-						adjustmentStart += 1;
-					}
-				}
-
-				adjust(self.mappings, adjustmentStart, self.mappings.length, -length);
-
-				return '';
-			});
-
-			return this;
-		};
-
-		return MagicString;
-	})();
-
-	var hasOwnProp = Object.prototype.hasOwnProperty;
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	var Bundle = (function () {
-		function Bundle() {
-			var options = arguments[0] === undefined ? {} : arguments[0];
-
-			_classCallCheck(this, Bundle);
-
-			this.intro = options.intro || '';
-			this.outro = options.outro || '';
-			this.separator = options.separator !== undefined ? options.separator : '\n';
-
-			this.sources = [];
-
-			this.uniqueSources = [];
-			this.uniqueSourceIndexByFilename = {};
-		}
-
-		Bundle.prototype.addSource = function addSource(source) {
-			if (source instanceof MagicString) {
-				return this.addSource({
-					content: source,
-					filename: source.filename,
-					separator: this.separator
-				});
-			}
-
-			if (typeof source !== 'object' || !source.content) {
-				throw new Error('bundle.addSource() takes an object with a `content` property, which should be an instance of MagicString, and an optional `filename`');
-			}
-
-			['filename', 'indentExclusionRanges', 'separator'].forEach(function (option) {
-				if (!hasOwnProp.call(source, option)) source[option] = source.content[option];
-			});
-
-			if (source.separator === undefined) {
-				// TODO there's a bunch of this sort of thing, needs cleaning up
-				source.separator = this.separator;
-			}
-
-			if (source.filename) {
-				if (!hasOwnProp.call(this.uniqueSourceIndexByFilename, source.filename)) {
-					this.uniqueSourceIndexByFilename[source.filename] = this.uniqueSources.length;
-					this.uniqueSources.push({ filename: source.filename, content: source.content.original });
-				} else {
-					var uniqueSource = this.uniqueSources[this.uniqueSourceIndexByFilename[source.filename]];
-					if (source.content.original !== uniqueSource.content) {
-						throw new Error('Illegal source: same filename (' + source.filename + '), different contents');
-					}
-				}
-			}
-
-			this.sources.push(source);
-			return this;
-		};
-
-		Bundle.prototype.append = function append(str, options) {
-			this.addSource({
-				content: new MagicString(str),
-				separator: options && options.separator || ''
-			});
-
-			return this;
-		};
-
-		Bundle.prototype.clone = function clone() {
-			var bundle = new Bundle({
-				intro: this.intro,
-				outro: this.outro,
+	Bundle.prototype.addSource = function addSource(source) {
+		if (source instanceof MagicString) {
+			return this.addSource({
+				content: source,
+				filename: source.filename,
 				separator: this.separator
 			});
+		}
 
-			this.sources.forEach(function (source) {
-				bundle.addSource({
-					filename: source.filename,
-					content: source.content.clone(),
-					separator: source.separator
-				});
+		if (typeof source !== 'object' || !source.content) {
+			throw new Error('bundle.addSource() takes an object with a `content` property, which should be an instance of MagicString, and an optional `filename`');
+		}
+
+		['filename', 'indentExclusionRanges', 'separator'].forEach(function (option) {
+			if (!hasOwnProp.call(source, option)) source[option] = source.content[option];
+		});
+
+		if (source.separator === undefined) {
+			// TODO there's a bunch of this sort of thing, needs cleaning up
+			source.separator = this.separator;
+		}
+
+		if (source.filename) {
+			if (!hasOwnProp.call(this.uniqueSourceIndexByFilename, source.filename)) {
+				this.uniqueSourceIndexByFilename[source.filename] = this.uniqueSources.length;
+				this.uniqueSources.push({ filename: source.filename, content: source.content.original });
+			} else {
+				var uniqueSource = this.uniqueSources[this.uniqueSourceIndexByFilename[source.filename]];
+				if (source.content.original !== uniqueSource.content) {
+					throw new Error('Illegal source: same filename (' + source.filename + '), different contents');
+				}
+			}
+		}
+
+		this.sources.push(source);
+		return this;
+	};
+
+	Bundle.prototype.append = function append(str, options) {
+		this.addSource({
+			content: new MagicString(str),
+			separator: options && options.separator || ''
+		});
+
+		return this;
+	};
+
+	Bundle.prototype.clone = function clone() {
+		var bundle = new Bundle({
+			intro: this.intro,
+			outro: this.outro,
+			separator: this.separator
+		});
+
+		this.sources.forEach(function (source) {
+			bundle.addSource({
+				filename: source.filename,
+				content: source.content.clone(),
+				separator: source.separator
+			});
+		});
+
+		return bundle;
+	};
+
+	Bundle.prototype.generateMap = function generateMap(options) {
+		var _this = this;
+
+		var offsets = {};
+
+		var names = [];
+		this.sources.forEach(function (source) {
+			Object.keys(source.content.nameLocations).forEach(function (location) {
+				var name = source.content.nameLocations[location];
+				if (! ~names.indexOf(name)) names.push(name);
+			});
+		});
+
+		var encoded = getSemis(this.intro) + this.sources.map(function (source, i) {
+			var prefix = i > 0 ? getSemis(source.separator) || ',' : '';
+			var mappings = undefined;
+
+			// we don't bother encoding sources without a filename
+			if (!source.filename) {
+				mappings = getSemis(source.content.toString());
+			} else {
+				var sourceIndex = _this.uniqueSourceIndexByFilename[source.filename];
+				mappings = source.content.getMappings(options.hires, sourceIndex, offsets, names);
+			}
+
+			return prefix + mappings;
+		}).join('') + getSemis(this.outro);
+
+		return new SourceMap({
+			file: options.file ? options.file.split(/[\/\\]/).pop() : null,
+			sources: this.uniqueSources.map(function (source) {
+				return options.file ? getRelativePath(options.file, source.filename) : source.filename;
+			}),
+			sourcesContent: this.uniqueSources.map(function (source) {
+				return options.includeContent ? source.content : null;
+			}),
+			names: names,
+			mappings: encoded
+		});
+	};
+
+	Bundle.prototype.getIndentString = function getIndentString() {
+		var indentStringCounts = {};
+
+		this.sources.forEach(function (source) {
+			var indentStr = source.content.indentStr;
+
+			if (indentStr === null) return;
+
+			if (!indentStringCounts[indentStr]) indentStringCounts[indentStr] = 0;
+			indentStringCounts[indentStr] += 1;
+		});
+
+		return Object.keys(indentStringCounts).sort(function (a, b) {
+			return indentStringCounts[a] - indentStringCounts[b];
+		})[0] || '\t';
+	};
+
+	Bundle.prototype.indent = function indent(indentStr) {
+		var _this2 = this;
+
+		if (!arguments.length) {
+			indentStr = this.getIndentString();
+		}
+
+		if (indentStr === '') return this; // noop
+
+		var trailingNewline = !this.intro || this.intro.slice(-1) === '\n';
+
+		this.sources.forEach(function (source, i) {
+			var separator = source.separator !== undefined ? source.separator : _this2.separator;
+			var indentStart = trailingNewline || i > 0 && /\r?\n$/.test(separator);
+
+			source.content.indent(indentStr, {
+				exclude: source.indentExclusionRanges,
+				indentStart: indentStart //: trailingNewline || /\r?\n$/.test( separator )  //true///\r?\n/.test( separator )
 			});
 
-			return bundle;
-		};
+			trailingNewline = source.content.str.slice(0, -1) === '\n';
+		});
 
-		Bundle.prototype.generateMap = function generateMap(options) {
-			var _this = this;
+		if (this.intro) {
+			this.intro = indentStr + this.intro.replace(/^[^\n]/gm, function (match, index) {
+				return index > 0 ? indentStr + match : match;
+			});
+		}
 
-			var offsets = {};
+		this.outro = this.outro.replace(/^[^\n]/gm, indentStr + '$&');
 
-			var encoded = getSemis(this.intro) + this.sources.map(function (source, i) {
-				var prefix = i > 0 ? getSemis(source.separator) || ',' : '';
-				var mappings = undefined;
+		return this;
+	};
 
-				// we don't bother encoding sources without a filename
-				if (!source.filename) {
-					mappings = getSemis(source.content.toString());
-				} else {
-					var sourceIndex = _this.uniqueSourceIndexByFilename[source.filename];
-					mappings = source.content.getMappings(options.hires, sourceIndex, offsets);
+	Bundle.prototype.prepend = function prepend(str) {
+		this.intro = str + this.intro;
+		return this;
+	};
+
+	Bundle.prototype.toString = function toString() {
+		var _this3 = this;
+
+		var body = this.sources.map(function (source, i) {
+			var separator = source.separator !== undefined ? source.separator : _this3.separator;
+			var str = (i > 0 ? separator : '') + source.content.toString();
+
+			return str;
+		}).join('');
+
+		return this.intro + body + this.outro;
+	};
+
+	Bundle.prototype.trimLines = function trimLines() {
+		return this.trim('[\\r\\n]');
+	};
+
+	Bundle.prototype.trim = function trim(charType) {
+		return this.trimStart(charType).trimEnd(charType);
+	};
+
+	Bundle.prototype.trimStart = function trimStart(charType) {
+		var rx = new RegExp('^' + (charType || '\\s') + '+');
+		this.intro = this.intro.replace(rx, '');
+
+		if (!this.intro) {
+			var source = undefined; // TODO put inside loop if safe
+			var i = 0;
+
+			do {
+				source = this.sources[i];
+
+				if (!source) {
+					this.outro = this.outro.replace(rx, '');
+					break;
 				}
 
-				return prefix + mappings;
-			}).join('') + getSemis(this.outro);
+				source.content.trimStart();
+				i += 1;
+			} while (source.content.str === '');
+		}
 
-			return new SourceMap({
-				file: options.file ? options.file.split(/[\/\\]/).pop() : null,
-				sources: this.uniqueSources.map(function (source) {
-					return options.file ? getRelativePath(options.file, source.filename) : source.filename;
-				}),
-				sourcesContent: this.uniqueSources.map(function (source) {
-					return options.includeContent ? source.content : null;
-				}),
-				names: [],
-				mappings: encoded
-			});
-		};
+		return this;
+	};
 
-		Bundle.prototype.getIndentString = function getIndentString() {
-			var indentStringCounts = {};
+	Bundle.prototype.trimEnd = function trimEnd(charType) {
+		var rx = new RegExp((charType || '\\s') + '+$');
+		this.outro = this.outro.replace(rx, '');
 
-			this.sources.forEach(function (source) {
-				var indentStr = source.content.indentStr;
+		if (!this.outro) {
+			var source = undefined;
+			var i = this.sources.length - 1;
 
-				if (indentStr === null) return;
+			do {
+				source = this.sources[i];
 
-				if (!indentStringCounts[indentStr]) indentStringCounts[indentStr] = 0;
-				indentStringCounts[indentStr] += 1;
-			});
+				if (!source) {
+					this.intro = this.intro.replace(rx, '');
+					break;
+				}
 
-			return Object.keys(indentStringCounts).sort(function (a, b) {
-				return indentStringCounts[a] - indentStringCounts[b];
-			})[0] || '\t';
-		};
+				source.content.trimEnd(charType);
+				i -= 1;
+			} while (source.content.str === '');
+		}
 
-		Bundle.prototype.indent = function indent(indentStr) {
-			var _this2 = this;
+		return this;
+	};
 
-			if (!arguments.length) {
-				indentStr = this.getIndentString();
-			}
+	return Bundle;
+})();
 
-			if (indentStr === '') return this; // noop
+function getSemis(str) {
+	return new Array(str.split('\n').length).join(';');
+}
 
-			var trailingNewline = !this.intro || this.intro.slice(-1) === '\n';
+MagicString.Bundle = Bundle;
 
-			this.sources.forEach(function (source, i) {
-				var separator = source.separator !== undefined ? source.separator : _this2.separator;
-				var indentStart = trailingNewline || i > 0 && /\r?\n$/.test(separator);
+module.exports = MagicString;
 
-				source.content.indent(indentStr, {
-					exclude: source.indentExclusionRanges,
-					indentStart: indentStart //: trailingNewline || /\r?\n$/.test( separator )  //true///\r?\n/.test( separator )
-				});
 
-				trailingNewline = source.content.str.slice(0, -1) === '\n';
-			});
-
-			if (this.intro) {
-				this.intro = indentStr + this.intro.replace(/^[^\n]/gm, function (match, index) {
-					return index > 0 ? indentStr + match : match;
-				});
-			}
-
-			this.outro = this.outro.replace(/^[^\n]/gm, indentStr + '$&');
-
-			return this;
-		};
-
-		Bundle.prototype.prepend = function prepend(str) {
-			this.intro = str + this.intro;
-			return this;
-		};
-
-		Bundle.prototype.toString = function toString() {
-			var _this3 = this;
-
-			var body = this.sources.map(function (source, i) {
-				var separator = source.separator !== undefined ? source.separator : _this3.separator;
-				var str = (i > 0 ? separator : '') + source.content.toString();
-
-				return str;
-			}).join('');
-
-			return this.intro + body + this.outro;
-		};
-
-		Bundle.prototype.trimLines = function trimLines() {
-			return this.trim('[\\r\\n]');
-		};
-
-		Bundle.prototype.trim = function trim(charType) {
-			return this.trimStart(charType).trimEnd(charType);
-		};
-
-		Bundle.prototype.trimStart = function trimStart(charType) {
-			var rx = new RegExp('^' + (charType || '\\s') + '+');
-			this.intro = this.intro.replace(rx, '');
-
-			if (!this.intro) {
-				var source = undefined; // TODO put inside loop if safe
-				var i = 0;
-
-				do {
-					source = this.sources[i];
-
-					if (!source) {
-						this.outro = this.outro.replace(rx, '');
-						break;
-					}
-
-					source.content.trimStart();
-					i += 1;
-				} while (source.content.str === '');
-			}
-
-			return this;
-		};
-
-		Bundle.prototype.trimEnd = function trimEnd(charType) {
-			var rx = new RegExp((charType || '\\s') + '+$');
-			this.outro = this.outro.replace(rx, '');
-
-			if (!this.outro) {
-				var source = undefined;
-				var i = this.sources.length - 1;
-
-				do {
-					source = this.sources[i];
-
-					if (!source) {
-						this.intro = this.intro.replace(rx, '');
-						break;
-					}
-
-					source.content.trimEnd(charType);
-					i -= 1;
-				} while (source.content.str === '');
-			}
-
-			return this;
-		};
-
-		return Bundle;
-	})();
-
-	MagicString.Bundle = Bundle;
-
-	var index = MagicString;
-
-	return index;
-
-}));
 }).call(this,require("buffer").Buffer)
-},{"buffer":93,"vlq":135}],119:[function(require,module,exports){
+},{"buffer":7,"vlq":49}],33:[function(require,module,exports){
 'use strict';
 module.exports = Number.isNaN || function (x) {
 	return x !== x;
 };
 
-},{}],120:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -39536,7 +37971,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":121}],121:[function(require,module,exports){
+},{"_process":35}],35:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -39629,17 +38064,17 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],122:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 var isFinite = require('is-finite');
 
 module.exports = function (str, n) {
 	if (typeof str !== 'string') {
-		throw new TypeError('Expected a string as the first argument');
+		throw new TypeError('Expected `input` to be a string');
 	}
 
 	if (n < 0 || !isFinite(n)) {
-		throw new TypeError('Expected a finite positive number');
+		throw new TypeError('Expected `count` to be a positive finite number');
 	}
 
 	var ret = '';
@@ -39650,12 +38085,12 @@ module.exports = function (str, n) {
 		}
 
 		str += str;
-	} while (n = n >> 1);
+	} while ((n >>= 1));
 
 	return ret;
 };
 
-},{"is-finite":117}],123:[function(require,module,exports){
+},{"is-finite":31}],37:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -39665,7 +38100,7 @@ exports.SourceMapGenerator = require('./source-map/source-map-generator').Source
 exports.SourceMapConsumer = require('./source-map/source-map-consumer').SourceMapConsumer;
 exports.SourceNode = require('./source-map/source-node').SourceNode;
 
-},{"./source-map/source-map-consumer":129,"./source-map/source-map-generator":130,"./source-map/source-node":131}],124:[function(require,module,exports){
+},{"./source-map/source-map-consumer":43,"./source-map/source-map-generator":44,"./source-map/source-node":45}],38:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -39764,7 +38199,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":132,"amdefine":89}],125:[function(require,module,exports){
+},{"./util":46,"amdefine":3}],39:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -39908,7 +38343,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./base64":126,"amdefine":89}],126:[function(require,module,exports){
+},{"./base64":40,"amdefine":3}],40:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -39952,7 +38387,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":89}],127:[function(require,module,exports){
+},{"amdefine":3}],41:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -40034,7 +38469,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":89}],128:[function(require,module,exports){
+},{"amdefine":3}],42:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2014 Mozilla Foundation and contributors
@@ -40122,7 +38557,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":132,"amdefine":89}],129:[function(require,module,exports){
+},{"./util":46,"amdefine":3}],43:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -40699,7 +39134,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":124,"./base64-vlq":125,"./binary-search":127,"./util":132,"amdefine":89}],130:[function(require,module,exports){
+},{"./array-set":38,"./base64-vlq":39,"./binary-search":41,"./util":46,"amdefine":3}],44:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -41101,7 +39536,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":124,"./base64-vlq":125,"./mapping-list":128,"./util":132,"amdefine":89}],131:[function(require,module,exports){
+},{"./array-set":38,"./base64-vlq":39,"./mapping-list":42,"./util":46,"amdefine":3}],45:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -41517,7 +39952,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./source-map-generator":130,"./util":132,"amdefine":89}],132:[function(require,module,exports){
+},{"./source-map-generator":44,"./util":46,"amdefine":3}],46:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -41838,14 +40273,14 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":89}],133:[function(require,module,exports){
+},{"amdefine":3}],47:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],134:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -42435,7 +40870,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":133,"_process":121,"inherits":115}],135:[function(require,module,exports){
+},{"./support/isBuffer":47,"_process":35,"inherits":29}],49:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
