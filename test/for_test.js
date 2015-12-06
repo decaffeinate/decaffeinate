@@ -87,6 +87,28 @@ describe('for loops', () => {
     `);
   });
 
+  it.skip('gives `for` loops without an index an index', () => {
+    check(`
+      for [0..1]
+        2
+    `, `
+      for (var i = 0; i <= 1; i++) {
+        2;
+      }
+    `);
+  });
+
+  it.skip('gives `for` loops without an index an index that does not collide with existing bindings', () => {
+    check(`
+      for [0..1]
+        i
+    `, `
+      for (var j = 0; j <= 1; j++) {
+        i;
+      }
+    `);
+  });
+
   it('allows iterating with for-in by a specific step size', () => {
     check(`
       for a in b by 2
