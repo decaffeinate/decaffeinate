@@ -57,19 +57,24 @@ export default function trimmedNodeRange(node, source) {
         break;
 
       case '/':
-          if (state === NORMAL) {
-            // Heuristic to differentiate from division operator
-            if (source.slice(index, index + 3) === '///'
-              || !source.slice(index).match(/^\/=?\s/)) {
-              state = REGEXP;
-            }
-            lastSignificantIndex = index;
-          } else if (state === REGEXP) {
-            state = NORMAL;
-            lastSignificantIndex = index;
-          } else if (state === NORMAL) {
-            lastSignificantIndex = index;
+        if (state === NORMAL) {
+          // Heuristic to differentiate from division operator
+          if (source.slice(index, index + 3) === '///'
+            || !source.slice(index).match(/^\/=?\s/)) {
+            state = REGEXP;
           }
+          lastSignificantIndex = index;
+        } else if (state === REGEXP) {
+          state = NORMAL;
+          lastSignificantIndex = index;
+        } else if (state === NORMAL) {
+          lastSignificantIndex = index;
+        }
+        break;
+
+      case '\\':
+        // The next character is escaped and should not be considered special.
+        index++;
         break;
 
       default:

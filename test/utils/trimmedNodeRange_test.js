@@ -50,4 +50,12 @@ describe('trimmedNodeRange', function() {
     const nodeRange = trimmedNodeRange(callNode, source);
     deepEqual(nodeRange, [0, 15]);
   });
+
+  it('does not eat into escaped regexes', () => {
+    const source = '"foo".replace(/[a-z\\/]/g, "")';
+    const ast = parse(source);
+    const regexNode = ast.body.statements[0].arguments[0];
+    const nodeRange = trimmedNodeRange(regexNode, source);
+    deepEqual(nodeRange, [14, 24]);
+  });
 });
