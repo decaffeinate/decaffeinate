@@ -483,6 +483,7 @@ var ORDER = {
   ArrayInitialiser: ['members'],
   AssignOp: ['assignee', 'expression'],
   BitAndOp: ['left', 'right'],
+  BitNotOp: ['expression'],
   BitOrOp: ['left', 'right'],
   BitXorOp: ['left', 'right'],
   Block: ['statements'],
@@ -559,6 +560,7 @@ var ORDER = {
   UnaryNegateOp: ['expression'],
   UnaryPlusOp: ['expression'],
   Undefined: [],
+  UnsignedRightShiftOp: ['left', 'right'],
   While: ['condition', 'body']
 };
 
@@ -688,6 +690,10 @@ function isShorthandThisObjectMember(node) {
  */
 function isStaticMethod(node) {
   if (node.type !== 'AssignOp') {
+    return false;
+  }
+
+  if (!node.parentNode.parentNode || node.parentNode.parentNode.type !== 'Class') {
     return false;
   }
 
