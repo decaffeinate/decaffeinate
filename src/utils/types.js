@@ -35,9 +35,11 @@ export function isWhile(node) {
  * @returns {boolean}
  */
 export function isConsequentOrAlternate(node) {
-  const parentNode = node.parentNode;
+  const { parentNode } = node;
   return parentNode.type === 'Conditional' && (
-    parentNode.consequent === node || parentNode.alternate === node);
+    parentNode.consequent === node ||
+    parentNode.alternate === node
+  );
 }
 
 /**
