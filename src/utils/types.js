@@ -114,6 +114,10 @@ export function isStaticMethod(node) {
     return false;
   }
 
+  if (!node.parentNode.parentNode || node.parentNode.parentNode.type !== 'Class') {
+    return false;
+  }
+
   const { assignee } = node;
 
   if (assignee.type !== 'MemberAccessOp') {

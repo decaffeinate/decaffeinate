@@ -42,4 +42,12 @@ describe('member access', () => {
         .c();
     `);
   });
+
+  it('allows assignment to member expressions of functions', () => {
+    check(`
+      a.b = ->
+    `, `
+      a.b = function() {};
+    `);
+  });
 });
