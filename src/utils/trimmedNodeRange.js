@@ -3,6 +3,7 @@ const DSTRING = 2;
 const NORMAL = 3;
 const SSTRING = 4;
 const REGEXP = 5;
+const HEREGEXP = 6;
 
 /**
  * Gets the range of the node by trimming whitespace and comments off the end.
@@ -27,7 +28,9 @@ export default function trimmedNodeRange(node, source) {
 
       case '\n':
       case '\r':
-        state = NORMAL;
+        if (state !== HEREGEXP) {
+          state = NORMAL;
+        }
         break;
 
       case '#':
@@ -58,17 +61,24 @@ export default function trimmedNodeRange(node, source) {
 
       case '/':
         if (state === NORMAL) {
-          // Heuristic to differentiate from division operator
-          if (source.slice(index, index + 3) === '///'
-            || !source.slice(index).match(/^\/=?\s/)) {
+          if (source.slice(index, index + '///'.length) === '///') {
+            state = HEREGEXP;
+            index += '//'.length;
+          } else if (!source.slice(index).match(/^\/=?\s/)) {
+            // Heuristic to differentiate from division operator
             state = REGEXP;
+          } else {
+            lastSignificantIndex = index;
           }
-          lastSignificantIndex = index;
         } else if (state === REGEXP) {
           state = NORMAL;
           lastSignificantIndex = index;
-        } else if (state === NORMAL) {
-          lastSignificantIndex = index;
+        } else if (state === HEREGEXP) {
+          if (source.slice(index, index + '///'.length) === '///') {
+            state = NORMAL;
+            index += '//'.length;
+            lastSignificantIndex = index;
+          }
         }
         break;
 
