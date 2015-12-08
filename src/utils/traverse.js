@@ -116,6 +116,7 @@ const ORDER = {
   UnaryNegateOp: ['expression'],
   UnaryPlusOp: ['expression'],
   Undefined: [],
+  UnsignedRightShiftOp: ['left', 'right'],
   While: ['condition', 'body']
 };
 
