@@ -40,6 +40,7 @@ const ORDER = {
   ArrayInitialiser: ['members'],
   AssignOp: ['assignee', 'expression'],
   BitAndOp: ['left', 'right'],
+  BitNotOp: ['expression'],
   BitOrOp: ['left', 'right'],
   BitXorOp: ['left', 'right'],
   Block: ['statements'],
