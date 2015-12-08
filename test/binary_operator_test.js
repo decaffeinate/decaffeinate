@@ -44,4 +44,12 @@ describe('binary operators', () => {
       a >>> b;
     `);
   });
+
+  it('passes chained logical `or` through', () => {
+    check(`
+      a || b || c
+    `, `
+      a || b || c;
+    `);
+  });
 });
