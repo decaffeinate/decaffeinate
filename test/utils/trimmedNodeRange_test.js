@@ -58,4 +58,12 @@ describe('trimmedNodeRange', function() {
     const nodeRange = trimmedNodeRange(regexNode, source);
     deepEqual(nodeRange, [14, 24]);
   });
+
+  it('does not eat into heregexes', () => {
+    const source = '"foo".replace ///\n  foo\n///g, "bar"';
+    const ast = parse(source);
+    const regeexNode = ast.body.statements[0].arguments[0];
+    const nodeRange = trimmedNodeRange(regeexNode, source);
+    deepEqual(nodeRange, [14, 28]);
+  });
 });
