@@ -106,7 +106,8 @@ describe('automatic conversions', function() {
           c: d
         `, `
           ({a: b,
-          c: d});
+          c: d
+          });
         `);
       });
     });

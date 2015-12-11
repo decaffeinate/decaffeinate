@@ -84,7 +84,8 @@ describe('parameter assignment', () => {
       ({a(b) {
           this.b = b;
           return this.b;
-      }});
+      }
+      });
     `);
   });
 
