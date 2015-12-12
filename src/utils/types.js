@@ -2,10 +2,45 @@
  * Determines whether a node represents a function, i.e. `->` or `=>`.
  *
  * @param {Object} node
+ * @param {boolean=} allowBound
  * @returns {boolean}
  */
-export function isFunction(node) {
-  return node.type === 'Function' || node.type === 'BoundFunction';
+export function isFunction(node, allowBound=true) {
+  return node.type === 'Function' || (allowBound && node.type === 'BoundFunction');
+}
+
+/**
+ * Determines  whether a node is the body of a function.
+ *
+ * @example
+ *
+ *   -> 1  # the literal `1` is the function body
+ *
+ *   ->
+ *     2   # the block containing `2` as a statement is the function body
+ *
+ * @param node
+ * @param {boolean=} allowBound
+ * @returns {boolean}
+ */
+export function isFunctionBody(node, allowBound=true) {
+  const { parentNode } = node;
+
+  if (!parentNode) {
+    return false;
+  }
+
+  return isFunction(parentNode, allowBound) && parentNode.body === node;
+}
+
+/**
+ * Determines whether the node is a conditional (i.e. `if` or `unless`).
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isConditional(node) {
+  return node.type === 'Conditional';
 }
 
 /**
@@ -36,7 +71,7 @@ export function isWhile(node) {
  */
 export function isConsequentOrAlternate(node) {
   const { parentNode } = node;
-  return parentNode.type === 'Conditional' && (
+  return parentNode && parentNode.type === 'Conditional' && (
     parentNode.consequent === node ||
     parentNode.alternate === node
   );
