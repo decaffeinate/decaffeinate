@@ -1,5 +1,6 @@
 import traverse from './traverse';
-import { isFunction } from './types';
+import isExpressionResultUsed from './isExpressionResultUsed';
+import { isConsequentOrAlternate, isFunction, isFunctionBody } from './types';
 
 /**
  * Determines whether the given node is implicitly returned.
@@ -15,11 +16,13 @@ export default function isImplicitlyReturned(node) {
   switch (node.type) {
     case 'Return':
     case 'Block':
-    case 'Conditional':
     case 'Try':
     case 'Throw':
     case 'Switch':
       return false;
+
+    case 'Conditional':
+      return node._expression ? couldContainImplicitReturn(node) : false;
 
     case 'ForIn':
     case 'ForOf':
@@ -48,7 +51,7 @@ function couldContainImplicitReturn(node) {
     return false;
   }
 
-  if (parentNode.type === 'Function' && node === parentNode.body) {
+  if (isFunctionBody(node, false)) {
     /*
      * Function body is nearly always in return position, whether it's a block:
      *
@@ -103,7 +106,7 @@ function couldContainImplicitReturn(node) {
     return isLastStatement(node) && couldContainImplicitReturn(parentNode);
   }
 
-  if (parentNode.type === 'Conditional' && node !== parentNode.condition) {
+  if (isConsequentOrAlternate(node)) {
     /*
      * A consequent or alternate is in return position iff its parent
      * conditional is:
@@ -113,7 +116,7 @@ function couldContainImplicitReturn(node) {
      *   else
      *     mightBeImplicitlyReturned
      */
-    return couldContainImplicitReturn(parentNode);
+    return !isExpressionResultUsed(parentNode) && couldContainImplicitReturn(parentNode);
   }
 
   if (parentNode.type === 'Try' && node !== parentNode.catchAssignee) {

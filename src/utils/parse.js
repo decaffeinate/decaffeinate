@@ -1,8 +1,9 @@
 import Scope from './Scope';
 import buildLineAndColumnMap from './buildLineAndColumnMap';
 import findCounterpartCharacter from './findCounterpartCharacter';
+import isExpressionResultUsed from './isExpressionResultUsed';
 import traverse from './traverse';
-import { isBinaryOperator, isShorthandThisObjectMember } from './types';
+import { isBinaryOperator, isConditional, isShorthandThisObjectMember } from './types';
 import { parse as coffeeScriptParse } from 'coffee-script-redux';
 
 /**
@@ -16,11 +17,23 @@ export default function parse(source) {
   const map = buildLineAndColumnMap(source);
 
   traverse(ast, function(node) {
+    attachMetadata(node);
     attachScope(node);
     fixRange(node, map, source);
   });
 
   return ast;
+}
+
+/**
+ * @param {Object} node
+ * @private
+ */
+function attachMetadata(node) {
+  if (isConditional(node) && isExpressionResultUsed(node)) {
+    // This conditional is used in an expression context, e.g. `a(if b then c)`.
+    node._expression = true;
+  }
 }
 
 /**

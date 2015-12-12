@@ -60,4 +60,12 @@ describe('implicit return', () => {
 
     check(`-> throw 1`, `(function() { throw 1; });`);
   });
+
+  it('adds it outside a conditional that turns into a ternary expression', () => {
+    check(`
+      -> if a then b else c
+    `, `
+      (function() { return a ? b : c; });
+    `);
+  });
 });

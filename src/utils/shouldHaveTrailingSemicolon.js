@@ -52,7 +52,6 @@ export default function shouldHaveTrailingSemicolon(node) {
   switch (node.type) {
     case 'Block':
     case 'ClassProtoAssignOp':
-    case 'Conditional':
     case 'Constructor':
     case 'ForIn':
     case 'ForOf':
@@ -61,6 +60,9 @@ export default function shouldHaveTrailingSemicolon(node) {
     case 'While':
     case 'Switch':
       return false;
+
+    case 'Conditional':
+      return isExpressionResultUsed(node);
 
     case 'Class':
       return !node.nameAssignee || isImplicitlyReturned(node);
