@@ -56,7 +56,8 @@ describe('objects', () => {
       b  :  -> false
     `, `
       ({a() { return true; },
-      b() { return false; }});
+      b() { return false; }
+      });
     `);
   });
 
@@ -133,6 +134,31 @@ describe('objects', () => {
       {@a}
     `, `
       ({a: this.a});
+    `);
+  });
+
+  it('appends trailing semicolons after multi-line objects correctly', () => {
+    // FIXME: Really, this should have a better result:
+    //
+    //   var a = {
+    //     b: {
+    //       c: d
+    //     }
+    //   };
+    //
+    check(`
+      a =
+        b:
+          c: d
+
+      e = f
+    `, `
+      var a =
+        {b:
+          {c: d}
+        };
+
+      var e = f;
     `);
   });
 });

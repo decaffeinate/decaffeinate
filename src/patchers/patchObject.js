@@ -1,3 +1,4 @@
+import appendClosingBrace from '../utils/appendClosingBrace';
 import isImplicitObject from '../utils/isImplicitObject';
 import isImplicitlyReturned from '../utils/isImplicitlyReturned';
 import { isCall, isConsequentOrAlternate, isShorthandThisObjectMember } from '../utils/types';
@@ -39,7 +40,10 @@ export function patchObjectEnd(node, patcher) {
   if (node.type === 'ObjectInitialiser') {
     if (!isCall(node.parentNode)) {
       if (patcher.original[node.range[0]] !== '{') {
-        patcher.insert(node.range[1], isObjectAsStatement(node) ? '})' : '}');
+        const insertionPoint = appendClosingBrace(node, patcher);
+        if (isObjectAsStatement(node)) {
+          patcher.insert(insertionPoint, ')');
+        }
       } else if (isObjectAsStatement(node)) {
         patcher.insert(node.range[1], ')');
       }
@@ -47,7 +51,7 @@ export function patchObjectEnd(node, patcher) {
       if (node !== node.parentNode.arguments[node.parentNode.arguments.length - 1]) {
         // Not the last argument, which is handled by `patchCalls`, so we handle it.
         if (isImplicitObject(node, patcher.original)) {
-          patcher.insert(node.range[1], '}');
+          appendClosingBrace(node, patcher);
         }
       }
     }
