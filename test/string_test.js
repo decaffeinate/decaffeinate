@@ -64,4 +64,24 @@ describe('strings', () => {
       bar\`;
     `);
   });
+
+  it('appends semicolons after the parentheses of a function call with a triple-double-quoted multi-line string as argument', () => {
+    check(`
+      a("""line1
+      line2""")
+    `, `
+      a(\`line1
+      line2\`);
+    `);
+  });
+
+  it('appends semicolons after the parentheses of a function call with a triple-single-quoted multi-line string as argument', () => {
+    check(`
+      a('''line1
+      line2''')
+    `, `
+      a(\`line1
+      line2\`);
+    `);
+  });
 });
