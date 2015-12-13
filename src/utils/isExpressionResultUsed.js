@@ -12,11 +12,20 @@ export default function isExpressionResultUsed(node) {
     return false;
   }
 
+  if (node._expression) {
+    return true;
+  }
+
   if (isConsequentOrAlternate(node)) {
     return false;
   }
 
-  const parentNode = node.parentNode;
+  const { parentNode } = node;
+
+  if (!parentNode) {
+    return false;
+  }
+
   if (parentNode.type === 'Function' && parentNode.parameters.indexOf(node) >= 0) {
     return false;
   }

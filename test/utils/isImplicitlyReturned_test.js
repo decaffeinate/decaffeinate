@@ -163,4 +163,12 @@ describe('isImplicitlyReturned', () => {
     strictEqual(node.type, 'While');
     ok(!isImplicitlyReturned(node));
   });
+
+  it('is true for conditional but false for consequent and alternate in the return position in a function', () => {
+    const node = parse('-> if a then b else c').body.statements[0].body;
+    strictEqual(node.type, 'Conditional');
+    ok(isImplicitlyReturned(node), 'conditional should be returned');
+    ok(!isImplicitlyReturned(node.consequent), 'consequent should not be returned');
+    ok(!isImplicitlyReturned(node.alternate), 'alternate should not be returned');
+  });
 });

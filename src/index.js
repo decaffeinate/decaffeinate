@@ -93,10 +93,10 @@ export function convert(source) {
       return;
     }
 
+    patchReturns(node, patcher);
     patchConditionalStart(node, patcher);
     patchWhileStart(node, patcher);
     patchRegularExpressions(node, patcher);
-    patchReturns(node, patcher);
     patchOf(node, patcher);
     patchKeywords(node, patcher);
     patchThis(node, patcher);
