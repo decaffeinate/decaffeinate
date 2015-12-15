@@ -579,6 +579,35 @@ function childPropertyNames(node) {
 }
 
 /**
+ * Determines whether the node is a boolean, optionally with the given value.
+ *
+ * @param {Object} node
+ * @param {boolean|string=} value
+ * @returns {boolean}
+ */
+function isBool(node) {
+  var value = arguments.length <= 1 || arguments[1] === undefined ? undefined : arguments[1];
+
+  if (node.type !== 'Bool') {
+    return false;
+  }
+
+  switch (typeof value === 'undefined' ? 'undefined' : babelHelpers.typeof(value)) {
+    case 'undefined':
+      return true;
+
+    case 'boolean':
+      return node.data === value;
+
+    case 'string':
+      return node.raw === value;
+
+    default:
+      throw new Error('Invalid boolean test value: ' + value + '. Expected a boolean or string.');
+  }
+}
+
+/**
  * Determines whether a node represents a function, i.e. `->` or `=>`.
  *
  * @param {Object} node
@@ -1198,6 +1227,20 @@ function shrinkPastParentheses(node, map, source, adjustPosition) {
   }
 
   return false;
+}
+
+/**
+ * Replace "off" and "on" boolean values with "false" and "true".
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchBoolean(node, patcher) {
+  if (isBool(node, 'off')) {
+    patcher.overwrite(node.range[0], node.range[1], 'false');
+  } else if (isBool(node, 'on')) {
+    patcher.overwrite(node.range[0], node.range[1], 'true');
+  }
 }
 
 var NORMAL$1 = 0;
@@ -5014,6 +5057,7 @@ function convert(source) {
     patchOf(node, patcher);
     patchKeywords(node, patcher);
     patchThis(node, patcher);
+    patchBoolean(node, patcher);
     patchPrototypeAccess(node, patcher);
     patchStringInterpolation(node, patcher);
     patchString(node, patcher);
