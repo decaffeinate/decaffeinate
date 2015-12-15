@@ -1,5 +1,6 @@
 import MagicString from 'magic-string';
 import parse from './utils/parse';
+import patchBoolean from './patchers/patchBoolean';
 import patchCommas from './patchers/patchCommas';
 import patchComments from './patchers/patchComments';
 import patchDeclarations from './patchers/patchDeclarations';
@@ -100,6 +101,7 @@ export function convert(source) {
     patchOf(node, patcher);
     patchKeywords(node, patcher);
     patchThis(node, patcher);
+    patchBoolean(node, patcher);
     patchPrototypeAccess(node, patcher);
     patchStringInterpolation(node, patcher);
     patchString(node, patcher);
