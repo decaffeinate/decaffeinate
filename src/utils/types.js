@@ -1,4 +1,31 @@
 /**
+ * Determines whether the node is a boolean, optionally with the given value.
+ *
+ * @param {Object} node
+ * @param {boolean|string=} value
+ * @returns {boolean}
+ */
+export function isBool(node, value=undefined) {
+  if (node.type !== 'Bool') {
+    return false;
+  }
+
+  switch (typeof value) {
+    case 'undefined':
+      return true;
+
+    case 'boolean':
+      return node.data === value;
+
+    case 'string':
+      return node.raw === value;
+
+    default:
+      throw new Error(`Invalid boolean test value: ${value}. Expected a boolean or string.`);
+  }
+}
+
+/**
  * Determines whether a node represents a function, i.e. `->` or `=>`.
  *
  * @param {Object} node
