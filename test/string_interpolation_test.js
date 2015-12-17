@@ -12,4 +12,27 @@ describe('string interpolation', () => {
   it('handles multi-line triple-quoted strings correctly', () => {
     check('a = """\n     #{b}\n     c\n    """', 'var a = `${b}\nc`;')
   });
+
+  it('handles double quotes inside triple-double quotes', () => {
+    check(`
+      a="""
+      bar="#{bar}"
+      """
+    `, `
+      var a=\`bar="\${bar}"\`;
+    `);
+  });
+
+  it.skip('handles comments inside interpolations', () => {
+    // CSR can't parse this.
+    check(`
+      a="#{
+      b # foo!
+      }"
+    `, `
+      var a=\`\${
+      b // foo!
+      }\`;
+    `);
+  });
 });
