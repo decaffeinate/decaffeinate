@@ -52,7 +52,7 @@ export default function lex(source, index=0) {
 
       case SSTRING:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('\'')) {
           setState(NORMAL);
         } else {
@@ -62,7 +62,7 @@ export default function lex(source, index=0) {
 
       case DSTRING:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('"')) {
           setState(NORMAL);
         } else {
@@ -88,7 +88,7 @@ export default function lex(source, index=0) {
 
       case TSSTRING:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('\'\'\'')) {
           setState(NORMAL);
         } else {
@@ -98,7 +98,7 @@ export default function lex(source, index=0) {
 
       case TDSTRING:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('"""')) {
           setState(NORMAL);
         } else {
@@ -108,7 +108,7 @@ export default function lex(source, index=0) {
 
       case REGEXP:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('/')) {
           // TODO: Consume flags.
           setState(NORMAL);
@@ -119,7 +119,7 @@ export default function lex(source, index=0) {
 
       case HEREGEXP:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('///')) {
           // TODO: Consume flags.
           setState(NORMAL);
