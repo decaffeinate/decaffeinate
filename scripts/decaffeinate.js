@@ -1299,7 +1299,7 @@ function lex(source) {
 
       case SSTRING:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('\'')) {
           setState(NORMAL);
         } else {
@@ -1309,7 +1309,7 @@ function lex(source) {
 
       case DSTRING:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('"')) {
           setState(NORMAL);
         } else {
@@ -1335,7 +1335,7 @@ function lex(source) {
 
       case TSSTRING:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('\'\'\'')) {
           setState(NORMAL);
         } else {
@@ -1345,7 +1345,7 @@ function lex(source) {
 
       case TDSTRING:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('"""')) {
           setState(NORMAL);
         } else {
@@ -1355,7 +1355,7 @@ function lex(source) {
 
       case REGEXP:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('/')) {
           // TODO: Consume flags.
           setState(NORMAL);
@@ -1366,7 +1366,7 @@ function lex(source) {
 
       case HEREGEXP:
         if (consume('\\')) {
-          index += 2;
+          index++;
         } else if (consume('///')) {
           // TODO: Consume flags.
           setState(NORMAL);
