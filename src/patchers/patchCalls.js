@@ -56,7 +56,7 @@ export function patchCallOpening(node, patcher) {
       if (callee.line === lastArgument.line) {
         patcher.overwrite(
           callee.range[1],
-          firstArgument.range[0],
+          rangeIncludingParentheses(firstArgument, patcher.original)[0],
           isImplicitObject(firstArgument, patcher.original) ? '({' : '('
         );
       } else {
