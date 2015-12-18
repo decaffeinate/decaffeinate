@@ -1243,21 +1243,163 @@ function patchBoolean(node, patcher) {
   }
 }
 
-var NORMAL$1 = 0;
-var LINE_COMMENT = 1;
-var BLOCK_COMMENT = 2;
-var DQUOTE = 3;
-var SQUOTE = 4;
-var FORWARD_SLASH = 5;
+var NORMAL = 1;
+var COMMENT = 2;
+var HERECOMMENT = 3;
+var DSTRING = 4;
+var SSTRING = 5;
+var TDSTRING = 6;
+var TSSTRING = 7;
+var REGEXP = 8;
+var HEREGEXP = 9;
+var EOF = 10;
 
-var NEWLINE_CODE = 10;
-var HASH_CODE = 35;
-var DQUOTE_CODE = 34;
-var SQUOTE_CODE = 39;
-var BACKWARD_SLASH = 92;
-var FORWARD_SLASH_CODE = 47;
+/**
+ * Provides basic, one-step-at-a-time CoffeeScript lexing. Yeah, I know, this
+ * shouldn't exist and we should just use the official CoffeeScript
+ * parser/lexer. See https://github.com/eventualbuddha/decaffeinate/issues/65.
+ *
+ * @param {string} source
+ * @param {number=} index
+ * @returns {function(): {index: number, state: number, previousState: number}}
+ */
+function lex(source) {
+  var index = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
-var BLOCK_COMMENT_DELIMITER$1 = '###';
+  var state = NORMAL;
+  return function step() {
+    var previousState = state;
+
+    if (index >= source.length) {
+      setState(EOF);
+    }
+
+    switch (state) {
+      case NORMAL:
+        if (consume('"""')) {
+          setState(TDSTRING);
+        } else if (consume('"')) {
+          setState(DSTRING);
+        } else if (consume('\'\'\'')) {
+          setState(TSSTRING);
+        } else if (consume('\'')) {
+          setState(SSTRING);
+        } else if (consume('###')) {
+          setState(HERECOMMENT);
+        } else if (consume('#')) {
+          setState(COMMENT);
+        } else if (consume('///')) {
+          setState(HEREGEXP);
+        } else if (!hasNext(/^\/=?\s/) && consume('/')) {
+          setState(REGEXP);
+        } else {
+          index++;
+        }
+        break;
+
+      case SSTRING:
+        if (consume('\\')) {
+          index += 2;
+        } else if (consume('\'')) {
+          setState(NORMAL);
+        } else {
+          index++;
+        }
+        break;
+
+      case DSTRING:
+        if (consume('\\')) {
+          index += 2;
+        } else if (consume('"')) {
+          setState(NORMAL);
+        } else {
+          index++;
+        }
+        break;
+
+      case COMMENT:
+        if (consume('\n') || consume('\r\n') || consume('\r')) {
+          setState(NORMAL);
+        } else {
+          index++;
+        }
+        break;
+
+      case HERECOMMENT:
+        if (consume('###')) {
+          setState(NORMAL);
+        } else {
+          index++;
+        }
+        break;
+
+      case TSSTRING:
+        if (consume('\\')) {
+          index += 2;
+        } else if (consume('\'\'\'')) {
+          setState(NORMAL);
+        } else {
+          index++;
+        }
+        break;
+
+      case TDSTRING:
+        if (consume('\\')) {
+          index += 2;
+        } else if (consume('"""')) {
+          setState(NORMAL);
+        } else {
+          index++;
+        }
+        break;
+
+      case REGEXP:
+        if (consume('\\')) {
+          index += 2;
+        } else if (consume('/')) {
+          // TODO: Consume flags.
+          setState(NORMAL);
+        } else {
+          index++;
+        }
+        break;
+
+      case HEREGEXP:
+        if (consume('\\')) {
+          index += 2;
+        } else if (consume('///')) {
+          // TODO: Consume flags.
+          setState(NORMAL);
+        } else {
+          index++;
+        }
+        break;
+    }
+
+    return { index: index, state: state, previousState: previousState };
+  };
+
+  function consume(string) {
+    if (hasNext(string)) {
+      index += string.length;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function setState(newState) {
+    state = newState;
+  }
+
+  function hasNext(value) {
+    if (typeof value === 'string') {
+      return source.slice(index, index + value.length) === value;
+    } else {
+      return value.test(source.slice(index));
+    }
+  }
+}
 
 /**
  * Returns the ranges of the sections of source code that are not comments.
@@ -1267,95 +1409,46 @@ var BLOCK_COMMENT_DELIMITER$1 = '###';
  */
 function rangesOfComments(source) {
   var result = [];
-  var index = 0;
-  var end = source.length;
-  var state = 0;
+  var step = lex(source);
+  var index = undefined;
+  var state = undefined;
+  var previousState = undefined;
+  var commentStartIndex = undefined;
+  var type = undefined;
 
-  var rangeStart = 0;
+  while (state !== EOF) {
+    var _step = step();
 
-  while (index < end) {
-    var c = source.charCodeAt(index);
+    index = _step.index;
+    state = _step.state;
+    previousState = _step.previousState;
 
-    switch (state) {
-      case NORMAL$1:
-        if (c === HASH_CODE) {
-          rangeStart = index;
-          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER$1.length) === BLOCK_COMMENT_DELIMITER$1) {
-            state = BLOCK_COMMENT;
-            index += BLOCK_COMMENT_DELIMITER$1.length;
+    switch (previousState) {
+      case NORMAL:
+        if (state === COMMENT) {
+          commentStartIndex = index - '#'.length;
+          if (commentStartIndex === 0 && source[index] === '!') {
+            type = 'shebang';
           } else {
-            state = LINE_COMMENT;
+            type = 'line';
           }
-        } else if (c === DQUOTE_CODE) {
-          state = DQUOTE;
-        } else if (c === SQUOTE_CODE) {
-          state = SQUOTE;
-        } else if (c === FORWARD_SLASH_CODE && (source.slice(index, index + 3) === '///'
-        // Heuristic to differentiate from division operator
-         || !source.slice(index).match(/^\/=?\s/))) {
-          state = FORWARD_SLASH;
+        } else if (state === HERECOMMENT) {
+          commentStartIndex = index - '###'.length;
+          type = 'block';
         }
         break;
 
-      case LINE_COMMENT:
-        if (c === NEWLINE_CODE) {
-          addComment();
-          state = NORMAL$1;
-        }
-        break;
-
-      case BLOCK_COMMENT:
-        if (c === HASH_CODE) {
-          if (source.slice(index, index + BLOCK_COMMENT_DELIMITER$1.length) === BLOCK_COMMENT_DELIMITER$1) {
-            index += BLOCK_COMMENT_DELIMITER$1.length;
-            addComment();
-            state = NORMAL$1;
-          }
-        }
-        break;
-
-      case DQUOTE:
-        if (c === DQUOTE_CODE) {
-          state = NORMAL$1;
-        } else if (c === BACKWARD_SLASH) {
-          index++;
-        }
-        break;
-
-      case SQUOTE:
-        if (c === SQUOTE_CODE) {
-          state = NORMAL$1;
-        } else if (c === BACKWARD_SLASH) {
-          index++;
-        }
-        break;
-
-      case FORWARD_SLASH:
-        if (c === FORWARD_SLASH_CODE) {
-          state = NORMAL$1;
+      case COMMENT:
+      case HERECOMMENT:
+        if (state === NORMAL || state === EOF) {
+          result.push({
+            start: commentStartIndex,
+            end: index,
+            type: type
+          });
         }
         break;
     }
-
-    index++;
-  }
-
-  if (state === LINE_COMMENT || state === BLOCK_COMMENT) {
-    addComment();
-  }
-
-  function addComment() {
-    var type = undefined;
-
-    // Check for shebang lines.
-    if (state === BLOCK_COMMENT) {
-      type = 'block';
-    } else if (rangeStart === 0 && source[1] === '!') {
-      type = 'shebang';
-    } else {
-      type = 'line';
-    }
-    result.push({ start: rangeStart, end: index, type: type });
   }
 
   return result;
@@ -1382,27 +1475,6 @@ function stripComments(source) {
   return result;
 }
 
-var NORMAL = 1;
-var COMMENT = 2;
-var DSTRING = 3;
-var SSTRING = 4;
-var TDSTRING = 5;
-var TSSTRING = 6;
-var REGEXP = 7;
-var HEREGEXP = 8;
-
-function newlineTerminatesState(state) {
-  switch (state) {
-    case TDSTRING:
-    case TSSTRING:
-    case HEREGEXP:
-      return false;
-
-    default:
-      return true;
-  }
-}
-
 /**
  * Gets the range of the node by trimming whitespace and comments off the end.
  * CoffeeScriptRedux parses nodes by consuming up until the start of the next
@@ -1415,115 +1487,25 @@ function newlineTerminatesState(state) {
  */
 function trimmedNodeRange(node, source) {
   var range = node.range;
+  var state = undefined;
+  var previousState = undefined;
   var index = range[0];
-  var state = NORMAL;
-  var lastSignificantIndex = undefined;
-  while (range[0] <= index && index < range[1]) {
-    switch (source[index]) {
-      case ' ':
-      case '\t':
-        break;
+  var end = undefined;
+  var step = lex(source, range[0]);
 
-      case '\n':
-      case '\r':
-        if (newlineTerminatesState(state)) {
-          state = NORMAL;
-        }
-        break;
+  while (index < range[1]) {
+    var _step = step();
 
-      case '#':
-        if (state === NORMAL) {
-          state = COMMENT;
-        }
-        break;
+    index = _step.index;
+    state = _step.state;
+    previousState = _step.previousState;
 
-      case '"':
-        if (state === NORMAL) {
-          if (hasNext('"""')) {
-            state = TDSTRING;
-            index += '""'.length;
-          } else {
-            state = DSTRING;
-          }
-        } else if (state === DSTRING) {
-          state = NORMAL;
-          lastSignificantIndex = index;
-        } else if (state === TDSTRING) {
-          if (hasNext('"""')) {
-            state = NORMAL;
-            index += '""'.length;
-            lastSignificantIndex = index;
-          }
-        }
-        break;
-
-      case "'":
-        if (state === NORMAL) {
-          if (hasNext("'''")) {
-            state = TSSTRING;
-            index += "''".length;
-          } else {
-            state = SSTRING;
-          }
-        } else if (state === SSTRING) {
-          state = NORMAL;
-          lastSignificantIndex = index;
-        } else if (state === TSSTRING) {
-          if (hasNext("'''")) {
-            state = NORMAL;
-            index += "''".length;
-            lastSignificantIndex = index;
-          }
-        }
-        break;
-
-      case '/':
-        if (state === NORMAL) {
-          if (hasNext('///')) {
-            state = HEREGEXP;
-            index += '//'.length;
-          } else if (!hasNext(/^\/=?\s/)) {
-            // Heuristic to differentiate from division operator
-            state = REGEXP;
-          } else {
-            lastSignificantIndex = index;
-          }
-        } else if (state === REGEXP) {
-          state = NORMAL;
-          lastSignificantIndex = index;
-        } else if (state === HEREGEXP) {
-          if (hasNext('///')) {
-            state = NORMAL;
-            index += '//'.length;
-            lastSignificantIndex = index;
-          }
-        }
-        break;
-
-      case '\\':
-        // The next character is escaped and should not be considered special.
-        index++;
-        break;
-
-      default:
-        if (state === NORMAL) {
-          lastSignificantIndex = index;
-        }
-        break;
-    }
-
-    index++;
-  }
-
-  function hasNext(value) {
-    if (typeof value === 'string') {
-      return source.slice(index, index + value.length) === value;
-    } else {
-      return value.test(source.slice(index));
+    if (state === NORMAL && previousState !== COMMENT && !/^\s$/.test(source[index - 1])) {
+      end = index;
     }
   }
 
-  return [range[0], lastSignificantIndex + 1];
+  return [range[0], end];
 }
 
 /**
@@ -3676,7 +3658,7 @@ function patchCallOpening(node, patcher) {
       var lastArgument = callArguments[callArguments.length - 1];
 
       if (callee.line === lastArgument.line) {
-        patcher.overwrite(callee.range[1], firstArgument.range[0], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
+        patcher.overwrite(callee.range[1], rangeIncludingParentheses(firstArgument, patcher.original)[0], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
       } else {
         patcher.insert(callee.range[1], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
       }
