@@ -9,6 +9,8 @@ export const REGEXP = 8;
 export const HEREGEXP = 9;
 export const EOF = 10;
 
+const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
+
 /**
  * Provides basic, one-step-at-a-time CoffeeScript lexing. Yeah, I know, this
  * shouldn't exist and we should just use the official CoffeeScript
@@ -110,7 +112,7 @@ export default function lex(source, index=0) {
         if (consume('\\')) {
           index++;
         } else if (consume('/')) {
-          // TODO: Consume flags.
+          while (consumeAny(REGEXP_FLAGS));
           setState(NORMAL);
         } else {
           index++;
@@ -121,7 +123,7 @@ export default function lex(source, index=0) {
         if (consume('\\')) {
           index++;
         } else if (consume('///')) {
-          // TODO: Consume flags.
+          while (consumeAny(REGEXP_FLAGS));
           setState(NORMAL);
         } else {
           index++;
@@ -131,6 +133,10 @@ export default function lex(source, index=0) {
 
     return { index, state, previousState };
   };
+
+  function consumeAny(strings) {
+    return strings.some(string => consume(string));
+  }
 
   function consume(string) {
     if (hasNext(string)) {
