@@ -6,7 +6,17 @@
  */
 export default function patchRegularExpressions(node, patcher) {
   if (node.type === 'RegExp') {
-    patcher.overwrite(node.range[0], node.range[1], `/${node.data}/${flagStringForRegularExpressionNode(node)}`);
+    const regexBody = node.raw.slice(0, 3) === '///' ?
+      // Escape slashes in block regexes.
+      node.data.replace(/\//g, '\\/') :
+      // Leave single-line regexes alone.
+      node.data;
+
+    patcher.overwrite(
+      node.range[0],
+      node.range[1],
+      `/${regexBody}/${flagStringForRegularExpressionNode(node)}`
+    );
   }
 }
 
