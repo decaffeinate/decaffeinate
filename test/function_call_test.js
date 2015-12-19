@@ -24,4 +24,17 @@ describe('function calls', () => {
       var a= new c(([b()]));
     `);
   });
+
+  it('places parentheses in calls with multi-line function arguments after the closing brace', () => {
+    check(`
+      promise.then ->
+        b # c
+      d
+    `, `
+      promise.then(function() {
+        return b; // c
+      });
+      d;
+    `);
+  });
 });
