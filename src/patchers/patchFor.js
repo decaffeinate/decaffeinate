@@ -44,7 +44,7 @@ export function patchForEnd(node, patcher) {
     } else if (parentNode.type === 'ForOf') {
       // e.g. `for key of object` -> `for (var key in object) {`
       //                                                    ^^^
-      patcher.insert(rangeIncludingParentheses(node, patcher.original)[1], ') {');
+      patcher.insert(rangeIncludingParentheses(node.range, patcher.original)[1], ') {');
     }
   }
 

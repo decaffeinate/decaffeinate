@@ -56,7 +56,7 @@ export function patchCallOpening(node, patcher) {
       if (callee.line === lastArgument.line) {
         patcher.overwrite(
           callee.range[1],
-          rangeIncludingParentheses(firstArgument, patcher.original)[0],
+          rangeIncludingParentheses(firstArgument.range, patcher.original)[0],
           isImplicitObject(firstArgument, patcher.original) ? '({' : '('
         );
       } else {
@@ -139,6 +139,6 @@ export function patchCallClosing(node, patcher) {
  * @returns {boolean}
  */
 function callHasParentheses(callee, source) {
-  const calleeRangeIncludingParentheses = rangeIncludingParentheses(callee, source);
+  const calleeRangeIncludingParentheses = rangeIncludingParentheses(callee.range, source);
   return source[calleeRangeIncludingParentheses[1]] === '(';
 }
