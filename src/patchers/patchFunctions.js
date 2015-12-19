@@ -1,7 +1,7 @@
 import appendClosingBrace from '../utils/appendClosingBrace';
+import appendToNode from '../utils/appendToNode';
 import isMultiline from '../utils/isMultiline';
 import isStatement from '../utils/isStatement';
-import shouldHaveTrailingSemicolon from '../utils/shouldHaveTrailingSemicolon';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 import { isFunction, isStaticMethod } from '../utils/types';
 
@@ -181,14 +181,11 @@ export function patchFunctionEnd(node, patcher) {
       functionClose += ')';
     }
 
-    if (shouldHaveTrailingSemicolon(node)) {
-      // Handle the closing semicolon here because otherwise it's difficult to
-      // reproduce the insertion position in `patchSemicolons`.
-      functionClose += ';';
-    }
-
-    if (functionClose) {
-      patcher.insert(insertionPoint, functionClose);
-    }
+    appendToNode(
+      node,
+      patcher,
+      functionClose,
+      insertionPoint
+    );
   }
 }

@@ -1,3 +1,4 @@
+import appendToNode from './appendToNode';
 import getIndent from './getIndent';
 import isMultiline from './isMultiline';
 import trimmedNodeRange from './trimmedNodeRange';
@@ -25,9 +26,11 @@ export default function appendClosingBrace(node, patcher) {
 
   let insertionPoint = seekToEndOfStatementOrLine(source, originalInsertionPoint);
 
-  patcher.insert(
-    insertionPoint,
-    `\n${getIndent(source, node.range[0])}}`
+  appendToNode(
+    node,
+    patcher,
+    `\n${getIndent(source, node.range[0])}}`,
+    insertionPoint
   );
 
   return insertionPoint;

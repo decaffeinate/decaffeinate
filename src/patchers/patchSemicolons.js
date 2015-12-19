@@ -1,8 +1,9 @@
+import appendToNode from '../utils/appendToNode';
 import isFollowedBy from '../utils/isFollowedBy';
 import rangeIncludingParentheses from '../utils/rangeIncludingParentheses';
 import shouldHaveTrailingSemicolon from '../utils/shouldHaveTrailingSemicolon';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
-import { isFunction } from '../utils/types';
+import { getNodeEnd } from '../utils/nodeEnd';
 
 /**
  * Adds semicolons after statements that should have semicolons.
@@ -11,13 +12,12 @@ import { isFunction } from '../utils/types';
  * @param {MagicString} patcher
  */
 export default function patchSemicolons(node, patcher) {
-  if (shouldHaveTrailingSemicolon(node) && !isFunction(node)) {
+  if (shouldHaveTrailingSemicolon(node)) {
     const source = patcher.original;
     if (!isFollowedBy(node, source, ';')) {
-      patcher.insert(
-        rangeIncludingParentheses(trimmedNodeRange(node, source), source)[1],
-        ';'
-      );
+      const expectedInsertionPoint = rangeIncludingParentheses(trimmedNodeRange(node, source), source)[1];
+      const insertionPoint = Math.max(getNodeEnd(node), expectedInsertionPoint);
+      appendToNode(node, patcher, ';', insertionPoint);
     }
   }
 }
