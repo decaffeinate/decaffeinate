@@ -1998,6 +1998,47 @@ function patchReturns(node, patcher) {
 }
 
 /**
+ * Mark the index which denotes the end of the node, i.e. the place where any
+ * new content should go.
+ *
+ * @param {Object} node
+ * @param {number} index
+ */
+function markNodeEnd(node, index) {
+  node._end = index;
+  var parentNode = node;
+  while (parentNode = parentNode.parentNode) {
+    parentNode._end = index;
+  }
+}
+
+/**
+ * Gets the end index of the node, i.e. the place where any new content should
+ * go.
+ *
+ * @param {Object} node
+ * @returns {number}
+ */
+function getNodeEnd(node) {
+  return '_end' in node ? node._end : node.range[1];
+}
+
+/**
+ * Appends content to a node, marking the index for future appends.
+ *
+ * @param {Object} node
+ * @param {MagicString} patcher
+ * @param {string} content
+ * @param {number=} index
+ */
+function appendToNode(node, patcher, content) {
+  var index = arguments.length <= 3 || arguments[3] === undefined ? getNodeEnd(node) : arguments[3];
+
+  patcher.insert(index, content);
+  markNodeEnd(node, index);
+}
+
+/**
  * Determines whether a node is followed by a particular token.
  *
  * @param {Object} node
@@ -2019,6 +2060,27 @@ function isFollowedBy(node, source, token) {
   }
 
   return false;
+}
+
+/**
+ * Gets the range of a node when including the parentheses surrounding it.
+ *
+ * @param {number[]} range
+ * @param {string} source
+ * @returns {number[]}
+ */
+function rangeIncludingParentheses(range, source) {
+  var _range = babelHelpers.slicedToArray(range, 2);
+
+  var start = _range[0];
+  var end = _range[1];
+
+  while (source[start - 1] === '(' && source[end] === ')') {
+    start--;
+    end++;
+  }
+
+  return [start, end];
 }
 
 /**
@@ -2101,14 +2163,12 @@ function shouldHaveTrailingSemicolon(node) {
  * @param {MagicString} patcher
  */
 function patchSemicolons(node, patcher) {
-  if (shouldHaveTrailingSemicolon(node) && !isFunction(node)) {
-    if (!isFollowedBy(node, patcher.original, ';')) {
-      var nodeRange = trimmedNodeRange(node, patcher.original);
-      while (patcher.original[nodeRange[0]] === '(' && patcher.original[nodeRange[1]] === ')') {
-        nodeRange[0]--;
-        nodeRange[1]++;
-      }
-      patcher.insert(nodeRange[1], ';');
+  if (shouldHaveTrailingSemicolon(node)) {
+    var source = patcher.original;
+    if (!isFollowedBy(node, source, ';')) {
+      var expectedInsertionPoint = rangeIncludingParentheses(trimmedNodeRange(node, source), source)[1];
+      var insertionPoint = Math.max(getNodeEnd(node), expectedInsertionPoint);
+      appendToNode(node, patcher, ';', insertionPoint);
     }
   }
 }
@@ -3601,27 +3661,6 @@ function isImplicitObject(node, source) {
 }
 
 /**
- * Gets the range of a node when including the parentheses surrounding it.
- *
- * @param {Object} node
- * @param {string} source
- * @returns {number[]}
- */
-function rangeIncludingParentheses(node, source) {
-  var _node$range = babelHelpers.slicedToArray(node.range, 2);
-
-  var start = _node$range[0];
-  var end = _node$range[1];
-
-  while (source[start - 1] === '(' && source[end] === ')') {
-    start--;
-    end++;
-  }
-
-  return [start, end];
-}
-
-/**
  * Adds tokens necessary to open a function call.
  *
  * @param {Object} node
@@ -3672,7 +3711,7 @@ function patchCallOpening(node, patcher) {
       var lastArgument = callArguments[callArguments.length - 1];
 
       if (callee.line === lastArgument.line) {
-        patcher.overwrite(callee.range[1], rangeIncludingParentheses(firstArgument, patcher.original)[0], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
+        patcher.overwrite(callee.range[1], rangeIncludingParentheses(firstArgument.range, patcher.original)[0], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
       } else {
         patcher.insert(callee.range[1], isImplicitObject(firstArgument, patcher.original) ? '({' : '(');
       }
@@ -3729,10 +3768,10 @@ function patchCallClosing(node, patcher) {
       var lastArgumentRange = trimmedNodeRange(lastArgument, patcher.original);
 
       if (callee.line === lastArgument.line) {
-        patcher.insert(lastArgumentRange[1], isImplicitObject(lastArgument, patcher.original) ? '})' : ')');
+        appendToNode(lastArgument, patcher, isImplicitObject(lastArgument, patcher.original) ? '})' : ')', Math.max(lastArgumentRange[1], getNodeEnd(lastArgument)));
       } else {
         var indent = getIndent(patcher.original, callee.range[1]);
-        patcher.insert(lastArgumentRange[1], isImplicitObject(lastArgument, patcher.original) ? '\n' + indent + '})' : '\n' + indent + ')');
+        appendToNode(lastArgument, patcher, isImplicitObject(lastArgument, patcher.original) ? '\n' + indent + '})' : '\n' + indent + ')', Math.max(lastArgumentRange[1], getNodeEnd(lastArgument)));
       }
     }
   }
@@ -3744,7 +3783,7 @@ function patchCallClosing(node, patcher) {
  * @returns {boolean}
  */
 function callHasParentheses(callee, source) {
-  var calleeRangeIncludingParentheses = rangeIncludingParentheses(callee, source);
+  var calleeRangeIncludingParentheses = rangeIncludingParentheses(callee.range, source);
   return source[calleeRangeIncludingParentheses[1]] === '(';
 }
 
@@ -3771,7 +3810,7 @@ function appendClosingBrace(node, patcher) {
 
   var insertionPoint = seekToEndOfStatementOrLine(source, originalInsertionPoint);
 
-  patcher.insert(insertionPoint, '\n' + getIndent(source, node.range[0]) + '}');
+  appendToNode(node, patcher, '\n' + getIndent(source, node.range[0]) + '}', insertionPoint);
 
   return insertionPoint;
 }
@@ -4132,7 +4171,7 @@ function patchForEnd(node, patcher) {
     } else if (parentNode.type === 'ForOf') {
       // e.g. `for key of object` -> `for (var key in object) {`
       //                                                    ^^^
-      patcher.insert(rangeIncludingParentheses(node, patcher.original)[1], ') {');
+      patcher.insert(rangeIncludingParentheses(node.range, patcher.original)[1], ') {');
     }
   }
 
@@ -4444,15 +4483,7 @@ function patchFunctionEnd(node, patcher) {
       functionClose += ')';
     }
 
-    if (shouldHaveTrailingSemicolon(node)) {
-      // Handle the closing semicolon here because otherwise it's difficult to
-      // reproduce the insertion position in `patchSemicolons`.
-      functionClose += ';';
-    }
-
-    if (functionClose) {
-      patcher.insert(insertionPoint, functionClose);
-    }
+    appendToNode(node, patcher, functionClose, insertionPoint);
   }
 }
 
