@@ -1254,6 +1254,8 @@ var REGEXP = 8;
 var HEREGEXP = 9;
 var EOF = 10;
 
+var REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
+
 /**
  * Provides basic, one-step-at-a-time CoffeeScript lexing. Yeah, I know, this
  * shouldn't exist and we should just use the official CoffeeScript
@@ -1357,7 +1359,7 @@ function lex(source) {
         if (consume('\\')) {
           index++;
         } else if (consume('/')) {
-          // TODO: Consume flags.
+          while (consumeAny(REGEXP_FLAGS)) {}
           setState(NORMAL);
         } else {
           index++;
@@ -1368,7 +1370,7 @@ function lex(source) {
         if (consume('\\')) {
           index++;
         } else if (consume('///')) {
-          // TODO: Consume flags.
+          while (consumeAny(REGEXP_FLAGS)) {}
           setState(NORMAL);
         } else {
           index++;
@@ -1378,6 +1380,12 @@ function lex(source) {
 
     return { index: index, state: state, previousState: previousState };
   };
+
+  function consumeAny(strings) {
+    return strings.some(function (string) {
+      return consume(string);
+    });
+  }
 
   function consume(string) {
     if (hasNext(string)) {
@@ -1945,7 +1953,13 @@ function patchPrototypeAccess(node, patcher) {
  */
 function patchRegularExpressions(node, patcher) {
   if (node.type === 'RegExp') {
-    patcher.overwrite(node.range[0], node.range[1], '/' + node.data + '/' + flagStringForRegularExpressionNode(node));
+    var regexBody = node.raw.slice(0, 3) === '///' ?
+    // Escape slashes in block regexes.
+    node.data.replace(/\//g, '\\/') :
+    // Leave single-line regexes alone.
+    node.data;
+
+    patcher.overwrite(node.range[0], node.range[1], '/' + regexBody + '/' + flagStringForRegularExpressionNode(node));
   }
 }
 
