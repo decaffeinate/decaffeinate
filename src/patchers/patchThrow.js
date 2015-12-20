@@ -15,7 +15,7 @@ export function patchThrowStart(node, patcher) {
     let str = '() => { ';
     if (patcher.original.slice(pos - LPAREN.length, pos) !== LPAREN) {
       // Doesn't start with a parenthesis, so add it to the start.
-      str += LPAREN;
+      str = LPAREN + str;
     }
     patcher.insert(pos, str);
   }
