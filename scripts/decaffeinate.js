@@ -4753,7 +4753,7 @@ function patchThrowStart(node, patcher) {
     var str = '() => { ';
     if (patcher.original.slice(pos - LPAREN.length, pos) !== LPAREN) {
       // Doesn't start with a parenthesis, so add it to the start.
-      str += LPAREN;
+      str = LPAREN + str;
     }
     patcher.insert(pos, str);
   }
