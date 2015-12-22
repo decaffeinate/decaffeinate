@@ -61,6 +61,30 @@ describe('objects', () => {
     `);
   });
 
+  it('uses computed methods for string keys', () => {
+    check(`
+      {
+        'a': -> b
+      }
+    `, `
+      ({
+        ['a']() { return b; }
+      });
+    `);
+  });
+
+  it('does not use computed properties for string keys with non-function values', () => {
+    check(`
+      {
+        'a': b
+      }
+    `, `
+      ({
+        'a': b
+      });
+    `);
+  });
+
   it('handles quoted strings as keys', () => {
     check(`
       write 301, '', 'Location': pathname+'/'

@@ -25,7 +25,12 @@ export function patchObjectStart(node, patcher) {
       }
     }
   } else if (node.type === 'ObjectInitialiserMember' && node.expression.type === 'Function') {
-    patcher.overwrite(node.key.range[1], node.expression.range[0], '');
+    if (node.key.type === 'String') {
+      patcher
+        .insert(node.key.range[0], '[')
+        .insert(node.key.range[1], ']');
+    }
+    patcher.remove(node.key.range[1], node.expression.range[0]);
   } else if (isShorthandThisObjectMember(node)) {
     // `{ @a }` -> `{ a: @a }`
     patcher.insert(node.range[0], `${node.key.data}: `);
