@@ -991,8 +991,8 @@ function isExpressionResultUsed(node) {
     return false;
   }
 
-  if (node._expression) {
-    return true;
+  if ('_expression' in node) {
+    return node._expression;
   }
 
   if (isConsequentOrAlternate(node)) {
@@ -1005,6 +1005,10 @@ function isExpressionResultUsed(node) {
     return false;
   }
 
+  if (parentNode.type === 'AssignOp') {
+    return node === parentNode.expression;
+  }
+
   if (parentNode.type === 'Function' && parentNode.parameters.indexOf(node) >= 0) {
     return false;
   }
@@ -1014,6 +1018,19 @@ function isExpressionResultUsed(node) {
   }
 
   return isImplicitlyReturned(node);
+}
+
+function wantsToBeStatement(node) {
+  switch (node.type) {
+    case 'Throw':
+      return true;
+
+    case 'Conditional':
+      return wantsToBeStatement(node.consequent) || wantsToBeStatement(node.alternate);
+
+    default:
+      return false;
+  }
 }
 
 /**
@@ -1040,7 +1057,10 @@ function parse(source) {
  * @private
  */
 function attachMetadata(node) {
-  if (isConditional(node) && isExpressionResultUsed(node)) {
+  if (isConditional(node) && isFunctionBody(node)) {
+    // This conditional is a single-line function that wants to be a statement.
+    node._expression = !wantsToBeStatement(node);
+  } else if (isConditional(node) && isExpressionResultUsed(node)) {
     // This conditional is used in an expression context, e.g. `a(if b then c)`.
     node._expression = true;
   }
@@ -3421,7 +3441,7 @@ function preprocessSoakedMemberAccessOp(node, patcher) {
     } else {
       conditional = node;
     }
-    var parens = conditional.parentNode.type !== 'Block';
+    var parens = isExpressionResultUsed(conditional);
     var consequent = undefined;
     if (parens) {
       patcher.insert(conditional.range[0], '(');
@@ -4418,7 +4438,7 @@ function patchBoundFunctionStart(node, patcher) {
     patcher.insert(node.range[0], '() ');
   }
 
-  if (node.body.type === 'Block') {
+  if (node.body.type === 'Block' || wantsToBeStatement(node.body)) {
     var arrowStart = node.parameters.length > 0 ? node.parameters[node.parameters.length - 1].range[1] : node.range[0];
 
     arrowStart = patcher.original.indexOf('=>', arrowStart);
@@ -4478,9 +4498,13 @@ function patchFunctionEnd(node, patcher) {
 
     if (node.type === 'Function' && isStatement(node)) {
       functionClose += ')';
-    } else if (node.type === 'BoundFunction' && node.body.type === 'SeqOp') {
-      // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
-      functionClose += ')';
+    } else if (node.type === 'BoundFunction') {
+      if (node.body.type === 'SeqOp') {
+        // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
+        functionClose += ')';
+      } else if (wantsToBeStatement(node.body)) {
+        functionClose += ' }';
+      }
     }
 
     appendToNode(node, patcher, functionClose, insertionPoint);
@@ -4509,7 +4533,10 @@ function patchObjectStart(node, patcher) {
       }
     }
   } else if (node.type === 'ObjectInitialiserMember' && node.expression.type === 'Function') {
-    patcher.overwrite(node.key.range[1], node.expression.range[0], '');
+    if (node.key.type === 'String') {
+      patcher.insert(node.key.range[0], '[').insert(node.key.range[1], ']');
+    }
+    patcher.remove(node.key.range[1], node.expression.range[0]);
   } else if (isShorthandThisObjectMember(node)) {
     // `{ @a }` -> `{ a: @a }`
     patcher.insert(node.range[0], node.key.data + ': ');
@@ -37394,7 +37421,6 @@ var MagicString = (function () {
 	};
 
 	MagicString.prototype.insert = function insert(index, content) {
-		console.log('INSERT', index, JSON.stringify(content));
 		if (typeof content !== 'string') {
 			throw new TypeError('inserted content must be a string');
 		}
@@ -37442,7 +37468,6 @@ var MagicString = (function () {
 	};
 
 	MagicString.prototype.overwrite = function overwrite(start, end, content, storeName) {
-		console.log('OVERWRITE', start, end, JSON.stringify(this.original.slice(start, end)), '->', JSON.stringify(content));
 		if (typeof content !== 'string') {
 			throw new TypeError('replacement content must be a string');
 		}
@@ -37478,7 +37503,6 @@ var MagicString = (function () {
 	};
 
 	MagicString.prototype.remove = function remove(start, end) {
-		console.log('REMOVE', start, end, JSON.stringify(this.original.slice(start, end)));
 		if (start < 0 || end > this.mappings.length) {
 			throw new Error('Character is out of bounds');
 		}
