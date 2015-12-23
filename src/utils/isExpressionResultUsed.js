@@ -26,6 +26,10 @@ export default function isExpressionResultUsed(node) {
     return false;
   }
 
+  if (parentNode.type === 'AssignOp') {
+    return node === parentNode.expression;
+  }
+
   if (parentNode.type === 'Function' && parentNode.parameters.indexOf(node) >= 0) {
     return false;
   }

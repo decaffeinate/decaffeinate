@@ -1,4 +1,5 @@
 import getFreeBinding from '../utils/getFreeBinding';
+import isExpressionResultUsed from '../utils/isExpressionResultUsed';
 
 /**
  * Re-writes soaked member expressions into CoffeeScript that does not use
@@ -26,7 +27,7 @@ export default function preprocessSoakedMemberAccessOp(node, patcher) {
     } else {
       conditional = node;
     }
-    let parens = conditional.parentNode.type !== 'Block';
+    let parens = isExpressionResultUsed(conditional);
     let consequent;
     if (parens) {
       patcher.insert(conditional.range[0], '(');

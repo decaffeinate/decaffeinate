@@ -54,4 +54,14 @@ describe('isExpressionResultUsed', () => {
     const ast = parse('a for a in b');
     ok(!isExpressionResultUsed(ast.body.statements[0].assignee));
   });
+
+  it('is false for the LHS of an assignment', () => {
+    const ast = parse('a = b');
+    ok(!isExpressionResultUsed(ast.body.statements[0].assignee));
+  });
+
+  it('is true for the RHS of an assignment', () => {
+    const ast = parse('a = b');
+    ok(isExpressionResultUsed(ast.body.statements[0].expression));
+  });
 });
