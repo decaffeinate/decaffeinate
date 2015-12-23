@@ -12,7 +12,7 @@ describe('throw', () => {
   it('adds wrapping parentheses when used in an expression context without them', () => {
     check(`a(b, throw c, d)`, `a(b, (() => { throw c; })(), d);`);
   });
-  
+
   it('is not considered an implicitly-returnable value', () => {
     check(`
       ->
@@ -24,6 +24,30 @@ describe('throw', () => {
           throw 42;
         }
       });
+    `);
+  });
+
+  it('blocks parent conditionals from becoming ternary expressions in single-line functions', () => {
+    check(`
+      -> if a then throw b
+    `, `
+      (function() { if (a) { throw b; } });
+    `);
+  });
+
+  it('blocks parent conditionals with a `return` from becoming ternary expressions in single-line functions', () => {
+    check(`
+      -> if a then throw b else c
+    `, `
+      (function() { if (a) { throw b; } else { return c; } });
+    `);
+  });
+
+  it('blocks parent conditionals from becoming ternary expressions in single-line bound functions', () => {
+    check(`
+      => if a then throw b
+    `, `
+      () => { if (a) { throw b; } };
     `);
   });
 });

@@ -3,7 +3,8 @@ import buildLineAndColumnMap from './buildLineAndColumnMap';
 import findCounterpartCharacter from './findCounterpartCharacter';
 import isExpressionResultUsed from './isExpressionResultUsed';
 import traverse from './traverse';
-import { isBinaryOperator, isConditional, isShorthandThisObjectMember } from './types';
+import wantsToBeStatement from './wantsToBeStatement';
+import { isBinaryOperator, isConditional, isFunctionBody, isShorthandThisObjectMember } from './types';
 import { parse as coffeeScriptParse } from 'coffee-script-redux';
 
 /**
@@ -30,7 +31,10 @@ export default function parse(source) {
  * @private
  */
 function attachMetadata(node) {
-  if (isConditional(node) && isExpressionResultUsed(node)) {
+  if (isConditional(node) && isFunctionBody(node)) {
+    // This conditional is a single-line function that wants to be a statement.
+    node._expression = !wantsToBeStatement(node);
+  } else if (isConditional(node) && isExpressionResultUsed(node)) {
     // This conditional is used in an expression context, e.g. `a(if b then c)`.
     node._expression = true;
   }

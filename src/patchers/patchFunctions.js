@@ -3,6 +3,7 @@ import appendToNode from '../utils/appendToNode';
 import isMultiline from '../utils/isMultiline';
 import isStatement from '../utils/isStatement';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
+import wantsToBeStatement from '../utils/wantsToBeStatement';
 import { isFunction, isStaticMethod } from '../utils/types';
 
 /**
@@ -106,7 +107,7 @@ function patchBoundFunctionStart(node, patcher) {
     patcher.insert(node.range[0], '() ');
   }
 
-  if (node.body.type === 'Block') {
+  if (node.body.type === 'Block' || wantsToBeStatement(node.body)) {
     let arrowStart = node.parameters.length > 0 ?
       node.parameters[node.parameters.length - 1].range[1] :
       node.range[0];
@@ -176,9 +177,13 @@ export function patchFunctionEnd(node, patcher) {
 
     if (node.type === 'Function' && isStatement(node)) {
       functionClose += ')';
-    } else if (node.type === 'BoundFunction' && node.body.type === 'SeqOp') {
-      // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
-      functionClose += ')';
+    } else if (node.type === 'BoundFunction') {
+      if (node.body.type === 'SeqOp') {
+        // Wrap sequences in parens, e.g. `a; b` becomes `(a, b)`.
+        functionClose += ')';
+      } else if (wantsToBeStatement(node.body)) {
+        functionClose += ' }';
+      }
     }
 
     appendToNode(

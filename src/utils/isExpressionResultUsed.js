@@ -12,8 +12,8 @@ export default function isExpressionResultUsed(node) {
     return false;
   }
 
-  if (node._expression) {
-    return true;
+  if ('_expression' in node) {
+    return node._expression;
   }
 
   if (isConsequentOrAlternate(node)) {
