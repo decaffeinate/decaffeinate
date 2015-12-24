@@ -1020,7 +1020,17 @@ function isExpressionResultUsed(node) {
   return isImplicitlyReturned(node);
 }
 
+/**
+ * Determines whether the given node prefers to be a statement.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
 function wantsToBeStatement(node) {
+  if (!node) {
+    return false;
+  }
+
   switch (node.type) {
     case 'Throw':
       return true;
