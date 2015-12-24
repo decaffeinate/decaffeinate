@@ -82,7 +82,7 @@ function fixRange(node, map, source) {
   }
 
   if (!('raw' in node)) {
-    if (fixBinaryOperator(node, map, source)) {
+    if (fixBinaryOperator(node, source)) {
       return;
     } else if (parentNode && parentNode.type === 'While' && parentNode.condition === node) {
       // Ignore `while` condition without raw
@@ -148,20 +148,19 @@ function rawMatchesRange(node, source) {
 
 /**
  * @param {Object} node
- * @param {LineAndColumnMap} map
  * @param {string} source
  * @returns {boolean}
  * @private
  */
-function fixBinaryOperator(node, map, source) {
+function fixBinaryOperator(node, source) {
   if (!isBinaryOperator(node)) {
     return false;
   }
 
   const { left, right } = node;
 
-  fixBinaryOperator(left, map, source);
-  fixBinaryOperator(right, map, source);
+  fixBinaryOperator(left, source);
+  fixBinaryOperator(right, source);
 
   if (!node.range) {
     node.range = [left.range[0], right.range[1]];
