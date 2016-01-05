@@ -13,19 +13,17 @@ detectIndent = 'default' in detectIndent ? detectIndent['default'] : detectInden
 var repeat = require('repeating');
 repeat = 'default' in repeat ? repeat['default'] : repeat;
 
-var babelHelpers = {};
-
-babelHelpers.typeof = function (obj) {
+function babelHelpers_typeof (obj) {
   return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj;
 };
 
-babelHelpers.classCallCheck = function (instance, Constructor) {
+function babelHelpers_classCallCheck (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 };
 
-babelHelpers.createClass = (function () {
+var babelHelpers_createClass = (function () {
   function defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
       var descriptor = props[i];
@@ -43,7 +41,7 @@ babelHelpers.createClass = (function () {
   };
 })();
 
-babelHelpers.slicedToArray = (function () {
+var babelHelpers_slicedToArray = (function () {
   function sliceIterator(arr, i) {
     var _arr = [];
     var _n = true;
@@ -81,7 +79,7 @@ babelHelpers.slicedToArray = (function () {
   };
 })();
 
-babelHelpers.toConsumableArray = function (arr) {
+function babelHelpers_toConsumableArray (arr) {
   if (Array.isArray(arr)) {
     for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
 
@@ -91,7 +89,6 @@ babelHelpers.toConsumableArray = function (arr) {
   }
 };
 
-babelHelpers;
 /**
  * Gets the identifiers for the given LHS value.
  *
@@ -130,7 +127,7 @@ function leftHandIdentifiers(node) {
 
 var Scope = (function () {
   function Scope(parent) {
-    babelHelpers.classCallCheck(this, Scope);
+    babelHelpers_classCallCheck(this, Scope);
 
     this.parent = parent;
     this.bindings = Object.create(parent ? parent.bindings : null);
@@ -141,7 +138,7 @@ var Scope = (function () {
    * @returns {?Object}
    */
 
-  babelHelpers.createClass(Scope, [{
+  babelHelpers_createClass(Scope, [{
     key: 'getBinding',
     value: function getBinding(name) {
       return this.bindings[this.key(name)] || null;
@@ -289,7 +286,7 @@ var LineAndColumnMap = (function () {
    */
 
   function LineAndColumnMap(source) {
-    babelHelpers.classCallCheck(this, LineAndColumnMap);
+    babelHelpers_classCallCheck(this, LineAndColumnMap);
 
     var offsets = [0];
 
@@ -331,7 +328,7 @@ var LineAndColumnMap = (function () {
    * @returns {?number}
    */
 
-  babelHelpers.createClass(LineAndColumnMap, [{
+  babelHelpers_createClass(LineAndColumnMap, [{
     key: "getOffset",
     value: function getOffset(line, column) {
       if (line + 1 >= this.offsets.length) {
@@ -592,7 +589,7 @@ function isBool(node) {
     return false;
   }
 
-  switch (typeof value === 'undefined' ? 'undefined' : babelHelpers.typeof(value)) {
+  switch (typeof value === 'undefined' ? 'undefined' : babelHelpers_typeof(value)) {
     case 'undefined':
       return true;
 
@@ -1120,7 +1117,7 @@ function fixRange(node, map, source) {
   }
 
   if (!('raw' in node)) {
-    if (fixBinaryOperator(node, map, source)) {
+    if (fixBinaryOperator(node, source)) {
       return;
     } else if (parentNode && parentNode.type === 'While' && parentNode.condition === node) {
       // Ignore `while` condition without raw
@@ -1180,12 +1177,11 @@ function rawMatchesRange(node, source) {
 
 /**
  * @param {Object} node
- * @param {LineAndColumnMap} map
  * @param {string} source
  * @returns {boolean}
  * @private
  */
-function fixBinaryOperator(node, map, source) {
+function fixBinaryOperator(node, source) {
   if (!isBinaryOperator(node)) {
     return false;
   }
@@ -1193,8 +1189,8 @@ function fixBinaryOperator(node, map, source) {
   var left = node.left;
   var right = node.right;
 
-  fixBinaryOperator(left, map, source);
-  fixBinaryOperator(right, map, source);
+  fixBinaryOperator(left, source);
+  fixBinaryOperator(right, source);
 
   if (!node.range) {
     node.range = [left.range[0], right.range[1]];
@@ -2100,7 +2096,7 @@ function isFollowedBy(node, source, token) {
  * @returns {number[]}
  */
 function rangeIncludingParentheses(range, source) {
-  var _range = babelHelpers.slicedToArray(range, 2);
+  var _range = babelHelpers_slicedToArray(range, 2);
 
   var start = _range[0];
   var end = _range[1];
@@ -2211,8 +2207,8 @@ function patchSemicolons(node, patcher) {
  */
 function patchSequences(node, patcher) {
   if (node.type === 'SeqOp') {
-    var sourceBetween = patcher.slice(node.left.range[1], node.right.range[0]);
-    var sequenceCharacterIndex = sourceBetween.indexOf(';');
+    var between = sourceBetween(patcher.original, node.left, node.right);
+    var sequenceCharacterIndex = between.indexOf(';');
     patcher.overwrite(node.left.range[1] + sequenceCharacterIndex, node.left.range[1] + sequenceCharacterIndex + ';'.length, ',');
   }
 }
@@ -2320,7 +2316,7 @@ function sharedIndentSize(ranges) {
   var size = null;
 
   ranges.forEach(function (_ref) {
-    var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+    var _ref2 = babelHelpers_slicedToArray(_ref, 2);
 
     var start = _ref2[0];
     var end = _ref2[1];
@@ -2340,7 +2336,7 @@ var TRIPLE_QUOTE_LENGTH$1 = 3;
  * @param {MagicString} patcher
  */
 function replaceTripleQuotes(node, patcher) {
-  var _node$range = babelHelpers.slicedToArray(node.range, 2);
+  var _node$range = babelHelpers_slicedToArray(node.range, 2);
 
   var start = _node$range[0];
   var end = _node$range[1];
@@ -2356,7 +2352,7 @@ function replaceTripleQuotes(node, patcher) {
       var indents = getIndentInfo(source, contentStart, contentEnd);
       var indentSize = sharedIndentSize(indents.ranges);
       indents.ranges.forEach(function (_ref) {
-        var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+        var _ref2 = babelHelpers_slicedToArray(_ref, 2);
 
         var start = _ref2[0];
         var end = _ref2[1];
@@ -2640,7 +2636,7 @@ var UNBOUND_ARROW = '->';
 function convertBoundFunctionToUnboundFunction(node, patcher) {
   var source = patcher.original;
 
-  var _node$range = babelHelpers.slicedToArray(node.range, 2);
+  var _node$range = babelHelpers_slicedToArray(node.range, 2);
 
   var start = _node$range[0];
   var end = _node$range[1];
@@ -2720,7 +2716,7 @@ function preprocessClass(node, patcher) {
               // FIXME: CSR does not actually support `super` yet!
               constructor.push(indent + 'super()');
             }
-            constructor.push.apply(constructor, babelHelpers.toConsumableArray(bindings.map(function (binding) {
+            constructor.push.apply(constructor, babelHelpers_toConsumableArray(bindings.map(function (binding) {
               return indent + binding;
             })).concat(['']));
             prependLinesToBlock(patcher, constructor, node.body);
@@ -2733,11 +2729,11 @@ function preprocessClass(node, patcher) {
           };
         })();
 
-        if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret2)) === "object") return _ret2.v;
+        if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers_typeof(_ret2)) === "object") return _ret2.v;
       }
     })();
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers_typeof(_ret)) === "object") return _ret.v;
   }
 }
 
@@ -3313,11 +3309,11 @@ function preprocessParameters(node, patcher) {
           };
         })();
 
-        if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret2)) === "object") return _ret2.v;
+        if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers_typeof(_ret2)) === "object") return _ret2.v;
       }
     })();
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers_typeof(_ret)) === "object") return _ret.v;
   }
 }
 
@@ -3421,7 +3417,7 @@ function preprocessRange(node, patcher) {
       };
     })();
 
-    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+    if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers_typeof(_ret)) === "object") return _ret.v;
   }
 }
 
@@ -3927,7 +3923,6 @@ function patchClassStart(node, patcher) {
     assignee._rewritten = true;
     assignee.expression._rewritten = true;
     patcher.overwrite(assignee.expression.range[0], assignee.range[1] - assignee.memberName.length, 'static ');
-    patcher.remove(assignee.range[1], node.expression.range[0]);
   }
 }
 
@@ -4422,12 +4417,13 @@ function patchUnboundFunctionStart(node, patcher) {
 
   var start = node.range[0];
   var fn = concise ? '' : 'function';
-  if (patcher.slice(start, start + 2) === '->') {
+  var source = patcher.original;
+  if (source.slice(start, start + 2) === '->') {
     patcher.overwrite(start, start + 2, '' + (isStatement(node) ? '(' : '') + fn + '() {');
   } else {
     patcher.insert(start, isStatement(node) ? '(' + fn : fn);
 
-    var arrowStart = patcher.original.indexOf('->', start);
+    var arrowStart = source.indexOf('->', start);
 
     if (arrowStart < 0) {
       throw new Error('unable to find `->` for function starting at line ' + node.line + ', column ' + node.column);
@@ -4444,14 +4440,16 @@ function patchUnboundFunctionStart(node, patcher) {
  * @param {MagicString} patcher
  */
 function patchBoundFunctionStart(node, patcher) {
-  if (patcher.slice(node.range[0], node.range[0] + 1) !== '(') {
+  var source = patcher.original;
+
+  if (source.slice(node.range[0], node.range[0] + 1) !== '(') {
     patcher.insert(node.range[0], '() ');
   }
 
   if (node.body.type === 'Block' || wantsToBeStatement(node.body)) {
     var arrowStart = node.parameters.length > 0 ? node.parameters[node.parameters.length - 1].range[1] : node.range[0];
 
-    arrowStart = patcher.original.indexOf('=>', arrowStart);
+    arrowStart = source.indexOf('=>', arrowStart);
 
     if (arrowStart < 0) {
       throw new Error('unable to find `=>` for function starting at line ' + node.line + ', column ' + node.column);
@@ -32815,8 +32813,8 @@ module.exports = {
 module.exports={
   "_args": [
     [
-      "coffee-script-redux@git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
-      "/src/decaffeinate"
+      "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
+      "/Users/donovan/src/com.brian-donovan/decaffeinate"
     ]
   ],
   "_from": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
@@ -32835,8 +32833,8 @@ module.exports={
       "sshUrl": "git+ssh://git@github.com/michaelficarra/CoffeeScriptRedux.git",
       "type": "github"
     },
-    "name": "coffee-script-redux",
-    "raw": "coffee-script-redux@git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
+    "name": null,
+    "raw": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
     "rawSpec": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
     "scope": null,
     "spec": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
@@ -32846,10 +32844,10 @@ module.exports={
     "/"
   ],
   "_resolved": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git#ab93dc34c64cd11853fb8cb5a4f02c6b8fc3b26b",
-  "_shasum": "43ee2444252a55a7ad77490fe15dcefe8730d77a",
+  "_shasum": "92a647e7cb485925729c195d6a816ae014650858",
   "_shrinkwrap": null,
-  "_spec": "coffee-script-redux@git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
-  "_where": "/src/decaffeinate",
+  "_spec": "git+https://github.com/michaelficarra/CoffeeScriptRedux.git",
+  "_where": "/Users/donovan/src/com.brian-donovan/decaffeinate",
   "author": {
     "name": "Michael Ficarra"
   },
@@ -37021,10 +37019,18 @@ module.exports = Array.isArray || function (arr) {
 
 var vlq = require('vlq');
 
-var babelHelpers_classCallCheck = function (instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
+function Patch(start, end, content, original, storeName) {
+	this.start = start;
+	this.end = end;
+	this.content = content;
+	this.original = original;
+	this.storeName = storeName;
+}
+
+Patch.prototype = {
+	clone: function clone() {
+		return new Patch(this.start, this.end, this.content, this.original, this.storeName);
+	}
 };
 
 var _btoa = undefined;
@@ -37042,29 +37048,24 @@ if (typeof window !== 'undefined' && typeof window.btoa === 'function') {
 
 var btoa = _btoa;
 
-var SourceMap = (function () {
-	function SourceMap(properties) {
-		babelHelpers_classCallCheck(this, SourceMap);
+function SourceMap(properties) {
+	this.version = 3;
 
-		this.version = 3;
+	this.file = properties.file;
+	this.sources = properties.sources;
+	this.sourcesContent = properties.sourcesContent;
+	this.names = properties.names;
+	this.mappings = properties.mappings;
+}
 
-		this.file = properties.file;
-		this.sources = properties.sources;
-		this.sourcesContent = properties.sourcesContent;
-		this.names = properties.names;
-		this.mappings = properties.mappings;
-	}
-
-	SourceMap.prototype.toString = function toString() {
+SourceMap.prototype = {
+	toString: function toString() {
 		return JSON.stringify(this);
-	};
-
-	SourceMap.prototype.toUrl = function toUrl() {
+	},
+	toUrl: function toUrl() {
 		return 'data:application/json;charset=utf-8;base64,' + btoa(this.toString());
-	};
-
-	return SourceMap;
-})();
+	}
+};
 
 function guessIndent(code) {
 	var lines = code.split('\n');
@@ -37098,71 +37099,98 @@ function guessIndent(code) {
 	return new Array(min + 1).join(' ');
 }
 
-function encodeMappings(original, str, mappings, hires, sourcemapLocations, sourceIndex, offsets, names, nameLocations) {
-	// store locations, for fast lookup
-	var lineStart = 0;
-	var locations = original.split('\n').map(function (line) {
-		var start = lineStart;
-		lineStart += line.length + 1; // +1 for the newline
+function encodeMappings(original, intro, patches, hires, sourcemapLocations, sourceIndex, offsets, names) {
+	var rawLines = [];
 
-		return start;
-	});
+	var generatedCodeLine = intro.split('\n').length - 1;
+	var rawSegments = rawLines[generatedCodeLine] = [];
 
-	var inverseMappings = invert(str, mappings);
+	var originalCharIndex = 0;
 
-	var charOffset = 0;
-	var lines = str.split('\n').map(function (line) {
-		var segments = [];
+	var generatedCodeColumn = 0;
+	var sourceCodeLine = 0;
+	var sourceCodeColumn = 0;
 
-		var char = undefined; // TODO put these inside loop, once we've determined it's safe to do so transpilation-wise
-		var origin = undefined;
-		var lastOrigin = -1;
-		var location = undefined;
-		var nameIndex = undefined;
+	function addSegmentsUntil(end) {
+		var first = true;
 
-		var i = undefined;
-
-		var len = line.length;
-		for (i = 0; i < len; i += 1) {
-			char = i + charOffset;
-			origin = inverseMappings[char];
-
-			nameIndex = -1;
-			location = null;
-
-			// if this character has no mapping, but the last one did,
-			// create a new segment
-			if (! ~origin && ~lastOrigin) {
-				location = getLocation(locations, lastOrigin + 1);
-
-				if (lastOrigin + 1 in nameLocations) nameIndex = names.indexOf(nameLocations[lastOrigin + 1]);
-			} else if (~origin && (hires || ~lastOrigin && origin !== lastOrigin + 1 || sourcemapLocations[origin])) {
-				location = getLocation(locations, origin);
-			}
-
-			if (location) {
-				segments.push({
-					generatedCodeColumn: i,
-					sourceIndex: sourceIndex,
-					sourceCodeLine: location.line,
-					sourceCodeColumn: location.column,
-					sourceCodeName: nameIndex
+		while (originalCharIndex < end) {
+			if (hires || first || sourcemapLocations[originalCharIndex]) {
+				rawSegments.push({
+					generatedCodeLine: generatedCodeLine,
+					generatedCodeColumn: generatedCodeColumn,
+					sourceCodeLine: sourceCodeLine,
+					sourceCodeColumn: sourceCodeColumn,
+					sourceCodeName: -1,
+					sourceIndex: sourceIndex
 				});
 			}
 
-			lastOrigin = origin;
+			if (original[originalCharIndex] === '\n') {
+				sourceCodeLine += 1;
+				sourceCodeColumn = 0;
+				generatedCodeLine += 1;
+				rawLines[generatedCodeLine] = rawSegments = [];
+				generatedCodeColumn = 0;
+			} else {
+				sourceCodeColumn += 1;
+				generatedCodeColumn += 1;
+			}
+
+			originalCharIndex += 1;
+			first = false;
+		}
+	}
+
+	for (var i = 0; i < patches.length; i += 1) {
+		var patch = patches[i];
+		var addSegmentForPatch = patch.storeName || patch.start > originalCharIndex;
+
+		addSegmentsUntil(patch.start);
+
+		if (addSegmentForPatch) {
+			rawSegments.push({
+				generatedCodeLine: generatedCodeLine,
+				generatedCodeColumn: generatedCodeColumn,
+				sourceCodeLine: sourceCodeLine,
+				sourceCodeColumn: sourceCodeColumn,
+				sourceCodeName: patch.storeName ? names.indexOf(patch.original) : -1,
+				sourceIndex: sourceIndex
+			});
 		}
 
-		charOffset += line.length + 1;
-		return segments;
-	});
+		var lines = patch.content.split('\n');
+		var lastLine = lines.pop();
+
+		if (lines.length) {
+			generatedCodeLine += lines.length;
+			rawLines[generatedCodeLine] = rawSegments = [];
+			generatedCodeColumn = lastLine.length;
+		} else {
+			generatedCodeColumn += lastLine.length;
+		}
+
+		lines = patch.original.split('\n');
+		lastLine = lines.pop();
+
+		if (lines.length) {
+			sourceCodeLine += lines.length;
+			sourceCodeColumn = lastLine.length;
+		} else {
+			sourceCodeColumn += lastLine.length;
+		}
+
+		originalCharIndex = patch.end;
+	}
+
+	addSegmentsUntil(original.length);
 
 	offsets.sourceIndex = offsets.sourceIndex || 0;
 	offsets.sourceCodeLine = offsets.sourceCodeLine || 0;
 	offsets.sourceCodeColumn = offsets.sourceCodeColumn || 0;
 	offsets.sourceCodeName = offsets.sourceCodeName || 0;
 
-	var encoded = lines.map(function (segments) {
+	var encoded = rawLines.map(function (segments) {
 		var generatedCodeColumn = 0;
 
 		return segments.map(function (segment) {
@@ -37185,40 +37213,6 @@ function encodeMappings(original, str, mappings, hires, sourcemapLocations, sour
 	return encoded;
 }
 
-function invert(str, mappings) {
-	var inverted = new Uint32Array(str.length);
-
-	// initialise everything to -1
-	var i = str.length;
-	while (i--) {
-		inverted[i] = -1;
-	}
-
-	// then apply the actual mappings
-	i = mappings.length;
-	while (i--) {
-		if (~mappings[i]) {
-			inverted[mappings[i]] = i;
-		}
-	}
-
-	return inverted;
-}
-
-function getLocation(locations, char) {
-	var i = locations.length;
-	while (i--) {
-		if (locations[i] <= char) {
-			return {
-				line: i,
-				column: char - locations[i]
-			};
-		}
-	}
-
-	throw new Error('Character out of bounds');
-}
-
 function getRelativePath(from, to) {
 	var fromParts = from.split(/[\/\\]/);
 	var toParts = to.split(/[\/\\]/);
@@ -37232,76 +37226,71 @@ function getRelativePath(from, to) {
 
 	if (fromParts.length) {
 		var i = fromParts.length;
-		while (i--) fromParts[i] = '..';
+		while (i--) {
+			fromParts[i] = '..';
+		}
 	}
 
 	return fromParts.concat(toParts).join('/');
 }
 
+var toString = Object.prototype.toString;
+
+function isObject(thing) {
+	return toString.call(thing) === '[object Object]';
+}
+
 var warned = false;
 
-var MagicString = (function () {
-	function MagicString(string) {
-		var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-		babelHelpers_classCallCheck(this, MagicString);
+function MagicString(string) {
+	var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-		Object.defineProperties(this, {
-			original: { writable: true, value: string },
-			str: { writable: true, value: string },
-			mappings: { writable: true, value: initMappings(string.length) },
-			filename: { writable: true, value: options.filename },
-			indentExclusionRanges: { writable: true, value: options.indentExclusionRanges },
-			sourcemapLocations: { writable: true, value: {} },
-			nameLocations: { writable: true, value: {} },
-			indentStr: { writable: true, value: guessIndent(string) }
-		});
-	}
+	Object.defineProperties(this, {
+		original: { writable: true, value: string },
+		outro: { writable: true, value: '' },
+		intro: { writable: true, value: '' },
+		patches: { writable: true, value: [] },
+		filename: { writable: true, value: options.filename },
+		indentExclusionRanges: { writable: true, value: options.indentExclusionRanges },
+		sourcemapLocations: { writable: true, value: {} },
+		storedNames: { writable: true, value: {} },
+		indentStr: { writable: true, value: guessIndent(string) }
+	});
+}
 
-	MagicString.prototype.addSourcemapLocation = function addSourcemapLocation(char) {
+MagicString.prototype = {
+	addSourcemapLocation: function addSourcemapLocation(char) {
 		this.sourcemapLocations[char] = true;
-	};
+	},
+	append: function append(content) {
+		if (typeof content !== 'string') throw new TypeError('outro content must be a string');
 
-	MagicString.prototype.append = function append(content) {
-		if (typeof content !== 'string') {
-			throw new TypeError('appended content must be a string');
-		}
-
-		this.str += content;
+		this.outro += content;
 		return this;
-	};
+	},
+	clone: function clone() {
+		var cloned = new MagicString(this.original, { filename: this.filename });
 
-	MagicString.prototype.clone = function clone() {
-		var clone = new MagicString(this.original, { filename: this.filename });
-		clone.str = this.str;
-
-		var i = clone.mappings.length;
-		while (i--) {
-			clone.mappings[i] = this.mappings[i];
-		}
+		cloned.patches = this.patches.map(function (patch) {
+			return patch.clone();
+		});
 
 		if (this.indentExclusionRanges) {
-			clone.indentExclusionRanges = typeof this.indentExclusionRanges[0] === 'number' ? [this.indentExclusionRanges[0], this.indentExclusionRanges[1]] : this.indentExclusionRanges.map(function (range) {
+			cloned.indentExclusionRanges = typeof this.indentExclusionRanges[0] === 'number' ? [this.indentExclusionRanges[0], this.indentExclusionRanges[1]] : this.indentExclusionRanges.map(function (range) {
 				return [range.start, range.end];
 			});
 		}
 
 		Object.keys(this.sourcemapLocations).forEach(function (loc) {
-			clone.sourcemapLocations[loc] = true;
+			cloned.sourcemapLocations[loc] = true;
 		});
 
-		return clone;
-	};
-
-	MagicString.prototype.generateMap = function generateMap(options) {
-		var _this = this;
-
+		return cloned;
+	},
+	generateMap: function generateMap(options) {
 		options = options || {};
 
-		var names = [];
-		Object.keys(this.nameLocations).forEach(function (location) {
-			var name = _this.nameLocations[location];
-			if (! ~names.indexOf(name)) names.push(name);
-		});
+		var names = Object.keys(this.storedNames);
 
 		return new SourceMap({
 			file: options.file ? options.file.split(/[\/\\]/).pop() : null,
@@ -37310,24 +37299,19 @@ var MagicString = (function () {
 			names: names,
 			mappings: this.getMappings(options.hires, 0, {}, names)
 		});
-	};
-
-	MagicString.prototype.getIndentString = function getIndentString() {
+	},
+	getIndentString: function getIndentString() {
 		return this.indentStr === null ? '\t' : this.indentStr;
-	};
+	},
+	getMappings: function getMappings(hires, sourceIndex, offsets, names) {
+		return encodeMappings(this.original, this.intro, this.patches, hires, this.sourcemapLocations, sourceIndex, offsets, names);
+	},
+	indent: function indent(indentStr, options) {
+		var _this = this;
 
-	MagicString.prototype.getMappings = function getMappings(hires, sourceIndex, offsets, names) {
-		return encodeMappings(this.original, this.str, this.mappings, hires, this.sourcemapLocations, sourceIndex, offsets, names, this.nameLocations);
-	};
-
-	MagicString.prototype.indent = function indent(indentStr, options) {
-		var _this2 = this;
-
-		var mappings = this.mappings;
-		var reverseMappings = reverse(mappings, this.str.length);
 		var pattern = /^[^\r\n]/gm;
 
-		if (typeof indentStr === 'object') {
+		if (isObject(indentStr)) {
 			options = indentStr;
 			indentStr = undefined;
 		}
@@ -37339,372 +37323,311 @@ var MagicString = (function () {
 		options = options || {};
 
 		// Process exclusion ranges
-		var exclusions = undefined;
+		var isExcluded = {};
 
 		if (options.exclude) {
-			exclusions = typeof options.exclude[0] === 'number' ? [options.exclude] : options.exclude;
-
-			exclusions = exclusions.map(function (range) {
-				var rangeStart = _this2.locate(range[0]);
-				var rangeEnd = _this2.locate(range[1]);
-
-				if (rangeStart === null || rangeEnd === null) {
-					throw new Error('Cannot use indices of replaced characters as exclusion ranges');
+			var exclusions = typeof options.exclude[0] === 'number' ? [options.exclude] : options.exclude;
+			exclusions.forEach(function (exclusion) {
+				for (var i = exclusion[0]; i < exclusion[1]; i += 1) {
+					isExcluded[i] = true;
 				}
-
-				return [rangeStart, rangeEnd];
-			});
-
-			exclusions.sort(function (a, b) {
-				return a[0] - b[0];
-			});
-
-			// check for overlaps
-			lastEnd = -1;
-			exclusions.forEach(function (range) {
-				if (range[0] < lastEnd) {
-					throw new Error('Exclusion ranges cannot overlap');
-				}
-
-				lastEnd = range[1];
 			});
 		}
 
-		var indentStart = options.indentStart !== false;
-		var inserts = [];
+		var shouldIndentNextCharacter = options.indentStart !== false;
+		var replacer = function replacer(match) {
+			if (shouldIndentNextCharacter) return '' + indentStr + match;
+			shouldIndentNextCharacter = true;
+			return match;
+		};
 
-		if (!exclusions) {
-			this.str = this.str.replace(pattern, function (match, index) {
-				if (!indentStart && index === 0) {
-					return match;
+		this.intro = this.intro.replace(pattern, replacer);
+
+		var charIndex = 0;
+		var patchIndex = 0;
+
+		var indentUntil = function indentUntil(end) {
+			while (charIndex < end) {
+				if (!isExcluded[charIndex]) {
+					var char = _this.original[charIndex];
+
+					if (char === '\n') {
+						shouldIndentNextCharacter = true;
+					} else if (char !== '\r' && shouldIndentNextCharacter) {
+						_this.patches.splice(patchIndex, 0, new Patch(charIndex, charIndex, indentStr, '', false));
+						shouldIndentNextCharacter = false;
+
+						patchIndex += 1;
+					}
 				}
 
-				inserts.push(index);
-				return indentStr + match;
-			});
-		} else {
-			this.str = this.str.replace(pattern, function (match, index) {
-				if (!indentStart && index === 0 || isExcluded(index - 1)) {
-					return match;
-				}
+				charIndex += 1;
+			}
+		};
 
-				inserts.push(index);
-				return indentStr + match;
-			});
-		}
+		for (; patchIndex < this.patches.length; patchIndex += 1) {
+			// can't cache this.patches.length, it may change
+			var patch = this.patches[patchIndex];
 
-		var adjustments = inserts.map(function (index) {
-			var origin = undefined;
+			indentUntil(patch.start);
 
-			do {
-				origin = reverseMappings[index++];
-			} while (! ~origin && index < _this2.str.length);
+			if (!isExcluded[charIndex]) {
+				patch.content = patch.content.replace(pattern, replacer);
 
-			return origin;
-		});
-
-		var i = adjustments.length;
-		var lastEnd = this.mappings.length;
-		while (i--) {
-			adjust(this.mappings, adjustments[i], lastEnd, (i + 1) * indentStr.length);
-			lastEnd = adjustments[i];
-		}
-
-		return this;
-
-		function isExcluded(index) {
-			var i = exclusions.length;
-			var range = undefined;
-
-			while (i--) {
-				range = exclusions[i];
-
-				if (range[1] < index) {
-					return false;
-				}
-
-				if (range[0] <= index) {
-					return true;
+				if (patch.content.length) {
+					shouldIndentNextCharacter = patch.content[patch.content.length - 1] === '\n';
 				}
 			}
-		}
-	};
 
-	MagicString.prototype.insert = function insert(index, content) {
+			charIndex = patch.end;
+		}
+
+		indentUntil(this.original.length);
+
+		this.outro = this.outro.replace(pattern, replacer);
+
+		return this;
+	},
+	insert: function insert(index, content) {
 		if (typeof content !== 'string') {
 			throw new TypeError('inserted content must be a string');
 		}
 
-		if (index === this.original.length) {
-			this.append(content);
-		} else {
-			var mapped = this.locate(index);
-
-			if (mapped === null) {
-				throw new Error('Cannot insert at replaced character index: ' + index);
-			}
-
-			this.str = this.str.substr(0, mapped) + content + this.str.substr(mapped);
-			adjust(this.mappings, index, this.mappings.length, content.length);
-		}
-
+		this.patch(index, index, content);
 		return this;
-	};
+	},
 
 	// get current location of character in original string
-
-	MagicString.prototype.locate = function locate(character) {
-		if (character < 0 || character > this.mappings.length) {
-			throw new Error('Character is out of bounds');
-		}
-
-		var loc = this.mappings[character];
-		return ~loc ? loc : null;
-	};
-
-	MagicString.prototype.locateOrigin = function locateOrigin(character) {
-		if (character < 0 || character >= this.str.length) {
-			throw new Error('Character is out of bounds');
-		}
-
-		var i = this.mappings.length;
-		while (i--) {
-			if (this.mappings[i] === character) {
-				return i;
-			}
-		}
-
-		return null;
-	};
-
-	MagicString.prototype.overwrite = function overwrite(start, end, content, storeName) {
+	locate: function locate(character) {
+		throw new Error('magicString.locate is deprecated');
+	},
+	locateOrigin: function locateOrigin(character) {
+		throw new Error('magicString.locateOrigin is deprecated');
+	},
+	overwrite: function overwrite(start, end, content, storeName) {
 		if (typeof content !== 'string') {
 			throw new TypeError('replacement content must be a string');
 		}
 
-		var firstChar = this.locate(start);
-		var lastChar = this.locate(end - 1);
-
-		if (firstChar === null || lastChar === null) {
-			throw new Error('Cannot overwrite the same content twice: \'' + this.original.slice(start, end).replace(/\n/g, '\\n') + '\'');
-		}
-
-		if (firstChar > lastChar + 1) {
-			throw new Error('BUG! First character mapped to a position after the last character: ' + '[' + start + ', ' + end + '] -> [' + firstChar + ', ' + (lastChar + 1) + ']');
-		}
-
-		if (storeName) {
-			this.nameLocations[start] = this.original.slice(start, end);
-		}
-
-		this.str = this.str.substr(0, firstChar) + content + this.str.substring(lastChar + 1);
-
-		var d = content.length - (lastChar + 1 - firstChar);
-
-		blank(this.mappings, start, end);
-		adjust(this.mappings, end, this.mappings.length, d);
+		this.patch(start, end, content, storeName);
 		return this;
-	};
+	},
+	patch: function patch(start, end, content, storeName) {
+		var original = this.original.slice(start, end);
+		console.log('PATCH', start, end, JSON.stringify(original), '->', JSON.stringify(content));
+		if (storeName) this.storedNames[original] = true;
 
-	MagicString.prototype.prepend = function prepend(content) {
-		this.str = content + this.str;
-		adjust(this.mappings, 0, this.mappings.length, content.length);
+		var i = this.patches.length;
+		while (i--) {
+			var previous = this.patches[i];
+
+			// TODO can we tidy this up?
+
+			// if this completely covers previous patch, remove it
+			if (start !== end && start <= previous.start && end >= previous.end) {
+				// unless it's an insert at the start
+				if (previous.start === previous.end && previous.start === start) break;
+				// or it's an insert at the end
+				if (previous.start === previous.end && previous.end === end) continue;
+				this.patches.splice(i, 1);
+			}
+
+			// if it overlaps, throw error
+			else if (start < previous.end && end > previous.start) {
+					// special case – it's okay to remove overlapping ranges
+					if (!previous.content.length && !content.length) {
+						previous.start = Math.min(start, previous.start);
+						previous.end = Math.max(end, previous.end);
+						return;
+					}
+
+					throw new Error('Cannot overwrite the same content twice: \'' + original + '\'');
+				}
+
+				// if this precedes previous patch, stop search
+				else if (start >= previous.end) {
+						break;
+					}
+		}
+
+		var patch = new Patch(start, end, content, original, storeName);
+		this.patches.splice(i + 1, 0, patch);
+		return patch;
+	},
+	prepend: function prepend(content) {
+		if (typeof content !== 'string') throw new TypeError('outro content must be a string');
+
+		this.intro = content + this.intro;
 		return this;
-	};
-
-	MagicString.prototype.remove = function remove(start, end) {
-		if (start < 0 || end > this.mappings.length) {
+	},
+	remove: function remove(start, end) {
+		if (start < 0 || end > this.original.length) {
 			throw new Error('Character is out of bounds');
 		}
 
-		var currentStart = -1;
-		var currentEnd = -1;
-		for (var i = start; i < end; i += 1) {
-			var loc = this.mappings[i];
-
-			if (~loc) {
-				if (! ~currentStart) currentStart = loc;
-
-				currentEnd = loc + 1;
-				this.mappings[i] = -1;
-			}
-		}
-
-		this.str = this.str.slice(0, currentStart) + this.str.slice(currentEnd);
-
-		adjust(this.mappings, end, this.mappings.length, currentStart - currentEnd);
+		this.patch(start, end, '');
 		return this;
-	};
-
-	MagicString.prototype.replace = function replace(start, end, content) {
+	},
+	replace: function replace(start, end, content) {
 		if (!warned) {
 			console.warn('magicString.replace(...) is deprecated. Use magicString.overwrite(...) instead');
 			warned = true;
 		}
 
 		return this.overwrite(start, end, content);
-	};
-
-	MagicString.prototype.slice = function slice(start) {
+	},
+	slice: function slice(start) {
 		var end = arguments.length <= 1 || arguments[1] === undefined ? this.original.length : arguments[1];
 
-		while (start < 0) start += this.original.length;
-		while (end < 0) end += this.original.length;
+		while (start < 0) {
+			start += this.original.length;
+		}while (end < 0) {
+			end += this.original.length;
+		}var firstPatchIndex = 0;
+		var lastPatchIndex = this.patches.length;
 
-		var firstChar = this.locate(start);
-		var lastChar = this.locate(end - 1);
+		while (lastPatchIndex--) {
+			var patch = this.patches[lastPatchIndex];
+			if (end >= patch.start && end < patch.end) throw new Error('Cannot use replaced characters (' + start + ', ' + end + ') as slice anchors');
 
-		if (firstChar === null || lastChar === null) {
-			throw new Error('Cannot use replaced characters as slice anchors');
+			// TODO this is weird, rewrite it
+			if (patch.start > end) continue;
+			break;
 		}
 
-		return this.str.slice(firstChar, lastChar + 1);
-	};
+		for (firstPatchIndex = 0; firstPatchIndex <= lastPatchIndex; firstPatchIndex += 1) {
+			var patch = this.patches[firstPatchIndex];
+			if (start > patch.start && start <= patch.end) throw new Error('Cannot use replaced characters (' + start + ', ' + end + ') as slice anchors');
 
-	MagicString.prototype.snip = function snip(start, end) {
+			if (start <= patch.start) {
+				break;
+			}
+		}
+
+		var result = '';
+		var lastIndex = start;
+
+		for (var i = firstPatchIndex; i <= lastPatchIndex; i += 1) {
+			var patch = this.patches[i];
+			result += this.original.slice(lastIndex, patch.start);
+			result += patch.content;
+
+			lastIndex = patch.end;
+		}
+
+		result += this.original.slice(lastIndex, end);
+
+		return result;
+	},
+	snip: function snip(start, end) {
 		var clone = this.clone();
 		clone.remove(0, start);
 		clone.remove(end, clone.original.length);
 
 		return clone;
-	};
-
-	MagicString.prototype.toString = function toString() {
-		return this.str;
-	};
-
-	MagicString.prototype.trimLines = function trimLines() {
+	},
+	toString: function toString() {
+		return this.intro + this.slice(0, this.original.length) + this.outro;
+	},
+	trimLines: function trimLines() {
 		return this.trim('[\\r\\n]');
-	};
-
-	MagicString.prototype.trim = function trim(charType) {
+	},
+	trim: function trim(charType) {
 		return this.trimStart(charType).trimEnd(charType);
-	};
-
-	MagicString.prototype.trimEnd = function trimEnd(charType) {
-		var _this3 = this;
-
+	},
+	trimEnd: function trimEnd(charType) {
 		var rx = new RegExp((charType || '\\s') + '+$');
 
-		this.str = this.str.replace(rx, function (trailing, index, str) {
-			var strLength = str.length;
-			var length = trailing.length;
+		this.outro = this.outro.replace(rx, '');
+		if (this.outro.length) return this;
 
-			var chars = [];
+		var charIndex = this.original.length;
+		var i = this.patches.length;
 
-			var i = strLength;
-			while (i-- > strLength - length) {
-				chars.push(_this3.locateOrigin(i));
-			}
+		while (i--) {
+			var patch = this.patches[i];
 
-			i = chars.length;
-			while (i--) {
-				if (chars[i] !== null) {
-					_this3.mappings[chars[i]] = -1;
+			if (charIndex > patch.end) {
+				var _slice = this.original.slice(patch.end, charIndex);
+
+				var _match = rx.exec(_slice);
+				if (_match) {
+					this.patch(charIndex - _match[0].length, charIndex, '');
+				}
+
+				if (!_match || _match[0].length < _slice.length) {
+					// there is non-whitespace after the patch
+					return this;
 				}
 			}
 
-			return '';
-		});
+			patch.content = patch.content.replace(rx, '');
+			if (patch.content) return this;
+
+			charIndex = patch.start;
+		}
+
+		var slice = this.original.slice(0, charIndex);
+
+		var match = rx.exec(slice);
+		if (match) this.patch(charIndex - match[0].length, charIndex, '');
 
 		return this;
-	};
-
-	MagicString.prototype.trimStart = function trimStart(charType) {
-		var _this4 = this;
-
+	},
+	trimStart: function trimStart(charType) {
 		var rx = new RegExp('^' + (charType || '\\s') + '+');
 
-		this.str = this.str.replace(rx, function (leading) {
-			var length = leading.length;
+		this.intro = this.intro.replace(rx, '');
+		if (this.intro.length) return this;
 
-			var chars = [];
-			var adjustmentStart = 0;
+		var charIndex = 0;
 
-			var i = length;
-			while (i--) {
-				chars.push(_this4.locateOrigin(i));
-			}
+		for (var i = 0; i < this.patches.length; i += 1) {
+			var patch = this.patches[i];
 
-			i = chars.length;
-			while (i--) {
-				if (chars[i] !== null) {
-					_this4.mappings[chars[i]] = -1;
-					adjustmentStart += 1;
+			if (charIndex < patch.start) {
+				var _slice2 = this.original.slice(charIndex, patch.start);
+
+				var _match2 = rx.exec(_slice2);
+				if (_match2) this.patch(charIndex, charIndex + _match2[0].length, '');
+
+				if (!_match2 || _match2[0].length < _slice2.length) {
+					// there is non-whitespace before the patch
+					return this;
 				}
 			}
 
-			adjust(_this4.mappings, adjustmentStart, _this4.mappings.length, -length);
+			patch.content = patch.content.replace(rx, '');
+			if (patch.content) return this;
 
-			return '';
-		});
+			charIndex = patch.end;
+		}
+
+		var slice = this.original.slice(charIndex, this.original.length);
+
+		var match = rx.exec(slice);
+		if (match) this.patch(charIndex, charIndex + match[0].length, '');
 
 		return this;
-	};
-
-	return MagicString;
-})();
-
-function adjust(mappings, start, end, d) {
-	if (!d) return; // replacement is same length as replaced string
-
-	var i = end;
-	while (i-- > start) {
-		if (~mappings[i]) {
-			mappings[i] += d;
-		}
 	}
-}
-
-function initMappings(i) {
-	var mappings = new Uint32Array(i);
-
-	while (i--) mappings[i] = i;
-	return mappings;
-}
-
-function blank(mappings, start, i) {
-	while (i-- > start) mappings[i] = -1;
-}
-
-function reverse(mappings, i) {
-	var result = new Uint32Array(i);
-
-	while (i--) {
-		result[i] = -1;
-	}
-
-	var location = undefined;
-	i = mappings.length;
-	while (i--) {
-		location = mappings[i];
-
-		if (~location) {
-			result[location] = i;
-		}
-	}
-
-	return result;
-}
+};
 
 var hasOwnProp = Object.prototype.hasOwnProperty;
 
-var Bundle = (function () {
-	function Bundle() {
-		var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-		babelHelpers_classCallCheck(this, Bundle);
+function Bundle() {
+	var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-		this.intro = options.intro || '';
-		this.outro = options.outro || '';
-		this.separator = options.separator !== undefined ? options.separator : '\n';
+	this.intro = options.intro || '';
+	this.separator = options.separator !== undefined ? options.separator : '\n';
 
-		this.sources = [];
+	this.sources = [];
 
-		this.uniqueSources = [];
-		this.uniqueSourceIndexByFilename = {};
-	}
+	this.uniqueSources = [];
+	this.uniqueSourceIndexByFilename = {};
+}
 
-	Bundle.prototype.addSource = function addSource(source) {
+Bundle.prototype = {
+	addSource: function addSource(source) {
 		if (source instanceof MagicString) {
 			return this.addSource({
 				content: source,
@@ -37713,7 +37636,7 @@ var Bundle = (function () {
 			});
 		}
 
-		if (typeof source !== 'object' || !source.content) {
+		if (!isObject(source) || !source.content) {
 			throw new Error('bundle.addSource() takes an object with a `content` property, which should be an instance of MagicString, and an optional `filename`');
 		}
 
@@ -37740,21 +37663,18 @@ var Bundle = (function () {
 
 		this.sources.push(source);
 		return this;
-	};
-
-	Bundle.prototype.append = function append(str, options) {
+	},
+	append: function append(str, options) {
 		this.addSource({
 			content: new MagicString(str),
 			separator: options && options.separator || ''
 		});
 
 		return this;
-	};
-
-	Bundle.prototype.clone = function clone() {
+	},
+	clone: function clone() {
 		var bundle = new Bundle({
 			intro: this.intro,
-			outro: this.outro,
 			separator: this.separator
 		});
 
@@ -37767,17 +37687,15 @@ var Bundle = (function () {
 		});
 
 		return bundle;
-	};
-
-	Bundle.prototype.generateMap = function generateMap(options) {
+	},
+	generateMap: function generateMap(options) {
 		var _this = this;
 
 		var offsets = {};
 
 		var names = [];
 		this.sources.forEach(function (source) {
-			Object.keys(source.content.nameLocations).forEach(function (location) {
-				var name = source.content.nameLocations[location];
+			Object.keys(source.content.storedNames).forEach(function (name) {
 				if (! ~names.indexOf(name)) names.push(name);
 			});
 		});
@@ -37795,7 +37713,7 @@ var Bundle = (function () {
 			}
 
 			return prefix + mappings;
-		}).join('') + getSemis(this.outro);
+		}).join('');
 
 		return new SourceMap({
 			file: options.file ? options.file.split(/[\/\\]/).pop() : null,
@@ -37808,9 +37726,8 @@ var Bundle = (function () {
 			names: names,
 			mappings: encoded
 		});
-	};
-
-	Bundle.prototype.getIndentString = function getIndentString() {
+	},
+	getIndentString: function getIndentString() {
 		var indentStringCounts = {};
 
 		this.sources.forEach(function (source) {
@@ -37825,9 +37742,8 @@ var Bundle = (function () {
 		return Object.keys(indentStringCounts).sort(function (a, b) {
 			return indentStringCounts[a] - indentStringCounts[b];
 		})[0] || '\t';
-	};
-
-	Bundle.prototype.indent = function indent(indentStr) {
+	},
+	indent: function indent(indentStr) {
 		var _this2 = this;
 
 		if (!arguments.length) {
@@ -37847,7 +37763,8 @@ var Bundle = (function () {
 				indentStart: indentStart //: trailingNewline || /\r?\n$/.test( separator )  //true///\r?\n/.test( separator )
 			});
 
-			trailingNewline = source.content.str.slice(0, -1) === '\n';
+			// TODO this is a very slow way to determine this
+			trailingNewline = source.content.toString().slice(0, -1) === '\n';
 		});
 
 		if (this.intro) {
@@ -37856,17 +37773,13 @@ var Bundle = (function () {
 			});
 		}
 
-		this.outro = this.outro.replace(/^[^\n]/gm, indentStr + '$&');
-
 		return this;
-	};
-
-	Bundle.prototype.prepend = function prepend(str) {
+	},
+	prepend: function prepend(str) {
 		this.intro = str + this.intro;
 		return this;
-	};
-
-	Bundle.prototype.toString = function toString() {
+	},
+	toString: function toString() {
 		var _this3 = this;
 
 		var body = this.sources.map(function (source, i) {
@@ -37876,67 +37789,57 @@ var Bundle = (function () {
 			return str;
 		}).join('');
 
-		return this.intro + body + this.outro;
-	};
-
-	Bundle.prototype.trimLines = function trimLines() {
+		return this.intro + body;
+	},
+	trimLines: function trimLines() {
 		return this.trim('[\\r\\n]');
-	};
-
-	Bundle.prototype.trim = function trim(charType) {
+	},
+	trim: function trim(charType) {
 		return this.trimStart(charType).trimEnd(charType);
-	};
-
-	Bundle.prototype.trimStart = function trimStart(charType) {
+	},
+	trimStart: function trimStart(charType) {
 		var rx = new RegExp('^' + (charType || '\\s') + '+');
 		this.intro = this.intro.replace(rx, '');
 
 		if (!this.intro) {
-			var source = undefined; // TODO put inside loop if safe
+			var source = undefined;
 			var i = 0;
 
 			do {
 				source = this.sources[i];
 
 				if (!source) {
-					this.outro = this.outro.replace(rx, '');
 					break;
 				}
 
-				source.content.trimStart();
+				source.content.trimStart(charType);
 				i += 1;
-			} while (source.content.str === '');
+			} while (source.content.toString() === ''); // TODO faster way to determine non-empty source?
 		}
 
 		return this;
-	};
-
-	Bundle.prototype.trimEnd = function trimEnd(charType) {
+	},
+	trimEnd: function trimEnd(charType) {
 		var rx = new RegExp((charType || '\\s') + '+$');
-		this.outro = this.outro.replace(rx, '');
 
-		if (!this.outro) {
-			var source = undefined;
-			var i = this.sources.length - 1;
+		var source = undefined;
+		var i = this.sources.length - 1;
 
-			do {
-				source = this.sources[i];
+		do {
+			source = this.sources[i];
 
-				if (!source) {
-					this.intro = this.intro.replace(rx, '');
-					break;
-				}
+			if (!source) {
+				this.intro = this.intro.replace(rx, '');
+				break;
+			}
 
-				source.content.trimEnd(charType);
-				i -= 1;
-			} while (source.content.str === '');
-		}
+			source.content.trimEnd(charType);
+			i -= 1;
+		} while (source.content.toString() === ''); // TODO faster way to determine non-empty source?
 
 		return this;
-	};
-
-	return Bundle;
-})();
+	}
+};
 
 function getSemis(str) {
 	return new Array(str.split('\n').length).join(';');
@@ -37945,7 +37848,6 @@ function getSemis(str) {
 MagicString.Bundle = Bundle;
 
 module.exports = MagicString;
-
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":7,"vlq":49}],33:[function(require,module,exports){
