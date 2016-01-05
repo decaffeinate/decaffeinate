@@ -78,12 +78,13 @@ function isConciseObjectMethod(node) {
 function patchUnboundFunctionStart(node, patcher, concise=false) {
   const start = node.range[0];
   const fn = concise ? '' : 'function';
-  if (patcher.slice(start, start + 2) === '->') {
+  const source = patcher.original;
+  if (source.slice(start, start + 2) === '->') {
     patcher.overwrite(start, start + 2, `${isStatement(node) ? '(' : ''}${fn}() {`);
   } else {
     patcher.insert(start, isStatement(node) ? `(${fn}` : fn);
 
-    let arrowStart = patcher.original.indexOf('->', start);
+    let arrowStart = source.indexOf('->', start);
 
     if (arrowStart < 0) {
       throw new Error(
@@ -103,7 +104,9 @@ function patchUnboundFunctionStart(node, patcher, concise=false) {
  * @param {MagicString} patcher
  */
 function patchBoundFunctionStart(node, patcher) {
-  if (patcher.slice(node.range[0], node.range[0] + 1) !== '(') {
+  const source = patcher.original;
+
+  if (source.slice(node.range[0], node.range[0] + 1) !== '(') {
     patcher.insert(node.range[0], '() ');
   }
 
@@ -112,7 +115,7 @@ function patchBoundFunctionStart(node, patcher) {
       node.parameters[node.parameters.length - 1].range[1] :
       node.range[0];
 
-    arrowStart = patcher.original.indexOf('=>', arrowStart);
+    arrowStart = source.indexOf('=>', arrowStart);
 
     if (arrowStart < 0) {
       throw new Error(

@@ -43,10 +43,6 @@ export function patchClassStart(node, patcher) {
       assignee.range[1] - assignee.memberName.length,
       'static '
     );
-    patcher.remove(
-      assignee.range[1],
-      node.expression.range[0]
-    );
   }
 }
 
