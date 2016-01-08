@@ -155,6 +155,10 @@ describe('conditionals', () => {
     check(`if a then b else c`, `if (a) { b; } else { c; }`);
   });
 
+  it('handles `if` statements with an implicit call in the condition', () => {
+    check(`if a b then c`, `if (a(b)) { c; }`);
+  });
+
   it('turns simple `if` with `else` as an expression into a ternary operator', () => {
     check(`a(if b then c else d)`, `a(b ? c : d);`);
   });

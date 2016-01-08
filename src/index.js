@@ -131,7 +131,6 @@ export function convert(source) {
     patchClassEnd(node, patcher);
     patchForEnd(node, patcher);
     patchObjectEnd(node, patcher);
-    patchConditionalEnd(node, patcher);
     patchSliceEnd(node, patcher);
     patchCallClosing(node, patcher);
     patchSemicolons(node, patcher);
@@ -140,6 +139,7 @@ export function convert(source) {
     patchSpreadEnd(node, patcher);
     patchSwitchEnd(node, patcher);
     patchRestEnd(node, patcher);
+    patchConditionalEnd(node, patcher);
   });
 
   patchComments(patcher);
