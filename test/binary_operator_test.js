@@ -37,6 +37,22 @@ describe('binary operators', () => {
     `);
   });
 
+  it('passes left shift through', () => {
+    check(`
+      a << b
+    `, `
+      a << b;
+    `);
+  });
+
+  it('passes signed right shift through', () => {
+    check(`
+      a >> b
+    `, `
+      a >> b;
+    `);
+  });
+
   it('passes unsigned right shift through', () => {
     check(`
       a >>> b
