@@ -480,4 +480,39 @@ describe('for loops', () => {
       });
     `);
   });
+
+  it('turns single-line `for-in` loop with `then` into multi-line `for` loop', () => {
+    check(`
+      for a in b then a()
+    `, `
+      for (var i = 0, a; i < b.length; i++) {
+        a = b[i];
+        a();
+      }
+    `);
+  });
+
+  it('turns single-line `for-of` loop with `then` into multi-line `for` loop', () => {
+    check(`
+      for k of o then k
+    `, `
+      for (var k in o) {
+        k;
+      }
+    `);
+  });
+
+  it('indents body of multi-line `for` body with `then`', () => {
+    check(`
+      for a in b then do (a) ->
+        a
+    `, `
+      for (var i = 0, a; i < b.length; i++) {
+        a = b[i];
+        (function(a) {
+          return a;
+        })(a);
+      }
+    `);
+  });
 });

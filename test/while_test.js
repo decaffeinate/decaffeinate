@@ -138,4 +138,24 @@ describe('while', () => {
       });
     `);
   });
+
+  it('handles a `while` loop with a `then` body', () => {
+    check(`
+      while a then do (a) -> a
+    `, `
+      while (a) {
+        (function(a) { return a; })(a);
+      }
+    `);
+  });
+
+  it('handles a `loop` with a `then` body', () => {
+    check(`
+      loop then a
+    `, `
+      while (true) {
+        a;
+      }
+    `);
+  });
 });
