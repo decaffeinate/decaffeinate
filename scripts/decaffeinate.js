@@ -2808,11 +2808,14 @@ function indentNode(node, patcher) {
 
   while (offset < range[1]) {
     patcher.insert(offset, indent);
-    offset = source.indexOf('\n', offset + '\n'.length);
+    offset = source.indexOf('\n', offset);
     if (offset < 0) {
       break;
     }
-    offset += '\n'.length;
+    while (source[offset] === '\n') {
+      // Skip empty lines.
+      offset += '\n'.length;
+    }
   }
 }
 
