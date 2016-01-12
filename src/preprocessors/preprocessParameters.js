@@ -10,9 +10,19 @@ import { isFunction } from '../utils/types';
  */
 export default function preprocessParameters(node, patcher) {
   if (isFunction(node)) {
+    const params = node.parameters;
     const assignments = [];
 
-    node.parameters.forEach(param => {
+    for (let i = 0; i < params.length - 1; i++) {
+      if (params[i].type === 'Rest') {
+        const lastParam = params[params.length - 1];
+        const afterRest = patcher.original.slice(params[i + 1].range[0], lastParam.range[1]);
+        patcher.remove(params[i].range[1], lastParam.range[1]);
+        assignments.push(`[ ${afterRest} ] = ${params[i].expression.data}.splice(-${params.length - i - 1})`);
+      }
+    }
+
+    params.forEach(param => {
       let thisDotParameter = getThisDotParameter(param);
       if (thisDotParameter) {
         // `@a` -> `a`

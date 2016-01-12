@@ -578,8 +578,32 @@ describe('automatic conversions', function() {
       check(`null`, `null;`);
     });
 
-    it('converts rest params in function calls', function() {
+    it('converts rest params in functions', function() {
       check(`(a,b...)->b[0]`, `(function(a,...b){return b[0]; });`);
+    });
+
+    it('converts non-terminal rest params in functions', function() {
+      check(`
+        (a..., b) ->
+          a.length + b
+      `, `
+        (function(...a) {
+          var [ b ] = a.splice(-1);
+          return a.length + b;
+        });
+      `);
+    });
+
+    it('converts non-terminal rest params and default values in functions', function() {
+      check(`
+        (a..., b, c=b) ->
+          a.length + b
+      `, `
+        (function(...a) {
+          var [ b, c=b ] = a.splice(-2);
+          return a.length + b;
+        });
+      `);
     });
 
     it('strips the backticks off interpolated JavaScript in a statement context', function() {
