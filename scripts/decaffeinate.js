@@ -2219,16 +2219,19 @@ function patchSequences(node, patcher) {
  * Inserts string escape characters before certain characters to be escaped.
  *
  * @param {MagicString} patcher
- * @param {string[]} characters
+ * @param {string[]|function(string): boolean} characters
  * @param {number} start
  * @param {number} end
  */
 function escape(patcher, characters, start, end) {
   var source = patcher.original;
+  var predicate = typeof characters !== 'function' ? function (chr) {
+    return characters.indexOf(chr) >= 0;
+  } : characters;
   for (var i = start; i < end; i++) {
     if (source[i] === '\\') {
       i++;
-    } else if (characters.indexOf(source[i]) >= 0) {
+    } else if (predicate(source[i], i, source)) {
       patcher.insert(i, '\\');
     }
   }
@@ -2397,7 +2400,9 @@ function patchStringInterpolation(node, patcher) {
     patchInterpolation(node.left, patcher);
     patchInterpolation(node.right, patcher);
   } else if (node.type === 'String' && node.parentNode.type === 'ConcatOp') {
-    escape(patcher, ['`'], node.range[0], node.range[1]);
+    escape(patcher, function (chr, i, source) {
+      return chr === '`' || chr === '$' && source[i + 1] === '{';
+    }, node.range[0], node.range[1]);
   }
 }
 
