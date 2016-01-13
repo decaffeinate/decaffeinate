@@ -35,4 +35,11 @@ describe('string interpolation', () => {
       }\`;
     `);
   });
+
+  it('escapes ${ inside strings that become template strings', () => {
+    check(
+      '"#{interpolation}${not interpolation}"',
+      '`${interpolation}\\${not interpolation}`;'
+    );
+  });
 });

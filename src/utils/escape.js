@@ -2,16 +2,19 @@
  * Inserts string escape characters before certain characters to be escaped.
  *
  * @param {MagicString} patcher
- * @param {string[]} characters
+ * @param {string[]|function(string): boolean} characters
  * @param {number} start
  * @param {number} end
  */
 export default function escape(patcher, characters, start, end) {
   const source = patcher.original;
+  const predicate = typeof characters !== 'function' ?
+    (chr => characters.indexOf(chr) >= 0) :
+    characters;
   for (let i = start; i < end; i++) {
     if (source[i] === '\\') {
       i++;
-    } else if (characters.indexOf(source[i]) >= 0) {
+    } else if (predicate(source[i], i, source)) {
       patcher.insert(i, '\\');
     }
   }

@@ -24,7 +24,12 @@ export default function patchStringInterpolation(node, patcher) {
     patchInterpolation(node.left, patcher);
     patchInterpolation(node.right, patcher);
   } else if (node.type === 'String' && node.parentNode.type === 'ConcatOp') {
-    escape(patcher, ['`'], node.range[0], node.range[1]);
+    escape(
+      patcher,
+      (chr, i, source) => chr === '`' || (chr === '$' && source[i + 1] === '{'),
+      node.range[0],
+      node.range[1]
+    );
   }
 }
 
