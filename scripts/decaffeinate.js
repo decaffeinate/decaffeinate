@@ -2238,6 +2238,19 @@ function escape(patcher, characters, start, end) {
 }
 
 /**
+ * Escape characters to be within a template string, i.e. ` and $ before {.
+ *
+ * @param {MagicString} patcher
+ * @param {number} start
+ * @param {number} end
+ */
+function escapeTemplateStringContents(patcher, start, end) {
+  escape(patcher, function (chr, i, source) {
+    return chr === '`' || chr === '$' && source[i + 1] === '{';
+  }, start, end);
+}
+
+/**
  * Determines whether the given node spans multiple lines.
  *
  * @param {string} source
@@ -2353,7 +2366,6 @@ function replaceTripleQuotes(node, patcher) {
 
   if (node.type === 'ConcatOp' || isMultiline(source, node)) {
     (function () {
-      quoteCharacter = '`';
       var indents = getIndentInfo(source, contentStart, contentEnd);
       var indentSize = sharedIndentSize(indents.ranges);
       indents.ranges.forEach(function (_ref) {
@@ -2367,14 +2379,14 @@ function replaceTripleQuotes(node, patcher) {
         }
       });
       patcher.remove(contentStart, contentStart + indents.leadingMargin).remove(contentEnd - indents.trailingMargin, contentEnd).overwrite(start, start + TRIPLE_QUOTE_LENGTH$1, '`').overwrite(end - TRIPLE_QUOTE_LENGTH$1, end, '`');
+      escapeTemplateStringContents(patcher, start + TRIPLE_QUOTE_LENGTH$1, end - TRIPLE_QUOTE_LENGTH$1);
     })();
   } else {
     quoteCharacter = patcher.original[start];
     patcher.remove(start, contentStart - quoteCharacter.length);
     patcher.remove(contentEnd + quoteCharacter.length, end);
+    escape(patcher, [quoteCharacter], start + TRIPLE_QUOTE_LENGTH$1, end - TRIPLE_QUOTE_LENGTH$1);
   }
-
-  escape(patcher, [quoteCharacter], start + TRIPLE_QUOTE_LENGTH$1, end - TRIPLE_QUOTE_LENGTH$1);
 }
 
 /**
@@ -2400,9 +2412,7 @@ function patchStringInterpolation(node, patcher) {
     patchInterpolation(node.left, patcher);
     patchInterpolation(node.right, patcher);
   } else if (node.type === 'String' && node.parentNode.type === 'ConcatOp') {
-    escape(patcher, function (chr, i, source) {
-      return chr === '`' || chr === '$' && source[i + 1] === '{';
-    }, node.range[0], node.range[1]);
+    escapeTemplateStringContents(patcher, node.range[0], node.range[1]);
   }
 }
 
