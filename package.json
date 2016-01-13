@@ -1,6 +1,6 @@
 {
   "name": "decaffeinate",
-  "version": "1.44.3",
+  "version": "1.44.4",
   "description": "Move your CoffeeScript source to JavaScript using ES6 syntax.",
   "main": "dist/decaffeinate.cjs.js",
   "jsnext:main": "dist/decaffeinate.es6.js",
