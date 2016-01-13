@@ -19,3 +19,19 @@ export default function escape(patcher, characters, start, end) {
     }
   }
 }
+
+/**
+ * Escape characters to be within a template string, i.e. ` and $ before {.
+ *
+ * @param {MagicString} patcher
+ * @param {number} start
+ * @param {number} end
+ */
+export function escapeTemplateStringContents(patcher, start, end) {
+  escape(
+    patcher,
+    (chr, i, source) => chr === '`' || (chr === '$' && source[i + 1] === '{'),
+    start,
+    end
+  );
+}

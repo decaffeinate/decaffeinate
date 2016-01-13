@@ -1,4 +1,4 @@
-import escape from '../utils/escape';
+import escape, { escapeTemplateStringContents } from '../utils/escape';
 import isMultiline from '../utils/isMultiline';
 import { getIndentInfo, sharedIndentSize } from '../utils/stripSharedIndent';
 
@@ -16,7 +16,6 @@ export default function replaceTripleQuotes(node, patcher) {
   let quoteCharacter;
 
   if (node.type === 'ConcatOp' || isMultiline(source, node)) {
-    quoteCharacter = '`';
     const indents = getIndentInfo(source, contentStart, contentEnd);
     const indentSize = sharedIndentSize(indents.ranges);
     indents.ranges.forEach(([start, end]) => {
@@ -43,16 +42,20 @@ export default function replaceTripleQuotes(node, patcher) {
         end,
         '`'
       );
+    escapeTemplateStringContents(
+      patcher,
+      start + TRIPLE_QUOTE_LENGTH,
+      end - TRIPLE_QUOTE_LENGTH
+    );
   } else {
     quoteCharacter = patcher.original[start];
     patcher.remove(start, contentStart - quoteCharacter.length);
     patcher.remove(contentEnd + quoteCharacter.length, end);
+    escape(
+      patcher,
+      [quoteCharacter],
+      start + TRIPLE_QUOTE_LENGTH,
+      end - TRIPLE_QUOTE_LENGTH
+    )
   }
-
-  escape(
-    patcher,
-    [quoteCharacter],
-    start + TRIPLE_QUOTE_LENGTH,
-    end - TRIPLE_QUOTE_LENGTH
-  );
 }

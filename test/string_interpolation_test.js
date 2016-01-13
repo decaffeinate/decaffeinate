@@ -42,4 +42,14 @@ describe('string interpolation', () => {
       '`${interpolation}\\${not interpolation}`;'
     );
   });
+
+  it('escapes ${ inside block strings that become template strings', () => {
+    check(`
+      """
+      \${a}
+      """
+    `, `
+      \`\\\${a}\`;
+    `);
+  })
 });
