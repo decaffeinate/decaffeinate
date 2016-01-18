@@ -112,8 +112,11 @@ export function isBinaryOperator(node) {
   switch (node.type) {
     case 'BitAndOp':
     case 'BitOrOp':
+    case 'BitXorOp':
+    case 'ConcatOp':
     case 'DivideOp':
     case 'EQOp':
+    case 'ExistsOp':
     case 'GTEOp':
     case 'GTOp':
     case 'InOp':
@@ -128,6 +131,7 @@ export function isBinaryOperator(node) {
     case 'OfOp':
     case 'PlusOp':
     case 'RemOp':
+    case 'SeqOp':
     case 'SignedRightShiftOp':
     case 'SubtractOp':
     case 'UnsignedRightShiftOp':
