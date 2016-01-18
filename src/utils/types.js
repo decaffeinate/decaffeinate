@@ -120,6 +120,7 @@ export function isBinaryOperator(node) {
     case 'InstanceofOp':
     case 'LTEOp':
     case 'LTOp':
+    case 'LeftShiftOp':
     case 'LogicalAndOp':
     case 'LogicalOrOp':
     case 'MultiplyOp':
@@ -127,7 +128,9 @@ export function isBinaryOperator(node) {
     case 'OfOp':
     case 'PlusOp':
     case 'RemOp':
+    case 'SignedRightShiftOp':
     case 'SubtractOp':
+    case 'UnsignedRightShiftOp':
       return true;
 
     default:

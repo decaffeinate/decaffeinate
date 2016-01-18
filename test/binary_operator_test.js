@@ -68,4 +68,12 @@ describe('binary operators', () => {
       a || b || c;
     `);
   });
+
+  it('handles left shift as a nested operator', () => {
+    check(`
+      value = object.id << 8 | object.type
+    `, `
+      var value = object.id << 8 | object.type;
+    `);
+  });
 });
