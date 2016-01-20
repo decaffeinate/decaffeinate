@@ -17,7 +17,7 @@ export default function parse(source) {
   const ast = coffeeScriptParse(source, { raw: true }).toBasicObject();
   const map = buildLineAndColumnMap(source);
 
-  traverse(ast, function(node) {
+  traverse(ast, node => {
     attachMetadata(node);
     attachScope(node);
     fixRange(node, map, source);
