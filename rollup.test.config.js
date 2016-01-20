@@ -7,5 +7,5 @@ export default {
   format: 'cjs',
   dest: 'build/test-bundle.js',
   sourceMap: true,
-  intro: `require('source-map-support').install();`
+  intro: "require('source-map-support').install();"
 };
