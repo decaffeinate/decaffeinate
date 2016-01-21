@@ -18,7 +18,7 @@ export default function parse(source) {
   const map = buildLineAndColumnMap(source);
 
   traverse(ast, node => {
-    attachMetadata(node);
+    attachMetadata(node, source);
     attachScope(node);
     fixRange(node, map, source);
   });
@@ -28,9 +28,18 @@ export default function parse(source) {
 
 /**
  * @param {Object} node
+ * @param {string} source
  * @private
  */
-function attachMetadata(node) {
+function attachMetadata(node, source) {
+  // CoffeeScriptRedux parses `unless a` as a `Conditional` with a
+  // `UnaryNegateOp` condition, but we want to easily distinguish that case from
+  // `if !a`, so we mark `unless` specifically and remove the `UnaryNegateOp`.
+  if (isConditional(node) && source.slice(node.range[0], node.range[0] + 'unless'.length) === 'unless') {
+    node.condition = node.condition.expression;
+    node.isUnless = true;
+  }
+
   if (isConditional(node) && isFunctionBody(node)) {
     // This conditional is a single-line function that wants to be a statement.
     node._expression = !wantsToBeStatement(node);

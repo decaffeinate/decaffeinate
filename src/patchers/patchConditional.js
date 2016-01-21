@@ -5,8 +5,6 @@ import replaceBetween from '../utils/replaceBetween';
 import requiresParentheses from '../utils/requiresParentheses';
 import trimmedNodeRange from '../utils/trimmedNodeRange';
 
-const UNLESS = 'unless';
-
 /**
  * Adds punctuation to `if` statements and converts `if` expressions.
  *
@@ -17,19 +15,19 @@ export function patchConditionalStart(node, patcher) {
   if (node.type === 'Conditional' && isExpressionResultUsed(node)) {
     // i.e. remove "if" or "unless"
     patcher.overwrite(node.range[0], node.condition.range[0], '');
-  } else if (isUnlessConditional(node, patcher.original)) {
-    patcher.overwrite(node.range[0], node.range[0] + UNLESS.length, 'if');
+  } else if (node.isUnless) {
+    patcher.overwrite(node.range[0], node.range[0] + 'unless'.length, 'if');
   } else if (isCondition(node) && isExpressionResultUsed(node.parentNode)) {
     // nothing to do
     return;
   } else if (isCondition(node)) {
     const isSurroundedByParens = isSurroundedBy(node, '(', patcher.original);
-    const isUnless = isUnlessConditional(node.parentNode, patcher.original);
+    const { isUnless } = node.parentNode;
     let inserted = '';
     let offset = node.range[0];
 
     if (isUnless) {
-      let conditionNeedsParens = requiresParentheses(node.expression);
+      let conditionNeedsParens = requiresParentheses(node.parentNode.condition);
       if (conditionNeedsParens) {
         if (isSurroundedByParens) {
           // e.g. `unless (a + b)` -> `if (!(a + b)) {`
@@ -75,7 +73,7 @@ export function patchConditionalEnd(node, patcher) {
       }
       let parens = isSurroundedBy(node, '(', patcher.original);
       let inserted = parens ? ' {' : ') {';
-      if (isUnlessConditional(node.parentNode, patcher.original) && requiresParentheses(node.expression)) {
+      if (node.parentNode.isUnless && requiresParentheses(node.parentNode.condition)) {
         inserted = `)${inserted}`;
       }
       let nodeRange = trimmedNodeRange(node, patcher.original);
@@ -107,7 +105,7 @@ export function patchConditionalEnd(node, patcher) {
   } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
     if (!isExpressionResultUsed(node)) {
       // Close the conditional if it isn't handled by closing an `else if`.
-      if (isOneLineConditionAndConsequent(node, patcher.original)) {
+      if (isOneLineConditionAndConsequent(node)) {
         let nodeRange = trimmedNodeRange(node, patcher.original);
         patcher.insert(nodeRange[1], ' }');
       } else {
@@ -128,15 +126,6 @@ function isCondition(node) {
 }
 
 /**
- * @param {Object} node
- * @param {string} source
- * @returns {boolean}
- */
-function isUnlessConditional(node, source) {
-  return node.type === 'Conditional' && source.slice(node.range[0], node.range[0] + UNLESS.length) === UNLESS;
-}
-
-/**
  * Determines whether a node is a Conditional node's consequent.
  *
  * @param {Object} node
@@ -152,13 +141,7 @@ function isConsequent(node) {
  * @param {Object} node
  * @returns {boolean}
  */
-function isOneLineConditionAndConsequent(node, source) {
-  let condition = node.condition;
-  let consequent = node.consequent;
-
-  if (isUnlessConditional(node, source)) {
-    condition = condition.expression;
-  }
-
+function isOneLineConditionAndConsequent(node) {
+  const { condition, consequent } = node;
   return condition.line === consequent.line;
 }
