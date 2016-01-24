@@ -29,7 +29,7 @@
   "author": "Brian Donovan",
   "license": "MIT",
   "dependencies": {
-    "coffee-script-redux": "https://github.com/michaelficarra/CoffeeScriptRedux.git",
+    "coffee-script-redux": "michaelficarra/CoffeeScriptRedux",
     "detect-indent": "^4.0.0",
     "magic-string": "^0.10.2",
     "repeating": "^2.0.0"
