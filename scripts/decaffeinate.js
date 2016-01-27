@@ -1064,7 +1064,7 @@ function parse$1(source) {
   var map = buildLineAndColumnMap(source);
 
   traverse(ast, function (node) {
-    attachMetadata(node);
+    attachMetadata(node, source);
     attachScope(node);
     fixRange(node, map, source);
   });
@@ -1074,9 +1074,18 @@ function parse$1(source) {
 
 /**
  * @param {Object} node
+ * @param {string} source
  * @private
  */
-function attachMetadata(node) {
+function attachMetadata(node, source) {
+  // CoffeeScriptRedux parses `unless a` as a `Conditional` with a
+  // `UnaryNegateOp` condition, but we want to easily distinguish that case from
+  // `if !a`, so we mark `unless` specifically and remove the `UnaryNegateOp`.
+  if (isConditional(node) && source.slice(node.range[0], node.range[0] + 'unless'.length) === 'unless') {
+    node.condition = node.condition.expression;
+    node.isUnless = true;
+  }
+
   if (isConditional(node) && isFunctionBody(node)) {
     // This conditional is a single-line function that wants to be a statement.
     node._expression = !wantsToBeStatement(node);
@@ -1146,6 +1155,19 @@ function fixRange(node, map, source) {
     } else if (node.type === 'LogicalNotOp' && node.expression && node.expression.type === 'InOp') {
       // Ignore `not` operator within `in` operator
       return;
+    } else if (node.type === 'LogicalNotOp' && node.parentNode.type === 'LogicalNotOp') {
+      var _parentNode = node.parentNode;
+
+      if (_parentNode.raw[0] === '!') {
+        node.range = [_parentNode.range[0] + '!'.length, _parentNode.range[1]];
+      } else if (_parentNode.raw.slice(0, 'not'.length) === 'not') {
+        node.range = [_parentNode.range[0] + 'not '.length, _parentNode.range[1]];
+      } else {
+        throw new Error('BUG: ' + _parentNode.type + ' does not start with `!` or `not`: ' + _parentNode.raw);
+      }
+      node.raw = source.slice.apply(source, babelHelpers.toConsumableArray(node.range));
+      node.line = node.expression.line;
+      node.column = node.expression.column + (node.range[0] - node.expression.range[0]);
     } else if (fixShorthandThisObjectMember(node)) {
       return;
     } else {
@@ -4003,8 +4025,6 @@ function isClassProtoAssignExpression(node) {
   return parentNode && parentNode.type === 'ClassProtoAssignOp' && node === parentNode.expression && node.type !== 'Function';
 }
 
-var UNLESS = 'unless';
-
 /**
  * Adds punctuation to `if` statements and converts `if` expressions.
  *
@@ -4015,19 +4035,20 @@ function patchConditionalStart(node, patcher) {
   if (node.type === 'Conditional' && isExpressionResultUsed(node)) {
     // i.e. remove "if" or "unless"
     patcher.overwrite(node.range[0], node.condition.range[0], '');
-  } else if (isUnlessConditional(node, patcher.original)) {
-    patcher.overwrite(node.range[0], node.range[0] + UNLESS.length, 'if');
+  } else if (node.isUnless) {
+    patcher.overwrite(node.range[0], node.range[0] + 'unless'.length, 'if');
   } else if (isCondition(node) && isExpressionResultUsed(node.parentNode)) {
     // nothing to do
     return;
   } else if (isCondition(node)) {
     var isSurroundedByParens = isSurroundedBy(node, '(', patcher.original);
-    var isUnless = isUnlessConditional(node.parentNode, patcher.original);
+    var isUnless = node.parentNode.isUnless;
+
     var inserted = '';
     var offset = node.range[0];
 
     if (isUnless) {
-      var conditionNeedsParens = requiresParentheses(node.expression);
+      var conditionNeedsParens = requiresParentheses(node.parentNode.condition);
       if (conditionNeedsParens) {
         if (isSurroundedByParens) {
           // e.g. `unless (a + b)` -> `if (!(a + b)) {`
@@ -4073,7 +4094,7 @@ function patchConditionalEnd(node, patcher) {
       }
       var parens = isSurroundedBy(node, '(', patcher.original);
       var inserted = parens ? ' {' : ') {';
-      if (isUnlessConditional(node.parentNode, patcher.original) && requiresParentheses(node.expression)) {
+      if (node.parentNode.isUnless && requiresParentheses(node.parentNode.condition)) {
         inserted = ')' + inserted;
       }
       var nodeRange = trimmedNodeRange(node, patcher.original);
@@ -4099,7 +4120,7 @@ function patchConditionalEnd(node, patcher) {
   } else if (node.type === 'Conditional' && (!node.alternate || node.alternate.type !== 'Conditional')) {
     if (!isExpressionResultUsed(node)) {
       // Close the conditional if it isn't handled by closing an `else if`.
-      if (isOneLineConditionAndConsequent(node, patcher.original)) {
+      if (isOneLineConditionAndConsequent(node)) {
         var nodeRange = trimmedNodeRange(node, patcher.original);
         patcher.insert(nodeRange[1], ' }');
       } else {
@@ -4120,15 +4141,6 @@ function isCondition(node) {
 }
 
 /**
- * @param {Object} node
- * @param {string} source
- * @returns {boolean}
- */
-function isUnlessConditional(node, source) {
-  return node.type === 'Conditional' && source.slice(node.range[0], node.range[0] + UNLESS.length) === UNLESS;
-}
-
-/**
  * Determines whether a node is a Conditional node's consequent.
  *
  * @param {Object} node
@@ -4144,13 +4156,9 @@ function isConsequent(node) {
  * @param {Object} node
  * @returns {boolean}
  */
-function isOneLineConditionAndConsequent(node, source) {
+function isOneLineConditionAndConsequent(node) {
   var condition = node.condition;
   var consequent = node.consequent;
-
-  if (isUnlessConditional(node, source)) {
-    condition = condition.expression;
-  }
 
   return condition.line === consequent.line;
 }
