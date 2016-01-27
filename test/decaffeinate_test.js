@@ -309,31 +309,6 @@ describe('automatic conversions', function() {
     it('renames "or" to "||"', function() {
       check(`a or b`, `a || b;`);
     });
-
-    it('renames "not" to "!" and removes the space if one is present', function() {
-      check(`not a`, `!a;`);
-    });
-
-    it('renames "not" to "!" when used in a condition', function() {
-      check(`
-        if not 0
-          1
-      `, `
-        if (!0) {
-          1;
-        }
-      `);
-    });
-
-    it('renames "not" to "!"', function() {
-      check(`not(a)`, `!(a);`);
-    });
-
-    it.skip('handles chained "not"s', function() {
-      // This seems to trigger a CoffeeScriptRedux bug.
-      // The inner LogicalNotOp has no raw/range.
-      check(`not not a`, `!!a;`);
-    });
   });
 
   describe('changing string interpolation to template strings', function() {

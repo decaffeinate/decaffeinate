@@ -107,6 +107,18 @@ function fixRange(node, map, source) {
     } else if (node.type === 'LogicalNotOp' && node.expression && node.expression.type === 'InOp') {
       // Ignore `not` operator within `in` operator
       return;
+    } else if (node.type === 'LogicalNotOp' && node.parentNode.type === 'LogicalNotOp') {
+      const { parentNode } = node;
+      if (parentNode.raw[0] === '!') {
+        node.range = [parentNode.range[0] + '!'.length, parentNode.range[1]];
+      } else if (parentNode.raw.slice(0, 'not'.length) === 'not') {
+        node.range = [parentNode.range[0] + 'not '.length, parentNode.range[1]];
+      } else {
+        throw new Error(`BUG: ${parentNode.type} does not start with \`!\` or \`not\`: ${parentNode.raw}`);
+      }
+      node.raw = source.slice(...node.range);
+      node.line = node.expression.line;
+      node.column = node.expression.column + (node.range[0] - node.expression.range[0]);
     } else if (fixShorthandThisObjectMember(node)) {
       return;
     } else {
