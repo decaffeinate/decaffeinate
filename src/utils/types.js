@@ -26,6 +26,51 @@ export function isBool(node, value=undefined) {
 }
 
 /**
+ * Determines whether a node is a member access operation.
+ */
+export function isMemberAccessOp(node) {
+  return isStaticMemberAccessOp(node) || isDynamicMemberAccessOp(node);
+}
+
+/**
+ * Determines whether a node is a static member access, e.g. `a.b`.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isStaticMemberAccessOp(node) {
+  switch (node.type) {
+    case 'MemberAccessOp':
+    case 'ProtoMemberAccessOp':
+    case 'SoakedMemberAccessOp':
+    case 'SoakedProtoMemberAccessOp':
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * Determines whether a node is a dynamic member access, e.g. `a[b]`.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+export function isDynamicMemberAccessOp(node) {
+  switch (node.type) {
+    case 'DynamicMemberAccessOp':
+    case 'DynamicProtoMemberAccessOp':
+    case 'SoakedDynamicMemberAccessOp':
+    case 'SoakedDynamicProtoMemberAccessOp':
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+/**
  * Determines whether a node represents a function, i.e. `->` or `=>`.
  *
  * @param {Object} node
