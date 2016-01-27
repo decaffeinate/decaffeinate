@@ -108,4 +108,15 @@ describe('parameter assignment', () => {
       (function(a=1) { return this.a = a; });
     `);
   });
+
+  it('ensures parameters with default values are not redeclared', () => {
+    check(`
+      (a=0) ->
+        a ?= 1
+    `, `
+      (function(a=0) {
+        if ((typeof a !== "undefined" && a !== null)) { return a; } else { return a = 1; }
+      });
+    `);
+  });
 });

@@ -63,6 +63,12 @@ describe('Scope', function() {
     ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
   });
 
+  it('processes functions with default parameters', function() {
+    const scope = new Scope();
+    scope.processNode(statement('(a=0) ->'));
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+  });
+
   it('processes for-of loops by binding key and value assignees', function() {
     const scope = new Scope();
     scope.processNode(statement('for key, {a, b, c: [d, e]} of object\n  key'));
