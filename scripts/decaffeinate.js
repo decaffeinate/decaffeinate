@@ -233,7 +233,11 @@ var Scope = function () {
         case 'Function':
         case 'BoundFunction':
           node.parameters.forEach(function (parameter) {
-            return _this2.declares(parameter.data, parameter);
+            if (parameter.type === 'DefaultParam') {
+              _this2.declares(parameter.param.data, parameter.param);
+            } else {
+              _this2.declares(parameter.data, parameter);
+            }
           });
           break;
 
