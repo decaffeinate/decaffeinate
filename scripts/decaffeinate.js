@@ -611,6 +611,51 @@ function isBool(node) {
 }
 
 /**
+ * Determines whether a node is a member access operation.
+ */
+function isMemberAccessOp(node) {
+  return isStaticMemberAccessOp(node) || isDynamicMemberAccessOp(node);
+}
+
+/**
+ * Determines whether a node is a static member access, e.g. `a.b`.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isStaticMemberAccessOp(node) {
+  switch (node.type) {
+    case 'MemberAccessOp':
+    case 'ProtoMemberAccessOp':
+    case 'SoakedMemberAccessOp':
+    case 'SoakedProtoMemberAccessOp':
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * Determines whether a node is a dynamic member access, e.g. `a[b]`.
+ *
+ * @param {Object} node
+ * @returns {boolean}
+ */
+function isDynamicMemberAccessOp(node) {
+  switch (node.type) {
+    case 'DynamicMemberAccessOp':
+    case 'DynamicProtoMemberAccessOp':
+    case 'SoakedDynamicMemberAccessOp':
+    case 'SoakedDynamicProtoMemberAccessOp':
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+/**
  * Determines whether a node represents a function, i.e. `->` or `=>`.
  *
  * @param {Object} node
@@ -960,6 +1005,7 @@ function isLastStatement(node) {
   }
 
   var statements = node.parentNode.statements;
+
   var index = statements.indexOf(node);
 
   if (index < 0) {
@@ -1192,7 +1238,7 @@ function fixRange(node, map, source) {
       return;
     }
 
-    throw new Error('BUG! Could not fix range for ' + node.type + ' at line ' + node.line + ', column ' + node.column);
+    throw new Error('BUG! Could not fix range for ' + node.type + (' at line ' + node.line + ', column ' + node.column));
   } else {
     shrinkPastParentheses(node, map, source, true);
   }
@@ -1556,6 +1602,7 @@ function stripComments(source) {
  */
 function trimmedNodeRange(node, source) {
   var range = node.range;
+
   var state = undefined;
   var previousState = undefined;
   var index = range[0];
@@ -1630,7 +1677,7 @@ function patchCommaAfterNode(member, members, patcher) {
 function getIndent(source, offset) {
   var startOfLine = getStartOfLine(source, offset);
   var indentOffset = startOfLine;
-  var indentCharacter;
+  var indentCharacter = undefined;
 
   switch (source[indentOffset]) {
     case ' ':
@@ -2803,36 +2850,59 @@ function preprocessCompoundAssignment(node, patcher) {
     switch (node.op) {
       case 'LogicalOrOp':
       case 'LogicalAndOp':
-        var isMemberAccess = /MemberAccessOp$/.test(assignee.type);
-        var isDynamicMemberAccess = assignee.type === 'DynamicMemberAccessOp';
-        var lhs = undefined;
-        var base = isMemberAccess ? assignee.expression.raw : assignee.raw;
-        var name = isDynamicMemberAccess ? assignee.indexingExpr.raw : isMemberAccess ? assignee.memberName : null;
-
-        if (isMemberAccess && !isSafeToRepeat(assignee.expression)) {
-          base = getFreeBinding(node.scope, 'base');
-          patcher.insert(assignee.expression.range[0], '(' + base + ' = ');
-          patcher.insert(assignee.expression.range[1], ')');
+        {
+          var lhs = getRepeatableLeftHandSide(node, patcher);
+          replaceBetween(patcher, assignee, expression, '=', ' (' + lhs + ' =');
+          patcher.insert(expression.range[1], ')');
+          return true;
         }
 
-        if (isDynamicMemberAccess && !isSafeToRepeat(assignee.indexingExpr)) {
-          name = getFreeBinding(node.scope, 'name');
-          patcher.insert(assignee.indexingExpr.range[0], name + ' = ');
+      case 'ExistsOp':
+        {
+          if (isExpressionResultUsed(node)) {
+            patcher.insert(node.range[0], 'if ');
+            var lhs = getRepeatableLeftHandSide(node, patcher);
+            patcher.overwrite(assignee.range[1], expression.range[0], '? then ' + lhs + ' else ' + lhs + ' = ');
+          } else {
+            patcher.insert(node.range[0], 'unless ');
+            var lhs = getRepeatableLeftHandSide(node, patcher);
+            patcher.overwrite(assignee.range[1], expression.range[0], '? then ' + lhs + ' = ');
+          }
+          return true;
         }
-
-        if (isDynamicMemberAccess) {
-          lhs = base + '[' + name + ']';
-        } else if (isMemberAccess) {
-          lhs = base + '.' + name;
-        } else {
-          lhs = base;
-        }
-
-        replaceBetween(patcher, assignee, expression, '=', ' (' + lhs + ' =');
-        patcher.insert(expression.range[1], ')');
-        return true;
     }
   }
+}
+
+function getRepeatableLeftHandSide(node, patcher) {
+  var assignee = node.assignee;
+
+  var isMemberAccess = isMemberAccessOp(assignee);
+  var isDynamicMemberAccess = isDynamicMemberAccessOp(assignee);
+  var lhs = undefined;
+  var base = isMemberAccess ? assignee.expression.raw : assignee.raw;
+  var name = isDynamicMemberAccess ? assignee.indexingExpr.raw : isMemberAccess ? assignee.memberName : null;
+
+  if (isMemberAccess && !isSafeToRepeat(assignee.expression)) {
+    base = getFreeBinding(node.scope, 'base');
+    patcher.insert(assignee.expression.range[0], '(' + base + ' = ');
+    patcher.insert(assignee.expression.range[1], ')');
+  }
+
+  if (isDynamicMemberAccess && !isSafeToRepeat(assignee.indexingExpr)) {
+    name = getFreeBinding(node.scope, 'name');
+    patcher.insert(assignee.indexingExpr.range[0], name + ' = ');
+  }
+
+  if (isDynamicMemberAccess) {
+    lhs = base + '[' + name + ']';
+  } else if (isMemberAccess) {
+    lhs = base + '.' + name;
+  } else {
+    lhs = base;
+  }
+
+  return lhs;
 }
 
 /**
@@ -2895,6 +2965,7 @@ function preprocessConditional(node, patcher) {
   if (node.type === 'Conditional') {
     var condition = node.condition;
     var consequent = node.consequent;
+
     if (condition.range[0] > consequent.range[0]) {
       // Found a POST-if/unless, transform it.
       var ifOrUnlessToken = sourceBetween(patcher.original, consequent, condition).trim();
@@ -3507,6 +3578,7 @@ function preprocessSoakedMemberAccessOp(node, patcher) {
     // `a.b?.c` -> `if (ref = a.b)? then ref.c`
     //              ^^^^^^^^^^   ^ ^^^^^^^^^
     var expression = node.expression;
+
     var conditional = undefined;
     if (node.parentNode.type === 'FunctionApplication' && node.parentNode.function === node) {
       conditional = node.parentNode;
@@ -4172,6 +4244,7 @@ function isOneLineConditionAndConsequent(node) {
 function patchExistentialOperatorStart(node, patcher) {
   if (node.type === 'UnaryExistsOp') {
     var expression = node.expression;
+
     if (expression.type !== 'Identifier' && needsParens(node)) {
       patcher.insert(node.range[0], '(');
     }
@@ -4187,6 +4260,7 @@ function patchExistentialOperatorStart(node, patcher) {
 function patchExistentialOperatorEnd(node, patcher) {
   if (node.type === 'UnaryExistsOp') {
     var expression = node.expression;
+
     var parens = needsParens(node);
     if (expression.type === 'Identifier') {
       var checked = expression.data;
@@ -4391,6 +4465,7 @@ function isStatement(node) {
   if (isFunction(node.parentNode.parentNode)) {
     // If it's the last statement then it's an implicit return.
     var statements = node.parentNode.statements;
+
     return statements[statements.length - 1] !== node;
   }
 
