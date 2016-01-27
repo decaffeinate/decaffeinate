@@ -26,7 +26,7 @@ describe('getIndent', function() {
 
   context('with a multi-line source string', function() {
     it('returns the indent for the line containing offset', function() {
-      var i;
+      let i;
       const source = '->\n  abc';
       const line1 = '->\n';
 
@@ -40,7 +40,7 @@ describe('getIndent', function() {
     });
 
     it('returns the indent for lines split by carriage returns', function() {
-      var i;
+      let i;
 
       for (i = 0; i < '  abc'.length; i++) {
         strictEqual(getIndent('  abc\rdef', i), '  ');

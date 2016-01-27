@@ -12,7 +12,7 @@
  */
 export default function findCounterpartCharacter(character, source, index=0) {
   const counterpart = getCounterpart(character);
-  const length = source.length;
+  const { length } = source;
 
   for (let level = 0; index < length; index++) {
     switch (source[index]) {
@@ -48,6 +48,6 @@ function getCounterpart(character) {
       return ']';
 
     default:
-      throw new Error('No known counterpart for character: ' + character);
+      throw new Error(`No known counterpart for character: ${character}`);
   }
 }

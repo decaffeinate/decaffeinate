@@ -53,7 +53,7 @@ export default class Scope {
    * @private
    */
   key(name) {
-    return '$' + name;
+    return `$${name}`;
   }
 
   /**

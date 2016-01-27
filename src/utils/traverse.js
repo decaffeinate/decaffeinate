@@ -6,7 +6,7 @@
  * @param {function(Object, function(Object), boolean): ?boolean} callback
  */
 export default function traverse(node, callback) {
-  var descended = false;
+  let descended = false;
 
   function descend(parent) {
     descended = true;
@@ -131,7 +131,7 @@ function childPropertyNames(node) {
   const names = ORDER[node.type];
 
   if (!names) {
-    throw new Error('cannot traverse unknown node type: ' + node.type);
+    throw new Error(`cannot traverse unknown node type: ${node.type}`);
   }
 
   return names;

@@ -172,7 +172,7 @@ function isLastStatement(node) {
     return false;
   }
 
-  let statements = node.parentNode.statements;
+  let { statements } = node.parentNode;
   let index = statements.indexOf(node);
 
   if (index < 0) {

@@ -17,7 +17,7 @@ export default function isStatement(node) {
 
   if (isFunction(node.parentNode.parentNode)) {
     // If it's the last statement then it's an implicit return.
-    const statements = node.parentNode.statements;
+    const { statements } = node.parentNode;
     return statements[statements.length - 1] !== node;
   }
 

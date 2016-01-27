@@ -17,8 +17,8 @@ import sourceBetween from '../utils/sourceBetween';
  */
 export default function preprocessConditional(node, patcher) {
   if (node.type === 'Conditional') {
-    const condition = node.condition;
-    const consequent = node.consequent;
+    const { condition } = node;
+    const { consequent } = node;
     if (condition.range[0] > consequent.range[0]) {
       // Found a POST-if/unless, transform it.
       let ifOrUnlessToken = sourceBetween(patcher.original, consequent, condition).trim();

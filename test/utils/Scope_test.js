@@ -42,25 +42,25 @@ describe('Scope', function() {
     const scope = new Scope();
 
     scope.processNode(statement('a = 1'));
-    ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
 
     scope.processNode(statement('{b, c} = this'));
-    ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
-    ok(scope.getBinding('c'), '`c` should be bound in: ' + scope);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
+    ok(scope.getBinding('c'), `\`c\` should be bound in: ${scope}`);
   });
 
   it('processes functions by binding all its parameters', function() {
     const scope = new Scope();
     scope.processNode(statement('(a, b) ->'));
-    ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
-    ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
   });
 
   it('processes bound functions by binding all its parameters', function() {
     const scope = new Scope();
     scope.processNode(statement('(a, b) =>'));
-    ok(scope.getBinding('a'), '`a` should be bound in: ' + scope);
-    ok(scope.getBinding('b'), '`b` should be bound in: ' + scope);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
   });
 
   it('processes for-of loops by binding key and value assignees', function() {

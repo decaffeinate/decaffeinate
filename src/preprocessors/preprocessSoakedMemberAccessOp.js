@@ -20,7 +20,7 @@ export default function preprocessSoakedMemberAccessOp(node, patcher) {
     //
     // `a.b?.c` -> `if (ref = a.b)? then ref.c`
     //              ^^^^^^^^^^   ^ ^^^^^^^^^
-    let expression = node.expression;
+    let { expression } = node;
     let conditional;
     if (node.parentNode.type === 'FunctionApplication' && node.parentNode.function === node) {
       conditional = node.parentNode;

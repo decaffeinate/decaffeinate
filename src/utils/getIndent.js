@@ -7,8 +7,8 @@
  */
 export default function getIndent(source, offset) {
   const startOfLine = getStartOfLine(source, offset);
-  var indentOffset = startOfLine;
-  var indentCharacter;
+  let indentOffset = startOfLine;
+  let indentCharacter;
 
   switch (source[indentOffset]) {
     case ' ':

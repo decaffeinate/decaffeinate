@@ -6,7 +6,7 @@
  */
 export function patchExistentialOperatorStart(node, patcher) {
   if (node.type === 'UnaryExistsOp') {
-    const expression = node.expression;
+    const { expression } = node;
     if (expression.type !== 'Identifier' && needsParens(node)) {
       patcher.insert(node.range[0], '(');
     }
@@ -21,7 +21,7 @@ export function patchExistentialOperatorStart(node, patcher) {
  */
 export function patchExistentialOperatorEnd(node, patcher) {
   if (node.type === 'UnaryExistsOp') {
-    const expression = node.expression;
+    const { expression } = node;
     const parens = needsParens(node);
     if (expression.type === 'Identifier') {
       const checked = expression.data;

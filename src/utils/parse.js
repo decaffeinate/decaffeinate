@@ -129,7 +129,7 @@ function fixRange(node, map, source) {
     }
   }
   const fixed = map.getOffset(node.line - 1, node.column - 1);
-  for (var slide = 0; slide < 3; slide++) {
+  for (let slide = 0; slide < 3; slide++) {
     if (source.slice(fixed - slide, fixed - slide + node.raw.length) === node.raw) {
       node.range = [fixed - slide, fixed - slide + node.raw.length];
       break;
@@ -147,8 +147,8 @@ function fixRange(node, map, source) {
     }
 
     throw new Error(
-      'BUG! Could not fix range for ' + node.type +
-      ' at line ' + node.line + ', column ' + node.column
+      `BUG! Could not fix range for ${node.type}` +
+      ` at line ${node.line}, column ${node.column}`
     );
   } else {
     shrinkPastParentheses(node, map, source, true);

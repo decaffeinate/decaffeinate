@@ -7,7 +7,7 @@
  * @returns {boolean}
  */
 export default function isFollowedBy(node, source, token) {
-  var index = node.range[1];
+  let index = node.range[1];
 
   while (index < source.length) {
     if (source.slice(index, index + token.length) === token) {

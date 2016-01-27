@@ -11,8 +11,8 @@ class LineAndColumnMap {
   constructor(source) {
     const offsets = [0];
 
-    var line = 0;
-    var cursor = 0;
+    let line = 0;
+    let cursor = 0;
 
     while (cursor < source.length) {
       switch (source.charCodeAt(cursor)) {

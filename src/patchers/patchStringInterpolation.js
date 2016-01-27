@@ -63,7 +63,7 @@ function patchInterpolation(node, patcher) {
  * @private
  */
 function findInterpolationStart(expression, source) {
-  var index = expression.range[0] - 2;
+  let index = expression.range[0] - 2;
 
   while (index >= 0) {
     if (source.slice(index, index + '#{'.length) === '#{') {
