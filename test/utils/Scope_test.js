@@ -69,6 +69,26 @@ describe('Scope', function() {
     ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
   });
 
+  it('processes functions with rest parameters', function() {
+    const scope = new Scope();
+    scope.processNode(statement('(a...) ->'));
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+  });
+
+  it('processes functions with destructured object parameters', function() {
+    const scope = new Scope();
+    scope.processNode(statement('({a, b}) ->'));
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
+  });
+
+  it('processes functions with destructured array parameters', function() {
+    const scope = new Scope();
+    scope.processNode(statement('([a, b]) ->'));
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
+  });
+
   it('processes for-of loops by binding key and value assignees', function() {
     const scope = new Scope();
     scope.processNode(statement('for key, {a, b, c: [d, e]} of object\n  key'));

@@ -1,3 +1,4 @@
+import flatMap from './flatMap';
 import leftHandIdentifiers from './leftHandIdentifiers';
 
 /**
@@ -80,13 +81,7 @@ export default class Scope {
 
       case 'Function':
       case 'BoundFunction':
-        node.parameters.forEach(parameter => {
-          if (parameter.type === 'DefaultParam') {
-            this.declares(parameter.param.data, parameter.param);
-          } else {
-            this.declares(parameter.data, parameter)
-          }
-        });
+        getBindingsForNode(node).forEach(identifier => this.declares(identifier.data, identifier));
         break;
 
       case 'ForIn':
@@ -118,5 +113,36 @@ export default class Scope {
    */
   inspect() {
     return this.toString();
+  }
+}
+
+/**
+ * Gets all the identifiers representing bindings in `node`.
+ *
+ * @param {Object} node
+ * @returns {Object[]}
+ */
+function getBindingsForNode(node) {
+  switch (node.type) {
+    case 'Function':
+    case 'BoundFunction':
+      return flatMap(node.parameters, getBindingsForNode);
+
+    case 'Identifier':
+    case 'ArrayInitialiser':
+    case 'ObjectInitialiser':
+      return leftHandIdentifiers(node);
+
+    case 'DefaultParam':
+      return getBindingsForNode(node.param);
+
+    case 'Rest':
+      return getBindingsForNode(node.expression);
+
+    case 'MemberAccessOp':
+      return [];
+
+    default:
+      throw new Error(`unexpected parameter type: ${node.type}`);
   }
 }

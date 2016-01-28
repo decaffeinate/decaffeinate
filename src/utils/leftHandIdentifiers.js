@@ -1,3 +1,5 @@
+import flatMap from './flatMap';
+
 /**
  * Gets the identifiers for the given LHS value.
  *
@@ -15,15 +17,9 @@ export default function leftHandIdentifiers(node) {
   if (node.type === 'Identifier') {
     return [node];
   } else if (node.type === 'ArrayInitialiser') {
-    return node.members.reduce(
-      (acc, member) => acc.concat(leftHandIdentifiers(member)),
-      []
-    );
+    return flatMap(node.members, leftHandIdentifiers);
   } else if (node.type === 'ObjectInitialiser') {
-    return node.members.reduce(
-      (acc, member) => acc.concat(leftHandIdentifiers(member.expression)),
-      []
-    );
+    return flatMap(node.members, member => leftHandIdentifiers(member.expression));
   } else {
     return [];
   }
