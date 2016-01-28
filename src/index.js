@@ -37,6 +37,7 @@ import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
 import { patchClassStart, patchClassEnd } from './patchers/patchClass';
 import { patchConditionalStart, patchConditionalEnd } from './patchers/patchConditional';
 import { patchExistentialOperatorStart, patchExistentialOperatorEnd } from './patchers/patchExistentialOperator';
+import { patchExtendsStart, patchExtendsEnd } from './patchers/patchExtends';
 import { patchForStart, patchForEnd } from './patchers/patchFor';
 import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
 import { patchObjectStart, patchObjectEnd } from './patchers/patchObject';
@@ -94,6 +95,7 @@ export function convert(source) {
       return;
     }
 
+    patchExtendsStart(node, patcher);
     patchReturns(node, patcher);
     patchConditionalStart(node, patcher);
     patchWhileStart(node, patcher);
@@ -140,6 +142,7 @@ export function convert(source) {
     patchSwitchEnd(node, patcher);
     patchRestEnd(node, patcher);
     patchConditionalEnd(node, patcher);
+    patchExtendsEnd(node, patcher);
   });
 
   patchComments(patcher);
