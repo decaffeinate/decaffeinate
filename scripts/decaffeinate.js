@@ -94,6 +94,20 @@ babelHelpers.toConsumableArray = function (arr) {
 babelHelpers;
 
 /**
+ * Maps a list to another list by combining lists.
+ *
+ * @param {Array<T>} list
+ * @param {function(T): Array<U>} map
+ * @returns {Array<U>}
+ * @template {T, U}
+ */
+function flatMap(list, map) {
+  return list.reduce(function (memo, item) {
+    return memo.concat(map(item));
+  }, []);
+}
+
+/**
  * Gets the identifiers for the given LHS value.
  *
  * @example
@@ -110,13 +124,11 @@ function leftHandIdentifiers(node) {
   if (node.type === 'Identifier') {
     return [node];
   } else if (node.type === 'ArrayInitialiser') {
-    return node.members.reduce(function (acc, member) {
-      return acc.concat(leftHandIdentifiers(member));
-    }, []);
+    return flatMap(node.members, leftHandIdentifiers);
   } else if (node.type === 'ObjectInitialiser') {
-    return node.members.reduce(function (acc, member) {
-      return acc.concat(leftHandIdentifiers(member.expression));
-    }, []);
+    return flatMap(node.members, function (member) {
+      return leftHandIdentifiers(member.expression);
+    });
   } else {
     return [];
   }
@@ -232,12 +244,8 @@ var Scope = function () {
 
         case 'Function':
         case 'BoundFunction':
-          node.parameters.forEach(function (parameter) {
-            if (parameter.type === 'DefaultParam') {
-              _this2.declares(parameter.param.data, parameter.param);
-            } else {
-              _this2.declares(parameter.data, parameter);
-            }
+          getBindingsForNode(node).forEach(function (identifier) {
+            return _this2.declares(identifier.data, identifier);
           });
           break;
 
@@ -280,6 +288,31 @@ var Scope = function () {
   }]);
   return Scope;
 }();
+
+function getBindingsForNode(node) {
+  switch (node.type) {
+    case 'Function':
+    case 'BoundFunction':
+      return flatMap(node.parameters, getBindingsForNode);
+
+    case 'Identifier':
+    case 'ArrayInitialiser':
+    case 'ObjectInitialiser':
+      return leftHandIdentifiers(node);
+
+    case 'DefaultParam':
+      return getBindingsForNode(node.param);
+
+    case 'Rest':
+      return getBindingsForNode(node.expression);
+
+    case 'MemberAccessOp':
+      return [];
+
+    default:
+      throw new Error('unexpected parameter type: ' + node.type);
+  }
+}
 
 var CR = 10; // \r
 var LF = 13; // \n
