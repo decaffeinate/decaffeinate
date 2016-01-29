@@ -13,37 +13,29 @@ describe('comments', () => {
 
   it('converts block comments to /* */', function() {
     check(`
-      a(
-        ###
-        HEY
-        ###
-        1
-      )
+      ###
+      HEY
+      ###
+      1
     `, `
-      a(
-        /*
-        HEY
-        */
-        1
-      );
+      /*
+      HEY
+      */
+      1;
     `);
   });
 
   it('turns leading hashes on block comment lines to leading asterisks', function() {
     check(`
-      a(
-        ###
-        # HEY
-        ###
-        1
-      )
+      ###
+      # HEY
+      ###
+      1
     `, `
-      a(
-        /*
-         * HEY
-         */
-        1
-      );
+      /*
+       * HEY
+       */
+      1;
     `);
   });
 
