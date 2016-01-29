@@ -543,6 +543,7 @@ var ORDER = {
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
   EQOp: ['left', 'right'],
   ExistsOp: ['left', 'right'],
+  ExtendsOp: ['left', 'right'],
   Float: [],
   ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
@@ -4330,6 +4331,39 @@ function needsParens(node) {
  * @param {Object} node
  * @param {MagicString} patcher
  */
+function patchExtendsStart(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (parentNode && parentNode.type === 'ExtendsOp') {
+    if (node === parentNode.left) {
+      patcher.insert(node.range[0], '((child, parent) => { for (var key in parent) { if ({}.hasOwnProperty.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; })(');
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
+function patchExtendsEnd(node, patcher) {
+  var parentNode = node.parentNode;
+
+  if (parentNode && parentNode.type === 'ExtendsOp') {
+    var left = parentNode.left;
+    var right = parentNode.right;
+
+    if (node === left) {
+      patcher.overwrite(left.range[1], right.range[0], ', ');
+    } else if (node === right) {
+      patcher.insert(right.range[1], ')');
+    }
+  }
+}
+
+/**
+ * @param {Object} node
+ * @param {MagicString} patcher
+ */
 function patchForStart(node, patcher) {
   var parentNode = node.parentNode;
 
@@ -5276,6 +5310,7 @@ function convert(source) {
       return;
     }
 
+    patchExtendsStart(node, patcher);
     patchReturns(node, patcher);
     patchConditionalStart(node, patcher);
     patchWhileStart(node, patcher);
@@ -5322,6 +5357,7 @@ function convert(source) {
     patchSwitchEnd(node, patcher);
     patchRestEnd(node, patcher);
     patchConditionalEnd(node, patcher);
+    patchExtendsEnd(node, patcher);
   });
 
   patchComments(patcher);
