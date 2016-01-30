@@ -128,7 +128,7 @@ const ORDER = {
  * @param {Object} node
  * @returns {string[]}
  */
-function childPropertyNames(node) {
+export function childPropertyNames(node) {
   const names = ORDER[node.type];
 
   if (!names) {
