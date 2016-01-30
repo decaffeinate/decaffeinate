@@ -33,6 +33,10 @@ export default class NodePatcher {
     this.editor.remove(start, end);
   }
 
+  slice(start, end) {
+    return this.editor.slice(start, end);
+  }
+
   context() {
     return this.parent.context();
   }

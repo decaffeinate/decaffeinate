@@ -1,5 +1,6 @@
 import BinaryOpPassthroughPatcher from './BinaryOpPassthroughPatcher';
 import BlockPatcher from './BlockPatcher';
+import BoolPatcher from './BoolPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
@@ -23,6 +24,10 @@ export function makePatcher(node, context, magicString, allPatchers=[]) {
 
     case 'Function':
       constructor = FunctionPatcher;
+      break;
+
+    case 'Bool':
+      constructor = BoolPatcher;
       break;
 
     case 'Block':
