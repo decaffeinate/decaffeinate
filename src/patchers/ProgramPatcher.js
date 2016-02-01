@@ -18,7 +18,7 @@ export default class ProgramPatcher extends NodePatcher {
 
   patch() {
     let { body } = this;
-    body.patch();
+    body.patch({ braces: false });
     this.patchComments();
   }
 
@@ -28,7 +28,7 @@ export default class ProgramPatcher extends NodePatcher {
    * @private
    */
   patchComments() {
-    let source = this.editor.original;
+    let { source } = this.context;
     let ranges = rangesOfComments(source);
 
     ranges.forEach(comment => {
@@ -61,7 +61,7 @@ export default class ProgramPatcher extends NodePatcher {
     let lastStartOfLine = null;
     let lineUpAsterisks = true;
     let isMultiline = false;
-    let source = this.editor.original;
+    let { source } = this.context;
     let expectedIndent = getIndent(source, start);
     const leadingHashIndexes = [];
 
@@ -130,10 +130,6 @@ export default class ProgramPatcher extends NodePatcher {
         'node'
       );
     }
-  }
-
-  context() {
-    return this.node.context;
   }
 }
 

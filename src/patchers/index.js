@@ -1,9 +1,13 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import AssignOpPatcher from './AssignOpPatcher';
 import BinaryOpPassthroughPatcher from './BinaryOpPassthroughPatcher';
 import BlockPatcher from './BlockPatcher';
 import BoolPatcher from './BoolPatcher';
+import ConditionalPatcher from './ConditionalPatcher';
+import EQOpPatcher from './EQOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
@@ -15,12 +19,19 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
 
   switch (node.type) {
     case 'Identifier':
+      constructor = IdentifierPatcher;
+      break;
+
     case 'Int':
       constructor = PassthroughPatcher;
       break;
 
     case 'FunctionApplication':
       constructor = FunctionApplicationPatcher;
+      break;
+
+    case 'EQOp':
+      constructor = EQOpPatcher;
       break;
 
     case 'Function':
@@ -31,12 +42,20 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
       constructor = BoolPatcher;
       break;
 
+    case 'Conditional':
+      constructor = ConditionalPatcher;
+      break;
+
     case 'ArrayInitialiser':
       constructor = ArrayInitialiserPatcher;
       break;
 
     case 'Block':
       constructor = BlockPatcher;
+      break;
+
+    case 'AssignOp':
+      constructor = AssignOpPatcher;
       break;
 
     case 'Return':

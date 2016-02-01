@@ -1,4 +1,5 @@
-import { Editor, Node, ParseContext } from './types';
+import { Token, Editor, Node, ParseContext } from './types';
+import adjustIndent from '../utils/adjustIndent';
 
 export default class NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor) {
@@ -161,11 +162,40 @@ export default class NodePatcher {
   }
 
   /**
+   * Gets a token between left and right patchers' nodes matching type and data.
+   */
+  tokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, type: string, data: ?string=null): ?Token {
+    let tokens = this.context.tokensBetweenNodes(left.node, right.node);
+    for (let i = 0; i < tokens.length; i++) {
+      let token = tokens[i];
+      if (token.type === type && (data === null || token.data === data)) {
+        return token;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Determines whether this patcher's node is preceded by a particular token.
    * Note that this looks at the token immediately before the `before` offset.
    */
   hasTokenBefore(type: string, data: ?string=null): boolean {
-    let token = this.context.tokenAtIndex(this.beforeTokenIndex - 1);
+    return this.hasTokenAtIndex(this.beforeTokenIndex - 1, type, data);
+  }
+
+  /**
+   * Determines whether this patcher's node is preceded by a particular token.
+   * Note that this looks at the token immediately after the `after` offset.
+   */
+  hasTokenAfter(type: string, data: ?string=null): boolean {
+    return this.hasTokenAtIndex(this.afterTokenIndex + 1, type, data);
+  }
+
+  /**
+   * Determines whether the token at index matches.
+   */
+  hasTokenAtIndex(index: number, type: string, data: ?string=null): boolean {
+    let token = this.context.tokenAtIndex(index);
     if (!token) {
       return false;
     }
@@ -179,20 +209,28 @@ export default class NodePatcher {
   }
 
   /**
-   * Determines whether this patcher's node is preceded by a particular token.
-   * Note that this looks at the token immediately after the `after` offset.
+   * Determines whether this patcher's node is surrounded by parentheses.
    */
-  hasTokenAfter(type: string, data: ?string=null): boolean {
-    let token = this.context.tokenAtIndex(this.lastTokenIndex + 1);
-    if (!token) {
-      return false;
-    }
-    if (token.type !== type) {
-      return false;
-    }
-    if (data !== null) {
-      return token.data === data;
-    }
-    return true;
+  isSurroundedByParentheses(): boolean {
+    console.log('BEFORE TOKEN', this.context.tokenAtIndex(this.beforeTokenIndex));
+    console.log('AFTER TOKEN', this.context.tokenAtIndex(this.afterTokenIndex));
+    return (
+      this.hasTokenAtIndex(this.beforeTokenIndex, '(') &&
+      this.hasTokenAtIndex(this.afterTokenIndex, ')')
+    );
+  }
+
+  /**
+   * Negates this patcher's node when patching.
+   */
+  negate() {
+    this.insertBefore('!');
+  }
+
+  /**
+   * Gets the indent string for the line that starts this patcher's node.
+   */
+  getIndent(offset: number=0): string {
+    return adjustIndent(this.context.source, this.start, offset);
   }
 }

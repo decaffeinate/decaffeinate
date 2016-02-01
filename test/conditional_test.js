@@ -1,6 +1,6 @@
 import check from './support/check';
 
-describe('conditionals', () => {
+describe.only('conditionals', () => {
   it('surrounds `if` conditions in parentheses and bodies in curly braces', () => {
     check(`
       if a
@@ -28,7 +28,7 @@ describe('conditionals', () => {
       unless a == b
         c
     `, `
-      if (!(a === b)) {
+      if (a !== b) {
         c;
       }
     `);
@@ -58,7 +58,7 @@ describe('conditionals', () => {
       unless (a == b)
         c
     `, `
-      if (!(a === b)) {
+      if (a !== b) {
         c;
       }
     `);

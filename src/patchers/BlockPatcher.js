@@ -8,7 +8,16 @@ export default class BlockPatcher extends NodePatcher {
   }
 
   patch(options={}) {
-    const { statements } = this;
+    let { braces=true, leftBracePosition, rightBracePosition } = options;
+    if (braces) {
+      if (typeof leftBracePosition === 'number') {
+        this.insert(leftBracePosition, ' {');
+      } else {
+        this.insertBefore('{');
+      }
+    }
+
+    let { statements } = this;
     statements.forEach(
       (statement, i) => {
         let isLast = i === statements.length - 1;
@@ -18,11 +27,20 @@ export default class BlockPatcher extends NodePatcher {
         } else {
           statement.patch();
         }
-        if (this.shouldAppendSemicolonToStatement(statement)) {
+        // FIXME: Implicit returns may have different semicolon needs.
+        if (statement.statementNeedsSemicolon() && this.shouldAppendSemicolonToStatement(statement)) {
           statement.insertAfter(';');
         }
       }
     );
+
+    if (braces) {
+      if (typeof rightBracePosition === 'number') {
+        this.insert(rightBracePosition, '} ');
+      } else {
+        this.insertAfter(`\n${this.getIndent(-1)}}`);
+      }
+    }
   }
 
   /**
@@ -36,11 +54,19 @@ export default class BlockPatcher extends NodePatcher {
       return true;
     }
 
-    if (tokenAfterStatement.type !== 'TERMINATOR') {
-      throw new Error(
-        'BUG: unexpected non-terminator following block statement: ' +
-        tokenAfterStatement.type
-      );
+    switch (tokenAfterStatement.type) {
+      case 'TERMINATOR':
+        break;
+
+      case 'OUTDENT':
+        // CoffeeScript does not insert a TERMINATOR before an OUTDENT.
+        return true;
+
+      default:
+        throw new Error(
+          `BUG: unexpected non-terminator following ${statement.node.type} ` +
+          `statement: ${tokenAfterStatement.type}`
+        );
     }
 
     if (tokenAfterStatement.data === ';') {
