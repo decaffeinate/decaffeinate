@@ -1,3 +1,4 @@
+import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import BinaryOpPassthroughPatcher from './BinaryOpPassthroughPatcher';
 import BlockPatcher from './BlockPatcher';
 import BoolPatcher from './BoolPatcher';
@@ -8,7 +9,7 @@ import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
 import { childPropertyNames } from '../utils/traverse';
 
-export function makePatcher(node, context, magicString, allPatchers=[]) {
+export function makePatcher(node, context, editor, allPatchers=[]) {
   let constructor;
   let props = childPropertyNames(node);
 
@@ -28,6 +29,10 @@ export function makePatcher(node, context, magicString, allPatchers=[]) {
 
     case 'Bool':
       constructor = BoolPatcher;
+      break;
+
+    case 'ArrayInitialiser':
+      constructor = ArrayInitialiserPatcher;
       break;
 
     case 'Block':
@@ -56,25 +61,27 @@ export function makePatcher(node, context, magicString, allPatchers=[]) {
     if (!child) {
       return null;
     } else if (Array.isArray(child)) {
-      return child.map(item => makePatcher(item, context, magicString, allPatchers));
+      return child.map(item => makePatcher(item, context, editor, allPatchers));
     } else {
-      return makePatcher(child, context, magicString, allPatchers);
+      return makePatcher(child, context, editor, allPatchers);
     }
   });
 
-  let patcher = new constructor(node, context, magicString, ...children);
+  let patcher = new constructor(node, context, editor, ...children);
   allPatchers.push(patcher);
-  children.forEach(child => {
-    if (Array.isArray(child)) {
-      child.forEach(item => item.parent = patcher);
-    } else {
-      child.parent = patcher;
-    }
-  });
+  associateParent(patcher, children);
 
   if (node.type === 'Program') {
     allPatchers.forEach(patcher => patcher.initialize());
   }
 
   return patcher;
+}
+
+function associateParent(parent, child) {
+  if (Array.isArray(child)) {
+    child.forEach(item => associateParent(parent, item));
+  } else if (child) {
+    child.parent = parent;
+  }
 }

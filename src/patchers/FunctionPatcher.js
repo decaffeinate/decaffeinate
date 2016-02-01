@@ -13,26 +13,28 @@ export default class FunctionPatcher extends NodePatcher {
     let isStatement = this.isStatement();
 
     if (isStatement) {
-      this.prepend('(');
+      this.insertAtStart('(');
     }
 
     this.patchFunctionStart(tokens);
     parameters.forEach(parameter => parameter.patch());
-    body.patch({ function: true });
+    if (body) {
+      body.patch({ function: true });
+    }
     this.patchFunctionEnd(tokens);
 
     if (isStatement) {
-      this.append(')');
+      this.insertAtEnd(')');
     }
   }
 
   patchFunctionStart(tokens) {
     let arrowIndex = 0;
 
-    this.prepend('function');
+    this.insertAtStart('function');
 
     if (tokens[0].type !== 'PARAM_START') {
-      this.prepend('() ');
+      this.insertAtStart('() ');
     } else {
       arrowIndex = findParamEnd(tokens, 0) + 1;
     }
@@ -41,8 +43,8 @@ export default class FunctionPatcher extends NodePatcher {
     this.overwrite(arrow.range[0], arrow.range[1], '{');
   }
 
-  patchFunctionEnd(tokens) {
-    this.append(' }');
+  patchFunctionEnd() {
+    this.insertAtEnd(' }');
   }
 
   setReturns() {

@@ -10,6 +10,6 @@ export default class FunctionApplicationPatcher extends NodePatcher {
   patch() {
     let { fn, args } = this;
     fn.patch();
-    args.patch();
+    args.forEach(arg => arg.patch());
   }
 }

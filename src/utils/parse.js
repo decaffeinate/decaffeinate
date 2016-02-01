@@ -5,7 +5,7 @@ import isExpressionResultUsed from './isExpressionResultUsed';
 import traverse from './traverse';
 import wantsToBeStatement from './wantsToBeStatement';
 import { isBinaryOperator, isConditional, isFunctionBody, isShorthandThisObjectMember } from './types';
-import { parse as coffeeScriptParse } from 'decaffeinate-parser';
+import { parse as coffeeScriptParse } from 'coffee-script-redux';
 
 /**
  * Parses a CoffeeScript program and cleans up and annotates the AST.
@@ -14,7 +14,7 @@ import { parse as coffeeScriptParse } from 'decaffeinate-parser';
  * @returns {Object} An AST from CoffeeScriptRedux with `scope` and `parentNode`.
  */
 export default function parse(source) {
-  const ast = coffeeScriptParse(source);
+  const ast = coffeeScriptParse(source, { raw: true }).toBasicObject();
   const map = buildLineAndColumnMap(source);
 
   traverse(ast, node => {
