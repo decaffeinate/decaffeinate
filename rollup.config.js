@@ -5,7 +5,8 @@ export default {
   plugins: [
     babel({
       babelrc: false,
-      presets: ['es2015-rollup']
+      presets: ['es2015-rollup'],
+      plugins: ['syntax-flow', 'transform-flow-strip-types']
     })
   ]
 };
