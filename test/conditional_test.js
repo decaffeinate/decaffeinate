@@ -1,6 +1,6 @@
 import check from './support/check';
 
-describe.only('conditionals', () => {
+describe('conditionals', () => {
   it('surrounds `if` conditions in parentheses and bodies in curly braces', () => {
     check(`
       if a

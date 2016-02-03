@@ -1,8 +1,9 @@
 import NodePatcher from './NodePatcher';
-import type { Token } from './types';
+import type BlockPatcher from './BlockPatcher';
+import type { Node, Token, ParseContext, Editor } from './types';
 
 export default class ConditionalPatcher extends NodePatcher {
-  constructor(node, context, editor, condition, consequent, alternate) {
+  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, consequent: BlockPatcher, alternate: ?BlockPatcher) {
     super(node, context, editor);
     this.condition = condition;
     this.consequent = consequent;
@@ -43,14 +44,15 @@ export default class ConditionalPatcher extends NodePatcher {
    */
   patchConsequent() {
     let { condition, consequent, alternate } = this;
-    let leftBracePosition = condition.after;
+    condition.insertAfter(' {');
 
     if (alternate) {
       let elseToken = this.getElseToken();
       let [ rightBracePosition ] = elseToken.range;
-      consequent.patch({ leftBracePosition, rightBracePosition });
+      this.insert(rightBracePosition, '} ');
+      consequent.patch({ leftBrace: false, rightBrace: false });
     } else {
-      consequent.patch({ leftBracePosition });
+      consequent.patch({ leftBrace: false });
     }
   }
 
@@ -61,8 +63,23 @@ export default class ConditionalPatcher extends NodePatcher {
     let { alternate } = this;
     if (alternate) {
       let elseToken = this.getElseToken();
-      let [ , leftBracePosition ] = elseToken.range;
-      alternate.patch({ leftBracePosition });
+      let isElseIf = this.hasTokenAfterToken(elseToken, 'IF');
+      if (isElseIf) {
+        // Let the nested ConditionalPatcher handle braces.
+        alternate.patch({ leftBrace: false, rightBrace: false });
+      } else {
+        let [ , leftBracePosition ] = elseToken.range;
+        this.insert(leftBracePosition, ' {');
+        alternate.patch({ leftBrace: false });
+      }
+    }
+  }
+
+  return() {
+    let { consequent, alternate } = this;
+    consequent.return();
+    if (alternate) {
+      alternate.return();
     }
   }
 

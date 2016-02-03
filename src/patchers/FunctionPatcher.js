@@ -5,6 +5,14 @@ export default class FunctionPatcher extends NodePatcher {
     super(node, context, editor);
     this.parameters = parameters;
     this.body = body;
+
+    let { source } = context;
+    while (source[this.after - '\n'.length] === '\n') {
+      this.after -= '\n'.length;
+    }
+    while (source[this.end - '\n'.length] === '\n') {
+      this.end -= '\n'.length;
+    }
   }
 
   patch() {
@@ -19,9 +27,8 @@ export default class FunctionPatcher extends NodePatcher {
     this.patchFunctionStart(tokens);
     parameters.forEach(parameter => parameter.patch());
     if (body) {
-      body.patch({ function: true });
+      body.patch({ function: true, leftBrace: false });
     }
-    this.patchFunctionEnd(tokens);
 
     if (isStatement) {
       this.insertAtEnd(')');
@@ -41,10 +48,6 @@ export default class FunctionPatcher extends NodePatcher {
 
     let arrow = tokens[arrowIndex];
     this.overwrite(arrow.range[0], arrow.range[1], '{');
-  }
-
-  patchFunctionEnd() {
-    this.insertAtEnd(' }');
   }
 
   setReturns() {

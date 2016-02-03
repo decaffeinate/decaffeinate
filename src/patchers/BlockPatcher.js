@@ -8,13 +8,10 @@ export default class BlockPatcher extends NodePatcher {
   }
 
   patch(options={}) {
-    let { braces=true, leftBracePosition, rightBracePosition } = options;
-    if (braces) {
-      if (typeof leftBracePosition === 'number') {
-        this.insert(leftBracePosition, ' {');
-      } else {
-        this.insertBefore('{');
-      }
+    let { leftBrace=true, rightBrace=true } = options;
+
+    if (leftBrace) {
+      this.insertBefore('{');
     }
 
     let { statements } = this;
@@ -22,7 +19,7 @@ export default class BlockPatcher extends NodePatcher {
       (statement, i) => {
         let isLast = i === statements.length - 1;
         if (options.function && isLast && !statement.returns()) {
-          statement.insertAtStart('return ');
+          statement.return();
           statement.patch({ expression: true });
         } else {
           statement.patch();
@@ -34,11 +31,11 @@ export default class BlockPatcher extends NodePatcher {
       }
     );
 
-    if (braces) {
-      if (typeof rightBracePosition === 'number') {
-        this.insert(rightBracePosition, '} ');
+    if (rightBrace) {
+      if (this.inline()) {
+        this.insertAfter(' }');
       } else {
-        this.insertAfter(`\n${this.getIndent(-1)}}`);
+        this.appendLineAfter('}', -1);
       }
     }
   }
@@ -98,5 +95,13 @@ export default class BlockPatcher extends NodePatcher {
    */
   statementNeedsSemicolon(): boolean {
     return false;
+  }
+
+  /**
+   * Gets whether this patcher's block is inline (on the same line as the node
+   * that contains it) or not.
+   */
+  inline(): boolean {
+    return this.node.inline;
   }
 }

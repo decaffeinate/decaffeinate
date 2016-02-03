@@ -98,6 +98,7 @@ export default class NodePatcher {
    * Insert content at the specified index.
    */
   insert(index: number, content: string) {
+    console.log('INSERT', index, JSON.stringify(content));
     this.editor.insert(index, content);
   }
 
@@ -134,6 +135,13 @@ export default class NodePatcher {
    */
   setStatement(statement) {
     this._statement = statement;
+  }
+
+  /**
+   * Causes the node to be returned from its function.
+   */
+  return() {
+    this.insertBefore('return ');
   }
 
   /**
@@ -209,11 +217,16 @@ export default class NodePatcher {
   }
 
   /**
+   * Determines whether a token is followed by another token.
+   */
+  hasTokenAfterToken(token: Token, type: string, data: ?string=null): boolean {
+    return this.hasTokenAtIndex(this.context.tokens.indexOf(token) + 1, type, data);
+  }
+
+  /**
    * Determines whether this patcher's node is surrounded by parentheses.
    */
   isSurroundedByParentheses(): boolean {
-    console.log('BEFORE TOKEN', this.context.tokenAtIndex(this.beforeTokenIndex));
-    console.log('AFTER TOKEN', this.context.tokenAtIndex(this.afterTokenIndex));
     return (
       this.hasTokenAtIndex(this.beforeTokenIndex, '(') &&
       this.hasTokenAtIndex(this.afterTokenIndex, ')')
@@ -232,5 +245,28 @@ export default class NodePatcher {
    */
   getIndent(offset: number=0): string {
     return adjustIndent(this.context.source, this.start, offset);
+  }
+
+  /**
+   * Gets the index ending the line following this patcher's node.
+   *
+   * @private
+   */
+  getEndOfLine(): number {
+    let { source } = this.context;
+    for (let i = this.after; i < source.length; i++) {
+      if (source[i] === '\n') {
+        return i;
+      }
+    }
+    return source.length;
+  }
+
+  /**
+   * Appends the given content after the end of the current line.
+   */
+  appendLineAfter(content: string, indentOffset: number=0) {
+    let eol = this.getEndOfLine();
+    this.insert(eol, `\n${this.getIndent(indentOffset)}${content}`);
   }
 }

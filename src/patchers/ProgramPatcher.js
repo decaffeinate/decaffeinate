@@ -18,7 +18,7 @@ export default class ProgramPatcher extends NodePatcher {
 
   patch() {
     let { body } = this;
-    body.patch({ braces: false });
+    body.patch({ leftBrace: false, rightBrace: false });
     this.patchComments();
   }
 
