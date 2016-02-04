@@ -1,7 +1,8 @@
 import NodePatcher from './NodePatcher';
+import type { Node, ParseContext, Editor } from './types';
 
 export default class FunctionPatcher extends NodePatcher {
-  constructor(node, context, editor, parameters, body) {
+  constructor(node: Node, context: ParseContext, editor: Editor, parameters: Array<NodePatcher>, body: ?NodePatcher) {
     super(node, context, editor);
     this.parameters = parameters;
     this.body = body;
@@ -43,7 +44,7 @@ export default class FunctionPatcher extends NodePatcher {
     if (tokens[0].type !== 'PARAM_START') {
       this.insertAtStart('() ');
     } else {
-      arrowIndex = findParamEnd(tokens, 0) + 1;
+      arrowIndex = this.context.indexOfEndTokenForStartTokenAtIndex(this.startTokenIndex) + 1;
     }
 
     let arrow = tokens[arrowIndex];
@@ -53,26 +54,4 @@ export default class FunctionPatcher extends NodePatcher {
   setReturns() {
     // Stop propagation of return info at functions.
   }
-}
-
-function findParamEnd(tokens, paramStartIndex) {
-  let level = 0;
-
-  for (let i = paramStartIndex; i < tokens.length; i++) {
-    switch (tokens[i].type) {
-      case 'PARAM_START':
-        level++;
-        break;
-
-      case 'PARAM_END':
-        level--;
-        break;
-    }
-
-    if (level === 0) {
-      return i;
-    }
-  }
-
-  throw new Error('no PARAM_END token found to match PARAM_START');
 }
