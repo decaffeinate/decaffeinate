@@ -215,4 +215,15 @@ describe('classes', () => {
       }
     `);
   });
+
+  it('converts member expression class names correctly', () => {
+    check(`
+      class A.B
+        a: -> 1
+    `, `
+      A.B = class B {
+        a() { return 1; }
+      };
+    `);
+  });
 });
