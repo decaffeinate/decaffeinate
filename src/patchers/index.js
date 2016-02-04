@@ -4,6 +4,7 @@ import BinaryOpPassthroughPatcher from './BinaryOpPassthroughPatcher';
 import BlockPatcher from './BlockPatcher';
 import BoolPatcher from './BoolPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
+import DeleteOpPatcher from './DeleteOpPatcher';
 import EQOpPatcher from './EQOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
@@ -69,6 +70,10 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
     case 'PlusOp':
     case 'SubtractOp':
       constructor = BinaryOpPassthroughPatcher;
+      break;
+
+    case 'DeleteOp':
+      constructor = DeleteOpPatcher;
       break;
 
     default:
