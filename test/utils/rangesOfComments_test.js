@@ -1,7 +1,7 @@
-import { deepEqual } from 'assert';
+import { deepEqual, throws } from 'assert';
 import rangesOfComments from '../../src/utils/rangesOfComments';
 
-describe('rangesOfComments', function() {
+describe.only('rangesOfComments', function() {
   it('returns nothing when there are no comments', function() {
     deepEqual(rangesOfComments('foo()'), []);
   });
@@ -17,6 +17,10 @@ describe('rangesOfComments', function() {
   it('does not confuse division operator + regular expression with comments', function() {
     deepEqual(rangesOfComments('b = 2 / 5\na = /#/'), []);
     deepEqual(rangesOfComments('b /= 2\na = /#/'), []);
+  });
+
+  it('does not include the newline ending a line comment as part of the comment', function() {
+    deepEqual(rangesOfComments('a # foo\n'), [{ start: 2, end: 7, type: 'line' }]);
   });
 
   it('correctly identifies escaped double quotes', function() {
@@ -37,5 +41,25 @@ describe('rangesOfComments', function() {
 
   it('identifies indented block comments', function() {
     deepEqual(rangesOfComments('a\n  ###\n  # b\n  ###\n  c: d'), [{ start: 4, end: 19, type: 'block' }]);
+  });
+
+  it('identifies comments in string interpolations', function() {
+    deepEqual(rangesOfComments('"""\n#{\n0 # zero\n}\n"""'), [{ start: 9, end: 15, type: 'line' }]);
+  });
+
+  it('identifies comments in nested string interpolations', function() {
+    deepEqual(rangesOfComments('"""\n#{\n"#{\n1 # one\n}"\n"""'), [{ start: 13, end: 18, type: 'line' }]);
+  });
+
+  it('fails when there are too many closing braces', function() {
+    throws(() => rangesOfComments('}'), /unexpected '}' found/);
+  });
+
+  it('fails when there are too many opening braces', function() {
+    throws(() => rangesOfComments('{'), /unexpected EOF while looking for '}'/);
+  });
+
+  it('does not confuse braces within strings or regular expressions as significant', function() {
+    deepEqual(rangesOfComments('{ "}": /}/ }'), []);
   });
 });

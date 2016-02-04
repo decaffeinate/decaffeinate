@@ -1,7 +1,7 @@
 import lex, { NORMAL, COMMENT, HERECOMMENT, EOF } from './lex';
 
 /**
- * Returns the ranges of the sections of source code that are not comments.
+ * Scans `source` for comments and returns information about them.
  *
  * @param {string} source
  * @returns {Array.<{start: number, end: number, type: string}>}
@@ -10,13 +10,14 @@ export default function rangesOfComments(source) {
   const result = [];
   const step = lex(source);
   let index;
+  let previousIndex;
   let state;
   let previousState;
   let commentStartIndex;
   let type;
 
   while (state !== EOF) {
-    ({ index, state, previousState } = step());
+    ({ index, previousIndex, state, previousState } = step());
 
     switch (previousState) {
       case NORMAL:
@@ -38,7 +39,7 @@ export default function rangesOfComments(source) {
         if (state === NORMAL || state === EOF) {
           result.push({
             start: commentStartIndex,
-            end: index,
+            end: type === 'block' ? index : previousIndex,
             type
           });
         }
