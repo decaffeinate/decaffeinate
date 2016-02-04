@@ -9,6 +9,7 @@ import EQOpPatcher from './EQOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
@@ -29,6 +30,10 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
 
     case 'FunctionApplication':
       constructor = FunctionApplicationPatcher;
+      break;
+
+    case 'MemberAccessOp':
+      constructor = MemberAccessOpPatcher;
       break;
 
     case 'EQOp':
