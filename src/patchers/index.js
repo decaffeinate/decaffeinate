@@ -68,10 +68,6 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
       constructor = ReturnPatcher;
       break;
 
-    case 'Program':
-      constructor = ProgramPatcher;
-      break;
-
     case 'PlusOp':
     case 'SubtractOp':
       constructor = BinaryOpPassthroughPatcher;
@@ -79,6 +75,10 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
 
     case 'DeleteOp':
       constructor = DeleteOpPatcher;
+      break;
+
+    case 'Program':
+      constructor = ProgramPatcher;
       break;
 
     default:
