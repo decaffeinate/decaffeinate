@@ -34,18 +34,18 @@ export default function replaceTripleQuotes(node, patcher) {
       )
       .overwrite(
         start,
-        start + TRIPLE_QUOTE_LENGTH,
+        contentStart,
         '`'
       )
       .overwrite(
-        end - TRIPLE_QUOTE_LENGTH,
+        contentEnd,
         end,
         '`'
       );
     escapeTemplateStringContents(
       patcher,
-      start + TRIPLE_QUOTE_LENGTH,
-      end - TRIPLE_QUOTE_LENGTH
+      contentStart,
+      contentEnd
     );
   } else {
     quoteCharacter = patcher.original[start];
@@ -54,8 +54,8 @@ export default function replaceTripleQuotes(node, patcher) {
     escape(
       patcher,
       [quoteCharacter],
-      start + TRIPLE_QUOTE_LENGTH,
-      end - TRIPLE_QUOTE_LENGTH
+      contentStart,
+      contentEnd
     )
   }
 }
