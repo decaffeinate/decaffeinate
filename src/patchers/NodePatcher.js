@@ -124,6 +124,20 @@ export default class NodePatcher {
   }
 
   /**
+   * Determines whether this node starts with a string.
+   */
+  startsWith(string: string): boolean {
+    return this.context.source.slice(this.start, this.start + string.length) === string;
+  }
+
+  /**
+   * Determines whether this node ends with a string.
+   */
+  endsWith(string: string): boolean {
+    return this.context.source.slice(this.end - string.length, this.end) === string;
+  }
+
+  /**
    * Gets whether this patcher is working on a statement or an expression.
    */
   isStatement(): boolean {

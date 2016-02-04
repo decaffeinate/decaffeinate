@@ -23,8 +23,7 @@ describe('string interpolation', () => {
     `);
   });
 
-  it.skip('handles comments inside interpolations', () => {
-    // CSR can't parse this.
+  it('handles comments inside interpolations', () => {
     check(`
       a="#{
       b # foo!
@@ -47,9 +46,11 @@ describe('string interpolation', () => {
     check(`
       """
       \${a}
+      \${b}
       """
     `, `
-      \`\\\${a}\`;
+      \`\\\${a}
+      \\\${b}\`;
     `);
-  })
+  });
 });

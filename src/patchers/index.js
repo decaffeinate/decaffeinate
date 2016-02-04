@@ -8,11 +8,13 @@ import DeleteOpPatcher from './DeleteOpPatcher';
 import EQOpPatcher from './EQOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
+import HerestringPatcher from './HerestringPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
+import TemplateLiteralPatcher from './TemplateLiteralPatcher';
 import { childPropertyNames } from '../utils/traverse';
 
 export function makePatcher(node, context, editor, allPatchers=[]) {
@@ -24,6 +26,7 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
       constructor = IdentifierPatcher;
       break;
 
+    case 'String':
     case 'Int':
       constructor = PassthroughPatcher;
       break;
@@ -71,6 +74,14 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
     case 'PlusOp':
     case 'SubtractOp':
       constructor = BinaryOpPassthroughPatcher;
+      break;
+
+    case 'TemplateLiteral':
+      constructor = TemplateLiteralPatcher;
+      break;
+
+    case 'Herestring':
+      constructor = HerestringPatcher;
       break;
 
     case 'DeleteOp':

@@ -15,7 +15,7 @@ export default function replaceTripleQuotes(node, patcher) {
   const source = patcher.original;
   let quoteCharacter;
 
-  if (node.type === 'ConcatOp' || isMultiline(source, node)) {
+  if (node.type === 'TemplateLiteral' || isMultiline(source, node)) {
     const indents = getIndentInfo(source, contentStart, contentEnd);
     const indentSize = sharedIndentSize(indents.ranges);
     indents.ranges.forEach(([start, end]) => {

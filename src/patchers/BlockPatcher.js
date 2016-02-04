@@ -75,7 +75,7 @@ export default class BlockPatcher extends NodePatcher {
     // look at characters following the end.
     let i = statement.after;
     for (;;) {
-      switch (this.slice(i, i + 1)) {
+      switch (context.source.slice(i, i + 1)) {
         case ' ':
         case '\t':
           i++;

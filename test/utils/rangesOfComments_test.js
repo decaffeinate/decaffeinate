@@ -1,7 +1,7 @@
 import { deepEqual, throws } from 'assert';
 import rangesOfComments from '../../src/utils/rangesOfComments';
 
-describe.only('rangesOfComments', function() {
+describe('rangesOfComments', function() {
   it('returns nothing when there are no comments', function() {
     deepEqual(rangesOfComments('foo()'), []);
   });

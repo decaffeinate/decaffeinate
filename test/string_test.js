@@ -26,15 +26,15 @@ describe('strings', () => {
   });
 
   it('changes multi-line triple-double-quotes to backticks', () => {
-    check(`"""a\n"""`, '`a`;');
+    check(`"""a\nb"""`, '`a\nb`;');
   });
 
   it('changes multi-line triple-single-quotes to backticks', () => {
-    check(`'''a\n'''`, '`a`;');
+    check(`'''a\nb'''`, '`a\nb`;');
   });
 
   it('removes a leading newline in triple-quoted strings', () => {
-    check(`'''\na'''`, '`a`;');
+    check(`'''\na'''`, `'a';`);
   });
 
   it('escapes backticks when changing the quote type', () => {

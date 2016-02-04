@@ -16,7 +16,8 @@ export type ParseContext = {
   tokenAtIndex: (index: number) => ?Token,
   indexOfTokenAtOffset: (offset: number) => ?number,
   tokensForNode: (node: Node) => Array<Token>,
-  tokensBetweenNodes: (left: Node, right: Node) => Array<Token>
+  tokensBetweenNodes: (left: Node, right: Node) => Array<Token>,
+  indexOfEndTokenForStartTokenAtIndex: (startTokenIndex: number) => ?number
 };
 
 export type Editor = {
