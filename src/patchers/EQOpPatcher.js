@@ -28,8 +28,10 @@ export default class EQOpPatcher extends NodePatcher {
     let eqToken = this.tokenBetweenPatchersMatching(left, right, 'COMPARE');
 
     if (!eqToken) {
-      throw new Error(
-        `BUG: expected COMPARE token between left and right in ${this.node.type}`
+      throw this.error(
+        'expected COMPARE token but none was found',
+        left.after,
+        right.before
       );
     }
 

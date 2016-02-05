@@ -104,7 +104,10 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
       break;
 
     default:
-      throw new Error(`no patcher available for node type: ${node.type}${props.length ? ` (props: ${props.join(', ')})` : ''}`);
+      throw new Error(
+        `no patcher available for node type: ${node.type}` +
+        `${props.length ? ` (props: ${props.join(', ')})` : ''}`
+      );
   }
 
   let children = props.map(name => {

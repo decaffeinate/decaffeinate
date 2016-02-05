@@ -109,8 +109,10 @@ export default class ConditionalPatcher extends NodePatcher {
 
     let elseToken = this.tokenBetweenPatchersMatching(consequent, alternate, 'ELSE');
     if (!elseToken) {
-      throw new Error(
-        `BUG: expected ELSE token between condition and consequent in ${this.node.type}`
+      throw this.error(
+        'expected ELSE token between consequent and alternate',
+        consequent.after,
+        alternate.before
       );
     }
     return elseToken;

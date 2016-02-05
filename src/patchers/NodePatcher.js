@@ -1,3 +1,4 @@
+import PatcherError from '../utils/PatchError';
 import adjustIndent from '../utils/adjustIndent';
 import { Token, Editor, Node, ParseContext } from './types';
 import { logger } from '../utils/debug';
@@ -294,5 +295,9 @@ export default class NodePatcher {
   appendLineAfter(content: string, indentOffset: number=0) {
     let eol = this.getEndOfLine();
     this.insert(eol, `\n${this.getIndent(indentOffset)}${content}`);
+  }
+
+  error(message: string, start: number=this.start, end: number=this.end): PatcherError {
+    return new PatcherError(message, this, start, end);
   }
 }
