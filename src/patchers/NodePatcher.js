@@ -280,7 +280,7 @@ export default class NodePatcher {
    */
   getEndOfLine(): number {
     let { source } = this.context;
-    for (let i = this.after; i < source.length; i++) {
+    for (let i = this.after - '\n'.length; i < source.length; i++) {
       if (source[i] === '\n') {
         return i;
       }
