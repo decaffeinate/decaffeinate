@@ -37,6 +37,12 @@ export default class ConditionalPatcher extends NodePatcher {
     if (!conditionHasParentheses) {
       condition.insertAfter(')');
     }
+
+    let thenToken = this.getThenToken();
+    if (thenToken) {
+      let [ start, end ] = thenToken.range;
+      this.remove(start, end + ' '.length);
+    }
   }
 
   /**
@@ -95,7 +101,7 @@ export default class ConditionalPatcher extends NodePatcher {
    *
    * @private
    */
-  getElseToken(): ?Token {
+  getElseToken(): Token {
     let { consequent, alternate } = this;
     if (!alternate) {
       return null;
@@ -108,5 +114,15 @@ export default class ConditionalPatcher extends NodePatcher {
       );
     }
     return elseToken;
+  }
+
+  /**
+   * Gets the token representing the `then` between condition and consequent.
+   *
+   * @private
+   */
+  getThenToken(): ?Token {
+    let { condition, consequent } = this;
+    return this.tokenBetweenPatchersMatching(condition, consequent, 'THEN');
   }
 }
