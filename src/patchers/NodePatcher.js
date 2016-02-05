@@ -1,5 +1,6 @@
-import { Token, Editor, Node, ParseContext } from './types';
 import adjustIndent from '../utils/adjustIndent';
+import { Token, Editor, Node, ParseContext } from './types';
+import { logger } from '../utils/debug';
 
 export default class NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor) {
@@ -10,6 +11,8 @@ export default class NodePatcher {
     this.tokens = context.tokensForNode(node);
     this.setStatement(false);
     this.setupLocationInformation();
+
+    this.log = logger(this.constructor.name);
   }
 
   /**
@@ -98,7 +101,7 @@ export default class NodePatcher {
    * Insert content at the specified index.
    */
   insert(index: number, content: string) {
-    console.log('INSERT', index, JSON.stringify(content));
+    this.log('INSERT', index, JSON.stringify(content));
     this.editor.insert(index, content);
   }
 
@@ -106,6 +109,11 @@ export default class NodePatcher {
    * Replace the content between the start and end indexes with new content.
    */
   overwrite(start: number, end: number, content: string) {
+    this.log(
+      'OVERWRITE', `[${start}, ${end})`,
+      JSON.stringify(this.context.source.slice(start, end)),
+      '→', JSON.stringify(content)
+    );
     this.editor.overwrite(start, end, content);
   }
 
@@ -113,6 +121,10 @@ export default class NodePatcher {
    * Remove the content between the start and end indexes.
    */
   remove(start: number, end: number) {
+    this.log(
+      'REMOVE', `[${start}, ${end})`,
+      JSON.stringify(this.context.source.slice(start, end))
+    );
     this.editor.remove(start, end);
   }
 
