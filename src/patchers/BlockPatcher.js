@@ -1,7 +1,8 @@
 import NodePatcher from './NodePatcher';
+import type { Node, ParseContext, Editor } from './types';
 
 export default class BlockPatcher extends NodePatcher {
-  constructor(node, context, editor, statements) {
+  constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
     super(node, context, editor);
     this.statements = statements;
     statements.forEach(statement => statement.setStatement(true));
