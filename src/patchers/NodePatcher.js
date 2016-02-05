@@ -159,7 +159,7 @@ export default class NodePatcher {
   /**
    * Sets whether this patcher is working on a statement or an expression.
    */
-  setStatement(statement) {
+  setStatement(statement: boolean) {
     this._statement = statement;
   }
 
