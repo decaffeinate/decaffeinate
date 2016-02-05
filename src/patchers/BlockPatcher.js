@@ -60,10 +60,14 @@ export default class BlockPatcher extends NodePatcher {
         return true;
 
       default:
-        throw new Error(
-          `BUG: unexpected non-terminator following ${statement.node.type} ` +
-          `statement: ${tokenAfterStatement.type}`
-        );
+        if (this.inline()) {
+          return true;
+        } else {
+          throw new Error(
+            `BUG: unexpected non-terminator following ${statement.node.type} ` +
+            `statement: ${tokenAfterStatement.type}`
+          );
+        }
     }
 
     if (tokenAfterStatement.data === ';') {
