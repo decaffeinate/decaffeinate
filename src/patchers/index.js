@@ -11,6 +11,7 @@ import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import HerestringPatcher from './HerestringPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
+import LogicalAndOpPatcher from './LogicalOpPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
@@ -79,6 +80,11 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
     case 'PlusOp':
     case 'SubtractOp':
       constructor = BinaryOpPassthroughPatcher;
+      break;
+
+    case 'LogicalAndOp':
+    case 'LogicalOrOp':
+      constructor = LogicalAndOpPatcher;
       break;
 
     case 'TemplateLiteral':
