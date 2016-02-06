@@ -8,26 +8,85 @@ export default class ConditionalPatcher extends NodePatcher {
     this.condition = condition;
     this.consequent = consequent;
     this.alternate = alternate;
+    condition.setRequiresExpression();
   }
 
-  patch() {
-    let { context, node } = this;
-    if (node.isUnless) {
-      let unlessToken = context.tokenAtIndex(this.startTokenIndex);
-      this.overwrite(...unlessToken.range, 'if');
+  prefersToPatchAsExpression(): boolean {
+    let { consequent, alternate } = this;
+    if (!alternate) {
+      return false;
     }
-    this.patchCondition();
-    this.patchConsequent();
-    this.patchAlternate();
+    return (
+      consequent.prefersToPatchAsExpression() &&
+      alternate.prefersToPatchAsExpression()
+    );
+  }
+
+  patchAsExpression() {
+    // `if a then b` → `a then b`
+    //  ^^^
+    this.remove(this.start, this.condition.start);
+
+    let thenToken = this.getThenToken();
+    if (thenToken) {
+      // `a then b` → `a ? b`
+      let [ start, end ] = thenToken.range;
+      this.overwrite(start, end, '?');
+    } else {
+      // `a b` → `a ? b`
+      this.condition.insertAfter(' ?');
+    }
+
+    let { alternate } = this;
+    if (alternate) {
+      // `a ? b else c` → `a ? b : c`
+      let elseToken = this.getElseToken();
+      let [ start, end ] = elseToken.range;
+      this.overwrite(start, end, ':');
+    } else {
+      // `a ? b` → `a ? b : undefined`
+      this.consequent.insertAfter(' : undefined');
+    }
+  }
+
+  patchAsForcedExpression() {
+    let { consequent, alternate } = this;
+
+    if (alternate) {
+      // We were forced to be an expression because something inside consequent
+      // or alternate didn't want to be an expression.
+      // TODO: IIFE
+    } else if (consequent.prefersToPatchAsExpression()) {
+      // We didn't want to be an expression because we don't have an alternate,
+      // which means that the alternate of a generated ternary would be
+      // `undefined`, which is ugly (i.e. `if a then b` → `a ? b : undefined`).
+      // TODO: Generate a `do` expression instead? (i.e. `do { if (a) { b; } }`)
+      this.patchAsExpression();
+    }
+  }
+
+  patchAsStatement() {
+    this.patchConditionForStatement();
+    this.patchConsequentForStatement();
+    this.patchAlternateForStatement();
   }
 
   /**
    * @private
    */
-  patchCondition() {
-    let { node, condition } = this;
+  patchConditionForStatement() {
+    let { context, node, condition } = this;
+
+    if (node.isUnless) {
+      // `unless a` → `if a`
+      //  ^^^^^^        ^^
+      let unlessToken = context.tokenAtIndex(this.startTokenIndex);
+      this.overwrite(...unlessToken.range, 'if');
+    }
     let conditionHasParentheses = condition.isSurroundedByParentheses();
     if (!conditionHasParentheses) {
+      // `if a` → `if (a`
+      //               ^
       condition.insertBefore('(');
     }
     if (node.isUnless) {
@@ -35,11 +94,15 @@ export default class ConditionalPatcher extends NodePatcher {
     }
     condition.patch();
     if (!conditionHasParentheses) {
+      // `if (a` → `if (a)`
+      //                  ^
       condition.insertAfter(')');
     }
 
     let thenToken = this.getThenToken();
     if (thenToken) {
+      // `if (a) then b` → `if (a) b`
+      //         ^^^^^
       let [ start, end ] = thenToken.range;
       this.remove(start, end + ' '.length);
     }
@@ -48,7 +111,7 @@ export default class ConditionalPatcher extends NodePatcher {
   /**
    * @private
    */
-  patchConsequent() {
+  patchConsequentForStatement() {
     let { condition, consequent, alternate } = this;
     condition.insertAfter(' {');
 
@@ -65,7 +128,7 @@ export default class ConditionalPatcher extends NodePatcher {
   /**
    * @private
    */
-  patchAlternate() {
+  patchAlternateForStatement() {
     let { alternate } = this;
     if (alternate) {
       let elseToken = this.getElseToken();

@@ -19,7 +19,7 @@ export default class FunctionPatcher extends NodePatcher {
   patch() {
     let { parameters, body, node, context } = this;
     let tokens = context.tokensForNode(node);
-    let isStatement = this.isStatement();
+    let isStatement = !this.willPatchAsExpression();
 
     if (isStatement) {
       this.insertAtStart('(');

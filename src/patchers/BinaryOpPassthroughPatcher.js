@@ -6,6 +6,8 @@ export default class BinaryOpPassthroughPatcher extends NodePatcher {
     super(node, context, editor);
     this.left = left;
     this.right = right;
+    left.setRequiresExpression();
+    right.setRequiresExpression();
   }
 
   patch() {

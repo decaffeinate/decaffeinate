@@ -10,6 +10,13 @@ export default class ReturnPatcher extends NodePatcher {
     this.setReturns(true);
   }
 
+  /**
+   * Return statements cannot be expressions.
+   */
+  canPatchAsExpression(): boolean {
+    return false;
+  }
+
   patch() {
     let { expression } = this;
     expression.patch();

@@ -5,6 +5,8 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     super(node, context, editor);
     this.fn = fn;
     this.args = args;
+    fn.setRequiresExpression();
+    args.forEach(arg => arg.setRequiresExpression());
   }
 
   patch() {

@@ -10,7 +10,6 @@ export default class NodePatcher {
     this.editor = editor;
 
     this.tokens = context.tokensForNode(node);
-    this.setStatement(false);
     this.setupLocationInformation();
 
     this.log = logger(this.constructor.name);
@@ -64,10 +63,40 @@ export default class NodePatcher {
 
   /**
    * Calls methods on `editor` to transform the source code represented by
-   * `node` from CoffeeScript to JavaScript.
+   * `node` from CoffeeScript to JavaScript. By default this method delegates
+   * to other patcher methods which can be overridden individually.
    */
   patch() {
-    throw new Error('`patch` must be overridden in subclasses');
+    if (this.forcedToPatchAsExpression()) {
+      this.patchAsForcedExpression();
+    } else if (this.willPatchAsExpression()) {
+      this.patchAsExpression();
+    } else {
+      this.patchAsStatement();
+    }
+  }
+
+  /**
+   * Override this to patch the node as an expression.
+   */
+  patchAsExpression() {
+    throw this.error(`'patchAsExpression' must be overridden in subclasses`);
+  }
+
+  /**
+   * Override this to patch the node as a statement.
+   */
+  patchAsStatement() {
+    throw this.error(`'patchAsStatement' must be overridden in subclasses`);
+  }
+
+  /**
+   * Override this to patch the node as an expression that would not normally be
+   * an expression, often by wrapping it in an immediately invoked function
+   * expression (IIFE).
+   */
+  patchAsForcedExpression() {
+    throw this.error(`'patchAsForcedExpression' must be overridden in subclasses`);
   }
 
   /**
@@ -151,23 +180,65 @@ export default class NodePatcher {
   }
 
   /**
-   * Gets whether this patcher is working on a statement or an expression.
+   * Tells us to force this patcher to generate an expression, or else throw.
    */
-  isStatement(): boolean {
-    return this._statement;
+  setRequiresExpression() {
+    this.setExpression(true);
   }
 
   /**
-   * Sets whether this patcher is working on a statement or an expression.
+   * Tells us to try to patch as an expression, returning whether it can.
    */
-  setStatement(statement: boolean) {
-    this._statement = statement;
+  setExpression(force=false): boolean {
+    if (force) {
+      if (!this.canPatchAsExpression()) {
+        throw this.error(`cannot represent ${this.node.type} as an expression`);
+      }
+    } else if (!this.prefersToPatchAsExpression()) {
+      return false;
+    }
+    this._expression = true;
+    return true;
+  }
+
+  /**
+   * Override this to express whether the patcher prefers to be represented as
+   * an expression. By default it's simply an alias for `canPatchAsExpression`.
+   *
+   * @protected
+   */
+  prefersToPatchAsExpression(): boolean {
+    return this.canPatchAsExpression();
+  }
+
+  /**
+   * Override this if a node cannot be represented as an expression.
+   *
+   * @protected
+   */
+  canPatchAsExpression(): boolean {
+    return true;
+  }
+
+  /**
+   * Gets whether this patcher is working on a statement or an expression.
+   */
+  willPatchAsExpression(): boolean {
+    return this._expression;
+  }
+
+  /**
+   * Gets whether this patcher was forced to patch its node as an expression.
+   */
+  forcedToPatchAsExpression(): boolean {
+    return this.willPatchAsExpression() && !this.prefersToPatchAsExpression();
   }
 
   /**
    * Causes the node to be returned from its function.
    */
   return() {
+    this.setRequiresExpression();
     this.insertBefore('return ');
   }
 
@@ -297,6 +368,9 @@ export default class NodePatcher {
     this.insert(eol, `\n${this.getIndent(indentOffset)}${content}`);
   }
 
+  /**
+   * Generate an error referring to a particular section of the source.
+   */
   error(message: string, start: number=this.start, end: number=this.end): PatcherError {
     return new PatcherError(message, this, start, end);
   }

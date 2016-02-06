@@ -5,7 +5,19 @@ export default class BlockPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
     super(node, context, editor);
     this.statements = statements;
-    statements.forEach(statement => statement.setStatement(true));
+  }
+
+  prefersToPatchAsExpression(): boolean {
+    return this.statements.every(
+      statement => statement.prefersToPatchAsExpression()
+    );
+  }
+
+  setExpression(force=false): boolean {
+    let willPatchAsExpression = super.setExpression(force);
+    if (willPatchAsExpression && this.prefersToPatchAsExpression()) {
+      this.statements.forEach(statement => statement.setExpression());
+    }
   }
 
   patch(options={}) {
@@ -21,7 +33,7 @@ export default class BlockPatcher extends NodePatcher {
         let isLast = i === statements.length - 1;
         if (options.function && isLast && !statement.returns()) {
           statement.return();
-          statement.patch({ expression: true });
+          statement.patch();
         } else {
           statement.patch();
         }

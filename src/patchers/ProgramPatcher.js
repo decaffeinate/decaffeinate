@@ -16,6 +16,13 @@ export default class ProgramPatcher extends NodePatcher {
     this.body = body;
   }
 
+  /**
+   * @protected
+   */
+  canPatchAsExpression(): boolean {
+    return false;
+  }
+
   patch() {
     let { body } = this;
     body.patch({ leftBrace: false, rightBrace: false });

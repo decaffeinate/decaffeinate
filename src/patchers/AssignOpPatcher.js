@@ -5,6 +5,8 @@ export default class AssignOpPatcher extends NodePatcher {
     super(node, context, editor);
     this.assignee = assignee;
     this.expression = expression;
+    assignee.setRequiresExpression();
+    expression.setRequiresExpression();
   }
 
   patch() {
