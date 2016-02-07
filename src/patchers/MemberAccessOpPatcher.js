@@ -9,5 +9,16 @@ export default class MemberAccessOpPatcher extends NodePatcher {
 
   patch() {
     this.expression.patch();
+    if (this.hasImplicitDot()) {
+      this.insert(this.expression.after, '.');
+    }
+  }
+
+  hasImplicitDot(): boolean {
+    return !this.expression.hasTokenAfter('.');
+  }
+
+  getMemberName(): string {
+    return this.node.memberName;
   }
 }
