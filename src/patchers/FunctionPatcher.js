@@ -53,7 +53,7 @@ export default class FunctionPatcher extends NodePatcher {
     this.overwrite(arrow.range[0], arrow.range[1], '{');
   }
 
-  setReturns() {
+  setExplicitlyReturns() {
     // Stop propagation of return info at functions.
   }
 }
