@@ -19,6 +19,7 @@ import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher';
+import ThisPatcher from './ThisPatcher';
 import { childPropertyNames } from '../utils/traverse';
 
 export function makePatcher(node, context, editor, allPatchers=[]) {
@@ -57,6 +58,10 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
 
     case 'ObjectInitialiser':
       constructor = ObjectInitialiserPatcher;
+      break;
+
+    case 'This':
+      constructor = ThisPatcher;
       break;
 
     case 'Function':
