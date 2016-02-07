@@ -7,7 +7,7 @@ export default class BlockPatcher extends NodePatcher {
     this.statements = statements;
   }
 
-  prefersToPatchAsExpression(): boolean {
+  canPatchAsExpression(): boolean {
     return this.statements.every(
       statement => statement.prefersToPatchAsExpression()
     );
@@ -49,6 +49,26 @@ export default class BlockPatcher extends NodePatcher {
       } else {
         this.appendLineAfter('}', -1);
       }
+    }
+  }
+
+  patchAsExpression({
+    leftBrace=this.statements.length > 1,
+    rightBrace=this.statements.length > 1
+    }={}) {
+    if (leftBrace) {
+      this.insertBefore('(');
+    }
+    this.statements.forEach(
+      (statement, i, statements) => {
+        statement.patch();
+        if (i !== statements.length - 1) {
+          this.insert(statement.after, ', ');
+        }
+      }
+    );
+    if (rightBrace) {
+      this.insertAfter(')');
     }
   }
 
