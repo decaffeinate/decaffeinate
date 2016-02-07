@@ -57,7 +57,7 @@ export default class BlockPatcher extends NodePatcher {
    */
   shouldAppendSemicolonToStatement(statement: NodePatcher): boolean {
     let { context } = this;
-    let tokenAfterStatement = context.tokenAtIndex(statement.lastTokenIndex + 1);
+    let tokenAfterStatement = context.tokenAtIndex(statement.afterTokenIndex + 1);
 
     if (!tokenAfterStatement) {
       return true;
