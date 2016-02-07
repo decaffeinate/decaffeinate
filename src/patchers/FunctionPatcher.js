@@ -18,7 +18,7 @@ export default class FunctionPatcher extends NodePatcher {
     body.setImplicitlyReturns();
   }
 
-  patch() {
+  patch({ method=false }={}) {
     let { parameters, body, node, context } = this;
     let tokens = context.tokensForNode(node);
     let isStatement = !this.willPatchAsExpression();
@@ -27,7 +27,7 @@ export default class FunctionPatcher extends NodePatcher {
       this.insertAtStart('(');
     }
 
-    this.patchFunctionStart(tokens);
+    this.patchFunctionStart({ method }, tokens);
     parameters.forEach(parameter => parameter.patch());
     if (body) {
       body.patch({ function: true, leftBrace: false });
@@ -38,10 +38,12 @@ export default class FunctionPatcher extends NodePatcher {
     }
   }
 
-  patchFunctionStart(tokens) {
+  patchFunctionStart({ method=false }, tokens) {
     let arrowIndex = 0;
 
-    this.insertAtStart('function');
+    if (!method) {
+      this.insertAtStart('function');
+    }
 
     if (tokens[0].type !== 'PARAM_START') {
       this.insertAtStart('() ');
