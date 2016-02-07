@@ -13,6 +13,8 @@ import HerestringPatcher from './HerestringPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import LogicalAndOpPatcher from './LogicalOpPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
+import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
@@ -47,6 +49,14 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
 
     case 'EQOp':
       constructor = EQOpPatcher;
+      break;
+
+    case 'ObjectInitialiserMember':
+      constructor = ObjectInitialiserMemberPatcher;
+      break;
+
+    case 'ObjectInitialiser':
+      constructor = ObjectInitialiserPatcher;
       break;
 
     case 'Function':
