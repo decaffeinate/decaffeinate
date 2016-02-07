@@ -96,7 +96,7 @@ export default class NodePatcher {
    * expression (IIFE).
    */
   patchAsForcedExpression() {
-    throw this.error(`'patchAsForcedExpression' must be overridden in subclasses`);
+    this.patchAsExpression();
   }
 
   /**
