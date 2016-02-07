@@ -11,7 +11,18 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
   patch() {
     let { fn, args } = this;
+    let implicitCall = this.isImplicitCall();
     fn.patch();
+    if (implicitCall) {
+      this.overwrite(fn.after, args[0].before, '(');
+    }
     args.forEach(arg => arg.patch());
+    if (implicitCall) {
+      this.insertAfter(')');
+    }
+  }
+
+  isImplicitCall() {
+    return !this.fn.hasTokenAfter('CALL_START');
   }
 }
