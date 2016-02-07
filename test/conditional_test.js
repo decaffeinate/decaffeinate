@@ -168,10 +168,10 @@ describe('conditionals', () => {
   });
 
   it('adds ternary operator code after any insertions for the consequent', () => {
-    check(`a(if b then c: d)`, `a(b ? ({c: d}) : undefined);`);
+    check(`a(if b then c: d)`, `a(b ? {c: d} : undefined);`);
   });
 
-  it('wraps multi-line conditionals used as expressions in an IIFE', () => {
+  it('turns multi-line `if` into a ternary with sequence expressions', () => {
     check(`
       ->
         z(if a
@@ -182,15 +182,14 @@ describe('conditionals', () => {
           a - d)
     `, `
       (function() {
-        return z((() => {
-          if (a) {
-            var c = a;
-            return a + c;
-          } else {
-            var d = a;
-            return a - d;
-          }
-        })());
+        var c;
+        var d;
+        return z(a ?
+          (c = a,
+          a + c)
+          :
+          (d = a,
+          a - d));
       });
     `);
   });
