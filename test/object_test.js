@@ -41,7 +41,7 @@ describe('objects', () => {
 
   it('indents and loosely wraps multi-line objects if needed', () => {
     check(`
-      a: b
+      a: b,
       c: d
     `, `
       ({
@@ -66,20 +66,23 @@ describe('objects', () => {
 
   it('uses concise methods for functions in objects', () => {
     check(`
-      a: -> true
-      b  :  -> false
+      ({
+        a: -> true
+        b  :  -> false
+      });
     `, `
-      ({a() { return true; },
-      b() { return false; }
+      ({
+        a() { return true; },
+        b() { return false; }
       });
     `);
   });
 
   it('uses computed methods for string keys', () => {
     check(`
-      {
+      ({
         'a': -> b
-      }
+      })
     `, `
       ({
         ['a']() { return b; }
@@ -139,28 +142,28 @@ describe('objects', () => {
     `);
   });
 
-  it('does not add braces to leading arguments in multi-line calls', () => {
+  it('does not stick braces to opening parentheses for leading argument objects', () => {
     check(`
-      new a(
+      a(
         b: c
         d
       )
     `, `
-      new a(
+      a(
         {b: c},
         d
       );
     `);
   });
 
-  it('does not add braces to trailing arguments in multi-line calls', () => {
+  it('does not stick braces to closing parentheses for trailing argument objects', () => {
     check(`
-      new a(
+      a(
         b
         c: d
       )
     `, `
-      new a(
+      a(
         b,
         {c: d}
       );
@@ -172,31 +175,6 @@ describe('objects', () => {
       {@a}
     `, `
       ({a: this.a});
-    `);
-  });
-
-  it('appends trailing semicolons after multi-line objects correctly', () => {
-    // FIXME: Really, this should have a better result:
-    //
-    //   var a = {
-    //     b: {
-    //       c: d
-    //     }
-    //   };
-    //
-    check(`
-      a =
-        b:
-          c: d
-
-      e = f
-    `, `
-      var a =
-        {b:
-          {c: d}
-        };
-
-      var e = f;
     `);
   });
 });
