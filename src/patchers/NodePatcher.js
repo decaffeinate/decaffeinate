@@ -66,13 +66,13 @@ export default class NodePatcher {
    * `node` from CoffeeScript to JavaScript. By default this method delegates
    * to other patcher methods which can be overridden individually.
    */
-  patch() {
+  patch(options={}) {
     if (this.forcedToPatchAsExpression()) {
-      this.patchAsForcedExpression();
+      this.patchAsForcedExpression(options);
     } else if (this.willPatchAsExpression()) {
-      this.patchAsExpression();
+      this.patchAsExpression(options);
     } else {
-      this.patchAsStatement();
+      this.patchAsStatement(options);
     }
   }
 
