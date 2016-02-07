@@ -1,6 +1,6 @@
 import PatcherError from '../utils/PatchError';
 import adjustIndent from '../utils/adjustIndent';
-import { Token, Editor, Node, ParseContext } from './types';
+import type { Token, Editor, Node, ParseContext } from './types';
 import { logger } from '../utils/debug';
 
 export default class NodePatcher {
