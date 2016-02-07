@@ -7,7 +7,7 @@ export default class ReturnPatcher extends NodePatcher {
   }
 
   initialize() {
-    this.setReturns(true);
+    this.setExplicitlyReturns();
   }
 
   /**

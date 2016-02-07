@@ -235,27 +235,33 @@ export default class NodePatcher {
   }
 
   /**
+   * Gets whether this patcher's node implicitly returns.
+   */
+  implicitlyReturns(): boolean {
+    return this._implicitlyReturns || false;
+  }
+
+  /**
    * Causes the node to be returned from its function.
    */
-  return() {
-    this.setRequiresExpression();
-    this.insertBefore('return ');
+  setImplicitlyReturns() {
+    this._implicitlyReturns = true;
   }
 
   /**
    * Gets whether this patcher's node returns explicitly from its function.
    */
-  returns() {
+  explicitlyReturns(): boolean {
     return this._returns || false;
   }
 
   /**
    * Marks this patcher's as containing a node that explicitly returns.
    */
-  setReturns() {
+  setExplicitlyReturns() {
     this._returns = true;
     if (this.parent) {
-      this.parent.setReturns();
+      this.parent.setExplicitlyReturns();
     }
   }
 

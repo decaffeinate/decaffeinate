@@ -20,23 +20,22 @@ export default class BlockPatcher extends NodePatcher {
     }
   }
 
-  patch(options={}) {
-    let { leftBrace=true, rightBrace=true } = options;
+  setImplicitlyReturns() {
+    this.statements[this.statements.length - 1].setImplicitlyReturns();
+  }
 
+  patchAsStatement({ leftBrace=true, rightBrace=true }={}) {
     if (leftBrace) {
       this.insertBefore('{');
     }
 
     let { statements } = this;
     statements.forEach(
-      (statement, i) => {
-        let isLast = i === statements.length - 1;
-        if (options.function && isLast && !statement.returns()) {
-          statement.return();
-          statement.patch();
-        } else {
-          statement.patch();
+      statement => {
+        if (statement.implicitlyReturns() && !statement.explicitlyReturns()) {
+          this.insert(statement.before, 'return ');
         }
+        statement.patch();
         // FIXME: Implicit returns may have different semicolon needs.
         if (statement.statementNeedsSemicolon() && this.shouldAppendSemicolonToStatement(statement)) {
           statement.insertAfter(';');

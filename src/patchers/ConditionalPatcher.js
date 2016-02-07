@@ -144,11 +144,11 @@ export default class ConditionalPatcher extends NodePatcher {
     }
   }
 
-  return() {
+  setImplicitlyReturns() {
     let { consequent, alternate } = this;
-    consequent.return();
+    consequent.setImplicitlyReturns();
     if (alternate) {
-      alternate.return();
+      alternate.setImplicitlyReturns();
     }
   }
 

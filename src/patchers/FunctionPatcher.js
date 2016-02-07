@@ -14,6 +14,8 @@ export default class FunctionPatcher extends NodePatcher {
     while (source[this.end - '\n'.length] === '\n') {
       this.end -= '\n'.length;
     }
+
+    body.setImplicitlyReturns();
   }
 
   patch() {
