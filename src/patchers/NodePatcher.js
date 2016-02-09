@@ -5,14 +5,14 @@ import { logger } from '../utils/debug';
 
 export default class NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor) {
+    this.log = logger(this.constructor.name);
+
     this.node = node;
     this.context = context;
     this.editor = editor;
 
     this.tokens = context.tokensForNode(node);
     this.setupLocationInformation();
-
-    this.log = logger(this.constructor.name);
   }
 
   /**
