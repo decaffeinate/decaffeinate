@@ -20,6 +20,7 @@ import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher';
 import ThisPatcher from './ThisPatcher';
+import ThrowPatcher from './ThrowPatcher';
 import { childPropertyNames } from '../utils/traverse';
 
 export function makePatcher(node, context, editor, allPatchers=[]) {
@@ -108,6 +109,10 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
 
     case 'Herestring':
       constructor = HerestringPatcher;
+      break;
+
+    case 'Throw':
+      constructor = ThrowPatcher;
       break;
 
     case 'DeleteOp':
