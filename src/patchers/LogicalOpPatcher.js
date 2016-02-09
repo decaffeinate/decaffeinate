@@ -1,3 +1,4 @@
+import BinaryOpPatcher from './BinaryOpPatcher';
 import NodePatcher from './NodePatcher';
 import type { Node, ParseContext, Editor } from './types';
 
@@ -12,7 +13,7 @@ import type { Node, ParseContext, Editor } from './types';
  *
  * [1]: https://en.wikipedia.org/wiki/De_Morgan%27s_laws
  */
-export default class LogicalOpPatcher extends NodePatcher {
+export default class LogicalOpPatcher extends BinaryOpPatcher {
   /**
    * `node` is expected to be either `LogicalAndOp` or `LogicalOrOp`.
    */

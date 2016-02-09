@@ -1,6 +1,6 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import AssignOpPatcher from './AssignOpPatcher';
-import BinaryOpPassthroughPatcher from './BinaryOpPassthroughPatcher';
+import BinaryOpPassthroughPatcher from './BinaryOpPatcher';
 import BlockPatcher from './BlockPatcher';
 import BoolPatcher from './BoolPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
