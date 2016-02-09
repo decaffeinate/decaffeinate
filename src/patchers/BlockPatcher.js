@@ -36,10 +36,6 @@ export default class BlockPatcher extends NodePatcher {
           this.insert(statement.before, 'return ');
         }
         statement.patch();
-        // FIXME: Implicit returns may have different semicolon needs.
-        if (statement.statementNeedsSemicolon() && this.shouldAppendSemicolonToStatement(statement)) {
-          this.insert(statement.after, ';');
-        }
       }
     );
 
@@ -70,69 +66,6 @@ export default class BlockPatcher extends NodePatcher {
     if (rightBrace) {
       this.insertAfter(')');
     }
-  }
-
-  /**
-   * @private
-   */
-  shouldAppendSemicolonToStatement(statement: NodePatcher): boolean {
-    let { context } = this;
-    let tokenAfterStatement = context.tokenAtIndex(statement.afterTokenIndex + 1);
-
-    if (!tokenAfterStatement) {
-      return true;
-    }
-
-    switch (tokenAfterStatement.type) {
-      case 'TERMINATOR':
-        break;
-
-      case 'OUTDENT':
-        // CoffeeScript does not insert a TERMINATOR before an OUTDENT.
-        return true;
-
-      default:
-        if (this.inline()) {
-          return true;
-        } else {
-          throw this.error(
-            `unexpected non-terminator following ${statement.node.type} ` +
-            `statement: ${tokenAfterStatement.type}`,
-            tokenAfterStatement.range[0],
-            tokenAfterStatement.range[1]
-          );
-        }
-    }
-
-    if (tokenAfterStatement.data === ';') {
-      return false;
-    }
-
-    // CoffeeScript ignores ';' in ';\n', generating a token for '\n' instead,
-    // so this terminator may actually be preceded by a semicolon. Let's just
-    // look at characters following the end.
-    let i = statement.after;
-    for (;;) {
-      switch (context.source.slice(i, i + 1)) {
-        case ' ':
-        case '\t':
-          i++;
-          break;
-
-        case ';':
-          return false;
-
-        default:
-          return true;
-      }
-    }
-  }
-
-  /**
-   * Blocks never have semicolons after them.
-   */
-  statementNeedsSemicolon(): boolean {
-    return false;
   }
 
   /**

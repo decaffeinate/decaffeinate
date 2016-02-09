@@ -183,13 +183,6 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   /**
-   * Conditionals do not need semicolons when used as statements.
-   */
-  statementNeedsSemicolon(): boolean {
-    return false;
-  }
-
-  /**
    * Gets the token representing the `else` between consequent and alternate.
    *
    * @private
