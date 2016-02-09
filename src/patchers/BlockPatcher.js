@@ -63,7 +63,7 @@ export default class BlockPatcher extends NodePatcher {
       (statement, i, statements) => {
         statement.patch();
         if (i !== statements.length - 1) {
-          this.insert(statement.after, ', ');
+          this.insert(statement.after, ',');
         }
       }
     );
