@@ -1,4 +1,5 @@
 import MagicString from 'magic-string';
+import addVariableDeclarations from 'add-variable-declarations';
 import { linter } from 'eslint';
 import { logger } from './utils/debug';
 import { makePatcher } from './patchers/index.js';
@@ -20,6 +21,13 @@ export function convert(source) {
 
   makePatcher(ast, ast.context, editor).patch();
   let js = editor.toString();
+  try {
+    js = addVariableDeclarations(js).code;
+  } catch (err) {
+    log(js);
+    log(err);
+    throw err;
+  }
   try {
     editor = new MagicString(js);
     let messages = linter.verify(js, { rules: { semi: 2 } });
