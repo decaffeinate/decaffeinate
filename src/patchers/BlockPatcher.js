@@ -38,7 +38,7 @@ export default class BlockPatcher extends NodePatcher {
         statement.patch();
         // FIXME: Implicit returns may have different semicolon needs.
         if (statement.statementNeedsSemicolon() && this.shouldAppendSemicolonToStatement(statement)) {
-          statement.insertAfter(';');
+          this.insert(statement.after, ';');
         }
       }
     );
