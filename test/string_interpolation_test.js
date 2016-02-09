@@ -10,7 +10,7 @@ describe('string interpolation', () => {
   });
 
   it('handles multi-line triple-quoted strings correctly', () => {
-    check('a = """\n     #{b}\n     c\n    """', 'var a = `${b}\nc`;')
+    check('a = """\n     #{b}\n     c\n    """', 'var a = `${b}\nc`;');
   });
 
   it('handles double quotes inside triple-double quotes', () => {

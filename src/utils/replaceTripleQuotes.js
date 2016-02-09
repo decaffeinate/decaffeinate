@@ -56,6 +56,6 @@ export default function replaceTripleQuotes(node, patcher) {
       [quoteCharacter],
       contentStart,
       contentEnd
-    )
+    );
   }
 }

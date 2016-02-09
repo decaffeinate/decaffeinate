@@ -6,6 +6,7 @@
     "mocha": true
   },
   "rules": {
+    "semi": 2,
     "strict": 0,
     "no-console": 0,
     "quotes": [2, "single", "avoid-escape"],
