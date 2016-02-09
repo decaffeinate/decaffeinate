@@ -187,7 +187,7 @@ describe('conditionals', () => {
         return z(a ?
           (c = a,
           a + c)
-          :
+        :
           (d = a,
           a - d));
       });
