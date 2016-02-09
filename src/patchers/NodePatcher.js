@@ -131,7 +131,13 @@ export default class NodePatcher {
    * Insert content at the specified index.
    */
   insert(index: number, content: string) {
-    this.log('INSERT', index, JSON.stringify(content));
+    this.log(
+      'INSERT',
+      index,
+      JSON.stringify(content),
+      'BEFORE',
+      JSON.stringify(this.context.source.slice(index, index + 2))
+    );
     this.editor.insert(index, content);
   }
 
