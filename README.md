@@ -37,4 +37,4 @@ project. In addition, not all language constructs are supported.
 [1]: #1
 [CoffeeScriptRedux]: https://github.com/michaelficarra/CoffeeScriptRedux
 [deviations]: https://github.com/michaelficarra/CoffeeScriptRedux/wiki/Intentional-Deviations-From-jashkenas-coffee-script
-[issues]: https://github.com/eventualbuddha/decaffeinate/issues
+[issues]: https://github.com/decaffeinate/decaffeinate/issues
