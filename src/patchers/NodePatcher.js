@@ -65,8 +65,8 @@ export default class NodePatcher {
      * Above the opening parenthesis is at the `before` index and the character
      * immediately after the closing parenthesis is at the `after` index.
      */
-    this.before = context.tokenAtIndex(beforeTokenIndex).range[0];
-    this.after = context.tokenAtIndex(afterTokenIndex).range[1];
+    this.before = Math.min(this.start, context.tokenAtIndex(beforeTokenIndex).range[0]);
+    this.after = Math.max(this.end, context.tokenAtIndex(afterTokenIndex).range[1]);
 
     this.beforeTokenIndex = beforeTokenIndex;
     this.afterTokenIndex = afterTokenIndex;
