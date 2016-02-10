@@ -14,8 +14,12 @@ export default class FunctionPatcher extends NodePatcher {
     while (source[this.end - '\n'.length] === '\n') {
       this.end -= '\n'.length;
     }
+  }
 
-    body.setImplicitlyReturns();
+  initialize() {
+    if (this.body) {
+      this.body.setImplicitlyReturns();
+    }
   }
 
   patch({ method=false }={}) {
@@ -30,7 +34,10 @@ export default class FunctionPatcher extends NodePatcher {
     this.patchFunctionStart({ method }, tokens);
     parameters.forEach(parameter => parameter.patch());
     if (body) {
-      body.patch({ function: true, leftBrace: false });
+      body.patch({ leftBrace: false });
+    } else {
+      // No body, so BlockPatcher can't insert it for us.
+      this.insertAtEnd('}');
     }
 
     if (isStatement) {
