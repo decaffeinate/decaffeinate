@@ -21,6 +21,14 @@ export default class NodePatcher {
   setupLocationInformation() {
     let { node, context } = this;
 
+    /**
+     * `start` and `end` is the exclusive range within the original source that
+     * composes this patcher's node. For example, here's the start and end of
+     * `a + b` in the expression below:
+     *
+     *   console.log(a + b)
+     *               ^    ^
+     */
     this.start = node.range[0];
     this.end = node.range[1];
 
@@ -46,6 +54,17 @@ export default class NodePatcher {
       afterTokenIndex++;
     }
 
+    /**
+     * `before` and `after` is the same as `start` and `end` for most nodes,
+     * but expands to encompass any other tokens that are not part of the AST
+     * but are still logically attached to the node, for example:
+     *
+     *   1 * (2 + 3)
+     *       ^      ^
+     *
+     * Above the opening parenthesis is at the `before` index and the character
+     * immediately after the closing parenthesis is at the `after` index.
+     */
     this.before = context.tokenAtIndex(beforeTokenIndex).range[0];
     this.after = context.tokenAtIndex(afterTokenIndex).range[1];
 
