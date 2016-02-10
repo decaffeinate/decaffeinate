@@ -13,6 +13,7 @@ import HerestringPatcher from './HerestringPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import LogicalAndOpPatcher from './LogicalOpPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import NewOpPatcher from './NewOpPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
@@ -109,6 +110,10 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
 
     case 'Herestring':
       constructor = HerestringPatcher;
+      break;
+
+    case 'NewOp':
+      constructor = NewOpPatcher;
       break;
 
     case 'Throw':
