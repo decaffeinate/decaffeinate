@@ -36,6 +36,9 @@ export default class BlockPatcher extends NodePatcher {
           this.insert(statement.before, 'return ');
         }
         statement.patch();
+        if (statement.statementNeedsSemicolon()) {
+          this.insert(statement.after, ';');
+        }
       }
     );
 

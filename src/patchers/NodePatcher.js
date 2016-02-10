@@ -291,6 +291,14 @@ export default class NodePatcher {
   }
 
   /**
+   * Determines whether this patcher's node needs a semicolon after it. This
+   * should be overridden in subclasses as appropriate.
+   */
+  statementNeedsSemicolon(): boolean {
+    return true;
+  }
+
+  /**
    * Gets a token between left and right patchers' nodes matching type and data.
    */
   tokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, type: string, data: ?string=null): ?Token {

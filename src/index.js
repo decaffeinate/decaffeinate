@@ -31,12 +31,18 @@ export function convert(source) {
   try {
     editor = new MagicString(js);
     let messages = linter.verify(js, {
-      rules: { semi: 2 },
+      rules: { 'semi': 2, 'no-extra-semi': 2 },
       env: { es6: true }
     });
     messages.forEach(message => {
-      if (message.ruleId === 'semi') {
-        editor.insert(message.fix.range[1], message.fix.text);
+      switch (message.ruleId) {
+        case 'semi':
+          editor.insert(message.fix.range[1], message.fix.text);
+          break;
+
+        case 'no-extra-semi':
+          editor.overwrite(...message.fix.range, message.fix.text);
+          break;
       }
     });
     js = editor.toString();
