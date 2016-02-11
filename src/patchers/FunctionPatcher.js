@@ -17,7 +17,7 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   initialize() {
-    if (this.body) {
+    if (this.body && !this.implicitReturnsDisabled()) {
       this.body.setImplicitlyReturns();
     }
   }
@@ -64,5 +64,20 @@ export default class FunctionPatcher extends NodePatcher {
 
   setExplicitlyReturns() {
     // Stop propagation of return info at functions.
+  }
+
+  /**
+   * Call before initialization to prevent this function from implicitly
+   * returning its last statement.
+   */
+  disableImplicitReturns() {
+    this._implicitReturnsDisabled = true;
+  }
+
+  /**
+   * Determines whether this function has implicit returns disabled.
+   */
+  implicitReturnsDisabled(): boolean {
+    return this._implicitReturnsDisabled;
   }
 }
