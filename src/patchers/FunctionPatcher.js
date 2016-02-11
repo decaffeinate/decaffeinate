@@ -46,19 +46,23 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   patchFunctionStart({ method=false }, tokens) {
-    let arrowIndex = 0;
+    let arrow = tokens[0];
 
     if (!method) {
       this.insertAtStart('function');
     }
 
-    if (tokens[0].type !== 'PARAM_START') {
+    if (arrow.type !== 'PARAM_START') {
       this.insertAtStart('() ');
     } else {
-      arrowIndex = this.context.indexOfEndTokenForStartTokenAtIndex(this.startTokenIndex) + 1;
+      arrow = this.context.tokenAtIndex(
+        this.context.indexOfEndTokenForStartTokenAtIndex(this.startTokenIndex) + 1
+      );
     }
 
-    let arrow = tokens[arrowIndex];
+    if (arrow.type !== '->') {
+      throw this.error(`expected '->' but found ${arrow.type}`, ...arrow.range);
+    }
     this.overwrite(arrow.range[0], arrow.range[1], '{');
   }
 
