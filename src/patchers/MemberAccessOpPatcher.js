@@ -1,5 +1,5 @@
 import NodePatcher from './NodePatcher';
-import type { Node, ParseContext, Editor } from './types';
+import type { Node, ParseContext, Editor, Token } from './types';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {
@@ -10,6 +10,8 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   patch() {
     this.expression.patch();
     if (this.hasImplicitDot()) {
+      // `@a` → `@.a`
+      //          ^
       this.insert(this.expression.after, '.');
     }
   }
@@ -20,5 +22,10 @@ export default class MemberAccessOpPatcher extends NodePatcher {
 
   getMemberName(): string {
     return this.node.memberName;
+  }
+
+  getMemberNameToken(): Token {
+    let tokenOffset = this.hasImplicitDot() ? /* NAME */ 1 : /* DOT NAME */ 2;
+    return this.context.tokenAtIndex(this.expression.afterTokenIndex + tokenOffset);
   }
 }

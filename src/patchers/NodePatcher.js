@@ -16,6 +16,13 @@ export default class NodePatcher {
   }
 
   /**
+   * Allow patcher classes to override the class used to patch their children.
+   */
+  static patcherClassForChildNode(/* node: Node, property: string */): ?Function {
+    return null;
+  }
+
+  /**
    * @private
    */
   setupLocationInformation() {

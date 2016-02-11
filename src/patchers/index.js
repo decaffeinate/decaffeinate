@@ -3,6 +3,9 @@ import AssignOpPatcher from './AssignOpPatcher';
 import BinaryOpPassthroughPatcher from './BinaryOpPatcher';
 import BlockPatcher from './BlockPatcher';
 import BoolPatcher from './BoolPatcher';
+import ClassPatcher from './ClassPatcher';
+import ClassAssignOpPatcher from './ClassAssignOpPatcher';
+import ConstructorPatcher from './ConstructorPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
 import DeleteOpPatcher from './DeleteOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
@@ -24,125 +27,34 @@ import ThisPatcher from './ThisPatcher';
 import ThrowPatcher from './ThrowPatcher';
 import { childPropertyNames } from '../utils/traverse';
 
-export function makePatcher(node, context, editor, allPatchers=[]) {
-  let constructor;
-  let props = childPropertyNames(node);
-
-  switch (node.type) {
-    case 'Identifier':
-      constructor = IdentifierPatcher;
-      break;
-
-    case 'String':
-    case 'Int':
-      constructor = PassthroughPatcher;
-      break;
-
-    case 'FunctionApplication':
-      constructor = FunctionApplicationPatcher;
-      break;
-
-    case 'MemberAccessOp':
-      constructor = MemberAccessOpPatcher;
-      break;
-
-    case 'DynamicMemberAccessOp':
-      constructor = DynamicMemberAccessOpPatcher;
-      break;
-
-    case 'EQOp':
-      constructor = EQOpPatcher;
-      break;
-
-    case 'ObjectInitialiserMember':
-      constructor = ObjectInitialiserMemberPatcher;
-      break;
-
-    case 'ObjectInitialiser':
-      constructor = ObjectInitialiserPatcher;
-      break;
-
-    case 'This':
-      constructor = ThisPatcher;
-      break;
-
-    case 'Function':
-      constructor = FunctionPatcher;
-      break;
-
-    case 'Bool':
-      constructor = BoolPatcher;
-      break;
-
-    case 'Conditional':
-      constructor = ConditionalPatcher;
-      break;
-
-    case 'ArrayInitialiser':
-      constructor = ArrayInitialiserPatcher;
-      break;
-
-    case 'Block':
-      constructor = BlockPatcher;
-      break;
-
-    case 'AssignOp':
-      constructor = AssignOpPatcher;
-      break;
-
-    case 'Return':
-      constructor = ReturnPatcher;
-      break;
-
-    case 'PlusOp':
-    case 'SubtractOp':
-      constructor = BinaryOpPassthroughPatcher;
-      break;
-
-    case 'LogicalAndOp':
-    case 'LogicalOrOp':
-      constructor = LogicalAndOpPatcher;
-      break;
-
-    case 'TemplateLiteral':
-      constructor = TemplateLiteralPatcher;
-      break;
-
-    case 'Herestring':
-      constructor = HerestringPatcher;
-      break;
-
-    case 'NewOp':
-      constructor = NewOpPatcher;
-      break;
-
-    case 'Throw':
-      constructor = ThrowPatcher;
-      break;
-
-    case 'DeleteOp':
-      constructor = DeleteOpPatcher;
-      break;
-
-    case 'Program':
-      constructor = ProgramPatcher;
-      break;
-
-    default:
-      throw new Error(
-        `no patcher available for node type: ${node.type}` +
-        `${props.length ? ` (props: ${props.join(', ')})` : ''}`
-      );
+export function makePatcher(node, context, editor, constructor=null, allPatchers=[]) {
+  if (!constructor) {
+    constructor = patcherConstructorForNode(node);
   }
 
+  let props = childPropertyNames(node);
   let children = props.map(name => {
     let child = node[name];
     if (!child) {
       return null;
     } else if (Array.isArray(child)) {
-      return child.map(item => makePatcher(item, context, editor, allPatchers));
+      return child.map(item =>
+        makePatcher(
+          item,
+          context,
+          editor,
+          constructor.patcherClassForChildNode(item, name),
+          allPatchers
+        )
+      );
     } else {
-      return makePatcher(child, context, editor, allPatchers);
+      return makePatcher(
+        child,
+        context,
+        editor,
+        constructor.patcherClassForChildNode(child, name),
+        allPatchers
+      );
     }
   });
 
@@ -155,6 +67,101 @@ export function makePatcher(node, context, editor, allPatchers=[]) {
   }
 
   return patcher;
+}
+
+function patcherConstructorForNode(node): Function {
+  switch (node.type) {
+    case 'Identifier':
+      return IdentifierPatcher;
+
+    case 'String':
+    case 'Int':
+      return PassthroughPatcher;
+
+    case 'FunctionApplication':
+      return FunctionApplicationPatcher;
+
+    case 'MemberAccessOp':
+      return MemberAccessOpPatcher;
+
+    case 'DynamicMemberAccessOp':
+      return DynamicMemberAccessOpPatcher;
+
+    case 'EQOp':
+      return EQOpPatcher;
+
+    case 'ObjectInitialiserMember':
+      return ObjectInitialiserMemberPatcher;
+
+    case 'ObjectInitialiser':
+      return ObjectInitialiserPatcher;
+
+    case 'This':
+      return ThisPatcher;
+
+    case 'Function':
+      return FunctionPatcher;
+
+    case 'Bool':
+      return BoolPatcher;
+
+    case 'Conditional':
+      return ConditionalPatcher;
+
+    case 'ArrayInitialiser':
+      return ArrayInitialiserPatcher;
+
+    case 'Block':
+      return BlockPatcher;
+
+    case 'AssignOp':
+      return AssignOpPatcher;
+
+    case 'Return':
+      return ReturnPatcher;
+
+    case 'PlusOp':
+    case 'SubtractOp':
+      return BinaryOpPassthroughPatcher;
+
+    case 'LogicalAndOp':
+    case 'LogicalOrOp':
+      return LogicalAndOpPatcher;
+
+    case 'TemplateLiteral':
+      return TemplateLiteralPatcher;
+
+    case 'Herestring':
+      return HerestringPatcher;
+
+    case 'NewOp':
+      return NewOpPatcher;
+
+    case 'Throw':
+      return ThrowPatcher;
+
+    case 'DeleteOp':
+      return DeleteOpPatcher;
+
+    case 'ClassProtoAssignOp':
+      return ClassAssignOpPatcher;
+
+    case 'Class':
+      return ClassPatcher;
+
+    case 'Constructor':
+      return ConstructorPatcher;
+
+    case 'Program':
+      return ProgramPatcher;
+
+    default:
+      let props = childPropertyNames(node);
+      throw new Error(
+        `no patcher available for node type: ${node.type}` +
+        `${props.length ? ` (props: ${props.join(', ')})` : ''}`
+      );
+  }
 }
 
 function associateParent(parent, child) {

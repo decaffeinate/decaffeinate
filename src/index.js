@@ -19,7 +19,18 @@ export function convert(source) {
   let ast = parse(source);
   let editor = new MagicString(source);
 
-  makePatcher(ast, ast.context, editor).patch();
+  try {
+    makePatcher(ast, ast.context, editor).patch();
+  } catch (err) {
+    // FIXME: instanceof would be nice
+    // http://stackoverflow.com/questions/33870684/why-doesnt-instanceof-work-on-instances-of-error-subclasses-under-babel-node
+    if (err.patcher) {
+      let { line, column } = err.patcher.context.lineMap.invert(err.start);
+      log(`Failed to patch ${err.patcher.node.type} at ${line + 1}:${column + 1}`);
+    }
+    throw err;
+  }
+
   let js = editor.toString();
   try {
     js = addVariableDeclarations(js).code;
@@ -28,6 +39,7 @@ export function convert(source) {
     log(err);
     throw err;
   }
+
   try {
     editor = new MagicString(js);
     let messages = linter.verify(js, {
