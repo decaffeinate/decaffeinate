@@ -1,6 +1,6 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import AssignOpPatcher from './AssignOpPatcher';
-import BinaryOpPassthroughPatcher from './BinaryOpPatcher';
+import BinaryOpPatcher from './BinaryOpPatcher';
 import BlockPatcher from './BlockPatcher';
 import BoolPatcher from './BoolPatcher';
 import ClassPatcher from './ClassPatcher';
@@ -122,7 +122,12 @@ function patcherConstructorForNode(node): Function {
 
     case 'PlusOp':
     case 'SubtractOp':
-      return BinaryOpPassthroughPatcher;
+    case 'BitAndOp':
+    case 'BitOrOp':
+    case 'LeftShiftOp':
+    case 'SignedRightShiftOp':
+    case 'UnsignedRightShiftOp':
+      return BinaryOpPatcher;
 
     case 'LogicalAndOp':
     case 'LogicalOrOp':
