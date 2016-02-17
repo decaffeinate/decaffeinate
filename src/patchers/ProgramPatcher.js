@@ -1,4 +1,5 @@
 import NodePatcher from './NodePatcher';
+import blank from '../utils/blank';
 import getIndent from '../utils/getIndent';
 import rangesOfComments from '../utils/rangesOfComments';
 
@@ -14,6 +15,8 @@ export default class ProgramPatcher extends NodePatcher {
   constructor(node, context, editor, body) {
     super(node, context, editor);
     this.body = body;
+
+    this.helpers = blank();
   }
 
   /**
@@ -27,6 +30,10 @@ export default class ProgramPatcher extends NodePatcher {
     let { body } = this;
     body.patch({ leftBrace: false, rightBrace: false });
     this.patchComments();
+
+    for (let helper in this.helpers) {
+      this.editor.append(`\n${this.helpers[helper]}`);
+    }
   }
 
   /**
@@ -137,6 +144,23 @@ export default class ProgramPatcher extends NodePatcher {
         'node'
       );
     }
+  }
+
+  /**
+   * Register a helper to be reused in several places.
+   *
+   * FIXME: Pick a different name than what is in scope.
+   */
+  registerHelper(name: string, code: string): string {
+    code = code.trim();
+    if (name in this.helpers) {
+      if (this.helpers[name] !== code) {
+        throw new Error(`BUG: cannot override helper '${name}'`);
+      }
+    } else {
+      this.helpers[name] = code;
+    }
+    return name;
   }
 }
 

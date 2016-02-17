@@ -10,6 +10,7 @@ import ConditionalPatcher from './ConditionalPatcher';
 import DeleteOpPatcher from './DeleteOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import EQOpPatcher from './EQOpPatcher';
+import ExtendsOpPatcher from './ExtendsOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import HerestringPatcher from './HerestringPatcher';
@@ -159,6 +160,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'Program':
       return ProgramPatcher;
+
+    case 'ExtendsOp':
+      return ExtendsOpPatcher;
 
     default:
       let props = childPropertyNames(node);

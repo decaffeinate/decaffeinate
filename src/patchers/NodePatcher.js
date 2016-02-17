@@ -412,4 +412,11 @@ export default class NodePatcher {
   error(message: string, start: number=this.start, end: number=this.end): PatcherError {
     return new PatcherError(message, this, start, end);
   }
+
+  /**
+   * Register a helper to be reused in several places.
+   */
+  registerHelper(name: string, code: string): string {
+    return this.parent.registerHelper(name, code);
+  }
 }

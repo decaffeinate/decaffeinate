@@ -81,7 +81,15 @@ describe('binary operators', () => {
     check(`
       a extends b
     `, `
-      ((child, parent) => { for (var key in parent) { if ({}.hasOwnProperty.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; })(a, b);
+      __extends__(a, b);
+      function __extends__(child, parent) {
+        Object.getOwnPropertyNames(parent).forEach(
+          name => child[name] = parent[name]
+        );
+        child.prototype = Object.create(parent.prototype);
+        child.__super__ = parent.prototype;
+        return child;
+      }
     `);
   });
 });

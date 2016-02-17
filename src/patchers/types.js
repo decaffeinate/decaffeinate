@@ -24,5 +24,6 @@ export type Editor = {
   insert: (start: number, end: number, content: string) => void,
   overwrite: (start: number, end: number, content: string) => void,
   remove: (start: number, end: number) => void,
-  slice: (start: number, end: number) => string
+  slice: (start: number, end: number) => string,
+  append: (content: string) => void,
 };
