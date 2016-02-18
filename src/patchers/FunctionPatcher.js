@@ -22,9 +22,9 @@ export default class FunctionPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement({ method=false }={}) {
+  patchAsStatement(options={}) {
     this.insertAtStart('(');
-    this.patchAsExpression({ method });
+    this.patchAsExpression(options);
     this.insertAtEnd(')');
   }
 
