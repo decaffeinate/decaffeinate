@@ -1,5 +1,5 @@
 import NodePatcher from './NodePatcher';
-import type { Node, ParseContext, Editor } from './types';
+import type { Token, Node, ParseContext, Editor } from './types';
 
 export default class BlockPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
@@ -62,13 +62,28 @@ export default class BlockPatcher extends NodePatcher {
       (statement, i, statements) => {
         statement.patch();
         if (i !== statements.length - 1) {
-          this.insert(statement.after, ',');
+          let semicolonToken = this.getSemicolonTokenBetween(
+            statement,
+            statements[i + 1]
+          );
+          if (semicolonToken) {
+            this.overwrite(...semicolonToken.range, ',');
+          } else {
+            this.insert(statement.after, ',');
+          }
         }
       }
     );
     if (rightBrace) {
       this.insertAfter(')');
     }
+  }
+
+  /**
+   * @private
+   */
+  getSemicolonTokenBetween(left: NodePatcher, right: NodePatcher): ?Token {
+    return this.tokenBetweenPatchersMatching(left, right, 'TERMINATOR', ';');
   }
 
   /**
