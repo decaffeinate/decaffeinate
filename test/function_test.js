@@ -63,4 +63,12 @@ describe('functions', () => {
   it('unwraps single-parameter fat arrow functions', () => {
     check(`(a) => a`, `a => a;`);
   });
+
+  it('turns fat arrow functions referencing `arguments` into regular functions with a `bind` call', () => {
+    check(`
+      => arguments[0]
+    `, `
+      (function() { return arguments[0]; }.bind(this));
+    `);
+  });
 });

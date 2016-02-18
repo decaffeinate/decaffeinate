@@ -1,6 +1,10 @@
 import BlockPatcher from './BlockPatcher';
 import FunctionPatcher from './FunctionPatcher';
-import type { Token } from './types';
+import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
+import NodePatcher from './NodePatcher';
+import traverse from '../utils/traverse';
+import type { Token, Node } from './types';
+import { isFunction } from '../utils/types';
 
 /**
  * Handles bound functions, i.e. "fat arrows".
@@ -10,6 +14,32 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
     super.initialize();
     if (this.hasInlineBody()) {
       this.body.setExpression();
+    }
+  }
+
+  /**
+   * Use a slightly-modified version of the regular `FunctionPatcher` when
+   * we can't use arrow functions.
+   */
+  static patcherClassOverrideForNode(node: Node): ?Class<NodePatcher> {
+    let referencesArguments = false;
+
+    traverse(node, child => {
+      if (referencesArguments) {
+        // We already found a reference, so skip this.
+        return false;
+      } else if (child.type === 'Identifier' && child.data === 'arguments') {
+        referencesArguments = true;
+      } else if (child !== node && isFunction(child)) {
+        // Don't descend into other functions.
+        return false;
+      }
+    });
+
+    if (referencesArguments) {
+      return ManuallyBoundFunctionPatcher;
+    } else {
+      return null;
     }
   }
 

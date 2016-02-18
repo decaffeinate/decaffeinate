@@ -34,6 +34,8 @@ export function makePatcher(node, context, editor, constructor=null, allPatchers
     constructor = patcherConstructorForNode(node);
   }
 
+  constructor = constructor.patcherClassOverrideForNode(node) || constructor;
+
   let props = childPropertyNames(node);
   let children = props.map(name => {
     let child = node[name];
