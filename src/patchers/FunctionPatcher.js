@@ -61,21 +61,20 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   getArrowToken(tokens: Array<Token>): Token {
-    if (!this.hasParamStart(tokens)) {
-      return tokens[0];
-    } else {
-      let arrow = this.context.tokenAtIndex(
+    let arrow = tokens[0];
+    if (this.hasParamStart(tokens)) {
+      arrow = this.context.tokenAtIndex(
         this.context.indexOfEndTokenForStartTokenAtIndex(this.startTokenIndex) + 1
       );
-      let expectedArrowType = this.expectedArrowType();
-      if (arrow.type !== expectedArrowType) {
-        throw this.error(
-          `expected '${expectedArrowType}' but found ${arrow.type}`,
-          ...arrow.range
-        );
-      }
-      return arrow;
     }
+    let expectedArrowType = this.expectedArrowType();
+    if (arrow.type !== expectedArrowType) {
+      throw this.error(
+        `expected '${expectedArrowType}' but found ${arrow.type}`,
+        ...arrow.range
+      );
+    }
+    return arrow;
   }
 
   expectedArrowType(): string {
