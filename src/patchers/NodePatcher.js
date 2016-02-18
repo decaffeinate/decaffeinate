@@ -18,7 +18,7 @@ export default class NodePatcher {
   /**
    * Allow patcher classes to override the class used to patch their children.
    */
-  static patcherClassForChildNode(/* node: Node, property: string */): ?Function {
+  static patcherClassForChildNode(/* node: Node, property: string */): ?Class<NodePatcher> {
     return null;
   }
 

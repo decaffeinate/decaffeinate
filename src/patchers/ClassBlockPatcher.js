@@ -9,7 +9,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
     this.statements = statements;
   }
 
-  static patcherClassForChildNode(node: Node, property: string): ?Function {
+  static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
     if (property === 'statements' && node.type === 'AssignOp') {
       return ClassAssignOpPatcher;
     }

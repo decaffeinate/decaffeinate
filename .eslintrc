@@ -17,5 +17,8 @@
   },
   "plugins": [
     "eslint-plugin-babel"
-  ]
+  ],
+  "globals": {
+    "Class": true
+  }
 }

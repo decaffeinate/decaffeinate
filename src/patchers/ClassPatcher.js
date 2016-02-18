@@ -10,7 +10,7 @@ export default class ClassPatcher extends NodePatcher {
     this.body = body;
   }
 
-  static patcherClassForChildNode(node: Node, property: string): ?Function {
+  static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
     if (property === 'body') {
       return ClassBlockPatcher;
     }
