@@ -49,11 +49,11 @@ export default class NodePatcher {
       let previousBeforeToken = context.tokenAtIndex(beforeTokenIndex - 1);
       let nextAfterToken = context.tokenAtIndex(afterTokenIndex + 1);
 
-      if (!previousBeforeToken || previousBeforeToken.type !== '(') {
+      if (!previousBeforeToken || previousBeforeToken.data !== '(') {
         break;
       }
 
-      if (!nextAfterToken || nextAfterToken.type !== ')') {
+      if (!nextAfterToken || nextAfterToken.data !== ')') {
         break;
       }
 
@@ -363,9 +363,11 @@ export default class NodePatcher {
    * Determines whether this patcher's node is surrounded by parentheses.
    */
   isSurroundedByParentheses(): boolean {
+    let beforeToken = this.context.tokenAtIndex(this.beforeTokenIndex);
+    let afterToken = this.context.tokenAtIndex(this.afterTokenIndex);
     return (
-      this.hasTokenAtIndex(this.beforeTokenIndex, '(') &&
-      this.hasTokenAtIndex(this.afterTokenIndex, ')')
+      beforeToken && beforeToken.data === '(' &&
+      afterToken && afterToken.data === ')'
     );
   }
 

@@ -3,6 +3,7 @@ import AssignOpPatcher from './AssignOpPatcher';
 import BinaryOpPatcher from './BinaryOpPatcher';
 import BlockPatcher from './BlockPatcher';
 import BoolPatcher from './BoolPatcher';
+import BoundFunctionPatcher from './BoundFunctionPatcher';
 import ClassPatcher from './ClassPatcher';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher';
 import ConstructorPatcher from './ConstructorPatcher';
@@ -102,6 +103,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'Function':
       return FunctionPatcher;
+
+    case 'BoundFunction':
+      return BoundFunctionPatcher;
 
     case 'Bool':
       return BoolPatcher;

@@ -372,31 +372,8 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('leaves fat arrow functions as arrow functions', function() {
-      check(`add = (a, b) => a + b`, `var add = (a, b) => a + b;`);
-    });
-
-    it('adds a block to fat arrow functions if their body is a block', function() {
-      check(`
-        add = (a, b) =>
-          a + b
-      `, `
-        var add = (a, b) => {
-          return a + b;
-        };
-      `);
-    });
-
     it('turns `;`-separated sequences into `,`-separated sequences', function() {
       check('a; b', 'a, b;');
-    });
-
-    it('wraps the body of fat arrow functions if the body is a sequence', function() {
-      check(`=> a; b`, `() => (a, b);`);
-    });
-
-    it('handles functions without a body', function() {
-      check(`->`, `(function() {});`);
     });
 
     it('handles object literals with function property values', function() {

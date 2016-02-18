@@ -1,5 +1,5 @@
 import NodePatcher from './NodePatcher';
-import type { Node, ParseContext, Editor } from './types';
+import type { Token, Node, ParseContext, Editor } from './types';
 
 export default class FunctionPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, parameters: Array<NodePatcher>, body: ?NodePatcher) {
@@ -22,48 +22,68 @@ export default class FunctionPatcher extends NodePatcher {
     }
   }
 
-  patch({ method=false }={}) {
-    let { parameters, body, node, context } = this;
-    let tokens = context.tokensForNode(node);
-    let isStatement = !this.willPatchAsExpression();
+  patchAsStatement({ method=false }={}) {
+    this.insertAtStart('(');
+    this.patchAsExpression({ method });
+    this.insertAtEnd(')');
+  }
 
-    if (isStatement) {
-      this.insertAtStart('(');
-    }
+  patchAsExpression({ method=false }={}) {
+    let { parameters, node, context } = this;
+    let tokens = context.tokensForNode(node);
 
     this.patchFunctionStart({ method }, tokens);
     parameters.forEach(parameter => parameter.patch());
-    if (body) {
-      body.patch({ leftBrace: false });
-    } else {
-      // No body, so BlockPatcher can't insert it for us.
-      this.insertAtEnd('}');
-    }
-
-    if (isStatement) {
-      this.insertAtEnd(')');
-    }
+    this.patchFunctionBody({ method });
   }
 
   patchFunctionStart({ method=false }, tokens) {
-    let arrow = tokens[0];
+    let arrow = this.getArrowToken(tokens);
 
     if (!method) {
       this.insertAtStart('function');
     }
 
-    if (arrow.type !== 'PARAM_START') {
+    if (!this.hasParamStart(tokens)) {
       this.insertAtStart('() ');
-    } else {
-      arrow = this.context.tokenAtIndex(
-        this.context.indexOfEndTokenForStartTokenAtIndex(this.startTokenIndex) + 1
-      );
     }
 
-    if (arrow.type !== '->') {
-      throw this.error(`expected '->' but found ${arrow.type}`, ...arrow.range);
-    }
     this.overwrite(arrow.range[0], arrow.range[1], '{');
+  }
+
+  patchFunctionBody() {
+    if (this.body) {
+      this.body.patch({ leftBrace: false });
+    } else {
+      // No body, so BlockPatcher can't insert it for us.
+      this.insertAtEnd('}');
+    }
+  }
+
+  getArrowToken(tokens: Array<Token>): Token {
+    if (!this.hasParamStart(tokens)) {
+      return tokens[0];
+    } else {
+      let arrow = this.context.tokenAtIndex(
+        this.context.indexOfEndTokenForStartTokenAtIndex(this.startTokenIndex) + 1
+      );
+      let expectedArrowType = this.expectedArrowType();
+      if (arrow.type !== expectedArrowType) {
+        throw this.error(
+          `expected '${expectedArrowType}' but found ${arrow.type}`,
+          ...arrow.range
+        );
+      }
+      return arrow;
+    }
+  }
+
+  expectedArrowType(): string {
+    return '->';
+  }
+
+  hasParamStart(tokens: Array<Token>): boolean {
+    return tokens[0].type === 'PARAM_START';
   }
 
   setExplicitlyReturns() {
