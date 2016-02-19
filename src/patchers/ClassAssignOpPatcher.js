@@ -1,9 +1,19 @@
+import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
 import ThisPatcher from './ThisPatcher';
+import type NodePatcher from './NodePatcher';
+import type { Node } from './types';
 
 export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
+  static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
+    if (property === 'expression' && node.type === 'BoundFunction') {
+      return ClassBoundMethodFunctionPatcher;
+    }
+    return null;
+  }
+
   /**
    * Don't put semicolons after methods.
    */
@@ -75,6 +85,13 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
       className instanceof IdentifierPatcher &&
       memberObject instanceof IdentifierPatcher &&
       className.node.data === className.node.data
+    );
+  }
+
+  isBoundInstanceMethod(): boolean {
+    return (
+      !this.isStaticMethod() &&
+      this.expression.node.type === 'BoundFunction'
     );
   }
 }

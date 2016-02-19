@@ -80,6 +80,7 @@ function patcherConstructorForNode(node): Function {
 
     case 'String':
     case 'Int':
+    case 'Super':
       return PassthroughPatcher;
 
     case 'FunctionApplication':

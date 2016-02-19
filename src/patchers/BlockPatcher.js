@@ -29,8 +29,7 @@ export default class BlockPatcher extends NodePatcher {
       this.insertBefore('{');
     }
 
-    let { statements } = this;
-    statements.forEach(
+    this.statements.forEach(
       statement => {
         if (statement.implicitlyReturns() && !statement.explicitlyReturns()) {
           this.insert(statement.before, 'return ');
@@ -76,6 +75,26 @@ export default class BlockPatcher extends NodePatcher {
     );
     if (rightBrace) {
       this.insertAfter(')');
+    }
+  }
+
+  /**
+   * Insert lines somewhere in this block.
+   */
+  insertLinesAtIndex(lines: Array<string>, index: number) {
+    if (index === this.statements.length) {
+      let lastStatement = this.statements[this.statements.length - 1];
+      let insertionPoint = this.context.source.indexOf('\n', lastStatement.after);
+      if (insertionPoint < 0) {
+        insertionPoint = lastStatement.after;
+      }
+      let indent = lastStatement.getIndent();
+      lines.forEach(line => this.insert(insertionPoint, `\n${indent}${line}`));
+    } else {
+      let statementToInsertBefore = this.statements[index];
+      let insertionPoint = statementToInsertBefore.before;
+      let indent = statementToInsertBefore.getIndent();
+      lines.forEach(line => this.insert(insertionPoint, `${line}\n${indent}`));
     }
   }
 

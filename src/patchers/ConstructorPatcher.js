@@ -1,13 +1,13 @@
 import IdentifierPatcher from './IdentifierPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
+import traverse from '../utils/traverse';
 import type FunctionPatcher from './FunctionPatcher';
 import type { Editor, Node, ParseContext, Token } from './types';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: FunctionPatcher) {
-    let constructorToken = context.tokensForNode(node)[0];
     let virtualKey = new IdentifierPatcher(
-      buildVirtualConstructorIdentifierNode(constructorToken),
+      buildVirtualConstructorIdentifierNode(context.tokensForNode(node)),
       context,
       editor
     );
@@ -15,6 +15,39 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
 
     // Constructor methods do not have implicit returns.
     expression.disableImplicitReturns();
+  }
+
+  patch(options={}) {
+    super.patch(options);
+    let boundMethods = this.parent.boundInstanceMethods();
+    if (boundMethods.length > 0) {
+      let statements = this.expression.body.statements;
+      let indexOfSuperStatement = -1;
+      for (let i = 0; i < statements.length; i++) {
+        let callsSuper = false;
+        traverse(statements[i].node, child => {
+          if (callsSuper) {
+            // Already found it, skip this one.
+            return false;
+          } else if (child.type === 'Super') {
+            // Found it.
+            callsSuper = true;
+          } else if (child.type === 'Class') {
+            // Don't go into other classes.
+            return false;
+          }
+        });
+        if (callsSuper) {
+          indexOfSuperStatement = i;
+          break;
+        }
+      }
+      let bindings = boundMethods.map(method => {
+        let key = this.context.source.slice(method.key.start, method.key.end);
+        return `this.${key} = this.${key}.bind(this)`;
+      });
+      this.expression.body.insertLinesAtIndex(bindings, indexOfSuperStatement + 1);
+    }
   }
 
   /**
@@ -25,7 +58,13 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   }
 }
 
-function buildVirtualConstructorIdentifierNode(constructorToken: Token): Node {
+function buildVirtualConstructorIdentifierNode(constructorTokens: Array<Token>): Node {
+  let constructorToken = constructorTokens.find(
+    token => token.type === 'IDENTIFIER' && token.data === 'constructor'
+  );
+  if (!constructorToken) {
+    throw new Error(`cannot find 'constructor' token in class constructor`);
+  }
   return {
     type: 'Identifier',
     line: constructorToken.line,

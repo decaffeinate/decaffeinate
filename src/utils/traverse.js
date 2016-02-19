@@ -110,6 +110,7 @@ const ORDER = {
   Spread: ['expression'],
   String: [],
   SubtractOp: ['left', 'right'],
+  Super: [],
   Switch: ['expression', 'cases', 'alternate'],
   SwitchCase: ['conditions', 'consequent'],
   TemplateLiteral: ['quasis', 'expressions'],

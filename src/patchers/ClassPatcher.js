@@ -1,6 +1,8 @@
 import ClassBlockPatcher from './ClassBlockPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import NodePatcher from './NodePatcher';
-import type { Node, ParseContext, Editor } from './types';
+import type { Token, Node, ParseContext, Editor } from './types';
 
 export default class ClassPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?ClassBlockPatcher) {
@@ -45,6 +47,22 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    if (this.isNamespaced()) {
+      let classToken = this.getClassToken();
+      // `class A.B` → `A.B`
+      //  ^^^^^^
+      this.remove(classToken.range[0], this.nameAssignee.before);
+      let name = this.getName();
+      if (name) {
+        // `A.B` → `A.B = class B`
+        //             ^^^^^^^^^^
+        this.insert(this.nameAssignee.after, ` = class ${this.getName()}`);
+      } else {
+        // `A[0]` → `A[0] = class`
+        //               ^^^^^^^^
+        this.insert(this.nameAssignee.after, ` = class`);
+      }
+    }
     if (this.nameAssignee) {
       this.nameAssignee.patch();
     }
@@ -64,7 +82,21 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   statementNeedsSemicolon(): boolean {
-    return this.isAnonymous();
+    return this.isAnonymous() || this.isNamespaced();
+  }
+
+  /**
+   * @private
+   */
+  getClassToken(): Token {
+    let token = this.context.tokenAtIndex(this.startTokenIndex);
+    if (token.type !== 'CLASS') {
+      throw this.error(
+        `unexpected leading token for class: ${token.type}`,
+        ...token.range
+      );
+    }
+    return token;
   }
 
   /**
@@ -72,6 +104,31 @@ export default class ClassPatcher extends NodePatcher {
    */
   isAnonymous(): boolean {
     return this.nameAssignee === null;
+  }
+
+  /**
+   * @private
+   */
+  isNamespaced(): boolean {
+    return !this.isAnonymous() && !(this.nameAssignee instanceof IdentifierPatcher);
+  }
+
+  /**
+   * @private
+   */
+  getName(): ?string {
+    let { nameAssignee } = this;
+    if (nameAssignee instanceof IdentifierPatcher) {
+      return nameAssignee.node.data;
+    } else if (nameAssignee instanceof MemberAccessOpPatcher) {
+      return nameAssignee.node.memberName;
+    } else {
+      return null;
+    }
+  }
+
+  isSubclass(): boolean {
+    return this.superclass !== null;
   }
 
   /**

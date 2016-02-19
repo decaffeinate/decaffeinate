@@ -116,6 +116,25 @@ describe('classes', () => {
     `);
   });
 
+  it('creates a constructor for bound methods with a `super` call in extended classes', () => {
+    check(`
+      class A extends B
+        a: =>
+          1
+    `, `
+      class A extends B {
+        constructor(...args) {
+          super(...args);
+          this.a = this.a.bind(this);
+        }
+
+        a() {
+          return 1;
+        }
+      }
+    `);
+  });
+
   it('handles bound methods with parameters', () => {
     check(`
       class a
@@ -153,22 +172,25 @@ describe('classes', () => {
     `);
   });
 
-  it.skip('creates a constructor with a super call for bound methods in a subclass', () => {
-    // FIXME: CSR does not properly support `super` yet!
-    // Check out this branch: https://github.com/michaelficarra/CoffeeScriptRedux/pull/313.
+  it('adds to an existing constructor for bound methods after a `super` call', () => {
     check(`
       class A extends B
         a: =>
           1
+
+        constructor: ->
+          super()
+          this.b = 2;
     `, `
       class A extends B {
+        a() {
+          return 1;
+        }
+
         constructor() {
           super();
           this.a = this.a.bind(this);
-        }
-
-        a() {
-          return 1;
+          this.b = 2;
         }
       }
     `);
@@ -222,6 +244,17 @@ describe('classes', () => {
         a: -> 1
     `, `
       A.B = class B {
+        a() { return 1; }
+      };
+    `);
+  });
+
+  it('converts dynamic member expression class names correctly', () => {
+    check(`
+      class A[B]
+        a: -> 1
+    `, `
+      A[B] = class {
         a() { return 1; }
       };
     `);

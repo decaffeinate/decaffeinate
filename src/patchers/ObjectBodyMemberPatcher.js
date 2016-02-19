@@ -21,11 +21,11 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   /**
    * KEY : EXPRESSION
    */
-  patch() {
+  patch(options={}) {
     if (this.isMethod()) {
-      this.patchAsMethod();
+      this.patchAsMethod(options);
     } else {
-      this.patchAsProperty();
+      this.patchAsProperty(options);
     }
   }
 
@@ -55,8 +55,8 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
    * @protected
    */
   patchAsProperty() {
-    this.key.patch();
-    this.expression.patch();
+    this.patchKey();
+    this.patchExpression();
   }
 
   /**
@@ -70,7 +70,7 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
    * @protected
    */
   patchExpression() {
-    this.expression.patch({ method: true });
+    this.expression.patch({ method: this.isMethod() });
   }
 
   /**

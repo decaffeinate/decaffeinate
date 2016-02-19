@@ -1,6 +1,8 @@
 import BlockPatcher from './BlockPatcher';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher';
+import ConstructorPatcher from './ConstructorPatcher';
 import NodePatcher from './NodePatcher';
+import adjustIndent from '../utils/adjustIndent';
 import type { Node, ParseContext, Editor } from './types';
 
 export default class ClassBlockPatcher extends BlockPatcher {
@@ -15,7 +17,48 @@ export default class ClassBlockPatcher extends BlockPatcher {
     }
   }
 
+  patch(options={}) {
+    if (!this.hasConstructor()) {
+      let boundMethods = this.boundInstanceMethods();
+      if (boundMethods.length > 0) {
+        let { source } = this.context;
+        let insertionPoint = this.statements[0].before;
+        let methodIndent = adjustIndent(source, insertionPoint, 0);
+        let methodBodyIndent = adjustIndent(source, insertionPoint, 1);
+        let constructor = '';
+        if (this.parent.isSubclass()) {
+          constructor += `constructor(...args) {\n${methodBodyIndent}super(...args);\n`;
+        } else {
+          constructor += `constructor() {\n`;
+        }
+        boundMethods.forEach(method => {
+          let key = source.slice(method.key.start, method.key.end);
+          constructor += `${methodBodyIndent}this.${key} = this.${key}.bind(this);\n`;
+        });
+        constructor += `${methodIndent}}\n\n${methodIndent}`;
+        this.insert(insertionPoint, constructor);
+      }
+    }
+    super.patch(options);
+  }
+
   canPatchAsExpression(): boolean {
     return false;
+  }
+
+  hasConstructor(): boolean {
+    return this.statements.some(
+      statement => statement instanceof ConstructorPatcher
+    );
+  }
+
+  boundInstanceMethods(): Array<ClassAssignOpPatcher> {
+    return this.statements.filter(statement => {
+      if (statement instanceof ClassAssignOpPatcher) {
+        return statement.isBoundInstanceMethod();
+      } else {
+        return false;
+      }
+    });
   }
 }
