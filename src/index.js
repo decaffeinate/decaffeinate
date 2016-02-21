@@ -1,5 +1,8 @@
 import MagicString from 'magic-string';
+import Scope from './utils/Scope.js';
 import addVariableDeclarations from 'add-variable-declarations';
+import traverse from './utils/traverse.js';
+import type { Node } from './patchers/types.js';
 import { linter } from 'eslint';
 import { logger } from './utils/debug';
 import { makePatcher } from './patchers/index.js';
@@ -18,6 +21,8 @@ const log = logger('convert');
 export function convert(source) {
   let ast = parse(source);
   let editor = new MagicString(source);
+
+  traverse(ast, attachScope);
 
   try {
     makePatcher(ast, ast.context, editor).patch();
@@ -64,4 +69,23 @@ export function convert(source) {
     throw err;
   }
   return js;
+}
+
+function attachScope(node: Node) {
+  switch (node.type) {
+    case 'Program':
+      node.scope = new Scope();
+      break;
+
+    case 'Function':
+    case 'BoundFunction':
+      node.scope = new Scope(node.parentNode.scope);
+      break;
+
+    default:
+      node.scope = node.parentNode.scope;
+      break;
+  }
+
+  node.scope.processNode(node);
 }
