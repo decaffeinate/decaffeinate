@@ -104,6 +104,44 @@ describe('Scope', function() {
         ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`)
     );
   });
+
+  describe('claimFreeBinding', () => {
+    it('returns "ref" if nothing is defined', () => {
+      const scope = new Scope();
+      const node = statement('ref');
+      strictEqual(scope.claimFreeBinding(node), 'ref');
+    });
+
+    it('adds a counter to the end of the binding if the binding is already taken', () => {
+      const scope = new Scope();
+      const node = statement('ref = ref1 = 0');
+      scope.processNode(node);
+      scope.processNode(node.expression);
+      strictEqual(scope.claimFreeBinding(node), 'ref2');
+    });
+
+    it('allows a base other than the default to be given', () => {
+      const scope = new Scope();
+      const node = statement('error = null');
+      scope.processNode(node);
+      strictEqual(scope.claimFreeBinding(node, 'error'), 'error1');
+    });
+
+    it('registers the claimed binding for subsequent calls', () => {
+      const scope = new Scope();
+      const node = statement('0');
+      scope.claimFreeBinding(node);
+      scope.claimFreeBinding(node);
+      strictEqual(scope.claimFreeBinding(node), 'ref2');
+    });
+
+    it('allows specifying multiple names to try', () => {
+      const scope = new Scope();
+      const node = statement('i = 0');
+      scope.processNode(node);
+      strictEqual(scope.claimFreeBinding(node, ['i', 'j', 'k']), 'j');
+    });
+  });
 });
 
 function statement(code) {

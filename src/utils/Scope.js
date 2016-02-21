@@ -49,6 +49,28 @@ export default class Scope {
   }
 
   /**
+   * @param {Object} node
+   * @param {string=} name
+   * @returns {string}
+   */
+  claimFreeBinding(node, name='ref') {
+    let names = Array.isArray(name) ? name : [name];
+    let binding = names.find(name => !this.getBinding(name));
+
+    if (!binding) {
+      let counter = 0;
+      while (!binding) {
+        counter += 1;
+        binding = names.find(name => !this.getBinding(`${name}${counter}`));
+      }
+      binding = `${binding}${counter}`;
+    }
+
+    this.declares(binding, node);
+    return binding;
+  }
+
+  /**
    * @param {string} name
    * @returns {string}
    * @private
