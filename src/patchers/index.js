@@ -27,6 +27,7 @@ import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
+import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher';
 import SpreadPatcher from './SpreadPatcher';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher';
 import ThisPatcher from './ThisPatcher';
@@ -162,6 +163,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'TemplateLiteral':
       return TemplateLiteralPatcher;
+
+    case 'SoakedMemberAccessOp':
+      return SoakedMemberAccessOpPatcher;
 
     case 'Herestring':
       return HerestringPatcher;
