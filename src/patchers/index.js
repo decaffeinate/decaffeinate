@@ -27,6 +27,7 @@ import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
+import RestPatcher from './RestPatcher';
 import ReturnPatcher from './ReturnPatcher';
 import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher';
 import SpreadPatcher from './SpreadPatcher';
@@ -179,6 +180,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'NewOp':
       return NewOpPatcher;
+
+    case 'Rest':
+      return RestPatcher;
 
     case 'Spread':
       return SpreadPatcher;
