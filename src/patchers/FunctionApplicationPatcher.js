@@ -1,22 +1,25 @@
 import NodePatcher from './NodePatcher';
+import type { Editor, Node, ParseContext } from './types';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
-  constructor(node, context, editor, fn, args) {
+  constructor(node: Node, context: ParseContext, editor: Editor, fn: NodePatcher, args: Array<NodePatcher>) {
     super(node, context, editor);
     this.fn = fn;
     this.args = args;
-    fn.setRequiresExpression();
-    args.forEach(arg => arg.setRequiresExpression());
+  }
+
+  initialize() {
+    this.fn.setRequiresExpression();
+    this.args.forEach(arg => arg.setRequiresExpression());
   }
 
   patch() {
-    let { fn, args } = this;
     let implicitCall = this.isImplicitCall();
-    fn.patch();
+    this.fn.patch();
     if (implicitCall) {
-      this.overwrite(fn.after, args[0].before, '(');
+      this.overwrite(this.fn.after, this.args[0].before, '(');
     }
-    args.forEach(arg => arg.patch());
+    this.args.forEach(arg => arg.patch());
     if (implicitCall) {
       this.insertAfter(')');
     }
