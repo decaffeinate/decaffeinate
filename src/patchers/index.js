@@ -27,6 +27,7 @@ import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import ReturnPatcher from './ReturnPatcher';
+import SpreadPatcher from './SpreadPatcher';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher';
 import ThisPatcher from './ThisPatcher';
 import ThrowPatcher from './ThrowPatcher';
@@ -167,6 +168,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'NewOp':
       return NewOpPatcher;
+
+    case 'Spread':
+      return SpreadPatcher;
 
     case 'Throw':
       return ThrowPatcher;
