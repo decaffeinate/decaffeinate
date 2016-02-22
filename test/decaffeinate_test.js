@@ -520,47 +520,6 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('converts soaked member access to a conditional', function() {
-      check(`
-        a?.b()
-      `, `
-        if ((typeof a !== "undefined" && a !== null)) { a.b(); }
-      `);
-    });
-
-    it('converts a complex soaked member access to a conditional with an assignment in the condition', function() {
-      check(`
-        a.b?.c
-      `, `
-        var ref;
-        if (((ref = a.b) != null)) { ref.c; }
-      `);
-    });
-
-    it('allows soaked member access to be used in an expression', function() {
-      check(`
-        a(b?.c)
-      `, `
-        a(((typeof b !== "undefined" && b !== null) ? b.c : undefined));
-      `);
-    });
-
-    it('converts dynamic soaked member access to a conditional', function() {
-      check(`
-        a?[b]()
-      `, `
-        if ((typeof a !== "undefined" && a !== null)) { a[b](); }
-      `);
-    });
-
-    it('wraps soaked member access if necessary', function() {
-      check(`
-        if a?.b then c
-      `, `
-        if ((typeof a !== "undefined" && a !== null) ? a.b : undefined) { c; }
-      `);
-    });
-
     it('handles bad range information provided by CoffeeScriptRedux', function() {
       // This source code creates bad range information for the MemberAccessOp.
       check(`
