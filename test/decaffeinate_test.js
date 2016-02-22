@@ -111,125 +111,6 @@ describe('automatic conversions', function() {
         `);
       });
     });
-
-    describe('in function calls', function() {
-      it('inserts commas after arguments if they are not there', function() {
-        check(`
-          a(
-            1
-            2
-          )
-        `, `
-          a(
-            1,
-            2
-          );
-        `);
-      });
-
-      it('does not insert commas in single-line calls', function() {
-        check(`a(1, 2)`, `a(1, 2);`);
-      });
-
-      it('inserts commas only for arguments that end a line', function() {
-        check(`
-          a(
-            1, 2
-            3, 4)
-        `, `
-          a(
-            1, 2,
-            3, 4);
-        `);
-      });
-
-      it('inserts commas immediately after the element if followed by a comment', function() {
-        check(`
-          a(
-            1 # hi
-            2
-          )
-        `, `
-          a(
-            1, // hi
-            2
-          );
-        `);
-      });
-
-      it('inserts commas on the same line when the property value is an interpolated string', function() {
-        check(`
-          a
-            b: "#{c}"
-            d: e
-        `, `
-          a({
-            b: \`\${c}\`,
-            d: e
-          });
-        `);
-      });
-    });
-  });
-
-  describe('inserting function call parentheses', function() {
-    it('replaces the space between the callee and the first argument for first arg on same line', function() {
-      check(`a 1, 2`, `a(1, 2);`);
-    });
-
-    it('does not add anything if there are already parens', function() {
-      check(`a()`, `a();`);
-      check(`a(1, 2)`, `a(1, 2);`);
-    });
-
-    it('does not add them when present and the callee is surrounded by parentheses', function() {
-      check(`(a)()`, `(a)();`);
-    });
-
-    it('adds parens for nested function calls', function() {
-      check(`a   b  c d     e`, `a(b(c(d(e))));`);
-    });
-
-    it('adds parens for a new expression with args', function() {
-      check(`new Foo 1`, `new Foo(1);`);
-    });
-
-    it('adds parens for a new expression without args', function() {
-      check(`new Foo`, `new Foo();`);
-    });
-
-    it('adds parens after the properties of a member expression', function() {
-      check(`a.b c`, `a.b(c);`);
-    });
-
-    it('adds parens after the brackets on a computed member expression', function() {
-      check(`a b[c]`, `a(b[c]);`);
-    });
-
-    it('adds parens without messing up multi-line calls', function() {
-      check(`
-        a
-          b: c
-      `, `
-        a({
-          b: c
-        });
-      `);
-    });
-
-    it('adds parens to multi-line calls with the right indentation', function() {
-      check(`
-        ->
-          a
-            b: c
-      `, `
-        (function() {
-          return a({
-            b: c
-          });
-        });
-      `);
-    });
   });
 
   describe('adding variable declarations', function() {
@@ -456,10 +337,6 @@ describe('automatic conversions', function() {
 
     it('passes `null` through as-is', function() {
       check(`null`, `null;`);
-    });
-
-    it('converts rest params in function calls', function() {
-      check(`(a,b...)->b[0]`, `(function(a,...b){return b[0]; });`);
     });
 
     it('strips the backticks off interpolated JavaScript in a statement context', function() {

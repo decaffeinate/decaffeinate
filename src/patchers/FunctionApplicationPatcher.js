@@ -19,7 +19,12 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     if (implicitCall) {
       this.overwrite(this.fn.after, this.args[0].before, '(');
     }
-    this.args.forEach(arg => arg.patch());
+    this.args.forEach((arg, i, args) => {
+      arg.patch();
+      if (i !== args.length - 1 && !arg.hasTokenAfter(',')) {
+        this.insert(arg.after, ',');
+      }
+    });
     if (implicitCall) {
       this.insertAfter(')');
     }
