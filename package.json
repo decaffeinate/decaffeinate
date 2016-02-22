@@ -29,7 +29,7 @@
   "author": "Brian Donovan",
   "license": "MIT",
   "dependencies": {
-    "add-variable-declarations": "^1.1.1",
+    "add-variable-declarations": "^1.1.3",
     "coffee-script-redux": "michaelficarra/CoffeeScriptRedux",
     "detect-indent": "^4.0.0",
     "eslint": "^1.10.3",

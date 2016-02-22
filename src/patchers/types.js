@@ -1,6 +1,9 @@
+import type Scope from '../utils/Scope';
+
 export type Node = {
   type: string,
-  range: Range
+  range: Range,
+  scope: Scope
 };
 
 export type Token = {

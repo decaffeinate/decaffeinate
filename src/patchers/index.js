@@ -6,6 +6,7 @@ import BoolPatcher from './BoolPatcher';
 import BoundFunctionPatcher from './BoundFunctionPatcher';
 import ClassPatcher from './ClassPatcher';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher';
+import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 import ConstructorPatcher from './ConstructorPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
 import DeleteOpPatcher from './DeleteOpPatcher';
@@ -17,6 +18,7 @@ import FunctionPatcher from './FunctionPatcher';
 import HerestringPatcher from './HerestringPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import LogicalAndOpPatcher from './LogicalOpPatcher';
+import LogicalOpCompoundAssignOpPatcher from './LogicalOpCompoundAssignOpPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import NewOpPatcher from './NewOpPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
@@ -80,6 +82,7 @@ function patcherConstructorForNode(node): Function {
 
     case 'String':
     case 'Int':
+    case 'Float':
     case 'Super':
       return PassthroughPatcher;
 
@@ -124,6 +127,17 @@ function patcherConstructorForNode(node): Function {
 
     case 'AssignOp':
       return AssignOpPatcher;
+
+    case 'CompoundAssignOp':
+      switch (node.op) {
+        case 'LogicalAndOp':
+        case 'LogicalOrOp':
+          return LogicalOpCompoundAssignOpPatcher;
+
+        default:
+          return CompoundAssignOpPatcher;
+      }
+      break;
 
     case 'Return':
       return ReturnPatcher;
