@@ -184,7 +184,7 @@ describe('compound assignment', () => {
       a ?= 2
     `, `
       var a = 1;
-      if (!(typeof a !== "undefined" && a !== null)) { a = 2; }
+      if (typeof a === 'undefined' || a === null) { a = 2; }
     `);
   });
 
@@ -192,7 +192,7 @@ describe('compound assignment', () => {
     check(`
       a.b ?= 1
     `, `
-      if (!(a.b != null)) { a.b = 1; }
+      if (a.b == null) { a.b = 1; }
     `);
   });
 
@@ -200,7 +200,7 @@ describe('compound assignment', () => {
     check(`
       a[b] ?= 1
     `, `
-      if (!(a[b] != null)) { a[b] = 1; }
+      if (a[b] == null) { a[b] = 1; }
     `);
   });
 
@@ -209,7 +209,7 @@ describe('compound assignment', () => {
       a[b()] ?= 1
     `, `
       var name;
-      if (!(a[name = b()] != null)) { a[name] = 1; }
+      if (a[name = b()] == null) { a[name] = 1; }
     `);
   });
 
@@ -218,7 +218,7 @@ describe('compound assignment', () => {
       a()[b] ?= 1
     `, `
       var base;
-      if (!((base = a())[b] != null)) { base[b] = 1; }
+      if ((base = a())[b] == null) { base[b] = 1; }
     `);
   });
 
@@ -228,7 +228,7 @@ describe('compound assignment', () => {
     `, `
       var base;
       var name;
-      if (!((base = a())[name = b()] != null)) { base[name] = 1; }
+      if ((base = a())[name = b()] == null) { base[name] = 1; }
     `);
   });
 
@@ -238,7 +238,7 @@ describe('compound assignment', () => {
     `, `
       var base;
       var name;
-      a(((base = b())[name = c()] != null) ? base[name] : base[name] = 1);
+      a((base = b())[name = c()] != null ? base[name] : (base[name] = 1));
     `);
   });
 });

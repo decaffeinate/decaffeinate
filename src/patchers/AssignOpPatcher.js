@@ -9,9 +9,12 @@ export default class AssignOpPatcher extends NodePatcher {
     expression.setRequiresExpression();
   }
 
-  patch() {
-    let { assignee, expression } = this;
-    assignee.patch();
-    expression.patch();
+  patchAsExpression() {
+    this.assignee.patch();
+    this.expression.patch();
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 }

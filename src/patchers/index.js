@@ -12,6 +12,7 @@ import ConditionalPatcher from './ConditionalPatcher';
 import DeleteOpPatcher from './DeleteOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import EQOpPatcher from './EQOpPatcher';
+import ExistsOpCompoundAssignOpPatcher from './ExistsOpCompoundAssignOpPatcher';
 import ExtendsOpPatcher from './ExtendsOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
@@ -133,6 +134,9 @@ function patcherConstructorForNode(node): Function {
         case 'LogicalAndOp':
         case 'LogicalOrOp':
           return LogicalOpCompoundAssignOpPatcher;
+
+        case 'ExistsOp':
+          return ExistsOpCompoundAssignOpPatcher;
 
         default:
           return CompoundAssignOpPatcher;
