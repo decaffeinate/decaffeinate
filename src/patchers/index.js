@@ -4,6 +4,7 @@ import BinaryOpPatcher from './BinaryOpPatcher';
 import BlockPatcher from './BlockPatcher';
 import BoolPatcher from './BoolPatcher';
 import BoundFunctionPatcher from './BoundFunctionPatcher';
+import ChainedComparisonOpPatcher from './ChainedComparisonOpPatcher';
 import ClassPatcher from './ClassPatcher';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
@@ -199,6 +200,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'Program':
       return ProgramPatcher;
+
+    case 'ChainedComparisonOp':
+      return ChainedComparisonOpPatcher;
 
     case 'ExtendsOp':
       return ExtendsOpPatcher;
