@@ -89,6 +89,12 @@ function patcherConstructorForNode(node): Function {
     case 'Super':
       return PassthroughPatcher;
 
+    case 'LTOp':
+    case 'GTOp':
+    case 'LTEOp':
+    case 'GTEOp':
+      return BinaryOpPatcher;
+
     case 'FunctionApplication':
       return FunctionApplicationPatcher;
 
