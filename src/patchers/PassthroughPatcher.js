@@ -16,4 +16,8 @@ export default class PassthroughPatcher extends NodePatcher {
       }
     });
   }
+
+  isRepeatable(): boolean {
+    return true;
+  }
 }

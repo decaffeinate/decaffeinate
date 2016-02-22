@@ -428,4 +428,37 @@ export default class NodePatcher {
   registerHelper(name: string, code: string): string {
     return this.parent.registerHelper(name, code);
   }
+
+  /**
+   * Determines whether this node can be repeated without side-effects. Most
+   * nodes are not repeatable, so that is the default. Subclasses should
+   * override this to indicate whether they are repeatable without any changes.
+   */
+  isRepeatable(): boolean {
+    return false;
+  }
+
+  /**
+   * Alter this node to enable it to be repeated without side-effects. Though
+   * a default implementation is provided, subclasses should override this to
+   * provide a more appropriate version for their particular node type.
+   */
+  makeRepeatable(parens: boolean, ref: ?string=null): string {
+    if (this.isRepeatable()) {
+      // If we can repeat it, just return the original source.
+      return this.context.source.slice(this.start, this.end);
+    } else {
+      // Can't repeat it, so we assign it to a free variable and return that,
+      // i.e. `a + b` → `(ref = a + b)`.
+      if (parens) {
+        this.insertBefore('(');
+      }
+      ref = this.node.scope.claimFreeBinding(this.node, ref);
+      this.insertBefore(`${ref} = `);
+      if (parens) {
+        this.insertAfter(')');
+      }
+      return ref;
+    }
+  }
 }
