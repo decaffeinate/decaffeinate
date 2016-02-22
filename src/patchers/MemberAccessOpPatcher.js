@@ -7,13 +7,17 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     this.expression = expression;
   }
 
-  patch() {
+  patchAsExpression() {
     this.expression.patch();
     if (this.hasImplicitDot()) {
       // `@a` → `@.a`
       //          ^
       this.insert(this.expression.after, '.');
     }
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 
   hasImplicitDot(): boolean {
