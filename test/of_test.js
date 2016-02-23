@@ -24,4 +24,15 @@ describe('of operator', () => {
       !(a in b);
     `);
   });
+
+  it('can be double negated', () => {
+    check(`
+      unless a not of b
+        c
+    `, `
+      if (a in b) {
+        c;
+      }
+    `);
+  });
 });
