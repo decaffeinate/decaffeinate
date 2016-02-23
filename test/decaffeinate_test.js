@@ -175,13 +175,6 @@ describe('automatic conversions', function() {
   });
 
   describe('changing keywords', function() {
-    it('renames "yes" to "true"', function() {
-      check(`a = yes`, `var a = true;`);
-    });
-
-    it('renames "no" to "false"', function() {
-      check(`a = no`, `var a = false;`);
-    });
 
     it('renames "and" to "&&"', function() {
       check(`a and b`, `a && b;`);
