@@ -9,7 +9,13 @@ export default class MemberAccessOpPatcher extends NodePatcher {
 
   patchAsExpression() {
     this.expression.patch();
-    if (this.hasImplicitDot()) {
+    if (this.isShorthandPrototype()) {
+      // `a::` → `a.prototype`
+      //   ^^      ^^^^^^^^^^
+      let operator = this.getMemberOperatorToken();
+      this.overwrite(...operator.range, '.prototype');
+    }
+    if (this.hasImplicitOperator()) {
       // `@a` → `@.a`
       //          ^
       this.insert(this.expression.after, '.');
@@ -20,16 +26,41 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     this.patchAsExpression();
   }
 
-  hasImplicitDot(): boolean {
-    return !this.expression.hasTokenAfter('.');
+  hasImplicitOperator(): boolean {
+    return !this.getMemberOperatorToken();
+  }
+
+  isShorthandPrototype(): boolean {
+    let token = this.getMemberOperatorToken();
+    return token ? token.type === '::' : false;
+  }
+
+  getMemberOperatorToken(): ?Token {
+    let lastToken = this.context.tokenAtIndex(this.afterTokenIndex);
+    if (lastToken.type === '::') {
+      return lastToken;
+    } else {
+      let penultimateToken = this.context.tokenAtIndex(this.afterTokenIndex - 1);
+      if (penultimateToken.type === '@') {
+        return null;
+      }
+      if (penultimateToken.type !== '.') {
+        throw this.error(`cannot find '.' in member access`);
+      }
+      return penultimateToken;
+    }
   }
 
   getMemberName(): string {
     return this.node.memberName;
   }
 
+  getFullMemberName(): string {
+    return this.getMemberName();
+  }
+
   getMemberNameToken(): Token {
-    let tokenOffset = this.hasImplicitDot() ? /* NAME */ 1 : /* DOT NAME */ 2;
+    let tokenOffset = this.hasImplicitOperator() ? /* NAME */ 1 : /* DOT NAME */ 2;
     return this.context.tokenAtIndex(this.expression.afterTokenIndex + tokenOffset);
   }
 
@@ -53,7 +84,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
       return super.makeRepeatable(parens, ref);
     } else {
       let expression = this.expression.makeRepeatable(true, 'base');
-      return `${expression}.${this.getMemberName()}`;
+      return `${expression}.${this.getFullMemberName()}`;
     }
   }
 }

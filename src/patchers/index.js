@@ -32,6 +32,7 @@ import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import OfOpPatcher from './OfOpPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
+import ProtoMemberAccessOpPatcher from './ProtoMemberAccessOpPatcher';
 import RangePatcher from './RangePatcher';
 import RestPatcher from './RestPatcher';
 import ReturnPatcher from './ReturnPatcher';
@@ -231,6 +232,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'Constructor':
       return ConstructorPatcher;
+
+    case 'ProtoMemberAccessOp':
+      return ProtoMemberAccessOpPatcher;
 
     case 'Program':
       return ProgramPatcher;
