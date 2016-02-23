@@ -22,6 +22,7 @@ import IdentifierPatcher from './IdentifierPatcher';
 import InOpPatcher from './InOpPatcher';
 import InstanceofOpPatcher from './InstanceofOpPatcher';
 import LogicalOpPatcher from './LogicalOpPatcher';
+import LogicalNotOpPatcher from './LogicalNotOpPatcher';
 import LogicalOpCompoundAssignOpPatcher from './LogicalOpCompoundAssignOpPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import NewOpPatcher from './NewOpPatcher';
@@ -180,6 +181,9 @@ function patcherConstructorForNode(node): Function {
     case 'LogicalAndOp':
     case 'LogicalOrOp':
       return LogicalOpPatcher;
+
+    case 'LogicalNotOp':
+      return LogicalNotOpPatcher;
 
     case 'TemplateLiteral':
       return TemplateLiteralPatcher;
