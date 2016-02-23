@@ -75,4 +75,15 @@ describe('chained comparison', () => {
       a() < (middle = b()) && middle < (middle1 = c()) && middle1 < d();
     `);
   });
+
+  it('flips the inequalities when used in an `unless`', () => {
+    check(`
+      unless a < b <= c
+        d
+    `, `
+      if (a >= b || b > c) {
+        d;
+      }
+    `);
+  });
 });

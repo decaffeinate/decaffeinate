@@ -12,6 +12,7 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: BinaryOpPatcher) {
     super(node, context, editor);
     this.expression = expression;
+    this.negated = false;
   }
 
   initialize() {
@@ -24,7 +25,10 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
       let middleAgain = middle.makeRepeatable(true, 'middle');
       // `a < b < c` → `a < b && b < c`
       //                     ^^^^^
-      this.insert(middle.after, ` && ${middleAgain}`);
+      this.insert(
+        middle.after,
+        ` ${this.negated ? '||' : '&&'} ${middleAgain}`
+      );
     });
   }
 
@@ -43,5 +47,14 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
       comparison = comparison.left;
     }
     return result;
+  }
+
+  negate() {
+    this.negated = !this.negated;
+    let comparison = this.expression;
+    while (comparison instanceof BinaryOpPatcher) {
+      comparison.negate();
+      comparison = comparison.left;
+    }
   }
 }

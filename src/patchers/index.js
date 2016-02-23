@@ -12,7 +12,7 @@ import ConstructorPatcher from './ConstructorPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
 import DeleteOpPatcher from './DeleteOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
-import EQOpPatcher from './EQOpPatcher';
+import EqualityPatcher from './EqualityPatcher';
 import ExistsOpCompoundAssignOpPatcher from './ExistsOpCompoundAssignOpPatcher';
 import ExtendsOpPatcher from './ExtendsOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
@@ -91,12 +91,6 @@ function patcherConstructorForNode(node): Function {
     case 'Super':
       return PassthroughPatcher;
 
-    case 'LTOp':
-    case 'GTOp':
-    case 'LTEOp':
-    case 'GTEOp':
-      return BinaryOpPatcher;
-
     case 'FunctionApplication':
       return FunctionApplicationPatcher;
 
@@ -107,7 +101,12 @@ function patcherConstructorForNode(node): Function {
       return DynamicMemberAccessOpPatcher;
 
     case 'EQOp':
-      return EQOpPatcher;
+    case 'NEQOp':
+    case 'LTOp':
+    case 'GTOp':
+    case 'LTEOp':
+    case 'GTEOp':
+      return EqualityPatcher;
 
     case 'ObjectInitialiserMember':
       return ObjectInitialiserMemberPatcher;

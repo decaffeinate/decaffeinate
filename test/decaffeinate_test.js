@@ -288,26 +288,6 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('converts equality operator to triple-equal operator', function() {
-      check(`a == b`, `a === b;`);
-      check(`a is b`, `a === b;`);
-    });
-
-    it('converts negative equality operator to triple-not-equal operator', function() {
-      check(`a != b`, `a !== b;`);
-      check(`a isnt b`, `a !== b;`);
-    });
-
-    it('leaves less-than operators alone', function() {
-      check(`a < b`, `a < b;`);
-      check(`a <= b`, `a <= b;`);
-    });
-
-    it('leaves greater-than operators alone', function() {
-      check(`a > b`, `a > b;`);
-      check(`a >= b`, `a >= b;`);
-    });
-
     it('leaves bitwise operators alone', function() {
       check(`a & b`, `a & b;`);
       check(`a | b`, `a | b;`);
