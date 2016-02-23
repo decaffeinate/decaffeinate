@@ -207,14 +207,6 @@ describe('automatic conversions', function() {
       check(`0? or 1?`, `(0 != null) || (1 != null);`);
     });
 
-    it('strips the backticks off interpolated JavaScript in a statement context', function() {
-      check('`var a = 1;`', 'var a = 1;');
-    });
-
-    it('strips the backticks off interpolated JavaScript in an expression context', function() {
-      check('a = `void 0`', 'var a = void 0;');
-    });
-
     it('handles simple binary existential operators', function() {
       check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });

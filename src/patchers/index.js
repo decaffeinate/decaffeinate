@@ -21,6 +21,7 @@ import HerestringPatcher from './HerestringPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import InOpPatcher from './InOpPatcher';
 import InstanceofOpPatcher from './InstanceofOpPatcher';
+import JavaScriptPatcher from './JavaScriptPatcher';
 import LogicalOpPatcher from './LogicalOpPatcher';
 import LogicalNotOpPatcher from './LogicalNotOpPatcher';
 import LogicalOpCompoundAssignOpPatcher from './LogicalOpCompoundAssignOpPatcher';
@@ -242,6 +243,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'ChainedComparisonOp':
       return ChainedComparisonOpPatcher;
+
+    case 'JavaScript':
+      return JavaScriptPatcher;
 
     case 'FloorDivideOp':
       return FloorDivideOpPatcher;
