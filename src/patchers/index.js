@@ -28,6 +28,7 @@ import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import NewOpPatcher from './NewOpPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
+import OfOpPatcher from './OfOpPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import RestPatcher from './RestPatcher';
@@ -231,6 +232,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'InstanceofOp':
       return InstanceofOpPatcher;
+
+    case 'OfOp':
+      return OfOpPatcher;
 
     case 'ChainedComparisonOp':
       return ChainedComparisonOpPatcher;
