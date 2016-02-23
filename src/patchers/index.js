@@ -15,6 +15,7 @@ import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import EqualityPatcher from './EqualityPatcher';
 import ExistsOpCompoundAssignOpPatcher from './ExistsOpCompoundAssignOpPatcher';
 import ExtendsOpPatcher from './ExtendsOpPatcher';
+import FloorDivideOpPatcher from './FloorDivideOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import HerestringPatcher from './HerestringPatcher';
@@ -219,6 +220,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'ChainedComparisonOp':
       return ChainedComparisonOpPatcher;
+
+    case 'FloorDivideOp':
+      return FloorDivideOpPatcher;
 
     case 'ExtendsOp':
       return ExtendsOpPatcher;

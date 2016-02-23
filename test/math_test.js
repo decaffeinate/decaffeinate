@@ -53,3 +53,21 @@ describe('remainder', () => {
     `);
   });
 });
+
+describe('floor division', () => {
+  it('wraps division in a `Math.floor` call', () => {
+    check(`
+      a // b
+    `, `
+      Math.floor(a / b);
+    `);
+  });
+
+  it('transforms left and right', () => {
+    check(`
+      (a b) // (c d)
+    `, `
+      Math.floor((a(b)) / (c(d)));
+    `);
+  });
+});

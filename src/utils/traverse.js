@@ -63,6 +63,7 @@ const ORDER = {
   ExistsOp: ['left', 'right'],
   ExtendsOp: ['left', 'right'],
   Float: [],
+  FloorDivideOp: ['left', 'right'],
   ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
   Function: ['parameters', 'body'],

@@ -1,5 +1,5 @@
 import NodePatcher from './NodePatcher';
-import type { Node, ParseContext, Editor } from './types';
+import type { Token, Node, ParseContext, Editor } from './types';
 
 export default class BinaryOpPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
@@ -13,8 +13,35 @@ export default class BinaryOpPatcher extends NodePatcher {
     this.right.setRequiresExpression();
   }
 
-  patch() {
+  /**
+   * LEFT OP RIGHT
+   */
+  patchAsExpression() {
     this.left.patch();
     this.right.patch();
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
+  }
+
+  /**
+   * @protected
+   */
+  getOperatorToken(): Token {
+    let tokens = this.context.tokensBetweenNodes(
+      this.left.node,
+      this.right.node
+    );
+    while (tokens[0] && tokens[0].type === ')') {
+      tokens.shift();
+    }
+    while (tokens[tokens.length - 1] && tokens[tokens.length - 1].type === '(') {
+      tokens.pop();
+    }
+    if (tokens.length !== 1) {
+      throw this.error('expected operator between binary operands');
+    }
+    return tokens[0];
   }
 }
