@@ -100,33 +100,33 @@ describe('declarations', () => {
 
   it('does not add variable declarations for destructuring array assignment with previously declared bindings', function() {
     check(`
-        a = 1
-        [a] = b
-      `, `
-        var a = 1;
-        [a] = b;
-      `);
+      a = 1
+      [a] = b
+    `, `
+      var a = 1;
+      [a] = b;
+    `);
   });
 
   it('wraps object destructuring that is not part of a variable declaration in parentheses', function() {
     check(`
-        a = 1
-        {a} = b
-      `, `
-        var a = 1;
-        ({a}) = b;
-      `);
+      a = 1
+      {a} = b
+    `, `
+      var a = 1;
+      ({a} = b);
+    `);
   });
 
-  it('adds variable declarations when the destructuring is mixed', function() {
-    // FIXME: Is this a good idea? Should we be marking this as an error?
+  it('does not add inline variable declarations when the destructuring is mixed', function() {
     check(`
-        a = 1
-        [a, b] = c
-      `, `
-        var a = 1;
-        var [a, b] = c;
-      `);
+      a = 1
+      [a, b] = c
+    `, `
+      var b;
+      var a = 1;
+      [a, b] = c;
+    `);
   });
 
   it('adds pre-declarations when the assignment is in an expression context', function() {
