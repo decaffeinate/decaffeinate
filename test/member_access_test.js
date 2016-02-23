@@ -31,7 +31,7 @@ describe('member access', () => {
     `);
   });
 
-  it.skip('allows chained dot-on-the-next-line style member access as a callee', () => {
+  it('allows chained dot-on-the-next-line style member access as a callee', () => {
     check(`
       a
         .b()
