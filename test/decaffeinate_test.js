@@ -207,10 +207,6 @@ describe('automatic conversions', function() {
       check(`0? or 1?`, `(0 != null) || (1 != null);`);
     });
 
-    it('passes `null` through as-is', function() {
-      check(`null`, `null;`);
-    });
-
     it('strips the backticks off interpolated JavaScript in a statement context', function() {
       check('`var a = 1;`', 'var a = 1;');
     });
