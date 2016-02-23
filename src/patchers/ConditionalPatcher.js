@@ -107,12 +107,11 @@ export default class ConditionalPatcher extends NodePatcher {
   patchConditionForStatement() {
     let { context, node, condition } = this;
 
-    if (node.isUnless) {
-      // `unless a` → `if a`
-      //  ^^^^^^        ^^
-      let unlessToken = context.tokenAtIndex(this.startTokenIndex);
-      this.overwrite(...unlessToken.range, 'if');
-    }
+    // `unless a` → `if a`
+    //  ^^^^^^        ^^
+    let ifToken = context.tokenAtIndex(this.startTokenIndex);
+    this.overwrite(...ifToken.range, 'if');
+
     let conditionHasParentheses = condition.isSurroundedByParentheses();
     if (!conditionHasParentheses) {
       // `if a` → `if (a`

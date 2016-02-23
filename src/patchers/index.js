@@ -20,6 +20,7 @@ import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import HerestringPatcher from './HerestringPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
+import InstanceofOpPatcher from './InstanceofOpPatcher';
 import LogicalAndOpPatcher from './LogicalOpPatcher';
 import LogicalOpCompoundAssignOpPatcher from './LogicalOpCompoundAssignOpPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
@@ -217,6 +218,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'Program':
       return ProgramPatcher;
+
+    case 'InstanceofOp':
+      return InstanceofOpPatcher;
 
     case 'ChainedComparisonOp':
       return ChainedComparisonOpPatcher;

@@ -12,4 +12,19 @@ describe('instanceof', () => {
   it('works with negated `instanceof`', () => {
     check(`a not instanceof b`, `!(a instanceof b);`);
   });
+
+  it('does not add parentheses if they are already there', () => {
+    check(`(a not instanceof b)`, `!(a instanceof b);`);
+  });
+
+  it('works with double-negated `instanceof`', () => {
+    check(`
+      unless a not instanceof b
+        c
+    `, `
+      if (a instanceof b) {
+        c;
+      }
+    `);
+  });
 });
