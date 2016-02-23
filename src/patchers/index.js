@@ -20,6 +20,7 @@ import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import HerestringPatcher from './HerestringPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
+import InOpPatcher from './InOpPatcher';
 import InstanceofOpPatcher from './InstanceofOpPatcher';
 import LogicalAndOpPatcher from './LogicalOpPatcher';
 import LogicalOpCompoundAssignOpPatcher from './LogicalOpCompoundAssignOpPatcher';
@@ -191,6 +192,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'NewOp':
       return NewOpPatcher;
+
+    case 'InOp':
+      return InOpPatcher;
 
     case 'Slice':
       return SlicePatcher;
