@@ -82,7 +82,7 @@ describe('implicit return', () => {
     check(`
       -> if a then b else c
     `, `
-      (function() { return a ? b : c; });
+      (function() { if (a) { return b; } else { return c; } });
     `);
   });
 });
