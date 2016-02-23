@@ -1,6 +1,18 @@
 import check from './support/check';
 
 describe('string interpolation', () => {
+  it('rewrites interpolations with #{} to ${}', function() {
+    check('"a#{b}c"', '`a${b}c`;');
+  });
+
+  it('rewrites interpolations with spaces after the "{"', function() {
+    check('"a#{ b }c"', '`a${ b }c`;');
+  });
+
+  it('can return interpolated strings', function() {
+    check('-> "#{a}"', '(function() { return `${a}`; });');
+  });
+
   it('ensures backticks are escaped', () => {
     check('"`#{name}` is required"', '`\\`${name}\\` is required`;');
   });
