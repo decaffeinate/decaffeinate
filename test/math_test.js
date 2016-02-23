@@ -11,9 +11,45 @@ describe('division', () => {
 
   it('transforms left and right', () => {
     check(`
-      (a ? b) / (c ? d)
+      (a b) / (c d)
     `, `
-      ((typeof a !== "undefined" && a !== null) ? a : b) / ((typeof c !== "undefined" && c !== null) ? c : d);
+      (a(b)) / (c(d));
+    `);
+  });
+});
+
+describe('multiplication', () => {
+  it('is passed through', () => {
+    check(`
+      a * b
+    `, `
+      a * b;
+    `);
+  });
+
+  it('transforms left and right', () => {
+    check(`
+      (a b) * (c d)
+    `, `
+      (a(b)) * (c(d));
+    `);
+  });
+});
+
+describe('remainder', () => {
+  it('is passed through', () => {
+    check(`
+      a % b
+    `, `
+      a % b;
+    `);
+  });
+
+  it('transforms left and right', () => {
+    check(`
+      (a b) % (c d)
+    `, `
+      (a(b)) % (c(d));
     `);
   });
 });

@@ -89,6 +89,8 @@ function patcherConstructorForNode(node): Function {
     case 'String':
     case 'Int':
     case 'Float':
+    case 'Null':
+    case 'Undefined':
     case 'Super':
     case 'PostIncrementOp':
     case 'PostDecrementOp':
@@ -162,6 +164,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'PlusOp':
     case 'SubtractOp':
+    case 'DivideOp':
+    case 'MultiplyOp':
+    case 'RemOp':
     case 'BitAndOp':
     case 'BitOrOp':
     case 'LeftShiftOp':
