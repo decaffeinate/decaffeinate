@@ -37,6 +37,17 @@ describe('classes', () => {
     `);
   });
 
+  it('preserves anonymous subclasses', () => {
+    check(`
+      class extends Parent
+        constructor: ->
+    `, `
+      (class extends Parent {
+        constructor() {}
+      });
+    `);
+  });
+
   it('preserves class constructors without arguments', () => {
     check(`
       class A
