@@ -29,6 +29,7 @@ import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
 import RestPatcher from './RestPatcher';
 import ReturnPatcher from './ReturnPatcher';
+import SlicePatcher from './SlicePatcher';
 import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher';
 import SpreadPatcher from './SpreadPatcher';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher';
@@ -183,6 +184,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'NewOp':
       return NewOpPatcher;
+
+    case 'Slice':
+      return SlicePatcher;
 
     case 'Rest':
       return RestPatcher;
