@@ -31,6 +31,7 @@ import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import OfOpPatcher from './OfOpPatcher';
 import PassthroughPatcher from './PassthroughPatcher';
 import ProgramPatcher from './ProgramPatcher';
+import RangePatcher from './RangePatcher';
 import RestPatcher from './RestPatcher';
 import ReturnPatcher from './ReturnPatcher';
 import SlicePatcher from './SlicePatcher';
@@ -209,6 +210,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'Spread':
       return SpreadPatcher;
+
+    case 'Range':
+      return RangePatcher;
 
     case 'Throw':
       return ThrowPatcher;
