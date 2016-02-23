@@ -10,7 +10,6 @@ import ClassAssignOpPatcher from './ClassAssignOpPatcher';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 import ConstructorPatcher from './ConstructorPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
-import DeleteOpPatcher from './DeleteOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import EqualityPatcher from './EqualityPatcher';
 import ExistsOpCompoundAssignOpPatcher from './ExistsOpCompoundAssignOpPatcher';
@@ -38,6 +37,7 @@ import SpreadPatcher from './SpreadPatcher';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher';
 import ThisPatcher from './ThisPatcher';
 import ThrowPatcher from './ThrowPatcher';
+import UnaryOpPatcher from './UnaryOpPatcher';
 import { childPropertyNames } from '../utils/traverse';
 
 export function makePatcher(node, context, editor, constructor=null, allPatchers=[]) {
@@ -209,7 +209,9 @@ function patcherConstructorForNode(node): Function {
       return ThrowPatcher;
 
     case 'DeleteOp':
-      return DeleteOpPatcher;
+    case 'TypeofOp':
+    case 'BitNotOp':
+      return UnaryOpPatcher;
 
     case 'ClassProtoAssignOp':
       return ClassAssignOpPatcher;

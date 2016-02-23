@@ -277,9 +277,5 @@ describe('automatic conversions', function() {
          (function() { return 42; }).observes('model');
       `);
     });
-
-    it('preserves typeof operators', function() {
-      check(`typeof a`, `typeof a;`);
-    });
   });
 });
