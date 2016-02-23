@@ -89,6 +89,10 @@ function patcherConstructorForNode(node): Function {
     case 'Int':
     case 'Float':
     case 'Super':
+    case 'PostIncrementOp':
+    case 'PostDecrementOp':
+    case 'PreIncrementOp':
+    case 'PreDecrementOp':
       return PassthroughPatcher;
 
     case 'FunctionApplication':
