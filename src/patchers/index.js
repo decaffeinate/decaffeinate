@@ -178,6 +178,7 @@ function patcherConstructorForNode(node): Function {
     case 'RemOp':
     case 'BitAndOp':
     case 'BitOrOp':
+    case 'BitXorOp':
     case 'LeftShiftOp':
     case 'SignedRightShiftOp':
     case 'UnsignedRightShiftOp':

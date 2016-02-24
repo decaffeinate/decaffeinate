@@ -17,6 +17,14 @@ describe('binary operators', () => {
     `);
   });
 
+  it('passes bitwise `xor` through', () => {
+    check(`
+      a ^ b
+    `, `
+      a ^ b;
+    `);
+  });
+
   it('passes compound subtraction and bitwise `and` through', () => {
     check(`
       a - b & c

@@ -187,12 +187,6 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('leaves bitwise operators alone', function() {
-      check(`a & b`, `a & b;`);
-      check(`a | b`, `a | b;`);
-      check(`a ^ b`, `a ^ b;`);
-    });
-
     it('converts unary existential identifier checks to typeof + null check', function() {
       check(`a?`, `typeof a !== "undefined" && a !== null;`);
     });
