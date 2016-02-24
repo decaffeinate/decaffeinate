@@ -1,6 +1,6 @@
 import check from './support/check';
 
-describe('try', () => {
+describe.skip('try', () => {
   it('handles multi-line try/catch with catch assignee', () => {
     check(`
       try

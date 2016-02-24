@@ -1,6 +1,6 @@
 import check from './support/check';
 
-describe('soaked function application', () => {
+describe.skip('soaked function application', () => {
   it('works with a basic function', () => {
     check(`
       a?()

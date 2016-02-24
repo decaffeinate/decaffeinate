@@ -45,7 +45,7 @@ describe('function calls', () => {
     `);
   });
 
-  it('inserts commas on the same line when the property value is an interpolated string', () => {
+  it.skip('inserts commas on the same line when the property value is an interpolated string', () => {
     check(`
       a
         b: "#{c}"
@@ -82,7 +82,7 @@ describe('function calls', () => {
     `);
   });
 
-  it('places parentheses in calls with multi-line function arguments after the closing brace', () => {
+  it.skip('places parentheses in calls with multi-line function arguments after the closing brace', () => {
     check(`
       promise.then ->
         b # c
@@ -128,7 +128,7 @@ describe('function calls', () => {
     check(`a b[c]`, `a(b[c]);`);
   });
 
-  it('adds parens without messing up multi-line calls', () => {
+  it.skip('adds parens without messing up multi-line calls', () => {
     check(`
       a
         b: c
@@ -139,7 +139,7 @@ describe('function calls', () => {
     `);
   });
 
-  it('adds parens to multi-line calls with the right indentation', () => {
+  it.skip('adds parens to multi-line calls with the right indentation', () => {
     check(`
       ->
         a

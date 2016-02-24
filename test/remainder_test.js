@@ -7,17 +7,17 @@ describe('remainder', () => {
 
   it('processes the left-hand expression', () => {
     check(`
-      a? % b
+      (a 0) % b
     `, `
-      (typeof a !== "undefined" && a !== null) % b;
+      (a(0)) % b;
     `);
   });
 
   it('processes its right-hand expression', () => {
     check(`
-      a % b?
+      a % (b 0)
     `, `
-      a % (typeof b !== "undefined" && b !== null);
+      a % (b(0));
     `);
   });
 });

@@ -13,7 +13,7 @@ describe('regular expressions', () => {
     check(`a.a(/#/)`, `a.a(/#/);`);
   });
 
-  it('rewrites block regular expressions as normal regular expressions', () => {
+  it.skip('rewrites block regular expressions as normal regular expressions', () => {
     check(`
         a = ///
           foo .*
@@ -36,7 +36,7 @@ describe('regular expressions', () => {
     check(`/\\/\\//`, `/\\/\\//;`);
   });
 
-  it('escapes slashes in heregexes', () => {
+  it.skip('escapes slashes in heregexes', () => {
     check(`///a/b///`, `/a\\/b/;`);
   });
 });

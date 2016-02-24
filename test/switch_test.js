@@ -1,6 +1,6 @@
 import check from './support/check';
 
-describe('switch', () => {
+describe.skip('switch', () => {
   it('works with a single case', () => {
     check(`
       switch a

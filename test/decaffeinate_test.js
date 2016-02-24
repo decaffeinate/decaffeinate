@@ -100,7 +100,7 @@ describe('automatic conversions', () => {
         `);
       });
 
-      it('inserts commas for braceless objects', () => {
+      it.skip('inserts commas for braceless objects', () => {
         check(`
           a: b
           c: d
@@ -150,7 +150,7 @@ describe('automatic conversions', () => {
       check('a; b', 'a; b;');
     });
 
-    it('handles object literals with function property values', () => {
+    it.skip('handles object literals with function property values', () => {
       check(`
         a
           b: ->
@@ -168,7 +168,7 @@ describe('automatic conversions', () => {
       `);
     });
 
-    it('handles object literals with function property values followed by comments', () => {
+    it.skip('handles object literals with function property values followed by comments', () => {
       check(`
         a
           b: ->
@@ -188,15 +188,15 @@ describe('automatic conversions', () => {
       `);
     });
 
-    it('handles simple binary existential operators', () => {
+    it.skip('handles simple binary existential operators', () => {
       check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });
 
-    it('deals gracefully with extra parens in simple binary existential operators', () => {
+    it.skip('deals gracefully with extra parens in simple binary existential operators', () => {
       check(`a ? (b)`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });
 
-    it('handles complex binary existential operators', () => {
+    it.skip('handles complex binary existential operators', () => {
       check(
         `@a ? @b`,
       `
@@ -205,7 +205,7 @@ describe('automatic conversions', () => {
       `);
     });
 
-    it('deals gracefully with extra parens in complex binary existential operators', () => {
+    it.skip('deals gracefully with extra parens in complex binary existential operators', () => {
       check(
         `@a ? (@b)`,
         `
@@ -215,7 +215,7 @@ describe('automatic conversions', () => {
       );
     });
 
-    it('prevents using temporary variables that clash with existing bindings', () => {
+    it.skip('prevents using temporary variables that clash with existing bindings', () => {
       check(`
         ref = 1
         @a ? @b
@@ -226,7 +226,7 @@ describe('automatic conversions', () => {
       `);
     });
 
-    it('prevents using temporary variables that clash with existing temporary variables', () => {
+    it.skip('prevents using temporary variables that clash with existing temporary variables', () => {
       check(`
         @a ? @b
         @c ? @d

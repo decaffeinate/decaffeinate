@@ -39,7 +39,7 @@ describe('objects', () => {
     `);
   });
 
-  it('indents and loosely wraps multi-line objects if needed', () => {
+  it.skip('indents and loosely wraps multi-line objects if needed', () => {
     check(`
       a: b,
       c: d
@@ -51,7 +51,7 @@ describe('objects', () => {
     `);
   });
 
-  it('adds curly braces loosely around a nested-object', () => {
+  it.skip('adds curly braces loosely around a nested-object', () => {
     check(`
       a:
         b: c
