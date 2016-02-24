@@ -2,7 +2,7 @@
 
 import { createReadStream, createWriteStream } from 'fs';
 import { join, dirname, basename, extname } from 'path';
-import { convert } from './index';
+import { convert } from './index.js';
 
 /**
  * Run the script with the user-supplied arguments.

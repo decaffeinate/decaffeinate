@@ -1,6 +1,10 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('functions', () => {
+  it('handles functions without a body', () => {
+    check(`->`, `(function() {});`);
+  });
+
   it('put the closing curly brace on a new line', () => {
     check(`
       ->
@@ -30,6 +34,41 @@ describe('functions', () => {
         return a; // hey
       });
       b;
+    `);
+  });
+
+  it('handles fat arrow functions without a body', () => {
+    check(`=>`, `() => {};`);
+  });
+
+  it('leaves fat arrow functions as arrow functions', () => {
+    check(`add = (a, b) => a + b`, `var add = (a, b) => a + b;`);
+  });
+
+  it('adds a block to fat arrow functions if their body is a block', () => {
+    check(`
+      add = (a, b) =>
+        a + b
+    `, `
+      var add = (a, b) => {
+        return a + b;
+      };
+    `);
+  });
+
+  it('wraps the body of fat arrow functions if the body is a sequence', () => {
+    check(`=> a; b`, `() => (a, b);`);
+  });
+
+  it('unwraps single-parameter fat arrow functions', () => {
+    check(`(a) => a`, `a => a;`);
+  });
+
+  it('turns fat arrow functions referencing `arguments` into regular functions with a `bind` call', () => {
+    check(`
+      => arguments[0]
+    `, `
+      (function() { return arguments[0]; }.bind(this));
     `);
   });
 });

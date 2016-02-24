@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('compound assignment', () => {
   it('passes through addition', () => {
@@ -111,7 +111,7 @@ describe('compound assignment', () => {
     `);
   });
 
-  it('supports LHS dynamic side-effect member access in logical OR', () => {
+  it('supports LHS dynamic index side-effect member access in logical OR', () => {
     check(`
       a[b()] ||= c
     `, `
@@ -120,7 +120,7 @@ describe('compound assignment', () => {
     `);
   });
 
-  it('supports LHS dynamic side-effect member access in logical AND', () => {
+  it('supports LHS dynamic index side-effect member access in logical AND', () => {
     check(`
       a[b()] &&= c
     `, `
@@ -129,21 +129,116 @@ describe('compound assignment', () => {
     `);
   });
 
-  it('supports LHS dynamic side-effect member access in logical OR', () => {
+  it('supports LHS dynamic base side-effect member access in logical OR', () => {
     check(`
-      a.b[c()] ||= d
+      a()[c] ||= d
     `, `
-      var name;
-      a.b[name = c()] || (a.b[name] = d);
+      var base;
+      (base = a())[c] || (base[c] = d);
     `);
   });
 
-  it('supports LHS dynamic side-effect member access in logical AND', () => {
+  it('supports LHS dynamic base side-effect member access in logical AND', () => {
     check(`
-      a.b[c()] &&= d
+      a()[c] &&= d
+    `, `
+      var base;
+      (base = a())[c] && (base[c] = d);
+    `);
+  });
+
+  it('supports LHS dynamic base and index side-effect member access in logical OR', () => {
+    check(`
+      a()[b()] ||= c
+    `, `
+      var base;
+      var name;
+      (base = a())[name = b()] || (base[name] = c);
+    `);
+  });
+
+  it('supports LHS dynamic base and index side-effect member access in logical AND', () => {
+    check(`
+      a()[b()] &&= c
+    `, `
+      var base;
+      var name;
+      (base = a())[name = b()] && (base[name] = c);
+    `);
+  });
+
+  it('ensures names do not collide when introducing new variables', () => {
+    check(`
+      name = 'abc'
+      a[b()] ||= c
+    `, `
+      var name1;
+      var name = 'abc';
+      a[name1 = b()] || (a[name1] = c);
+    `);
+  });
+
+  it('handles simple existence assignment', () => {
+    check(`
+      a = 1
+      a ?= 2
+    `, `
+      var a = 1;
+      if (typeof a === 'undefined' || a === null) { a = 2; }
+    `);
+  });
+
+  it('handles simple member expression existence assignment', () => {
+    check(`
+      a.b ?= 1
+    `, `
+      if (a.b == null) { a.b = 1; }
+    `);
+  });
+
+  it('handles simple computed member expression existence assignment', () => {
+    check(`
+      a[b] ?= 1
+    `, `
+      if (a[b] == null) { a[b] = 1; }
+    `);
+  });
+
+  it('handles computed member expression existence assignment with unsafe-to-repeat key', () => {
+    check(`
+      a[b()] ?= 1
     `, `
       var name;
-      a.b[name = c()] && (a.b[name] = d);
+      if (a[name = b()] == null) { a[name] = 1; }
+    `);
+  });
+
+  it('handles member expression existence assignment with unsafe-to-repeat object', () => {
+    check(`
+      a()[b] ?= 1
+    `, `
+      var base;
+      if ((base = a())[b] == null) { base[b] = 1; }
+    `);
+  });
+
+  it('handles member expression existence assignment with unsafe-to-repeat key and object', () => {
+    check(`
+      a()[b()] ?= 1
+    `, `
+      var base;
+      var name;
+      if ((base = a())[name = b()] == null) { base[name] = 1; }
+    `);
+  });
+
+  it('handles existence assignment used as an expression', () => {
+    check(`
+      a(b()[c()] ?= 1)
+    `, `
+      var base;
+      var name;
+      a((base = b())[name = c()] != null ? base[name] : (base[name] = 1));
     `);
   });
 });

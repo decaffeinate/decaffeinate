@@ -1,4 +1,4 @@
-import findCounterpartCharacter from './findCounterpartCharacter';
+import findCounterpartCharacter from './findCounterpartCharacter.js';
 
 /**
  * Determines whether a node is surrounded by a matching pair of grouping

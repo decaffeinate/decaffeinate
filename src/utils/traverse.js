@@ -51,7 +51,6 @@ const ORDER = {
   Class: ['nameAssignee', 'parent', 'body'],
   ClassProtoAssignOp: ['assignee', 'expression'],
   CompoundAssignOp: ['assignee', 'expression'],
-  ConcatOp: ['left', 'right'],
   Conditional: ['condition', 'consequent', 'alternate'],
   Constructor: ['expression'],
   Continue: [],
@@ -64,12 +63,14 @@ const ORDER = {
   ExistsOp: ['left', 'right'],
   ExtendsOp: ['left', 'right'],
   Float: [],
+  FloorDivideOp: ['left', 'right'],
   ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
   Function: ['parameters', 'body'],
   FunctionApplication: ['function', 'arguments'],
   GTEOp: ['left', 'right'],
   GTOp: ['left', 'right'],
+  Herestring: [],
   Identifier: [],
   InOp: ['left', 'right'],
   InstanceofOp: ['left', 'right'],
@@ -110,8 +111,10 @@ const ORDER = {
   Spread: ['expression'],
   String: [],
   SubtractOp: ['left', 'right'],
+  Super: [],
   Switch: ['expression', 'cases', 'alternate'],
   SwitchCase: ['conditions', 'consequent'],
+  TemplateLiteral: ['quasis', 'expressions'],
   This: [],
   Throw: ['expression'],
   Try: ['body', 'catchAssignee', 'catchBody', 'finallyBody'],
@@ -128,7 +131,7 @@ const ORDER = {
  * @param {Object} node
  * @returns {string[]}
  */
-function childPropertyNames(node) {
+export function childPropertyNames(node) {
   const names = ORDER[node.type];
 
   if (!names) {

@@ -1,31 +1,31 @@
 import { strictEqual } from 'assert';
-import getIndent from '../../src/utils/getIndent';
+import getIndent from '../../src/utils/getIndent.js';
 
 describe('getIndent', function() {
   context('with an empty source string', function() {
-    it('returns an empty string', function() {
+    it('returns an empty string', () => {
       strictEqual(getIndent('', 0), '');
     });
   });
 
   context('with a single-line source string without an indent', function() {
-    it('return zero', function() {
+    it('return zero', () => {
       strictEqual(getIndent('abc', 0), '');
     });
   });
 
   context('with a single-line source string with an indent', function() {
-    it('returns the leading spaces', function() {
+    it('returns the leading spaces', () => {
       strictEqual(getIndent('  abc', 0), '  ');
     });
 
-    it('returns the leading tabs', function() {
+    it('returns the leading tabs', () => {
       strictEqual(getIndent('\t\tabc', 0), '\t\t');
     });
   });
 
   context('with a multi-line source string', function() {
-    it('returns the indent for the line containing offset', function() {
+    it('returns the indent for the line containing offset', () => {
       let i;
       const source = '->\n  abc';
       const line1 = '->\n';
@@ -39,7 +39,7 @@ describe('getIndent', function() {
       }
     });
 
-    it('returns the indent for lines split by carriage returns', function() {
+    it('returns the indent for lines split by carriage returns', () => {
       let i;
 
       for (i = 0; i < '  abc'.length; i++) {
@@ -51,7 +51,7 @@ describe('getIndent', function() {
       }
     });
 
-    it('considers newlines as part of the previous line', function() {
+    it('considers newlines as part of the previous line', () => {
       strictEqual(getIndent('a\n  b: c', 1), '');
     });
   });

@@ -1,6 +1,18 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('string interpolation', () => {
+  it('rewrites interpolations with #{} to ${}', () => {
+    check('"a#{b}c"', '`a${b}c`;');
+  });
+
+  it('rewrites interpolations with spaces after the "{"', () => {
+    check('"a#{ b }c"', '`a${ b }c`;');
+  });
+
+  it('can return interpolated strings', () => {
+    check('-> "#{a}"', '(function() { return `${a}`; });');
+  });
+
   it('ensures backticks are escaped', () => {
     check('"`#{name}` is required"', '`\\`${name}\\` is required`;');
   });
@@ -10,7 +22,7 @@ describe('string interpolation', () => {
   });
 
   it('handles multi-line triple-quoted strings correctly', () => {
-    check('a = """\n     #{b}\n     c\n    """', 'var a = `${b}\nc`;')
+    check('a = """\n     #{b}\n     c\n    """', 'var a = `${b}\nc`;');
   });
 
   it('handles double quotes inside triple-double quotes', () => {
@@ -23,8 +35,7 @@ describe('string interpolation', () => {
     `);
   });
 
-  it.skip('handles comments inside interpolations', () => {
-    // CSR can't parse this.
+  it('handles comments inside interpolations', () => {
     check(`
       a="#{
       b # foo!
@@ -47,9 +58,11 @@ describe('string interpolation', () => {
     check(`
       """
       \${a}
+      \${b}
       """
     `, `
-      \`\\\${a}\`;
+      \`\\\${a}
+      \\\${b}\`;
     `);
-  })
+  });
 });

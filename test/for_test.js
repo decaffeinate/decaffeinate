@@ -1,6 +1,6 @@
-import check from './support/check';
+import check from './support/check.js';
 
-describe('for loops', () => {
+describe.skip('for loops', () => {
   it('transforms basic for-of loops into for-in', () => {
     check(`
       for k of o

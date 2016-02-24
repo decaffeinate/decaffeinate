@@ -1,6 +1,6 @@
-import escape, { escapeTemplateStringContents } from '../utils/escape';
-import isMultiline from '../utils/isMultiline';
-import { getIndentInfo, sharedIndentSize } from '../utils/stripSharedIndent';
+import escape, { escapeTemplateStringContents } from '../utils/escape.js';
+import isMultiline from '../utils/isMultiline.js';
+import { getIndentInfo, sharedIndentSize } from '../utils/stripSharedIndent.js';
 
 const TRIPLE_QUOTE_LENGTH = 3;
 
@@ -15,7 +15,7 @@ export default function replaceTripleQuotes(node, patcher) {
   const source = patcher.original;
   let quoteCharacter;
 
-  if (node.type === 'ConcatOp' || isMultiline(source, node)) {
+  if (node.type === 'TemplateLiteral' || isMultiline(source, node)) {
     const indents = getIndentInfo(source, contentStart, contentEnd);
     const indentSize = sharedIndentSize(indents.ranges);
     indents.ranges.forEach(([start, end]) => {
@@ -34,18 +34,18 @@ export default function replaceTripleQuotes(node, patcher) {
       )
       .overwrite(
         start,
-        start + TRIPLE_QUOTE_LENGTH,
+        contentStart,
         '`'
       )
       .overwrite(
-        end - TRIPLE_QUOTE_LENGTH,
+        contentEnd,
         end,
         '`'
       );
     escapeTemplateStringContents(
       patcher,
-      start + TRIPLE_QUOTE_LENGTH,
-      end - TRIPLE_QUOTE_LENGTH
+      contentStart,
+      contentEnd
     );
   } else {
     quoteCharacter = patcher.original[start];
@@ -54,8 +54,8 @@ export default function replaceTripleQuotes(node, patcher) {
     escape(
       patcher,
       [quoteCharacter],
-      start + TRIPLE_QUOTE_LENGTH,
-      end - TRIPLE_QUOTE_LENGTH
-    )
+      contentStart,
+      contentEnd
+    );
   }
 }

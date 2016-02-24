@@ -1,6 +1,6 @@
 import { ok, strictEqual } from 'assert';
-import isImplicitlyReturned from '../../src/utils/isImplicitlyReturned';
-import parse from '../../src/utils/parse';
+import isImplicitlyReturned from '../../src/utils/isImplicitlyReturned.js';
+import parse from '../../src/utils/parse.js';
 
 describe('isImplicitlyReturned', () => {
   it('is false for blocks', () => {

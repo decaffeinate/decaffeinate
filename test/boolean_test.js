@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('booleans', () => {
   it('converts `off` to `false`', () => {
@@ -15,5 +15,13 @@ describe('booleans', () => {
 
   it('leaves `true` as-is', () => {
     check(`true`, `true;`);
+  });
+
+  it('renames `yes` to `true`', () => {
+    check(`yes`, `true;`);
+  });
+
+  it('renames `no` to `false`', () => {
+    check(`no`, `false;`);
   });
 });

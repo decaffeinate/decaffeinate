@@ -1,4 +1,4 @@
-import getIndent from './getIndent';
+import getIndent from './getIndent.js';
 
 /**
  * @param {MagicString} patcher

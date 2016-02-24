@@ -1,6 +1,6 @@
-import determineIndent from './determineIndent';
+import determineIndent from './determineIndent.js';
 import repeat from 'repeating';
-import trimmedNodeRange from './trimmedNodeRange';
+import trimmedNodeRange from './trimmedNodeRange.js';
 
 /**
  * Indent a node by the given number of levels.

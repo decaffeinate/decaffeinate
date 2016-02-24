@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('of operator', () => {
   it('turns into an `in` operator', () => {
@@ -22,6 +22,17 @@ describe('of operator', () => {
       a not of b
     `, `
       !(a in b);
+    `);
+  });
+
+  it('can be double negated', () => {
+    check(`
+      unless a not of b
+        c
+    `, `
+      if (a in b) {
+        c;
+      }
     `);
   });
 });

@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('member access', () => {
   it('allows dot-on-the-next-line style member access', () => {
@@ -31,7 +31,7 @@ describe('member access', () => {
     `);
   });
 
-  it.skip('allows chained dot-on-the-next-line style member access as a callee', () => {
+  it('allows chained dot-on-the-next-line style member access as a callee', () => {
     check(`
       a
         .b()

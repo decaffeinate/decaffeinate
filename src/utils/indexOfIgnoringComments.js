@@ -1,4 +1,4 @@
-import rangesOfNonComments from './rangesOfNonComments';
+import rangesOfNonComments from './rangesOfNonComments.js';
 
 /**
  * Finds a string within source, ignoring any comment strings. Returns -1 if

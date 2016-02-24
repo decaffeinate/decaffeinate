@@ -1,4 +1,4 @@
-import { getNodeEnd, markNodeEnd } from './nodeEnd';
+import { getNodeEnd, markNodeEnd } from './nodeEnd.js';
 
 /**
  * Appends content to a node, marking the index for future appends.

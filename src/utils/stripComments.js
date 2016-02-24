@@ -1,4 +1,4 @@
-import rangesOfComments from './rangesOfComments';
+import rangesOfComments from './rangesOfComments.js';
 
 /**
  * @param {string} source

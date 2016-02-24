@@ -1,6 +1,6 @@
 import MagicString from 'magic-string';
-import appendClosingBrace from '../../src/utils/appendClosingBrace';
-import parse from '../../src/utils/parse';
+import appendClosingBrace from '../../src/utils/appendClosingBrace.js';
+import parse from '../../src/utils/parse.js';
 import { strictEqual } from 'assert';
 
 describe('appendClosingBrace', () => {

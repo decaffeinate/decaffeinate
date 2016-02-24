@@ -1,7 +1,7 @@
-import appendToNode from './appendToNode';
-import getIndent from './getIndent';
-import isMultiline from './isMultiline';
-import trimmedNodeRange from './trimmedNodeRange';
+import appendToNode from './appendToNode.js';
+import getIndent from './getIndent.js';
+import isMultiline from './isMultiline.js';
+import trimmedNodeRange from './trimmedNodeRange.js';
 
 const NEWLINE = '\n';
 const SPACE = ' ';

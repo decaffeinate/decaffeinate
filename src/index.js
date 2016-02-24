@@ -1,151 +1,65 @@
 import MagicString from 'magic-string';
-import parse from './utils/parse';
-import patchBoolean from './patchers/patchBoolean';
-import patchCommas from './patchers/patchCommas';
-import patchComments from './patchers/patchComments';
-import patchDeclarations from './patchers/patchDeclarations';
-import patchEmbeddedJavaScript from './patchers/patchEmbeddedJavaScript';
-import patchEquality from './patchers/patchEquality';
-import patchKeywords from './patchers/patchKeywords';
-import patchOf from './patchers/patchOf';
-import patchPrototypeAccess from './patchers/patchPrototypeAccess';
-import patchRegularExpressions from './patchers/patchRegularExpressions';
-import patchReturns from './patchers/patchReturns';
-import patchSemicolons from './patchers/patchSemicolons';
-import patchSequences from './patchers/patchSequences';
-import patchStringInterpolation from './patchers/patchStringInterpolation';
-import patchString from './patchers/patchString';
-import patchThis from './patchers/patchThis';
-import preprocessBinaryExistentialOperator from './preprocessors/preprocessBinaryExistentialOperator';
-import preprocessChainedComparison from './preprocessors/preprocessChainedComparison';
-import preprocessClass from './preprocessors/preprocessClass';
-import preprocessCompoundAssignment from './preprocessors/preprocessCompoundAssignment';
-import preprocessConditional from './preprocessors/preprocessConditional';
-import preprocessDo from './preprocessors/preprocessDo';
-import preprocessFor from './preprocessors/preprocessFor';
-import preprocessIn from './preprocessors/preprocessIn';
-import preprocessNegatableOps from './preprocessors/preprocessNegatableOps';
-import preprocessParameters from './preprocessors/preprocessParameters';
-import preprocessRange from './preprocessors/preprocessRange';
-import preprocessSoakedMemberAccessOp from './preprocessors/preprocessSoakedMemberAccessOp';
-import preprocessSoakedFunctionApplication from './preprocessors/preprocessSoakedFunctionApplication';
-import preprocessSwitch from './preprocessors/preprocessSwitch';
-import preprocessTry from './preprocessors/preprocessTry';
-import preprocessWhile from './preprocessors/preprocessWhile';
-import traverse from './utils/traverse';
-import { patchCallOpening, patchCallClosing } from './patchers/patchCalls';
-import { patchClassStart, patchClassEnd } from './patchers/patchClass';
-import { patchConditionalStart, patchConditionalEnd } from './patchers/patchConditional';
-import { patchExistentialOperatorStart, patchExistentialOperatorEnd } from './patchers/patchExistentialOperator';
-import { patchExtendsStart, patchExtendsEnd } from './patchers/patchExtends';
-import { patchForStart, patchForEnd } from './patchers/patchFor';
-import { patchFunctionStart, patchFunctionEnd } from './patchers/patchFunctions';
-import { patchObjectStart, patchObjectEnd } from './patchers/patchObject';
-import { patchRestStart, patchRestEnd } from './patchers/patchRest';
-import { patchSliceStart, patchSliceEnd } from './patchers/patchSlice';
-import { patchSpreadStart, patchSpreadEnd } from './patchers/patchSpread';
-import { patchSwitchStart, patchSwitchEnd } from './patchers/patchSwitch';
-import { patchThrowStart, patchThrowEnd } from './patchers/patchThrow';
-import { patchTryStart, patchTryEnd } from './patchers/patchTry';
-import { patchWhileStart, patchWhileEnd } from './patchers/patchWhile';
+import addVariableDeclarations from 'add-variable-declarations';
+import { linter } from 'eslint';
+import { logger } from './utils/debug.js';
+import { makePatcher } from './patchers/index.js';
+import parse from './utils/parse.js';
 
 export { default as run } from './cli';
 
+const log = logger('convert');
+
 /**
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
- *
- * @param source
- * @returns {string}
  */
-export function convert(source) {
-  const ast = parse(source);
-  const patcher = new MagicString(source);
+export function convert(source: string): string {
+  let ast = parse(source);
+  let editor = new MagicString(source);
 
-  let wasRewritten = false;
-
-  traverse(ast, (node) => {
-    if (wasRewritten) {
-      return false;
+  try {
+    makePatcher(ast, ast.context, editor).patch();
+  } catch (err) {
+    // FIXME: instanceof would be nice
+    // http://stackoverflow.com/questions/33870684/why-doesnt-instanceof-work-on-instances-of-error-subclasses-under-babel-node
+    if (err.patcher) {
+      let { line, column } = err.patcher.context.lineMap.invert(err.start);
+      log(`Failed to patch ${err.patcher.node.type} at ${line + 1}:${column + 1}`);
     }
-    wasRewritten =
-      preprocessClass(node, patcher) ||
-      preprocessCompoundAssignment(node, patcher) ||
-      preprocessFor(node, patcher) ||
-      preprocessIn(node, patcher) ||
-      preprocessNegatableOps(node, patcher) ||
-      preprocessDo(node, patcher) ||
-      preprocessConditional(node, patcher) ||
-      preprocessBinaryExistentialOperator(node, patcher) ||
-      preprocessParameters(node, patcher) ||
-      preprocessRange(node, patcher) ||
-      preprocessSwitch(node, patcher) ||
-      preprocessSoakedFunctionApplication(node, patcher) ||
-      preprocessSoakedMemberAccessOp(node, patcher) ||
-      preprocessTry(node, patcher) ||
-      preprocessWhile(node, patcher) ||
-      preprocessChainedComparison(node, patcher);
-  });
-
-  if (wasRewritten) {
-    return convert(patcher.toString());
+    throw err;
   }
 
-  traverse(ast, (node, descend) => {
-    if (node._rewritten) {
-      return;
-    }
+  let js = editor.toString();
+  try {
+    js = addVariableDeclarations(js).code;
+  } catch (err) {
+    log(js);
+    log(err);
+    throw err;
+  }
 
-    patchExtendsStart(node, patcher);
-    patchReturns(node, patcher);
-    patchConditionalStart(node, patcher);
-    patchWhileStart(node, patcher);
-    patchRegularExpressions(node, patcher);
-    patchOf(node, patcher);
-    patchKeywords(node, patcher);
-    patchThis(node, patcher);
-    patchBoolean(node, patcher);
-    patchPrototypeAccess(node, patcher);
-    patchStringInterpolation(node, patcher);
-    patchString(node, patcher);
-    patchForStart(node, patcher);
-    patchSliceStart(node, patcher);
-    patchCallOpening(node, patcher);
-    patchObjectStart(node, patcher);
-    patchDeclarations(node, patcher);
-    patchFunctionStart(node, patcher);
-    patchClassStart(node, patcher);
-    patchEquality(node, patcher);
-    patchThrowStart(node, patcher);
-    patchSpreadStart(node, patcher);
-    patchSwitchStart(node, patcher);
-    patchRestStart(node, patcher);
-    patchTryStart(node, patcher);
-    patchEmbeddedJavaScript(node, patcher);
-    patchExistentialOperatorStart(node, patcher);
+  try {
+    editor = new MagicString(js);
+    let messages = linter.verify(js, {
+      rules: { 'semi': 2, 'no-extra-semi': 2 },
+      env: { es6: true }
+    });
+    messages.forEach(message => {
+      switch (message.ruleId) {
+        case 'semi':
+          editor.insert(message.fix.range[1], message.fix.text);
+          break;
 
-    descend(node);
-
-    patchTryEnd(node, patcher);
-    patchWhileEnd(node, patcher);
-    patchThrowEnd(node, patcher);
-    patchExistentialOperatorEnd(node, patcher);
-    patchFunctionEnd(node, patcher);
-    patchClassEnd(node, patcher);
-    patchForEnd(node, patcher);
-    patchObjectEnd(node, patcher);
-    patchSliceEnd(node, patcher);
-    patchCallClosing(node, patcher);
-    patchSemicolons(node, patcher);
-    patchSequences(node, patcher);
-    patchCommas(node, patcher);
-    patchSpreadEnd(node, patcher);
-    patchSwitchEnd(node, patcher);
-    patchRestEnd(node, patcher);
-    patchConditionalEnd(node, patcher);
-    patchExtendsEnd(node, patcher);
-  });
-
-  patchComments(patcher);
-
-  return patcher.toString();
+        case 'no-extra-semi':
+          editor.overwrite(...message.fix.range, message.fix.text);
+          break;
+      }
+    });
+    js = editor.toString();
+  } catch (err) {
+    log(js);
+    log(err);
+    throw err;
+  }
+  return js;
 }
+

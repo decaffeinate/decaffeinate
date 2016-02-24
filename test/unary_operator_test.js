@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('unary operators', () => {
   it('passes bitwise negation through', () => {
@@ -34,5 +34,23 @@ describe('unary operators', () => {
         1;
       }
     `);
+  });
+
+  it('preserves typeof operators', () => {
+    check(`typeof a`, `typeof a;`);
+  });
+
+  it.skip('converts unary existential identifier checks to typeof + null check', () => {
+    check(`a?`, `typeof a !== 'undefined' && a !== null;`);
+  });
+
+  it.skip('converts unary existential non-identifier to non-strict null check', () => {
+    check(`a.b?`, `a.b != null;`);
+    check(`0?`, `0 != null;`);
+  });
+
+  it.skip('surrounds unary existential operator results if needed', () => {
+    check(`a? or b?`, `(typeof a !== 'undefined' && a !== null) || (typeof b !== 'undefined' && b !== null);`);
+    check(`0? or 1?`, `(0 != null) || (1 != null);`);
   });
 });

@@ -1,4 +1,4 @@
-import { isFunction } from './types';
+import { isFunction } from './types.js';
 
 /**
  * Determines whether the given node is a statement.

@@ -8,7 +8,7 @@
     "decaffeinate": "./bin/decaffeinate"
   },
   "scripts": {
-    "lint": "eslint src test",
+    "lint": "eslint --rulesdir eslint-rules src test",
     "pretest": "npm run build",
     "test": "mocha --compilers js:./test/support/babel-register.js",
     "prebuild": "npm run lint",
@@ -29,8 +29,10 @@
   "author": "Brian Donovan",
   "license": "MIT",
   "dependencies": {
-    "coffee-script-redux": "michaelficarra/CoffeeScriptRedux",
+    "add-variable-declarations": "^1.1.3",
+    "decaffeinate-parser": "^1.1.2",
     "detect-indent": "^4.0.0",
+    "eslint": "^1.10.3",
     "magic-string": "^0.10.2",
     "repeating": "^2.0.0"
   },
@@ -39,17 +41,19 @@
     "dist"
   ],
   "devDependencies": {
-    "babel": "^6.3.26",
+    "babel": "^6.5.1",
     "babel-eslint": "^5.0.0-beta6",
-    "babel-preset-es2015": "^6.3.13",
+    "babel-plugin-syntax-flow": "^6.5.0",
+    "babel-plugin-transform-flow-strip-types": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0",
     "babel-preset-es2015-rollup": "^1.1.1",
-    "babel-register": "^6.4.3",
+    "babel-register": "^6.5.1",
     "browserify": "^13.0.0",
     "eslint": "^1.10.3",
-    "eslint-plugin-babel": "^3.0.0",
-    "mocha": "^2.3.4",
+    "eslint-plugin-babel": "^3.1.0",
+    "mocha": "^2.4.5",
     "mversion": "^1.10.1",
-    "rollup": "^0.25.0",
+    "rollup": "^0.25.3",
     "rollup-plugin-babel": "^2.3.9"
   },
   "publishConfig": {

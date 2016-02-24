@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('parameter assignment', () => {
   it('allows assigning as a typical local binding', () => {
@@ -9,7 +9,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('allows assigning to a `this` property', () => {
+  it.skip('allows assigning to a `this` property', () => {
     // FIXME: This should not return the assignment value.
     check(`
       (@a) ->
@@ -18,7 +18,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('allows assigning to multiple `this` properties', () => {
+  it.skip('allows assigning to multiple `this` properties', () => {
     // FIXME: This should not return the assignment value.
     check(`
       (@a, @b) ->
@@ -27,7 +27,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('adds assignments to `this` properties before any function body', () => {
+  it.skip('adds assignments to `this` properties before any function body', () => {
     check(`
       (@a, @b) ->
         @a + @b
@@ -40,7 +40,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('does not clobber any variables declared in the function scope', () => {
+  it.skip('does not clobber any variables declared in the function scope', () => {
     check(`
       a = 1
       (@a, @b) ->
@@ -57,7 +57,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('inserts the assignments at the right indentation', () => {
+  it.skip('inserts the assignments at the right indentation', () => {
     check(`
       if true
         (@a) ->
@@ -72,7 +72,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('inserts all assignments with the right indentation', () => {
+  it.skip('inserts all assignments with the right indentation', () => {
     check(`
       z()
 
@@ -89,7 +89,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('works as expected for struct-like class constructors', () => {
+  it.skip('works as expected for struct-like class constructors', () => {
     check(`
       class Point
         constructor: (@x, @y) ->
@@ -100,7 +100,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('works with default parameters', () => {
+  it.skip('works with default parameters', () => {
     // FIXME: This should not return the assignment value.
     check(`
       (@a=1) ->
@@ -109,7 +109,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it('ensures parameters with default values are not redeclared', () => {
+  it.skip('ensures parameters with default values are not redeclared', () => {
     check(`
       (a=0) ->
         a ?= 1

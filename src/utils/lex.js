@@ -22,8 +22,11 @@ const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
  */
 export default function lex(source, index=0) {
   let state = NORMAL;
+  let interpolationStack = [];
+  let braceStack = [];
   return function step() {
-    const previousState = state;
+    let previousState = state;
+    let previousIndex = index;
 
     if (index >= source.length) {
       setState(EOF);
@@ -45,6 +48,14 @@ export default function lex(source, index=0) {
           setState(COMMENT);
         } else if (consume('///')) {
           setState(HEREGEXP);
+        } else if (consume('{')) {
+          braceStack.push(previousIndex);
+        } else if (consume('}')) {
+          if (braceStack.length === 0) {
+            popInterpolation();
+          } else {
+            braceStack.pop();
+          }
         } else if (!hasNext(/^\/=?\s/) && consume('/')) {
           setState(REGEXP);
         } else {
@@ -67,6 +78,8 @@ export default function lex(source, index=0) {
           index++;
         } else if (consume('"')) {
           setState(NORMAL);
+        } else if (consume('#{')) {
+          pushInterpolation();
         } else {
           index++;
         }
@@ -103,6 +116,8 @@ export default function lex(source, index=0) {
           index++;
         } else if (consume('"""')) {
           setState(NORMAL);
+        } else if (consume('#{')) {
+          pushInterpolation();
         } else {
           index++;
         }
@@ -129,9 +144,18 @@ export default function lex(source, index=0) {
           index++;
         }
         break;
+
+      case EOF:
+        if (braceStack.length !== 0) {
+          throw new Error(
+            `unexpected EOF while looking for '}' to match '{' ` +
+            `at ${braceStack[braceStack.length - 1]}`
+          );
+        }
+        break;
     }
 
-    return { index, state, previousState };
+    return { index, previousIndex, state, previousState };
   };
 
   function consumeAny(strings) {
@@ -157,5 +181,17 @@ export default function lex(source, index=0) {
     } else {
       return value.test(source.slice(index));
     }
+  }
+
+  function pushInterpolation() {
+    interpolationStack.push(state);
+    setState(NORMAL);
+  }
+
+  function popInterpolation() {
+    if (interpolationStack.length === 0) {
+      throw new Error(`unexpected '}' found in string at ${index}: ${JSON.stringify(source)}`);
+    }
+    setState(interpolationStack.pop());
   }
 }

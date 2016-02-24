@@ -1,6 +1,6 @@
-import check from './support/check';
+import check from './support/check.js';
 
-describe('do', () => {
+describe.skip('do', () => {
   it('creates an IIFE returning the last value', () => {
     check(`do -> 1`, `(function() { return 1; })();`);
   });
