@@ -187,20 +187,6 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('converts unary existential identifier checks to typeof + null check', function() {
-      check(`a?`, `typeof a !== "undefined" && a !== null;`);
-    });
-
-    it('converts unary existential non-identifier to non-strict null check', function() {
-      check(`a.b?`, `a.b != null;`);
-      check(`0?`, `0 != null;`);
-    });
-
-    it('surrounds unary existential operator results if needed', function() {
-      check(`a? or b?`, `(typeof a !== "undefined" && a !== null) || (typeof b !== "undefined" && b !== null);`);
-      check(`0? or 1?`, `(0 != null) || (1 != null);`);
-    });
-
     it('handles simple binary existential operators', function() {
       check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });
