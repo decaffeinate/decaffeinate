@@ -105,8 +105,9 @@ describe('automatic conversions', function() {
           a: b
           c: d
         `, `
-          ({a: b,
-          c: d
+          ({
+            a: b,
+            c: d
           });
         `);
       });
@@ -145,8 +146,8 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('turns `;`-separated sequences into `,`-separated sequences', function() {
-      check('a; b', 'a, b;');
+    it('preserves statements on one line separated by a semicolon', () => {
+      check('a; b', 'a; b;');
     });
 
     it('handles object literals with function property values', function() {
