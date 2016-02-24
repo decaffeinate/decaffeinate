@@ -32,6 +32,7 @@ export default class BlockPatcher extends NodePatcher {
     this.statements.forEach(
       statement => {
         if (statement.implicitlyReturns() && !statement.explicitlyReturns()) {
+          statement.setRequiresExpression();
           this.insert(statement.before, 'return ');
         }
         statement.patch();
