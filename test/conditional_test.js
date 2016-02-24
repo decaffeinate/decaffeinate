@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('conditionals', () => {
   it('surrounds `if` conditions in parentheses and bodies in curly braces', () => {

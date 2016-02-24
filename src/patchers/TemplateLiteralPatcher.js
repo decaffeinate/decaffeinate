@@ -1,7 +1,7 @@
-import NodePatcher from './NodePatcher';
-import replaceTripleQuotes from '../utils/replaceTripleQuotes';
-import { escapeTemplateStringContents } from '../utils/escape';
-import type { Node, ParseContext, Editor } from './types';
+import NodePatcher from './NodePatcher.js';
+import replaceTripleQuotes from '../utils/replaceTripleQuotes.js';
+import { escapeTemplateStringContents } from '../utils/escape.js';
+import type { Node, ParseContext, Editor } from './types.js';
 
 export default class TemplateLiteralPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, quasis: Array<NodePatcher>, expressions: Array<NodePatcher>) {

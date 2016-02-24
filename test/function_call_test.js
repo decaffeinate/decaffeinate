@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('function calls', () => {
   it('inserts commas after arguments if they are not there', () => {

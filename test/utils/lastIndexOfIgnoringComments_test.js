@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import lastIndexOfIgnoringComments from '../../src/utils/lastIndexOfIgnoringComments';
+import lastIndexOfIgnoringComments from '../../src/utils/lastIndexOfIgnoringComments.js';
 
 describe('lastIndexOfIgnoringComments', function() {
   it('finds the last instance of a string as normal when there are no comments', () => {

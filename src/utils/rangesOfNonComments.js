@@ -1,4 +1,4 @@
-import rangesOfComments from './rangesOfComments';
+import rangesOfComments from './rangesOfComments.js';
 
 /**
  * Returns the ranges of the sections of source code that are not comments.

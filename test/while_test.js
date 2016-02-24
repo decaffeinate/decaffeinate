@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('while', () => {
   it('surrounds its condition with parentheses', () => {

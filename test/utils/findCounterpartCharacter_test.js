@@ -1,4 +1,4 @@
-import findCounterpartCharacter from '../../src/utils/findCounterpartCharacter';
+import findCounterpartCharacter from '../../src/utils/findCounterpartCharacter.js';
 import { strictEqual } from 'assert';
 
 describe('findCounterpartCharacter', function() {

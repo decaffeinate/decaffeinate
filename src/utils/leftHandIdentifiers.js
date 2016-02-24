@@ -1,4 +1,4 @@
-import flatMap from './flatMap';
+import flatMap from './flatMap.js';
 
 /**
  * Gets the identifiers for the given LHS value.

@@ -1,4 +1,4 @@
-import sourceBetween from './sourceBetween';
+import sourceBetween from './sourceBetween.js';
 
 /**
  * Replace part of the text between the given nodes with a new string.

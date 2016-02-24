@@ -1,6 +1,6 @@
-import escape, { escapeTemplateStringContents } from '../utils/escape';
-import isMultiline from '../utils/isMultiline';
-import { getIndentInfo, sharedIndentSize } from '../utils/stripSharedIndent';
+import escape, { escapeTemplateStringContents } from '../utils/escape.js';
+import isMultiline from '../utils/isMultiline.js';
+import { getIndentInfo, sharedIndentSize } from '../utils/stripSharedIndent.js';
 
 const TRIPLE_QUOTE_LENGTH = 3;
 

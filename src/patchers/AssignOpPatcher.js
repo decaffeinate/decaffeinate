@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher';
-import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
+import NodePatcher from './NodePatcher.js';
+import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
 
 export default class AssignOpPatcher extends NodePatcher {
   constructor(node, context, editor, assignee, expression) {

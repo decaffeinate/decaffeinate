@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('unary operators', () => {
   it('passes bitwise negation through', () => {

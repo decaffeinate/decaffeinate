@@ -1,6 +1,6 @@
-import NodePatcher from './NodePatcher';
-import type BlockPatcher from './BlockPatcher';
-import type { Node, Token, ParseContext, Editor } from './types';
+import NodePatcher from './NodePatcher.js';
+import type BlockPatcher from './BlockPatcher.js';
+import type { Node, Token, ParseContext, Editor } from './types.js';
 
 export default class ConditionalPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, consequent: BlockPatcher, alternate: ?BlockPatcher) {

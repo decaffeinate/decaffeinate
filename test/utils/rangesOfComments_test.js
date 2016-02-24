@@ -1,5 +1,5 @@
 import { deepEqual, throws } from 'assert';
-import rangesOfComments from '../../src/utils/rangesOfComments';
+import rangesOfComments from '../../src/utils/rangesOfComments.js';
 
 describe('rangesOfComments', function() {
   it('returns nothing when there are no comments', () => {

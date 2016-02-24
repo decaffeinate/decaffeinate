@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import indexOfIgnoringComments from '../../src/utils/indexOfIgnoringComments';
+import indexOfIgnoringComments from '../../src/utils/indexOfIgnoringComments.js';
 
 describe('indexOfIgnoringComments', function() {
   it('finds strings in source without comments as normal', () => {

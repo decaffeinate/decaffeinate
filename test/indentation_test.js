@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('indentation', () => {
   it('parses 2-space programs', () => {

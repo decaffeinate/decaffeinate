@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe.skip('expansion', () => {
   it('allows getting the last elements of an array', () => {

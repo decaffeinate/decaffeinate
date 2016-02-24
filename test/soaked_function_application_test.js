@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe.skip('soaked function application', () => {
   it('works with a basic function', () => {

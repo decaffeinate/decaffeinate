@@ -1,9 +1,9 @@
-import adjustIndent from '../utils/adjustIndent';
-import getFreeBinding from '../utils/getFreeBinding';
-import getIndent from '../utils/getIndent';
-import indentNode from '../utils/indentNode';
-import isExpressionResultUsed from '../utils/isExpressionResultUsed';
-import trimmedNodeRange from '../utils/trimmedNodeRange';
+import adjustIndent from '../utils/adjustIndent.js';
+import getFreeBinding from '../utils/getFreeBinding.js';
+import getIndent from '../utils/getIndent.js';
+import indentNode from '../utils/indentNode.js';
+import isExpressionResultUsed from '../utils/isExpressionResultUsed.js';
+import trimmedNodeRange from '../utils/trimmedNodeRange.js';
 
 /**
  * If the `for` loop is used as an expression we wrap it in an IIFE.

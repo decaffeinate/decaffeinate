@@ -1,6 +1,6 @@
-import BinaryOpPatcher from './BinaryOpPatcher';
-import NodePatcher from './NodePatcher';
-import type { Node, ParseContext, Editor } from './types';
+import BinaryOpPatcher from './BinaryOpPatcher.js';
+import NodePatcher from './NodePatcher.js';
+import type { Node, ParseContext, Editor } from './types.js';
 
 /**
  * Handles logical AND and logical OR.

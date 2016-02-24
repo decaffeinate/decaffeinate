@@ -1,6 +1,6 @@
 import { deepEqual } from 'assert';
-import parse from '../../src/utils/parse';
-import trimmedNodeRange from '../../src/utils/trimmedNodeRange';
+import parse from '../../src/utils/parse.js';
+import trimmedNodeRange from '../../src/utils/trimmedNodeRange.js';
 
 describe('trimmedNodeRange', function() {
   it('discounts trailing whitespace on a function node', () => {

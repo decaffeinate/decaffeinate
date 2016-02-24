@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe.skip('try', () => {
   it('handles multi-line try/catch with catch assignee', () => {

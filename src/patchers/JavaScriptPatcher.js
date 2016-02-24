@@ -1,4 +1,4 @@
-import NodePatcher from './NodePatcher';
+import NodePatcher from './NodePatcher.js';
 
 /**
  * Handles embedded JavaScript.

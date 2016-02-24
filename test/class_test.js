@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('classes', () => {
   it('converts named classes without bodies', () => {

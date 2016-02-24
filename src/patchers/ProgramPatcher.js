@@ -1,7 +1,7 @@
-import NodePatcher from './NodePatcher';
-import blank from '../utils/blank';
-import getIndent from '../utils/getIndent';
-import rangesOfComments from '../utils/rangesOfComments';
+import NodePatcher from './NodePatcher.js';
+import blank from '../utils/blank.js';
+import getIndent from '../utils/getIndent.js';
+import rangesOfComments from '../utils/rangesOfComments.js';
 
 const BLOCK_COMMENT_DELIMITER = '###';
 

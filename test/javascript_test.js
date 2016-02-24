@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('embedded JavaScript', () => {
   it('strips the backticks off in a statement context', () => {

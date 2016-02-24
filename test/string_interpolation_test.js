@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('string interpolation', () => {
   it('rewrites interpolations with #{} to ${}', () => {

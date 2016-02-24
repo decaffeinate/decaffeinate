@@ -1,6 +1,6 @@
-import getIndent from './getIndent';
-import indentNode from './indentNode';
-import trimmedNodeRange from './trimmedNodeRange';
+import getIndent from './getIndent.js';
+import indentNode from './indentNode.js';
+import trimmedNodeRange from './trimmedNodeRange.js';
 
 /**
  * @param {Object} node

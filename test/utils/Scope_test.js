@@ -1,6 +1,6 @@
 import { ok, strictEqual } from 'assert';
 import { parse } from 'coffee-script-redux';
-import Scope from '../../src/utils/Scope';
+import Scope from '../../src/utils/Scope.js';
 
 describe('Scope', function() {
   const A = {};

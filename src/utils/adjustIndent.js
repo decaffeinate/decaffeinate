@@ -1,5 +1,5 @@
-import determineIndent from './determineIndent';
-import getIndent from './getIndent';
+import determineIndent from './determineIndent.js';
+import getIndent from './getIndent.js';
 
 /**
  * Adjust an indent in source at a specific offset by an amount.

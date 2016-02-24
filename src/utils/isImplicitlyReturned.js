@@ -1,6 +1,6 @@
-import traverse from './traverse';
-import isExpressionResultUsed from './isExpressionResultUsed';
-import { isConsequentOrAlternate, isFunction, isFunctionBody } from './types';
+import traverse from './traverse.js';
+import isExpressionResultUsed from './isExpressionResultUsed.js';
+import { isConsequentOrAlternate, isFunction, isFunctionBody } from './types.js';
 
 /**
  * Determines whether the given node is implicitly returned.

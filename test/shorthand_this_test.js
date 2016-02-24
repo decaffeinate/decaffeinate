@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('changing shorthand this to longhand this', function() {
   it('changes shorthand member expressions to longhand member expressions', () => {

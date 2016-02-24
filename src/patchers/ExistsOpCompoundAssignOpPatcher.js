@@ -1,5 +1,5 @@
-import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
-import IdentifierPatcher from './IdentifierPatcher';
+import CompoundAssignOpPatcher from './CompoundAssignOpPatcher.js';
+import IdentifierPatcher from './IdentifierPatcher.js';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression() {

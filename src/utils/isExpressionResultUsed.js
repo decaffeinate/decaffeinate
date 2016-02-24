@@ -1,5 +1,5 @@
-import isImplicitlyReturned from './isImplicitlyReturned';
-import { isConsequentOrAlternate } from './types';
+import isImplicitlyReturned from './isImplicitlyReturned.js';
+import { isConsequentOrAlternate } from './types.js';
 
 /**
  * Determines whether a node's resulting value could be used.

@@ -1,5 +1,5 @@
-import isExpressionResultUsed from '../../src/utils/isExpressionResultUsed';
-import parse from '../../src/utils/parse';
+import isExpressionResultUsed from '../../src/utils/isExpressionResultUsed.js';
+import parse from '../../src/utils/parse.js';
 import { ok } from 'assert';
 
 describe('isExpressionResultUsed', () => {

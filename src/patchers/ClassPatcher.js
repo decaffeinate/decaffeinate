@@ -1,8 +1,8 @@
-import ClassBlockPatcher from './ClassBlockPatcher';
-import IdentifierPatcher from './IdentifierPatcher';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher';
-import NodePatcher from './NodePatcher';
-import type { Token, Node, ParseContext, Editor } from './types';
+import ClassBlockPatcher from './ClassBlockPatcher.js';
+import IdentifierPatcher from './IdentifierPatcher.js';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
+import NodePatcher from './NodePatcher.js';
+import type { Token, Node, ParseContext, Editor } from './types.js';
 
 export default class ClassPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?ClassBlockPatcher) {

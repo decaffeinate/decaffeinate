@@ -1,5 +1,5 @@
 import { deepEqual, strictEqual } from 'assert';
-import buildLineAndColumnMap from '../../src/utils/buildLineAndColumnMap';
+import buildLineAndColumnMap from '../../src/utils/buildLineAndColumnMap.js';
 
 describe('buildLineAndColumnMap', function() {
   context('with a single-line string', function() {

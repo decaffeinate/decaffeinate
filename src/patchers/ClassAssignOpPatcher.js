@@ -1,10 +1,10 @@
-import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher';
-import IdentifierPatcher from './IdentifierPatcher';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher';
-import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
-import ThisPatcher from './ThisPatcher';
-import type NodePatcher from './NodePatcher';
-import type { Node } from './types';
+import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher.js';
+import IdentifierPatcher from './IdentifierPatcher.js';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
+import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
+import ThisPatcher from './ThisPatcher.js';
+import type NodePatcher from './NodePatcher.js';
+import type { Node } from './types.js';
 
 export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {

@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('in operator', () => {
   it('turns into an `indexOf` call', () => {

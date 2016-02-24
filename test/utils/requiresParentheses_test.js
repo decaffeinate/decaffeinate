@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
-import parse from '../../src/utils/parse';
-import requiresParentheses from '../../src/utils/requiresParentheses';
+import parse from '../../src/utils/parse.js';
+import requiresParentheses from '../../src/utils/requiresParentheses.js';
 
 describe('requiresParentheses', function() {
   it('is false for identifiers', () => {

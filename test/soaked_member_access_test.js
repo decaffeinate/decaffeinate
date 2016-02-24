@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe.skip('soaked member access', () => {
   it('turns soaked member access assignment into an `if` statement', () => {

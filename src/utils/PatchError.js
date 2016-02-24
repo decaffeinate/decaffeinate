@@ -1,4 +1,4 @@
-import type NodePatcher from '../patchers/NodePatcher';
+import type NodePatcher from '../patchers/NodePatcher.js';
 
 export default class PatchError extends Error {
   constructor(message: string, patcher: NodePatcher, start: number, end: number) {

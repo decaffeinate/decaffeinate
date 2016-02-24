@@ -1,8 +1,8 @@
-import IdentifierPatcher from './IdentifierPatcher';
-import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
-import traverse from '../utils/traverse';
-import type FunctionPatcher from './FunctionPatcher';
-import type { Editor, Node, ParseContext, Token } from './types';
+import IdentifierPatcher from './IdentifierPatcher.js';
+import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
+import traverse from '../utils/traverse.js';
+import type FunctionPatcher from './FunctionPatcher.js';
+import type { Editor, Node, ParseContext, Token } from './types.js';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: FunctionPatcher) {

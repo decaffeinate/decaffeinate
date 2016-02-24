@@ -1,6 +1,6 @@
 import MagicString from 'magic-string';
-import indentNode from '../../src/utils/indentNode';
-import parse from '../../src/utils/parse';
+import indentNode from '../../src/utils/indentNode.js';
+import parse from '../../src/utils/parse.js';
 import { strictEqual as eq } from 'assert';
 
 describe('indentNode', () => {

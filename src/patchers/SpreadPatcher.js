@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher';
-import type { Editor, Node, ParseContext } from './types';
+import NodePatcher from './NodePatcher.js';
+import type { Editor, Node, ParseContext } from './types.js';
 
 /**
  * Handles spread operations, e.g. `a(b...)` or `[a...]`.

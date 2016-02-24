@@ -1,4 +1,4 @@
-import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 
 export default class ProtoMemberAccessOpPatcher extends MemberAccessOpPatcher {
   patchAsExpression() {

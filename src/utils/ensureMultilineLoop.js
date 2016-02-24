@@ -1,7 +1,7 @@
-import adjustIndent from '../utils/adjustIndent';
-import getIndent from '../utils/getIndent';
-import indentNode from '../utils/indentNode';
-import sourceBetween from '../utils/sourceBetween';
+import adjustIndent from '../utils/adjustIndent.js';
+import getIndent from '../utils/getIndent.js';
+import indentNode from '../utils/indentNode.js';
+import sourceBetween from '../utils/sourceBetween.js';
 
 /**
  * Re-order `for` loop parts if the body precedes the rest.

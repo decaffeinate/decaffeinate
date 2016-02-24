@@ -1,5 +1,5 @@
-import AssignOpPatcher from './AssignOpPatcher';
-import type { Token } from './types';
+import AssignOpPatcher from './AssignOpPatcher.js';
+import type { Token } from './types.js';
 
 export default class CompoundAssignOpPatcher extends AssignOpPatcher {
   getOperatorToken(): Token {

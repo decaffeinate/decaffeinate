@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe.skip('for loops', () => {
   it('transforms basic for-of loops into for-in', () => {

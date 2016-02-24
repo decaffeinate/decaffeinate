@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher';
-import type { Token, Editor, Node, ParseContext } from './types';
+import NodePatcher from './NodePatcher.js';
+import type { Token, Editor, Node, ParseContext } from './types.js';
 
 /**
  * Handles array or string slicing, e.g. `names[i..]`.

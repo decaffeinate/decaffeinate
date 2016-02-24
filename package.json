@@ -8,7 +8,7 @@
     "decaffeinate": "./bin/decaffeinate"
   },
   "scripts": {
-    "lint": "eslint src test",
+    "lint": "eslint --rulesdir eslint-rules src test",
     "pretest": "npm run build",
     "test": "mocha --compilers js:./test/support/babel-register.js",
     "prebuild": "npm run lint",

@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('objects', () => {
   it('adds curly braces immediately around a single-line object', () => {

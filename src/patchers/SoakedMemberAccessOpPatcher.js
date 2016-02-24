@@ -1,4 +1,4 @@
-import NodePatcher from './NodePatcher';
+import NodePatcher from './NodePatcher.js';
 
 export default class SoakedMemberAccessOpPatcher extends NodePatcher {
   patchAsExpression() {

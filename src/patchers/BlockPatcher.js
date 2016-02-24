@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher';
-import type { Token, Node, ParseContext, Editor } from './types';
+import NodePatcher from './NodePatcher.js';
+import type { Token, Node, ParseContext, Editor } from './types.js';
 
 export default class BlockPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {

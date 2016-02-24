@@ -1,6 +1,6 @@
 import { deepEqual } from 'assert';
-import parse from '../../src/utils/parse';
-import rangeIncludingParentheses from '../../src/utils/rangeIncludingParentheses';
+import parse from '../../src/utils/parse.js';
+import rangeIncludingParentheses from '../../src/utils/rangeIncludingParentheses.js';
 
 describe('rangeIncludingParentheses', () => {
   it('returns the normal node range when not surrounded by parentheses', () => {

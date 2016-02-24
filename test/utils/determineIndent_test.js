@@ -1,4 +1,4 @@
-import determineIndent from '../../src/utils/determineIndent';
+import determineIndent from '../../src/utils/determineIndent.js';
 import { strictEqual } from 'assert';
 
 describe('determineIndent', () => {

@@ -1,5 +1,5 @@
-import flatMap from './flatMap';
-import leftHandIdentifiers from './leftHandIdentifiers';
+import flatMap from './flatMap.js';
+import leftHandIdentifiers from './leftHandIdentifiers.js';
 
 /**
  * Represents a CoffeeScript scope and its bindings.

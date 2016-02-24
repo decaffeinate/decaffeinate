@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher';
-import type { Node, ParseContext, Editor, Token } from './types';
+import NodePatcher from './NodePatcher.js';
+import type { Node, ParseContext, Editor, Token } from './types.js';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {

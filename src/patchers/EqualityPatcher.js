@@ -1,6 +1,6 @@
-import BinaryOpPatcher from './BinaryOpPatcher';
-import NodePatcher from './NodePatcher';
-import type { Token, Node, ParseContext, Editor } from './types';
+import BinaryOpPatcher from './BinaryOpPatcher.js';
+import NodePatcher from './NodePatcher.js';
+import type { Token, Node, ParseContext, Editor } from './types.js';
 
 /**
  * Handles equality and inequality comparisons.

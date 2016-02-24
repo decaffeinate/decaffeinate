@@ -1,4 +1,4 @@
-import lex, { NORMAL, COMMENT, HERECOMMENT, EOF } from './lex';
+import lex, { NORMAL, COMMENT, HERECOMMENT, EOF } from './lex.js';
 
 /**
  * Scans `source` for comments and returns information about them.

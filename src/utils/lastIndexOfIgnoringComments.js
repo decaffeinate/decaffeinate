@@ -1,4 +1,4 @@
-import rangesOfNonComments from './rangesOfNonComments';
+import rangesOfNonComments from './rangesOfNonComments.js';
 
 /**
  * Finds the last index of a string inside source code ignoring comments.

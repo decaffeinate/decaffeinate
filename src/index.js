@@ -1,7 +1,7 @@
 import MagicString from 'magic-string';
 import addVariableDeclarations from 'add-variable-declarations';
 import { linter } from 'eslint';
-import { logger } from './utils/debug';
+import { logger } from './utils/debug.js';
 import { makePatcher } from './patchers/index.js';
 import parse from './utils/parse.js';
 

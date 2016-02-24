@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('declarations', () => {
   it('adds inline declarations for assignments as statements', () => {

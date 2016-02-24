@@ -1,10 +1,10 @@
-import BlockPatcher from './BlockPatcher';
-import FunctionPatcher from './FunctionPatcher';
-import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
-import NodePatcher from './NodePatcher';
-import traverse from '../utils/traverse';
-import type { Token, Node } from './types';
-import { isFunction } from '../utils/types';
+import BlockPatcher from './BlockPatcher.js';
+import FunctionPatcher from './FunctionPatcher.js';
+import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
+import NodePatcher from './NodePatcher.js';
+import traverse from '../utils/traverse.js';
+import type { Token, Node } from './types.js';
+import { isFunction } from '../utils/types.js';
 
 /**
  * Handles bound functions, i.e. "fat arrows".

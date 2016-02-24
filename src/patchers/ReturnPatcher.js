@@ -1,4 +1,4 @@
-import NodePatcher from './NodePatcher';
+import NodePatcher from './NodePatcher.js';
 
 export default class ReturnPatcher extends NodePatcher {
   constructor(node, context, editor, expression) {

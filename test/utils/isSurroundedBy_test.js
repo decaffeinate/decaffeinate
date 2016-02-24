@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
-import isSurroundedBy from '../../src/utils/isSurroundedBy';
-import parse from '../../src/utils/parse';
+import isSurroundedBy from '../../src/utils/isSurroundedBy.js';
+import parse from '../../src/utils/parse.js';
 
 describe('isSurroundedBy', function() {
   it('is false when the string does not start with the given grouping character', () => {

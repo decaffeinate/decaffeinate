@@ -1,6 +1,6 @@
-import isExpressionResultUsed from '../utils/isExpressionResultUsed';
-import isImplicitlyReturned from '../utils/isImplicitlyReturned';
-import { isStaticMethod } from '../utils/types';
+import isExpressionResultUsed from '../utils/isExpressionResultUsed.js';
+import isImplicitlyReturned from '../utils/isImplicitlyReturned.js';
+import { isStaticMethod } from '../utils/types.js';
 
 /**
  * Determines whether a node should have a semicolon after it.

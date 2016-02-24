@@ -1,4 +1,4 @@
-import lex, { NORMAL, COMMENT } from './lex';
+import lex, { NORMAL, COMMENT } from './lex.js';
 
 /**
  * Gets the range of the node by trimming whitespace and comments off the end.

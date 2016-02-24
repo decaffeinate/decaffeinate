@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher';
-import escape, { escapeTemplateStringContents } from '../utils/escape';
+import NodePatcher from './NodePatcher.js';
+import escape, { escapeTemplateStringContents } from '../utils/escape.js';
 
 const HERESTRING_DELIMITER_LENGTH = 3;
 

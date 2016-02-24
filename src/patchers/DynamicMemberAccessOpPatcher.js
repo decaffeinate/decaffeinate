@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher';
-import type { Node, ParseContext, Editor } from './types';
+import NodePatcher from './NodePatcher.js';
+import type { Node, ParseContext, Editor } from './types.js';
 
 export default class DynamicMemberAccessOpPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher, indexingExpr: NodePatcher) {

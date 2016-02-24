@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('literals', () => {
   it('leaves `undefined` as-is', () => {

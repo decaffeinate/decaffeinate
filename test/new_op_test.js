@@ -1,4 +1,4 @@
-import check from './support/check';
+import check from './support/check.js';
 
 describe('`new` operator', () => {
   it('inserts missing commas after arguments', () => {
