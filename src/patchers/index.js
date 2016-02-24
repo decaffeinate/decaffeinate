@@ -43,6 +43,7 @@ import TemplateLiteralPatcher from './TemplateLiteralPatcher';
 import ThisPatcher from './ThisPatcher';
 import ThrowPatcher from './ThrowPatcher';
 import UnaryOpPatcher from './UnaryOpPatcher';
+import WhilePatcher from './WhilePatcher';
 import { childPropertyNames } from '../utils/traverse';
 
 export function makePatcher(node, context, editor, constructor=null, allPatchers=[]) {
@@ -197,6 +198,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'Herestring':
       return HerestringPatcher;
+
+    case 'While':
+      return WhilePatcher;
 
     case 'NewOp':
       return NewOpPatcher;
