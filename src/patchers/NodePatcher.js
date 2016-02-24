@@ -35,6 +35,10 @@ export default class NodePatcher {
   setupLocationInformation() {
     let { node, context } = this;
 
+    if (node.virtual) {
+      return;
+    }
+
     /**
      * `start` and `end` is the exclusive range within the original source that
      * composes this patcher's node. For example, here's the start and end of
