@@ -86,19 +86,19 @@ describe('declarations', () => {
     `);
   });
 
-  it('does not add variable declarations when the LHS is a member expression', function() {
+  it('does not add variable declarations when the LHS is a member expression', () => {
     check(`a.b = 1`, `a.b = 1;`);
   });
 
-  it('adds variable declarations for destructuring array assignment', function() {
+  it('adds variable declarations for destructuring array assignment', () => {
     check(`[a] = b`, `var [a] = b;`);
   });
 
-  it('adds variable declarations for destructuring object assignment', function() {
+  it('adds variable declarations for destructuring object assignment', () => {
     check(`{a} = b`, `var {a} = b;`);
   });
 
-  it('does not add variable declarations for destructuring array assignment with previously declared bindings', function() {
+  it('does not add variable declarations for destructuring array assignment with previously declared bindings', () => {
     check(`
       a = 1
       [a] = b
@@ -108,7 +108,7 @@ describe('declarations', () => {
     `);
   });
 
-  it('wraps object destructuring that is not part of a variable declaration in parentheses', function() {
+  it('wraps object destructuring that is not part of a variable declaration in parentheses', () => {
     check(`
       a = 1
       {a} = b
@@ -118,7 +118,7 @@ describe('declarations', () => {
     `);
   });
 
-  it('does not add inline variable declarations when the destructuring is mixed', function() {
+  it('does not add inline variable declarations when the destructuring is mixed', () => {
     check(`
       a = 1
       [a, b] = c
@@ -129,19 +129,19 @@ describe('declarations', () => {
     `);
   });
 
-  it('adds pre-declarations when the assignment is in an expression context', function() {
+  it('adds pre-declarations when the assignment is in an expression context', () => {
     check(`a(b = c)`, `var b;\na(b = c);`);
   });
 
-  it('adds pre-declarations when the assignment would be implicitly returned', function() {
+  it('adds pre-declarations when the assignment would be implicitly returned', () => {
     check('->\n  a = 1', '(function() {\n  var a;\n  return a = 1;\n});');
   });
 
-  it('adds pre-declarations at the right indent level when the assignment is in an expression context', function() {
+  it('adds pre-declarations at the right indent level when the assignment is in an expression context', () => {
     check(`->\n  a(b = c)`, `(function() {\n  var b;\n  return a(b = c);\n});`);
   });
 
-  it('adds pre-declarations and regular declarations together properly', function() {
+  it('adds pre-declarations and regular declarations together properly', () => {
     check('a = 1\nb = c = 2', 'var c;\nvar a = 1;\nvar b = c = 2;');
   });
 });

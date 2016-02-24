@@ -1,7 +1,7 @@
 import check from './support/check';
 
 describe('comments', () => {
-  it('converts line comments to // form', function() {
+  it('converts line comments to // form', () => {
     check(`
       # foo
       1
@@ -11,7 +11,7 @@ describe('comments', () => {
     `);
   });
 
-  it('converts block comments to /* */', function() {
+  it('converts block comments to /* */', () => {
     check(`
       ###
       HEY
@@ -25,7 +25,7 @@ describe('comments', () => {
     `);
   });
 
-  it('turns leading hashes on block comment lines to leading asterisks', function() {
+  it('turns leading hashes on block comment lines to leading asterisks', () => {
     check(`
       ###
       # HEY
@@ -39,7 +39,7 @@ describe('comments', () => {
     `);
   });
 
-  it('converts mixed doc block comments to /** */', function() {
+  it('converts mixed doc block comments to /** */', () => {
     check(`
       ###*
       @param {Buffer} un-hashed

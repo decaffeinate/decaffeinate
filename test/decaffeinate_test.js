@@ -1,8 +1,8 @@
 import check from './support/check';
 
-describe('automatic conversions', function() {
-  describe('inserting commas', function() {
-    it('does not add commas after block comments', function() {
+describe('automatic conversions', () => {
+  describe('inserting commas', () => {
+    it('does not add commas after block comments', () => {
       check(`
         {
           a: b
@@ -23,8 +23,8 @@ describe('automatic conversions', function() {
       );
     });
 
-    describe('in objects', function() {
-      it('inserts commas after properties if they are not there', function() {
+    describe('in objects', () => {
+      it('inserts commas after properties if they are not there', () => {
         check(`
           {
             a: b
@@ -38,7 +38,7 @@ describe('automatic conversions', function() {
         `);
       });
 
-      it('does not insert commas if there already is one', function() {
+      it('does not insert commas if there already is one', () => {
         check(`
           {
             a: b,
@@ -52,11 +52,11 @@ describe('automatic conversions', function() {
         `);
       });
 
-      it('does not insert commas in single-line objects', function() {
+      it('does not insert commas in single-line objects', () => {
         check(`{ a: b, c: d }`, `({ a: b, c: d });`);
       });
 
-      it('inserts commas only for objects that end a line', function() {
+      it('inserts commas only for objects that end a line', () => {
         check(`
           {
             a: b, c: d
@@ -72,7 +72,7 @@ describe('automatic conversions', function() {
         `);
       });
 
-      it('inserts commas immediately after the element if followed by a comment', function() {
+      it('inserts commas immediately after the element if followed by a comment', () => {
         check(`
           {
             a: b # hi!
@@ -86,7 +86,7 @@ describe('automatic conversions', function() {
         `);
       });
 
-      it('inserts commas after shorthand properties', function() {
+      it('inserts commas after shorthand properties', () => {
         check(`
           {
             a
@@ -100,7 +100,7 @@ describe('automatic conversions', function() {
         `);
       });
 
-      it('inserts commas for braceless objects', function() {
+      it('inserts commas for braceless objects', () => {
         check(`
           a: b
           c: d
@@ -114,28 +114,28 @@ describe('automatic conversions', function() {
     });
   });
 
-  describe('converting all at once', function() {
-    it('adds semicolons after call parentheses', function() {
+  describe('converting all at once', () => {
+    it('adds semicolons after call parentheses', () => {
       check(`Ember = require "ember"`, `var Ember = require("ember");`);
     });
 
-    it('adds braces to implicit object literals', function() {
+    it('adds braces to implicit object literals', () => {
       check(`a b: c`, `a({b: c});`);
     });
 
-    it('adds parentheses around implicit bare object literals', function() {
+    it('adds parentheses around implicit bare object literals', () => {
       check(`a: b`, `({a: b});`);
     });
 
-    it('adds parentheses around explicit bare object literals', function() {
+    it('adds parentheses around explicit bare object literals', () => {
       check(`{a}`, `({a});`);
     });
 
-    it('adds object braces to the last function argument even if there are parentheses', function() {
+    it('adds object braces to the last function argument even if there are parentheses', () => {
       check(`a(b: c)`, `a({b: c});`);
     });
 
-    it('does not add parentheses to objects that are implicit returns', function() {
+    it('does not add parentheses to objects that are implicit returns', () => {
       check(`
         ->
           {a: b}
@@ -150,7 +150,7 @@ describe('automatic conversions', function() {
       check('a; b', 'a; b;');
     });
 
-    it('handles object literals with function property values', function() {
+    it('handles object literals with function property values', () => {
       check(`
         a
           b: ->
@@ -168,7 +168,7 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('handles object literals with function property values followed by comments', function() {
+    it('handles object literals with function property values followed by comments', () => {
       check(`
         a
           b: ->
@@ -188,15 +188,15 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('handles simple binary existential operators', function() {
+    it('handles simple binary existential operators', () => {
       check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });
 
-    it('deals gracefully with extra parens in simple binary existential operators', function() {
+    it('deals gracefully with extra parens in simple binary existential operators', () => {
       check(`a ? (b)`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });
 
-    it('handles complex binary existential operators', function() {
+    it('handles complex binary existential operators', () => {
       check(
         `@a ? @b`,
       `
@@ -205,7 +205,7 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('deals gracefully with extra parens in complex binary existential operators', function() {
+    it('deals gracefully with extra parens in complex binary existential operators', () => {
       check(
         `@a ? (@b)`,
         `
@@ -215,7 +215,7 @@ describe('automatic conversions', function() {
       );
     });
 
-    it('prevents using temporary variables that clash with existing bindings', function() {
+    it('prevents using temporary variables that clash with existing bindings', () => {
       check(`
         ref = 1
         @a ? @b
@@ -226,7 +226,7 @@ describe('automatic conversions', function() {
       `);
     });
 
-    it('prevents using temporary variables that clash with existing temporary variables', function() {
+    it('prevents using temporary variables that clash with existing temporary variables', () => {
       check(`
         @a ? @b
         @c ? @d

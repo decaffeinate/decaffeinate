@@ -1,7 +1,7 @@
 import check from './support/check';
 
 describe('try', () => {
-  it('handles multi-line try/catch with catch assignee', function() {
+  it('handles multi-line try/catch with catch assignee', () => {
     check(`
       try
         a()
@@ -16,7 +16,7 @@ describe('try', () => {
     `);
   });
 
-  it('handles indented multi-line try/catch with catch assignee', function() {
+  it('handles indented multi-line try/catch with catch assignee', () => {
     check(`
       ->
         try
@@ -34,7 +34,7 @@ describe('try', () => {
     `);
   });
 
-  it('handles multi-line try/catch without catch assignee', function() {
+  it('handles multi-line try/catch without catch assignee', () => {
     check(`
       try
         a()
@@ -49,7 +49,7 @@ describe('try', () => {
     `);
   });
 
-  it('handles multi-line try without catch clause without finally clause', function() {
+  it('handles multi-line try without catch clause without finally clause', () => {
     check(`
       try
         a()
@@ -61,7 +61,7 @@ describe('try', () => {
     `);
   });
 
-  it('handles multi-line indented try without catch clause without finally clause', function() {
+  it('handles multi-line indented try without catch clause without finally clause', () => {
     check(`
       ->
         try
@@ -76,7 +76,7 @@ describe('try', () => {
     `);
   });
 
-  it('handles multi-line try without catch clause with finally clause', function() {
+  it('handles multi-line try without catch clause with finally clause', () => {
     check(`
       try
         a()

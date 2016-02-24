@@ -1,7 +1,7 @@
 import check from './support/check';
 
 describe('functions', () => {
-  it('handles functions without a body', function() {
+  it('handles functions without a body', () => {
     check(`->`, `(function() {});`);
   });
 

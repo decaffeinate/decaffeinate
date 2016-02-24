@@ -1,15 +1,15 @@
 import check from './support/check';
 
 describe('string interpolation', () => {
-  it('rewrites interpolations with #{} to ${}', function() {
+  it('rewrites interpolations with #{} to ${}', () => {
     check('"a#{b}c"', '`a${b}c`;');
   });
 
-  it('rewrites interpolations with spaces after the "{"', function() {
+  it('rewrites interpolations with spaces after the "{"', () => {
     check('"a#{ b }c"', '`a${ b }c`;');
   });
 
-  it('can return interpolated strings', function() {
+  it('can return interpolated strings', () => {
     check('-> "#{a}"', '(function() { return `${a}`; });');
   });
 

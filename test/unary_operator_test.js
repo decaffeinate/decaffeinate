@@ -36,7 +36,7 @@ describe('unary operators', () => {
     `);
   });
 
-  it('preserves typeof operators', function() {
+  it('preserves typeof operators', () => {
     check(`typeof a`, `typeof a;`);
   });
 

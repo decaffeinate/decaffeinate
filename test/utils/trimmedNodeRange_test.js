@@ -3,7 +3,7 @@ import parse from '../../src/utils/parse';
 import trimmedNodeRange from '../../src/utils/trimmedNodeRange';
 
 describe('trimmedNodeRange', function() {
-  it('discounts trailing whitespace on a function node', function() {
+  it('discounts trailing whitespace on a function node', () => {
     const source = 'a\n  b: ->\n    c\n\n  d: 1';
     const ast = parse(source);
     const fnNode = ast.body.statements[0].arguments[0].members[0].expression;
@@ -11,7 +11,7 @@ describe('trimmedNodeRange', function() {
     deepEqual(nodeRange, [7, 15]);
   });
 
-  it('discounts trailing comments on a function node', function() {
+  it('discounts trailing comments on a function node', () => {
     const source = 'a\n  b: ->\n    c\n\n  # d is one, yo\n  d: 1';
     const ast = parse(source);
     const fnNode = ast.body.statements[0].arguments[0].members[0].expression;
@@ -19,7 +19,7 @@ describe('trimmedNodeRange', function() {
     deepEqual(nodeRange, [7, 15]);
   });
 
-  it('does not identify hash marks in strings as comments', function() {
+  it('does not identify hash marks in strings as comments', () => {
     const source = 'a\n  b: "#{c}"\n  d: e';
     const ast = parse(source);
     const stringNode = ast.body.statements[0].arguments[0].members[0];
@@ -27,7 +27,7 @@ describe('trimmedNodeRange', function() {
     deepEqual(nodeRange, [4, 13]);
   });
 
-  it('does not identify hash marks in regular expressions as comments and does not confuse with division operator', function() {
+  it('does not identify hash marks in regular expressions as comments and does not confuse with division operator', () => {
     const source = 'z = y / x\na = /#/';
     const ast = parse(source);
     const regExpNode = ast.body.statements[1].expression;
@@ -35,7 +35,7 @@ describe('trimmedNodeRange', function() {
     deepEqual(nodeRange, [14, 17]);
   });
 
-  it('does not trim an identifier range', function() {
+  it('does not trim an identifier range', () => {
     const source = 'a';
     const ast = parse(source);
     const identifierNode = ast.body.statements[0];
@@ -43,7 +43,7 @@ describe('trimmedNodeRange', function() {
     deepEqual(nodeRange, [0, 1]);
   });
 
-  it('does not count whitespace and comments after a function application containing a function', function() {
+  it('does not count whitespace and comments after a function application containing a function', () => {
     const source = 'a\n  b: ->\n    c\n\n# FOO\n\nd e';
     const ast = parse(source);
     const callNode = ast.body.statements[0];
