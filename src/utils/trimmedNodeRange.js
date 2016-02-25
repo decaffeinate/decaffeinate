@@ -11,7 +11,7 @@ import lex, { NORMAL, COMMENT } from './lex.js';
  * @returns {number[]}
  */
 export default function trimmedNodeRange(node, source) {
-  const { range } = node;
+  let { range } = node;
   let state;
   let previousState;
   let index = range[0];

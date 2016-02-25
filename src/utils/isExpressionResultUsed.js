@@ -20,7 +20,7 @@ export default function isExpressionResultUsed(node) {
     return false;
   }
 
-  const { parentNode } = node;
+  let { parentNode } = node;
 
   if (!parentNode) {
     return false;

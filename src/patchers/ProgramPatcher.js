@@ -77,7 +77,7 @@ export default class ProgramPatcher extends NodePatcher {
     let isMultiline = false;
     let { source } = this.context;
     let expectedIndent = getIndent(source, start);
-    const leadingHashIndexes = [];
+    let leadingHashIndexes = [];
 
     for (let index = start + BLOCK_COMMENT_DELIMITER.length; index < end - BLOCK_COMMENT_DELIMITER.length; index++) {
       switch (source[index]) {

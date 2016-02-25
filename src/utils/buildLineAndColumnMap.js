@@ -9,7 +9,7 @@ class LineAndColumnMap {
    * @param {string} source
    */
   constructor(source) {
-    const offsets = [0];
+    let offsets = [0];
 
     let line = 0;
     let cursor = 0;
@@ -54,8 +54,8 @@ class LineAndColumnMap {
       return null;
     }
 
-    const thisLineOffset = this.offsets[line];
-    const nextLineOffset = this.offsets[line + 1];
+    let thisLineOffset = this.offsets[line];
+    let nextLineOffset = this.offsets[line + 1];
 
     if (nextLineOffset - thisLineOffset < column) {
       // Column out of bounds.

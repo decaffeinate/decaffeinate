@@ -11,8 +11,8 @@
  * @returns {number}
  */
 export default function findCounterpartCharacter(character, source, index=0) {
-  const counterpart = getCounterpart(character);
-  const { length } = source;
+  let counterpart = getCounterpart(character);
+  let { length } = source;
 
   for (let level = 0; index < length; index++) {
     switch (source[index]) {

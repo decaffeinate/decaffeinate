@@ -1,13 +1,13 @@
-export const NORMAL = 1;
-export const COMMENT = 2;
-export const HERECOMMENT = 3;
-export const DSTRING = 4;
-export const SSTRING = 5;
-export const TDSTRING = 6;
-export const TSSTRING = 7;
-export const REGEXP = 8;
-export const HEREGEXP = 9;
-export const EOF = 10;
+export let NORMAL = 1;
+export let COMMENT = 2;
+export let HERECOMMENT = 3;
+export let DSTRING = 4;
+export let SSTRING = 5;
+export let TDSTRING = 6;
+export let TSSTRING = 7;
+export let REGEXP = 8;
+export let HEREGEXP = 9;
+export let EOF = 10;
 
 const REGEXP_FLAGS = ['i', 'g', 'm', 'y'];
 

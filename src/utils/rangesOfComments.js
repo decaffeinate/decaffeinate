@@ -7,8 +7,8 @@ import lex, { NORMAL, COMMENT, HERECOMMENT, EOF } from './lex.js';
  * @returns {Array.<{start: number, end: number, type: string}>}
  */
 export default function rangesOfComments(source) {
-  const result = [];
-  const step = lex(source);
+  let result = [];
+  let step = lex(source);
   let index;
   let previousIndex;
   let state;

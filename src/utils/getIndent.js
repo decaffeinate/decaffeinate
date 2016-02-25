@@ -6,7 +6,7 @@
  * @returns {string}
  */
 export default function getIndent(source, offset) {
-  const startOfLine = getStartOfLine(source, offset);
+  let startOfLine = getStartOfLine(source, offset);
   let indentOffset = startOfLine;
   let indentCharacter;
 
@@ -35,10 +35,10 @@ export default function getIndent(source, offset) {
  * @returns {number}
  */
 function getStartOfLine(source, offset) {
-  const lfIndex = source.lastIndexOf('\n', offset - 1);
+  let lfIndex = source.lastIndexOf('\n', offset - 1);
 
   if (lfIndex < 0) {
-    const crIndex = source.lastIndexOf('\r', offset - 1);
+    let crIndex = source.lastIndexOf('\r', offset - 1);
 
     if (crIndex < 0) {
       return 0;

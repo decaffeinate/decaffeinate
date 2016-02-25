@@ -17,7 +17,7 @@ export default function convertLoopExpressionIntoIIFE(node, patcher) {
     return false;
   }
 
-  const result = getFreeBinding(node.scope, 'result');
+  let result = getFreeBinding(node.scope, 'result');
 
   let thisIndent = getIndent(patcher.original, node.range[0]);
   let nextIndent = adjustIndent(patcher.original, node.range[0], 1);

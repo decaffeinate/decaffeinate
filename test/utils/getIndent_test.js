@@ -27,8 +27,8 @@ describe('getIndent', function() {
   context('with a multi-line source string', function() {
     it('returns the indent for the line containing offset', () => {
       let i;
-      const source = '->\n  abc';
-      const line1 = '->\n';
+      let source = '->\n  abc';
+      let line1 = '->\n';
 
       for (i = 0; i < line1.length; i++) {
         strictEqual(getIndent(source, i), '');

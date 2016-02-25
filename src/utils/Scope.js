@@ -33,7 +33,7 @@ export default class Scope {
    * @param {Object} node
    */
   declares(name, node) {
-    const key = this.key(name);
+    let key = this.key(name);
     this.bindings[key] = node;
   }
 
@@ -123,7 +123,7 @@ export default class Scope {
    * @returns {string}
    */
   toString() {
-    const parts = this.getOwnNames();
+    let parts = this.getOwnNames();
     if (this.parent) {
       parts.push(`parent = ${this.parent}`);
     }

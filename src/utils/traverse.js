@@ -12,7 +12,7 @@ export default function traverse(node, callback) {
     descended = true;
 
     childPropertyNames(parent).forEach(property => {
-      const value = parent[property];
+      let value = parent[property];
       if (Array.isArray(value)) {
         value.forEach(child => {
           child.parentNode = parent;
@@ -25,7 +25,7 @@ export default function traverse(node, callback) {
     });
   }
 
-  const shouldDescend = callback(
+  let shouldDescend = callback(
     node,
     descend,
     childPropertyNames(node).length === 0
@@ -132,7 +132,7 @@ const ORDER = {
  * @returns {string[]}
  */
 export function childPropertyNames(node) {
-  const names = ORDER[node.type];
+  let names = ORDER[node.type];
 
   if (!names) {
     throw new Error(`cannot traverse unknown node type: ${node.type}`);

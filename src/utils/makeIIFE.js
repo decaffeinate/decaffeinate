@@ -7,8 +7,8 @@ import trimmedNodeRange from './trimmedNodeRange.js';
  * @param {MagicString} patcher
  */
 export default function makeIIFE(node, patcher) {
-  const range = trimmedNodeRange(node, patcher.original);
-  const indent = getIndent(patcher.original, range[0]);
+  let range = trimmedNodeRange(node, patcher.original);
+  let indent = getIndent(patcher.original, range[0]);
   patcher.insert(range[0], `(=>\n${indent}`);
   indentNode(node, patcher);
   patcher.insert(range[1], ')()');

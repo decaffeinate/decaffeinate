@@ -7,7 +7,7 @@ import parse from './utils/parse.js';
 
 export { default as run } from './cli';
 
-const log = logger('convert');
+let log = logger('convert');
 
 /**
  * Decaffeinate CoffeeScript source code by adding optional punctuation.

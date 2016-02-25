@@ -7,7 +7,7 @@ const DEFAULT_INDENT = '  ';
  * @returns {string}
  */
 export default function determineIndent(source) {
-  const indent = detectIndent(source);
+  let indent = detectIndent(source);
   if (indent.type === 'space' && indent.amount % 2 === 1) {
     return DEFAULT_INDENT;
   }

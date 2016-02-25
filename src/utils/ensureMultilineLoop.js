@@ -11,7 +11,7 @@ import sourceBetween from '../utils/sourceBetween.js';
  * @returns {boolean}
  */
 export default function ensureMultilineLoop(node, patcher) {
-  const { keyAssignee, valAssignee, body } = node;
+  let { keyAssignee, valAssignee, body } = node;
   let firstAssignee = null;
   let lastHeaderPart = null;
   let keyword = null;
@@ -47,7 +47,7 @@ export default function ensureMultilineLoop(node, patcher) {
     return true;
   }
 
-  const hasThen = sourceBetween(patcher.original, lastHeaderPart, body).indexOf('\n') < 0;
+  let hasThen = sourceBetween(patcher.original, lastHeaderPart, body).indexOf('\n') < 0;
 
   if (hasThen) {
     // e.g. `for k of o then k` -> `for k of o\n  k`

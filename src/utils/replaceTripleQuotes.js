@@ -9,15 +9,15 @@ const TRIPLE_QUOTE_LENGTH = 3;
  * @param {MagicString} patcher
  */
 export default function replaceTripleQuotes(node, patcher) {
-  const [start, end] = node.range;
-  const contentStart = start + TRIPLE_QUOTE_LENGTH;
-  const contentEnd = end - TRIPLE_QUOTE_LENGTH;
-  const source = patcher.original;
+  let [start, end] = node.range;
+  let contentStart = start + TRIPLE_QUOTE_LENGTH;
+  let contentEnd = end - TRIPLE_QUOTE_LENGTH;
+  let source = patcher.original;
   let quoteCharacter;
 
   if (node.type === 'TemplateLiteral' || isMultiline(source, node)) {
-    const indents = getIndentInfo(source, contentStart, contentEnd);
-    const indentSize = sharedIndentSize(indents.ranges);
+    let indents = getIndentInfo(source, contentStart, contentEnd);
+    let indentSize = sharedIndentSize(indents.ranges);
     indents.ranges.forEach(([start, end]) => {
       if (end - start >= indentSize) {
         patcher.remove(start, start + indentSize);

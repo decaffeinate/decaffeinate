@@ -10,7 +10,7 @@ import { convert } from './index.js';
  * @param {string[]} args
  */
 export default function run(args) {
-  const input = parseArguments(args);
+  let input = parseArguments(args);
 
   if (input.paths.length) {
     runWithPaths(input.paths);
@@ -24,10 +24,10 @@ export default function run(args) {
  * @returns {{paths: string[]}}
  */
 function parseArguments(args) {
-  const paths = /** @type string[] */[];
+  let paths = /** @type string[] */[];
 
-  for (var i = 0; i < args.length; i++) {
-    var arg = args[i];
+  for (let i = 0; i < args.length; i++) {
+    let arg = args[i];
     switch (arg) {
       case '-h':
       case '--help':
@@ -51,11 +51,11 @@ function parseArguments(args) {
  * @param {?function(Error[])=} callback
  */
 function runWithPaths(paths, callback) {
-  const errors = [];
-  var index = 0;
+  let errors = [];
+  let index = 0;
 
   function processPath(path) {
-    const outputPath = join(dirname(path), basename(path, extname(path))) + '.js';
+    let outputPath = join(dirname(path), basename(path, extname(path))) + '.js';
     runWithStream(
       createReadStream(path, { encoding: 'utf8' }),
       createWriteStream(outputPath, { encoding: 'utf8' }),
@@ -85,8 +85,8 @@ function runWithPaths(paths, callback) {
  * @param {function(?Error)=} callback
  */
 function runWithStream(input, output, callback) {
-  var error;
-  var data = '';
+  let error;
+  let data = '';
 
   input.setEncoding('utf8');
 
@@ -111,7 +111,7 @@ function runWithStream(input, output, callback) {
  * Print usage help.
  */
 function usage() {
-  const exe = basename(process.argv[1]);
+  let exe = basename(process.argv[1]);
   console.log('%s [OPTIONS] PATH [PATH …]', exe);
   console.log('%s [OPTIONS] < INPUT', exe);
   console.log();

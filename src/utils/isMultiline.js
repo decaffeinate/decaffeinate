@@ -6,6 +6,6 @@
  * @returns {boolean}
  */
 export default function isMultiline(source, node) {
-  const newlineIndex = source.indexOf('\n', node.range[0]);
+  let newlineIndex = source.indexOf('\n', node.range[0]);
   return newlineIndex >= 0 && newlineIndex < node.range[1];
 }

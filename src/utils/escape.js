@@ -7,8 +7,8 @@
  * @param {number} end
  */
 export default function escape(patcher, characters, start, end) {
-  const source = patcher.original;
-  const predicate = typeof characters !== 'function' ?
+  let source = patcher.original;
+  let predicate = typeof characters !== 'function' ?
     (chr => characters.indexOf(chr) >= 0) :
     characters;
   for (let i = start; i < end; i++) {

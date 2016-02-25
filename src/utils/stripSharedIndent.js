@@ -5,9 +5,9 @@
  * @returns {string}
  */
 export default function stripSharedIndent(source) {
-  const indents = getIndentInfo(source);
-  const minimumIndent = sharedIndentSize(indents.ranges);
-  const lines = source.slice(indents.leadingMargin, source.length - indents.trailingMargin).split('\n');
+  let indents = getIndentInfo(source);
+  let minimumIndent = sharedIndentSize(indents.ranges);
+  let lines = source.slice(indents.leadingMargin, source.length - indents.trailingMargin).split('\n');
   return lines.map(line => line.slice(minimumIndent)).join('\n');
 }
 
@@ -18,7 +18,7 @@ export default function stripSharedIndent(source) {
  * @returns {{leadingMargin: number, trailingMargin: number, ranges: Array<Array<number>>}}
  */
 export function getIndentInfo(source, start=0, end=source.length) {
-  const ranges = [];
+  let ranges = [];
 
   let leadingMargin = 0;
   while (source[start + leadingMargin] === ' ') {

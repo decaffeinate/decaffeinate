@@ -7,6 +7,7 @@
   },
   "rules": {
     "semi": 2,
+    "no-var": 2,
     "strict": 0,
     "no-console": 0,
     "quotes": [2, "single", "avoid-escape"],
@@ -14,7 +15,8 @@
     "babel/object-shorthand": 1,
     "babel/generator-star-spacing": 1,
     "babel/new-cap": 1,
-    "require-import-extension": 2
+    "require-import-extension": 2,
+    "no-const-except-at-top": 2
   },
   "plugins": [
     "eslint-plugin-babel"

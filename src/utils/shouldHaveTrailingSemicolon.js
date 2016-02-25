@@ -9,7 +9,7 @@ import { isStaticMethod } from '../utils/types.js';
  * @returns {boolean}
  */
 export default function shouldHaveTrailingSemicolon(node) {
-  const { parentNode } = node;
+  let { parentNode } = node;
 
   if (!parentNode) {
     return false;

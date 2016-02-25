@@ -42,7 +42,7 @@ export default function isImplicitlyReturned(node) {
  * @private
  */
 function couldContainImplicitReturn(node) {
-  const { parentNode } = node;
+  let { parentNode } = node;
 
   if (!parentNode) {
     /*

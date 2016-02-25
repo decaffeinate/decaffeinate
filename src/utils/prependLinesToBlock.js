@@ -6,7 +6,7 @@ import getIndent from './getIndent.js';
  * @param {Object} node
  */
 export default function prependLinesToBlock(patcher, lines, node) {
-  const indent = getIndent(patcher.original, node.range[0]);
+  let indent = getIndent(patcher.original, node.range[0]);
   let string = '';
 
   for (let i = 0; i < lines.length; i++) {

@@ -14,10 +14,10 @@ export default function indentNode(node, patcher, levels=1) {
     return;
   }
 
-  const source = patcher.original;
-  const range = trimmedNodeRange(node, source);
+  let source = patcher.original;
+  let range = trimmedNodeRange(node, source);
   let offset = range[0];
-  const indent = repeat(determineIndent(source), levels);
+  let indent = repeat(determineIndent(source), levels);
 
   while (offset < range[1]) {
     patcher.insert(offset, indent);

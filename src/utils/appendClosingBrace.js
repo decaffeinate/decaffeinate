@@ -16,8 +16,8 @@ const HASH = '#';
  * @returns {number}
  */
 export default function appendClosingBrace(node, patcher) {
-  const source = patcher.original;
-  const originalInsertionPoint = trimmedNodeRange(node, source)[1];
+  let source = patcher.original;
+  let originalInsertionPoint = trimmedNodeRange(node, source)[1];
 
   if (!isMultiline(source, node)) {
     patcher.insert(originalInsertionPoint, '}');

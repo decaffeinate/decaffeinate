@@ -96,7 +96,7 @@ export function isFunction(node, allowBound=true) {
  * @returns {boolean}
  */
 export function isFunctionBody(node, allowBound=true) {
-  const { parentNode } = node;
+  let { parentNode } = node;
 
   if (!parentNode) {
     return false;
@@ -142,7 +142,7 @@ export function isWhile(node) {
  * @returns {boolean}
  */
 export function isConsequentOrAlternate(node) {
-  const { parentNode } = node;
+  let { parentNode } = node;
   return parentNode && parentNode.type === 'Conditional' && (
     parentNode.consequent === node ||
     parentNode.alternate === node
@@ -235,7 +235,7 @@ export function isStaticMethod(node) {
     return false;
   }
 
-  const { assignee } = node;
+  let { assignee } = node;
 
   if (assignee.type !== 'MemberAccessOp') {
     return false;
