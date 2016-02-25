@@ -33,7 +33,6 @@ describe('compound assignment', () => {
     check(`
       a ||= b
     `, `
-      var a;
       a || (a = b);
     `);
   });
@@ -42,7 +41,6 @@ describe('compound assignment', () => {
     check(`
       a &&= b
     `, `
-      var a;
       a && (a = b);
     `);
   });
