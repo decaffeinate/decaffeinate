@@ -127,6 +127,17 @@ describe('classes', () => {
     `);
   });
 
+  it('handles class properties', () => {
+    check(`
+      class A
+        setup: _.once () ->
+    `, `
+      class A {
+        setup = _.once(function() {});
+      }
+    `);
+  });
+
   it('creates a constructor for bound methods with a `super` call in extended classes', () => {
     check(`
       class A extends B

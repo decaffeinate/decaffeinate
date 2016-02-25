@@ -21,8 +21,8 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     return !this.isMethod();
   }
 
-  patch() {
-    super.patch();
+  patchAsExpression() {
+    super.patchAsExpression();
     if (this.isStaticMethod()) {
       // `this.a: ->` → `static a: ->`
       //  ^^^^^          ^^^^^^^
@@ -45,6 +45,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     // `name: null` → `name = null`
     //      ^^             ^^^
     this.overwrite(this.key.after, this.expression.before, ' = ');
+    this.patchExpression();
   }
 
   /**

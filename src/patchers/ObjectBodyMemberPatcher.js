@@ -21,12 +21,16 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   /**
    * KEY : EXPRESSION
    */
-  patch(options={}) {
+  patchAsExpression(options={}) {
     if (this.isMethod()) {
       this.patchAsMethod(options);
     } else {
       this.patchAsProperty(options);
     }
+  }
+
+  patchAsStatement(options={}) {
+    this.patchAsExpression(options);
   }
 
   /**
