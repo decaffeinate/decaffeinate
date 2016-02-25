@@ -1,11 +1,15 @@
 import check from './support/check.js';
 
 describe('default params', () => {
-  it.skip('ensures transforms happen on the default value', () => {
+  it('ensures default value is left in place', () => {
+    check(`(a=2) ->`, `(function(a=2) {});`);
+  });
+
+  it('ensures transforms happen on the default value', () => {
     check(`(a=b.c?) ->`, `(function(a=(b.c != null)) {});`);
   });
 
-  it.skip('ensures @foo is transformed correctly', () => {
+  it('ensures @foo is transformed correctly', () => {
     check(`(a=@b) ->`, `(function(a=this.b) {});`);
   });
 });
