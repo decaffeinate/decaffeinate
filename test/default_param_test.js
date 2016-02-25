@@ -6,7 +6,7 @@ describe('default params', () => {
   });
 
   it('ensures transforms happen on the default value', () => {
-    check(`(a=b.c?) ->`, `(function(a=(b.c != null)) {});`);
+    check(`(a=b c) ->`, `(function(a=b(c)) {});`);
   });
 
   it('ensures @foo is transformed correctly', () => {
