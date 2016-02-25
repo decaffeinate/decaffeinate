@@ -10,6 +10,7 @@ import ClassAssignOpPatcher from './ClassAssignOpPatcher.js';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher.js';
 import ConstructorPatcher from './ConstructorPatcher.js';
 import ConditionalPatcher from './ConditionalPatcher.js';
+import DefaultParamPatcher from './DefaultParamPatcher.js';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
 import EqualityPatcher from './EqualityPatcher.js';
 import ExistsOpCompoundAssignOpPatcher from './ExistsOpCompoundAssignOpPatcher.js';
@@ -153,6 +154,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'AssignOp':
       return AssignOpPatcher;
+
+    case 'DefaultParam':
+      return DefaultParamPatcher;
 
     case 'CompoundAssignOp':
       switch (node.op) {
