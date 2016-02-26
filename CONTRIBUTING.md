@@ -308,6 +308,79 @@ all handled by [`BinaryOpPatcher`][BinaryOpPatcher].
 
 [BinaryOpPatcher]: https://github.com/decaffeinate/decaffeinate/blob/master/src/patchers/BinaryOpPatcher.js
 
-#### TODO: More advanced patcher stuff here?
+#### Temporary variables & repeating code
 
-## TODO: Submitting a pull request
+Sometimes you may need to introduce temporary variables to hold values, often so
+that you can repeat a bit of code without triggering side-effects twice. Here's
+an example:
+
+```coffee
+a().b += c
+```
+
+In this case we can leave it alone because JavaScript has a `+=` operator, but
+if we wanted to expand it manually we can't just do `a().b = a().b + c`, because
+that would run `a()` twice. Since `a()` may have a side-effect, we have to cache
+its result. Doing so manually we might edit it to this:
+
+```coffee
+base = a()
+base.b = base.b + c
+```
+
+Now we're safe, since `a()` only runs once. As we noted, we don't have to do
+this for `+=`, but we must do it for compound operators JavaScript doesn't have
+like `||=`. Here's what the [`LogicalOpCompoundAssignOpPatcher`][locaop]
+actually edits `a().b ||= c` to become:
+
+```js
+(base = a()).b = base.b || c
+```
+
+[locaop]: https://github.com/decaffeinate/decaffeinate/blob/master/src/patchers/LogicalOpCompoundAssignOpPatcher.js
+
+How does this work? This is accomplished by the `makeRepeatable` method on
+patchers. It is responsible for editing its node to store the side-effecty parts
+in a temporary variable and return the source code needed to reference the same
+value again. For simple values like integers and non-interpolated strings, they
+make no edits and simply return their original source. Each patcher is
+responsible for implementing both `isRepeatable` to determine whether it is safe
+to repeat the source as-is, and if it could ever return `false`, a
+`makeRepeatable` override as well. See [`MemberAccessOpPatcher`][maop] for an
+example.
+
+[maop]: https://github.com/decaffeinate/decaffeinate/blob/master/src/patchers/MemberAccessOpPatcher.js
+
+Temporary variables may also be introduced as loop counters or similar. To claim
+a temporary variable, just use the patchers' `claimFreeBinding` method,
+optionally passing the name you'd like to use. If that name is taken, a numeric
+suffix will be added until the name is not in use. That name will then be
+reserved so that future calls cannot use it either. If you'd like to choose from
+a list of names, just pass an array.
+
+```js
+let nameBinding = this.claimFreeBinding('name');
+this.insertBefore(`${nameBinding} = `);
+
+let loopCounter = this.claimFreeBinding(['i', 'j', 'k']);
+this.insert(this.keyAssignee.after, `, ${loopCounter}`);
+```
+
+Don't worry about creating variable declarations when assigning to temporary
+variables. The [add-variable-declarations][avd] library is used to add them as
+appropriate in a post-processing step.
+
+[avd]: https://github.com/eventualbuddha/add-variable-declarations
+
+## Submitting a pull request
+
+Once you've got the code and checked that the tests all pass as shown above,
+create a branch based on `master` with a descriptive name such as
+`fix-binary-operator-statements` or `add-support-for-soaked-member-access`.
+Make changes to fix your bug or add your feature, ensuring that you write tests
+covering the changes. The tests you add or change *should fail* on `master`.
+
+Once you're satisfied with your changes create a pull request on your own fork.
+Please provide a description of *why* you're issuing the pull request, and
+reference any relevant existing issues. Expect to go through a round or two of
+review before a pull request is accepted.

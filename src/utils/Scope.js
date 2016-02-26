@@ -51,7 +51,7 @@ export default class Scope {
 
   /**
    * @param {Object} node
-   * @param {string=} name
+   * @param {string|Array<string>=} name
    * @returns {string}
    */
   claimFreeBinding(node, name='ref') {

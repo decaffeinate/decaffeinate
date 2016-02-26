@@ -457,12 +457,16 @@ export default class NodePatcher {
       if (parens) {
         this.insertBefore('(');
       }
-      ref = this.node.scope.claimFreeBinding(this.node, ref);
+      ref = this.claimFreeBinding(ref);
       this.insertBefore(`${ref} = `);
       if (parens) {
         this.insertAfter(')');
       }
       return ref;
     }
+  }
+
+  claimFreeBinding(ref: string|Array<string>='ref'): string {
+    return this.node.scope.claimFreeBinding(this.node, ref);
   }
 }
