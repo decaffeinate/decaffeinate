@@ -40,17 +40,38 @@ describe('unary operators', () => {
     check(`typeof a`, `typeof a;`);
   });
 
-  it.skip('converts unary existential identifier checks to typeof + null check', () => {
+  it('converts unary existential identifier checks to typeof + null check', () => {
     check(`a?`, `typeof a !== 'undefined' && a !== null;`);
   });
 
-  it.skip('converts unary existential non-identifier to non-strict null check', () => {
+  it('converts unary existential non-identifier to non-strict null check', () => {
     check(`a.b?`, `a.b != null;`);
     check(`0?`, `0 != null;`);
   });
 
-  it.skip('surrounds unary existential operator results if needed', () => {
+  it('surrounds unary existential operator results if needed', () => {
     check(`a? or b?`, `(typeof a !== 'undefined' && a !== null) || (typeof b !== 'undefined' && b !== null);`);
     check(`0? or 1?`, `(0 != null) || (1 != null);`);
+    check(`(0?) or (1?)`, `(0 != null) || (1 != null);`);
+  });
+
+  it('converts unary existential operator and handles negation', () => {
+    check(`
+      unless a? and c
+        b
+    `, `
+      if ((typeof a === 'undefined' || a === null) || !c) {
+        b;
+      }
+    `);
+
+    check(`
+      unless a.b?
+        b
+    `, `
+      if ((a.b == null)) {
+        b;
+      }
+    `);
   });
 });

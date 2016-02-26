@@ -43,6 +43,7 @@ import SpreadPatcher from './SpreadPatcher.js';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher.js';
 import ThisPatcher from './ThisPatcher.js';
 import ThrowPatcher from './ThrowPatcher.js';
+import UnaryExistsOpPatcher from './UnaryExistsOpPatcher.js';
 import UnaryOpPatcher from './UnaryOpPatcher.js';
 import WhilePatcher from './WhilePatcher.js';
 import { childPropertyNames } from '../utils/traverse.js';
@@ -232,6 +233,9 @@ function patcherConstructorForNode(node): Function {
     case 'TypeofOp':
     case 'BitNotOp':
       return UnaryOpPatcher;
+
+    case 'UnaryExistsOp':
+      return UnaryExistsOpPatcher;
 
     case 'ClassProtoAssignOp':
       return ClassAssignOpPatcher;
