@@ -1,5 +1,6 @@
 import IdentifierPatcher from './IdentifierPatcher.js';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
+import find from '../utils/array/find.js';
 import traverse from '../utils/traverse.js';
 import type FunctionPatcher from './FunctionPatcher.js';
 import type { Editor, Node, ParseContext, Token } from './types.js';
@@ -59,7 +60,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
 }
 
 function buildVirtualConstructorIdentifierNode(constructorTokens: Array<Token>): Node {
-  let constructorToken = constructorTokens.find(
+  let constructorToken = find(constructorTokens,
     token => token.type === 'IDENTIFIER' && token.data === 'constructor'
   );
   if (!constructorToken) {

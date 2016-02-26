@@ -1,3 +1,4 @@
+import find from './array/find.js';
 import flatMap from './flatMap.js';
 import leftHandIdentifiers from './leftHandIdentifiers.js';
 
@@ -55,13 +56,13 @@ export default class Scope {
    */
   claimFreeBinding(node, name='ref') {
     let names = Array.isArray(name) ? name : [name];
-    let binding = names.find(name => !this.getBinding(name));
+    let binding = find(names, name => !this.getBinding(name));
 
     if (!binding) {
       let counter = 0;
       while (!binding) {
         counter += 1;
-        binding = names.find(name => !this.getBinding(`${name}${counter}`));
+        binding = find(names, name => !this.getBinding(`${name}${counter}`));
       }
       binding = `${binding}${counter}`;
     }
