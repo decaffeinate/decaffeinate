@@ -19,6 +19,26 @@ Run the tests to make sure everything works as expected:
 $ npm test
 ```
 
+## Debugging
+
+The patchers log the edits they make if a matching environment variable is set.
+For example, to log all the edits made by the `BlockPatcher` you can set
+`DEBUG:BlockPatcher` to `1`, like so:
+
+```
+$ env 'DEBUG:BlockPatcher=1' npm test
+```
+
+To enable all loggers, use `DEBUG:*=1`. To log within a patcher, use the `log`
+instance method like so:
+
+```js
+patchAsExpression() {
+  // …
+  this.log('Some text', someObject);
+}
+```
+
 ## Adding features
 
 Decaffeinate is implemented primarily as a collection of patchers, objects that
