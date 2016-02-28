@@ -42,6 +42,8 @@ import SlicePatcher from './patchers/SlicePatcher.js';
 import SoakedMemberAccessOpPatcher from './patchers/SoakedMemberAccessOpPatcher.js';
 import SpreadPatcher from './patchers/SpreadPatcher.js';
 import SuperPatcher from './patchers/SuperPatcher.js';
+import SwitchCasePatcher from './patchers/SwitchCasePatcher.js';
+import SwitchPatcher from './patchers/SwitchPatcher.js';
 import TemplateLiteralPatcher from './patchers/TemplateLiteralPatcher.js';
 import ThisPatcher from './patchers/ThisPatcher.js';
 import ThrowPatcher from './patchers/ThrowPatcher.js';
@@ -211,6 +213,12 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'Constructor':
         return ConstructorPatcher;
+
+      case 'Switch':
+        return SwitchPatcher;
+
+      case 'SwitchCase':
+        return SwitchCasePatcher;
 
       case 'ProtoMemberAccessOp':
         return ProtoMemberAccessOpPatcher;

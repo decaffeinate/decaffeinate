@@ -1,6 +1,6 @@
 import check from './support/check.js';
 
-describe.skip('switch', () => {
+describe('switch', () => {
   it('works with a single case', () => {
     check(`
       switch a
@@ -10,6 +10,56 @@ describe.skip('switch', () => {
       switch (a) {
         case b:
           c;
+          break;
+      }
+    `);
+  });
+
+  it('works when there is a comment after the expression', () => {
+    check(`
+      switch a # yolo
+        when b
+          c
+    `, `
+      switch (a) { // yolo
+        case b:
+          c;
+          break;
+      }
+    `);
+  });
+
+
+  it('works when the expression is already surrounded by parens', () => {
+    check(`
+      switch (a?)
+        when b
+          c
+    `, `
+      switch (typeof a !== 'undefined' && a !== null) {
+        case b:
+          c;
+          break;
+      }
+    `);
+  });
+
+  it('only inserts break statements when needed', () => {
+    check(`
+      switch a
+        when b
+          c
+          break
+        when d
+          e
+          break
+    `, `
+      switch (a) {
+        case b:
+          c;
+          break;
+        case d:
+          e;
           break;
       }
     `);
@@ -153,7 +203,6 @@ describe.skip('switch', () => {
         switch b
           when c
             d
-
       e
     `, `
       var a = function() {
@@ -161,9 +210,8 @@ describe.skip('switch', () => {
           case c:
             return d;
         }
-      };
-
-      e;
+      }
+      ;e;
     `);
   });
 
@@ -177,16 +225,16 @@ describe.skip('switch', () => {
         else 'A'
     `, `
       switch (false) {
-        case !(score < 60): 'F'; break;
-        case !(score < 70): 'D'; break;
-        case !(score < 80): 'C'; break;
-        case !(score < 90): 'B'; break;
+        case score >= 60: 'F'; break;
+        case score >= 70: 'D'; break;
+        case score >= 80: 'C'; break;
+        case score >= 90: 'B'; break;
         default: 'A';
       }
     `);
   });
 
-  it('works with `switch` used as an expression', () => {
+  it.skip('works with `switch` used as an expression', () => {
     check(`
       a = switch b
         when c then d
@@ -201,7 +249,7 @@ describe.skip('switch', () => {
     `);
   });
 
-  it('works with the switch from the CoffeeScript demo page', () => {
+  it.skip('works with the switch from the CoffeeScript demo page', () => {
     check(`
     switch day
       when "Mon" then go work
