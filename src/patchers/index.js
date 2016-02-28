@@ -42,6 +42,8 @@ import SlicePatcher from './SlicePatcher.js';
 import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher.js';
 import SpreadPatcher from './SpreadPatcher.js';
 import SuperPatcher from './SuperPatcher.js';
+import SwitchCasePatcher from './SwitchCasePatcher.js';
+import SwitchPatcher from './SwitchPatcher.js';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher.js';
 import ThisPatcher from './ThisPatcher.js';
 import ThrowPatcher from './ThrowPatcher.js';
@@ -276,6 +278,12 @@ function patcherConstructorForNode(node): Function {
 
     case 'ExtendsOp':
       return ExtendsOpPatcher;
+
+    case 'Switch':
+      return SwitchPatcher;
+
+    case 'SwitchCase':
+      return SwitchCasePatcher;
 
     default:
       let props = childPropertyNames(node);
