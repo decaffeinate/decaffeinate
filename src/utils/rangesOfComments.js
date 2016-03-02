@@ -1,4 +1,4 @@
-import lex, { NORMAL, COMMENT, HERECOMMENT, EOF } from './lex.js';
+import lex, { COMMENT, HERECOMMENT }  from 'coffee-lex';
 
 /**
  * Scans `source` for comments and returns information about them.
@@ -7,45 +7,23 @@ import lex, { NORMAL, COMMENT, HERECOMMENT, EOF } from './lex.js';
  * @returns {Array.<{start: number, end: number, type: string}>}
  */
 export default function rangesOfComments(source) {
-  let result = [];
-  let step = lex(source);
-  let index;
-  let previousIndex;
-  let state;
-  let previousState;
-  let commentStartIndex;
-  let type;
-
-  while (state !== EOF) {
-    ({ index, previousIndex, state, previousState } = step());
-
-    switch (previousState) {
-      case NORMAL:
-        if (state === COMMENT) {
-          commentStartIndex = index - '#'.length;
-          if (commentStartIndex === 0 && source[index] === '!') {
-            type = 'shebang';
-          } else {
-            type = 'line';
-          }
-        } else if (state === HERECOMMENT) {
-          commentStartIndex = index - '###'.length;
-          type = 'block';
+  return lex(source)
+    .filter(token => token.type === COMMENT || token.type === HERECOMMENT)
+    .map(comment => {
+      let type;
+      if (comment.type === COMMENT) {
+        if (comment.start === 0 && source[1] === '!') {
+          type = 'shebang';
+        } else {
+          type = 'line';
         }
-        break;
-
-      case COMMENT:
-      case HERECOMMENT:
-        if (state === NORMAL || state === EOF) {
-          result.push({
-            start: commentStartIndex,
-            end: type === 'block' ? index : previousIndex,
-            type
-          });
-        }
-        break;
-    }
-  }
-
-  return result;
+      } else if (comment.type === HERECOMMENT) {
+        type = 'block';
+      }
+      return {
+        start: comment.start,
+        end: comment.end,
+        type
+      };
+    });
 }
