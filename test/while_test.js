@@ -158,4 +158,32 @@ describe('while', () => {
       }
     `);
   });
+
+  it('handles `while` with a `when` guard clause', () => {
+    check(`
+      while a b when c d
+        e f
+        g h
+    `, `
+      while (a(b)) {
+        if (c(d)) {
+          e(f);
+          g(h);
+        }
+      }
+    `);
+  });
+
+  it('does not add parentheses around `when` guard clause if it already has them', () => {
+    check(`
+      while a when (b)
+        c
+    `, `
+      while (a) {
+        if (b) {
+          c;
+        }
+      }
+    `);
+  });
 });
