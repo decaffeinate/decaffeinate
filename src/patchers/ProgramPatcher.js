@@ -1,5 +1,6 @@
 import NodePatcher from './NodePatcher.js';
 import blank from '../utils/blank.js';
+import determineIndent from '../utils/determineIndent.js';
 import getIndent from '../utils/getIndent.js';
 import rangesOfComments from '../utils/rangesOfComments.js';
 
@@ -17,6 +18,7 @@ export default class ProgramPatcher extends NodePatcher {
     this.body = body;
 
     this.helpers = blank();
+    this._indentString = null;
   }
 
   /**
@@ -161,6 +163,16 @@ export default class ProgramPatcher extends NodePatcher {
       this.helpers[name] = code;
     }
     return name;
+  }
+
+  /**
+   * Gets the indent string used for each indent in this program.
+   */
+  getProgramIndentString(): string {
+    if (!this._indentString) {
+      this._indentString = determineIndent(this.context.source);
+    }
+    return this._indentString;
   }
 }
 

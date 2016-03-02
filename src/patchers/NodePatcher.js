@@ -1,5 +1,6 @@
 import PatcherError from '../utils/PatchError.js';
 import adjustIndent from '../utils/adjustIndent.js';
+import repeat from 'repeating';
 import type { Token, Editor, Node, ParseContext } from './types.js';
 import { logger } from '../utils/debug.js';
 
@@ -394,6 +395,65 @@ export default class NodePatcher {
    */
   getIndent(offset: number=0): string {
     return adjustIndent(this.context.source, this.start, offset);
+  }
+
+  /**
+   * Gets the indent string used for each indent in this program.
+   */
+  getProgramIndentString(): string {
+    return this.parent.getProgramIndentString();
+  }
+
+  /**
+   * Indent this node a number of times. To unindent, pass a negative number.
+   *
+   * Note that because this method inserts indents immediately before the first
+   * non-whitespace character of each line in the node's source, it should be
+   * called *before* any other editing is done to the node's source to ensure
+   * that strings inserted before child nodes appear after the indent, not
+   * before.
+   */
+  indent(offset: number=1) {
+    if (offset === 0) {
+      return;
+    }
+
+    let indentString = this.getProgramIndentString();
+    let indentToChange = repeat(indentString, Math.abs(offset));
+    let start = this.before;
+    let end = this.after;
+    let { source } = this.context;
+    let hasIndentedThisLine = false;
+
+    for (let i = start; i < end; i++) {
+      switch (source[i]) {
+        case '\n':
+        case '\r':
+          hasIndentedThisLine = false;
+          break;
+
+        case ' ':
+        case '\t':
+          break;
+
+        default:
+          if (!hasIndentedThisLine) {
+            if (offset > 0) {
+              this.insert(i, indentToChange);
+            } else if (source.slice(i - indentToChange.length, i) === indentToChange) {
+              this.remove(i - indentToChange.length, i);
+            } else {
+              throw this.error(
+                `cannot unindent line by ${offset} without enough indent`,
+                i - indentToChange.length,
+                i
+              );
+            }
+            hasIndentedThisLine = true;
+          }
+          break;
+      }
+    }
   }
 
   /**
