@@ -17,7 +17,12 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     let implicitCall = this.isImplicitCall();
     this.fn.patch();
     if (implicitCall) {
-      this.overwrite(this.fn.after, this.args[0].before, '(');
+      let arg = this.args.length === 1 ? this.args[0] : null;
+      if (arg && arg.node.virtual) {
+        this.insert(this.fn.after, '(');
+      } else {
+        this.overwrite(this.fn.after, this.args[0].before, '(');
+      }
     }
     this.args.forEach((arg, i, args) => {
       arg.patch();

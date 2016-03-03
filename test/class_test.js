@@ -218,6 +218,48 @@ describe('classes', () => {
     `);
   });
 
+  it('converts `super` inside non-constructor methods to a named lookup', () => {
+    check(`
+      class A extends B
+        a: ->
+          super
+    `, `
+      class A extends B {
+        a() {
+          return super.a();
+        }
+      }
+    `);
+  });
+
+  it('converts `super` with args inside non-constructor methods to a named lookup', () => {
+    check(`
+      class A extends B
+        a: ->
+          super 1, 2
+    `, `
+      class A extends B {
+        a() {
+          return super.a(1, 2);
+        }
+      }
+    `);
+  });
+
+  it('converts `super` inside static methods to a named lookup', () => {
+    check(`
+      class A extends B
+        @a: ->
+          super
+    `, `
+      class A extends B {
+        static a() {
+          return super.a();
+        }
+      }
+    `);
+  });
+
   it('converts shorthand-this static methods correctly', () => {
     check(`
       class A

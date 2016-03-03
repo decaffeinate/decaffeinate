@@ -18,6 +18,11 @@ export default class SpreadPatcher extends NodePatcher {
    * All we have to do is move the `...` from the right to the left.
    */
   patchAsExpression() {
+    if (this.node.virtual) {
+      // i.e. the virtual spread in a bare `super` call.
+      return;
+    }
+
     // `a...` → `...a...`
     //           ^^^
     this.insert(this.expression.before, '...');

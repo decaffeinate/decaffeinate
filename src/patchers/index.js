@@ -40,6 +40,7 @@ import ReturnPatcher from './ReturnPatcher.js';
 import SlicePatcher from './SlicePatcher.js';
 import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher.js';
 import SpreadPatcher from './SpreadPatcher.js';
+import SuperPatcher from './SuperPatcher.js';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher.js';
 import ThisPatcher from './ThisPatcher.js';
 import ThrowPatcher from './ThrowPatcher.js';
@@ -102,7 +103,6 @@ function patcherConstructorForNode(node): Function {
     case 'Float':
     case 'Null':
     case 'Undefined':
-    case 'Super':
     case 'PostIncrementOp':
     case 'PostDecrementOp':
     case 'PreIncrementOp':
@@ -239,6 +239,9 @@ function patcherConstructorForNode(node): Function {
 
     case 'ClassProtoAssignOp':
       return ClassAssignOpPatcher;
+
+    case 'Super':
+      return SuperPatcher;
 
     case 'Class':
       return ClassPatcher;
