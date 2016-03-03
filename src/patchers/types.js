@@ -30,3 +30,29 @@ export type Editor = {
   slice: (start: number, end: number) => string,
   append: (content: string) => void,
 };
+
+export type SourceType = {
+  name: string
+};
+
+export type SourceToken = {
+  type: SourceType,
+  start: number,
+  end: number
+}
+
+export type SourceTokenListIndex = {
+  next: () => ?SourceTokenListIndex,
+  previous: () => ?SourceTokenListIndex,
+  advance: (offset: number) => ?SourceTokenListIndex
+};
+
+export type SourceTokenList = {
+  slice: (start: SourceTokenListIndex, end: SourceTokenListIndex) => SourceTokenList,
+  indexOfTokenContainingSourceIndex: (index: number) => ?SourceTokenListIndex,
+  indexOfTokenEndingAtSourceIndex: (index: number) => ?SourceTokenListIndex,
+  indexOfTokenMatchingPredicate: (predicate: (token: SourceToken) => boolean) => ?SourceTokenListIndex,
+  indexOfTokenStartingAtSourceIndex: (index: number) => ?SourceTokenListIndex,
+  lastIndexOfTokenMatchingPredicate: (predicate: (token: SourceToken) => boolean) => ?SourceTokenListIndex,
+  tokenAtIndex: (index: SourceTokenListIndex) => ?SourceToken
+};

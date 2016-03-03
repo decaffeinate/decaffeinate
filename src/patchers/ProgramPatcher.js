@@ -2,17 +2,11 @@ import NodePatcher from './NodePatcher.js';
 import blank from '../utils/blank.js';
 import determineIndent from '../utils/determineIndent.js';
 import getIndent from '../utils/getIndent.js';
-import rangesOfComments from '../utils/rangesOfComments.js';
+import lex, { COMMENT, HERECOMMENT} from 'coffee-lex';
 import type BlockPatcher from './BlockPatcher.js';
-import type { Editor, Node, ParseContext } from './types.js';
+import type { Editor, Node, ParseContext, SourceToken, SourceTokenList } from './types.js';
 
 const BLOCK_COMMENT_DELIMITER = '###';
-
-type Comment = {
-  type: 'line' | 'block' | 'shebang',
-  start: number,
-  end: number
-};
 
 export default class ProgramPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, body: BlockPatcher) {
@@ -21,6 +15,14 @@ export default class ProgramPatcher extends NodePatcher {
 
     this.helpers = blank();
     this._indentString = null;
+    this._tokens = lex(context.source);
+  }
+
+  /**
+   * Gets the tokens for the whole program.
+   */
+  getProgramSourceTokens(): SourceTokenList {
+    return this._tokens;
   }
 
   /**
@@ -46,21 +48,15 @@ export default class ProgramPatcher extends NodePatcher {
    */
   patchComments() {
     let { source } = this.context;
-    let ranges = rangesOfComments(source);
-
-    ranges.forEach(comment => {
-      switch (comment.type) {
-        case 'line':
-          this.patchLineComment(comment);
-          break;
-
-        case 'block':
-          this.patchBlockComment(comment);
-          break;
-
-        case 'shebang':
-          this.patchShebangComment(comment);
-          break;
+    this.getProgramSourceTokens().forEach(token => {
+      if (token.type === COMMENT) {
+        if (token.start === 0 && source[1] === '!') {
+          this.patchShebangComment(token);
+        } else {
+          this.patchLineComment(token);
+        }
+      } else if (token.type === HERECOMMENT) {
+        this.patchBlockComment(token);
       }
     });
   }
@@ -70,7 +66,7 @@ export default class ProgramPatcher extends NodePatcher {
    *
    * @private
    */
-  patchBlockComment(comment: Comment) {
+  patchBlockComment(comment: SourceToken) {
     let { start, end } = comment;
     this.overwrite(start, start + BLOCK_COMMENT_DELIMITER.length, '/*');
 
@@ -125,7 +121,7 @@ export default class ProgramPatcher extends NodePatcher {
    *
    * @private
    */
-  patchLineComment(comment: Comment) {
+  patchLineComment(comment: SourceToken) {
     let { start } = comment;
     this.overwrite(start, start + '#'.length, '//');
   }
@@ -135,7 +131,7 @@ export default class ProgramPatcher extends NodePatcher {
    *
    * @private
    */
-  patchShebangComment(comment: Comment) {
+  patchShebangComment(comment: SourceToken) {
     let { start, end } = comment;
     let commentBody = this.slice(start, end);
     let coffeeIndex = commentBody.indexOf('coffee');

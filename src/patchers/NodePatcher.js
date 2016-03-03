@@ -1,7 +1,7 @@
 import PatcherError from '../utils/PatchError.js';
 import adjustIndent from '../utils/adjustIndent.js';
 import repeat from 'repeating';
-import type { Token, Editor, Node, ParseContext } from './types.js';
+import type { Token, SourceToken, SourceTokenListIndex, Editor, Node, ParseContext, SourceTokenList } from './types.js';
 import { logger } from '../utils/debug.js';
 
 export default class NodePatcher {
@@ -331,6 +331,43 @@ export default class NodePatcher {
    */
   statementNeedsSemicolon(): boolean {
     return true;
+  }
+
+  /**
+   * Gets the tokens for the whole program.
+   */
+  getProgramSourceTokens(): SourceTokenList {
+    return this.parent.getProgramSourceTokens();
+  }
+
+  /**
+   * Gets the index of the token starting at a particular source index.
+   */
+  indexOfSourceTokenStartingAtSourceIndex(index: number): ?SourceTokenListIndex {
+    return this.getProgramSourceTokens().indexOfTokenStartingAtSourceIndex(index);
+  }
+
+  /**
+   * Gets the index of the token between left and right patchers that matches
+   * a predicate function.
+   */
+  indexOfSourceTokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, predicate: (token: SourceToken) => boolean): ?SourceTokenListIndex {
+    let start = left.after;
+    let end = right.before;
+    return this.getProgramSourceTokens().indexOfTokenMatchingPredicate(token => {
+      return (
+        token.start >= start &&
+        token.start <= end &&
+        predicate(token)
+      );
+    });
+  }
+
+  /**
+   * Gets the token at a particular index.
+   */
+  sourceTokenAtIndex(index: SourceTokenListIndex): ?SourceToken {
+    return this.getProgramSourceTokens().tokenAtIndex(index);
   }
 
   /**
