@@ -1,5 +1,5 @@
 import { ok, strictEqual } from 'assert';
-import { parse } from 'coffee-script-redux';
+import { parse } from 'decaffeinate-parser';
 import Scope from '../../src/utils/Scope.js';
 
 describe('Scope', function() {
@@ -145,5 +145,5 @@ describe('Scope', function() {
 });
 
 function statement(code) {
-  return parse(code).toBasicObject().body.statements[0];
+  return parse(code).body.statements[0];
 }
