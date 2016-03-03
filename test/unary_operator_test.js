@@ -44,6 +44,14 @@ describe('unary operators', () => {
     check(`a?`, `typeof a !== 'undefined' && a !== null;`);
   });
 
+  it('converts unary existential identifier checks of known bindings to non-strict null check', () => {
+    check(`
+      (a) -> a?
+    `, `
+      (function(a) { return (a != null); });
+    `);
+  });
+
   it('converts unary existential non-identifier to non-strict null check', () => {
     check(`a.b?`, `a.b != null;`);
     check(`0?`, `0 != null;`);

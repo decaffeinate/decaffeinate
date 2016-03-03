@@ -58,8 +58,13 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
   patchAsStatement() {
     let { node, negated } = this;
     let nodeExpression = node.expression;
+    let needsTypeofCheck = (
+      nodeExpression &&
+      nodeExpression.type === 'Identifier' &&
+      node.scope.getBinding(nodeExpression.data) === null
+    );
 
-    if (nodeExpression && nodeExpression.type === 'Identifier') {
+    if (needsTypeofCheck) {
       if (negated) {
         // `a?` → `typeof a === 'undefined' && a === null`
         //  ^^     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
