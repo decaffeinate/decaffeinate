@@ -169,6 +169,11 @@ export default class NodePatcher {
    * Insert content at the specified index.
    */
   insert(index: number, content: string) {
+    if (typeof index !== 'number') {
+      throw new Error(
+        `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
+      );
+    }
     this.log(
       'INSERT',
       index,
@@ -183,6 +188,12 @@ export default class NodePatcher {
    * Replace the content between the start and end indexes with new content.
    */
   overwrite(start: number, end: number, content: string) {
+    if (typeof start !== 'number' || typeof end !== 'number') {
+      throw new Error(
+        `cannot overwrite non-numeric range [${start}, ${end}) ` +
+        `with ${JSON.stringify(content)}`
+      );
+    }
     this.log(
       'OVERWRITE', `[${start}, ${end})`,
       JSON.stringify(this.context.source.slice(start, end)),
@@ -195,6 +206,11 @@ export default class NodePatcher {
    * Remove the content between the start and end indexes.
    */
   remove(start: number, end: number) {
+    if (typeof start !== 'number' || typeof end !== 'number') {
+      throw new Error(
+        `cannot remove non-numeric range [${start}, ${end})`
+      );
+    }
     this.log(
       'REMOVE', `[${start}, ${end})`,
       JSON.stringify(this.context.source.slice(start, end))
