@@ -13,7 +13,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     this.args.forEach(arg => arg.setRequiresExpression());
   }
 
-  patch() {
+  patchAsExpression() {
     let implicitCall = this.isImplicitCall();
     this.fn.patch();
     if (implicitCall) {
@@ -28,6 +28,10 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     if (implicitCall) {
       this.insertAfter(')');
     }
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 
   isImplicitCall() {
