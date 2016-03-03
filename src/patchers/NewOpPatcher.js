@@ -16,7 +16,7 @@ export default class NewOpPatcher extends NodePatcher {
     this.args.forEach(arg => arg.setRequiresExpression());
   }
 
-  patch() {
+  patchAsExpression() {
     this.ctor.patch();
     let implicitCall = this.isImplicitCall();
     if (this.args.length > 0) {
@@ -36,6 +36,10 @@ export default class NewOpPatcher extends NodePatcher {
     } else if (implicitCall) {
       this.insert(this.ctor.after, '()');
     }
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 
   /**

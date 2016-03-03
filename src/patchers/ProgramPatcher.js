@@ -3,6 +3,8 @@ import blank from '../utils/blank.js';
 import determineIndent from '../utils/determineIndent.js';
 import getIndent from '../utils/getIndent.js';
 import rangesOfComments from '../utils/rangesOfComments.js';
+import type BlockPatcher from './BlockPatcher.js';
+import type { Editor, Node, ParseContext } from './types.js';
 
 const BLOCK_COMMENT_DELIMITER = '###';
 
@@ -13,7 +15,7 @@ type Comment = {
 };
 
 export default class ProgramPatcher extends NodePatcher {
-  constructor(node, context, editor, body) {
+  constructor(node: Node, context: ParseContext, editor: Editor, body: BlockPatcher) {
     super(node, context, editor);
     this.body = body;
 
@@ -28,9 +30,8 @@ export default class ProgramPatcher extends NodePatcher {
     return false;
   }
 
-  patch() {
-    let { body } = this;
-    body.patch({ leftBrace: false, rightBrace: false });
+  patchAsStatement() {
+    this.body.patch({ leftBrace: false, rightBrace: false });
     this.patchComments();
 
     for (let helper in this.helpers) {

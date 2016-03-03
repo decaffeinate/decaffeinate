@@ -28,11 +28,15 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
   /**
    * LEFT OP RIGHT
    */
-  patch() {
+  patchAsExpression() {
     let { left, right, replacement, logicToken } = this;
     left.patch();
     this.overwrite(...logicToken.range, replacement);
     right.patch();
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 
   /**

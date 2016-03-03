@@ -18,12 +18,16 @@ export default class ExtendsOpPatcher extends BinaryOpPatcher {
   /**
    * CHILD extends PARENT
    */
-  patch() {
+  patchAsExpression() {
     let helper = this.registerHelper('__extends__', EXTENDS_HELPER);
     this.insert(this.left.before, `${helper}(`);
     this.left.patch();
     this.overwrite(this.left.after, this.right.before, ', ');
     this.right.patch();
     this.insert(this.right.after, ')');
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 }

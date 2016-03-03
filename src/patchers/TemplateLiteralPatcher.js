@@ -10,7 +10,7 @@ export default class TemplateLiteralPatcher extends NodePatcher {
     this.expressions = expressions;
   }
 
-  patch() {
+  patchAsExpression() {
     let { quasis, expressions, start, end } = this;
 
     if (this.startsWith('"""')) {
@@ -27,5 +27,9 @@ export default class TemplateLiteralPatcher extends NodePatcher {
 
     escapeTemplateStringContents(this.editor, start, end);
     expressions.forEach(expression => expression.patch());
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 }

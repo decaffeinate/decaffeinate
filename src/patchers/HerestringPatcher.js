@@ -4,7 +4,7 @@ import escape, { escapeTemplateStringContents } from '../utils/escape.js';
 const HERESTRING_DELIMITER_LENGTH = 3;
 
 export default class HerestringPatcher extends NodePatcher {
-  patch() {
+  patchAsExpression() {
     let { source } = this.context;
     let contentStart = this.start + HERESTRING_DELIMITER_LENGTH;
     let contentEnd = this.end - HERESTRING_DELIMITER_LENGTH;
@@ -26,5 +26,9 @@ export default class HerestringPatcher extends NodePatcher {
       this.remove(contentEnd + 1, this.end);
       escape(this.editor, [source[this.start]], contentStart, contentEnd);
     }
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 }

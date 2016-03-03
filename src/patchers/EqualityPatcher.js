@@ -14,11 +14,15 @@ export default class EqualityPatcher extends BinaryOpPatcher {
     this.negated = false;
   }
 
-  patch() {
+  patchAsExpression() {
     this.left.patch();
     let compareToken = this.getCompareToken();
     this.overwrite(...compareToken.range, this.getCompareOperator());
     this.right.patch();
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 
   getCompareOperator(): string {

@@ -1,13 +1,17 @@
 import NodePatcher from './NodePatcher.js';
 import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
+import type { Node, ParseContext, Editor } from './types.js';
 
 export default class AssignOpPatcher extends NodePatcher {
-  constructor(node, context, editor, assignee, expression) {
+  constructor(node: Node, context: ParseContext, editor: Editor, assignee: NodePatcher, expression: NodePatcher) {
     super(node, context, editor);
     this.assignee = assignee;
     this.expression = expression;
-    assignee.setRequiresExpression();
-    expression.setRequiresExpression();
+  }
+
+  initialize() {
+    this.assignee.setRequiresExpression();
+    this.expression.setRequiresExpression();
   }
 
   patchAsExpression() {

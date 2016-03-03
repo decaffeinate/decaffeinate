@@ -8,7 +8,10 @@ export default class ConditionalPatcher extends NodePatcher {
     this.condition = condition;
     this.consequent = consequent;
     this.alternate = alternate;
-    condition.setRequiresExpression();
+  }
+
+  initialize() {
+    this.condition.setRequiresExpression();
   }
 
   prefersToPatchAsExpression(): boolean {

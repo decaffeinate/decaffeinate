@@ -1,10 +1,14 @@
 import NodePatcher from './NodePatcher.js';
 
 export default class ThisPatcher extends NodePatcher {
-  patch() {
+  patchAsExpression() {
     if (this.isShorthandThis()) {
       this.overwrite(this.start, this.end, 'this');
     }
+  }
+
+  patchAsStatement() {
+    this.patchAsExpression();
   }
 
   isShorthandThis() {
