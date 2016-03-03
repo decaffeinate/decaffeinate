@@ -1,5 +1,6 @@
 import NodePatcher from './NodePatcher.js';
-import type { Token, Node, ParseContext, Editor } from './types.js';
+import type { SourceToken, Node, ParseContext, Editor } from './types.js';
+import { SEMICOLON } from 'coffee-lex';
 
 export default class BlockPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
@@ -62,12 +63,13 @@ export default class BlockPatcher extends NodePatcher {
       (statement, i, statements) => {
         statement.patch();
         if (i !== statements.length - 1) {
-          let semicolonToken = this.getSemicolonTokenBetween(
+          let semicolonTokenIndex = this.getSemicolonSourceTokenBetween(
             statement,
             statements[i + 1]
           );
-          if (semicolonToken) {
-            this.overwrite(...semicolonToken.range, ',');
+          if (semicolonTokenIndex) {
+            let semicolonToken = this.sourceTokenAtIndex(semicolonTokenIndex);
+            this.overwrite(semicolonToken.start, semicolonToken.end, ',');
           } else {
             this.insert(statement.after, ',');
           }
@@ -102,8 +104,12 @@ export default class BlockPatcher extends NodePatcher {
   /**
    * @private
    */
-  getSemicolonTokenBetween(left: NodePatcher, right: NodePatcher): ?Token {
-    return this.tokenBetweenPatchersMatching(left, right, 'TERMINATOR', ';');
+  getSemicolonSourceTokenBetween(left: NodePatcher, right: NodePatcher): ?SourceToken {
+    return this.indexOfSourceTokenBetweenPatchersMatching(
+      left,
+      right,
+      token => token.type === SEMICOLON
+    );
   }
 
   /**

@@ -1,18 +1,21 @@
 import AssignOpPatcher from './AssignOpPatcher.js';
-import type { Token } from './types.js';
+import type { SourceToken } from './types.js';
+import { OPERATOR } from 'coffee-lex';
 
 export default class CompoundAssignOpPatcher extends AssignOpPatcher {
-  getOperatorToken(): Token {
-    let operator = this.tokenBetweenPatchersMatching(
+  getOperatorToken(): SourceToken {
+    let operatorIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
-      'COMPOUND_ASSIGN'
+      token => token.type === OPERATOR
     );
-    if (!operator) {
+    if (!operatorIndex) {
       throw this.error(
-        `expected COMPOUND_ASSIGN token between assignee and expression`
+        `expected OPERATOR token between assignee and expression`,
+        this.assignee.after,
+        this.expression.before
       );
     }
-    return operator;
+    return this.sourceTokenAtIndex(operatorIndex);
   }
 }

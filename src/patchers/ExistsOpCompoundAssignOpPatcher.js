@@ -27,7 +27,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     let operator = this.getOperatorToken();
     // `a.b != null ? a.b ?= b` → `a.b != null ? a.b : (a.b = b`
     //                    ^^                         ^^^^^^^^
-    this.overwrite(...operator.range, `: (${assigneeAgain} =`);
+    this.overwrite(operator.start, operator.end, `: (${assigneeAgain} =`);
     this.expression.patch();
     // `a.b != null ? a.b : (a.b = b` → `a.b != null ? a.b : (a.b = b)`
     //                                                               ^
@@ -62,7 +62,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     let operator = this.getOperatorToken();
     // `if (a.b == null) { ?= b` → `if (a.b == null) { a.b = b`
     //                     ^^                          ^^^^^
-    this.overwrite(...operator.range, `${assigneeAgain} =`);
+    this.overwrite(operator.start, operator.end, `${assigneeAgain} =`);
     this.expression.patch();
     // `if (a.b == null) { a.b = b` → `if (a.b == null) { a.b = b; }`
     //                                                           ^^^

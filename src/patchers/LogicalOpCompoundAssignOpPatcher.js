@@ -5,7 +5,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
     let operator = this.getOperatorToken();
     // `a &&= b` → `a && b`
     //      ^
-    this.remove(operator.range[1] - '='.length, operator.range[1]);
+    this.remove(operator.end - '='.length, operator.end);
     let assigneeAgain = this.assignee.makeRepeatable(false);
     this.assignee.patch();
     // `a && b` → `a && (a = b`
@@ -18,7 +18,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
 
   patchAsStatement() {
     let operator = this.getOperatorToken();
-    let op = this.context.source.slice(...operator.range);
+    let op = this.context.source.slice(operator.start, operator.end);
 
     // `a &&= b` → `if (a &&= b`
     //              ^^^^
