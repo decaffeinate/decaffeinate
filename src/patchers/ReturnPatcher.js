@@ -1,7 +1,8 @@
 import NodePatcher from './NodePatcher.js';
+import type { Editor, Node, ParseContext } from './types.js';
 
 export default class ReturnPatcher extends NodePatcher {
-  constructor(node, context, editor, expression) {
+  constructor(node: Node, context: ParseContext, editor: Editor, expression: ?NodePatcher) {
     super(node, context, editor);
     this.expression = expression;
   }
@@ -17,8 +18,9 @@ export default class ReturnPatcher extends NodePatcher {
     return false;
   }
 
-  patch() {
-    let { expression } = this;
-    expression.patch();
+  patchAsStatement() {
+    if (this.expression) {
+      this.expression.patch();
+    }
   }
 }
