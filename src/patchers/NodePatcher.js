@@ -525,11 +525,18 @@ export default class NodePatcher {
   }
 
   /**
-   * Appends the given content after the end of the current line.
+   * Appends the given content on a new line after the end of the current line.
    */
   appendLineAfter(content: string, indentOffset: number=0) {
+    this.appendToEndOfLine(`\n${this.getIndent(indentOffset)}${content}`);
+  }
+
+  /**
+   * Appends the given content at the end of the current line.
+   */
+  appendToEndOfLine(content: string) {
     let eol = this.getEndOfLine();
-    this.insert(eol, `\n${this.getIndent(indentOffset)}${content}`);
+    this.insert(eol, content);
   }
 
   /**
