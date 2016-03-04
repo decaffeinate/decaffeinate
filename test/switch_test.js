@@ -238,16 +238,22 @@ describe('switch', () => {
     check(`
       a = switch b
         when c then d
+        when f
+          return g
         else e
     `, `
-      var a = (() => { switch (b) {
+      var a = (function() {
+      switch (b) {
         case c: return d;
+        case f:
+          return g;
         default: return e;
-      } })();
+      }
+      })();
     `);
   });
 
-  it.skip('works with the switch from the CoffeeScript demo page', () => {
+  it('works with the switch from the CoffeeScript demo page', () => {
     check(`
     switch day
       when "Mon" then go work
