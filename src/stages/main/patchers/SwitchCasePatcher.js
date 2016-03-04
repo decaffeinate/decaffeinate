@@ -1,4 +1,5 @@
 import NodePatcher from './NodePatcher.js';
+import find from '../utils/array/find.js';
 import type { Editor, Node, ParseContext, Token } from './types.js';
 
 export default class SwitchCasePatcher extends NodePatcher {
@@ -66,7 +67,7 @@ export default class SwitchCasePatcher extends NodePatcher {
    * @private
    */
   getWhenToken(): ?Token {
-    return this.tokens.find(token => token.type === 'LEADING_WHEN');
+    return find(this.tokens, token => token.type === 'LEADING_WHEN');
   }
 
   /**
@@ -80,7 +81,7 @@ export default class SwitchCasePatcher extends NodePatcher {
    * @private
    */
   getBreakToken(): ?Token {
-    return this.tokens.find(token => token.type === 'STATEMENT' && token.data === 'break');
+    return find(this.tokens, token => token.type === 'STATEMENT' && token.data === 'break');
   }
 
   /**
