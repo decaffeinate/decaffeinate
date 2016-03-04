@@ -77,6 +77,55 @@ describe('binary operators', () => {
     `);
   });
 
+  it('handles binary existence operator with a global LHS as a statement', () => {
+    check(`
+      a ? b
+    `, `
+      if (typeof a === 'undefined' || a === null) { b; }
+    `);
+  });
+
+  it('handles binary existence operator with a global LHS as an expression', () => {
+    check(`
+      (a ? b)
+    `, `
+      (typeof a !== 'undefined' && a !== null ? a : b);
+    `);
+  });
+
+  it('handles binary existence operator with a safe-to-repeat member expression as a statement', () => {
+    check(`
+      a.b ? a
+    `, `
+      if (a.b == null) { a; }
+    `);
+  });
+
+  it('handles binary existence operator with a safe-to-repeat member expression as an expression', () => {
+    check(`
+      (a.b ? a)
+    `, `
+      (a.b != null ? a.b : a);
+    `);
+  });
+
+  it('handles binary existence operator with an unsafe-to-repeat member expression as a statement', () => {
+    check(`
+      a() ? b
+    `, `
+      if (a() == null) { b; }
+    `);
+  });
+
+  it('handles binary existence operator with an unsafe-to-repeat member expression as an expression', () => {
+    check(`
+      (a() ? b)
+    `, `
+      var left;
+      ((left = a()) != null ? left : b);
+    `);
+  });
+
   it('handles left shift as a nested operator', () => {
     check(`
       value = object.id << 8 | object.type

@@ -14,6 +14,7 @@ import DefaultParamPatcher from './DefaultParamPatcher.js';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
 import EqualityPatcher from './EqualityPatcher.js';
 import ExistsOpCompoundAssignOpPatcher from './ExistsOpCompoundAssignOpPatcher.js';
+import ExistsOpPatcher from './ExistsOpPatcher.js';
 import ExtendsOpPatcher from './ExtendsOpPatcher.js';
 import FloorDivideOpPatcher from './FloorDivideOpPatcher.js';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
@@ -188,6 +189,9 @@ function patcherConstructorForNode(node): Function {
     case 'SignedRightShiftOp':
     case 'UnsignedRightShiftOp':
       return BinaryOpPatcher;
+
+    case 'ExistsOp':
+      return ExistsOpPatcher;
 
     case 'LogicalAndOp':
     case 'LogicalOrOp':
