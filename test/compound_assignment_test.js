@@ -177,13 +177,21 @@ describe('compound assignment', () => {
       `);
     });
 
-    it('handles simple existence assignment', () => {
+    it('handles simple existence assignment of a global variable', () => {
+      check(`
+        [a ?= 2]
+      `, `
+        [typeof a !== 'undefined' && a !== null ? a : (a = 2)];
+      `);
+    });
+
+    it('handles simple existence assignment of a bound variable', () => {
       check(`
         a = 1
         [a ?= 2]
       `, `
         var a = 1;
-        [typeof a !== 'undefined' && a !== null ? a : (a = 2)];
+        [a != null ? a : (a = 2)];
       `);
     });
 

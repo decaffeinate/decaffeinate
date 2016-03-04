@@ -61,7 +61,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
     let needsTypeofCheck = (
       nodeExpression &&
       nodeExpression.type === 'Identifier' &&
-      node.scope.getBinding(nodeExpression.data) === null
+      !node.scope.hasBinding(nodeExpression.data)
     );
 
     if (needsTypeofCheck) {

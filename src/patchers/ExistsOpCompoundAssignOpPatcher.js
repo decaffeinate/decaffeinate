@@ -4,7 +4,11 @@ import IdentifierPatcher from './IdentifierPatcher.js';
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression() {
     let assigneeAgain;
-    if (this.assignee instanceof IdentifierPatcher) {
+    let needsTypeofCheck = (
+      this.assignee instanceof IdentifierPatcher &&
+      !this.node.scope.hasBinding(this.assignee.node.data)
+    );
+    if (needsTypeofCheck) {
       // `a ?= b` → `typeof a ?= b`
       //             ^^^^^^^
       this.insert(this.assignee.before, `typeof `);

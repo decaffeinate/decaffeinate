@@ -14,12 +14,12 @@ export default class Scope {
     this.bindings = Object.create(parent ? parent.bindings : null);
   }
 
-  /**
-   * @param {string} name
-   * @returns {?Object}
-   */
-  getBinding(name) {
+  getBinding(name: string): ?Object {
     return this.bindings[this.key(name)] || null;
+  }
+
+  hasBinding(name: string): boolean {
+    return this.getBinding(name) !== null;
   }
 
   /**
