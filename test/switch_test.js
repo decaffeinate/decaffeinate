@@ -234,18 +234,16 @@ describe('switch', () => {
     `);
   });
 
-  it.skip('works with `switch` used as an expression', () => {
+  it('works with `switch` used as an expression', () => {
     check(`
       a = switch b
         when c then d
         else e
     `, `
-      var a = (function() {
-        switch (b) {
-          case c: return d;
-          default: return e;
-        }
-      })();
+      var a = (() => { switch (b) {
+        case c: return d;
+        default: return e;
+      } })();
     `);
   });
 

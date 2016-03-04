@@ -57,14 +57,14 @@ export default class SwitchPatcher extends NodePatcher {
   patchAsExpression() {
     this.setImplicitlyReturns();
 
-    // `` → `(function() {\n`
-    //       ^^^^^^^^^^^^^^^
-    this.insertBefore('(function() {\n');
+    // `` → `(() => { `
+    //       ^^^^^^^^^
+    this.insertBefore('(() => { ');
     this.patchAsStatement();
 
-    // `` → `})()`
-    //       ^^^^
-    this.appendLineAfter('})()');
+    // `` → ` })()`
+    //       ^^^^^
+    this.appendToEndOfLine(' })()');
   }
 
   /**
