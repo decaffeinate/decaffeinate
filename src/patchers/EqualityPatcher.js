@@ -1,6 +1,7 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import NodePatcher from './NodePatcher.js';
-import type { Token, Node, ParseContext, Editor } from './types.js';
+import type { SourceToken, Node, ParseContext, Editor } from './types.js';
+import { OPERATOR } from 'coffee-lex';
 
 /**
  * Handles equality and inequality comparisons.
@@ -17,7 +18,11 @@ export default class EqualityPatcher extends BinaryOpPatcher {
   patchAsExpression() {
     this.left.patch();
     let compareToken = this.getCompareToken();
-    this.overwrite(...compareToken.range, this.getCompareOperator());
+    this.overwrite(
+      compareToken.start,
+      compareToken.end,
+      this.getCompareOperator()
+    );
     this.right.patch();
   }
 
@@ -55,19 +60,23 @@ export default class EqualityPatcher extends BinaryOpPatcher {
   /**
    * @private
    */
-  getCompareToken(): Token {
+  getCompareToken(): SourceToken {
     let { left, right } = this;
-    let compareToken = this.tokenBetweenPatchersMatching(left, right, 'COMPARE');
+    let compareTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+      left,
+      right,
+      token => (this.log(token), token.type === OPERATOR)
+    );
 
-    if (!compareToken) {
+    if (!compareTokenIndex) {
       throw this.error(
-        'expected COMPARE token but none was found',
+        'expected OPERATOR token but none was found',
         left.after,
         right.before
       );
     }
 
-    return compareToken;
+    return this.sourceTokenAtIndex(compareTokenIndex);
   }
 
   /**
