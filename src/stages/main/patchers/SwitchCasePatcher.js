@@ -23,9 +23,9 @@ export default class SwitchCasePatcher extends NodePatcher {
     this.conditions.forEach((condition) => {
       // `a b c then d` → `case a: case b: case c: then d`
       //                   ^^^^^ ^^^^^^^ ^^^^^^^ ^
-      condition.insertBefore('case ');
+      this.insert(condition.before, 'case ');
       condition.patch({ leftBrace: false, rightBrace: false });
-      condition.insertAfter(':');
+      this.insert(condition.after, ':');
     });
 
 
@@ -42,7 +42,7 @@ export default class SwitchCasePatcher extends NodePatcher {
       if (thenToken) {
         // `case a: case b: case c: then d → `case a: case b: case c: d break`
         //                                                             ^^^^^^
-        this.consequent.insertAfter(' break');
+        this.insert(this.consequent.after, ' break');
       } else {
         this.appendLineAfter('break', 1);
       }
