@@ -2,7 +2,7 @@ import NodePatcher from './NodePatcher.js';
 import type { Editor, Node, ParseContext, Token } from './types.js';
 
 export default class SwitchCasePatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, conditions: NodePatcher, consequent: NodePatcher) {
+  constructor(node: Node, context: ParseContext, editor: Editor, conditions: Array<NodePatcher>, consequent: NodePatcher) {
     super(node, context, editor);
     this.conditions = conditions;
     this.consequent = consequent;
