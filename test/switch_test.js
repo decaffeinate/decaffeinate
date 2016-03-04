@@ -242,14 +242,12 @@ describe('switch', () => {
           return g
         else e
     `, `
-      var a = (function() {
-      switch (b) {
+      var a = (() => { switch (b) {
         case c: return d;
         case f:
           return g;
         default: return e;
-      }
-      })();
+      } })();
     `);
   });
 
