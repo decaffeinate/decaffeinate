@@ -1,8 +1,9 @@
 /* eslint no-process-exit: 0 */
 
-import { stat, readdir, createReadStream, createWriteStream } from 'fs';
-import { join, dirname, basename, extname } from 'path';
+import PatchError from './utils/PatchError.js';
 import { convert } from './index.js';
+import { join, dirname, basename, extname } from 'path';
+import { stat, readdir, createReadStream, createWriteStream } from 'fs';
 
 /**
  * Run the script with the user-supplied arguments.
@@ -13,7 +14,7 @@ export default function run(args: Array<string>) {
   if (input.paths.length) {
     runWithPaths(input.paths);
   } else {
-    runWithStream(process.stdin, process.stdout);
+    runWithStream('stdin', process.stdin, process.stdout);
   }
 }
 
@@ -74,6 +75,7 @@ function runWithPaths(paths: Array<string>, callback: ?((errors: Array<Error>) =
     let outputPath = join(dirname(path), basename(path, extname(path))) + '.js';
     console.log(`${path} → ${outputPath}`);
     runWithStream(
+      path,
       createReadStream(path, { encoding: 'utf8' }),
       createWriteStream(outputPath, { encoding: 'utf8' }),
       err => {
@@ -100,6 +102,7 @@ type ReadableStream = {
 };
 
 type WritableStream = {
+  write: (data: string) => void,
   end: (data?: string, callback?: Function) => void,
   on: (event: string, callback: Function) => void
 };
@@ -107,7 +110,7 @@ type WritableStream = {
 /**
  * Run decaffeinate reading from input and writing to corresponding output.
  */
-function runWithStream(input: ReadableStream, output: WritableStream, callback: (error?: ?Error) => void) {
+function runWithStream(name: string, input: ReadableStream, output: WritableStream, callback: (error?: ?Error) => void) {
   let error = null;
   let data = '';
 
@@ -116,7 +119,18 @@ function runWithStream(input: ReadableStream, output: WritableStream, callback: 
   input.on('data', chunk => data += chunk);
 
   input.on('end', () => {
-    output.end(convert(data), () => {
+    let converted;
+    try {
+      converted = convert(data);
+    } catch (err) {
+      if (err.context) {
+        console.error(`${name}: ${PatchError.prettyPrint(err)}`);
+        process.exit(1);
+      } else {
+        throw err;
+      }
+    }
+    output.end(converted, () => {
       if (callback) {
         callback(error);
       }

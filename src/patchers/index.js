@@ -5,11 +5,11 @@ import BlockPatcher from './BlockPatcher.js';
 import BoolPatcher from './BoolPatcher.js';
 import BoundFunctionPatcher from './BoundFunctionPatcher.js';
 import ChainedComparisonOpPatcher from './ChainedComparisonOpPatcher.js';
-import ClassPatcher from './ClassPatcher.js';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher.js';
+import ClassPatcher from './ClassPatcher.js';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher.js';
-import ConstructorPatcher from './ConstructorPatcher.js';
 import ConditionalPatcher from './ConditionalPatcher.js';
+import ConstructorPatcher from './ConstructorPatcher.js';
 import DefaultParamPatcher from './DefaultParamPatcher.js';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
 import EqualityPatcher from './EqualityPatcher.js';
@@ -24,15 +24,16 @@ import IdentifierPatcher from './IdentifierPatcher.js';
 import InOpPatcher from './InOpPatcher.js';
 import InstanceofOpPatcher from './InstanceofOpPatcher.js';
 import JavaScriptPatcher from './JavaScriptPatcher.js';
-import LogicalOpPatcher from './LogicalOpPatcher.js';
 import LogicalNotOpPatcher from './LogicalNotOpPatcher.js';
 import LogicalOpCompoundAssignOpPatcher from './LogicalOpCompoundAssignOpPatcher.js';
+import LogicalOpPatcher from './LogicalOpPatcher.js';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import NewOpPatcher from './NewOpPatcher.js';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher.js';
 import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
 import OfOpPatcher from './OfOpPatcher.js';
 import PassthroughPatcher from './PassthroughPatcher.js';
+import PatchError from '../utils/PatchError.js';
 import ProgramPatcher from './ProgramPatcher.js';
 import ProtoMemberAccessOpPatcher from './ProtoMemberAccessOpPatcher.js';
 import RangePatcher from './RangePatcher.js';
@@ -48,11 +49,22 @@ import ThrowPatcher from './ThrowPatcher.js';
 import UnaryExistsOpPatcher from './UnaryExistsOpPatcher.js';
 import UnaryOpPatcher from './UnaryOpPatcher.js';
 import WhilePatcher from './WhilePatcher.js';
+import type NodePatcher from './NodePatcher.js';
 import { childPropertyNames } from '../utils/traverse.js';
 
 export function makePatcher(node, context, editor, constructor=null, allPatchers=[]) {
   if (!constructor) {
     constructor = patcherConstructorForNode(node);
+
+    if (constructor === null) {
+      let props = childPropertyNames(node);
+      throw new PatchError(
+        `no patcher available for node type: ${node.type}` +
+        `${props.length ? ` (props: ${props.join(', ')})` : ''}`,
+        context,
+        ...node.range
+      );
+    }
   }
 
   constructor = constructor.patcherClassOverrideForNode(node) || constructor;
@@ -94,7 +106,7 @@ export function makePatcher(node, context, editor, constructor=null, allPatchers
   return patcher;
 }
 
-function patcherConstructorForNode(node): Function {
+function patcherConstructorForNode(node): ?Class<NodePatcher> {
   switch (node.type) {
     case 'Identifier':
       return IdentifierPatcher;
@@ -278,11 +290,7 @@ function patcherConstructorForNode(node): Function {
       return ExtendsOpPatcher;
 
     default:
-      let props = childPropertyNames(node);
-      throw new Error(
-        `no patcher available for node type: ${node.type}` +
-        `${props.length ? ` (props: ${props.join(', ')})` : ''}`
-      );
+      return null;
   }
 }
 
