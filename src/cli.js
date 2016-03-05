@@ -1,15 +1,13 @@
 /* eslint no-process-exit: 0 */
 
-import { createReadStream, createWriteStream } from 'fs';
+import { stat, readdir, createReadStream, createWriteStream } from 'fs';
 import { join, dirname, basename, extname } from 'path';
 import { convert } from './index.js';
 
 /**
  * Run the script with the user-supplied arguments.
- *
- * @param {string[]} args
  */
-export default function run(args) {
+export default function run(args: Array<string>) {
   let input = parseArguments(args);
 
   if (input.paths.length) {
@@ -19,12 +17,8 @@ export default function run(args) {
   }
 }
 
-/**
- * @param {string[]} args
- * @returns {{paths: string[]}}
- */
-function parseArguments(args) {
-  let paths = /** @type string[] */[];
+function parseArguments(args: Array<string>): { paths: Array<string> } {
+  let paths = [];
 
   for (let i = 0; i < args.length; i++) {
     let arg = args[i];
@@ -46,20 +40,43 @@ function parseArguments(args) {
 
 /**
  * Run decaffeinate on the given paths, changing them in place.
- *
- * @param {string[]} paths
- * @param {?function(Error[])=} callback
  */
-function runWithPaths(paths, callback) {
+function runWithPaths(paths: Array<string>, callback: ?((errors: Array<Error>) => void)=null) {
   let errors = [];
-  let index = 0;
+  let pending = paths.slice();
 
-  function processPath(path) {
+  function processPath(path: string) {
+    stat(path, (err, info) => {
+      if (err) { errors.push(err); }
+      else if (info.isDirectory()) {
+        processDirectory(path);
+      } else {
+        processFile(path);
+      }
+    });
+  }
+
+  function processDirectory(path: string) {
+    readdir(path, (err, children) => {
+      if (err) { errors.push(err); }
+      else {
+        pending.unshift(
+          ...children
+            .filter(child => extname(child) === '.coffee')
+            .map(child => join(path, child))
+        );
+      }
+      processNext();
+    });
+  }
+
+  function processFile(path: string) {
     let outputPath = join(dirname(path), basename(path, extname(path))) + '.js';
+    console.log(`${path} → ${outputPath}`);
     runWithStream(
       createReadStream(path, { encoding: 'utf8' }),
       createWriteStream(outputPath, { encoding: 'utf8' }),
-      function(err) {
+      err => {
         if (err) { errors.push(err); }
         processNext();
       }
@@ -67,8 +84,8 @@ function runWithPaths(paths, callback) {
   }
 
   function processNext() {
-    if (index < paths.length) {
-      processPath(paths[index++]);
+    if (pending.length > 0) {
+      processPath(pending.shift());
     } else if (callback) {
       callback(errors);
     }
@@ -77,34 +94,36 @@ function runWithPaths(paths, callback) {
   processNext();
 }
 
+type ReadableStream = {
+  setEncoding: (encoding: string) => void,
+  on: (event: string, callback: Function) => void
+};
+
+type WritableStream = {
+  end: (data?: string, callback?: Function) => void,
+  on: (event: string, callback: Function) => void
+};
+
 /**
  * Run decaffeinate reading from input and writing to corresponding output.
- *
- * @param {ReadableStream} input
- * @param {WritableStream} output
- * @param {function(?Error)=} callback
  */
-function runWithStream(input, output, callback) {
-  let error;
+function runWithStream(input: ReadableStream, output: WritableStream, callback: (error?: ?Error) => void) {
+  let error = null;
   let data = '';
 
   input.setEncoding('utf8');
 
-  input.on('data', function(chunk) {
-    data += chunk;
-  });
+  input.on('data', chunk => data += chunk);
 
-  input.on('end', function() {
-    output.end(convert(data), function() {
+  input.on('end', () => {
+    output.end(convert(data), () => {
       if (callback) {
         callback(error);
       }
     });
   });
 
-  output.on('error', function(err) {
-    error = err;
-  });
+  output.on('error', err => error = err);
 }
 
 /**
@@ -128,6 +147,9 @@ function usage() {
   console.log();
   console.log('  # Pipe an example from the command-line.');
   console.log('  $ echo "a = 1" | decaffeinate');
+  console.log();
+  console.log('  # Process everything in a directory.');
+  console.log('  $ decaffeinate src/');
   console.log();
   console.log('  # Redirect input from a file.');
   console.log('  $ decaffeinate < index.coffee');
