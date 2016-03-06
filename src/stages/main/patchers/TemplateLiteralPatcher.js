@@ -1,6 +1,6 @@
 import NodePatcher from './NodePatcher.js';
-import replaceTripleQuotes from '../utils/replaceTripleQuotes.js';
-import { escapeTemplateStringContents } from '../utils/escape.js';
+import replaceTripleQuotes from '../../../utils/replaceTripleQuotes.js';
+import { escapeTemplateStringContents } from '../../../utils/escape.js';
 import type { Node, ParseContext, Editor } from './types.js';
 
 export default class TemplateLiteralPatcher extends NodePatcher {

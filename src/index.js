@@ -2,7 +2,7 @@ import MagicString from 'magic-string';
 import addVariableDeclarations from 'add-variable-declarations';
 import { linter } from 'eslint';
 import { logger } from './utils/debug.js';
-import { makePatcher } from './patchers/index.js';
+import { makePatcher } from './stages/main/index.js';
 import parse from './utils/parse.js';
 
 export { default as run } from './cli';

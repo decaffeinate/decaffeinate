@@ -1,8 +1,8 @@
-import PatcherError from '../utils/PatchError.js';
-import adjustIndent from '../utils/adjustIndent.js';
+import PatcherError from '../../../utils/PatchError.js';
+import adjustIndent from '../../../utils/adjustIndent.js';
 import repeat from 'repeating';
 import type { Token, SourceToken, SourceTokenListIndex, Editor, Node, ParseContext, SourceTokenList } from './types.js';
-import { logger } from '../utils/debug.js';
+import { logger } from '../../../utils/debug.js';
 
 export default class NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor) {

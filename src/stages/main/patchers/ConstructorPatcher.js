@@ -1,7 +1,7 @@
 import IdentifierPatcher from './IdentifierPatcher.js';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
-import find from '../utils/array/find.js';
-import traverse from '../utils/traverse.js';
+import find from '../../../utils/array/find.js';
+import traverse from '../../../utils/traverse.js';
 import type FunctionPatcher from './FunctionPatcher.js';
 import type { Editor, Node, ParseContext, Token } from './types.js';
 

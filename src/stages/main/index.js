@@ -1,63 +1,64 @@
-import ArrayInitialiserPatcher from './ArrayInitialiserPatcher.js';
-import AssignOpPatcher from './AssignOpPatcher.js';
-import BinaryOpPatcher from './BinaryOpPatcher.js';
-import BlockPatcher from './BlockPatcher.js';
-import BoolPatcher from './BoolPatcher.js';
-import BoundFunctionPatcher from './BoundFunctionPatcher.js';
-import ChainedComparisonOpPatcher from './ChainedComparisonOpPatcher.js';
-import ClassAssignOpPatcher from './ClassAssignOpPatcher.js';
-import ClassPatcher from './ClassPatcher.js';
-import CompoundAssignOpPatcher from './CompoundAssignOpPatcher.js';
-import ConditionalPatcher from './ConditionalPatcher.js';
-import ConstructorPatcher from './ConstructorPatcher.js';
-import DefaultParamPatcher from './DefaultParamPatcher.js';
-import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
-import EqualityPatcher from './EqualityPatcher.js';
-import ExistsOpCompoundAssignOpPatcher from './ExistsOpCompoundAssignOpPatcher.js';
-import ExistsOpPatcher from './ExistsOpPatcher.js';
-import ExtendsOpPatcher from './ExtendsOpPatcher.js';
-import FloorDivideOpPatcher from './FloorDivideOpPatcher.js';
-import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
-import FunctionPatcher from './FunctionPatcher.js';
-import HerestringPatcher from './HerestringPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import InOpPatcher from './InOpPatcher.js';
-import InstanceofOpPatcher from './InstanceofOpPatcher.js';
-import JavaScriptPatcher from './JavaScriptPatcher.js';
-import LogicalNotOpPatcher from './LogicalNotOpPatcher.js';
-import LogicalOpCompoundAssignOpPatcher from './LogicalOpCompoundAssignOpPatcher.js';
-import LogicalOpPatcher from './LogicalOpPatcher.js';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
-import NewOpPatcher from './NewOpPatcher.js';
-import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher.js';
-import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
-import OfOpPatcher from './OfOpPatcher.js';
-import PassthroughPatcher from './PassthroughPatcher.js';
-import PatchError from '../utils/PatchError.js';
-import ProgramPatcher from './ProgramPatcher.js';
-import ProtoMemberAccessOpPatcher from './ProtoMemberAccessOpPatcher.js';
-import RangePatcher from './RangePatcher.js';
-import RestPatcher from './RestPatcher.js';
-import ReturnPatcher from './ReturnPatcher.js';
-import SlicePatcher from './SlicePatcher.js';
-import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher.js';
-import SpreadPatcher from './SpreadPatcher.js';
-import SuperPatcher from './SuperPatcher.js';
-import TemplateLiteralPatcher from './TemplateLiteralPatcher.js';
-import ThisPatcher from './ThisPatcher.js';
-import ThrowPatcher from './ThrowPatcher.js';
-import UnaryExistsOpPatcher from './UnaryExistsOpPatcher.js';
-import UnaryOpPatcher from './UnaryOpPatcher.js';
-import WhilePatcher from './WhilePatcher.js';
-import type NodePatcher from './NodePatcher.js';
-import { childPropertyNames } from '../utils/traverse.js';
+import ArrayInitialiserPatcher from './patchers/ArrayInitialiserPatcher.js';
+import AssignOpPatcher from './patchers/AssignOpPatcher.js';
+import BinaryOpPatcher from './patchers/BinaryOpPatcher.js';
+import BlockPatcher from './patchers/BlockPatcher.js';
+import BoolPatcher from './patchers/BoolPatcher.js';
+import BoundFunctionPatcher from './patchers/BoundFunctionPatcher.js';
+import ChainedComparisonOpPatcher from './patchers/ChainedComparisonOpPatcher.js';
+import ClassAssignOpPatcher from './patchers/ClassAssignOpPatcher.js';
+import ClassPatcher from './patchers/ClassPatcher.js';
+import CompoundAssignOpPatcher from './patchers/CompoundAssignOpPatcher.js';
+import ConditionalPatcher from './patchers/ConditionalPatcher.js';
+import ConstructorPatcher from './patchers/ConstructorPatcher.js';
+import DefaultParamPatcher from './patchers/DefaultParamPatcher.js';
+import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher.js';
+import EqualityPatcher from './patchers/EqualityPatcher.js';
+import ExistsOpCompoundAssignOpPatcher from './patchers/ExistsOpCompoundAssignOpPatcher.js';
+import ExistsOpPatcher from './patchers/ExistsOpPatcher.js';
+import ExtendsOpPatcher from './patchers/ExtendsOpPatcher.js';
+import FloorDivideOpPatcher from './patchers/FloorDivideOpPatcher.js';
+import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher.js';
+import FunctionPatcher from './patchers/FunctionPatcher.js';
+import HerestringPatcher from './patchers/HerestringPatcher.js';
+import IdentifierPatcher from './patchers/IdentifierPatcher.js';
+import InOpPatcher from './patchers/InOpPatcher.js';
+import InstanceofOpPatcher from './patchers/InstanceofOpPatcher.js';
+import JavaScriptPatcher from './patchers/JavaScriptPatcher.js';
+import LogicalNotOpPatcher from './patchers/LogicalNotOpPatcher.js';
+import LogicalOpCompoundAssignOpPatcher from './patchers/LogicalOpCompoundAssignOpPatcher.js';
+import LogicalOpPatcher from './patchers/LogicalOpPatcher.js';
+import MemberAccessOpPatcher from './patchers/MemberAccessOpPatcher.js';
+import NewOpPatcher from './patchers/NewOpPatcher.js';
+import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher.js';
+import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher.js';
+import OfOpPatcher from './patchers/OfOpPatcher.js';
+import PassthroughPatcher from './patchers/PassthroughPatcher.js';
+import PatchError from '../../utils/PatchError.js';
+import ProgramPatcher from './patchers/ProgramPatcher.js';
+import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher.js';
+import RangePatcher from './patchers/RangePatcher.js';
+import RestPatcher from './patchers/RestPatcher.js';
+import ReturnPatcher from './patchers/ReturnPatcher.js';
+import SlicePatcher from './patchers/SlicePatcher.js';
+import SoakedMemberAccessOpPatcher from './patchers/SoakedMemberAccessOpPatcher.js';
+import SpreadPatcher from './patchers/SpreadPatcher.js';
+import SuperPatcher from './patchers/SuperPatcher.js';
+import TemplateLiteralPatcher from './patchers/TemplateLiteralPatcher.js';
+import ThisPatcher from './patchers/ThisPatcher.js';
+import ThrowPatcher from './patchers/ThrowPatcher.js';
+import UnaryExistsOpPatcher from './patchers/UnaryExistsOpPatcher.js';
+import UnaryOpPatcher from './patchers/UnaryOpPatcher.js';
+import WhilePatcher from './patchers/WhilePatcher.js';
+import type NodePatcher from './patchers/NodePatcher.js';
+import { childPropertyNames } from '../../utils/traverse.js';
 
 export function makePatcher(node, context, editor, constructor=null, allPatchers=[]) {
+  let props = childPropertyNames(node);
+
   if (!constructor) {
     constructor = patcherConstructorForNode(node);
 
     if (constructor === null) {
-      let props = childPropertyNames(node);
       throw new PatchError(
         `no patcher available for node type: ${node.type}` +
         `${props.length ? ` (props: ${props.join(', ')})` : ''}`,
@@ -69,7 +70,6 @@ export function makePatcher(node, context, editor, constructor=null, allPatchers
 
   constructor = constructor.patcherClassOverrideForNode(node) || constructor;
 
-  let props = childPropertyNames(node);
   let children = props.map(name => {
     let child = node[name];
     if (!child) {
