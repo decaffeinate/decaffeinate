@@ -1,4 +1,4 @@
-/* eslint no-process-exit: 0 */
+/* eslint-disable no-process-exit */
 
 import PatchError from './utils/PatchError.js';
 import { convert } from './index.js';
