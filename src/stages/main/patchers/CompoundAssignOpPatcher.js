@@ -1,5 +1,5 @@
 import AssignOpPatcher from './AssignOpPatcher.js';
-import type { SourceToken } from './types.js';
+import type { SourceToken } from './../../../patchers/types.js';
 import { OPERATOR } from 'coffee-lex';
 
 export default class CompoundAssignOpPatcher extends AssignOpPatcher {

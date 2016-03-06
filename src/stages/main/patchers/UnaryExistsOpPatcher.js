@@ -1,5 +1,5 @@
 import UnaryOpPatcher from './UnaryOpPatcher.js';
-import type { Node, ParseContext, Editor, NodePatcher } from './types.js';
+import type { Node, ParseContext, Editor, NodePatcher } from './../../../patchers/types.js';
 
 /**
  * Handles unary exists, e.g. `a?`.

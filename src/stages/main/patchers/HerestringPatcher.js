@@ -1,4 +1,4 @@
-import NodePatcher from './NodePatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
 import escape, { escapeTemplateStringContents } from '../../../utils/escape.js';
 
 const HERESTRING_DELIMITER_LENGTH = 3;

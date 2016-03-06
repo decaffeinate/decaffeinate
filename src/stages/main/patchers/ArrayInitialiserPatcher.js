@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher.js';
-import type { Editor, Node, ParseContext } from './types.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
+import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 
 export default class ArrayInitialiserPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, members: Array<NodePatcher>) {

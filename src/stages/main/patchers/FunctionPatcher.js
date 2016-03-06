@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher.js';
-import type { Token, Node, ParseContext, Editor } from './types.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
+import type { Token, Node, ParseContext, Editor } from './../../../patchers/types.js';
 
 export default class FunctionPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, parameters: Array<NodePatcher>, body: ?NodePatcher) {

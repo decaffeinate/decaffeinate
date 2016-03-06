@@ -1,6 +1,6 @@
-import NodePatcher from './NodePatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
-import type { Node, SourceTokenListIndex, ParseContext, Editor } from './types.js';
+import type { Node, SourceTokenListIndex, ParseContext, Editor } from './../../../patchers/types.js';
 import { ELSE, IF, THEN } from 'coffee-lex';
 
 export default class ConditionalPatcher extends NodePatcher {

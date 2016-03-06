@@ -1,7 +1,7 @@
 import FunctionPatcher from './FunctionPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
-import NodePatcher from './NodePatcher.js';
-import type { Editor, Node, ParseContext } from './types.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
+import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 
 /**
  * Handles object properties.

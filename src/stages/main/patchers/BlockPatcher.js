@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher.js';
-import type { SourceToken, Node, ParseContext, Editor } from './types.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
+import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
 import { SEMICOLON } from 'coffee-lex';
 
 export default class BlockPatcher extends NodePatcher {

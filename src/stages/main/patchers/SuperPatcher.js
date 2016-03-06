@@ -1,4 +1,4 @@
-import NodePatcher from './NodePatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher.js';
 import ConstructorPatcher from './ConstructorPatcher.js';
 

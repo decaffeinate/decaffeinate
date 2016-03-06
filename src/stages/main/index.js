@@ -32,7 +32,7 @@ import NewOpPatcher from './patchers/NewOpPatcher.js';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher.js';
 import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher.js';
 import OfOpPatcher from './patchers/OfOpPatcher.js';
-import PassthroughPatcher from './patchers/PassthroughPatcher.js';
+import PassthroughPatcher from './../../patchers/PassthroughPatcher.js';
 import PatchError from '../../utils/PatchError.js';
 import ProgramPatcher from './patchers/ProgramPatcher.js';
 import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher.js';
@@ -49,7 +49,7 @@ import ThrowPatcher from './patchers/ThrowPatcher.js';
 import UnaryExistsOpPatcher from './patchers/UnaryExistsOpPatcher.js';
 import UnaryOpPatcher from './patchers/UnaryOpPatcher.js';
 import WhilePatcher from './patchers/WhilePatcher.js';
-import type NodePatcher from './patchers/NodePatcher.js';
+import type NodePatcher from './../../patchers/NodePatcher.js';
 import { childPropertyNames } from '../../utils/traverse.js';
 
 export function makePatcher(node, context, editor, constructor=null, allPatchers=[]) {

@@ -3,8 +3,8 @@ import IdentifierPatcher from './IdentifierPatcher.js';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
 import ThisPatcher from './ThisPatcher.js';
-import type NodePatcher from './NodePatcher.js';
-import type { Node } from './types.js';
+import type NodePatcher from './../../../patchers/NodePatcher.js';
+import type { Node } from './../../../patchers/types.js';
 
 export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {

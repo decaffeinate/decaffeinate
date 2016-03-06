@@ -1,10 +1,10 @@
-import NodePatcher from './NodePatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
 import blank from '../../../utils/blank.js';
 import determineIndent from '../../../utils/determineIndent.js';
 import getIndent from '../../../utils/getIndent.js';
 import lex, { COMMENT, HERECOMMENT} from 'coffee-lex';
 import type BlockPatcher from './BlockPatcher.js';
-import type { Editor, Node, ParseContext, SourceToken, SourceTokenList } from './types.js';
+import type { Editor, Node, ParseContext, SourceToken, SourceTokenList } from './../../../patchers/types.js';
 
 const BLOCK_COMMENT_DELIMITER = '###';
 

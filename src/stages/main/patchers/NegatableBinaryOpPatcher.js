@@ -1,6 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
-import type NodePatcher from './NodePatcher.js';
-import type { Editor, Node, ParseContext } from './types.js';
+import type NodePatcher from './../../../patchers/NodePatcher.js';
+import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 
 /**
  * Handles `instanceof` operator, e.g. `a instanceof b`.

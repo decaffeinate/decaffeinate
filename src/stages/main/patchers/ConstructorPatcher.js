@@ -3,7 +3,7 @@ import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
 import find from '../../../utils/array/find.js';
 import traverse from '../../../utils/traverse.js';
 import type FunctionPatcher from './FunctionPatcher.js';
-import type { Editor, Node, ParseContext, Token } from './types.js';
+import type { Editor, Node, ParseContext, Token } from './../../../patchers/types.js';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: FunctionPatcher) {

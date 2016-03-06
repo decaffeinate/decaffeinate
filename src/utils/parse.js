@@ -1,6 +1,6 @@
 import Scope from './Scope.js';
 import traverse from './traverse.js';
-import type { Node } from '../stages/main/patchers/types.js';
+import type { Node } from '../patchers/types.js';
 import { parse as decaffeinateParse } from 'decaffeinate-parser';
 
 /**

@@ -1,4 +1,4 @@
-import type Scope from '../../../utils/Scope.js';
+import type Scope from '../utils/Scope.js';
 
 export type Node = {
   type: string,

@@ -1,6 +1,6 @@
 import printTable from './printTable.js';
 import repeat from 'repeating';
-import type { ParseContext } from '../stages/main/patchers/types.js';
+import type { ParseContext } from '../patchers/types.js';
 
 export default class PatchError extends Error {
   constructor(message: string, context: ParseContext, start: number, end: number) {

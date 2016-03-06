@@ -1,9 +1,9 @@
 import BlockPatcher from './BlockPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
-import NodePatcher from './NodePatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
 import traverse from '../../../utils/traverse.js';
-import type { Token, Node } from './types.js';
+import type { Token, Node } from './../../../patchers/types.js';
 import { isFunction } from '../../../utils/types.js';
 
 /**

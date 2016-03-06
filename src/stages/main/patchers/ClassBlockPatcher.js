@@ -1,9 +1,9 @@
 import BlockPatcher from './BlockPatcher.js';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher.js';
 import ConstructorPatcher from './ConstructorPatcher.js';
-import NodePatcher from './NodePatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
 import adjustIndent from '../../../utils/adjustIndent.js';
-import type { Node, ParseContext, Editor } from './types.js';
+import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
 
 export default class ClassBlockPatcher extends BlockPatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {

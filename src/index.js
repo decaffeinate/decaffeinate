@@ -2,8 +2,11 @@ import MagicString from 'magic-string';
 import addVariableDeclarations from 'add-variable-declarations';
 import { linter } from 'eslint';
 import { logger } from './utils/debug.js';
-import { makePatcher } from './stages/main/index.js';
+import { makePatcher as makeNormalizePatcher } from './stages/normalize/index.js';
+import { makePatcher as makeMainPatcher } from './stages/main/index.js';
 import parse from './utils/parse.js';
+import type NodePatcher from './patchers/NodePatcher.js';
+import type { Node, Editor, ParseContext } from './patchers/types.js';
 
 export { default as run } from './cli';
 
@@ -13,22 +16,8 @@ let log = logger('convert');
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
  */
 export function convert(source: string): string {
-  let ast = parse(source);
-  let editor = new MagicString(source);
-
-  try {
-    makePatcher(ast, ast.context, editor).patch();
-  } catch (err) {
-    // FIXME: instanceof would be nice
-    // http://stackoverflow.com/questions/33870684/why-doesnt-instanceof-work-on-instances-of-error-subclasses-under-babel-node
-    if (err.patcher) {
-      let { line, column } = err.patcher.context.lineMap.invert(err.start);
-      log(`Failed to patch ${err.patcher.node.type} at ${line + 1}:${column + 1}`);
-    }
-    throw err;
-  }
-
-  let js = editor.toString();
+  let normalized = patch(source, makeNormalizePatcher).code;
+  let js = patch(normalized, makeMainPatcher).code;
   try {
     js = addVariableDeclarations(js).code;
   } catch (err) {
@@ -38,7 +27,7 @@ export function convert(source: string): string {
   }
 
   try {
-    editor = new MagicString(js);
+    let editor = new MagicString(js);
     let messages = linter.verify(js, {
       rules: { 'semi': 2, 'no-extra-semi': 2 },
       env: { es6: true }
@@ -61,5 +50,12 @@ export function convert(source: string): string {
     throw err;
   }
   return js;
+}
+
+function patch(source: string, makePatcher: (ast: Node, context: ParseContext, editor: Editor) => NodePatcher): { code: string, map: Object } {
+  let ast = parse(source);
+  let editor = new MagicString(source);
+  makePatcher(ast, ast.context, editor).patch();
+  return { code: editor.toString(), map: editor.generateMap() };
 }
 

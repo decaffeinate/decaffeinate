@@ -1,8 +1,8 @@
-import PatcherError from '../../../utils/PatchError.js';
-import adjustIndent from '../../../utils/adjustIndent.js';
+import PatcherError from '../utils/PatchError.js';
+import adjustIndent from '../utils/adjustIndent.js';
 import repeat from 'repeating';
 import type { Token, SourceToken, SourceTokenListIndex, Editor, Node, ParseContext, SourceTokenList } from './types.js';
-import { logger } from '../../../utils/debug.js';
+import { logger } from '../utils/debug.js';
 
 export default class NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor) {
@@ -543,7 +543,7 @@ export default class NodePatcher {
    * Generate an error referring to a particular section of the source.
    */
   error(message: string, start: number=this.start, end: number=this.end): PatcherError {
-    return new PatcherError(message, this, start, end);
+    return new PatcherError(message, this.context, start, end);
   }
 
   /**

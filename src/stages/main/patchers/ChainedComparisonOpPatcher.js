@@ -1,6 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
-import NodePatcher from './NodePatcher.js';
-import type { Editor, Node, ParseContext } from './types.js';
+import NodePatcher from './../../../patchers/NodePatcher.js';
+import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 
 /**
  * Handles constructs of the form `a < b < c < … < z`.
