@@ -543,7 +543,7 @@ export default class NodePatcher {
    * Generate an error referring to a particular section of the source.
    */
   error(message: string, start: number=this.start, end: number=this.end): PatcherError {
-    return new PatcherError(message, this, start, end);
+    return new PatcherError(message, this.context, start, end);
   }
 
   /**

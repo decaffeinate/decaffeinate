@@ -46,6 +46,22 @@ know how to transform a particular CoffeeScript node type to JavaScript. They
 work by editing the original CoffeeScript source code, such as inserting missing
 punctuation.
 
+### Stages
+
+Patchers are grouped into stages since some features cannot be done in a single
+pass.
+
+#### `normalize` stage
+
+This stage does pre-processing and takes CoffeeScript as input and generates
+CoffeeScript as output. Typically patchers will not be added here, but in the
+`main` stage instead.
+
+#### `main` stage
+
+This stage does almost all the editing and takes CoffeeScript as input and
+generates JavaScript as output.
+
 ### Building a patcher
 
 Let's build a simple patcher for booleans. CoffeeScript has `true` and `false`
@@ -54,7 +70,7 @@ and `no`, and `on` and `off`. We need to edit the entire node when an alias is
 used to be either `true` or `false`.
 
 First, we create a subclass of `NodePatcher`, the base class for all patchers,
-in `src/patchers/BoolPatcher.js`:
+in `src/stages/main/patchers/BoolPatcher.js`:
 
 ```js
 import NodePatcher from './NodePatcher.js';
@@ -63,7 +79,7 @@ export default class BoolPatcher extends NodePatcher {}
 ```
 
 Then we'd want to map the `Bool` node type to `BoolPatcher` in
-`src/patchers/index.js` (it is, of course, already so mapped).
+`src/stages/main/patchers/index.js` (it is, of course, already so mapped).
 
 Right now `BoolPatcher` will simply throw an exception because we need to
 implement `patchAsExpression` and `patchAsStatement`.
@@ -165,7 +181,7 @@ export default class BoolPatcher extends NodePatcher {
 Now we've got a patcher that rewrites boolean aliases to `true` and `false`! You
 can [the real `BoolPatcher` here][BoolPatcher].
 
-[BoolPatcher]: https://github.com/decaffeinate/decaffeinate/blob/master/src/patchers/BoolPatcher.js
+[BoolPatcher]: https://github.com/decaffeinate/decaffeinate/blob/master/src/stages/main/patchers/BoolPatcher.js
 
 In
 addition to `overwrite`, there's `insert` and `remove` which patchers can use to
@@ -190,8 +206,8 @@ you'll want to use `start`/`end` or `before`/`after` respectively.
 The simplest patchers with children are ones that we don't have to edit at all,
 but whose children might need editing. Let's build a patcher for handling binary
 `+` (i.e. `PlusOp`). We start off as we did for the boolean patcher above by
-creating `src/patchers/PlusOpPatcher.js` and editing `src/patchers/index.js`
-appropriately.
+creating `src/stages/main/patchers/PlusOpPatcher.js` and editing
+`src/stages/main/patchers/index.js` appropriately.
 
 ```js
 import NodePatcher from './NodePatcher.js';
@@ -306,7 +322,7 @@ Now `a + if b then c else d` will become `a + b ? c : d;` as intended, since the
 `patchAsStatement`. In reality, `PlusOp` and several other binary operators are
 all handled by [`BinaryOpPatcher`][BinaryOpPatcher].
 
-[BinaryOpPatcher]: https://github.com/decaffeinate/decaffeinate/blob/master/src/patchers/BinaryOpPatcher.js
+[BinaryOpPatcher]: https://github.com/decaffeinate/decaffeinate/blob/master/src/stages/main/patchers/BinaryOpPatcher.js
 
 #### Temporary variables & repeating code
 
@@ -337,7 +353,7 @@ actually edits `a().b ||= c` to become:
 (base = a()).b = base.b || c
 ```
 
-[locaop]: https://github.com/decaffeinate/decaffeinate/blob/master/src/patchers/LogicalOpCompoundAssignOpPatcher.js
+[locaop]: https://github.com/decaffeinate/decaffeinate/blob/master/src/stages/main/patchers/LogicalOpCompoundAssignOpPatcher.js
 
 How does this work? This is accomplished by the `makeRepeatable` method on
 patchers. It is responsible for editing its node to store the side-effecty parts
@@ -349,7 +365,7 @@ to repeat the source as-is, and if it could ever return `false`, a
 `makeRepeatable` override as well. See [`MemberAccessOpPatcher`][maop] for an
 example.
 
-[maop]: https://github.com/decaffeinate/decaffeinate/blob/master/src/patchers/MemberAccessOpPatcher.js
+[maop]: https://github.com/decaffeinate/decaffeinate/blob/master/src/stages/main/patchers/MemberAccessOpPatcher.js
 
 Temporary variables may also be introduced as loop counters or similar. To claim
 a temporary variable, just use the patchers' `claimFreeBinding` method,

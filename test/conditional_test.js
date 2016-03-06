@@ -248,7 +248,15 @@ describe('conditionals', () => {
     check(`if a then throw err`, `if (a) { throw err; }`);
   });
 
-  it.skip('works with POST-`if` as the body of a function', () => {
-    check(`-> a if b`, `(function() { return b ? a : undefined; });`);
+  it('works with POST-`if` as the body of a function', () => {
+    check(`-> a if b`, `(function() { if (b) { return a; } });`);
+  });
+
+  it('works with nested POST-`if`', () => {
+    check(`
+      a b if c d unless e f
+    `, `
+      if (!e(f)) { if (c(d)) { a(b); } }
+    `);
   });
 });
