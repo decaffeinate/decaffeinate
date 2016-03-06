@@ -1,12 +1,11 @@
 import MagicString from 'magic-string';
+import MainStage from './stages/main/index.js';
+import NormalizeStage from './stages/normalize/index.js';
 import addVariableDeclarations from 'add-variable-declarations';
+import parse from './utils/parse.js';
+import type Stage from './stages/Stage.js';
 import { linter } from 'eslint';
 import { logger } from './utils/debug.js';
-import { makePatcher as makeNormalizePatcher } from './stages/normalize/index.js';
-import { makePatcher as makeMainPatcher } from './stages/main/index.js';
-import parse from './utils/parse.js';
-import type NodePatcher from './patchers/NodePatcher.js';
-import type { Node, Editor, ParseContext } from './patchers/types.js';
 
 export { default as run } from './cli';
 
@@ -16,8 +15,8 @@ let log = logger('convert');
  * Decaffeinate CoffeeScript source code by adding optional punctuation.
  */
 export function convert(source: string): string {
-  let normalized = patch(source, makeNormalizePatcher).code;
-  let js = patch(normalized, makeMainPatcher).code;
+  let normalized = patch(source, NormalizeStage).code;
+  let js = patch(normalized, MainStage).code;
   try {
     js = addVariableDeclarations(js).code;
   } catch (err) {
@@ -52,10 +51,12 @@ export function convert(source: string): string {
   return js;
 }
 
-function patch(source: string, makePatcher: (ast: Node, context: ParseContext, editor: Editor) => NodePatcher): { code: string, map: Object } {
+function patch(source: string, StageClass: Class<Stage>): { code: string, map: Object } {
   let ast = parse(source);
   let editor = new MagicString(source);
-  makePatcher(ast, ast.context, editor).patch();
+  let stage = new StageClass(ast, ast.context, editor);
+  let patcher = stage.build();
+  patcher.patch();
   return { code: editor.toString(), map: editor.generateMap() };
 }
 
