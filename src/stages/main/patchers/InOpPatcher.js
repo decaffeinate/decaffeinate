@@ -1,6 +1,7 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { SourceType, Editor, Node, ParseContext } from './../../../patchers/types.js';
+import { RELATION } from 'coffee-lex';
 
 const IN_HELPER =
 `function __in__(needle, haystack) {
@@ -21,6 +22,13 @@ export default class InOpPatcher extends BinaryOpPatcher {
 
   negate() {
     this.negated = !this.negated;
+  }
+
+  /**
+   * @protected
+   */
+  expectedOperatorTokenType(): SourceType {
+    return RELATION;
   }
 
   /**

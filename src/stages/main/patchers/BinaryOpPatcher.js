@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Token, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { SourceToken, SourceType, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import { OPERATOR } from 'coffee-lex';
 
 export default class BinaryOpPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
@@ -28,20 +29,23 @@ export default class BinaryOpPatcher extends NodePatcher {
   /**
    * @protected
    */
-  getOperatorToken(): Token {
-    let tokens = this.context.tokensBetweenNodes(
-      this.left.node,
-      this.right.node
+  getOperatorToken(): SourceToken {
+    let expectedOperatorTokenType = this.expectedOperatorTokenType();
+    let operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+      this.left,
+      this.right,
+      token => token.type === expectedOperatorTokenType
     );
-    while (tokens[0] && tokens[0].type === ')') {
-      tokens.shift();
-    }
-    while (tokens[tokens.length - 1] && tokens[tokens.length - 1].type === '(') {
-      tokens.pop();
-    }
-    if (tokens.length !== 1) {
+    if (!operatorTokenIndex) {
       throw this.error('expected operator between binary operands');
     }
-    return tokens[0];
+    return this.sourceTokenAtIndex(operatorTokenIndex);
+  }
+
+  /**
+   * @protected
+   */
+  expectedOperatorTokenType(): SourceType {
+    return OPERATOR;
   }
 }

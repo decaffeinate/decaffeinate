@@ -53,6 +53,6 @@ export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
     // `!(a not instanceof b)` → `!(a instanceof b)`
     //      ^^^^^^^^^^^^^^            ^^^^^^^^^^
     let token = this.getOperatorToken();
-    this.overwrite(...token.range, this.javaScriptOperator());
+    this.overwrite(token.start, token.end, this.javaScriptOperator());
   }
 }

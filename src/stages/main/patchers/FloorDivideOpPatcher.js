@@ -18,6 +18,6 @@ export default class FloorDivideOpPatcher extends BinaryOpPatcher {
     this.insertAfter(')');
     // `Math.floor(a // b)` → `Math.floor(a / b)`
     //               ^^                     ^
-    this.overwrite(...operator.range, '/');
+    this.overwrite(operator.start, operator.end, '/');
   }
 }
