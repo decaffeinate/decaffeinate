@@ -134,7 +134,8 @@ function runWithStream(name: string, input: ReadableStream, output: WritableStre
         throw err;
       }
     }
-    output.end(converted, () => {
+    let { code } = converted;
+    output.end(code, () => {
       if (callback) {
         callback(error);
       }

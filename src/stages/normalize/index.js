@@ -1,10 +1,14 @@
 import ConditionalPatcher from './patchers/ConditionalPatcher.js';
 import NodePatcher from '../../patchers/NodePatcher.js';
 import PassthroughPatcher from '../../patchers/PassthroughPatcher.js';
-import Stage from '../Stage.js';
+import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage.js';
 import type { Node } from '../../patchers/types.js';
 
-export default class NormalizeStage extends Stage {
+export default class NormalizeStage extends TransformCoffeeScriptStage {
+  static get outputExtension() {
+    return '.coffee';
+  }
+
   patcherConstructorForNode(node: Node): ?Class<NodePatcher> {
     switch (node.type) {
       case 'Conditional':

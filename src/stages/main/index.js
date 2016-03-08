@@ -41,18 +41,18 @@ import ReturnPatcher from './patchers/ReturnPatcher.js';
 import SlicePatcher from './patchers/SlicePatcher.js';
 import SoakedMemberAccessOpPatcher from './patchers/SoakedMemberAccessOpPatcher.js';
 import SpreadPatcher from './patchers/SpreadPatcher.js';
-import Stage from '../Stage.js';
 import SuperPatcher from './patchers/SuperPatcher.js';
 import TemplateLiteralPatcher from './patchers/TemplateLiteralPatcher.js';
 import ThisPatcher from './patchers/ThisPatcher.js';
 import ThrowPatcher from './patchers/ThrowPatcher.js';
+import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage.js';
 import UnaryExistsOpPatcher from './patchers/UnaryExistsOpPatcher.js';
 import UnaryOpPatcher from './patchers/UnaryOpPatcher.js';
 import WhilePatcher from './patchers/WhilePatcher.js';
 import type NodePatcher from './../../patchers/NodePatcher.js';
 import type { Node } from '../../patchers/types.js';
 
-export default class MainStage extends Stage {
+export default class MainStage extends TransformCoffeeScriptStage {
   patcherConstructorForNode(node: Node): ?Class<NodePatcher> {
     switch (node.type) {
       case 'Identifier':

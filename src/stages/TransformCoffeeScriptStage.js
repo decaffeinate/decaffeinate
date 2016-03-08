@@ -1,9 +1,36 @@
+import MagicString from 'magic-string';
 import NodePatcher from '../patchers/NodePatcher.js';
 import PatchError from '../utils/PatchError.js';
+import parse from '../utils/parse.js';
 import type { Node, ParseContext, Editor } from '../patchers/types.js';
+import { basename } from 'path';
 import { childPropertyNames } from '../utils/traverse.js';
 
-export default class Stage {
+export default class TransformCoffeeScriptStage {
+  static run(content: string, filename: string): { code: string, map: Object } {
+    let ast = parse(content);
+    let editor = new MagicString(content);
+    let stage = new this(ast, ast.context, editor);
+    let patcher = stage.build();
+    patcher.patch();
+    return {
+      code: editor.toString(),
+      map: editor.generateMap({
+        source: filename,
+        file: `${basename(filename, this.inputExtension)}-${this.name}${this.outputExtension}`,
+        includeContent: true
+      })
+    };
+  }
+
+  static get inputExtension() {
+    return '.coffee';
+  }
+
+  static get outputExtension() {
+    return '.js';
+  }
+
   constructor(ast: Node, context: ParseContext, editor: Editor) {
     this.ast = ast;
     this.context = context;
