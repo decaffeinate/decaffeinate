@@ -1,7 +1,7 @@
 {
   "name": "decaffeinate",
   "version": "1.44.13",
-  "description": "Move your CoffeeScript source to JavaScript using ES6 syntax.",
+  "description": "Move your CoffeeScript source to modern JavaScript.",
   "main": "dist/decaffeinate.cjs.js",
   "jsnext:main": "dist/decaffeinate.es6.js",
   "bin": {
@@ -24,7 +24,8 @@
     "coffee-script",
     "convert",
     "es3",
-    "es6"
+    "es6",
+    "esnext"
   ],
   "author": "Brian Donovan",
   "license": "MIT",

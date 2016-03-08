@@ -148,7 +148,7 @@ function usage() {
   console.log('%s [OPTIONS] PATH [PATH …]', exe);
   console.log('%s [OPTIONS] < INPUT', exe);
   console.log();
-  console.log('Move your CoffeeScript source to JavaScript using ES6 syntax.');
+  console.log('Move your CoffeeScript source to JavaScript using modern syntax.');
   console.log();
   console.log('OPTIONS');
   console.log();
