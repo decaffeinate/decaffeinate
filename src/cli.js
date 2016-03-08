@@ -9,16 +9,20 @@ import { stat, readdir, createReadStream, createWriteStream } from 'fs';
  * Run the script with the user-supplied arguments.
  */
 export default function run(args: Array<string>) {
-  let input = parseArguments(args);
+  let options = parseArguments(args);
 
-  if (input.paths.length) {
-    runWithPaths(input.paths);
+  if (options.paths.length) {
+    runWithPaths(options.paths);
   } else {
     runWithStream('stdin', process.stdin, process.stdout);
   }
 }
 
-function parseArguments(args: Array<string>): { paths: Array<string> } {
+type Options = {
+  paths: Array<string>
+};
+
+function parseArguments(args: Array<string>): Options {
   let paths = [];
 
   for (let i = 0; i < args.length; i++) {
