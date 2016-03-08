@@ -47,8 +47,18 @@ describe.skip('expansion', () => {
     check(`
       (a, b, ..., c, d) ->
     `, `
-      (function() {
-        var a = arguments[0], b = arguments[1], c = arguments[arguments.length - 2], d = arguments[arguments.length - 1];
+      (function(a, b, ...rest) {
+        var c = rest[rest.length - 2], d = rest[rest.length - 1];
+      });
+    `);
+  });
+
+  it('allows getting the first and last elements of a parameter list in a bound function', () => {
+    check(`
+      (a, b, ..., c, d) =>
+    `, `
+      ((a, b, ...rest) => {
+        var c = rest[rest.length - 2], d = rest[rest.length - 1];
       });
     `);
   });
