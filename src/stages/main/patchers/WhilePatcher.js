@@ -83,6 +83,10 @@ export default class WhilePatcher extends NodePatcher {
     throw this.error(`cannot handle 'while' used as an expression (yet)`);
   }
 
+  statementNeedsSemicolon() {
+    return false;
+  }
+
   /**
    * @private
    */
