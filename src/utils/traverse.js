@@ -52,7 +52,7 @@ const ORDER = {
   ClassProtoAssignOp: ['assignee', 'expression'],
   CompoundAssignOp: ['assignee', 'expression'],
   Conditional: ['condition', 'consequent', 'alternate'],
-  Constructor: ['expression'],
+  Constructor: ['assignee', 'expression'],
   Continue: [],
   DeleteOp: ['expression'],
   DivideOp: ['left', 'right'],

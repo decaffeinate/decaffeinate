@@ -1,27 +1,12 @@
-import IdentifierPatcher from './IdentifierPatcher.js';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
 import traverse from '../../../utils/traverse.js';
 import type FunctionPatcher from './FunctionPatcher.js';
+import type NodePatcher from '../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, expression: FunctionPatcher) {
-    // Build a virtual 'constructor' identifier node.
-    let tokens = context.sourceTokens;
-    let keyTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(
-      node.range[0]
-    );
-    let keyToken = tokens.tokenAtIndex(keyTokenIndex);
-    let keyNode = {
-      type: 'Identifier',
-      data: 'constructor',
-      raw: 'constructor',
-      line: node.line,
-      column: node.column,
-      range: [keyToken.start, keyToken.end]
-    };
-    let key = new IdentifierPatcher(keyNode, context, editor);
-    super(node, context, editor, key, expression);
+  constructor(node: Node, context: ParseContext, editor: Editor, assignee: NodePatcher, expression: FunctionPatcher) {
+    super(node, context, editor, assignee, expression);
 
     // Constructor methods do not have implicit returns.
     expression.disableImplicitReturns();
