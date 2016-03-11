@@ -21,18 +21,21 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
     super(node, context, editor);
     this.left = left;
     this.right = right;
-    this.logicToken = this.tokenBetweenPatchersMatching(this.left, this.right, 'LOGIC');
-    this.replacement = this.logicToken.data;
+    this.negated = false;
   }
 
   /**
    * LEFT OP RIGHT
    */
   patchAsExpression() {
-    let { left, right, replacement, logicToken } = this;
-    left.patch();
-    this.overwrite(...logicToken.range, replacement);
-    right.patch();
+    this.left.patch();
+    let operatorToken = this.getOperatorToken();
+    this.overwrite(
+      operatorToken.start,
+      operatorToken.end,
+      this.getOperator()
+    );
+    this.right.patch();
   }
 
   patchAsStatement() {
@@ -41,9 +44,29 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
 
   /**
    * Apply De Morgan's law.
+   *
+   * @private
    */
+  getOperator(): string {
+    let operatorToken = this.getOperatorToken();
+    let operator = this.context.source.slice(
+      operatorToken.start,
+      operatorToken.end
+    );
+    if (operator === 'and') {
+      operator = '&&';
+    } else if (operator === 'or') {
+      operator = '||';
+    }
+    if (this.negated) {
+      return operator === '&&' ? '||' : '&&';
+    } else {
+      return operator;
+    }
+  }
+
   negate() {
-    this.replacement = this.replacement === '&&' ? '||' : '&&';
+    this.negated = !this.negated;
     this.left.negate();
     this.right.negate();
   }
