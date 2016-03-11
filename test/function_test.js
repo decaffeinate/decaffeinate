@@ -37,6 +37,14 @@ describe('functions', () => {
     `);
   });
 
+  it('puts the closing punctuation before trailing comments for one-line functions', () => {
+    check(`
+      -> a # b
+    `, `
+      (function() { return a; }); // b
+    `);
+  });
+
   it('handles fat arrow functions without a body', () => {
     check(`=>`, `() => {};`);
   });

@@ -26,7 +26,11 @@ export default class FunctionPatcher extends NodePatcher {
   patchAsStatement(options={}) {
     this.insertAtStart('(');
     this.patchAsExpression(options);
-    this.insertAtEnd(')');
+    if (this.body && this.body.inline()) {
+      this.insertAtEnd(')');
+    } else {
+      this.appendToEndOfLine(')');
+    }
   }
 
   patchAsExpression({ method=false }={}) {
