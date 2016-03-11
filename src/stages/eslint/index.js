@@ -1,9 +1,13 @@
 import MagicString from 'magic-string';
 import { basename } from 'path';
 import { linter } from 'eslint';
+import { logger } from '../../utils/debug.js';
 
 export default class EslintStage {
   static run(content: string, filename: string): { code: string, map: Object } {
+    let log = logger(this.name);
+    log(content);
+
     let editor = new MagicString(content);
     let messages = linter.verify(content, {
       rules: { 'semi': 2, 'no-extra-semi': 2 },

@@ -5,9 +5,13 @@ import parse from '../utils/parse.js';
 import type { Node, ParseContext, Editor } from '../patchers/types.js';
 import { basename } from 'path';
 import { childPropertyNames } from '../utils/traverse.js';
+import { logger } from '../utils/debug.js';
 
 export default class TransformCoffeeScriptStage {
   static run(content: string, filename: string): { code: string, map: Object } {
+    let log = logger(this.name);
+    log(content);
+
     let ast = parse(content);
     let editor = new MagicString(content);
     let stage = new this(ast, ast.context, editor);
