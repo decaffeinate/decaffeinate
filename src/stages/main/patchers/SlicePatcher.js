@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Token, Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { SourceToken, Editor, Node, ParseContext } from './../../../patchers/types.js';
+import { LBRACKET, RANGE, RBRACKET } from 'coffee-lex';
 
 /**
  * Handles array or string slicing, e.g. `names[i..]`.
@@ -19,24 +20,24 @@ export default class SlicePatcher extends NodePatcher {
    * EXPRESSION '[' LEFT? ( .. | ... ) RIGHT? ']'
    */
   patchAsExpression() {
-    let indexStart = this.getIndexStartToken();
+    let indexStart = this.getIndexStartSourceToken();
     // `a[0..1]` → `a.slice(0..1]`
     //   ^           ^^^^^^^
-    this.overwrite(...indexStart.range, '.slice(');
+    this.overwrite(indexStart.start, indexStart.end, '.slice(');
     if (this.left) {
       this.left.patch();
     } else if (this.right) {
       // `a.slice(..1]` → `a.slice(0..1]`
       //                           ^
-      this.insert(indexStart.range[1], '0');
+      this.insert(indexStart.end, '0');
     }
-    let slice = this.getSliceToken();
-    let inclusive = slice.data === '..';
+    let slice = this.getSliceSourceToken();
+    let inclusive = slice.end - slice.start === '..'.length;
     let right = this.right;
     if (right) {
       // `a.slice(0..1]` → `a.slice(0, 1]`
       //           ^^                ^^
-      this.overwrite(...slice.range, ', ');
+      this.overwrite(slice.start, slice.end, ', ');
       if (inclusive) {
         if (right.node.type === 'Int') {
           this.overwrite(
@@ -54,12 +55,12 @@ export default class SlicePatcher extends NodePatcher {
     } else {
       // `a.slice(0..]` → `a.slice(0]`
       //           ^^
-      this.overwrite(...slice.range, '');
+      this.overwrite(slice.start, slice.end, '');
     }
-    let indexEnd = this.getIndexEndToken();
+    let indexEnd = this.getIndexEndSourceToken();
     // `a.slice(0, 1]` → `a.slice(0, 1)`
     //              ^                 ^
-    this.overwrite(...indexEnd.range, ')');
+    this.overwrite(indexEnd.start, indexEnd.end, ')');
   }
 
   patchAsStatement() {
@@ -69,48 +70,49 @@ export default class SlicePatcher extends NodePatcher {
   /**
    * @private
    */
-  getIndexStartToken(): Token {
-    let index = this.expression.afterTokenIndex;
-    let token;
-    do {
-      token = this.context.tokenAtIndex(index);
-      index += 1;
-    } while (token && token.type !== 'INDEX_START');
-    if (!token || index > this.afterTokenIndex) {
+  getIndexStartSourceToken(): SourceToken {
+    let tokens = this.context.sourceTokens;
+    let index = tokens.indexOfTokenMatchingPredicate(
+      token => token.type === LBRACKET,
+      this.expression.lastSurroundingTokenIndex
+    );
+    if (!index || index.isAfter(this.lastSourceTokenIndex)) {
       throw this.error(`could not find INDEX_START after slice expression`);
     }
-    return token;
+    return tokens.tokenAtIndex(index);
   }
 
   /**
    * @private
    */
-  getSliceToken(): Token {
-    let index = this.left ? this.left.afterTokenIndex : this.expression.afterTokenIndex;
-    let token;
-    do {
-      token = this.context.tokenAtIndex(index);
-      index += 1;
-    } while (token && token.type !== '...' && token.type !== '..');
-    if (!token || index > this.afterTokenIndex) {
+  getSliceSourceToken(): SourceToken {
+    let tokens = this.context.sourceTokens;
+    let { source } = this.context;
+    let index = tokens.indexOfTokenMatchingPredicate(token => {
+      if (token.type !== RANGE) {
+        return false;
+      }
+      let operator = source.slice(token.start, token.end);
+      return operator === '...' || operator === '..';
+    }, this.left ? this.left.lastSurroundingTokenIndex : this.expression.lastSurroundingTokenIndex);
+    if (!index || index.isAfter(this.lastSourceTokenIndex)) {
       throw this.error(`could not find '..' or '...' in slice`);
     }
-    return token;
+    return tokens.tokenAtIndex(index);
   }
 
   /**
    * @private
    */
-  getIndexEndToken(): Token {
-    let index = this.afterTokenIndex;
-    let token;
-    do {
-      token = this.context.tokenAtIndex(index);
-      index -= 1;
-    } while (token && token.type !== ']');
-    if (!token || index < this.beforeTokenIndex) {
+  getIndexEndSourceToken(): SourceToken {
+    let tokens = this.context.sourceTokens;
+    let index = tokens.lastIndexOfTokenMatchingPredicate(
+      token => token.type === RBRACKET,
+      this.lastSurroundingTokenIndex
+    );
+    if (!index || index.isBefore(this.firstSourceTokenIndex)) {
       throw this.error(`could not find ']' ending slice`);
     }
-    return token;
+    return tokens.tokenAtIndex(index);
   }
 }

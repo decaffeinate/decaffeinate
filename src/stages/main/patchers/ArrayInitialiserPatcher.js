@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import { COMMA } from 'coffee-lex';
 
 export default class ArrayInitialiserPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, members: Array<NodePatcher>) {
@@ -14,7 +15,7 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
   patchAsExpression() {
     this.members.forEach((member, i, members) => {
       let isLast = i === members.length - 1;
-      let needsComma = !isLast && !member.hasTokenAfter(',');
+      let needsComma = !isLast && !member.hasSourceTokenAfter(COMMA);
       member.patch();
       if (needsComma) {
         this.insert(member.after, ',');

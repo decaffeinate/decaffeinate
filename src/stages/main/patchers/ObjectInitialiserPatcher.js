@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import { COMMA, LBRACE } from 'coffee-lex';
 
 /**
  * Handles object literals.
@@ -21,7 +22,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     this.members.forEach((member, i, members) => {
       member.patch();
       if (i !== members.length - 1) {
-        if (!member.hasTokenAfter(',')) {
+        if (!member.hasSourceTokenAfter(COMMA)) {
           this.insert(member.after, ',');
         }
       }
@@ -62,6 +63,8 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
    *   { a: b }  # false
    */
   isImplicitObject(): boolean {
-    return !this.hasTokenAtIndex(this.startTokenIndex, '{');
+    let tokens = this.context.sourceTokens;
+    let indexOfFirstToken = tokens.indexOfTokenStartingAtSourceIndex(this.start);
+    return tokens.tokenAtIndex(indexOfFirstToken).type !== LBRACE;
   }
 }

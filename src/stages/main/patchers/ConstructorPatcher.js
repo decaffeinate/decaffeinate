@@ -1,18 +1,27 @@
 import IdentifierPatcher from './IdentifierPatcher.js';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
-import find from '../../../utils/array/find.js';
 import traverse from '../../../utils/traverse.js';
 import type FunctionPatcher from './FunctionPatcher.js';
-import type { Editor, Node, ParseContext, Token } from './../../../patchers/types.js';
+import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: FunctionPatcher) {
-    let virtualKey = new IdentifierPatcher(
-      buildVirtualConstructorIdentifierNode(context.tokensForNode(node)),
-      context,
-      editor
+    // Build a virtual 'constructor' identifier node.
+    let tokens = context.sourceTokens;
+    let keyTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(
+      node.range[0]
     );
-    super(node, context, editor, virtualKey, expression);
+    let keyToken = tokens.tokenAtIndex(keyTokenIndex);
+    let keyNode = {
+      type: 'Identifier',
+      data: 'constructor',
+      raw: 'constructor',
+      line: node.line,
+      column: node.column,
+      range: [keyToken.start, keyToken.end]
+    };
+    let key = new IdentifierPatcher(keyNode, context, editor);
+    super(node, context, editor, key, expression);
 
     // Constructor methods do not have implicit returns.
     expression.disableImplicitReturns();
@@ -57,20 +66,4 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   statementNeedsSemicolon(): boolean {
     return false;
   }
-}
-
-function buildVirtualConstructorIdentifierNode(constructorTokens: Array<Token>): Node {
-  let constructorToken = find(constructorTokens,
-    token => token.type === 'IDENTIFIER' && token.data === 'constructor'
-  );
-  if (!constructorToken) {
-    throw new Error(`cannot find 'constructor' token in class constructor`);
-  }
-  return {
-    type: 'Identifier',
-    line: constructorToken.line,
-    column: constructorToken.column,
-    raw: constructorToken.raw,
-    range: constructorToken.range
-  };
 }

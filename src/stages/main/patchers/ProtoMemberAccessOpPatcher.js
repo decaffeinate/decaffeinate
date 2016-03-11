@@ -5,8 +5,8 @@ export default class ProtoMemberAccessOpPatcher extends MemberAccessOpPatcher {
     this.expression.patch();
     // `a::b` → `a.prototype.b`
     //   ^^        ^^^^^^^^^^
-    let memberNameToken = this.getMemberNameToken();
-    this.overwrite(this.expression.after, memberNameToken.range[0], '.prototype.');
+    let memberNameToken = this.getMemberNameSourceToken();
+    this.overwrite(this.expression.after, memberNameToken.start, '.prototype.');
   }
 
   hasImplicitOperator(): boolean {

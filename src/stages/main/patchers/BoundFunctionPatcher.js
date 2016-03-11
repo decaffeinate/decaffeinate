@@ -3,7 +3,7 @@ import FunctionPatcher from './FunctionPatcher.js';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import traverse from '../../../utils/traverse.js';
-import type { Token, Node } from './../../../patchers/types.js';
+import type { Node } from './../../../patchers/types.js';
 import { isFunction } from '../../../utils/types.js';
 
 /**
@@ -48,10 +48,10 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
     this.patchAsExpression(options);
   }
 
-  patchFunctionStart(options, tokens: Array<Token>) {
-    let arrow = this.getArrowToken(tokens);
+  patchFunctionStart() {
+    let arrow = this.getArrowToken();
 
-    if (!this.hasParamStart(tokens)) {
+    if (!this.hasParamStart()) {
       this.insertAtStart('() ');
     } else if (this.parameters.length === 1) {
       let [ param ] = this.parameters;
@@ -62,7 +62,7 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
     }
 
     if (!this.willPatchBodyInline()) {
-      this.insert(arrow.range[1], ' {');
+      this.insert(arrow.end, ' {');
     }
   }
 

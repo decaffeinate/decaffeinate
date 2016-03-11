@@ -1,8 +1,19 @@
 import PatcherError from '../utils/PatchError.js';
 import adjustIndent from '../utils/adjustIndent.js';
 import repeat from 'repeating';
-import type { Token, SourceToken, SourceTokenListIndex, Editor, Node, ParseContext, SourceTokenList } from './types.js';
+import type { SourceType, SourceToken, SourceTokenListIndex, Editor, Node, ParseContext, SourceTokenList } from './types.js';
 import { logger } from '../utils/debug.js';
+import { COMMENT, HERECOMMENT, NEWLINE, LPAREN, RPAREN } from 'coffee-lex';
+
+const NON_SEMANTIC_SOURCE_TOKEN_TYPES = [COMMENT, HERECOMMENT, NEWLINE];
+
+/**
+ * This isn't a great name because newlines do have semantic meaning in
+ * CoffeeScript, but it's close enough.
+ */
+function isSemanticToken(token) {
+  return NON_SEMANTIC_SOURCE_TOKEN_TYPES.indexOf(token.type) < 0;
+}
 
 export default class NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor) {
@@ -51,27 +62,47 @@ export default class NodePatcher {
     this.start = node.range[0];
     this.end = node.range[1];
 
-    this.startTokenIndex = context.indexOfTokenAtOffset(this.start);
-    this.lastTokenIndex = this.startTokenIndex + this.tokens.length - 1;
+    let tokens = context.sourceTokens;
+    let firstSourceTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(this.start);
+    let lastSourceTokenIndex = tokens.indexOfTokenEndingAtSourceIndex(this.end);
 
-    let beforeTokenIndex = this.startTokenIndex;
-    let afterTokenIndex = this.lastTokenIndex;
+    this.firstSourceTokenIndex = firstSourceTokenIndex;
+    this.lastSourceTokenIndex = lastSourceTokenIndex;
+
+    let firstSurroundingTokenIndex = firstSourceTokenIndex;
+    let lastSurroundingTokenIndex = lastSourceTokenIndex;
 
     for (;;) {
-      let previousBeforeToken = context.tokenAtIndex(beforeTokenIndex - 1);
-      let nextAfterToken = context.tokenAtIndex(afterTokenIndex + 1);
+      let previousSurroundingTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
+        isSemanticToken,
+        firstSurroundingTokenIndex.previous()
+      );
+      let nextSurroundingTokenIndex = tokens.indexOfTokenMatchingPredicate(
+        isSemanticToken,
+        lastSurroundingTokenIndex.next()
+      );
 
-      if (!previousBeforeToken || previousBeforeToken.data !== '(') {
+      if (!previousSurroundingTokenIndex || !nextSurroundingTokenIndex) {
         break;
       }
 
-      if (!nextAfterToken || nextAfterToken.data !== ')') {
+      let previousSurroundingToken = tokens.tokenAtIndex(previousSurroundingTokenIndex);
+      let nextSurroundingToken = tokens.tokenAtIndex(nextSurroundingTokenIndex);
+
+      if (!previousSurroundingToken || previousSurroundingToken.type !== LPAREN) {
         break;
       }
 
-      beforeTokenIndex--;
-      afterTokenIndex++;
+      if (!nextSurroundingToken || nextSurroundingToken.type !== RPAREN) {
+        break;
+      }
+
+      firstSurroundingTokenIndex = previousSurroundingTokenIndex;
+      lastSurroundingTokenIndex = nextSurroundingTokenIndex;
     }
+
+    this.firstSurroundingTokenIndex = firstSurroundingTokenIndex;
+    this.lastSurroundingTokenIndex = lastSurroundingTokenIndex;
 
     /**
      * `before` and `after` is the same as `start` and `end` for most nodes,
@@ -84,11 +115,8 @@ export default class NodePatcher {
      * Above the opening parenthesis is at the `before` index and the character
      * immediately after the closing parenthesis is at the `after` index.
      */
-    this.before = Math.min(this.start, context.tokenAtIndex(beforeTokenIndex).range[0]);
-    this.after = Math.max(this.end, context.tokenAtIndex(afterTokenIndex).range[1]);
-
-    this.beforeTokenIndex = beforeTokenIndex;
-    this.afterTokenIndex = afterTokenIndex;
+    this.before = tokens.tokenAtIndex(firstSurroundingTokenIndex).start;
+    this.after = tokens.tokenAtIndex(lastSurroundingTokenIndex).end;
   }
 
   /**
@@ -337,7 +365,7 @@ export default class NodePatcher {
    * Gets the tokens for the whole program.
    */
   getProgramSourceTokens(): SourceTokenList {
-    return this.parent.getProgramSourceTokens();
+    return this.context.sourceTokens;
   }
 
   /**
@@ -371,68 +399,56 @@ export default class NodePatcher {
   }
 
   /**
-   * Gets a token between left and right patchers' nodes matching type and data.
+   * Gets the source encompassed by the given token.
    */
-  tokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, type: string, data: ?string=null): ?Token {
-    let tokens = this.context.tokensBetweenNodes(left.node, right.node);
-    for (let i = 0; i < tokens.length; i++) {
-      let token = tokens[i];
-      if (token.type === type && (data === null || token.data === data)) {
-        return token;
+  sourceOfToken(token: SourceToken): string {
+    return this.context.source.slice(token.start, token.end);
+  }
+
+  /**
+   * Gets the index of a token after `start` with the matching type, ignoring
+   * non-semantic types by default.
+   */
+  indexOfSourceTokenAfterSourceTokenIndex(start: SourceTokenListIndex, type: SourceType, ignore: Array<SourceType>=NON_SEMANTIC_SOURCE_TOKEN_TYPES): ?SourceTokenListIndex {
+    let index = start;
+    let tokens = this.context.sourceTokens;
+
+    for (;;) {
+      index = index.next();
+      if (!index) {
+        return null;
+      }
+      let token = tokens.tokenAtIndex(index);
+      if (!token) {
+        return null;
+      }
+      if (ignore.indexOf(token.type) >= 0) {
+        continue;
+      }
+      if (token.type === type) {
+        return index;
+      } else {
+        return null;
       }
     }
-    return null;
   }
 
   /**
-   * Determines whether this patcher's node is preceded by a particular token.
-   * Note that this looks at the token immediately before the `before` offset.
+   * Determines whether this patcher's node is followed by a particular token.
    */
-  hasTokenBefore(type: string, data: ?string=null): boolean {
-    return this.hasTokenAtIndex(this.beforeTokenIndex - 1, type, data);
-  }
-
-  /**
-   * Determines whether this patcher's node is preceded by a particular token.
-   * Note that this looks at the token immediately after the `after` offset.
-   */
-  hasTokenAfter(type: string, data: ?string=null): boolean {
-    return this.hasTokenAtIndex(this.afterTokenIndex + 1, type, data);
-  }
-
-  /**
-   * Determines whether the token at index matches.
-   */
-  hasTokenAtIndex(index: number, type: string, data: ?string=null): boolean {
-    let token = this.context.tokenAtIndex(index);
-    if (!token) {
-      return false;
-    }
-    if (token.type !== type) {
-      return false;
-    }
-    if (data !== null) {
-      return token.data === data;
-    }
-    return true;
-  }
-
-  /**
-   * Determines whether a token is followed by another token.
-   */
-  hasTokenAfterToken(token: Token, type: string, data: ?string=null): boolean {
-    return this.hasTokenAtIndex(this.context.tokens.indexOf(token) + 1, type, data);
+  hasSourceTokenAfter(type: SourceType, ignore: Array<SourceType>=NON_SEMANTIC_SOURCE_TOKEN_TYPES): boolean {
+    return this.indexOfSourceTokenAfterSourceTokenIndex(this.lastSurroundingTokenIndex, type, ignore) !== null;
   }
 
   /**
    * Determines whether this patcher's node is surrounded by parentheses.
    */
   isSurroundedByParentheses(): boolean {
-    let beforeToken = this.context.tokenAtIndex(this.beforeTokenIndex);
-    let afterToken = this.context.tokenAtIndex(this.afterTokenIndex);
+    let beforeToken = this.context.sourceTokens.tokenAtIndex(this.firstSurroundingTokenIndex);
+    let afterToken = this.context.sourceTokens.tokenAtIndex(this.lastSurroundingTokenIndex);
     return (
-      beforeToken && beforeToken.data === '(' &&
-      afterToken && afterToken.data === ')'
+      beforeToken && beforeToken.type === LPAREN &&
+      afterToken && afterToken.type === RPAREN
     );
   }
 

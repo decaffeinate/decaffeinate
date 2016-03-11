@@ -124,6 +124,20 @@ describe('function calls', () => {
     `);
   });
 
+  it('works with a callee enclosed in parentheses and including a comment', () => {
+    check(`
+      (
+        # HEY
+        foo
+      ) 0
+    `, `
+      (
+        // HEY
+        foo
+      )(0);
+    `);
+  });
+
   it('adds parens for nested function calls', () => {
     check(`a   b  c d     e`, `a(b(c(d(e))));`);
   });

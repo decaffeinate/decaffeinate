@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Node, ParseContext, Editor, Token } from './../../../patchers/types.js';
+import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
+import { AT, DOT, IDENTIFIER, PROTO } from 'coffee-lex';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {
@@ -12,8 +13,8 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     if (this.isShorthandPrototype()) {
       // `a::` → `a.prototype`
       //   ^^      ^^^^^^^^^^
-      let operator = this.getMemberOperatorToken();
-      this.overwrite(...operator.range, '.prototype');
+      let operator = this.getMemberOperatorSourceToken();
+      this.overwrite(operator.start, operator.end, '.prototype');
     }
     if (this.hasImplicitOperator()) {
       // `@a` → `@.a`
@@ -27,24 +28,27 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   }
 
   hasImplicitOperator(): boolean {
-    return !this.getMemberOperatorToken();
+    return !this.getMemberOperatorSourceToken();
   }
 
   isShorthandPrototype(): boolean {
-    let token = this.getMemberOperatorToken();
-    return token ? token.type === '::' : false;
+    let token = this.getMemberOperatorSourceToken();
+    return token ? token.type === PROTO : false;
   }
 
-  getMemberOperatorToken(): ?Token {
-    let lastToken = this.context.tokenAtIndex(this.afterTokenIndex);
-    if (lastToken.type === '::') {
+  getMemberOperatorSourceToken(): ?SourceToken {
+    let tokens = this.context.sourceTokens;
+    let lastIndex = this.lastSourceTokenIndex;
+    let lastToken = tokens.tokenAtIndex(lastIndex);
+    if (lastToken.type === PROTO) {
       return lastToken;
     } else {
-      let penultimateToken = this.context.tokenAtIndex(this.afterTokenIndex - 1);
-      if (penultimateToken.type === '@') {
+      let penultimateIndex = lastIndex.previous();
+      let penultimateToken = tokens.tokenAtIndex(penultimateIndex);
+      if (penultimateToken.type === AT) {
         return null;
       }
-      if (penultimateToken.type !== '.') {
+      if (penultimateToken.type !== DOT) {
         throw this.error(`cannot find '.' in member access`);
       }
       return penultimateToken;
@@ -59,9 +63,16 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     return this.getMemberName();
   }
 
-  getMemberNameToken(): Token {
-    let tokenOffset = this.hasImplicitOperator() ? /* NAME */ 1 : /* DOT NAME */ 2;
-    return this.context.tokenAtIndex(this.expression.afterTokenIndex + tokenOffset);
+  getMemberNameSourceToken(): SourceToken {
+    let tokens = this.context.sourceTokens;
+    let index = tokens.lastIndexOfTokenMatchingPredicate(
+      token => token.type === IDENTIFIER,
+      this.lastSourceTokenIndex
+    );
+    if (!index || index.isBefore(this.firstSourceTokenIndex)) {
+      throw this.error(`unable to find member name token in access`);
+    }
+    return tokens.tokenAtIndex(index);
   }
 
   /**

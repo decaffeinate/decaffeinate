@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Token, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
+import { FUNCTION, LPAREN, RPAREN } from 'coffee-lex';
 
 export default class FunctionPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, parameters: Array<NodePatcher>, body: ?NodePatcher) {
@@ -34,26 +35,23 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   patchAsExpression({ method=false }={}) {
-    let { parameters, node, context } = this;
-    let tokens = context.tokensForNode(node);
-
-    this.patchFunctionStart({ method }, tokens);
-    parameters.forEach(parameter => parameter.patch());
+    this.patchFunctionStart({ method });
+    this.parameters.forEach(parameter => parameter.patch());
     this.patchFunctionBody({ method });
   }
 
-  patchFunctionStart({ method=false }, tokens) {
-    let arrow = this.getArrowToken(tokens);
+  patchFunctionStart({ method=false }) {
+    let arrow = this.getArrowToken();
 
     if (!method) {
       this.insertAtStart('function');
     }
 
-    if (!this.hasParamStart(tokens)) {
+    if (!this.hasParamStart()) {
       this.insertAtStart('() ');
     }
 
-    this.overwrite(arrow.range[0], arrow.range[1], '{');
+    this.overwrite(arrow.start, arrow.end, '{');
   }
 
   patchFunctionBody() {
@@ -65,18 +63,29 @@ export default class FunctionPatcher extends NodePatcher {
     }
   }
 
-  getArrowToken(tokens: Array<Token>): Token {
-    let arrow = tokens[0];
-    if (this.hasParamStart(tokens)) {
-      arrow = this.context.tokenAtIndex(
-        this.context.indexOfEndTokenForStartTokenAtIndex(this.startTokenIndex) + 1
+  getArrowToken(): SourceToken {
+    let arrowIndex = this.firstSourceTokenIndex;
+    if (this.hasParamStart()) {
+      let parenRange = this.getProgramSourceTokens()
+        .rangeOfMatchingTokensContainingTokenIndex(
+          LPAREN,
+          RPAREN,
+          this.firstSourceTokenIndex
+        );
+      let rparenIndex = parenRange[1].previous();
+      arrowIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+        rparenIndex,
+        FUNCTION
       );
+      this.log({ rparenIndex, arrowIndex });
     }
+    let arrow = this.sourceTokenAtIndex(arrowIndex);
     let expectedArrowType = this.expectedArrowType();
-    if (arrow.type !== expectedArrowType) {
+    let actualArrowType = this.sourceOfToken(arrow);
+    if (actualArrowType !== expectedArrowType) {
       throw this.error(
-        `expected '${expectedArrowType}' but found ${arrow.type}`,
-        ...arrow.range
+        `expected '${expectedArrowType}' but found ${actualArrowType}`,
+        arrow.start, arrow.end
       );
     }
     return arrow;
@@ -86,8 +95,8 @@ export default class FunctionPatcher extends NodePatcher {
     return '->';
   }
 
-  hasParamStart(tokens: Array<Token>): boolean {
-    return tokens[0].type === 'PARAM_START';
+  hasParamStart(): boolean {
+    return this.sourceTokenAtIndex(this.firstSourceTokenIndex).type === LPAREN;
   }
 
   setExplicitlyReturns() {

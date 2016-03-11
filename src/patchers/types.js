@@ -3,24 +3,16 @@ import type Scope from '../utils/Scope.js';
 export type Node = {
   type: string,
   range: Range,
-  scope: Scope
-};
-
-export type Token = {
-  type: string,
-  data: string,
-  range: Range
+  scope: Scope,
+  raw: string,
+  line: number,
+  column: number,
 };
 
 export type Range = [number, number];
 
 export type ParseContext = {
   source: string,
-  tokenAtIndex: (index: number) => ?Token,
-  indexOfTokenAtOffset: (offset: number) => ?number,
-  tokensForNode: (node: Node) => Array<Token>,
-  tokensBetweenNodes: (left: Node, right: Node) => Array<Token>,
-  indexOfEndTokenForStartTokenAtIndex: (startTokenIndex: number) => ?number
 };
 
 export type Editor = {
@@ -32,20 +24,22 @@ export type Editor = {
 };
 
 export type SourceType = {
-  name: string
+  name: string,
 };
 
 export type SourceToken = {
   type: SourceType,
   start: number,
-  end: number
+  end: number,
 }
 
 export type SourceTokenListIndex = {
   next: () => ?SourceTokenListIndex,
   previous: () => ?SourceTokenListIndex,
-  advance: (offset: number) => ?SourceTokenListIndex
+  advance: (offset: number) => ?SourceTokenListIndex,
 };
+
+type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIndex];
 
 export type SourceTokenList = {
   slice: (start: SourceTokenListIndex, end: SourceTokenListIndex) => SourceTokenList,
@@ -54,5 +48,6 @@ export type SourceTokenList = {
   indexOfTokenMatchingPredicate: (predicate: (token: SourceToken) => boolean) => ?SourceTokenListIndex,
   indexOfTokenStartingAtSourceIndex: (index: number) => ?SourceTokenListIndex,
   lastIndexOfTokenMatchingPredicate: (predicate: (token: SourceToken) => boolean) => ?SourceTokenListIndex,
-  tokenAtIndex: (index: SourceTokenListIndex) => ?SourceToken
+  rangeOfMatchingTokensContainingTokenIndex: (startType: SourceType, endType: SourceType, index: SourceTokenListIndex) => ?SourceTokenListIndexRange,
+  tokenAtIndex: (index: SourceTokenListIndex) => ?SourceToken,
 };

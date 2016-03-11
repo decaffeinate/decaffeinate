@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import { COMMA } from 'coffee-lex';
 
 /**
  * Handles construction of objects with `new`.
@@ -26,7 +27,7 @@ export default class NewOpPatcher extends NodePatcher {
       this.args.forEach((arg, i, args) => {
         arg.patch();
         let isLast = i === args.length - 1;
-        if (!isLast && !arg.hasTokenAfter(',')) {
+        if (!isLast && !arg.hasSourceTokenAfter(COMMA)) {
           this.insert(arg.after, ',');
         }
       });

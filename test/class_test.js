@@ -9,6 +9,20 @@ describe('classes', () => {
     check(`class`, `(class {});`);
   });
 
+  it('converts anonymous classes with bodies', () => {
+    check(`
+      A = class
+        a: ->
+          1
+    `, `
+      var A = class {
+        a() {
+          return 1;
+        }
+      };
+    `);
+  });
+
   it('preserves class body functions as method definitions', () => {
     check(`
       class A

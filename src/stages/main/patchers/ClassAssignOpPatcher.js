@@ -26,8 +26,8 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     if (this.isStaticMethod()) {
       // `this.a: ->` → `static a: ->`
       //  ^^^^^          ^^^^^^^
-      let memberNameToken = this.key.getMemberNameToken();
-      this.overwrite(this.key.before, memberNameToken.range[0], 'static ');
+      let memberNameToken = this.key.getMemberNameSourceToken();
+      this.overwrite(this.key.before, memberNameToken.start, 'static ');
     }
   }
 

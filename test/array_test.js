@@ -26,14 +26,20 @@ describe('arrays', () => {
   it('does not change multi-line arrays when there are all the commas, even in weird places', () => {
     check(`
       [
-        1     ,
-        2,
+        1
+        ,
+        2
+        # hey
+        ,
         3
       ]
     `, `
       [
-        1     ,
-        2,
+        1
+        ,
+        2
+        // hey
+        ,
         3
       ];
     `);

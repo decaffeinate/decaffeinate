@@ -25,13 +25,13 @@ export default class WhilePatcher extends NodePatcher {
   patchAsStatement() {
     // `until a` → `while a`
     //  ^^^^^       ^^^^^
-    let whileToken = this.context.tokenAtIndex(this.startTokenIndex);
-    let isLoop = this.context.source.slice(...whileToken.range) === 'loop';
+    let whileToken = this.sourceTokenAtIndex(this.firstSourceTokenIndex);
+    let isLoop = this.context.source.slice(whileToken.start, whileToken.end) === 'loop';
 
     if (isLoop) {
-      this.overwrite(...whileToken.range, 'while (true) {');
+      this.overwrite(whileToken.start, whileToken.end, 'while (true) {');
     } else {
-      this.overwrite(...whileToken.range, 'while');
+      this.overwrite(whileToken.start, whileToken.end, 'while');
 
       let conditionNeedsParens = !this.condition.isSurroundedByParentheses();
       if (conditionNeedsParens) {

@@ -2,7 +2,8 @@ import ClassBlockPatcher from './ClassBlockPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Token, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import { CLASS } from 'coffee-lex';
 
 export default class ClassPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?ClassBlockPatcher) {
@@ -51,7 +52,7 @@ export default class ClassPatcher extends NodePatcher {
       let classToken = this.getClassToken();
       // `class A.B` → `A.B`
       //  ^^^^^^
-      this.remove(classToken.range[0], this.nameAssignee.before);
+      this.remove(classToken.start, this.nameAssignee.before);
       let name = this.getName();
       if (name) {
         // `A.B` → `A.B = class B`
@@ -88,15 +89,16 @@ export default class ClassPatcher extends NodePatcher {
   /**
    * @private
    */
-  getClassToken(): Token {
-    let token = this.context.tokenAtIndex(this.startTokenIndex);
-    if (token.type !== 'CLASS') {
+  getClassToken(): SourceToken {
+    let tokens = this.context.sourceTokens;
+    let classSourceToken = tokens.tokenAtIndex(this.firstSourceTokenIndex);
+    if (classSourceToken.type !== CLASS) {
       throw this.error(
-        `unexpected leading token for class: ${token.type}`,
-        ...token.range
+        `expected CLASS token but found ${classSourceToken.type.name}`,
+        classSourceToken.start, classSourceToken.end
       );
     }
-    return token;
+    return classSourceToken;
   }
 
   /**
@@ -143,13 +145,6 @@ export default class ClassPatcher extends NodePatcher {
       return this.nameAssignee.after;
     }
 
-    let classToken = this.context.tokenAtIndex(this.startTokenIndex);
-    if (classToken.type !== 'CLASS') {
-      throw this.error(
-        `expected CLASS token but found ${classToken.type}`,
-        ...classToken.range
-      );
-    }
-    return classToken.range[1];
+    return this.getClassToken().end;
   }
 }

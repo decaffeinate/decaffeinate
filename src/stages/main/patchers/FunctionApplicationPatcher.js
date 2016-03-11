@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import { CALL_START, COMMA } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, fn: NodePatcher, args: Array<NodePatcher>) {
@@ -26,7 +27,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     }
     this.args.forEach((arg, i, args) => {
       arg.patch();
-      if (i !== args.length - 1 && !arg.hasTokenAfter(',')) {
+      if (i !== args.length - 1 && !arg.hasSourceTokenAfter(COMMA)) {
         this.insert(arg.after, ',');
       }
     });
@@ -40,6 +41,6 @@ export default class FunctionApplicationPatcher extends NodePatcher {
   }
 
   isImplicitCall() {
-    return !this.fn.hasTokenAfter('CALL_START');
+    return !this.fn.hasSourceTokenAfter(CALL_START);
   }
 }
