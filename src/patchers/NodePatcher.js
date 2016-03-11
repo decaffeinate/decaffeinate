@@ -26,7 +26,7 @@ export default class NodePatcher {
   /**
    * Allow patcher classes that would patch a node to chose a different class.
    */
-  static patcherClassOverrideForNode(/* node: Node */): ?Class<NodePatcher> {
+  static patcherClassOverrideForNode(node: Node): ?Class<NodePatcher> { // eslint-disable-line no-unused-vars
     return null;
   }
 
