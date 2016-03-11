@@ -55,7 +55,7 @@
     "eslint-plugin-babel": "^3.1.0",
     "mocha": "^2.4.5",
     "mversion": "^1.10.1",
-    "rollup": "^0.25.3",
+    "rollup": "^0.25.4",
     "rollup-plugin-babel": "^2.3.9"
   },
   "publishConfig": {
