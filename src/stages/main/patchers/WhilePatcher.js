@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Token, Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 
 /**
  * Handles `while` loops, e.g.
@@ -85,20 +85,5 @@ export default class WhilePatcher extends NodePatcher {
 
   statementNeedsSemicolon() {
     return false;
-  }
-
-  /**
-   * @private
-   */
-  getWhenToken(): ?Token {
-    if (this.guard) {
-      return this.tokenBetweenPatchersMatching(
-        this.condition,
-        this.guard,
-        'WHEN'
-      );
-    } else {
-      return null;
-    }
   }
 }
