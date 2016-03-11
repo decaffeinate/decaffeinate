@@ -127,7 +127,7 @@ function runWithStream(name: string, input: ReadableStream, output: WritableStre
     try {
       converted = convert(data);
     } catch (err) {
-      if (err.context) {
+      if (PatchError.isA(err)) {
         console.error(`${name}: ${PatchError.prettyPrint(err)}`);
         process.exit(1);
       } else {

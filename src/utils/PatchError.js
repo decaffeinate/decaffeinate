@@ -15,6 +15,10 @@ export default class PatchError extends Error {
     return this.message;
   }
 
+  static isA(error: Object): boolean {
+    return 'context' in error && 'start' in error && 'end' in error;
+  }
+
   static prettyPrint(error: PatchError) {
     let { context: { source, lineMap }, start, end, message } = error;
     let startLoc = lineMap.invert(start);
