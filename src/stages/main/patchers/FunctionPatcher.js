@@ -77,7 +77,6 @@ export default class FunctionPatcher extends NodePatcher {
         rparenIndex,
         FUNCTION
       );
-      this.log({ rparenIndex, arrowIndex });
     }
     let arrow = this.sourceTokenAtIndex(arrowIndex);
     let expectedArrowType = this.expectedArrowType();
