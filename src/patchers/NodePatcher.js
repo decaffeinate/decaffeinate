@@ -23,7 +23,6 @@ export default class NodePatcher {
     this.context = context;
     this.editor = editor;
 
-    this.tokens = context.tokensForNode(node);
     this.setupLocationInformation();
   }
 
