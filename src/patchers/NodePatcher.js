@@ -400,16 +400,22 @@ export default class NodePatcher {
    * non-semantic types by default.
    */
   indexOfSourceTokenAfterSourceTokenIndex(start: SourceTokenListIndex, type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): ?SourceTokenListIndex {
-    return this.getProgramSourceTokens().indexOfTokenMatchingPredicate(
-      token => predicate(token) && token.type === type,
-      start.next()
-    );
+    let index = this.getProgramSourceTokens()
+      .indexOfTokenMatchingPredicate(predicate, start.next());
+    if (!index) {
+      return null;
+    }
+    let token = this.sourceTokenAtIndex(index);
+    if (!token || token.type !== type) {
+      return null;
+    }
+    return index;
   }
 
   /**
    * Determines whether this patcher's node is followed by a particular token.
    */
-  hasSourceTokenAfter(type: SourceType, predicate: (token: SourceToken) => boolean): boolean {
+  hasSourceTokenAfter(type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): boolean {
     return this.indexOfSourceTokenAfterSourceTokenIndex(this.lastSurroundingTokenIndex, type, predicate) !== null;
   }
 
