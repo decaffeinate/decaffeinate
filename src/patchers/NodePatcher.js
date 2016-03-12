@@ -2,18 +2,9 @@ import PatcherError from '../utils/PatchError.js';
 import adjustIndent from '../utils/adjustIndent.js';
 import repeat from 'repeating';
 import type { SourceType, SourceToken, SourceTokenListIndex, Editor, Node, ParseContext, SourceTokenList } from './types.js';
+import { LPAREN, RPAREN } from 'coffee-lex';
+import { isSemanticToken } from '../utils/types.js';
 import { logger } from '../utils/debug.js';
-import { COMMENT, HERECOMMENT, NEWLINE, LPAREN, RPAREN } from 'coffee-lex';
-
-const NON_SEMANTIC_SOURCE_TOKEN_TYPES = [COMMENT, HERECOMMENT, NEWLINE];
-
-/**
- * This isn't a great name because newlines do have semantic meaning in
- * CoffeeScript, but it's close enough.
- */
-function isSemanticToken(token) {
-  return NON_SEMANTIC_SOURCE_TOKEN_TYPES.indexOf(token.type) < 0;
-}
 
 export default class NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor) {
@@ -408,35 +399,18 @@ export default class NodePatcher {
    * Gets the index of a token after `start` with the matching type, ignoring
    * non-semantic types by default.
    */
-  indexOfSourceTokenAfterSourceTokenIndex(start: SourceTokenListIndex, type: SourceType, ignore: Array<SourceType>=NON_SEMANTIC_SOURCE_TOKEN_TYPES): ?SourceTokenListIndex {
-    let index = start;
-    let tokens = this.context.sourceTokens;
-
-    for (;;) {
-      index = index.next();
-      if (!index) {
-        return null;
-      }
-      let token = tokens.tokenAtIndex(index);
-      if (!token) {
-        return null;
-      }
-      if (ignore.indexOf(token.type) >= 0) {
-        continue;
-      }
-      if (token.type === type) {
-        return index;
-      } else {
-        return null;
-      }
-    }
+  indexOfSourceTokenAfterSourceTokenIndex(start: SourceTokenListIndex, type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): ?SourceTokenListIndex {
+    return this.getProgramSourceTokens().indexOfTokenMatchingPredicate(
+      token => predicate(token) && token.type === type,
+      start.next()
+    );
   }
 
   /**
    * Determines whether this patcher's node is followed by a particular token.
    */
-  hasSourceTokenAfter(type: SourceType, ignore: Array<SourceType>=NON_SEMANTIC_SOURCE_TOKEN_TYPES): boolean {
-    return this.indexOfSourceTokenAfterSourceTokenIndex(this.lastSurroundingTokenIndex, type, ignore) !== null;
+  hasSourceTokenAfter(type: SourceType, predicate: (token: SourceToken) => boolean): boolean {
+    return this.indexOfSourceTokenAfterSourceTokenIndex(this.lastSurroundingTokenIndex, type, predicate) !== null;
   }
 
   /**

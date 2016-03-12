@@ -1,3 +1,6 @@
+import { COMMENT, HERECOMMENT, NEWLINE } from 'coffee-lex';
+import type { SourceToken } from '../patchers/types.js';
+
 /**
  * Determines whether the node is a boolean, optionally with the given value.
  *
@@ -249,4 +252,14 @@ export function isStaticMethod(node) {
     assignee.expression.type === 'Identifier' &&
     assignee.expression.data === node.parentNode.parentNode.name.data
   );
+}
+
+const NON_SEMANTIC_SOURCE_TOKEN_TYPES = [COMMENT, HERECOMMENT, NEWLINE];
+
+/**
+ * This isn't a great name because newlines do have semantic meaning in
+ * CoffeeScript, but it's close enough.
+ */
+export function isSemanticToken(token: SourceToken): boolean {
+  return NON_SEMANTIC_SOURCE_TOKEN_TYPES.indexOf(token.type) < 0;
 }
