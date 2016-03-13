@@ -41,13 +41,13 @@ export default class SlicePatcher extends NodePatcher {
       if (inclusive) {
         if (right.node.type === 'Int') {
           this.overwrite(
-            right.start,
-            right.end,
+            right.contentStart,
+            right.contentEnd,
             `${right.node.data + 1}`
           );
         } else {
           right.patch();
-          this.insert(right.after, ' + 1');
+          this.insert(right.outerEnd, ' + 1');
         }
       } else {
         right.patch();
@@ -74,9 +74,9 @@ export default class SlicePatcher extends NodePatcher {
     let tokens = this.context.sourceTokens;
     let index = tokens.indexOfTokenMatchingPredicate(
       token => token.type === LBRACKET,
-      this.expression.lastSurroundingTokenIndex
+      this.expression.outerEndTokenIndex
     );
-    if (!index || index.isAfter(this.lastSourceTokenIndex)) {
+    if (!index || index.isAfter(this.contentEndTokenIndex)) {
       throw this.error(`could not find INDEX_START after slice expression`);
     }
     return tokens.tokenAtIndex(index);
@@ -94,8 +94,8 @@ export default class SlicePatcher extends NodePatcher {
       }
       let operator = source.slice(token.start, token.end);
       return operator === '...' || operator === '..';
-    }, this.left ? this.left.lastSurroundingTokenIndex : this.expression.lastSurroundingTokenIndex);
-    if (!index || index.isAfter(this.lastSourceTokenIndex)) {
+    }, this.left ? this.left.outerEndTokenIndex : this.expression.outerEndTokenIndex);
+    if (!index || index.isAfter(this.contentEndTokenIndex)) {
       throw this.error(`could not find '..' or '...' in slice`);
     }
     return tokens.tokenAtIndex(index);
@@ -108,9 +108,9 @@ export default class SlicePatcher extends NodePatcher {
     let tokens = this.context.sourceTokens;
     let index = tokens.lastIndexOfTokenMatchingPredicate(
       token => token.type === RBRACKET,
-      this.lastSurroundingTokenIndex
+      this.outerEndTokenIndex
     );
-    if (!index || index.isBefore(this.firstSourceTokenIndex)) {
+    if (!index || index.isBefore(this.contentStartTokenIndex)) {
       throw this.error(`could not find ']' ending slice`);
     }
     return tokens.tokenAtIndex(index);

@@ -38,7 +38,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
         }
       }
       let bindings = boundMethods.map(method => {
-        let key = this.context.source.slice(method.key.start, method.key.end);
+        let key = this.context.source.slice(method.key.contentStart, method.key.contentEnd);
         return `this.${key} = this.${key}.bind(this)`;
       });
       this.expression.body.insertLinesAtIndex(bindings, indexOfSuperStatement + 1);

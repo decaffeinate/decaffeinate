@@ -25,10 +25,10 @@ export default class SpreadPatcher extends NodePatcher {
 
     // `a...` → `...a...`
     //           ^^^
-    this.insert(this.expression.before, '...');
+    this.insert(this.expression.outerStart, '...');
     this.expression.patch();
     // `...a...` → `...a`
     //      ^^^
-    this.remove(this.expression.after, this.end);
+    this.remove(this.expression.outerEnd, this.contentEnd);
   }
 }

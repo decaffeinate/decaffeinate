@@ -10,10 +10,10 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
     this.assignee.patch();
     // `a && b` → `a && (a = b`
     //                  ^^^^^
-    this.insert(this.expression.before, `(${assigneeAgain} = `);
+    this.insert(this.expression.outerStart, `(${assigneeAgain} = `);
     // `a && (a = b` → `a && (a = b)`
     //                             ^
-    this.insert(this.expression.after, ')');
+    this.insert(this.expression.outerEnd, ')');
   }
 
   patchAsStatement() {
@@ -22,7 +22,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
 
     // `a &&= b` → `if (a &&= b`
     //              ^^^^
-    this.insertBefore('if (');
+    this.insert(this.contentStart, 'if (');
 
     if (op === '||=') {
       this.assignee.negate();
@@ -33,10 +33,10 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
 
     // `if (a &&= b` → `if (a) { a = b`
     //       ^^^^^           ^^^^^^^^
-    this.overwrite(this.assignee.after, this.expression.before, `) { ${assigneeAgain} = `);
+    this.overwrite(this.assignee.outerEnd, this.expression.outerStart, `) { ${assigneeAgain} = `);
 
     // `if (a) { a = b` → `if (a) { a = b }`
     //                                   ^^
-    this.insert(this.expression.after, ' }');
+    this.insert(this.expression.outerEnd, ' }');
   }
 }

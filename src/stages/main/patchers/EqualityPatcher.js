@@ -71,8 +71,8 @@ export default class EqualityPatcher extends BinaryOpPatcher {
     if (!compareTokenIndex) {
       throw this.error(
         'expected OPERATOR token but none was found',
-        left.after,
-        right.before
+        left.outerEnd,
+        right.outerStart
       );
     }
 

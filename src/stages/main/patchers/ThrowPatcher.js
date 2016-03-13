@@ -31,26 +31,33 @@ export default class ThrowPatcher extends NodePatcher {
     if (!hasParens) {
       // `throw err` → `(throw err`
       //                ^
-      this.insertAtStart('(');
+      this.insert(this.outerStart, '(');
     }
     // `(throw err` → `(() => { throw err`
     //                  ^^^^^^^^
-    this.insertAtStart('() => { ');
+    this.insert(this.innerStart, '() => { ');
     this.patchAsStatement();
     // `(() => { throw err` → `(() => { throw err }`
     //                                           ^^
-    this.insertAtEnd(' }');
+    this.insert(this.innerEnd, ' }');
     if (!hasParens) {
       // `(() => { throw err }` → `(() => { throw err })`
       //                                               ^
-      this.insertAtEnd(')');
+      this.insert(this.outerEnd, ')');
     }
     // `(() => { throw err })` → `(() => { throw err })()`
     //                                                 ^^
-    this.insertAfter('()');
+    this.insert(this.outerEnd, '()');
   }
 
   patchAsStatement() {
     this.expression.patch();
+  }
+
+  /**
+   * This is here so that we can add the `()` outside any existing parens.
+   */
+  allowPatchingOuterBounds(): boolean {
+    return true;
   }
 }

@@ -3,7 +3,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 export default class ThisPatcher extends NodePatcher {
   patchAsExpression() {
     if (this.isShorthandThis()) {
-      this.overwrite(this.start, this.end, 'this');
+      this.overwrite(this.contentStart, this.contentEnd, 'this');
     }
   }
 
@@ -12,6 +12,6 @@ export default class ThisPatcher extends NodePatcher {
   }
 
   isShorthandThis() {
-    return this.context.source.slice(this.start, this.end) === '@';
+    return this.context.source.slice(this.contentStart, this.contentEnd) === '@';
   }
 }

@@ -5,9 +5,9 @@ import FunctionPatcher from './FunctionPatcher.js';
  */
 export default class ManuallyBoundFunctionPatcher extends FunctionPatcher {
   patchAsStatement(options={}) {
-    this.insertBefore('(');
+    this.insert(this.contentStart, '(');
     this.patchAsExpression(options);
-    this.insertAfter('.bind(this))');
+    this.insert(this.contentEnd, '.bind(this))');
   }
 
   expectedArrowType(): string {

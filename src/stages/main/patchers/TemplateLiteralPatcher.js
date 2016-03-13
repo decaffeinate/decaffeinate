@@ -11,21 +11,21 @@ export default class TemplateLiteralPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
-    let { quasis, expressions, start, end } = this;
+    let { quasis, expressions, contentStart, contentEnd } = this;
 
     if (this.startsWith('"""')) {
       replaceTripleQuotes(this.node, this.editor);
     } else {
-      this.overwrite(start, start + '"'.length, '`');
-      this.overwrite(end - '"'.length, end, '`');
+      this.overwrite(contentStart, contentStart + '"'.length, '`');
+      this.overwrite(contentEnd - '"'.length, contentEnd, '`');
     }
 
     for (let i = 0; i < quasis.length - 1; i++) {
       let quasi = quasis[i];
-      this.overwrite(quasi.end, quasi.end + '#'.length, '$');
+      this.overwrite(quasi.contentEnd, quasi.contentEnd + '#'.length, '$');
     }
 
-    escapeTemplateStringContents(this.editor, start, end);
+    escapeTemplateStringContents(this.editor, contentStart, contentEnd);
     expressions.forEach(expression => expression.patch());
   }
 

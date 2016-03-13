@@ -20,19 +20,19 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     if (implicitCall) {
       let arg = this.args.length === 1 ? this.args[0] : null;
       if (arg && arg.node.virtual) {
-        this.insert(this.fn.after, '(');
+        this.insert(this.fn.outerEnd, '(');
       } else {
-        this.overwrite(this.fn.after, this.args[0].before, '(');
+        this.overwrite(this.fn.outerEnd, this.args[0].outerStart, '(');
       }
     }
     this.args.forEach((arg, i, args) => {
       arg.patch();
       if (i !== args.length - 1 && !arg.hasSourceTokenAfter(COMMA)) {
-        this.insert(arg.after, ',');
+        this.insert(arg.outerEnd, ',');
       }
     });
     if (implicitCall) {
-      this.insertAfter(')');
+      this.insert(this.innerEnd, ')');
     }
   }
 

@@ -7,7 +7,7 @@ export default class LogicalNotOpPatcher extends UnaryOpPatcher {
   patchAsExpression() {
     // `not a` → `!a`
     //  ^^^^      ^
-    this.overwrite(this.start, this.expression.before, '!');
+    this.overwrite(this.contentStart, this.expression.outerStart, '!');
     super.patchAsExpression();
   }
 }

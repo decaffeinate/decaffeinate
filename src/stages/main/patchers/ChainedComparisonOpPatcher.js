@@ -26,7 +26,7 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
       // `a < b < c` → `a < b && b < c`
       //                     ^^^^^
       this.insert(
-        middle.after,
+        middle.outerEnd,
         ` ${this.negated ? '||' : '&&'} ${middleAgain}`
       );
     });

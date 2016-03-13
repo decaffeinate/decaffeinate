@@ -17,18 +17,18 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   patchAsExpression() {
     let implicitObject = this.isImplicitObject();
     if (implicitObject) {
-      this.insertAtStart('{');
+      this.insert(this.innerStart, '{');
     }
     this.members.forEach((member, i, members) => {
       member.patch();
       if (i !== members.length - 1) {
         if (!member.hasSourceTokenAfter(COMMA)) {
-          this.insert(member.after, ',');
+          this.insert(member.outerEnd, ',');
         }
       }
     });
     if (implicitObject) {
-      this.insertAtEnd('}');
+      this.insert(this.innerEnd, '}');
     }
   }
 
@@ -48,11 +48,11 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   patchAsStatement() {
     let needsParentheses = !this.isSurroundedByParentheses();
     if (needsParentheses) {
-      this.insertBefore('(');
+      this.insert(this.contentStart, '(');
     }
     this.patchAsExpression();
     if (needsParentheses) {
-      this.insertAfter(')');
+      this.insert(this.contentEnd, ')');
     }
   }
 
@@ -64,7 +64,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
    */
   isImplicitObject(): boolean {
     let tokens = this.context.sourceTokens;
-    let indexOfFirstToken = tokens.indexOfTokenStartingAtSourceIndex(this.start);
+    let indexOfFirstToken = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
     return tokens.tokenAtIndex(indexOfFirstToken).type !== LBRACE;
   }
 }

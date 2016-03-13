@@ -6,7 +6,7 @@ export default class SuperPatcher extends NodePatcher {
   patchAsExpression() {
     let name = this.getContainingMethodName();
     if (name) {
-      this.insertAtEnd(`.${name}`);
+      this.insert(this.contentEnd, `.${name}`);
     }
   }
 

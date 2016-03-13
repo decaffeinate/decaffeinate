@@ -35,17 +35,17 @@ export default class ConditionalPatcher extends NodePatcher {
     this.consequent.patch();
     this.condition.patch();
     let patchedCondition = this.slice(
-      this.condition.before,
-      this.condition.after
+      this.condition.outerStart,
+      this.condition.outerEnd
     );
     let patchedConsequent = this.slice(
-      this.consequent.before,
-      this.consequent.after
+      this.consequent.outerStart,
+      this.consequent.outerEnd
     );
     let ifToken = this.node.isUnless ? 'unless' : 'if';
     this.overwrite(
-      this.start,
-      this.end,
+      this.contentStart,
+      this.contentEnd,
       `${ifToken} ${patchedCondition} then ${patchedConsequent}`
     );
   }
@@ -55,6 +55,6 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   isPostIf(): boolean {
-    return this.condition.start > this.consequent.start;
+    return this.condition.contentStart > this.consequent.contentStart;
   }
 }

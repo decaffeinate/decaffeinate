@@ -33,13 +33,13 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
       // `{ @name }` → `{ name: @name }`
       //                  ^^^^^^
       this.insert(
-        memberAccessKey.before,
+        memberAccessKey.outerStart,
         `${memberAccessKey.getMemberName()}: `
       );
     } else if (expand) {
       // `{ a } → { a: a }`
       //            ^^^
-      this.insert(key.before, `${this.slice(key.start, key.end)}: `);
+      this.insert(key.outerStart, `${this.slice(key.contentStart, key.contentEnd)}: `);
     }
     key.patch();
   }

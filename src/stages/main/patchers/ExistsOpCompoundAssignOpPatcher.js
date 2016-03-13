@@ -11,13 +11,13 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     if (needsTypeofCheck) {
       // `a ?= b` → `typeof a ?= b`
       //             ^^^^^^^
-      this.insert(this.assignee.before, `typeof `);
+      this.insert(this.assignee.outerStart, `typeof `);
       this.assignee.patch();
       assigneeAgain = this.assignee.makeRepeatable();
       // `typeof a ? b` → `typeof a !== 'undefined' && a !== null ? a ?= b`
       //                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.insert(
-        this.assignee.after,
+        this.assignee.outerEnd,
         ` !== 'undefined' && ${assigneeAgain} !== null ? ${assigneeAgain}`
       );
     } else {
@@ -25,7 +25,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       assigneeAgain = this.assignee.makeRepeatable();
       // `a.b ?= b` → `a.b != null ? a.b ?= b`
       //                  ^^^^^^^^^^^^^^
-      this.insert(this.assignee.after, ` != null ? ${assigneeAgain}`);
+      this.insert(this.assignee.outerEnd, ` != null ? ${assigneeAgain}`);
     }
 
     let operator = this.getOperatorToken();
@@ -35,7 +35,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     this.expression.patch();
     // `a.b != null ? a.b : (a.b = b` → `a.b != null ? a.b : (a.b = b)`
     //                                                               ^
-    this.insert(this.expression.after, ')');
+    this.insert(this.expression.outerEnd, ')');
   }
 
   patchAsStatement() {
@@ -43,24 +43,24 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     if (this.assignee instanceof IdentifierPatcher) {
       // `a ?= b` → `if (typeof a ?= b`
       //             ^^^^^^^^^^^
-      this.insert(this.assignee.before, `if (typeof `);
+      this.insert(this.assignee.outerStart, `if (typeof `);
       this.assignee.patch();
       assigneeAgain = this.assignee.makeRepeatable();
       // `if (typeof a ?= b` → `if (typeof a === 'undefined' || a === null) { ?= b`
       //                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.insert(
-        this.assignee.after,
+        this.assignee.outerEnd,
         ` === 'undefined' || ${assigneeAgain} === null) {`
       );
     } else {
       // `a.b ?= b` → `if (a.b ?= b`
       //               ^^^^
-      this.insert(this.assignee.before, `if (`);
+      this.insert(this.assignee.outerStart, `if (`);
       this.assignee.patch();
       assigneeAgain = this.assignee.makeRepeatable();
       // `if (a.b ?= b` → `if (a.b == null) { ?= b`
       //                          ^^^^^^^^^^^
-      this.insert(this.assignee.after, ` == null) {`);
+      this.insert(this.assignee.outerEnd, ` == null) {`);
     }
 
     let operator = this.getOperatorToken();
@@ -70,6 +70,6 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     this.expression.patch();
     // `if (a.b == null) { a.b = b` → `if (a.b == null) { a.b = b; }`
     //                                                           ^^^
-    this.insert(this.expression.after, `; }`);
+    this.insert(this.expression.outerEnd, `; }`);
   }
 }

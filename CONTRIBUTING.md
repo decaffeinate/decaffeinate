@@ -123,15 +123,15 @@ export default class BoolPatcher extends NodePatcher {
 We need to figure out if the original source for the boolean was something we
 can simply leave as-is, or if we have to re-write it. We can access the original
 source by getting `this.context.source` inside a patcher, and each patcher has
-`start` and `end` properties for the source offsets for the start and end of the
-node.
+`contentStart` and `contentEnd` properties for the source offsets for the start
+and end of the node.
 
 ```js
 import NodePatcher from './NodePatcher.js';
 
 export default class BoolPatcher extends NodePatcher {
   patchAsExpression() {
-    let source = this.context.source.slice(this.start, this.end);
+    let source = this.context.source.slice(this.contentStart, this.contentEnd);
     switch (source) {
       case 'yes':
       case 'on':
@@ -158,16 +158,16 @@ import NodePatcher from './NodePatcher.js';
 
 export default class BoolPatcher extends NodePatcher {
   patchAsExpression() {
-    let source = this.context.source.slice(this.start, this.end);
+    let source = this.context.source.slice(this.contentStart, this.contentEnd);
     switch (source) {
       case 'yes':
       case 'on':
-        this.overwrite(this.start, this.end, 'true');
+        this.overwrite(this.contentStart, this.contentEnd, 'true');
         break;
         
       case 'no':
       case 'off':
-        this.overwrite(this.start, this.end, 'false');
+        this.overwrite(this.contentStart, this.contentEnd, 'false');
         break;
     }
   }
@@ -185,21 +185,30 @@ can [the real `BoolPatcher` here][BoolPatcher].
 
 In
 addition to `overwrite`, there's `insert` and `remove` which patchers can use to
-edit the source. Also, in addition to `start` and `end` there's `before` and
-`after`, which point to the locations outside the bounds of any containing
-parentheses. For example, for the `PlusOp` containing `foo + bar`:
+edit the source. Also, in addition to `contentStart` and `contentEnd` there's
+`outerStart`, `outerEnd`, `innerStart` and `innerEnd`, which point to the
+locations outside and inside the bounds of any containing parentheses. For
+example, for the `PlusOp` containing `2 + 3`:
 
 ```
-( foo + bar ) * baz
-^ ^        ^ ^
-| |        | |
-| start  end |
-|            |
-before   after
+       innerStart
+           |
+outerStart | contentStart
+         | | |
+         ▼ ▼ ▼
+     1 * ((  2 + 3  ))
+                  ▲ ▲ ▲
+                  | | |
+         contentEnd | outerEnd
+                    |
+                 innerEnd
 ```
 
-Depending on whether you want to insert text inside or outside the parentheses,
-you'll want to use `start`/`end` or `before`/`after` respectively.
+Which position you use depends on whether you want to insert text immediately
+before or after the node's content, immediately inside any surrounding
+parentheses, or outside the surrounding parentheses. Note that patchers cannot
+make changes outside the range of their own `[outerStart, outerEnd)` if that
+range is different from `[contentStart, contentEnd)`.
 
 #### Patchers with children
 

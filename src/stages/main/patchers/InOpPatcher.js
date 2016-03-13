@@ -40,31 +40,31 @@ export default class InOpPatcher extends BinaryOpPatcher {
 
     if (this.negated) {
       // `a in b` → `!a in b`
-      this.insert(this.left.before, '!');
+      this.insert(this.left.outerStart, '!');
     }
 
     // `a in b` → `__in__a in b`
     //             ^^^^^^^
-    this.insert(this.left.before, helper);
+    this.insert(this.left.outerStart, helper);
 
     if (needsParens) {
       // `__in__a in b` → `__in__(a in b`
       //                         ^
-      this.insert(this.left.before, '(');
+      this.insert(this.left.outerStart, '(');
     }
 
     this.left.patch();
 
     // `__in__(a in b` → `__in__(a, b`
     //          ^^^^              ^^
-    this.overwrite(this.left.after, this.right.before, ', ');
+    this.overwrite(this.left.outerEnd, this.right.outerStart, ', ');
 
     this.right.patch();
 
     if (needsParens) {
       // `__in__(a, b` → `__in__(a, b)`
       //                             ^
-      this.insert(this.right.after, ')');
+      this.insert(this.right.outerEnd, ')');
     }
   }
 }

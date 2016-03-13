@@ -20,11 +20,11 @@ export default class ExtendsOpPatcher extends BinaryOpPatcher {
    */
   patchAsExpression() {
     let helper = this.registerHelper('__extends__', EXTENDS_HELPER);
-    this.insert(this.left.before, `${helper}(`);
+    this.insert(this.left.outerStart, `${helper}(`);
     this.left.patch();
-    this.overwrite(this.left.after, this.right.before, ', ');
+    this.overwrite(this.left.outerEnd, this.right.outerStart, ', ');
     this.right.patch();
-    this.insert(this.right.after, ')');
+    this.insert(this.right.outerEnd, ')');
   }
 
   patchAsStatement() {

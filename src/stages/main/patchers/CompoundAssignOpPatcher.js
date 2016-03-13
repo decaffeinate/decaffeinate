@@ -12,8 +12,8 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
     if (!operatorIndex) {
       throw this.error(
         `expected OPERATOR token between assignee and expression`,
-        this.assignee.after,
-        this.expression.before
+        this.assignee.outerEnd,
+        this.expression.outerStart
       );
     }
     return this.sourceTokenAtIndex(operatorIndex);

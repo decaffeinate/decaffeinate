@@ -48,7 +48,7 @@ export default class RangePatcher extends BinaryOpPatcher {
 
     // `[0..2]` → `[0, 1, 2]`
     //  ^^^^^^     ^^^^^^^^^
-    this.overwrite(this.start, this.end, `[${list}]`);
+    this.overwrite(this.contentStart, this.contentEnd, `[${list}]`);
   }
 
   /**
@@ -59,19 +59,19 @@ export default class RangePatcher extends BinaryOpPatcher {
 
     // `[a..b]` → `__range__(a..b]`
     //  ^          ^^^^^^^^^^
-    this.overwrite(this.start, this.left.before, `${helper}(`);
+    this.overwrite(this.contentStart, this.left.outerStart, `${helper}(`);
 
     this.left.patch();
 
     // `__range__(a..b]` → `__range__(a, b]`
     //             ^^                  ^^
-    this.overwrite(this.left.after, this.right.before, ', ');
+    this.overwrite(this.left.outerEnd, this.right.outerStart, ', ');
 
     this.right.patch();
 
     // `__range__(a, b]` → `__range__(a, b, true)`
     //                ^                   ^^^^^^
-    this.overwrite(this.right.after, this.end, `, ${this.isInclusive()})`);
+    this.overwrite(this.right.outerEnd, this.contentEnd, `, ${this.isInclusive()})`);
   }
 
   /**

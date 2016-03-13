@@ -42,34 +42,37 @@ export default class NodePatcher {
     }
 
     /**
-     * `start` and `end` is the exclusive range within the original source that
-     * composes this patcher's node. For example, here's the start and end of
+     * `contentStart` and `contentEnd` is the exclusive range within the original source that
+     * composes this patcher's node. For example, here's the contentStart and contentEnd of
      * `a + b` in the expression below:
      *
      *   console.log(a + b)
      *               ^    ^
      */
-    this.start = node.range[0];
-    this.end = node.range[1];
+    this.contentStart = node.range[0];
+    this.contentEnd = node.range[1];
 
     let tokens = context.sourceTokens;
-    let firstSourceTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(this.start);
-    let lastSourceTokenIndex = tokens.indexOfTokenEndingAtSourceIndex(this.end);
+    let firstSourceTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
+    let lastSourceTokenIndex = tokens.indexOfTokenEndingAtSourceIndex(this.contentEnd);
 
-    this.firstSourceTokenIndex = firstSourceTokenIndex;
-    this.lastSourceTokenIndex = lastSourceTokenIndex;
+    this.contentStartTokenIndex = firstSourceTokenIndex;
+    this.contentEndTokenIndex = lastSourceTokenIndex;
 
-    let firstSurroundingTokenIndex = firstSourceTokenIndex;
-    let lastSurroundingTokenIndex = lastSourceTokenIndex;
+    let outerStartTokenIndex = firstSourceTokenIndex;
+    let outerEndTokenIndex = lastSourceTokenIndex;
+
+    let innerStartTokenIndex = firstSourceTokenIndex;
+    let innerEndTokenIndex = lastSourceTokenIndex;
 
     for (;;) {
       let previousSurroundingTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
         isSemanticToken,
-        firstSurroundingTokenIndex.previous()
+        outerStartTokenIndex.previous()
       );
       let nextSurroundingTokenIndex = tokens.indexOfTokenMatchingPredicate(
         isSemanticToken,
-        lastSurroundingTokenIndex.next()
+        outerEndTokenIndex.next()
       );
 
       if (!previousSurroundingTokenIndex || !nextSurroundingTokenIndex) {
@@ -87,26 +90,53 @@ export default class NodePatcher {
         break;
       }
 
-      firstSurroundingTokenIndex = previousSurroundingTokenIndex;
-      lastSurroundingTokenIndex = nextSurroundingTokenIndex;
+      if (innerStartTokenIndex === firstSourceTokenIndex) {
+        innerStartTokenIndex = previousSurroundingTokenIndex;
+      }
+
+      if (innerEndTokenIndex === lastSourceTokenIndex) {
+        innerEndTokenIndex = nextSurroundingTokenIndex;
+      }
+
+      outerStartTokenIndex = previousSurroundingTokenIndex;
+      outerEndTokenIndex = nextSurroundingTokenIndex;
     }
 
-    this.firstSurroundingTokenIndex = firstSurroundingTokenIndex;
-    this.lastSurroundingTokenIndex = lastSurroundingTokenIndex;
+    this.innerStartTokenIndex = innerStartTokenIndex;
+    this.innerEndTokenIndex = innerEndTokenIndex;
+
+    this.outerStartTokenIndex = outerStartTokenIndex;
+    this.outerEndTokenIndex = outerEndTokenIndex;
 
     /**
-     * `before` and `after` is the same as `start` and `end` for most nodes,
-     * but expands to encompass any other tokens that are not part of the AST
-     * but are still logically attached to the node, for example:
+     * `innerStart`, `innerEnd`, `outerStart` and `outerEnd` refer to the
+     * positions around surrounding parentheses. In most nodes they are the same
+     * as `contentStart` and `contentEnd`. For example:
      *
-     *   1 * (2 + 3)
-     *       ^      ^
-     *
-     * Above the opening parenthesis is at the `before` index and the character
-     * immediately after the closing parenthesis is at the `after` index.
+     *              innerStart
+     *                  |
+     *       outerStart | contentStart
+     *                | | |
+     *                ▼ ▼ ▼
+     *            1 * ((  2 + 3  ))
+     *                         ▲ ▲ ▲
+     *                         | | |
+     *                contentEnd | outerEnd
+     *                           |
+     *                        innerEnd
      */
-    this.before = tokens.tokenAtIndex(firstSurroundingTokenIndex).start;
-    this.after = tokens.tokenAtIndex(lastSurroundingTokenIndex).end;
+    if (innerStartTokenIndex === firstSourceTokenIndex) {
+      this.innerStart = this.contentStart;
+    } else {
+      this.innerStart = tokens.tokenAtIndex(innerStartTokenIndex).end;
+    }
+    if (innerEndTokenIndex === lastSourceTokenIndex) {
+      this.innerEnd = this.contentEnd;
+    } else {
+      this.innerEnd = tokens.tokenAtIndex(innerEndTokenIndex).start;
+    }
+    this.outerStart = tokens.tokenAtIndex(outerStartTokenIndex).start;
+    this.outerEnd = tokens.tokenAtIndex(outerEndTokenIndex).end;
   }
 
   /**
@@ -156,34 +186,6 @@ export default class NodePatcher {
   }
 
   /**
-   * Insert content at the start of `node`'s location.
-   */
-  insertAtStart(content: string) {
-    this.insert(this.start, content);
-  }
-
-  /**
-   * Insert content at the end of `node`'s location.
-   */
-  insertAtEnd(content: string) {
-    this.insert(this.end, content);
-  }
-
-  /**
-   * Inserts content before any punctuation for this node, i.e. parentheses.
-   */
-  insertBefore(content: string) {
-    this.insert(this.before, content);
-  }
-
-  /**
-   * Inserts content after any punctuation for this node, i.e. parentheses.
-   */
-  insertAfter(content: string) {
-    this.insert(this.after, content);
-  }
-
-  /**
    * Insert content at the specified index.
    */
   insert(index: number, content: string) {
@@ -199,7 +201,85 @@ export default class NodePatcher {
       'BEFORE',
       JSON.stringify(this.context.source.slice(index, index + 2))
     );
+
+    this.adjustBoundsToInclude(index);
     this.editor.insert(index, content);
+  }
+
+  /**
+   * @protected
+   */
+  allowPatchingOuterBounds(): boolean {
+    return false;
+  }
+
+  /**
+   * @protected
+   */
+  getEditingBounds(): [number, number] {
+    let boundingPatcher = this.getBoundingPatcher();
+    if (this.allowPatchingOuterBounds()) {
+      return [boundingPatcher.outerStart, boundingPatcher.outerEnd];
+    } else {
+      return [boundingPatcher.innerStart, boundingPatcher.innerEnd];
+    }
+  }
+
+  /**
+   * @protected
+   */
+  isIndexEditable(index: number): boolean {
+    let [ start, end ] = this.getEditingBounds();
+    return index >= start && index <= end;
+  }
+
+  /**
+   * @protected
+   */
+  assertEditableIndex(index: number) {
+    if (!this.isIndexEditable(index)) {
+      let [ start, end ] = this.getEditingBounds();
+      throw this.error(
+        `cannot edit index ${index} because it is not editable (i.e. outside [${start}, ${end}))`,
+        start,
+        end
+      );
+    }
+  }
+
+  /**
+   * When editing outside a node's bounds we expand the bounds to fit, if
+   * possible. Note that if a node or a node's parent is wrapped in parentheses
+   * we cannot adjust the bounds beyond the inside of the parentheses.
+   *
+   * @private
+   */
+  adjustBoundsToInclude(index: number) {
+    this.assertEditableIndex(index);
+
+    if (index < this.innerStart) {
+      this.log('Moving `innerStart` from', this.innerStart, 'to', index);
+      this.innerStart = index;
+    }
+
+    if (index > this.innerEnd) {
+      this.log('Moving `innerEnd` from', this.innerEnd, 'to', index);
+      this.innerEnd = index;
+    }
+
+    if (index < this.outerStart) {
+      this.log('Moving `outerStart` from', this.outerStart, 'to', index);
+      this.outerStart = index;
+    }
+
+    if (index > this.outerEnd) {
+      this.log('Moving `outerEnd` from', this.outerEnd, 'to', index);
+      this.outerEnd = index;
+    }
+
+    if (this.parent) {
+      this.parent.adjustBoundsToInclude(index);
+    }
   }
 
   /**
@@ -247,14 +327,14 @@ export default class NodePatcher {
    * Determines whether this node starts with a string.
    */
   startsWith(string: string): boolean {
-    return this.context.source.slice(this.start, this.start + string.length) === string;
+    return this.context.source.slice(this.contentStart, this.contentStart + string.length) === string;
   }
 
   /**
    * Determines whether this node ends with a string.
    */
   endsWith(string: string): boolean {
-    return this.context.source.slice(this.end - string.length, this.end) === string;
+    return this.context.source.slice(this.contentEnd - string.length, this.contentEnd) === string;
   }
 
   /**
@@ -370,8 +450,8 @@ export default class NodePatcher {
    * a predicate function.
    */
   indexOfSourceTokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, predicate: (token: SourceToken) => boolean): ?SourceTokenListIndex {
-    let start = left.after;
-    let end = right.before;
+    let start = left.outerEnd;
+    let end = right.outerStart;
     return this.getProgramSourceTokens().indexOfTokenMatchingPredicate(token => {
       return (
         token.start >= start &&
@@ -396,7 +476,7 @@ export default class NodePatcher {
   }
 
   /**
-   * Gets the index of a token after `start` with the matching type, ignoring
+   * Gets the index of a token after `contentStart` with the matching type, ignoring
    * non-semantic types by default.
    */
   indexOfSourceTokenAfterSourceTokenIndex(start: SourceTokenListIndex, type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): ?SourceTokenListIndex {
@@ -416,33 +496,43 @@ export default class NodePatcher {
    * Determines whether this patcher's node is followed by a particular token.
    */
   hasSourceTokenAfter(type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): boolean {
-    return this.indexOfSourceTokenAfterSourceTokenIndex(this.lastSurroundingTokenIndex, type, predicate) !== null;
+    return this.indexOfSourceTokenAfterSourceTokenIndex(this.outerEndTokenIndex, type, predicate) !== null;
   }
 
   /**
    * Determines whether this patcher's node is surrounded by parentheses.
    */
   isSurroundedByParentheses(): boolean {
-    let beforeToken = this.context.sourceTokens.tokenAtIndex(this.firstSurroundingTokenIndex);
-    let afterToken = this.context.sourceTokens.tokenAtIndex(this.lastSurroundingTokenIndex);
+    let beforeToken = this.sourceTokenAtIndex(this.outerStartTokenIndex);
+    let afterToken = this.sourceTokenAtIndex(this.outerEndTokenIndex);
     return (
       beforeToken && beforeToken.type === LPAREN &&
       afterToken && afterToken.type === RPAREN
     );
   }
 
+  getBoundingPatcher(): ?NodePatcher {
+    if (this.isSurroundedByParentheses()) {
+      return this;
+    } else if (this.parent) {
+      return this.parent.getBoundingPatcher();
+    } else {
+      return this;
+    }
+  }
+
   /**
    * Negates this patcher's node when patching.
    */
   negate() {
-    this.insertBefore('!');
+    this.insert(this.outerStart, '!');
   }
 
   /**
    * Gets the indent string for the line that starts this patcher's node.
    */
   getIndent(offset: number=0): string {
-    return adjustIndent(this.context.source, this.start, offset);
+    return adjustIndent(this.context.source, this.contentStart, offset);
   }
 
   /**
@@ -468,8 +558,8 @@ export default class NodePatcher {
 
     let indentString = this.getProgramIndentString();
     let indentToChange = repeat(indentString, Math.abs(offset));
-    let start = this.before;
-    let end = this.after;
+    let start = this.outerStart;
+    let end = this.outerEnd;
     let { source } = this.context;
     let hasIndentedThisLine = false;
 
@@ -511,7 +601,7 @@ export default class NodePatcher {
    */
   getEndOfLine(): number {
     let { source } = this.context;
-    for (let i = this.after - '\n'.length; i < source.length; i++) {
+    for (let i = this.outerEnd - '\n'.length; i < source.length; i++) {
       if (source[i] === '\n') {
         return i;
       }
@@ -523,7 +613,12 @@ export default class NodePatcher {
    * Appends the given content on a new line after the end of the current line.
    */
   appendLineAfter(content: string, indentOffset: number=0) {
-    this.appendToEndOfLine(`\n${this.getIndent(indentOffset)}${content}`);
+    let boundingPatcher = this.getBoundingPatcher();
+    let endOfLine = this.getEndOfLine();
+    this.insert(
+      Math.min(endOfLine, boundingPatcher.innerEnd),
+      `\n${this.getIndent(indentOffset)}${content}`
+    );
   }
 
   /**
@@ -537,7 +632,7 @@ export default class NodePatcher {
   /**
    * Generate an error referring to a particular section of the source.
    */
-  error(message: string, start: number=this.start, end: number=this.end): PatcherError {
+  error(message: string, start: number=this.contentStart, end: number=this.contentEnd): PatcherError {
     return new PatcherError(message, this.context, start, end);
   }
 
@@ -565,17 +660,17 @@ export default class NodePatcher {
   makeRepeatable(parens: boolean, ref: ?string=null): string {
     if (this.isRepeatable()) {
       // If we can repeat it, just return the original source.
-      return this.context.source.slice(this.start, this.end);
+      return this.context.source.slice(this.contentStart, this.contentEnd);
     } else {
       // Can't repeat it, so we assign it to a free variable and return that,
       // i.e. `a + b` → `(ref = a + b)`.
       if (parens) {
-        this.insertBefore('(');
+        this.insert(this.innerStart, '(');
       }
       ref = this.claimFreeBinding(ref);
-      this.insertBefore(`${ref} = `);
+      this.insert(this.innerStart, `${ref} = `);
       if (parens) {
-        this.insertAfter(')');
+        this.insert(this.innerEnd, ')');
       }
       return ref;
     }

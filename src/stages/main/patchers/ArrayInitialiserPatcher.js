@@ -18,7 +18,7 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
       let needsComma = !isLast && !member.hasSourceTokenAfter(COMMA);
       member.patch();
       if (needsComma) {
-        this.insert(member.after, ',');
+        this.insert(member.outerEnd, ',');
       }
     });
   }

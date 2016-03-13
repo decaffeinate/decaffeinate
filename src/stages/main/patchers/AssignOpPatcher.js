@@ -25,11 +25,11 @@ export default class AssignOpPatcher extends NodePatcher {
       !this.isSurroundedByParentheses()
     );
     if (needsParens) {
-      this.insertBefore('(');
+      this.insert(this.outerStart, '(');
     }
     this.patchAsExpression();
     if (needsParens) {
-      this.insertAfter(')');
+      this.insert(this.outerEnd, ')');
     }
   }
 }

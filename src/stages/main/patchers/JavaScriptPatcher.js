@@ -10,10 +10,10 @@ export default class JavaScriptPatcher extends NodePatcher {
   patchAsExpression() {
     // '`void 0`' → 'void 0`'
     //  ^
-    this.remove(this.start, this.start + '`'.length);
+    this.remove(this.contentStart, this.contentStart + '`'.length);
     // 'void 0`' → 'void 0'
     //        ^
-    this.remove(this.end - '`'.length, this.end);
+    this.remove(this.contentEnd - '`'.length, this.contentEnd);
   }
 
   patchAsStatement() {

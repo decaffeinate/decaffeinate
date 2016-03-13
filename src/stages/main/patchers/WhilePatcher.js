@@ -25,7 +25,7 @@ export default class WhilePatcher extends NodePatcher {
   patchAsStatement() {
     // `until a` → `while a`
     //  ^^^^^       ^^^^^
-    let whileToken = this.sourceTokenAtIndex(this.firstSourceTokenIndex);
+    let whileToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
     let isLoop = this.context.source.slice(whileToken.start, whileToken.end) === 'loop';
 
     if (isLoop) {
@@ -37,7 +37,7 @@ export default class WhilePatcher extends NodePatcher {
       if (conditionNeedsParens) {
         // `while a` → `while (a`
         //                    ^
-        this.insert(this.condition.before, '(');
+        this.insert(this.condition.outerStart, '(');
       }
 
       if (this.node.isUntil) {
@@ -51,20 +51,20 @@ export default class WhilePatcher extends NodePatcher {
         // `while (a when b` → `while (a) {\n  if (b`
         //          ^^^^^^              ^^^^^^^^^^^
         this.overwrite(
-          this.condition.after,
-          this.guard.before,
+          this.condition.outerEnd,
+          this.guard.outerStart,
           `${conditionNeedsParens ? ')' : ''} {\n${bodyIndent}if ${guardNeedsParens ? '(' : ''}`
         );
         this.guard.patch();
 
         // `while (a) {\n  if (b` → `while (a) {\n  if (b) {`
         //                                               ^^^
-        this.insert(this.guard.after, `${guardNeedsParens ? ')' : ''} {`);
+        this.insert(this.guard.outerEnd, `${guardNeedsParens ? ')' : ''} {`);
         this.body.indent();
       } else {
         // `while (a` → `while (a) {`
         //                       ^^^
-        this.insert(this.condition.after, `${conditionNeedsParens ? ')' : ''} {`);
+        this.insert(this.condition.outerEnd, `${conditionNeedsParens ? ')' : ''} {`);
       }
     }
 

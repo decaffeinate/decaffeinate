@@ -13,14 +13,14 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
     if (needsTypeofCheck) {
       // `a ? b` → `typeof a ? b`
       //            ^^^^^^^
-      this.insertAtStart(`typeof `);
+      this.insert(this.contentStart, `typeof `);
       let leftAgain = this.left.makeRepeatable(true, 'left');
       this.left.patch();
       // `typeof a ? b` → `typeof a !== 'undefined' && a !== null ? a : b`
       //          ^^^              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.overwrite(
-        this.left.after,
-        this.right.before,
+        this.left.outerEnd,
+        this.right.outerStart,
         ` !== 'undefined' && ${leftAgain} !== null ? ${leftAgain} : `
       );
     } else {
@@ -29,8 +29,8 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
       // `a.b ? c` → `a.b != null ? a.b : c`
       //     ^^^         ^^^^^^^^^^^^^^^^^
       this.overwrite(
-        this.left.after,
-        this.right.before,
+        this.left.outerEnd,
+        this.right.outerStart,
         ` != null ? ${leftAgain} : `
       );
     }
@@ -47,30 +47,30 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
     );
     // `a ? b` → `if (a ? b`
     //            ^^^
-    this.insertAtStart(`if (`);
+    this.insert(this.contentStart, `if (`);
     if (needsTypeofCheck) {
       let leftAgain = this.left.makeRepeatable();
       // `if (a ? b` → `if (typeof a ? b`
       //                    ^^^^^^^
-      this.insertAtStart(`typeof `);
+      this.insert(this.contentStart, `typeof `);
       // `if (typeof a ? b` → `if (typeof a === 'undefined' || a === null) { b`
       //              ^^^                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.overwrite(
-        this.left.after,
-        this.right.before,
+        this.left.outerEnd,
+        this.right.outerStart,
         ` === 'undefined' || ${leftAgain} === null) { `
       );
     } else {
       // `if (a.b ? b.c` → `if (a.b == null) { b.c`
       //         ^^^               ^^^^^^^^^^^^
       this.overwrite(
-        this.left.after,
-        this.right.before,
+        this.left.outerEnd,
+        this.right.outerStart,
         ` == null) { `
       );
     }
     // `if (a.b == null) { b.c` → `if (a.b == null) { b.c }`
     //                                                   ^^
-    this.insertAtEnd(` }`);
+    this.insert(this.innerEnd, ` }`);
   }
 }

@@ -35,7 +35,7 @@ export default class ClassPatcher extends NodePatcher {
     if (anonymous && !hasParens) {
       // `class` → `(class`
       //            ^
-      this.insertBefore('(');
+      this.insert(this.innerStart, '(');
     }
 
     this.patchAsExpression();
@@ -43,7 +43,7 @@ export default class ClassPatcher extends NodePatcher {
     if (anonymous && !hasParens) {
       // `(class` → `(class)`
       //                   ^
-      this.insertAfter(')');
+      this.insert(this.innerEnd, ')');
     }
   }
 
@@ -52,16 +52,16 @@ export default class ClassPatcher extends NodePatcher {
       let classToken = this.getClassToken();
       // `class A.B` → `A.B`
       //  ^^^^^^
-      this.remove(classToken.start, this.nameAssignee.before);
+      this.remove(classToken.start, this.nameAssignee.outerStart);
       let name = this.getName();
       if (name) {
         // `A.B` → `A.B = class B`
         //             ^^^^^^^^^^
-        this.insert(this.nameAssignee.after, ` = class ${this.getName()}`);
+        this.insert(this.nameAssignee.outerEnd, ` = class ${this.getName()}`);
       } else {
         // `A[0]` → `A[0] = class`
         //               ^^^^^^^^
-        this.insert(this.nameAssignee.after, ` = class`);
+        this.insert(this.nameAssignee.outerEnd, ` = class`);
       }
     }
     if (this.nameAssignee) {
@@ -73,7 +73,7 @@ export default class ClassPatcher extends NodePatcher {
     if (!this.body) {
       // `class A` → `class A {}`
       //                     ^^^
-      this.insertAtEnd(' {}');
+      this.insert(this.innerEnd,' {}');
     } else {
       // `class A` → `class A {`
       //                     ^^
@@ -91,7 +91,7 @@ export default class ClassPatcher extends NodePatcher {
    */
   getClassToken(): SourceToken {
     let tokens = this.context.sourceTokens;
-    let classSourceToken = tokens.tokenAtIndex(this.firstSourceTokenIndex);
+    let classSourceToken = tokens.tokenAtIndex(this.contentStartTokenIndex);
     if (classSourceToken.type !== CLASS) {
       throw this.error(
         `expected CLASS token but found ${classSourceToken.type.name}`,
@@ -138,11 +138,11 @@ export default class ClassPatcher extends NodePatcher {
    */
   getBraceInsertionOffset(): number {
     if (this.superclass) {
-      return this.superclass.after;
+      return this.superclass.outerEnd;
     }
 
     if (this.nameAssignee) {
-      return this.nameAssignee.after;
+      return this.nameAssignee.outerEnd;
     }
 
     return this.getClassToken().end;

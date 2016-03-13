@@ -7,14 +7,13 @@ export default class FunctionPatcher extends NodePatcher {
     super(node, context, editor);
     this.parameters = parameters;
     this.body = body;
+  }
 
-    let { source } = context;
-    while (source[this.after - '\n'.length] === '\n') {
-      this.after -= '\n'.length;
-    }
-    while (source[this.end - '\n'.length] === '\n') {
-      this.end -= '\n'.length;
-    }
+  /**
+   * @protected
+   */
+  setupLocationInformation() {
+    super.setupLocationInformation();
   }
 
   initialize() {
@@ -25,13 +24,9 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   patchAsStatement(options={}) {
-    this.insertAtStart('(');
+    this.insert(this.innerStart, '(');
     this.patchAsExpression(options);
-    if (this.body && this.body.inline()) {
-      this.insertAtEnd(')');
-    } else {
-      this.appendToEndOfLine(')');
-    }
+    this.insert(this.innerEnd, ')');
   }
 
   patchAsExpression({ method=false }={}) {
@@ -44,11 +39,11 @@ export default class FunctionPatcher extends NodePatcher {
     let arrow = this.getArrowToken();
 
     if (!method) {
-      this.insertAtStart('function');
+      this.insert(this.contentStart, 'function');
     }
 
     if (!this.hasParamStart()) {
-      this.insertAtStart('() ');
+      this.insert(this.contentStart, '() ');
     }
 
     this.overwrite(arrow.start, arrow.end, '{');
@@ -59,18 +54,18 @@ export default class FunctionPatcher extends NodePatcher {
       this.body.patch({ leftBrace: false });
     } else {
       // No body, so BlockPatcher can't insert it for us.
-      this.insertAtEnd('}');
+      this.insert(this.innerEnd, '}');
     }
   }
 
   getArrowToken(): SourceToken {
-    let arrowIndex = this.firstSourceTokenIndex;
+    let arrowIndex = this.contentStartTokenIndex;
     if (this.hasParamStart()) {
       let parenRange = this.getProgramSourceTokens()
         .rangeOfMatchingTokensContainingTokenIndex(
           LPAREN,
           RPAREN,
-          this.firstSourceTokenIndex
+          this.contentStartTokenIndex
         );
       let rparenIndex = parenRange[1].previous();
       arrowIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
@@ -95,7 +90,7 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   hasParamStart(): boolean {
-    return this.sourceTokenAtIndex(this.firstSourceTokenIndex).type === LPAREN;
+    return this.sourceTokenAtIndex(this.contentStartTokenIndex).type === LPAREN;
   }
 
   setExplicitlyReturns() {

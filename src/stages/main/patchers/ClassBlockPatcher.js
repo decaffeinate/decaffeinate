@@ -22,7 +22,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
       let boundMethods = this.boundInstanceMethods();
       if (boundMethods.length > 0) {
         let { source } = this.context;
-        let insertionPoint = this.statements[0].before;
+        let insertionPoint = this.statements[0].outerStart;
         let methodIndent = adjustIndent(source, insertionPoint, 0);
         let methodBodyIndent = adjustIndent(source, insertionPoint, 1);
         let constructor = '';
@@ -32,7 +32,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
           constructor += `constructor() {\n`;
         }
         boundMethods.forEach(method => {
-          let key = source.slice(method.key.start, method.key.end);
+          let key = source.slice(method.key.contentStart, method.key.contentEnd);
           constructor += `${methodBodyIndent}this.${key} = this.${key}.bind(this);\n`;
         });
         constructor += `${methodIndent}}\n\n${methodIndent}`;

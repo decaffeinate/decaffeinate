@@ -41,17 +41,17 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     if (computedKey) {
       // `{ 'hi there': ->` → `{ ['hi there': ->`
       //                         ^
-      this.insert(this.key.before, '[');
+      this.insert(this.key.outerStart, '[');
     }
     this.patchKey();
     if (computedKey) {
       // `{ ['hi there': ->` → `{ ['hi there']: ->`
       //                                     ^
-      this.insert(this.key.after, ']');
+      this.insert(this.key.outerEnd, ']');
     }
     // `{ ['hi there']: ->` → `{ ['hi there']->`
     //                ^^
-    this.remove(this.key.after, this.expression.before);
+    this.remove(this.key.outerEnd, this.expression.outerStart);
     this.patchExpression();
   }
 

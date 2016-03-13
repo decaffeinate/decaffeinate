@@ -22,20 +22,20 @@ export default class NewOpPatcher extends NodePatcher {
     let implicitCall = this.isImplicitCall();
     if (this.args.length > 0) {
       if (implicitCall) {
-        this.overwrite(this.ctor.after, this.args[0].before, '(');
+        this.overwrite(this.ctor.outerEnd, this.args[0].outerStart, '(');
       }
       this.args.forEach((arg, i, args) => {
         arg.patch();
         let isLast = i === args.length - 1;
         if (!isLast && !arg.hasSourceTokenAfter(COMMA)) {
-          this.insert(arg.after, ',');
+          this.insert(arg.outerEnd, ',');
         }
       });
       if (implicitCall) {
-        this.insert(this.args[this.args.length - 1].after, ')');
+        this.insert(this.args[this.args.length - 1].outerEnd, ')');
       }
     } else if (implicitCall) {
-      this.insert(this.ctor.after, '()');
+      this.insert(this.ctor.outerEnd, '()');
     }
   }
 
@@ -47,6 +47,6 @@ export default class NewOpPatcher extends NodePatcher {
    * @private
    */
   isImplicitCall(): boolean {
-    return this.context.source[this.ctor.after] !== '(';
+    return this.context.source[this.ctor.outerEnd] !== '(';
   }
 }

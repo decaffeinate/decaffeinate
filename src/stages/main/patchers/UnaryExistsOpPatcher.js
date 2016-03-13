@@ -42,13 +42,13 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
     if (needsParens) {
       // `a?` → `(a?`
       //         ^
-      this.insertBefore('(');
+      this.insert(this.contentStart, '(');
     }
     this.patchAsStatement();
     if (needsParens) {
       // `(a?` → `(a?)`
       //             ^
-      this.insertAfter(')');
+      this.insert(this.contentEnd, ')');
     }
   }
 
@@ -69,16 +69,16 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
         // `a?` → `typeof a === 'undefined' && a === null`
         //  ^^     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         this.overwrite(
-          this.start,
-          this.end,
+          this.contentStart,
+          this.contentEnd,
           `typeof ${nodeExpression.raw} === 'undefined' || ${nodeExpression.raw} === null`
         );
       } else {
         // `a?` → `typeof a !== 'undefined' && a !== null`
         //  ^^     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         this.overwrite(
-          this.start,
-          this.end,
+          this.contentStart,
+          this.contentEnd,
           `typeof ${nodeExpression.raw} !== 'undefined' && ${nodeExpression.raw} !== null`
         );
       }
@@ -87,11 +87,11 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
       if (negated) {
         // `a.b?` → `a.b == null`
         //     ^        ^^^^^^^^
-        this.overwrite(this.expression.after, this.end, ' == null');
+        this.overwrite(this.expression.outerEnd, this.contentEnd, ' == null');
       } else {
         // `a.b?` → `a.b != null`
         //     ^        ^^^^^^^^
-        this.overwrite(this.expression.after, this.end, ' != null');
+        this.overwrite(this.expression.outerEnd, this.contentEnd, ' != null');
       }
     }
   }

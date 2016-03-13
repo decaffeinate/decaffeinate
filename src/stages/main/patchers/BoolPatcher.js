@@ -2,15 +2,15 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 
 export default class BoolPatcher extends NodePatcher {
   patchAsExpression() {
-    switch (this.slice(this.start, this.end)) {
+    switch (this.slice(this.contentStart, this.contentEnd)) {
       case 'off':
       case 'no':
-        this.overwrite(this.start, this.end, 'false');
+        this.overwrite(this.contentStart, this.contentEnd, 'false');
         break;
 
       case 'on':
       case 'yes':
-        this.overwrite(this.start, this.end, 'true');
+        this.overwrite(this.contentStart, this.contentEnd, 'true');
         break;
     }
   }

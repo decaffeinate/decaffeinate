@@ -6,8 +6,8 @@ const HERESTRING_DELIMITER_LENGTH = 3;
 export default class HerestringPatcher extends NodePatcher {
   patchAsExpression() {
     let { source } = this.context;
-    let contentStart = this.start + HERESTRING_DELIMITER_LENGTH;
-    let contentEnd = this.end - HERESTRING_DELIMITER_LENGTH;
+    let contentStart = this.contentStart + HERESTRING_DELIMITER_LENGTH;
+    let contentEnd = this.contentEnd - HERESTRING_DELIMITER_LENGTH;
 
     // Remove the padding.
     let { padding, data } = this.node;
@@ -17,14 +17,14 @@ export default class HerestringPatcher extends NodePatcher {
 
     if (data.indexOf('\n') >= 0) {
       // Multi-line, so use a template string.
-      this.overwrite(this.start, contentStart, '`');
-      this.overwrite(contentEnd, this.end, '`');
+      this.overwrite(this.contentStart, contentStart, '`');
+      this.overwrite(contentEnd, this.contentEnd, '`');
       escapeTemplateStringContents(this.editor, contentStart, contentEnd);
     } else {
       // Single-line, so keep the original quotes.
-      this.remove(this.start, contentStart - 1);
-      this.remove(contentEnd + 1, this.end);
-      escape(this.editor, [source[this.start]], contentStart, contentEnd);
+      this.remove(this.contentStart, contentStart - 1);
+      this.remove(contentEnd + 1, this.contentEnd);
+      escape(this.editor, [source[this.contentStart]], contentStart, contentEnd);
     }
   }
 

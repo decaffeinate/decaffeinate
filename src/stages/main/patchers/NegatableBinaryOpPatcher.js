@@ -32,13 +32,13 @@ export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
     if (negated) {
       // `a not instanceof b` → `!a not instanceof b`
       //                         ^
-      this.insertBefore('!');
+      this.insert(this.outerStart, '!');
     }
 
     if (needsParens) {
       // `!a not instanceof b` → `!(a not instanceof b`
       //                           ^
-      this.insertBefore('(');
+      this.insert(this.contentStart, '(');
     }
 
     // Patch LEFT and RIGHT.
@@ -47,12 +47,19 @@ export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
     if (needsParens) {
       // `!(a not instanceof b` → `!(a not instanceof b)`
       //                                               ^
-      this.insertAfter(')');
+      this.insert(this.contentEnd, ')');
     }
 
     // `!(a not instanceof b)` → `!(a instanceof b)`
     //      ^^^^^^^^^^^^^^            ^^^^^^^^^^
     let token = this.getOperatorToken();
     this.overwrite(token.start, token.end, this.javaScriptOperator());
+  }
+
+  /**
+   * This is here so we can add the `!` outside any existing parens.
+   */
+  allowPatchingOuterBounds(): boolean {
+    return true;
   }
 }

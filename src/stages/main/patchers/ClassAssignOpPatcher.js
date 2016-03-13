@@ -27,7 +27,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
       // `this.a: ->` → `static a: ->`
       //  ^^^^^          ^^^^^^^
       let memberNameToken = this.key.getMemberNameSourceToken();
-      this.overwrite(this.key.before, memberNameToken.start, 'static ');
+      this.overwrite(this.key.outerStart, memberNameToken.start, 'static ');
     }
   }
 
@@ -44,7 +44,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   patchAsProperty() {
     // `name: null` → `name = null`
     //      ^^             ^^^
-    this.overwrite(this.key.after, this.expression.before, ' = ');
+    this.overwrite(this.key.outerEnd, this.expression.outerStart, ' = ');
     this.patchExpression();
   }
 

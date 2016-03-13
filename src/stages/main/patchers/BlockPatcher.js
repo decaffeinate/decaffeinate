@@ -27,7 +27,7 @@ export default class BlockPatcher extends NodePatcher {
 
   patchAsStatement({ leftBrace=true, rightBrace=true }={}) {
     if (leftBrace) {
-      this.insertBefore('{');
+      this.insert(this.innerStart, '{');
     }
 
     this.statements.forEach(
@@ -37,18 +37,18 @@ export default class BlockPatcher extends NodePatcher {
         }
         if (statement.implicitlyReturns() && !statement.explicitlyReturns()) {
           statement.setRequiresExpression();
-          this.insert(statement.before, 'return ');
+          this.insert(statement.outerStart, 'return ');
         }
         statement.patch();
         if (statement.statementNeedsSemicolon()) {
-          this.insert(statement.after, ';');
+          this.insert(statement.outerEnd, ';');
         }
       }
     );
 
     if (rightBrace) {
       if (this.inline()) {
-        this.insertAfter(' }');
+        this.insert(this.innerEnd, ' }');
       } else {
         this.appendLineAfter('}', -1);
       }
@@ -60,7 +60,7 @@ export default class BlockPatcher extends NodePatcher {
     rightBrace=this.statements.length > 1
     }={}) {
     if (leftBrace) {
-      this.insertBefore('(');
+      this.insert(this.innerStart, '(');
     }
     this.statements.forEach(
       (statement, i, statements) => {
@@ -74,13 +74,13 @@ export default class BlockPatcher extends NodePatcher {
             let semicolonToken = this.sourceTokenAtIndex(semicolonTokenIndex);
             this.overwrite(semicolonToken.start, semicolonToken.end, ',');
           } else {
-            this.insert(statement.after, ',');
+            this.insert(statement.outerEnd, ',');
           }
         }
       }
     );
     if (rightBrace) {
-      this.insertAfter(')');
+      this.insert(this.innerEnd, ')');
     }
   }
 
@@ -90,15 +90,15 @@ export default class BlockPatcher extends NodePatcher {
   insertLinesAtIndex(lines: Array<string>, index: number) {
     if (index === this.statements.length) {
       let lastStatement = this.statements[this.statements.length - 1];
-      let insertionPoint = this.context.source.indexOf('\n', lastStatement.after);
+      let insertionPoint = this.context.source.indexOf('\n', lastStatement.outerEnd);
       if (insertionPoint < 0) {
-        insertionPoint = lastStatement.after;
+        insertionPoint = lastStatement.outerEnd;
       }
       let indent = lastStatement.getIndent();
       lines.forEach(line => this.insert(insertionPoint, `\n${indent}${line}`));
     } else {
       let statementToInsertBefore = this.statements[index];
-      let insertionPoint = statementToInsertBefore.before;
+      let insertionPoint = statementToInsertBefore.outerStart;
       let indent = statementToInsertBefore.getIndent();
       lines.forEach(line => this.insert(insertionPoint, `${line}\n${indent}`));
     }

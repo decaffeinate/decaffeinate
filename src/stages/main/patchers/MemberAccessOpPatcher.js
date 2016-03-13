@@ -19,7 +19,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     if (this.hasImplicitOperator()) {
       // `@a` → `@.a`
       //          ^
-      this.insert(this.expression.after, '.');
+      this.insert(this.expression.outerEnd, '.');
     }
   }
 
@@ -38,7 +38,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
 
   getMemberOperatorSourceToken(): ?SourceToken {
     let tokens = this.context.sourceTokens;
-    let lastIndex = this.lastSourceTokenIndex;
+    let lastIndex = this.contentEndTokenIndex;
     let lastToken = tokens.tokenAtIndex(lastIndex);
     if (lastToken.type === PROTO) {
       return lastToken;
@@ -67,9 +67,9 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     let tokens = this.context.sourceTokens;
     let index = tokens.lastIndexOfTokenMatchingPredicate(
       token => token.type === IDENTIFIER,
-      this.lastSourceTokenIndex
+      this.contentEndTokenIndex
     );
-    if (!index || index.isBefore(this.firstSourceTokenIndex)) {
+    if (!index || index.isBefore(this.contentStartTokenIndex)) {
       throw this.error(`unable to find member name token in access`);
     }
     return tokens.tokenAtIndex(index);

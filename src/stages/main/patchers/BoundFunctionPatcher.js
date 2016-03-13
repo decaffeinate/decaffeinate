@@ -52,12 +52,12 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
     let arrow = this.getArrowToken();
 
     if (!this.hasParamStart()) {
-      this.insertAtStart('() ');
+      this.insert(this.contentStart, '() ');
     } else if (this.parameters.length === 1) {
       let [ param ] = this.parameters;
       if (param.isSurroundedByParentheses()) {
-        this.remove(param.before, param.start);
-        this.remove(param.end, param.after);
+        this.remove(param.outerStart, param.contentStart);
+        this.remove(param.contentEnd, param.outerEnd);
       }
     }
 
@@ -75,7 +75,7 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
       }
     } else {
       // No body, so BlockPatcher can't insert it for us.
-      this.insertAtEnd('}');
+      this.insert(this.innerEnd, '}');
     }
   }
 
