@@ -1,5 +1,6 @@
-import NodePatcher from './NodePatcher.js';
-import type { Editor, Node, ParseContext, Token } from './types.js';
+import NodePatcher from '../../../patchers/NodePatcher.js';
+import type { Editor, Node, ParseContext, SourceToken } from '../../../patchers/types.js';
+import { ELSE, SWITCH } from 'coffee-lex';
 
 export default class SwitchPatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher, cases: Array<NodePatcher>, alternate: ?NodePatcher) {
@@ -14,7 +15,7 @@ export default class SwitchPatcher extends NodePatcher {
       // `switch a` → `switch (a`
       //                      ^
       if (!this.expression.isSurroundedByParentheses()) {
-        this.expression.insertBefore('(');
+        this.insert(this.expression.contentStart, '(');
       }
 
       this.expression.patch();
@@ -22,19 +23,19 @@ export default class SwitchPatcher extends NodePatcher {
       // `switch (a` → `switch (a)`
       //                         ^
       if (!this.expression.isSurroundedByParentheses()) {
-        this.expression.insertAfter(')');
+        this.insert(this.expression.contentEnd, ')');
       }
 
       // `switch (a)` → `switch (a) {`
       //                            ^
-      this.expression.insertAfter(' {');
+      this.insert(this.expression.outerEnd, ' {');
     } else {
       this.cases.forEach(casePatcher => casePatcher.negate());
 
       // `switch` → `switch (false) {`
       //                   ^^^^^^^^^^
       let switchToken = this.getSwitchToken();
-      this.insert(switchToken.range[1], ' (false) {');
+      this.insert(switchToken.end, ' (false) {');
     }
 
     this.cases.forEach(casePatcher => casePatcher.patch());
@@ -59,7 +60,7 @@ export default class SwitchPatcher extends NodePatcher {
 
     // `` → `(() => { `
     //       ^^^^^^^^^
-    this.insertBefore('(() => { ');
+    this.insert(this.outerStart, '(() => { ');
     this.patchAsStatement();
 
     // `` → ` })()`
@@ -75,26 +76,41 @@ export default class SwitchPatcher extends NodePatcher {
     //           ^^^^^^^^
     let elseToken = this.getElseToken();
     if (elseToken) {
-      this.overwrite(...elseToken.range, 'default:');
+      this.overwrite(elseToken.start, elseToken.end, 'default:');
     }
   }
 
   /**
    * @private
    */
-  getElseToken(): Token {
+  getElseToken(): ?SourceToken {
     if (!this.alternate) {
       return null;
     }
 
-    return this.tokens.find(token => token.type === 'ELSE');
+    let tokens = this.context.sourceTokens;
+    let elseTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
+      token => token.type === ELSE,
+      this.alternate.contentStartTokenIndex
+    );
+    if (!elseTokenIndex || elseTokenIndex.isBefore(this.contentStartTokenIndex)) {
+      throw this.alternate.error(`no ELSE token found before 'switch' alternate`);
+    }
+    return this.sourceTokenAtIndex(elseTokenIndex);
   }
 
   /**
    * @private
    */
-  getSwitchToken(): Token {
-    return this.tokens.find(token => token.type === 'SWITCH');
+  getSwitchToken(): SourceToken {
+    let switchToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+    if (!switchToken) {
+      throw this.error(`bad token index for start of 'switch'`);
+    }
+    if (switchToken.type !== SWITCH) {
+      throw this.error(`unexpected ${switchToken.type.name} token at start of 'switch'`);
+    }
+    return switchToken;
   }
 
 }

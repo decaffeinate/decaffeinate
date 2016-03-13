@@ -210,8 +210,8 @@ describe('switch', () => {
           case c:
             return d;
         }
-      }
-      ;e;
+      };
+      e;
     `);
   });
 

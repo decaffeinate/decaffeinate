@@ -1,6 +1,6 @@
-import NodePatcher from './NodePatcher.js';
-import find from '../utils/array/find.js';
-import type { Editor, Node, ParseContext, Token } from './types.js';
+import NodePatcher from '../../../patchers/NodePatcher.js';
+import type { Editor, Node, ParseContext, SourceToken } from '../../../patchers/types.js';
+import { BREAK, COMMA, THEN, WHEN } from 'coffee-lex';
 
 export default class SwitchCasePatcher extends NodePatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, conditions: Array<NodePatcher>, consequent: NodePatcher) {
@@ -9,24 +9,28 @@ export default class SwitchCasePatcher extends NodePatcher {
     this.consequent = consequent;
   }
 
+  initialize() {
+    this.conditions.forEach(condition => condition.setRequiresExpression());
+  }
+
   patchAsStatement() {
     // `when a, b, c then d` → `a, b, c then d`
     //  ^^^^^
     let whenToken = this.getWhenToken();
-    this.remove(whenToken.range[0], this.conditions[0].start);
+    this.remove(whenToken.start, this.conditions[0].contentStart);
 
     // `a, b, c then d` → `a b c then d`
     //   ^  ^
-    this.getCommaTokens().forEach((comma) => {
-      this.remove(...comma.range);
+    this.getCommaTokens().forEach(comma => {
+      this.remove(comma.start, comma.end);
     });
 
-    this.conditions.forEach((condition) => {
+    this.conditions.forEach(condition => {
       // `a b c then d` → `case a: case b: case c: then d`
       //                   ^^^^^ ^^^^^^^ ^^^^^^^ ^
-      this.insert(condition.before, 'case ');
+      this.insert(condition.outerStart, 'case ');
       condition.patch({ leftBrace: false, rightBrace: false });
-      this.insert(condition.after, ':');
+      this.insert(condition.outerEnd, ':');
     });
 
 
@@ -34,7 +38,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     //                          ^^^^^
     let thenToken = this.getThenToken();
     if (thenToken) {
-      this.remove(thenToken.range[0], this.consequent.start);
+      this.remove(thenToken.start, this.consequent.contentStart);
     }
 
     this.consequent.patch({ leftBrace: false, rightBrace: false });
@@ -43,7 +47,7 @@ export default class SwitchCasePatcher extends NodePatcher {
       if (thenToken) {
         // `case a: case b: case c: then d → `case a: case b: case c: d break`
         //                                                             ^^^^^^
-        this.insert(this.consequent.after, ' break');
+        this.insert(this.consequent.contentEnd, ' break');
       } else {
         this.appendLineAfter('break', 1);
       }
@@ -66,22 +70,50 @@ export default class SwitchCasePatcher extends NodePatcher {
   /**
    * @private
    */
-  getWhenToken(): ?Token {
-    return find(this.tokens, token => token.type === 'LEADING_WHEN');
+  getWhenToken(): SourceToken {
+    let whenToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+    if (!whenToken) {
+      throw this.error(`bad token index for start of 'when'`);
+    }
+    if (whenToken.type !== WHEN) {
+      throw this.error(`unexpected ${whenToken.type.name} at start of 'switch' case`);
+    }
+    return whenToken;
   }
 
   /**
    * @private
    */
-  getCommaTokens(): Array<Token> {
-    return this.tokens.filter(token => token.type === ',');
+  getCommaTokens(): Array<SourceToken> {
+    let result = [];
+    for (let i = 1; i < this.conditions.length; i++) {
+      let left = this.conditions[i - 1];
+      let right = this.conditions[i];
+      let commaIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+        left, right, token => token.type === COMMA
+      );
+      if (!commaIndex) {
+        throw this.error(
+          `unable to find comma between 'when' conditions`,
+          left.contentEnd,
+          right.contentStart
+        );
+      }
+      result.push(this.sourceTokenAtIndex(commaIndex));
+    }
+    return result;
   }
 
   /**
    * @private
    */
-  getBreakToken(): ?Token {
-    return find(this.tokens, token => token.type === 'STATEMENT' && token.data === 'break');
+  getBreakToken(): ?SourceToken {
+    let lastToken = this.sourceTokenAtIndex(this.contentEndTokenIndex);
+    if (lastToken && lastToken.type === BREAK) {
+      return lastToken;
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -89,8 +121,12 @@ export default class SwitchCasePatcher extends NodePatcher {
    *
    * @private
    */
-  getThenToken(): ?Token {
-    return this.tokenBetweenPatchersMatching(this.conditions[0], this.consequent, 'THEN');
+  getThenToken(): ?SourceToken {
+    let thenTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+      this.conditions[0],
+      this.consequent,
+      token => token.type === THEN
+    );
+    return thenTokenIndex ? this.sourceTokenAtIndex(thenTokenIndex) : null;
   }
-
 }
