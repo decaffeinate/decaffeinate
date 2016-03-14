@@ -2,11 +2,19 @@ import check from './support/check.js';
 
 describe('implicit return', () => {
   it('is added for the last expression in a typical function', () => {
-    check(`-> 1`, `(function() { return 1; });`);
+    check(`
+      ->
+        a = 1
+    `, `
+      (function() {
+        let a;
+        return a = 1;
+      });
+    `);
   });
 
   it('is not added when one is already there', () => {
-    check(`a = -> return 1`, `var a = function() { return 1; };`);
+    check(`a = -> b(); return c`, `let a = function() { b(); return c; };`);
   });
 
   it('is not added for the last expression in a block-less bound function', () => {

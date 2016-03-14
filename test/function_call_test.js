@@ -78,7 +78,7 @@ describe('function calls', () => {
     check(`
       a= new c ([b()])
     `, `
-      var a= new c(([b()]));
+      let a= new c(([b()]));
     `);
   });
 
@@ -184,6 +184,6 @@ describe('function calls', () => {
   });
 
   it('converts rest params in function calls', () => {
-    check(`(a,b...)->b[0]`, `(function(a,...b){return b[0]; });`);
+    check(`(a,b...)->b[0]`, `(a,...b)=> b[0];`);
   });
 });

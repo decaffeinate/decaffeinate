@@ -2,14 +2,14 @@ import check from './support/check.js';
 
 describe('declarations', () => {
   it('adds inline declarations for assignments as statements', () => {
-    check(`a = 1`, `var a = 1;`);
+    check(`a = 1`, `let a = 1;`);
   });
 
   it('adds separate declarations for assignments as expressions', () => {
     check(`
       a(b = 1)
     `, `
-      var b;
+      let b;
       a(b = 1);
     `);
   });
@@ -19,7 +19,7 @@ describe('declarations', () => {
       a = 1
       a = 2
     `, `
-      var a = 1;
+      let a = 1;
       a = 2;
     `);
   });
@@ -29,9 +29,7 @@ describe('declarations', () => {
       (a) ->
         a = 1
     `, `
-      (function(a) {
-        return a = 1;
-      });
+      a => a = 1;
     `);
   });
 
@@ -41,7 +39,7 @@ describe('declarations', () => {
         a = 1
     `, `
       (function() {
-        var a;
+        let a;
         return a = 1;
       });
     `);
@@ -53,10 +51,8 @@ describe('declarations', () => {
       ->
         a = 2
     `, `
-      var a = 1;
-      (function() {
-        return a = 2;
-      });
+      let a = 1;
+      () => a = 2;
     `);
   });
 
@@ -68,7 +64,7 @@ describe('declarations', () => {
     `, `
       if (a) {
         if (b) {
-          var c = 1;
+          let c = 1;
         }
       }
     `);
@@ -79,7 +75,7 @@ describe('declarations', () => {
       if a = 1
         b
     `, `
-      var a;
+      let a;
       if (a = 1) {
         b;
       }
@@ -91,11 +87,11 @@ describe('declarations', () => {
   });
 
   it('adds variable declarations for destructuring array assignment', () => {
-    check(`[a] = b`, `var [a] = b;`);
+    check(`[a] = b`, `let [a] = b;`);
   });
 
   it('adds variable declarations for destructuring object assignment', () => {
-    check(`{a} = b`, `var {a} = b;`);
+    check(`{a} = b`, `let {a} = b;`);
   });
 
   it('does not add variable declarations for destructuring array assignment with previously declared bindings', () => {
@@ -103,7 +99,7 @@ describe('declarations', () => {
       a = 1
       [a] = b
     `, `
-      var a = 1;
+      let a = 1;
       [a] = b;
     `);
   });
@@ -113,7 +109,7 @@ describe('declarations', () => {
       a = 1
       {a} = b
     `, `
-      var a = 1;
+      let a = 1;
       ({a} = b);
     `);
   });
@@ -123,25 +119,25 @@ describe('declarations', () => {
       a = 1
       [a, b] = c
     `, `
-      var b;
-      var a = 1;
+      let b;
+      let a = 1;
       [a, b] = c;
     `);
   });
 
   it('adds pre-declarations when the assignment is in an expression context', () => {
-    check(`a(b = c)`, `var b;\na(b = c);`);
+    check(`a(b = c)`, `let b;\na(b = c);`);
   });
 
   it('adds pre-declarations when the assignment would be implicitly returned', () => {
-    check('->\n  a = 1', '(function() {\n  var a;\n  return a = 1;\n});');
+    check('->\n  a = 1', '(function() {\n  let a;\n  return a = 1;\n});');
   });
 
   it('adds pre-declarations at the right indent level when the assignment is in an expression context', () => {
-    check(`->\n  a(b = c)`, `(function() {\n  var b;\n  return a(b = c);\n});`);
+    check(`->\n  a(b = c)`, `(function() {\n  let b;\n  return a(b = c);\n});`);
   });
 
   it('adds pre-declarations and regular declarations together properly', () => {
-    check('a = 1\nb = c = 2', 'var c;\nvar a = 1;\nvar b = c = 2;');
+    check('a = 1\nb = c = 2', 'let c;\nlet a = 1;\nlet b = c = 2;');
   });
 });

@@ -8,30 +8,30 @@ describe('functions', () => {
   it('put the closing curly brace on a new line', () => {
     check(`
       ->
-        a
+        return
     `, `
       (function() {
-        return a;
+        return;
       });
     `);
   });
 
   it('put the closing curly brace on the same line if the original is a single line', () => {
     check(`
-      -> a
+      -> return
     `, `
-      (function() { return a; });
+      (function() { return; });
     `);
   });
 
   it('puts the closing curly brace before any trailing comments on the last statement in the body', () => {
     check(`
       ->
-        a # hey
+        return # hey
       b
     `, `
       (function() {
-        return a; // hey
+        return; // hey
       });
       b;
     `);
@@ -39,19 +39,19 @@ describe('functions', () => {
 
   it('puts the closing punctuation before trailing comments for one-line functions', () => {
     check(`
-      -> a # b
+      -> return # b
     `, `
-      (function() { return a; }); // b
+      (function() { return; }); // b
     `);
   });
 
   it('puts the closing punctuation before trailing comments for parentheses-wrapped functions', () => {
     check(`
       (->
-        a) # b
+        return) # b
     `, `
       (function() {
-        return a;
+        return;
       }); // b
     `);
   });
@@ -61,7 +61,7 @@ describe('functions', () => {
   });
 
   it('leaves fat arrow functions as arrow functions', () => {
-    check(`add = (a, b) => a + b`, `var add = (a, b) => a + b;`);
+    check(`add = (a, b) => a + b`, `let add = (a, b) => a + b;`);
   });
 
   it('adds a block to fat arrow functions if their body is a block', () => {
@@ -69,7 +69,7 @@ describe('functions', () => {
       add = (a, b) =>
         a + b
     `, `
-      var add = (a, b) => {
+      let add = (a, b) => {
         return a + b;
       };
     `);

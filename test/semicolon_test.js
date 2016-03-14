@@ -18,7 +18,7 @@ describe('semicolons', () => {
         b # c
       d
     `, `
-      var a = function() {
+      let a = function() {
         return b; // c
       };
       d;
@@ -46,7 +46,7 @@ describe('semicolons', () => {
   });
 
   it('adds them after assignments', () => {
-    check(`a = 1`, `var a = 1;`);
+    check(`a = 1`, `let a = 1;`);
   });
 
   it('does not add them after `if` statements', () => {
@@ -65,7 +65,7 @@ describe('semicolons', () => {
       for a in b
         a
     `, `
-      for (var i = 0, a; i < b.length; i++) {
+      for (let i = 0, a; i < b.length; i++) {
         a = b[i];
         a;
       }
@@ -74,7 +74,7 @@ describe('semicolons', () => {
       for a of b
         a
     `, `
-      for (var a in b) {
+      for (let a in b) {
         a;
       }
     `);
@@ -108,8 +108,8 @@ describe('semicolons', () => {
       x = 1
       -> 2
     `, `
-      var x = 1;
-      (function() { return 2; });
+      let x = 1;
+      () => 2;
     `);
   });
 });

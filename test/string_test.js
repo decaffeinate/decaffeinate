@@ -60,7 +60,7 @@ describe('strings', () => {
            bar
           """
     `, `
-      var a = \`foo
+      let a = \`foo
       bar\`;
     `);
   });

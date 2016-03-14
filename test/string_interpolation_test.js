@@ -10,7 +10,7 @@ describe('string interpolation', () => {
   });
 
   it('can return interpolated strings', () => {
-    check('-> "#{a}"', '(function() { return `${a}`; });');
+    check('-> "#{a}"', '() => `${a}`;');
   });
 
   it('ensures backticks are escaped', () => {
@@ -22,7 +22,7 @@ describe('string interpolation', () => {
   });
 
   it('handles multi-line triple-quoted strings correctly', () => {
-    check('a = """\n     #{b}\n     c\n    """', 'var a = `${b}\nc`;');
+    check('a = """\n     #{b}\n     c\n    """', 'let a = `${b}\nc`;');
   });
 
   it('handles double quotes inside triple-double quotes', () => {
@@ -31,7 +31,7 @@ describe('string interpolation', () => {
       bar="#{bar}"
       """
     `, `
-      var a=\`bar="\${bar}"\`;
+      let a=\`bar="\${bar}"\`;
     `);
   });
 
@@ -41,7 +41,7 @@ describe('string interpolation', () => {
       b # foo!
       }"
     `, `
-      var a=\`\${
+      let a=\`\${
       b // foo!
       }\`;
     `);

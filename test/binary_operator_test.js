@@ -121,7 +121,7 @@ describe('binary operators', () => {
     check(`
       (a() ? b)
     `, `
-      var left;
+      let left;
       ((left = a()) != null ? left : b);
     `);
   });
@@ -130,7 +130,7 @@ describe('binary operators', () => {
     check(`
       value = object.id << 8 | object.type
     `, `
-      var value = object.id << 8 | object.type;
+      let value = object.id << 8 | object.type;
     `);
   });
 

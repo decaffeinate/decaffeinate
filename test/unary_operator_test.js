@@ -48,7 +48,7 @@ describe('unary operators', () => {
     check(`
       (a) -> a?
     `, `
-      (function(a) { return (a != null); });
+      a => a != null;
     `);
   });
 

@@ -1,5 +1,6 @@
 import AddVariableDeclarationsStage from './stages/add-variable-declarations/index.js';
 import EslintStage from './stages/eslint/index.js';
+import EsnextStage from './stages/esnext/index.js';
 import MainStage from './stages/main/index.js';
 import NormalizeStage from './stages/normalize/index.js';
 
@@ -27,7 +28,8 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
     NormalizeStage,
     MainStage,
     AddVariableDeclarationsStage,
-    EslintStage
+    EslintStage,
+    EsnextStage
   ]);
 }
 
