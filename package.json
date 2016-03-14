@@ -31,10 +31,12 @@
   "license": "MIT",
   "dependencies": {
     "add-variable-declarations": "^1.2.0",
+    "babel-eslint": "^5.0.0",
     "coffee-lex": "^1.3.2",
     "decaffeinate-parser": "^1.2.5",
     "detect-indent": "^4.0.0",
     "eslint": "^1.10.3",
+    "esnext": "^1.15.6",
     "magic-string": "^0.10.2",
     "repeating": "^2.0.0"
   },
@@ -44,7 +46,7 @@
   ],
   "devDependencies": {
     "babel": "^6.5.1",
-    "babel-eslint": "^5.0.0-beta6",
+    "babel-eslint": "^5.0.0",
     "babel-plugin-syntax-flow": "^6.5.0",
     "babel-plugin-transform-flow-strip-types": "^6.5.0",
     "babel-preset-es2015": "^6.5.0",

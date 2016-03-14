@@ -15,7 +15,7 @@ describe('classes', () => {
         a: ->
           1
     `, `
-      var A = class {
+      let A = class {
         a() {
           return 1;
         }
@@ -35,19 +35,22 @@ describe('classes', () => {
         }
       }
     `);
+    // FIXME: Ideally the semi-colon would be directly after the closing curly.
+    // This is due to an edge case that esnext chose not to address in its
+    // `functions.arrow` plugin.
     check(`
       ->
         class A
           a: ->
             1
     `, `
-      (function() {
-        return class A {
+      () =>
+        class A {
           a() {
             return 1;
           }
-        };
-      });
+        }
+      ;
     `);
   });
 

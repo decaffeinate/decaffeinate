@@ -3,9 +3,9 @@ import check from './support/check.js';
 describe('return', () => {
   it('works with a return value', () =>
     check(`
-      -> return 1
+      -> a; return 1
     `, `
-      (function() { return 1; });
+      (function() { a; return 1; });
     `)
   );
 

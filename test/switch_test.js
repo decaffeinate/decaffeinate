@@ -205,7 +205,7 @@ describe('switch', () => {
             d
       e
     `, `
-      var a = function() {
+      let a = function() {
         switch (b) {
           case c:
             return d;
@@ -242,7 +242,7 @@ describe('switch', () => {
           return g
         else e
     `, `
-      var a = (() => { switch (b) {
+      let a = (() => { switch (b) {
         case c: return d;
         case f:
           return g;

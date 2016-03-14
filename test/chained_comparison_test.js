@@ -31,7 +31,7 @@ describe('chained comparison', () => {
     check(`
       a < b() < c
     `, `
-      var middle;
+      let middle;
       a < (middle = b()) && middle < c;
     `);
   });
@@ -41,8 +41,8 @@ describe('chained comparison', () => {
       middle = 1
       a < b() < c
     `, `
-      var middle1;
-      var middle = 1;
+      let middle1;
+      let middle = 1;
       a < (middle1 = b()) && middle1 < c;
     `);
   });
@@ -70,8 +70,8 @@ describe('chained comparison', () => {
     check(`
       a() < b() < c() < d()
     `, `
-      var middle;
-      var middle1;
+      let middle;
+      let middle1;
       a() < (middle = b()) && middle < (middle1 = c()) && middle1 < d();
     `);
   });
