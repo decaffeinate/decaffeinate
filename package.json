@@ -36,7 +36,7 @@
     "decaffeinate-parser": "^1.2.5",
     "detect-indent": "^4.0.0",
     "eslint": "^1.10.3",
-    "esnext": "^1.15.6",
+    "esnext": "^1.15.7",
     "magic-string": "^0.10.2",
     "repeating": "^2.0.0"
   },
