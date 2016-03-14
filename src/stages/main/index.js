@@ -39,6 +39,7 @@ import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher.js
 import RangePatcher from './patchers/RangePatcher.js';
 import RestPatcher from './patchers/RestPatcher.js';
 import ReturnPatcher from './patchers/ReturnPatcher.js';
+import SeqOpPatcher from './patchers/SeqOpPatcher.js';
 import SlicePatcher from './patchers/SlicePatcher.js';
 import SoakedMemberAccessOpPatcher from './patchers/SoakedMemberAccessOpPatcher.js';
 import SpreadPatcher from './patchers/SpreadPatcher.js';
@@ -235,6 +236,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'ChainedComparisonOp':
         return ChainedComparisonOpPatcher;
+
+      case 'SeqOp':
+        return SeqOpPatcher;
 
       case 'JavaScript':
         return JavaScriptPatcher;
