@@ -6,18 +6,21 @@ export default class FloorDivideOpPatcher extends BinaryOpPatcher {
    */
   patchAsExpression() {
     let operator = this.getOperatorToken();
+
     // `a // b` → `Math.floor(a // b`
     //             ^^^^^^^^^^^
     this.insert(this.contentStart, 'Math.floor(');
 
-    // Patch LEFT and RIGHT.
-    super.patchAsExpression();
+    this.left.patch();
+
+    // `Math.floor(a // b)` → `Math.floor(a / b)`
+    //               ^^                     ^
+    this.overwrite(operator.start, operator.end, '/');
+
+    this.right.patch();
 
     // `Math.floor(a // b` → `Math.floor(a // b)`
     //                                         ^
     this.insert(this.contentEnd, ')');
-    // `Math.floor(a // b)` → `Math.floor(a / b)`
-    //               ^^                     ^
-    this.overwrite(operator.start, operator.end, '/');
   }
 }
