@@ -13,6 +13,7 @@ import ConstructorPatcher from './patchers/ConstructorPatcher.js';
 import DefaultParamPatcher from './patchers/DefaultParamPatcher.js';
 import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher.js';
 import EqualityPatcher from './patchers/EqualityPatcher.js';
+import ExpOpPatcher from './patchers/ExpOpPatcher.js';
 import ExistsOpCompoundAssignOpPatcher from './patchers/ExistsOpCompoundAssignOpPatcher.js';
 import ExistsOpPatcher from './patchers/ExistsOpPatcher.js';
 import ExtendsOpPatcher from './patchers/ExtendsOpPatcher.js';
@@ -240,6 +241,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'FloorDivideOp':
         return FloorDivideOpPatcher;
+
+      case 'ExpOp':
+        return ExpOpPatcher;
 
       case 'ExtendsOp':
         return ExtendsOpPatcher;
