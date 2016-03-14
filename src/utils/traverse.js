@@ -61,6 +61,7 @@ const ORDER = {
   DynamicMemberAccessOp: ['expression', 'indexingExpr'],
   EQOp: ['left', 'right'],
   ExistsOp: ['left', 'right'],
+  ExpOp: ['left', 'right'],
   ExtendsOp: ['left', 'right'],
   Float: [],
   FloorDivideOp: ['left', 'right'],

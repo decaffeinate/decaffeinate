@@ -71,3 +71,13 @@ describe('floor division', () => {
     `);
   });
 });
+
+describe('exponentiation', () => {
+  it('wraps exponentiation in a `Math.pow` call', () => {
+    check(`
+      (a b) ** (c d)
+    `, `
+      Math.pow((a(b)), (c(d)));
+    `);
+  });
+});
