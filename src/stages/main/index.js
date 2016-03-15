@@ -51,7 +51,9 @@ import ThisPatcher from './patchers/ThisPatcher.js';
 import ThrowPatcher from './patchers/ThrowPatcher.js';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage.js';
 import UnaryExistsOpPatcher from './patchers/UnaryExistsOpPatcher.js';
+import UnaryMathOpPatcher from './patchers/UnaryMathOpPatcher.js';
 import UnaryOpPatcher from './patchers/UnaryOpPatcher.js';
+import UnaryTypeofOpPatcher from './patchers/UnaryTypeofOpPatcher.js';
 import WhilePatcher from './patchers/WhilePatcher.js';
 import type NodePatcher from './../../patchers/NodePatcher.js';
 import type { Node } from '../../patchers/types.js';
@@ -196,9 +198,15 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'Throw':
         return ThrowPatcher;
 
-      case 'DeleteOp':
-      case 'TypeofOp':
+      case 'UnaryPlusOp':
+      case 'UnaryNegateOp':
       case 'BitNotOp':
+        return UnaryMathOpPatcher;
+
+      case 'TypeofOp':
+        return UnaryTypeofOpPatcher;
+
+      case 'DeleteOp':
         return UnaryOpPatcher;
 
       case 'UnaryExistsOp':

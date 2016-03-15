@@ -1,6 +1,14 @@
 import check from './support/check.js';
 
 describe('unary operators', () => {
+  it('passes unary minus through', () => {
+    check(`-1`, `-1;`);
+  });
+
+  it('passes unary plus through', () => {
+    check(`+1`, `+1;`);
+  });
+
   it('passes bitwise negation through', () => {
     check(`~0`, `~0;`);
   });
