@@ -43,14 +43,12 @@ export default class TransformCoffeeScriptStage {
     this.patchers = [];
   }
 
-  /* eslint-disable no-unused-vars */
   /**
    * This should be overridden in subclasses.
    */
-  patcherConstructorForNode(node: Node): ?Class<NodePatcher> {
+  patcherConstructorForNode(node: Node): ?Class<NodePatcher> { // eslint-disable-line no-unused-vars
     return null;
   }
-  /* eslint-enable no-unused-vars */
 
   build(): NodePatcher {
     this.root = this.patcherForNode(this.ast);
