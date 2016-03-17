@@ -1,4 +1,6 @@
+import BinaryOpPatcher from './BinaryOpPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
+import UnaryOpPatcher from './UnaryOpPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Node, SourceTokenListIndex, ParseContext, Editor } from './../../../patchers/types.js';
 import { ELSE, IF, THEN } from 'coffee-lex';
@@ -56,9 +58,15 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    let addParens = this.ternaryNeedsParens() && !this.isSurroundedByParentheses();
+
     // `if a then b` → `a then b`
     //  ^^^
-    this.remove(this.contentStart, this.condition.contentStart);
+    this.overwrite(
+      this.contentStart,
+      this.condition.contentStart,
+      addParens ? '(' : ''
+    );
 
     this.condition.patch();
 
@@ -87,6 +95,17 @@ export default class ConditionalPatcher extends NodePatcher {
       // `a ? b` → `a ? b : undefined`
       this.insert(this.consequent.outerEnd, ' : undefined');
     }
+
+    if (addParens) {
+      this.insert(this.contentEnd, ')');
+    }
+  }
+
+  ternaryNeedsParens(): boolean {
+    return (
+      this.parent instanceof BinaryOpPatcher ||
+      this.parent instanceof UnaryOpPatcher
+    );
   }
 
   patchAsForcedExpression() {
