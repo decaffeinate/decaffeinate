@@ -283,4 +283,12 @@ describe('conditionals', () => {
       a + (b ? c : d);
     `);
   });
+
+  it('does not add unnecessary parens to a conditional expression', () => {
+    check(`
+      a ** if b then c else d
+    `, `
+      Math.pow(a, b ? c : d);
+    `);
+  });
 });
