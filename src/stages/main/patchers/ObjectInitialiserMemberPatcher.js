@@ -6,9 +6,6 @@ import ThisPatcher from './ThisPatcher.js';
  * Handles object properties.
  */
 export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatcher {
-  /**
-   * @protected
-   */
   patchAsProperty() {
     if (this.key.node === this.expression.node) {
       this.patchAsShorthand();

@@ -1,8 +1,12 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
+import type BlockPatcher from './BlockPatcher.js';
 import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
 import { FUNCTION, LPAREN, RPAREN } from 'coffee-lex';
 
 export default class FunctionPatcher extends NodePatcher {
+  parameters: Array<NodePatcher>;
+  body: ?BlockPatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, parameters: Array<NodePatcher>, body: ?NodePatcher) {
     super(node, context, editor);
     this.parameters = parameters;

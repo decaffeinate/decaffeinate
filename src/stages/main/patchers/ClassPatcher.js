@@ -6,6 +6,10 @@ import type { SourceToken, Node, ParseContext, Editor } from './../../../patcher
 import { CLASS } from 'coffee-lex';
 
 export default class ClassPatcher extends NodePatcher {
+  nameAssignee: ?NodePatcher;
+  superclass: ?NodePatcher;
+  body: ?ClassBlockPatcher;
+
   constructor(node: Node, context: ParseContext, editor: Editor, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?ClassBlockPatcher) {
     super(node, context, editor);
     this.nameAssignee = nameAssignee;

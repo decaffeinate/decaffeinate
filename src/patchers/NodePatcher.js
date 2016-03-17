@@ -7,6 +7,25 @@ import { isSemanticToken } from '../utils/types.js';
 import { logger } from '../utils/debug.js';
 
 export default class NodePatcher {
+  node: Node;
+  context: ParseContext;
+  editor: Editor;
+  log: (...args: Array<any>) => void;
+  parent: ?NodePatcher;
+
+  contentStart: number;
+  contentEnd: number;
+  contentStartTokenIndex: SourceTokenListIndex;
+  contentEndTokenIndex: SourceTokenListIndex;
+  innerStart: number;
+  innerEnd: number;
+  innerStartTokenIndex: SourceTokenListIndex;
+  innerEndTokenIndex: SourceTokenListIndex;
+  outerStart: number;
+  outerEnd: number;
+  outerStartTokenIndex: SourceTokenListIndex;
+  outerEndTokenIndex: SourceTokenListIndex;
+  
   constructor(node: Node, context: ParseContext, editor: Editor) {
     this.log = logger(this.constructor.name);
 
@@ -206,9 +225,6 @@ export default class NodePatcher {
     this.editor.insert(index, content);
   }
 
-  /**
-   * @protected
-   */
   allowPatchingOuterBounds(): boolean {
     return false;
   }
@@ -362,8 +378,6 @@ export default class NodePatcher {
   /**
    * Override this to express whether the patcher prefers to be represented as
    * an expression. By default it's simply an alias for `canPatchAsExpression`.
-   *
-   * @protected
    */
   prefersToPatchAsExpression(): boolean {
     return this.canPatchAsExpression();
@@ -371,8 +385,6 @@ export default class NodePatcher {
 
   /**
    * Override this if a node cannot be represented as an expression.
-   *
-   * @protected
    */
   canPatchAsExpression(): boolean {
     return true;

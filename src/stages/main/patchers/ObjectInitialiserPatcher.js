@@ -6,6 +6,8 @@ import { COMMA, LBRACE } from 'coffee-lex';
  * Handles object literals.
  */
 export default class ObjectInitialiserPatcher extends NodePatcher {
+  members: Array<NodePatcher>;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, members: Array<NodePatcher>) {
     super(node, context, editor);
     this.members = members;

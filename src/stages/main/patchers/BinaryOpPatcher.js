@@ -3,6 +3,9 @@ import type { SourceToken, SourceType, Node, ParseContext, Editor } from './../.
 import { OPERATOR } from 'coffee-lex';
 
 export default class BinaryOpPatcher extends NodePatcher {
+  left: NodePatcher;
+  right: NodePatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
     super(node, context, editor);
     this.left = left;
@@ -26,9 +29,6 @@ export default class BinaryOpPatcher extends NodePatcher {
     this.patchAsExpression();
   }
 
-  /**
-   * @protected
-   */
   getOperatorToken(): SourceToken {
     let expectedOperatorTokenType = this.expectedOperatorTokenType();
     let operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
@@ -42,9 +42,6 @@ export default class BinaryOpPatcher extends NodePatcher {
     return this.sourceTokenAtIndex(operatorTokenIndex);
   }
 
-  /**
-   * @protected
-   */
   expectedOperatorTokenType(): SourceType {
     return OPERATOR;
   }

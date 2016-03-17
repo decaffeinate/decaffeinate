@@ -3,6 +3,10 @@ import type { Editor, Node, ParseContext, SourceToken } from '../../../patchers/
 import { ELSE, SWITCH } from 'coffee-lex';
 
 export default class SwitchPatcher extends NodePatcher {
+  expression: NodePatcher;
+  cases: Array<NodePatcher>;
+  alternate: ?NodePatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher, cases: Array<NodePatcher>, alternate: ?NodePatcher) {
     super(node, context, editor);
     this.expression = expression;

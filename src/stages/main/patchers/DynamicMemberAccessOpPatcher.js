@@ -2,6 +2,9 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
 
 export default class DynamicMemberAccessOpPatcher extends NodePatcher {
+  expression: NodePatcher;
+  indexingExpr: NodePatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher, indexingExpr: NodePatcher) {
     super(node, context, editor);
     this.expression = expression;

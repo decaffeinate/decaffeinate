@@ -3,6 +3,9 @@ import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 import { CALL_START, COMMA } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
+  fn: NodePatcher;
+  args: Array<NodePatcher>;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, fn: NodePatcher, args: Array<NodePatcher>) {
     super(node, context, editor);
     this.fn = fn;
