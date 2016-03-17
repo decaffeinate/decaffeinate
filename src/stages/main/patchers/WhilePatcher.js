@@ -1,5 +1,7 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type BlockPatcher from './BlockPatcher.js';
+import type { Editor, Node, ParseContext, SourceTokenListIndex } from './../../../patchers/types.js';
+import { LOOP, THEN, WHILE } from 'coffee-lex';
 
 /**
  * Handles `while` loops, e.g.
@@ -8,7 +10,7 @@ import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
  *     b
  */
 export default class WhilePatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: ?NodePatcher) {
+  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: ?BlockPatcher) {
     super(node, context, editor);
     this.condition = condition;
     this.guard = guard;
@@ -18,15 +20,14 @@ export default class WhilePatcher extends NodePatcher {
   /**
    * ( 'while' | 'until' ) CONDITION ('when' GUARD)? 'then' BODY
    * ( 'while' | 'until' ) CONDITION ('when' GUARD)? NEWLINE INDENT BODY
-   * BODY ( 'while' | 'until' ) CONDITION ('when' GUARD)?
    * 'loop' 'then' BODY
    * 'loop' NEWLINE INDENT BODY
    */
   patchAsStatement() {
     // `until a` → `while a`
     //  ^^^^^       ^^^^^
-    let whileToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
-    let isLoop = this.context.source.slice(whileToken.start, whileToken.end) === 'loop';
+    let whileToken = this.sourceTokenAtIndex(this.getWhileTokenIndex());
+    let isLoop = whileToken.type === LOOP;
 
     if (isLoop) {
       this.overwrite(whileToken.start, whileToken.end, 'while (true) {');
@@ -68,15 +69,30 @@ export default class WhilePatcher extends NodePatcher {
       }
     }
 
+    let thenIndex = this.getThenTokenIndex();
+    if (thenIndex) {
+      let thenToken = this.sourceTokenAtIndex(thenIndex);
+      let nextToken = this.sourceTokenAtIndex(thenIndex.next());
+      this.remove(thenToken.start, nextToken.start);
+    }
+
     this.body.patch({ leftBrace: false, rightBrace: false });
 
     if (this.guard) {
       // Close the guard's `if` consequent block.
-      this.body.appendLineAfter('}');
+      if (this.body.inline()) {
+        this.insert(this.body.innerEnd, ' }');
+      } else {
+        this.body.appendLineAfter('}');
+      }
     }
 
     // Close the `while` body block.
-    this.appendLineAfter('}');
+    if (this.body.inline()) {
+      this.insert(this.body.innerEnd, ' }');
+    } else {
+      this.appendLineAfter('}');
+    }
   }
 
   patchAsExpression() {
@@ -85,5 +101,54 @@ export default class WhilePatcher extends NodePatcher {
 
   statementNeedsSemicolon() {
     return false;
+  }
+
+  /**
+   * @private
+   */
+  getWhileTokenIndex(): SourceTokenListIndex {
+    let whileTokenIndex = this.contentStartTokenIndex;
+    let whileToken = this.sourceTokenAtIndex(whileTokenIndex);
+    if (!whileToken) {
+      throw this.error(`could not get first token of 'while' loop`);
+    }
+    switch (whileToken.type) {
+      case LOOP:
+      case WHILE:
+        return whileTokenIndex;
+
+      default:
+        throw this.error(
+          `expected 'while' token to be type WHILE or LOOP, got ${whileToken.type.name}`
+        );
+    }
+  }
+
+  /**
+   * @private
+   */
+  getThenTokenIndex(): ?SourceTokenListIndex {
+    let whileTokenIndex = this.getWhileTokenIndex();
+    if (!whileTokenIndex) {
+      throw this.error(`could not get first token of 'while' loop`);
+    }
+
+    let whileToken = this.sourceTokenAtIndex(whileTokenIndex);
+    if (whileToken.type === LOOP) {
+      // `loop then …`
+      let nextTokenIndex = whileTokenIndex.next();
+      let nextToken = this.sourceTokenAtIndex(nextTokenIndex);
+      if (!nextToken) {
+        throw this.error(`expected another token after 'loop' but none was found`);
+      }
+      return nextToken.type === THEN ? nextTokenIndex : null;
+    } else {
+      // `while a then …`
+      return this.indexOfSourceTokenBetweenPatchersMatching(
+        this.condition,
+        this.guard || this.body,
+        token => token.type === THEN
+      );
+    }
   }
 }
