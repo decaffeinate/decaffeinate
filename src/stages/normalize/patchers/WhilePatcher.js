@@ -11,7 +11,11 @@ import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
  *   while b() then a()
  */
 export default class WhilePatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: ?NodePatcher) {
+  condition: NodePatcher;
+  guard: ?NodePatcher;
+  body: NodePatcher;
+  
+  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: NodePatcher) {
     super(node, context, editor);
     this.condition = condition;
     this.guard = guard;

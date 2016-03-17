@@ -7,6 +7,9 @@ import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
  * Handles object properties.
  */
 export default class ObjectBodyMemberPatcher extends NodePatcher {
+  key: NodePatcher;
+  expression: NodePatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, key: NodePatcher, expression: NodePatcher) {
     super(node, context, editor);
     this.key = key;
@@ -33,9 +36,6 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     this.patchAsExpression(options);
   }
 
-  /**
-   * @protected
-   */
   patchAsMethod() {
     let computedKey = this.isComputed();
     if (computedKey) {
@@ -55,24 +55,15 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     this.patchExpression();
   }
 
-  /**
-   * @protected
-   */
   patchAsProperty() {
     this.patchKey();
     this.patchExpression();
   }
 
-  /**
-   * @protected
-   */
   patchKey() {
     this.key.patch();
   }
 
-  /**
-   * @protected
-   */
   patchExpression() {
     this.expression.patch({ method: this.isMethod() });
   }

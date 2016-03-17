@@ -11,6 +11,10 @@ import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
  *   unless list? then return []
  */
 export default class ConditionalPatcher extends NodePatcher {
+  condition: NodePatcher;
+  guard: ?NodePatcher;
+  body: ?NodePatcher;
+
   constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, consequent: NodePatcher, alternate: ?NodePatcher) {
     super(node, context, editor);
     this.condition = condition;

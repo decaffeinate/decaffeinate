@@ -6,6 +6,8 @@ import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
  * Handles constructs of the form `a < b < c < … < z`.
  */
 export default class ChainedComparisonOpPatcher extends NodePatcher {
+  expression: NodePatcher;
+  
   /**
    * `node` should have type `ChainedComparisonOp`.
    */

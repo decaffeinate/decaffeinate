@@ -6,6 +6,8 @@ import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
  * Handles `instanceof` operator, e.g. `a instanceof b`.
  */
 export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
+  negated: boolean;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
     super(node, context, editor, left, right);
     this.negated = node.isNot;
@@ -15,9 +17,6 @@ export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
     this.negated = !this.negated;
   }
 
-  /**
-   * @protected
-   */
   javaScriptOperator() {
     throw new Error(`'javaScriptOperator' should be implemented in subclass`);
   }

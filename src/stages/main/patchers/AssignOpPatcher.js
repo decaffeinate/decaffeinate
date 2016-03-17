@@ -3,6 +3,9 @@ import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
 
 export default class AssignOpPatcher extends NodePatcher {
+  assignee: NodePatcher;
+  expression: NodePatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, assignee: NodePatcher, expression: NodePatcher) {
     super(node, context, editor);
     this.assignee = assignee;

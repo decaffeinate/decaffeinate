@@ -4,6 +4,9 @@ import { escapeTemplateStringContents } from '../../../utils/escape.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
 
 export default class TemplateLiteralPatcher extends NodePatcher {
+  quasis: Array<NodePatcher>;
+  expressions: Array<NodePatcher>;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, quasis: Array<NodePatcher>, expressions: Array<NodePatcher>) {
     super(node, context, editor);
     this.quasis = quasis;

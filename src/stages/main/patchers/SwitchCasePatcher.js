@@ -3,6 +3,9 @@ import type { Editor, Node, ParseContext, SourceToken } from '../../../patchers/
 import { BREAK, COMMA, THEN, WHEN } from 'coffee-lex';
 
 export default class SwitchCasePatcher extends NodePatcher {
+  conditions: Array<NodePatcher>;
+  consequent: NodePatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, conditions: Array<NodePatcher>, consequent: NodePatcher) {
     super(node, context, editor);
     this.conditions = conditions;

@@ -14,6 +14,8 @@ import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
  * [1]: https://en.wikipedia.org/wiki/De_Morgan%27s_laws
  */
 export default class LogicalOpPatcher extends BinaryOpPatcher {
+  negated: boolean = false;
+
   /**
    * `node` is expected to be either `LogicalAndOp` or `LogicalOrOp`.
    */
@@ -21,7 +23,6 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
     super(node, context, editor);
     this.left = left;
     this.right = right;
-    this.negated = false;
   }
 
   /**

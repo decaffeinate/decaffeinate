@@ -10,7 +10,11 @@ import { LOOP, THEN, WHILE } from 'coffee-lex';
  *     b
  */
 export default class WhilePatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: ?BlockPatcher) {
+  condition: NodePatcher;
+  guard: ?NodePatcher;
+  body: BlockPatcher;
+  
+  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: BlockPatcher) {
     super(node, context, editor);
     this.condition = condition;
     this.guard = guard;

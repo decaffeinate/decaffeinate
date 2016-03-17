@@ -5,6 +5,8 @@ import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
  * Handles spread operations, e.g. `a(b...)` or `[a...]`.
  */
 export default class SpreadPatcher extends NodePatcher {
+  expression: ?NodePatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, expression: ?NodePatcher) {
     super(node, context, editor);
     this.expression = expression;

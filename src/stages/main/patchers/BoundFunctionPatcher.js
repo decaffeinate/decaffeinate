@@ -1,4 +1,3 @@
-import BlockPatcher from './BlockPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
@@ -84,20 +83,10 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
   }
 
   willPatchBodyInline(): boolean {
-    let body = this.getBody();
-    return body ? body.willPatchAsExpression() : false;
+    return this.body ? this.body.willPatchAsExpression() : false;
   }
 
   hasInlineBody(): boolean {
-    let body = this.getBody();
-    return body ? body.inline() : false;
-  }
-
-  getBody(): ?BlockPatcher {
-    if (!this.body) {
-      return null;
-    }
-
-    return (this.body: BlockPatcher);
+    return this.body ? this.body.inline() : false;
   }
 }

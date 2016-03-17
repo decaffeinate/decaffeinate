@@ -3,14 +3,10 @@ import ClassAssignOpPatcher from './ClassAssignOpPatcher.js';
 import ConstructorPatcher from './ConstructorPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import adjustIndent from '../../../utils/adjustIndent.js';
-import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type ClassPatcher from './ClassPatcher.js';
+import type { Node } from './../../../patchers/types.js';
 
 export default class ClassBlockPatcher extends BlockPatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
-    super(node, context, editor);
-    this.statements = statements;
-  }
-
   static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
     if (property === 'statements' && node.type === 'AssignOp') {
       return ClassAssignOpPatcher;
@@ -26,7 +22,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
         let methodIndent = adjustIndent(source, insertionPoint, 0);
         let methodBodyIndent = adjustIndent(source, insertionPoint, 1);
         let constructor = '';
-        if (this.parent.isSubclass()) {
+        if (this.getClassPatcher().isSubclass()) {
           constructor += `constructor(...args) {\n${methodBodyIndent}super(...args);\n`;
         } else {
           constructor += `constructor() {\n`;
@@ -40,6 +36,10 @@ export default class ClassBlockPatcher extends BlockPatcher {
       }
     }
     super.patch(options);
+  }
+  
+  getClassPatcher(): ClassPatcher {
+    return this.parent;
   }
 
   canPatchAsExpression(): boolean {

@@ -3,6 +3,8 @@ import type { Node, ParseContext, Editor, SourceToken } from './../../../patcher
 import { AT, DOT, IDENTIFIER, PROTO } from 'coffee-lex';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
+  expression: NodePatcher;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {
     super(node, context, editor);
     this.expression = expression;

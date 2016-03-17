@@ -3,6 +3,8 @@ import type { SourceToken, Node, ParseContext, Editor } from './../../../patcher
 import { SEMICOLON } from 'coffee-lex';
 
 export default class BlockPatcher extends NodePatcher {
+  statements: Array<NodePatcher>;
+
   constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
     super(node, context, editor);
     this.statements = statements;

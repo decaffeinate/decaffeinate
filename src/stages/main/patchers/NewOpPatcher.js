@@ -6,6 +6,9 @@ import { COMMA } from 'coffee-lex';
  * Handles construction of objects with `new`.
  */
 export default class NewOpPatcher extends NodePatcher {
+  ctor: NodePatcher;
+  args: Array<NodePatcher>;
+  
   constructor(node: Node, context: ParseContext, editor: Editor, ctor: NodePatcher, args: Array<NodePatcher>) {
     super(node, context, editor);
     this.ctor = ctor;

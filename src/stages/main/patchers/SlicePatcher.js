@@ -6,6 +6,10 @@ import { LBRACKET, RANGE, RBRACKET } from 'coffee-lex';
  * Handles array or string slicing, e.g. `names[i..]`.
  */
 export default class SlicePatcher extends NodePatcher {
+  expression: NodePatcher;
+  left: ?NodePatcher;
+  right: ?NodePatcher;
+  
   /**
    * `node` is of type `Slice`.
    */

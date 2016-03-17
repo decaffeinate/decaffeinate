@@ -1,20 +1,13 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { SourceToken } from './../../../patchers/types.js';
 import { OPERATOR } from 'coffee-lex';
 
 /**
  * Handles equality and inequality comparisons.
  */
 export default class EqualityPatcher extends BinaryOpPatcher {
-  /**
-   * `node` is either `EQOp` or `NEQOp`.
-   */
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor, left, right);
-    this.negated = false;
-  }
-
+  negated: boolean = false;
+  
   patchAsExpression() {
     this.left.patch();
     let compareToken = this.getCompareToken();

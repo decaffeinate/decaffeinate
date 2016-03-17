@@ -12,6 +12,8 @@ const IN_HELPER =
  * Handles `in` operators, e.g. `a in b` and `a not in b`.
  */
 export default class InOpPatcher extends BinaryOpPatcher {
+  negated: boolean;
+  
   /**
    * `node` is of type `InOp`.
    */
@@ -24,9 +26,6 @@ export default class InOpPatcher extends BinaryOpPatcher {
     this.negated = !this.negated;
   }
 
-  /**
-   * @protected
-   */
   expectedOperatorTokenType(): SourceType {
     return RELATION;
   }

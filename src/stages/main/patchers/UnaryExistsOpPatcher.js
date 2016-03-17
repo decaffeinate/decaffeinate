@@ -1,14 +1,10 @@
 import UnaryOpPatcher from './UnaryOpPatcher.js';
-import type { Node, ParseContext, Editor, NodePatcher } from './../../../patchers/types.js';
 
 /**
  * Handles unary exists, e.g. `a?`.
  */
 export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {
-    super(node, context, editor, expression);
-    this.negated = false;
-  }
+  negated: boolean = false;
 
   /**
    * The expression version of this sometimes needs parentheses, but we don't

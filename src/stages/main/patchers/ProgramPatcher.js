@@ -9,6 +9,10 @@ import type { Editor, Node, ParseContext, SourceToken } from './../../../patcher
 const BLOCK_COMMENT_DELIMITER = '###';
 
 export default class ProgramPatcher extends NodePatcher {
+  body: BlockPatcher;
+  helpers: { [key: string]: string };
+  _indentString: ?string;
+
   constructor(node: Node, context: ParseContext, editor: Editor, body: BlockPatcher) {
     super(node, context, editor);
     this.body = body;
@@ -17,9 +21,6 @@ export default class ProgramPatcher extends NodePatcher {
     this._indentString = null;
   }
 
-  /**
-   * @protected
-   */
   canPatchAsExpression(): boolean {
     return false;
   }
