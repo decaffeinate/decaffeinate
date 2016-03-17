@@ -326,8 +326,8 @@ export default class PlusOpPatcher extends NodePatcher {
 }
 ```
 
-Now `a + if b then c else d` will become `a + b ? c : d;` as intended, since the
-`right` patcher knows to patch using `patchAsExpression` instead of
+Now `a + if b then c else d` will become `a + (b ? c : d);` as intended, since
+the `right` patcher knows to patch using `patchAsExpression` instead of
 `patchAsStatement`. In reality, `PlusOp` and several other binary operators are
 all handled by [`BinaryOpPatcher`][BinaryOpPatcher].
 

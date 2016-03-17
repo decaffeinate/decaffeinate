@@ -15,7 +15,7 @@ export default class UnaryOpPatcher extends NodePatcher {
    * OP EXPRESSION
    */
   patchAsExpression() {
-    this.expression.patch();
+    this.expression.patch({ needsParens: true });
   }
 
   patchAsStatement() {

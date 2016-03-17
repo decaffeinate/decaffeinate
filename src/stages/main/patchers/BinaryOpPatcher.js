@@ -18,8 +18,8 @@ export default class BinaryOpPatcher extends NodePatcher {
    * LEFT OP RIGHT
    */
   patchAsExpression() {
-    this.left.patch();
-    this.right.patch();
+    this.left.patch({ needsParens: true });
+    this.right.patch({ needsParens: true });
   }
 
   patchAsStatement() {

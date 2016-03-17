@@ -55,10 +55,16 @@ export default class ConditionalPatcher extends NodePatcher {
     return !this.willPatchAsTernary() && this.forcedToPatchAsExpression();
   }
 
-  patchAsExpression() {
+  patchAsExpression({ needsParens }={}) {
+    let addParens = needsParens && !this.isSurroundedByParentheses();
+
     // `if a then b` → `a then b`
     //  ^^^
-    this.remove(this.contentStart, this.condition.contentStart);
+    this.overwrite(
+      this.contentStart,
+      this.condition.contentStart,
+      addParens ? '(' : ''
+    );
 
     this.condition.patch();
 
@@ -86,6 +92,10 @@ export default class ConditionalPatcher extends NodePatcher {
     } else {
       // `a ? b` → `a ? b : undefined`
       this.insert(this.consequent.outerEnd, ' : undefined');
+    }
+
+    if (addParens) {
+      this.insert(this.contentEnd, ')');
     }
   }
 

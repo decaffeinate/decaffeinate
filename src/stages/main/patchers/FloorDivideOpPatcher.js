@@ -11,13 +11,13 @@ export default class FloorDivideOpPatcher extends BinaryOpPatcher {
     //             ^^^^^^^^^^^
     this.insert(this.contentStart, 'Math.floor(');
 
-    this.left.patch();
+    this.left.patch({ needsParens: true });
 
     // `Math.floor(a // b)` → `Math.floor(a / b)`
     //               ^^                     ^
     this.overwrite(operator.start, operator.end, '/');
 
-    this.right.patch();
+    this.right.patch({ needsParens: true });
 
     // `Math.floor(a // b` → `Math.floor(a // b)`
     //                                         ^

@@ -259,4 +259,36 @@ describe('conditionals', () => {
       if (!e(f)) { if (c(d)) { a(b); } }
     `);
   });
+
+  it('surrounds the conditional expression in parens as part of a binary expression', () => {
+    check(`
+      a + if b then c else d
+    `, `
+      a + (b ? c : d);
+    `);
+  });
+
+  it('surrounds the conditional expression in parens as part of a unary expression', () => {
+    check(`
+      -if b then c else d
+    `, `
+      -(b ? c : d);
+    `);
+  });
+
+  it('does not add extra parens to a conditional expression', () => {
+    check(`
+      a + (if b then c else d)
+    `, `
+      a + (b ? c : d);
+    `);
+  });
+
+  it('does not add unnecessary parens to a conditional expression', () => {
+    check(`
+      a ** if b then c else d
+    `, `
+      Math.pow(a, b ? c : d);
+    `);
+  });
 });
