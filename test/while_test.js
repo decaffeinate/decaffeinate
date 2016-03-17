@@ -26,26 +26,11 @@ describe('while', () => {
     `);
   });
 
-  it.skip('adds braces for single-line while loops correctly', () => {
+  it('adds braces for single-line while loops correctly', () => {
     check(`
       b while a
     `, `
-      while (a) {
-        b;
-      }
-    `);
-  });
-
-  it.skip('moves the body with the correct indentation', () => {
-    check(`
-      if a
-        b while c
-    `, `
-      if (a) {
-        while (c) {
-          b;
-        }
-      }
+      while (a) { b; }
     `);
   });
 
@@ -139,23 +124,19 @@ describe('while', () => {
     `);
   });
 
-  it.skip('handles a `while` loop with a `then` body', () => {
+  it('handles a `while` loop with a `then` body', () => {
     check(`
-      while a then do (a) -> a
+      while a then ((a) -> a)(1)
     `, `
-      while (a) {
-        (function(a) { return a; })(a);
-      }
+      while (a) { (a => a)(1); }
     `);
   });
 
-  it.skip('handles a `loop` with a `then` body', () => {
+  it('handles a `loop` with a `then` body', () => {
     check(`
       loop then a
     `, `
-      while (true) {
-        a;
-      }
+      while (true) { a; }
     `);
   });
 
