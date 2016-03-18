@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, SourceType, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
 import { OPERATOR } from 'coffee-lex';
 
 export default class BinaryOpPatcher extends NodePatcher {
@@ -30,11 +30,10 @@ export default class BinaryOpPatcher extends NodePatcher {
   }
 
   getOperatorToken(): SourceToken {
-    let expectedOperatorTokenType = this.expectedOperatorTokenType();
     let operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.left,
       this.right,
-      token => token.type === expectedOperatorTokenType
+      this.operatorTokenPredicate()
     );
     if (!operatorTokenIndex) {
       throw this.error('expected operator between binary operands');
@@ -42,7 +41,7 @@ export default class BinaryOpPatcher extends NodePatcher {
     return this.sourceTokenAtIndex(operatorTokenIndex);
   }
 
-  expectedOperatorTokenType(): SourceType {
-    return OPERATOR;
+  operatorTokenPredicate(): (token: SourceToken) => boolean {
+    return (token: SourceToken) => token.type === OPERATOR;
   }
 }

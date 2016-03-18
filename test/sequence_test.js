@@ -16,4 +16,32 @@ describe('sequences', () => {
       () => (a, b, c);
     `);
   });
+  
+  it('handles newlines as separators', () => {
+    check(`
+      if a then (
+        b
+        c
+      )
+    `, `
+      if (a) { (
+        b,
+        c
+      ); }
+    `);
+  });
+
+  it('handles mixed semicolon and newline-separated sequence expressions', () => {
+    check(`
+      (
+        a; b
+        c
+      )
+    `, `
+      (
+        a, b,
+        c
+      );
+    `);
+  });
 });

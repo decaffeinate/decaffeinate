@@ -1,6 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
-import { SEMICOLON } from 'coffee-lex';
-import type { SourceType } from './../../../patchers/types.js';
+import { NEWLINE, SEMICOLON } from 'coffee-lex';
+import type { SourceToken } from './../../../patchers/types.js';
 
 /**
  * Handles sequence expressions, e.g `a; b`.
@@ -13,17 +13,19 @@ export default class SeqOpPatcher extends BinaryOpPatcher {
     this.left.patch();
 
     let token = this.getOperatorToken();
-    // `a; b` → `a, b`
-    //   ^        ^
-    this.overwrite(token.start, token.end, ',');
+    
+    if (token.type === SEMICOLON) {
+      // `a; b` → `a, b`
+      //   ^        ^
+      this.overwrite(token.start, token.end, ',');
+    } else if (token.type === NEWLINE) {
+      this.insert(this.left.outerEnd, ',');
+    }
 
     this.right.patch();
   }
 
-  /**
-   * @protected
-   */
-  expectedOperatorTokenType(): SourceType {
-    return SEMICOLON;
+  operatorTokenPredicate(): (token: SourceToken) => boolean {
+    return (token: SourceToken): boolean => token.type === SEMICOLON || token.type === NEWLINE;
   }
 }
