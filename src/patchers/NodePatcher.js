@@ -488,6 +488,20 @@ export default class NodePatcher {
   }
 
   /**
+   * Gets the original source of this patcher's node.
+   */
+  getOriginalSource(): string {
+    return this.context.source.slice(this.contentStart, this.contentEnd);
+  }
+
+  /**
+   * Gets the patched source of this patcher's node.
+   */
+  getPatchedSource(): string {
+    return this.slice(this.contentStart, this.contentEnd);
+  }
+
+  /**
    * Gets the index of a token after `contentStart` with the matching type, ignoring
    * non-semantic types by default.
    */
@@ -672,7 +686,7 @@ export default class NodePatcher {
   makeRepeatable(parens: boolean, ref: ?string=null): string {
     if (this.isRepeatable()) {
       // If we can repeat it, just return the original source.
-      return this.context.source.slice(this.contentStart, this.contentEnd);
+      return this.getOriginalSource();
     } else {
       // Can't repeat it, so we assign it to a free variable and return that,
       // i.e. `a + b` → `(ref = a + b)`.
