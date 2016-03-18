@@ -1,6 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceType, Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { SourceToken, Editor, Node, ParseContext } from './../../../patchers/types.js';
 import { RELATION } from 'coffee-lex';
 
 const IN_HELPER =
@@ -26,8 +26,8 @@ export default class InOpPatcher extends BinaryOpPatcher {
     this.negated = !this.negated;
   }
 
-  expectedOperatorTokenType(): SourceType {
-    return RELATION;
+  operatorTokenPredicate(): (token: SourceToken) => boolean {
+    return (token: SourceToken) => token.type === RELATION;
   }
 
   /**
