@@ -2,7 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 
 export default class BoolPatcher extends NodePatcher {
   patchAsExpression() {
-    switch (this.slice(this.contentStart, this.contentEnd)) {
+    switch (this.getOriginalSource()) {
       case 'off':
       case 'no':
         this.overwrite(this.contentStart, this.contentEnd, 'false');

@@ -131,7 +131,7 @@ import NodePatcher from './NodePatcher.js';
 
 export default class BoolPatcher extends NodePatcher {
   patchAsExpression() {
-    let source = this.context.source.slice(this.contentStart, this.contentEnd);
+    let source = this.getOriginalSource();
     switch (source) {
       case 'yes':
       case 'on':
@@ -158,7 +158,7 @@ import NodePatcher from './NodePatcher.js';
 
 export default class BoolPatcher extends NodePatcher {
   patchAsExpression() {
-    let source = this.context.source.slice(this.contentStart, this.contentEnd);
+    let source = this.getOriginalSource();
     switch (source) {
       case 'yes':
       case 'on':

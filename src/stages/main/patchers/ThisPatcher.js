@@ -12,6 +12,6 @@ export default class ThisPatcher extends NodePatcher {
   }
 
   isShorthandThis() {
-    return this.context.source.slice(this.contentStart, this.contentEnd) === '@';
+    return this.getOriginalSource() === '@';
   }
 }

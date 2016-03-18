@@ -186,4 +186,12 @@ describe('function calls', () => {
   it('converts rest params in function calls', () => {
     check(`(a,b...)->b[0]`, `(a,...b)=> b[0];`);
   });
+
+  it('works when the entire span of arguments is replaced', () => {
+    check(`
+      a yes
+    `, `
+      a(true);
+    `);
+  });
 });
