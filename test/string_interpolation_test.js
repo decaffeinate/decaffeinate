@@ -47,6 +47,14 @@ describe('string interpolation', () => {
     `);
   });
 
+  it('handles nested string interpolations', () => {
+    check(`
+      "a#{"b#{c}d"}e"
+    `, `
+      \`a\${\`b\${c}d\`}e\`;
+    `);
+  });
+
   it('escapes ${ inside strings that become template strings', () => {
     check(
       '"#{interpolation}${not interpolation}"',
