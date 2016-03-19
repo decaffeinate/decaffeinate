@@ -41,7 +41,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
         let key = this.context.source.slice(method.key.contentStart, method.key.contentEnd);
         return `this.${key} = this.${key}.bind(this)`;
       });
-      this.expression.body.insertLinesAtIndex(bindings, indexOfSuperStatement + 1);
+      this.expression.body.insertStatementsAtIndex(bindings, indexOfSuperStatement + 1);
     }
   }
 

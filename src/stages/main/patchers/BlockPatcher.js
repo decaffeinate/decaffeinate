@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
-import { SEMICOLON } from 'coffee-lex';
+import { NEWLINE, SEMICOLON } from 'coffee-lex';
 
 export default class BlockPatcher extends NodePatcher {
   statements: Array<NodePatcher>;
@@ -87,22 +87,26 @@ export default class BlockPatcher extends NodePatcher {
   }
 
   /**
-   * Insert lines somewhere in this block.
+   * Insert statements somewhere in this block.
    */
-  insertLinesAtIndex(lines: Array<string>, index: number) {
+  insertStatementsAtIndex(statements: Array<string>, index: number) {
+    let separator = this.inline() ? '; ' : '\n';
     if (index === this.statements.length) {
       let lastStatement = this.statements[this.statements.length - 1];
-      let insertionPoint = this.context.source.indexOf('\n', lastStatement.outerEnd);
-      if (insertionPoint < 0) {
-        insertionPoint = lastStatement.outerEnd;
-      }
+      let terminatorTokenIndex = this.context.sourceTokens.indexOfTokenMatchingPredicate(
+        token => token.type === NEWLINE || token.type === SEMICOLON,
+        lastStatement.outerEndTokenIndex
+      );
+      let insertionPoint = terminatorTokenIndex ?
+        this.sourceTokenAtIndex(terminatorTokenIndex).start :
+        lastStatement.outerEnd;
       let indent = lastStatement.getIndent();
-      lines.forEach(line => this.insert(insertionPoint, `\n${indent}${line}`));
+      statements.forEach(line => this.insert(insertionPoint, `${separator}${indent}${line}`));
     } else {
       let statementToInsertBefore = this.statements[index];
       let insertionPoint = statementToInsertBefore.outerStart;
       let indent = statementToInsertBefore.getIndent();
-      lines.forEach(line => this.insert(insertionPoint, `${line}\n${indent}`));
+      statements.forEach(line => this.insert(insertionPoint, `${line}${separator}${indent}`));
     }
   }
 
