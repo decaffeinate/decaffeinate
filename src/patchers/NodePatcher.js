@@ -172,12 +172,25 @@ export default class NodePatcher {
    * to other patcher methods which can be overridden individually.
    */
   patch(options={}) {
-    if (this.forcedToPatchAsExpression()) {
-      this.patchAsForcedExpression(options);
-    } else if (this.willPatchAsExpression()) {
-      this.patchAsExpression(options);
-    } else {
-      this.patchAsStatement(options);
+    try {
+      if (this.forcedToPatchAsExpression()) {
+        this.patchAsForcedExpression(options);
+      } else if (this.willPatchAsExpression()) {
+        this.patchAsExpression(options);
+      } else {
+        this.patchAsStatement(options);
+      }
+    } catch (err) {
+      if (!PatcherError.isA(err)) {
+        throw this.error(
+          err.message,
+          this.contentStart,
+          this.contentEnd,
+          err
+        );
+      } else {
+        throw err;
+      }
     }
   }
 
@@ -658,8 +671,8 @@ export default class NodePatcher {
   /**
    * Generate an error referring to a particular section of the source.
    */
-  error(message: string, start: number=this.contentStart, end: number=this.contentEnd): PatcherError {
-    return new PatcherError(message, this.context, start, end);
+  error(message: string, start: number=this.contentStart, end: number=this.contentEnd, error: ?Error=null): PatcherError {
+    return new PatcherError(message, this.context, start, end, error);
   }
 
   /**
