@@ -3,20 +3,39 @@ import repeat from 'repeating';
 import type { ParseContext } from '../patchers/types.js';
 
 export default class PatchError extends Error {
-  constructor(message: string, context: ParseContext, start: number, end: number) {
+  message: string;
+  context: ParseContext;
+  start: number;
+  end: number;
+  error: ?Error;
+
+  constructor(message: string, context: ParseContext, start: number, end: number, error: ?Error) {
     super(message);
     this.message = message;
     this.context = context;
     this.start = start;
     this.end = end;
+    this.error = error;
   }
 
   toString(): string {
     return this.message;
   }
 
-  static isA(error: Object): boolean {
-    return 'context' in error && 'start' in error && 'end' in error;
+  /**
+   * Due to babel's inability to simulate extending native types, we have our
+   * own method for determining whether an object is an instance of
+   * `PatchError`.
+   * 
+   * @see http://stackoverflow.com/a/33837088/549363
+   */
+  static isA(error: Error): boolean {
+    return (
+      error instanceof Error &&
+      'context' in error &&
+      'start' in error &&
+      'end' in error
+    );
   }
 
   static prettyPrint(error: PatchError) {
