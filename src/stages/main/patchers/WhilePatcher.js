@@ -52,20 +52,33 @@ export default class WhilePatcher extends NodePatcher {
 
       if (this.guard) {
         let guardNeedsParens = !this.guard.isSurroundedByParentheses();
-        let bodyIndent = this.body.getIndent();
-        // `while (a when b` → `while (a) {\n  if (b`
-        //          ^^^^^^              ^^^^^^^^^^^
-        this.overwrite(
-          this.condition.outerEnd,
-          this.guard.outerStart,
-          `${conditionNeedsParens ? ')' : ''} {\n${bodyIndent}if ${guardNeedsParens ? '(' : ''}`
-        );
+        if (this.body.inline()) {
+          // `while (a when b` → `while (a) { if (b`
+          //          ^^^^^^              ^^^^^^^^
+          this.overwrite(
+            this.condition.outerEnd,
+            this.guard.outerStart,
+            `${conditionNeedsParens ? ')' : ''} { if ${guardNeedsParens ? '(' : ''}`
+          );
+        } else {
+          let bodyIndent = this.body.getIndent();
+          // `while (a when b` → `while (a) {\n  if (b`
+          //          ^^^^^^              ^^^^^^^^^^^
+          this.overwrite(
+            this.condition.outerEnd,
+            this.guard.outerStart,
+            `${conditionNeedsParens ? ')' : ''} {\n${bodyIndent}if ${guardNeedsParens ? '(' : ''}`
+          );
+
+        }
         this.guard.patch();
 
         // `while (a) {\n  if (b` → `while (a) {\n  if (b) {`
         //                                               ^^^
         this.insert(this.guard.outerEnd, `${guardNeedsParens ? ')' : ''} {`);
-        this.body.indent();
+        if (!this.body.inline()) {
+          this.body.indent();
+        }
       } else {
         // `while (a` → `while (a) {`
         //                       ^^^
@@ -80,7 +93,17 @@ export default class WhilePatcher extends NodePatcher {
       this.remove(thenToken.start, nextToken.start);
     }
 
-    this.body.patch({ leftBrace: false, rightBrace: false });
+    if (this.willPatchAsExpression() && !this.allBodyCodePathsPresent()) {
+      let itemBinding = this.getResultArrayElementBinding();
+      this.body.insertStatementsAtIndex([`var ${itemBinding}`], 0);
+      this.body.patch({ leftBrace: false, rightBrace: false });
+      this.body.insertStatementsAtIndex(
+        [`${this.getResultArrayBinding()}.push(${itemBinding})`],
+        this.body.statements.length
+      );
+    } else {
+      this.body.patch({ leftBrace: false, rightBrace: false });
+    }
 
     if (this.guard) {
       // Close the guard's `if` consequent block.
@@ -100,7 +123,101 @@ export default class WhilePatcher extends NodePatcher {
   }
 
   patchAsExpression() {
-    throw this.error(`cannot handle 'while' used as an expression (yet)`);
+    this.body.setImplicitlyReturns();
+    let resultBinding = this.getResultArrayBinding();
+    this.insert(this.contentStart, `(() => { ${resultBinding} = []; `);
+    this.patchAsStatement();
+    this.insert(this.contentEnd, ` return ${resultBinding}; })()`);
+  }
+
+  /**
+   * Most implicit returns cause program flow to break by using a `return`
+   * statement, but we don't do that since we're just collecting values in
+   * an array. This allows descendants who care about this to adjust their
+   * behavior accordingly.
+   */
+  implicitReturnWillBreak(): boolean {
+    if (this.willPatchAsExpression()) {
+      return false;
+    } else {
+      return super.implicitReturnWillBreak();
+    }
+  }
+
+  /**
+   * We decide how statements in implicit return positions are patched, if
+   * we're being used as an expression. This is because we don't want to return
+   * them, but add them to an array.
+   */
+  implicitReturnPatcher(): NodePatcher {
+    if (this.willPatchAsExpression()) {
+      return this;
+    } else {
+      return super.implicitReturnPatcher();
+    }
+  }
+
+  /**
+   * If this `while` is used as an expression, then we need to collect all the
+   * values of the statements in implicit-return position. If all the code paths
+   * in our body are present, we can just add `result.push(…)` to all
+   * implicit-return position statements. If not, we want those code paths to
+   * result in adding `undefined` to the resulting array. The way we do that is
+   * by creating an `item` local variable that we set in each code path, and
+   * when the code exits through a missing code path (i.e. `if false then b`)
+   * then `item` will naturally have the value `undefined` which we then push
+   * at the end of the `while` body.
+   */
+  patchImplicitReturnStart(patcher: NodePatcher) {
+    patcher.setRequiresExpression();
+    if (this.allBodyCodePathsPresent()) {
+      // `a + b` → `result.push(a + b`
+      //            ^^^^^^^^^^^^
+      this.insert(patcher.outerStart, `${this.getResultArrayBinding()}.push(`);
+    } else {
+      // `a + b` → `item = a + b`
+      //            ^^^^^^^
+      this.insert(patcher.outerStart, `${this.getResultArrayElementBinding()} = `);
+    }
+  }
+
+  /**
+   * @see patchImplicitReturnStart
+   */
+  patchImplicitReturnEnd(patcher: NodePatcher) {
+    if (this.allBodyCodePathsPresent()) {
+      this.insert(patcher.outerEnd, `)`);
+    }
+  }
+
+  /**
+   * @private
+   */
+  allBodyCodePathsPresent(): boolean {
+    if (this._allBodyCodePathsPresent === undefined) {
+      this._allBodyCodePathsPresent = this.body.allCodePathsPresent();
+    }
+    return this._allBodyCodePathsPresent;
+  }
+
+  /**
+   * @private
+   */
+  getResultArrayBinding(): string {
+    if (!this._resultArrayBinding) {
+      this._resultArrayBinding = this.claimFreeBinding('result');
+    }
+    return this._resultArrayBinding;
+  }
+
+  /**
+   * @private
+   */
+  getResultArrayElementBinding(): string {
+    if (!this._resultArrayElementBinding) {
+      this._resultArrayElementBinding = this.claimFreeBinding('item');
+    }
+    return this._resultArrayElementBinding;
   }
 
   statementNeedsSemicolon() {
@@ -149,8 +266,8 @@ export default class WhilePatcher extends NodePatcher {
     } else {
       // `while a then …`
       return this.indexOfSourceTokenBetweenPatchersMatching(
-        this.condition,
-        this.guard || this.body,
+        this.guard || this.condition,
+        this.body,
         token => token.type === THEN
       );
     }

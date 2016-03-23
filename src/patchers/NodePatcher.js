@@ -432,6 +432,38 @@ export default class NodePatcher {
   }
 
   /**
+   * Gets the ancestor that can make implicit returns explicit. Classes that
+   * override this method should override `implicitReturnWillBreak`.
+   */
+  implicitReturnPatcher(): NodePatcher {
+    return this.parent.implicitReturnPatcher();
+  }
+
+  /**
+   * Patch the beginning of an implicitly-returned descendant.
+   */
+  patchImplicitReturnStart(patcher: NodePatcher) {
+    patcher.setRequiresExpression();
+    this.insert(patcher.outerStart, 'return ');
+  }
+
+  /**
+   * Determines whether the implicit return code will stop execution of
+   * statements in the current block. Classes that override this method should
+   * also override `implicitReturnPatcher`.
+   */
+  implicitReturnWillBreak(): boolean {
+    return this.parent.implicitReturnWillBreak();
+  }
+
+  /**
+   * Patch the end of an implicitly-returned descendant.
+   */
+  patchImplicitReturnEnd(patcher: NodePatcher) { // eslint-disable-line no-unused-vars
+    // Nothing to do.
+  }
+
+  /**
    * Gets whether this patcher's node returns explicitly from its function.
    */
   explicitlyReturns(): boolean {

@@ -37,11 +37,19 @@ export default class BlockPatcher extends NodePatcher {
         if (statement.isSurroundedByParentheses()) {
           statement.setRequiresExpression();
         }
-        if (statement.implicitlyReturns() && !statement.explicitlyReturns()) {
-          statement.setRequiresExpression();
-          this.insert(statement.outerStart, 'return ');
+        let hasImplicitReturn = (
+          statement.implicitlyReturns() &&
+          !statement.explicitlyReturns()
+        );
+        let implicitReturnPatcher = hasImplicitReturn ?
+          this.implicitReturnPatcher() : null;
+        if (implicitReturnPatcher) {
+          implicitReturnPatcher.patchImplicitReturnStart(statement);
         }
         statement.patch();
+        if (implicitReturnPatcher) {
+          implicitReturnPatcher.patchImplicitReturnEnd(statement);
+        }
         if (statement.statementNeedsSemicolon()) {
           this.insert(statement.outerEnd, ';');
         }
