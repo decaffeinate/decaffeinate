@@ -128,4 +128,11 @@ export default class BlockPatcher extends NodePatcher {
   inline(): boolean {
     return this.node.inline;
   }
+
+  /**
+   * Blocks only exit via the last statement, so we check its code paths.
+   */
+  allCodePathsPresent(): boolean {
+    return this.statements[this.statements.length - 1].allCodePathsPresent();
+  }
 }

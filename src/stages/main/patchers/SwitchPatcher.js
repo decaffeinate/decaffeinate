@@ -117,4 +117,18 @@ export default class SwitchPatcher extends NodePatcher {
     return switchToken;
   }
 
+  /**
+   * Switch statements with all code paths present have a `default` case and
+   * each case has all of its code paths covered.
+   */
+  allCodePathsPresent(): boolean {
+    if (!this.alternate) {
+      return false;
+    }
+    
+    return (
+      this.cases.every(switchCase => switchCase.allCodePathsPresent()) &&
+      this.alternate.allCodePathsPresent()
+    );
+  }
 }

@@ -721,4 +721,11 @@ export default class NodePatcher {
   claimFreeBinding(ref: string|Array<string>='ref'): string {
     return this.node.scope.claimFreeBinding(this.node, ref);
   }
+
+  /**
+   * Determines whether all the possible code paths in this node are present.
+   */
+  allCodePathsPresent(): boolean {
+    return true;
+  }
 }

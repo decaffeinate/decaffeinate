@@ -263,4 +263,19 @@ export default class ConditionalPatcher extends NodePatcher {
       token => token.type === THEN
     );
   }
+
+  /**
+   * Conditionals have all code paths if there is an `else` and both the
+   * consequent and alternate have all their code paths.
+   */
+  allCodePathsPresent(): boolean {
+    if (!this.alternate) {
+      return false;
+    }
+
+    return (
+      this.consequent.allCodePathsPresent() &&
+      this.alternate.allCodePathsPresent()
+    );
+  }
 }
