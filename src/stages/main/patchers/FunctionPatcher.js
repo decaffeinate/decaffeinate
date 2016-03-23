@@ -13,13 +13,6 @@ export default class FunctionPatcher extends NodePatcher {
     this.body = body;
   }
 
-  /**
-   * @protected
-   */
-  setupLocationInformation() {
-    super.setupLocationInformation();
-  }
-
   initialize() {
     if (this.body && !this.implicitReturnsDisabled()) {
       this.body.setImplicitlyReturns();
