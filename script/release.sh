@@ -4,10 +4,11 @@ set -e
 
 source $(dirname $0)/helpers.sh
 
-RELEASE_TYPE=$1
+RELEASE_TYPE=
+TAG=
 
 usage() {
-  echo "$(basename $0) (major | minor | patch)"
+  echo "$(basename $0) (major | minor | patch) (--latest|--dev)"
 }
 
 if hasChanges; then
@@ -15,24 +16,43 @@ if hasChanges; then
   exit 1
 fi
 
-case "$RELEASE_TYPE" in
-  major|minor|patch)
-    ;;
+while [ -n "$1" ]; do
+  case "$1" in
+    major|minor|patch)
+      RELEASE_TYPE=$1
+      ;;
 
-  -h|--help)
-    usage
-    exit 0
-    ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
 
-  *)
-    usage
-    exit 1
-    ;;
-esac
+    --latest)
+      TAG=latest
+      ;;
+
+    --dev)
+      TAG=dev
+      ;;
+
+    *)
+      usage
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+if [[ -z "$RELEASE_TYPE" || -z "$TAG" ]]; then
+  usage
+  exit 1
+fi
 
 npm test
 mversion $RELEASE_TYPE -m
 git push
 git push --tags
-npm publish
-$(dirname $0)/update-gh-pages.sh
+npm publish --tag=$TAG
+if [ "$TAG" == "latest" ]; then
+  $(dirname $0)/update-gh-pages.sh
+fi
