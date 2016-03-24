@@ -78,17 +78,68 @@ describe('while', () => {
     `);
   });
 
-  it.skip('handles `while` loops used as an expression', () => {
+  it('handles `while` loops used as an expression', () => {
     check(`
       a(b while c)
     `, `
-      a((() => {
-        var result = [];
-        while (c) {
-          result.push(b);
-        }
-        return result;
-      })());
+      a((() => { let result = []; while (c) { result.push(b); } return result; })());
+    `);
+  });
+
+  it('handles `while` loops with a guard used as an expression', () => {
+    check(`
+      a(b while c when d)
+    `, `
+      a((() => { let result = []; while (c) { if (d) { result.push(b); } } return result; })());
+    `);
+  });
+
+  it('collects `undefined` when a code path has no value', () => {
+    check(`
+      a(
+        while b
+          if c
+            d
+          else if e
+            f
+      )
+    `, `
+      a(
+        (() => { let result = []; while (b) {
+          let item;
+          if (c) {
+            item = d;
+          } else if (e) {
+            item = f;
+          }
+          result.push(item);
+        } return result; })()
+      );
+    `);
+  });
+
+  it('does not use a temporary variable when all code paths are covered', () => {
+    check(`
+      a(
+        while b
+          switch c
+            when d
+              e
+            else
+              f
+      )
+    `, `
+      a(
+        (() => { let result = []; while (b) {
+          switch (c) {
+            case d:
+              result.push(e);
+              break;
+            default:
+              result.push(f);
+          }
+        } return result; })()
+      );
     `);
   });
 
@@ -106,21 +157,17 @@ describe('while', () => {
     `);
   });
 
-  it.skip('considers a `while` loop as an implicit return if it only returns within a function', () => {
+  it('considers a `while` loop as an implicit return if it only returns within a function', () => {
     check(`
       ->
         while true
           -> return a
     `, `
-      (function() {
-        return (() => {
-          var result = [];
-          while (true) {
-            result.push(function() { return a; });
-          }
-          return result;
-        })();
-      });
+      () =>
+        (() => { let result = []; while (true) {
+          result.push(() => a);
+        } return result; })()
+      ;
     `);
   });
 

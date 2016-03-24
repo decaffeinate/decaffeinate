@@ -46,7 +46,13 @@ export default class SwitchCasePatcher extends NodePatcher {
 
     this.consequent.patch({ leftBrace: false, rightBrace: false });
 
-    if (!this.getBreakToken() && !this.implicitlyReturns()) {
+    let hasBreak = this.getBreakToken() !== null;
+    let implicitReturnWillBreak = (
+      this.implicitlyReturns() &&
+      this.implicitReturnWillBreak()
+    );
+    let shouldAddBreak = !hasBreak && !implicitReturnWillBreak;
+    if (shouldAddBreak) {
       if (thenToken) {
         // `case a: case b: case c: then d → `case a: case b: case c: d break`
         //                                                             ^^^^^^

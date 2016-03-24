@@ -89,6 +89,14 @@ export default class FunctionPatcher extends NodePatcher {
   hasParamStart(): boolean {
     return this.sourceTokenAtIndex(this.contentStartTokenIndex).type === LPAREN;
   }
+  
+  implicitReturnPatcher(): NodePatcher {
+    return this;
+  }
+  
+  implicitReturnWillBreak(): boolean {
+    return true;
+  }
 
   setExplicitlyReturns() {
     // Stop propagation of return info at functions.
