@@ -161,7 +161,6 @@ export function isBinaryOperator(node) {
     case 'BitAndOp':
     case 'BitOrOp':
     case 'BitXorOp':
-    case 'ConcatOp':
     case 'DivideOp':
     case 'EQOp':
     case 'ExistsOp':
