@@ -704,7 +704,9 @@ export default class NodePatcher {
    * Generate an error referring to a particular section of the source.
    */
   error(message: string, start: number=this.contentStart, end: number=this.contentEnd, error: ?Error=null): PatcherError {
-    return new PatcherError(message, this.context, start, end, error);
+    let patcherError = new PatcherError(message, this.context, start, end, error);
+    if (error) { patcherError.stack = error.stack; }
+    return patcherError;
   }
 
   /**
