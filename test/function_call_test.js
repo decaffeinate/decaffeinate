@@ -194,4 +194,12 @@ describe('function calls', () => {
       a(true);
     `);
   });
+
+  it('works with a call that returns a function that is immediately called', () => {
+    check(`
+      a()()
+    `, `
+      a()();
+    `);
+  });
 });
