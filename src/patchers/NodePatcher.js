@@ -231,7 +231,7 @@ export default class NodePatcher {
       index,
       JSON.stringify(content),
       'BEFORE',
-      JSON.stringify(this.context.source.slice(index, index + 2))
+      JSON.stringify(this.context.source.slice(index, index + 8))
     );
 
     this.adjustBoundsToInclude(index);
