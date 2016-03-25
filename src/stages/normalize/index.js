@@ -1,4 +1,6 @@
 import ConditionalPatcher from './patchers/ConditionalPatcher.js';
+import ForInPatcher from './patchers/ForInPatcher.js';
+import ForOfPatcher from './patchers/ForOfPatcher.js';
 import NodePatcher from '../../patchers/NodePatcher.js';
 import PassthroughPatcher from '../../patchers/PassthroughPatcher.js';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage.js';
@@ -14,6 +16,12 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
     switch (node.type) {
       case 'Conditional':
         return ConditionalPatcher;
+
+      case 'ForIn':
+        return ForInPatcher;
+
+      case 'ForOf':
+        return ForOfPatcher;
 
       case 'While':
         return WhilePatcher;
