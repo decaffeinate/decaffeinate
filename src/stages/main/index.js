@@ -18,6 +18,8 @@ import ExistsOpCompoundAssignOpPatcher from './patchers/ExistsOpCompoundAssignOp
 import ExistsOpPatcher from './patchers/ExistsOpPatcher.js';
 import ExtendsOpPatcher from './patchers/ExtendsOpPatcher.js';
 import FloorDivideOpPatcher from './patchers/FloorDivideOpPatcher.js';
+import ForInPatcher from './patchers/ForInPatcher.js';
+import ForOfPatcher from './patchers/ForOfPatcher.js';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher.js';
 import FunctionPatcher from './patchers/FunctionPatcher.js';
 import HerestringPatcher from './patchers/HerestringPatcher.js';
@@ -174,6 +176,12 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'Herestring':
         return HerestringPatcher;
+
+      case 'ForIn':
+        return ForInPatcher;
+
+      case 'ForOf':
+        return ForOfPatcher;
 
       case 'While':
         return WhilePatcher;
