@@ -1,6 +1,6 @@
 import check from './support/check.js';
 
-describe.skip('try', () => {
+describe('try', () => {
   it('handles multi-line try/catch with catch assignee', () => {
     check(`
       try
@@ -56,8 +56,7 @@ describe.skip('try', () => {
     `, `
       try {
         a();
-      } catch (error) {
-      }
+      } catch (error) {}
     `);
   });
 
@@ -70,8 +69,7 @@ describe.skip('try', () => {
       (function() {
         try {
           return a();
-        } catch (error) {
-        }
+        } catch (error) {}
       });
     `);
   });
@@ -99,8 +97,7 @@ describe.skip('try', () => {
     `, `
       try {
         a;
-      } catch (error) {
-      }
+      } catch (error) {}
       b;
     `);
   });
@@ -113,13 +110,19 @@ describe.skip('try', () => {
     `);
   });
 
+  it('works with single-line try and single-line catch with `then`', () => {
+    check(`
+      try a catch err then b
+    `, `
+      try { a; } catch (err) { b; }
+    `);
+  });
+
   it('works with single-line try used as an expression', () => {
     check(`
       a = try b()
     `, `
-      var a = (() => {
-        try { return b(); } catch (error) {}
-      })();
+      let a = (() => { try { return b(); } catch (error) {} })();
     `);
   });
 
@@ -129,11 +132,10 @@ describe.skip('try', () => {
       try
         foo()
     `, `
-      var error = null;
+      let error = null;
       try {
         foo();
-      } catch (error1) {
-      }
+      } catch (error1) {}
     `);
   });
 });

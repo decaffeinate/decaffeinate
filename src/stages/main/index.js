@@ -50,6 +50,7 @@ import TemplateLiteralPatcher from './patchers/TemplateLiteralPatcher.js';
 import ThisPatcher from './patchers/ThisPatcher.js';
 import ThrowPatcher from './patchers/ThrowPatcher.js';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage.js';
+import TryPatcher from './patchers/TryPatcher.js';
 import UnaryExistsOpPatcher from './patchers/UnaryExistsOpPatcher.js';
 import UnaryMathOpPatcher from './patchers/UnaryMathOpPatcher.js';
 import UnaryOpPatcher from './patchers/UnaryOpPatcher.js';
@@ -223,6 +224,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'Constructor':
         return ConstructorPatcher;
+
+      case 'Try':
+        return TryPatcher;
 
       case 'Switch':
         return SwitchPatcher;
