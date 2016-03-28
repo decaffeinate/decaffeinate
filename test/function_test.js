@@ -51,8 +51,19 @@ describe('functions', () => {
         return) # b
     `, `
       (function() {
-        return;
-      }); // b
+        return;}); // b
+    `);
+  });
+
+  it('puts closing curly brace just inside loosely-wrapped function parens', () => {
+    check(`
+      (->
+        @get('delegateEmail') or @get('email')
+      ).property('delegateEmail', 'email')
+    `, `
+      (function() {
+        return this.get('delegateEmail') || this.get('email');
+      }).property('delegateEmail', 'email');
     `);
   });
 

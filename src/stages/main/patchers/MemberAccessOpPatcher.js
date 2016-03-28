@@ -10,6 +10,10 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     this.expression = expression;
   }
 
+  initialize() {
+    this.expression.setRequiresExpression();
+  }
+
   patchAsExpression() {
     this.expression.patch();
     if (this.isShorthandPrototype()) {

@@ -500,14 +500,12 @@ describe('for loops', () => {
   });
 
   it('handles multi-line body with `then`', () => {
-    // FIXME: esnext should not eat the whitespace between `=>` and `console.log`.
     check(`
       for a in b then (->
         console.log('foo')
       )()
     `, `
-      for (let i = 0; i < b.length; i++) { let a = b[i]; (() => console.log('foo')
-      )(); }
+      for (let i = 0; i < b.length; i++) { let a = b[i]; (() => console.log('foo'))(); }
     `);
   });
 });

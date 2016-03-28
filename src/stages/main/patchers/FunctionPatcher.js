@@ -48,7 +48,12 @@ export default class FunctionPatcher extends NodePatcher {
 
   patchFunctionBody() {
     if (this.body) {
-      this.body.patch({ leftBrace: false });
+      if (this.isSurroundedByParentheses()) {
+        this.body.patch({ leftBrace: false, rightBrace: false });
+        this.insert(this.innerEnd, this.body.inline() ? ' }' : '}');
+      } else {
+        this.body.patch({ leftBrace: false });
+      }
     } else {
       // No body, so BlockPatcher can't insert it for us.
       this.insert(this.innerEnd, '}');
