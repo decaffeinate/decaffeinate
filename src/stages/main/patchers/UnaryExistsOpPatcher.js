@@ -60,6 +60,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
       !node.scope.hasBinding(nodeExpression.data)
     );
 
+    this.expression.patch();
     if (needsTypeofCheck) {
       if (negated) {
         // `a?` → `typeof a === 'undefined' && a === null`
