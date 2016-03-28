@@ -1,6 +1,8 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
+import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 import { COMMA, LBRACE } from 'coffee-lex';
+import { isSemanticToken } from '../../../utils/types.js';
 
 /**
  * Handles object literals.
@@ -19,18 +21,37 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   patchAsExpression() {
     let implicitObject = this.isImplicitObject();
     if (implicitObject) {
-      this.insert(this.innerStart, '{');
-    }
-    this.members.forEach((member, i, members) => {
-      member.patch();
-      if (i !== members.length - 1) {
-        if (!member.hasSourceTokenAfter(COMMA)) {
-          this.insert(member.outerEnd, ',');
+      let needsSpace = false;
+      let curlyBraceInsertionPosition = this.innerStart;
+      if (this.shouldExpandCurlyBraces()) {
+        let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex.previous();
+        if (tokenIndexBeforeOuterStartTokenIndex) {
+          let precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
+            isSemanticToken,
+            tokenIndexBeforeOuterStartTokenIndex
+          );
+          if (precedingTokenIndex) {
+            let precedingToken = this.sourceTokenAtIndex(precedingTokenIndex);
+            curlyBraceInsertionPosition = precedingToken.end;
+            let precedingTokenText = this.sourceOfToken(precedingToken);
+            let lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
+            needsSpace = (
+              lastCharOfToken === ':' ||
+              lastCharOfToken === '=' ||
+              lastCharOfToken === ','
+            );
+          }
         }
       }
-    });
+      this.insert(curlyBraceInsertionPosition, needsSpace ? ' {' : '{');
+    }
+    this.patchMembers();
     if (implicitObject) {
-      this.insert(this.innerEnd, '}');
+      if (this.shouldExpandCurlyBraces()) {
+        this.appendLineAfter('}', -1);
+      } else {
+        this.insert(this.innerEnd, '}');
+      }
     }
   }
 
@@ -49,13 +70,53 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
    */
   patchAsStatement() {
     let needsParentheses = !this.isSurroundedByParentheses();
+    let implicitObject = this.isImplicitObject();
     if (needsParentheses) {
       this.insert(this.contentStart, '(');
     }
-    this.patchAsExpression();
+    if (implicitObject) {
+      if (this.shouldExpandCurlyBraces()) {
+        this.insert(this.innerStart, `{\n${this.getIndent()}`);
+        this.indent();
+      } else {
+        this.insert(this.innerStart, '{');
+      }
+    }
+    this.patchMembers();
+    if (implicitObject) {
+      if (this.shouldExpandCurlyBraces()) {
+        this.appendLineAfter('}', -1);
+      } else {
+        this.insert(this.innerEnd, '}');
+      }
+    }
     if (needsParentheses) {
       this.insert(this.contentEnd, ')');
     }
+  }
+
+  /**
+   * @private
+   */
+  shouldExpandCurlyBraces(): boolean {
+    return (
+      this.isMultiline() ||
+      this.parent instanceof ObjectInitialiserMemberPatcher
+    );
+  }
+
+  /**
+   * @private
+   */
+  patchMembers() {
+    this.members.forEach((member, i, members) => {
+      member.patch();
+      if (i !== members.length - 1) {
+        if (!member.hasSourceTokenAfter(COMMA)) {
+          this.insert(member.outerEnd, ',');
+        }
+      }
+    });
   }
 
   /**

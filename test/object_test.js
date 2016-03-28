@@ -1,6 +1,14 @@
 import check from './support/check.js';
 
 describe('objects', () => {
+  it('adds parentheses around implicit bare object literals', () => {
+    check(`a: b`, `({a: b});`);
+  });
+
+  it('adds parentheses around explicit bare object literals', () => {
+    check(`{a}`, `({a});`);
+  });
+
   it('adds curly braces immediately around a single-line object', () => {
     check(`
       a b: c, d: e
@@ -39,7 +47,7 @@ describe('objects', () => {
     `);
   });
 
-  it.skip('indents and loosely wraps multi-line objects if needed', () => {
+  it('indents and loosely wraps multi-line objects if needed', () => {
     check(`
       a: b,
       c: d
@@ -51,7 +59,7 @@ describe('objects', () => {
     `);
   });
 
-  it.skip('adds curly braces loosely around a nested-object', () => {
+  it('adds curly braces loosely around a nested object', () => {
     check(`
       a:
         b: c
@@ -60,6 +68,19 @@ describe('objects', () => {
         a: {
           b: c
         }
+      });
+    `);
+  });
+
+  it('adds curly braces inside a function call', () => {
+    check(`
+      a b,
+        c: d
+        e: f
+    `, `
+      a(b, {
+        c: d,
+        e: f
       });
     `);
   });
@@ -167,6 +188,19 @@ describe('objects', () => {
         b,
         {c: d}
       );
+    `);
+  });
+
+  it('adds opening and closing braces in the right places for multi-line objects in function calls', () => {
+    check(`
+      a
+        a: b
+        c: d
+    `, `
+      a({
+        a: b,
+        c: d
+      });
     `);
   });
 
