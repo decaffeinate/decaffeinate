@@ -211,4 +211,23 @@ describe('objects', () => {
       ({a: this.a});
     `);
   });
+
+  it('adds the curly braces at the right place for implicitly-returned objects', () => {
+    check(`
+      ->
+        b = 1
+        d = 2
+        a: b
+        c: d
+    `, `
+      (function() {
+        let b = 1;
+        let d = 2;
+        return {
+          a: b,
+          c: d
+        };
+      });
+    `);
+  });
 });

@@ -21,29 +21,41 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   patchAsExpression() {
     let implicitObject = this.isImplicitObject();
     if (implicitObject) {
-      let needsSpace = false;
       let curlyBraceInsertionPosition = this.innerStart;
+      let textToInsert = '{';
+      let shouldIndent = false;
       if (this.shouldExpandCurlyBraces()) {
-        let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex.previous();
-        if (tokenIndexBeforeOuterStartTokenIndex) {
-          let precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
-            isSemanticToken,
-            tokenIndexBeforeOuterStartTokenIndex
-          );
-          if (precedingTokenIndex) {
-            let precedingToken = this.sourceTokenAtIndex(precedingTokenIndex);
-            curlyBraceInsertionPosition = precedingToken.end;
-            let precedingTokenText = this.sourceOfToken(precedingToken);
-            let lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
-            needsSpace = (
-              lastCharOfToken === ':' ||
-              lastCharOfToken === '=' ||
-              lastCharOfToken === ','
+        if (this.implicitlyReturns()) {
+          textToInsert = `{\n${this.getIndent()}`;
+          shouldIndent = true;
+        } else {
+          let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex.previous();
+          if (tokenIndexBeforeOuterStartTokenIndex) {
+            let precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
+              isSemanticToken,
+              tokenIndexBeforeOuterStartTokenIndex
             );
+            if (precedingTokenIndex) {
+              let precedingToken = this.sourceTokenAtIndex(precedingTokenIndex);
+              curlyBraceInsertionPosition = precedingToken.end;
+              let precedingTokenText = this.sourceOfToken(precedingToken);
+              let lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
+              let needsSpace = (
+                lastCharOfToken === ':' ||
+                lastCharOfToken === '=' ||
+                lastCharOfToken === ','
+              );
+              if (needsSpace) {
+                textToInsert = ' {';
+              }
+            }
           }
         }
       }
-      this.insert(curlyBraceInsertionPosition, needsSpace ? ' {' : '{');
+      this.insert(curlyBraceInsertionPosition, textToInsert);
+      if (shouldIndent) {
+        this.indent();
+      }
     }
     this.patchMembers();
     if (implicitObject) {
