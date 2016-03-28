@@ -3,6 +3,7 @@
  */
 
 import babel from 'rollup-plugin-babel';
+import json from 'rollup-plugin-json';
 import { readFileSync } from 'fs';
 
 var babelConfig = JSON.parse(readFileSync('.babelrc', { encoding: 'utf8' }));
@@ -14,6 +15,7 @@ babelConfig.presets = babelConfig.presets.map(function(preset) {
 export default {
   entry: 'src/index.js',
   plugins: [
+    json(),
     babel(babelConfig)
   ]
 };

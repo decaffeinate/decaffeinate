@@ -4,6 +4,7 @@ import EsnextStage from './stages/esnext/index.js';
 import MainStage from './stages/main/index.js';
 import NormalizeStage from './stages/normalize/index.js';
 
+export { version } from '../package.json';
 export { default as run } from './cli';
 
 type Options = {

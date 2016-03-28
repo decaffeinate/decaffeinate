@@ -1,9 +1,12 @@
+var extname = require('path').extname;
+
 module.exports = function(context) {
   return {
     'ImportDeclaration': function(node) {
       var source = node.source.value;
       if (startsWith(source, './') || startsWith(source, '../')) {
-        if (!endsWith(source, '.js')) {
+        var ext = extname(source);
+        if (ext !== '.js' && ext !== '.json') {
           context.report({
             node: node.source,
             message: 'Missing `.js` extension in relative import.',
@@ -20,8 +23,4 @@ module.exports = function(context) {
 
 function startsWith(string, prefix) {
   return string.lastIndexOf(prefix, prefix.length) >= 0;
-}
-
-function endsWith(string, suffix) {
-  return string.indexOf(suffix, string.length - suffix.length) >= 0;
 }
