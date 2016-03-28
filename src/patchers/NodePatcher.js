@@ -25,6 +25,8 @@ export default class NodePatcher {
   outerEnd: number;
   outerStartTokenIndex: SourceTokenListIndex;
   outerEndTokenIndex: SourceTokenListIndex;
+
+  adjustedIndentLevel: number = 0;
   
   constructor(node: Node, context: ParseContext, editor: Editor) {
     this.log = logger(this.constructor.name);
@@ -603,7 +605,21 @@ export default class NodePatcher {
    * Gets the indent string for the line that starts this patcher's node.
    */
   getIndent(offset: number=0): string {
-    return adjustIndent(this.context.source, this.contentStart, offset);
+    return adjustIndent(
+      this.context.source,
+      this.contentStart,
+      this.getAdjustedIndentLevel() + offset
+    );
+  }
+
+  /**
+   * Get the amount the adjusted indent level differs from the original level.
+   */
+  getAdjustedIndentLevel(): number {
+    return (
+      this.adjustedIndentLevel +
+      (this.parent ? this.parent.getAdjustedIndentLevel() : 0)
+    );
   }
 
   /**
@@ -627,6 +643,7 @@ export default class NodePatcher {
       return;
     }
 
+    this.adjustedIndentLevel += offset;
     let indentString = this.getProgramIndentString();
     let indentToChange = repeat(indentString, Math.abs(offset));
     let start = this.outerStart;

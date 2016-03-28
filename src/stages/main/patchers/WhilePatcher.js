@@ -110,7 +110,7 @@ export default class WhilePatcher extends NodePatcher {
       if (this.body.inline()) {
         this.insert(this.body.innerEnd, ' }');
       } else {
-        this.body.appendLineAfter('}');
+        this.body.appendLineAfter('}', -1);
       }
     }
 
