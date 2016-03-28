@@ -4,6 +4,7 @@ import PatchError from './utils/PatchError.js';
 import { convert } from './index.js';
 import { join, dirname, basename, extname } from 'path';
 import { stat, readdir, createReadStream, createWriteStream } from 'fs';
+import { version } from '../package.json';
 
 /**
  * Run the script with the user-supplied arguments.
@@ -31,6 +32,12 @@ function parseArguments(args: Array<string>): Options {
       case '-h':
       case '--help':
         usage();
+        process.exit(0);
+        break;
+      
+      case '-v':
+      case '--version':
+        console.log(`decaffeinate v${version}`);
         process.exit(0);
         break;
 
@@ -157,7 +164,8 @@ function usage() {
   console.log();
   console.log('OPTIONS');
   console.log();
-  console.log('  -h, --help  Display this help message.');
+  console.log('  -h, --help     Display this help message.');
+  console.log(`  -v, --version  Display the current version (v${version}).`);
   console.log();
   console.log('EXAMPLES');
   console.log();
