@@ -123,18 +123,6 @@ describe('automatic conversions', () => {
       check(`a b: c`, `a({b: c});`);
     });
 
-    it('adds parentheses around implicit bare object literals', () => {
-      check(`a: b`, `({a: b});`);
-    });
-
-    it('adds parentheses around explicit bare object literals', () => {
-      check(`{a}`, `({a});`);
-    });
-
-    it('adds object braces to the last function argument even if there are parentheses', () => {
-      check(`a(b: c)`, `a({b: c});`);
-    });
-
     it('does not add parentheses to objects that are implicit returns', () => {
       check(`
         ->

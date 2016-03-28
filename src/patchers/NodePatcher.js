@@ -542,6 +542,13 @@ export default class NodePatcher {
   }
 
   /**
+   * Determines whether this patcher's node spanned multiple lines.
+   */
+  isMultiline(): boolean {
+    return /[\r\n]/.test(this.getOriginalSource());
+  }
+
+  /**
    * Gets the patched source of this patcher's node.
    */
   getPatchedSource(): string {

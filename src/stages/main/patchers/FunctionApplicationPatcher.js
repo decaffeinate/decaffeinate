@@ -21,11 +21,14 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     let implicitCall = this.isImplicitCall();
     this.fn.patch();
     if (implicitCall) {
-      let arg = this.args.length === 1 ? this.args[0] : null;
-      if (arg && arg.node.virtual) {
+      let firstArg = this.args[0];
+      let hasOneArg = this.args.length === 1;
+      let firstArgIsOnNextLine = !firstArg ? false :
+        /[\r\n]/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
+      if ((hasOneArg && firstArg.node.virtual) || firstArgIsOnNextLine) {
         this.insert(this.fn.outerEnd, '(');
       } else {
-        this.overwrite(this.fn.outerEnd, this.args[0].outerStart, '(');
+        this.overwrite(this.fn.outerEnd, firstArg.outerStart, '(');
       }
     }
     this.args.forEach((arg, i, args) => {
