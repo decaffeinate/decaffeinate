@@ -53,6 +53,19 @@ describe('conditionals', () => {
     `);
   });
 
+  it('causes the condition not to add parentheses even if it normally would', () => {
+    check(`
+      a = b
+      if a?
+        c
+    `, `
+      let a = b;
+      if (a != null) {
+        c;
+      }
+    `);
+  });
+
   it('correctly inserts parentheses when an `unless` condition requires them when it was surrounded by parentheses', () => {
     check(`
       unless (a == b)

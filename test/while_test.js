@@ -214,4 +214,17 @@ describe('while', () => {
       }
     `);
   });
+
+  it('causes the condition not to add parentheses even if it normally would', () => {
+    check(`
+      a = b
+      while a?
+        c
+    `, `
+      let a = b;
+      while (a != null) {
+        c;
+      }
+    `);
+  });
 });

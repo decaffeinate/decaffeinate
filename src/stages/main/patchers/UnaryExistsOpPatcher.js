@@ -33,15 +33,15 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    *
    *   'set? ' + (a != null);
    */
-  patchAsExpression() {
-    let needsParens = !this.isSurroundedByParentheses();
-    if (needsParens) {
+  patchAsExpression({ needsParens=true }={}) {
+    let addParens = needsParens && !this.isSurroundedByParentheses();
+    if (addParens) {
       // `a?` → `(a?`
       //         ^
       this.insert(this.contentStart, '(');
     }
     this.patchAsStatement();
-    if (needsParens) {
+    if (addParens) {
       // `(a?` → `(a?)`
       //             ^
       this.insert(this.contentEnd, ')');

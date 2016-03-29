@@ -139,7 +139,7 @@ export default class ConditionalPatcher extends NodePatcher {
     if (this.node.isUnless) {
       this.condition.negate();
     }
-    this.condition.patch();
+    this.condition.patch({ needsParens: false });
     if (!conditionHasParentheses) {
       // `if (a` → `if (a)`
       //                  ^

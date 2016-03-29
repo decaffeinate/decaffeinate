@@ -89,7 +89,7 @@ describe('unary operators', () => {
       unless a.b?
         b
     `, `
-      if ((a.b == null)) {
+      if (a.b == null) {
         b;
       }
     `);

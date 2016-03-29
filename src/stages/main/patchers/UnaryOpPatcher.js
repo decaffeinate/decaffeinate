@@ -16,11 +16,11 @@ export default class UnaryOpPatcher extends NodePatcher {
   /**
    * OP EXPRESSION
    */
-  patchAsExpression() {
-    this.expression.patch({ needsParens: true });
+  patchAsExpression({ needsParens=true }={}) {
+    this.expression.patch({ needsParens });
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
+  patchAsStatement(options={}) {
+    this.patchAsExpression(options);
   }
 }
