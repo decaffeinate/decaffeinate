@@ -54,7 +54,8 @@ export default class Scope {
    * @param {string|Array<string>=} name
    * @returns {string}
    */
-  claimFreeBinding(node, name='ref') {
+  claimFreeBinding(node, name=null) {
+    if (!name) { name = 'ref'; }
     let names = Array.isArray(name) ? name : [name];
     let binding = find(names, name => !this.getBinding(name));
 

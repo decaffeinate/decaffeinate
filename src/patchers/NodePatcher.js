@@ -786,7 +786,7 @@ export default class NodePatcher {
   /**
    * Claim a binding that is unique in the current scope.
    */
-  claimFreeBinding(ref: string|Array<string>='ref'): string {
+  claimFreeBinding(ref: ?string|Array<string>=null): string {
     return this.node.scope.claimFreeBinding(this.node, ref);
   }
 
