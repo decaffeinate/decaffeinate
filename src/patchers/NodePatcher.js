@@ -36,6 +36,7 @@ export default class NodePatcher {
     this.editor = editor;
 
     this.setupLocationInformation();
+    this.withPrettyErrors(() => this.setupLocationInformation());
   }
 
   /**
@@ -174,7 +175,7 @@ export default class NodePatcher {
    * to other patcher methods which can be overridden individually.
    */
   patch(options={}) {
-    try {
+    this.withPrettyErrors(() => {
       if (this.forcedToPatchAsExpression()) {
         this.patchAsForcedExpression(options);
       } else if (this.willPatchAsExpression()) {
@@ -182,6 +183,15 @@ export default class NodePatcher {
       } else {
         this.patchAsStatement(options);
       }
+    });
+  }
+
+  /**
+   * Catch errors and throw them again annotated with the current node.
+   */
+  withPrettyErrors(body: () => void) {
+    try {
+      body();
     } catch (err) {
       if (!PatcherError.isA(err)) {
         throw this.error(
