@@ -1,3 +1,4 @@
+import BoundFunctionPatcher from './BoundFunctionPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
@@ -9,7 +10,7 @@ import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 export default class ObjectBodyMemberPatcher extends NodePatcher {
   key: NodePatcher;
   expression: NodePatcher;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, key: NodePatcher, expression: NodePatcher) {
     super(node, context, editor);
     this.key = key;
@@ -49,9 +50,11 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
       //                                     ^
       this.insert(this.key.outerEnd, ']');
     }
-    // `{ ['hi there']: ->` → `{ ['hi there']->`
-    //                ^^
-    this.remove(this.key.outerEnd, this.expression.outerStart);
+    if (!this.isBoundMethod()) {
+      // `{ ['hi there']: ->` → `{ ['hi there']->`
+      //                ^^
+      this.remove(this.key.outerEnd, this.expression.outerStart);
+    }
     this.patchExpression();
   }
 
@@ -80,5 +83,12 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
    */
   isMethod(): boolean {
     return this.expression instanceof FunctionPatcher;
+  }
+
+  /**
+   * @protected
+   */
+  isBoundMethod(): boolean {
+    return this.expression instanceof BoundFunctionPatcher;
   }
 }
