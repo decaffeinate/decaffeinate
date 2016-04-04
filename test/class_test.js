@@ -11,11 +11,11 @@ describe('classes', () => {
 
   it('converts anonymous classes with bodies', () => {
     check(`
-      A = class
+      Animal = class
         a: ->
           1
     `, `
-      let A = class {
+      let Animal = class {
         a() {
           return 1;
         }

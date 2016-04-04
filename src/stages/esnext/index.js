@@ -20,7 +20,7 @@ export default class EsnextStage {
             // … without any sort of destructuring …
             node.declarations[0].id.type !== 'Identifier' ||
             // … starting with a capital letter.
-            !/^[$_]?[A-Z]/.test(node.declarations[0].id.name)
+            !/^[$_]?[A-Z]+$/.test(node.declarations[0].id.name)
           );
         }
       }
