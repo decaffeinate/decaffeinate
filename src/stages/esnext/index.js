@@ -11,7 +11,18 @@ export default class EsnextStage {
     let { code, map } = convert(content, {
       parse,
       'declarations.block-scope': {
-        disableConst: true
+        disableConst(node: Object): boolean {
+          return (
+            // Only use `const` for top-level variables…
+            node.parentNode.type !== 'Program' ||
+            // … as the only variable in its declaration …
+            node.declarations.length !== 1 ||
+            // … without any sort of destructuring …
+            node.declarations[0].id.type !== 'Identifier' ||
+            // … starting with a capital letter.
+            !/^[$_]?[A-Z]+$/.test(node.declarations[0].id.name)
+          );
+        }
       }
     });
     map.file = `${basename(filename, '.js')}-${this.name}.js`;
