@@ -18,4 +18,11 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
     }
     return this.sourceTokenAtIndex(operatorIndex);
   }
+
+  /**
+   * If `LHS` needs parens then `LHS += RHS` needs parens.
+   */
+  statementNeedsParens(): boolean {
+    return this.assignee.statementShouldAddParens();
+  }
 }

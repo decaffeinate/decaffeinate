@@ -19,10 +19,6 @@ export default class EqualityPatcher extends BinaryOpPatcher {
     this.right.patch();
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   getCompareOperator(): string {
     switch (this.node.type) {
       case 'EQOp':

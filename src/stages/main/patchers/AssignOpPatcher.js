@@ -1,5 +1,4 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
 
 export default class AssignOpPatcher extends NodePatcher {
@@ -22,17 +21,10 @@ export default class AssignOpPatcher extends NodePatcher {
     this.expression.patch();
   }
 
-  patchAsStatement() {
-    let needsParens = (
-      this.assignee instanceof ObjectInitialiserPatcher &&
-      !this.isSurroundedByParentheses()
-    );
-    if (needsParens) {
-      this.insert(this.outerStart, '(');
-    }
-    this.patchAsExpression();
-    if (needsParens) {
-      this.insert(this.outerEnd, ')');
-    }
+  /**
+   * The assignment needs parentheses when the LHS needs parens.
+   */
+  statementNeedsParens(): boolean {
+    return this.assignee.statementShouldAddParens();
   }
 }

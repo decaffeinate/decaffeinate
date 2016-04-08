@@ -24,8 +24,4 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
       }
     });
   }
-
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
 }

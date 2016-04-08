@@ -15,6 +15,10 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     this.members = members;
   }
 
+  initialize() {
+    this.members.forEach(member => member.setRequiresExpression());
+  }
+
   /**
    * Objects as expressions are very similar to their CoffeeScript equivalents.
    */
@@ -141,5 +145,12 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     let tokens = this.context.sourceTokens;
     let indexOfFirstToken = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
     return tokens.tokenAtIndex(indexOfFirstToken).type !== LBRACE;
+  }
+
+  /**
+   * Starting a statement with an object always requires parens.
+   */
+  statementNeedsParens(): boolean {
+    return true;
   }
 }

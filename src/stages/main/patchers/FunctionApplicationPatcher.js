@@ -42,11 +42,14 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   isImplicitCall() {
     return !this.fn.hasSourceTokenAfter(CALL_START);
+  }
+
+  /**
+   * Probably can't happen, but just for completeness.
+   */
+  statementNeedsParens(): boolean {
+    return this.fn.statementShouldAddParens();
   }
 }

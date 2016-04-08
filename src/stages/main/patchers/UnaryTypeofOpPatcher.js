@@ -10,4 +10,11 @@ export default class UnaryTypeofOpPatcher extends UnaryOpPatcher {
   isRepeatable(): boolean {
     return this.expression.isRepeatable();
   }
+
+  /**
+   * This always starts with `typeof` and doesn't need parens.
+   */
+  statementNeedsParens(): boolean {
+    return false;
+  }
 }

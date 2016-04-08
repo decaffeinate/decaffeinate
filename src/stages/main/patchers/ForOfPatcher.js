@@ -1,5 +1,4 @@
 import ForPatcher from './ForPatcher.js';
-import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
 
 export default class ForOfPatcher extends ForPatcher {
   patchAsStatement() {
@@ -30,7 +29,7 @@ export default class ForOfPatcher extends ForPatcher {
 
       let valueAssignmentStatement = `${valAssigneeString} = ${targetAgain}[${keyBinding}]`;
 
-      if (valAssignee instanceof ObjectInitialiserPatcher) {
+      if (valAssignee.statementNeedsParens()) {
         valueAssignmentStatement = `(${valueAssignmentStatement})`;
       }
 

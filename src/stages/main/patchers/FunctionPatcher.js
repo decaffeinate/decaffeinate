@@ -121,4 +121,11 @@ export default class FunctionPatcher extends NodePatcher {
   implicitReturnsDisabled(): boolean {
     return this._implicitReturnsDisabled;
   }
+
+  /**
+   * Functions in CoffeeScript are always anonymous and therefore need parens.
+   */
+  statementNeedsParens(): boolean {
+    return true;
+  }
 }

@@ -216,8 +216,15 @@ export default class NodePatcher {
   /**
    * Override this to patch the node as a statement.
    */
-  patchAsStatement() {
-    throw this.error(`'patchAsStatement' must be overridden in subclasses`);
+  patchAsStatement(options={}) {
+    let addParens = this.statementShouldAddParens();
+    if (addParens) {
+      this.insert(this.outerStart, '(');
+    }
+    this.patchAsExpression(options);
+    if (addParens) {
+      this.insert(this.outerEnd, ')');
+    }
   }
 
   /**
@@ -498,6 +505,26 @@ export default class NodePatcher {
    */
   statementNeedsSemicolon(): boolean {
     return true;
+  }
+
+  /**
+   * Determines whether, when appearing as a statement, this patcher's node
+   * needs to be surrounded by parentheses.
+   * 
+   * Subclasses should override this and, typically, delegate to their leftmost
+   * child patcher. Subclasses may return `false` when they will insert text at
+   * the start of the node.
+   */
+  statementNeedsParens(): boolean {
+    return false;
+  }
+
+  /**
+   * Determines whether this patcher's node should add parentheses when used in
+   * a statement context.
+   */
+  statementShouldAddParens(): boolean {
+    return this.statementNeedsParens() && !this.isSurroundedByParentheses();
   }
 
   /**

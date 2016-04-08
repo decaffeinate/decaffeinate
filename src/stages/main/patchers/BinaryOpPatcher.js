@@ -25,10 +25,6 @@ export default class BinaryOpPatcher extends NodePatcher {
     this.right.patch({ needsParens: true });
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   getOperatorToken(): SourceToken {
     let operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.left,
@@ -43,5 +39,12 @@ export default class BinaryOpPatcher extends NodePatcher {
 
   operatorTokenPredicate(): (token: SourceToken) => boolean {
     return (token: SourceToken) => token.type === OPERATOR;
+  }
+
+  /**
+   * IF `LEFT` needs parens then `LEFT + RIGHT` needs parens.
+   */
+  statementNeedsParens(): boolean {
+    return this.left.statementShouldAddParens();
   }
 }

@@ -34,10 +34,6 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
     });
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   /**
    * @private
    */
@@ -58,5 +54,12 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
       comparison.negate();
       comparison = comparison.left;
     }
+  }
+
+  /**
+   * Forward the request to the underlying comparison operator.
+   */
+  statementNeedsParens(): boolean {
+    return this.expression.statementNeedsParens();
   }
 }

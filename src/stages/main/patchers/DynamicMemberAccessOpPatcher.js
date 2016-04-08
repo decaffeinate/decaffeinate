@@ -16,10 +16,6 @@ export default class DynamicMemberAccessOpPatcher extends NodePatcher {
     this.indexingExpr.patch();
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   /**
    * CoffeeScript considers dynamic member access repeatable if both parts
    * are themselves repeatable. So, for example, `a[0]` is repeatable because
@@ -40,5 +36,12 @@ export default class DynamicMemberAccessOpPatcher extends NodePatcher {
     let expression = this.expression.makeRepeatable(true, 'base');
     let indexingExpr = this.indexingExpr.makeRepeatable(false, 'name');
     return `${expression}[${indexingExpr}]`;
+  }
+
+  /**
+   * If `BASE` needs parens, then `BASE[INDEX]` needs parens.
+   */
+  statementNeedsParens(): boolean {
+    return this.expression.statementShouldAddParens();
   }
 }

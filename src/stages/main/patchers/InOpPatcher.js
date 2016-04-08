@@ -66,4 +66,11 @@ export default class InOpPatcher extends BinaryOpPatcher {
       this.insert(this.right.outerEnd, ')');
     }
   }
+
+  /**
+   * We always prefix with `__in__` so no parens needed.
+   */
+  statementNeedsParens(): boolean {
+    return false;
+  }
 }

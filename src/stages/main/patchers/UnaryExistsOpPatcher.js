@@ -52,13 +52,8 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    * EXPRESSION '?'
    */
   patchAsStatement() {
-    let { node, negated } = this;
-    let nodeExpression = node.expression;
-    let needsTypeofCheck = (
-      nodeExpression &&
-      nodeExpression.type === 'Identifier' &&
-      !node.scope.hasBinding(nodeExpression.data)
-    );
+    let { node: { expression }, negated } = this;
+    let needsTypeofCheck = this.needsTypeofCheck();
 
     this.expression.patch();
     if (needsTypeofCheck) {
@@ -68,7 +63,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
         this.overwrite(
           this.contentStart,
           this.contentEnd,
-          `typeof ${nodeExpression.raw} === 'undefined' || ${nodeExpression.raw} === null`
+          `typeof ${expression.raw} === 'undefined' || ${expression.raw} === null`
         );
       } else {
         // `a?` → `typeof a !== 'undefined' && a !== null`
@@ -76,7 +71,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
         this.overwrite(
           this.contentStart,
           this.contentEnd,
-          `typeof ${nodeExpression.raw} !== 'undefined' && ${nodeExpression.raw} !== null`
+          `typeof ${expression.raw} !== 'undefined' && ${expression.raw} !== null`
         );
       }
 
@@ -99,5 +94,30 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    */
   negate() {
     this.negated = !this.negated;
+  }
+
+  /**
+   * @private
+   */
+  needsTypeofCheck(): boolean {
+    let { node } = this;
+    let { expression } = node;
+    return (
+      expression &&
+      expression.type === 'Identifier' &&
+      !node.scope.hasBinding(expression.data)
+    );
+  }
+
+  /**
+   * When we prefix with a `typeof` check we don't need parens, otherwise
+   * delegate.
+   */
+  statementNeedsParens(): boolean {
+    if (this.needsTypeofCheck()) {
+      return false;
+    } else {
+      return this.expression.statementShouldAddParens();
+    }
   }
 }

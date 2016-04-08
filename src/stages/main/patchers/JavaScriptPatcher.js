@@ -15,8 +15,4 @@ export default class JavaScriptPatcher extends NodePatcher {
     //        ^
     this.remove(this.contentEnd - '`'.length, this.contentEnd);
   }
-
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
 }

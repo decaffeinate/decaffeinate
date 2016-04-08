@@ -29,10 +29,6 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   hasImplicitOperator(): boolean {
     return !this.getMemberOperatorSourceToken();
   }
@@ -99,5 +95,12 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   makeRepeatable(parens: boolean, ref: ?string=null) { // eslint-disable-line no-unused-vars
     let expression = this.expression.makeRepeatable(true, 'base');
     return `${expression}.${this.getFullMemberName()}`;
+  }
+
+  /**
+   * If `BASE` needs parens, then `BASE.MEMBER` needs parens.
+   */
+  statementNeedsParens(): boolean {
+    return this.expression.statementShouldAddParens();
   }
 }

@@ -89,4 +89,12 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
   hasInlineBody(): boolean {
     return this.body ? this.body.inline() : false;
   }
+
+  /**
+   * Bound functions already start with a paren or a param identifier, and so
+   * are safe to start a statement.
+   */
+  statementNeedsParens(): boolean {
+    return false;
+  }
 }

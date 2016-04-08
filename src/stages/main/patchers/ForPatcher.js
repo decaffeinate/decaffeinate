@@ -1,6 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
-import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
 import { RELATION, THEN } from 'coffee-lex';
@@ -68,7 +67,7 @@ export default class ForPatcher extends NodePatcher {
 
       let valueAssignmentStatement = `${valAssigneeString} = ${targetAgain}[${keyBinding}]`;
 
-      if (valAssignee instanceof ObjectInitialiserPatcher) {
+      if (valAssignee.statementNeedsParens()) {
         valueAssignmentStatement = `(${valueAssignmentStatement})`;
       }
 

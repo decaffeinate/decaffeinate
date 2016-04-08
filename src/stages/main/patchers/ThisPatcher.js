@@ -7,10 +7,6 @@ export default class ThisPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   isShorthandThis() {
     return this.getOriginalSource() === '@';
   }

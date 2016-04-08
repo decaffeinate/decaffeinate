@@ -61,9 +61,11 @@ export default class ForInPatcher extends ForPatcher {
     let intro = [];
     let outro = [];
 
-    intro.push(
-      `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`
-    );
+    let valueAssignment = `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`;
+    if (this.valAssignee.statementNeedsParens()) {
+      valueAssignment = `(${valueAssignment})`;
+    }
+    intro.push(valueAssignment);
 
     let filter = this.filter;
     let body = this.body;

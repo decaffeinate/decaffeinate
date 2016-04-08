@@ -20,8 +20,4 @@ export default class DefaultParamPatcher extends NodePatcher {
     this.param.patch();
     this.value.patch();
   }
-  
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
 }

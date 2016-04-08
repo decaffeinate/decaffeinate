@@ -25,7 +25,10 @@ export default class ExpOpPatcher extends BinaryOpPatcher {
     this.insert(this.contentEnd, `)`);
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
+  /**
+   * We'll always start with `Math.pow` so we don't need parens.
+   */
+  statementNeedsParens(): boolean {
+    return false;
   }
 }

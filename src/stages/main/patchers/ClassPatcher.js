@@ -91,6 +91,13 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   /**
+   * Classes, like functions, only need parens as statements when anonymous.
+   */
+  statementNeedsParens(): boolean {
+    return this.isAnonymous();
+  }
+
+  /**
    * @private
    */
   getClassToken(): SourceToken {

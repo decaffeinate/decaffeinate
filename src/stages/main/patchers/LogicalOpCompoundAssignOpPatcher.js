@@ -59,4 +59,11 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
     let op = this.sourceOfToken(operator);
     return op === '||=' || op === 'or=';
   }
+
+  /**
+   * We always start with an `if` statement, so no parens.
+   */
+  statementNeedsParens(): boolean {
+    return false;
+  }
 }

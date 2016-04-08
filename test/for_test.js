@@ -86,6 +86,18 @@ describe('for loops', () => {
     `);
   });
 
+  it('transforms for-in loops with destructured value', () => {
+    check(`
+      for { a, b } in c
+        a + b
+    `, `
+      for (let i = 0; i < c.length; i++) {
+        let { a, b } = c[i];
+        a + b;
+      }
+    `);
+  });
+
   it.skip('transforms `for` loops without an index', () => {
     check(`
       for [0..1]

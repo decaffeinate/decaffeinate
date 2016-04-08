@@ -27,7 +27,10 @@ export default class ExtendsOpPatcher extends BinaryOpPatcher {
     this.insert(this.right.outerEnd, ')');
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
+  /**
+   * We always prefix with `__extends__`, so no need for parens.
+   */
+  statementNeedsParens(): boolean {
+    return false;
   }
 }

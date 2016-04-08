@@ -244,4 +244,12 @@ describe('objects', () => {
       });
     `);
   });
+
+  it('adds parentheses around an assignment whose LHS starts with an object', () => {
+    check(`
+      {a}.b = c
+    `, `
+      ({a}.b = c);
+    `);
+  });
 });

@@ -54,10 +54,6 @@ export default class ConditionalPatcher extends NodePatcher {
     );
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   isPostIf(): boolean {
     return this.condition.contentStart > this.consequent.contentStart;
   }

@@ -53,10 +53,6 @@ export default class DoOpPatcher extends NodePatcher {
     this.insert(this.innerEnd, `(${args.join(', ')})`);
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   /**
    * @private
    */

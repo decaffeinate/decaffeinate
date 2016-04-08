@@ -33,10 +33,6 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement(options={}) {
-    this.patchAsExpression(options);
-  }
-
   patchAsMethod() {
     let computedKey = this.isComputed();
     if (computedKey) {

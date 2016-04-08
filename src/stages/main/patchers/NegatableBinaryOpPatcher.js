@@ -61,4 +61,15 @@ export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
   allowPatchingOuterBounds(): boolean {
     return true;
   }
+
+  /**
+   * It may be wrapped due to negation, so don't double-wrap.
+   */
+  statementNeedsParens(): boolean {
+    if (this.negated) {
+      return false;
+    } else {
+      return super.statementNeedsParens();
+    }
+  }
 }

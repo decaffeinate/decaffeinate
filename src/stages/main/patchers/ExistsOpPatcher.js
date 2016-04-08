@@ -73,4 +73,11 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
     //                                                   ^^
     this.insert(this.innerEnd, ` }`);
   }
+
+  /**
+   * We'll always start with an `if` so we don't need parens.
+   */
+  statementNeedsParens(): boolean {
+    return false;
+  }
 }

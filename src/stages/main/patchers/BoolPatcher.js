@@ -14,8 +14,4 @@ export default class BoolPatcher extends NodePatcher {
         break;
     }
   }
-
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
 }

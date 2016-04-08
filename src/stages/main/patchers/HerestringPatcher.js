@@ -27,8 +27,4 @@ export default class HerestringPatcher extends NodePatcher {
       escape(this.editor, [source[this.contentStart]], contentStart, contentEnd);
     }
   }
-
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
 }

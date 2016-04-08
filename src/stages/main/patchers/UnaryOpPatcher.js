@@ -20,7 +20,10 @@ export default class UnaryOpPatcher extends NodePatcher {
     this.expression.patch({ needsParens });
   }
 
-  patchAsStatement(options={}) {
-    this.patchAsExpression(options);
+  /**
+   * If `EXPRESSION` needs parens then `EXPRESSION OP` needs parens.
+   */
+  statementNeedsParens(): boolean {
+    return this.expression.statementShouldAddParens();
   }
 }

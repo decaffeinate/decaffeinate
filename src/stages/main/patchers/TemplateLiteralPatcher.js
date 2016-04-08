@@ -31,8 +31,4 @@ export default class TemplateLiteralPatcher extends NodePatcher {
     escapeTemplateStringContents(this.editor, contentStart, contentEnd);
     expressions.forEach(expression => expression.patch());
   }
-
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
 }

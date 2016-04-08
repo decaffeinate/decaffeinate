@@ -67,10 +67,6 @@ export default class SlicePatcher extends NodePatcher {
     this.overwrite(indexEnd.start, indexEnd.end, ')');
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   /**
    * @private
    */
@@ -118,5 +114,12 @@ export default class SlicePatcher extends NodePatcher {
       throw this.error(`could not find ']' ending slice`);
     }
     return tokens.tokenAtIndex(index);
+  }
+
+  /**
+   * If `BASE` needs parens then `BASE[0..1]` needs parens.
+   */
+  statementNeedsParens(): boolean {
+    return this.expression.statementShouldAddParens();
   }
 }

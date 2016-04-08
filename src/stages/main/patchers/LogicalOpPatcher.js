@@ -39,10 +39,6 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
     this.right.patch();
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   /**
    * Apply De Morgan's law.
    *

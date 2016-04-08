@@ -42,10 +42,6 @@ export default class NewOpPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement() {
-    this.patchAsExpression();
-  }
-
   /**
    * @private
    */

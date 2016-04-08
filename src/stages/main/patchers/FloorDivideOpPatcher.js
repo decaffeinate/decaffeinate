@@ -23,4 +23,11 @@ export default class FloorDivideOpPatcher extends BinaryOpPatcher {
     //                                         ^
     this.insert(this.contentEnd, ')');
   }
+
+  /**
+   * We always prefix with `Math.floor`, so no need for parens.
+   */
+  statementNeedsParens(): boolean {
+    return false;
+  }
 }

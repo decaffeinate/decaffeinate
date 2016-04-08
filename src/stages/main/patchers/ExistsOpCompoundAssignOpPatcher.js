@@ -72,4 +72,11 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     //                                                           ^^^
     this.insert(this.expression.outerEnd, `; }`);
   }
+
+  /**
+   * We'll always start with an `if` so we don't need parens.
+   */
+  statementNeedsParens(): boolean {
+    return false;
+  }
 }
