@@ -238,6 +238,14 @@ describe('compound assignment', () => {
         [(base = a())[name = b()] != null ? base[name] : (base[name] = 1)];
       `);
     });
+
+    it('handles `this` as a safe-to-repeat base', () => {
+      check(`
+        [@a or= 0]
+      `, `
+        [this.a || (this.a = 0)];
+      `);
+    });
   });
 
   describe('patching as statements', () => {
@@ -448,6 +456,14 @@ describe('compound assignment', () => {
       `, `
         let base;
         if (!((base = a || b)).c) { base.c = d || e; }
+      `);
+    });
+
+    it('handles `this` as a safe-to-repeat base', () => {
+      check(`
+        @a or= 0
+      `, `
+        if (!this.a) { this.a = 0; }
       `);
     });
   });
