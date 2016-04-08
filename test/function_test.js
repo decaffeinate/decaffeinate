@@ -55,6 +55,31 @@ describe('functions', () => {
     `);
   });
 
+  it.skip('puts the closing punctuation after trailing comments for multi-line bodies', () => {
+    check(`
+      validExpirationDate = (month, year) ->
+        today = new Date()
+        fullYear = 2000 + parseInt(year)
+        (/^\\d{1,2}$/.test month) and (/^\\d{1,2}$/.test year) and
+          (month >= 1 and month <= 12) and
+          fullYear >= today.getFullYear() and
+          (fullYear isnt today.getFullYear() or month > today.getMonth()) # Date.month is 0 indexed
+
+      module.exports = { validExpirationDate }
+    `, `
+      let validExpirationDate = function(month, year) {
+        let today = new Date();
+        let fullYear = 2000 + parseInt(year);
+        return (/^\\d{1,2}$/.test(month)) && (/^\\d{1,2}$/.test(year)) &&
+          (month >= 1 && month <= 12) &&
+          fullYear >= today.getFullYear() &&
+          (fullYear !== today.getFullYear() || month > today.getMonth()); // Date.month is 0 indexed
+      };
+
+      export { validExpirationDate };
+    `);
+  });
+
   it('puts closing curly brace just inside loosely-wrapped function parens', () => {
     check(`
       (->
