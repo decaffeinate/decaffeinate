@@ -35,7 +35,6 @@ export default class NodePatcher {
     this.context = context;
     this.editor = editor;
 
-    this.setupLocationInformation();
     this.withPrettyErrors(() => this.setupLocationInformation());
   }
 
