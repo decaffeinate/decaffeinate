@@ -441,5 +441,14 @@ describe('compound assignment', () => {
         if ((base = a())[name = b()] == null) { base[name] = 1; }
       `);
     });
+
+    it('patches children', () => {
+      check(`
+        (a or b).c or= d or e
+      `, `
+        let base;
+        if (!((base = a || b)).c) { base.c = d || e; }
+      `);
+    });
   });
 });
