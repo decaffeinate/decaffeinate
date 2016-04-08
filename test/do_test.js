@@ -1,8 +1,12 @@
 import check from './support/check.js';
 
-describe.skip('do', () => {
+describe('`do`', () => {
+  it('becomes a normal call expression when not given a function expression', () => {
+    check(`do foo`, `foo();`);
+  });
+  
   it('creates an IIFE returning the last value', () => {
-    check(`do -> 1`, `(function() { return 1; })();`);
+    check(`one = do -> 1`, `let one = (() => 1)();`);
   });
 
   it('creates an IIFE with bound functions', () => {
@@ -10,19 +14,19 @@ describe.skip('do', () => {
   });
 
   it('creates an IIFE with shadowed arguments', () => {
-    check(`do (i) -> i`, `(function(i) { return i; })(i);`);
+    check(`do (i) -> i`, `(i => i)(i);`);
   });
 
   it('creates an IIFE with explicit bindings', () => {
-    check(`do (i=1) -> i`, `(function(i) { return i; })(1);`);
+    check(`do (i=1) -> i`, `(i => i)(1);`);
   });
 
   it('creates an IIFE with object destructuring', () => {
-    check(`do ({i}) -> i`, `(function({i}) { return i; })({i});`);
+    check(`do ({i}) -> i`, `(({i}) => i)({i});`);
   });
 
   it('creates an IIFE with array destructuring', () => {
-    check(`do ([a]) -> a`, `(function([a]) { return a; })([a]);`);
+    check(`do ([a]) -> a`, `(([a]) => a)([a]);`);
   });
 
   it('create a multi-line IIFE', () => {
@@ -32,14 +36,10 @@ describe.skip('do', () => {
         result
     `, `
       (function(i, n) {
-        var result = i + n;
+        let result = i + n;
         return result;
       })(i, 0);
     `);
-  });
-
-  it('creates an IIFE for `do` used in an expression context', () => {
-    check(`a(do -> 1)`, `a((function() { return 1; })());`);
   });
 
   it('creates a multi-line IIFE surrounded by parentheses', () => {
@@ -48,26 +48,11 @@ describe.skip('do', () => {
         a = 1
         b = a) + 1
     `, `
-      ((function() {
-        var b;
-        var a = 1;
-        return b = a;
-      })()) + 1;
-    `);
-  });
-
-  it('puts the close of the IIFE as close to the block body as possible', () => {
-    check(`
-      do ->
-        a
-
-      b
-    `, `
       (function() {
-        return a;
-      })();
-
-      b;
+        let b;
+        let a = 1;
+        return b = a;
+      }()) + 1;
     `);
   });
 });

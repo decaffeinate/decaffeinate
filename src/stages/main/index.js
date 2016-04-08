@@ -11,6 +11,7 @@ import CompoundAssignOpPatcher from './patchers/CompoundAssignOpPatcher.js';
 import ConditionalPatcher from './patchers/ConditionalPatcher.js';
 import ConstructorPatcher from './patchers/ConstructorPatcher.js';
 import DefaultParamPatcher from './patchers/DefaultParamPatcher.js';
+import DoOpPatcher from './patchers/DoOpPatcher.js';
 import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher.js';
 import EqualityPatcher from './patchers/EqualityPatcher.js';
 import ExpOpPatcher from './patchers/ExpOpPatcher.js';
@@ -241,6 +242,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'SwitchCase':
         return SwitchCasePatcher;
+
+      case 'DoOp':
+        return DoOpPatcher;
 
       case 'ProtoMemberAccessOp':
         return ProtoMemberAccessOpPatcher;
