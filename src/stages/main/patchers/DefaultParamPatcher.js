@@ -10,6 +10,11 @@ export default class DefaultParamPatcher extends NodePatcher {
     this.param = param;
     this.value = value;
   }
+
+  initialize() {
+    this.param.setRequiresExpression();
+    this.value.setRequiresExpression();
+  }
   
   patchAsExpression() {
     this.param.patch();

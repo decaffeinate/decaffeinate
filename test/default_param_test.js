@@ -12,4 +12,8 @@ describe('default params', () => {
   it('ensures @foo is transformed correctly', () => {
     check(`(a=@b) ->`, `(function(a=this.b) {});`);
   });
+
+  it('patches value as an expression', () => {
+    check(`(a=b: c) ->`, `(function(a={b: c}) {});`);
+  });
 });
