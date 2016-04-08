@@ -99,6 +99,20 @@ describe('objects', () => {
     `);
   });
 
+  it('converts methods for fat arrow functions in objects properly', () => {
+    check(`
+      ({
+        a: => @true
+        b  :  => @false
+      });
+    `, `
+      ({
+        a: () => this.true,
+        b  :  () => this.false
+      });
+    `);
+  });
+
   it('uses computed methods for string keys', () => {
     check(`
       ({
