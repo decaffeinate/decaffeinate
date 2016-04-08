@@ -96,12 +96,8 @@ export default class MemberAccessOpPatcher extends NodePatcher {
    * We can make member accesses repeatable by making the base expression
    * repeatable if it isn't already.
    */
-  makeRepeatable(parens: boolean, ref: ?string=null) {
-    if (this.isRepeatable()) {
-      return super.makeRepeatable(parens, ref);
-    } else {
-      let expression = this.expression.makeRepeatable(true, 'base');
-      return `${expression}.${this.getFullMemberName()}`;
-    }
+  makeRepeatable(parens: boolean, ref: ?string=null) { // eslint-disable-line no-unused-vars
+    let expression = this.expression.makeRepeatable(true, 'base');
+    return `${expression}.${this.getFullMemberName()}`;
   }
 }

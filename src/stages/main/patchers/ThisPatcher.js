@@ -14,4 +14,12 @@ export default class ThisPatcher extends NodePatcher {
   isShorthandThis() {
     return this.getOriginalSource() === '@';
   }
+
+  isRepeatable(): boolean {
+    return true;
+  }
+
+  makeRepeatable(parens: boolean, ref: ?string=null): string { // eslint-disable-line no-unused-vars
+    return 'this';
+  }
 }
