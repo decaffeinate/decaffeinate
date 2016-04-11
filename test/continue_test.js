@@ -1,13 +1,13 @@
 import check from './support/check.js';
 
-describe.skip('continue', () => {
+describe('continue', () => {
   it('is passed through as-is', () => {
     check(`
       for a in b
         continue
     `, `
-      for (var i = 0, a; i < b.length; i++) {
-        a = b[i];
+      for (let i = 0; i < b.length; i++) {
+        let a = b[i];
         continue;
       }
     `);
