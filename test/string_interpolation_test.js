@@ -73,4 +73,12 @@ describe('string interpolation', () => {
       \\\${b}\`;
     `);
   });
+
+  it('is allowed inside an object with explicit curly braces', () => {
+    check(`
+      { a: "#{b}" }
+    `, `
+      ({ a: \`\${b}\` });
+    `);
+  });
 });
