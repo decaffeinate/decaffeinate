@@ -13,15 +13,15 @@ describe('regular expressions', () => {
     check(`a.a(/#/)`, `a.a(/#/);`);
   });
 
-  it.skip('rewrites block regular expressions as normal regular expressions', () => {
+  it('rewrites block regular expressions as normal regular expressions', () => {
     check(`
-        a = ///
-          foo .*
-          bar
-        ///
-      `, `
-        let a = /foo.*bar/;
-      `);
+      a = ///
+        foo .*
+        bar
+      ///
+    `, `
+      let a = /foo.*bar/;
+    `);
   });
 
   it('preserves slash escapes in regular expressions', () => {
@@ -36,7 +36,7 @@ describe('regular expressions', () => {
     check(`/\\/\\//`, `/\\/\\//;`);
   });
 
-  it.skip('escapes slashes in heregexes', () => {
+  it('escapes slashes in heregexes', () => {
     check(`///a/b///`, `/a\\/b/;`);
   });
 });

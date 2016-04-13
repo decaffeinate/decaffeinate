@@ -40,6 +40,7 @@ import PassthroughPatcher from './../../patchers/PassthroughPatcher.js';
 import ProgramPatcher from './patchers/ProgramPatcher.js';
 import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher.js';
 import RangePatcher from './patchers/RangePatcher.js';
+import RegExpPatcher from './patchers/RegExpPatcher.js';
 import RestPatcher from './patchers/RestPatcher.js';
 import ReturnPatcher from './patchers/ReturnPatcher.js';
 import SeqOpPatcher from './patchers/SeqOpPatcher.js';
@@ -158,6 +159,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'SignedRightShiftOp':
       case 'UnsignedRightShiftOp':
         return BinaryOpPatcher;
+
+      case 'RegExp':
+        return RegExpPatcher;
 
       case 'ExistsOp':
         return ExistsOpPatcher;
