@@ -567,6 +567,15 @@ var NodePatcher = function () {
       var firstSourceTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
       var lastSourceTokenIndex = tokens.indexOfTokenEndingAtSourceIndex(this.contentEnd);
 
+      if (!firstSourceTokenIndex || !lastSourceTokenIndex) {
+        if (node.type === 'Program') {
+          // Just an empty program.
+          return;
+        }
+
+        throw this.error('cannot find first or last token in node');
+      }
+
       this.contentStartTokenIndex = firstSourceTokenIndex;
       this.contentEndTokenIndex = lastSourceTokenIndex;
 
@@ -657,10 +666,8 @@ var NodePatcher = function () {
 
       for (;;) {
         var startChar = context.source[this.contentStart];
-        this.log('START CHAR', JSON.stringify(startChar));
 
         if (startChar === ' ' || startChar === '\t') {
-          this.log('MOVING START OF', this.node.type);
           this.contentStart++;
         } else {
           break;
@@ -669,10 +676,8 @@ var NodePatcher = function () {
 
       for (;;) {
         var lastChar = context.source[this.contentEnd - 1];
-        this.log('LAST CHAR', JSON.stringify(lastChar));
 
         if (lastChar === ' ' || lastChar === '\t') {
-          this.log('MOVING END OF', this.node.type, 'FROM', this.contentEnd);
           this.contentEnd--;
         } else {
           break;
@@ -5535,7 +5540,9 @@ var ProgramPatcher = function (_NodePatcher) {
   }, {
     key: 'patchAsStatement',
     value: function patchAsStatement() {
-      this.body.patch({ leftBrace: false, rightBrace: false });
+      if (this.body) {
+        this.body.patch({ leftBrace: false, rightBrace: false });
+      }
       this.patchComments();
 
       for (var helper in this.helpers) {
@@ -8561,7 +8568,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.7.2";
+var version = "2.7.3";
 
 /**
  * Run the script with the user-supplied arguments.
@@ -40856,21 +40863,28 @@ function coerce(val) {
   function parse(source) {
     var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
+    var CS = options.coffeeScript || CoffeeScript;
+
+    patchCoffeeScript(CS);
+
+    var context = ParseContext.fromSource(source, CS.tokens, lex__default, CS.nodes);
+
     if (source.length === 0) {
-      return (/** @type Program */{
-          type: 'Program',
-          line: 1,
-          column: 1,
-          raw: source,
-          range: [0, 0],
-          body: null
-        }
+      var program = {
+        type: 'Program',
+        line: 1,
+        column: 1,
+        raw: source,
+        range: [0, 0],
+        body: null
+      };
+
+      Object.defineProperty(program, 'context', { value: context });
+      return (/** @type Program */program
       );
     }
 
-    var CS = options.coffeeScript || CoffeeScript;
-    patchCoffeeScript(CS);
-    return (/** @type Program */convert(ParseContext.fromSource(source, CS.tokens, lex__default, CS.nodes))
+    return (/** @type Program */convert(context)
     );
   }
 
