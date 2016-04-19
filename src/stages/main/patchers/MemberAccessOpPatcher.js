@@ -4,7 +4,7 @@ import { AT, DOT, IDENTIFIER, PROTO } from 'coffee-lex';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
   expression: NodePatcher;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {
     super(node, context, editor);
     this.expression = expression;
@@ -39,22 +39,33 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   }
 
   getMemberOperatorSourceToken(): ?SourceToken {
-    let tokens = this.context.sourceTokens;
     let lastIndex = this.contentEndTokenIndex;
-    let lastToken = tokens.tokenAtIndex(lastIndex);
+    let lastToken = this.sourceTokenAtIndex(lastIndex);
+
     if (lastToken.type === PROTO) {
+      // e.g. `a::`
       return lastToken;
-    } else {
-      let penultimateIndex = lastIndex.previous();
-      let penultimateToken = tokens.tokenAtIndex(penultimateIndex);
-      if (penultimateToken.type === AT) {
+    }
+
+    let dotIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+      this.expression.outerEndTokenIndex,
+      DOT
+    );
+
+    if (!dotIndex) {
+      let firstIndex = this.contentStartTokenIndex;
+      let firstToken = this.sourceTokenAtIndex(firstIndex);
+
+      if (firstToken.type === AT) {
+        // e.g. `@a`, so it's okay that there's no dot
         return null;
       }
-      if (penultimateToken.type !== DOT) {
-        throw this.error(`cannot find '.' in member access`);
-      }
-      return penultimateToken;
+
+      throw this.error(`cannot find '.' in member access`);
     }
+
+    // e.g. `a.b`
+    return this.sourceTokenAtIndex(dotIndex);
   }
 
   getMemberName(): string {

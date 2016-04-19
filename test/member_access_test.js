@@ -11,6 +11,16 @@ describe('member access', () => {
     `);
   });
 
+  it('allows dot-on-this-line-member-on-next-line style member access', () => {
+    check(`
+      a. # hello!
+        b
+    `, `
+      a. // hello!
+        b;
+    `);
+  });
+
   it('allows dot-on-the-next-line style member access as a callee', () => {
     check(`
       a
