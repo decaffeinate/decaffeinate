@@ -2541,22 +2541,30 @@ var MemberAccessOpPatcher = function (_NodePatcher) {
   }, {
     key: 'getMemberOperatorSourceToken',
     value: function getMemberOperatorSourceToken() {
-      var tokens = this.context.sourceTokens;
       var lastIndex = this.contentEndTokenIndex;
-      var lastToken = tokens.tokenAtIndex(lastIndex);
+      var lastToken = this.sourceTokenAtIndex(lastIndex);
+
       if (lastToken.type === coffeeLex.PROTO) {
+        // e.g. `a::`
         return lastToken;
-      } else {
-        var penultimateIndex = lastIndex.previous();
-        var penultimateToken = tokens.tokenAtIndex(penultimateIndex);
-        if (penultimateToken.type === coffeeLex.AT) {
+      }
+
+      var dotIndex = this.indexOfSourceTokenAfterSourceTokenIndex(this.expression.outerEndTokenIndex, coffeeLex.DOT);
+
+      if (!dotIndex) {
+        var firstIndex = this.contentStartTokenIndex;
+        var firstToken = this.sourceTokenAtIndex(firstIndex);
+
+        if (firstToken.type === coffeeLex.AT) {
+          // e.g. `@a`, so it's okay that there's no dot
           return null;
         }
-        if (penultimateToken.type !== coffeeLex.DOT) {
-          throw this.error('cannot find \'.\' in member access');
-        }
-        return penultimateToken;
+
+        throw this.error('cannot find \'.\' in member access');
       }
+
+      // e.g. `a.b`
+      return this.sourceTokenAtIndex(dotIndex);
     }
   }, {
     key: 'getMemberName',
@@ -8553,7 +8561,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.7.1";
+var version = "2.7.2";
 
 /**
  * Run the script with the user-supplied arguments.
