@@ -174,10 +174,8 @@ export default class NodePatcher {
 
     for (;;) {
       let startChar = context.source[this.contentStart];
-      this.log('START CHAR', JSON.stringify(startChar));
 
       if (startChar === ' ' || startChar === '\t') {
-        this.log('MOVING START OF', this.node.type);
         this.contentStart++;
       } else {
         break;
@@ -186,10 +184,8 @@ export default class NodePatcher {
 
     for (;;) {
       let lastChar = context.source[this.contentEnd - 1];
-      this.log('LAST CHAR', JSON.stringify(lastChar));
 
       if (lastChar === ' ' || lastChar === '\t') {
-        this.log('MOVING END OF', this.node.type, 'FROM', this.contentEnd);
         this.contentEnd--;
       } else {
         break;
