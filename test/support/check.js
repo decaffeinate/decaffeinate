@@ -4,9 +4,12 @@ import { convert } from '../../dist/decaffeinate.cjs.js';
 import { strictEqual } from 'assert';
 
 export default function check(source, expected) {
+  if (source[0] === '\n') { source = stripSharedIndent(source); }
+  if (expected[0] === '\n') { expected = stripSharedIndent(expected); }
+
   try {
-    let converted = convert(stripSharedIndent(source));
-    strictEqual(converted.code, stripSharedIndent(expected));
+    let converted = convert(source);
+    strictEqual(converted.code, expected);
   } catch (err) {
     if (PatchError.isA(err)) {
       console.error(PatchError.prettyPrint(err));

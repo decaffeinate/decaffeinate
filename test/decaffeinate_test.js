@@ -1,5 +1,15 @@
 import check from './support/check.js';
 
+describe('decaffeinate', () => {
+  // https://github.com/decaffeinate/decaffeinate/issues/173
+  it('handles programs that start or end with a space (#173)', () => {
+    check(` a`, ` a;`);
+    check(`\ta`, `\ta;`);
+    check(`a `, `a; `);
+    check(`a\t`, `a;\t`);
+  });
+});
+
 describe('automatic conversions', () => {
   describe('inserting commas', () => {
     it('does not add commas after block comments', () => {

@@ -3,6 +3,7 @@ import ForInPatcher from './patchers/ForInPatcher.js';
 import ForOfPatcher from './patchers/ForOfPatcher.js';
 import NodePatcher from '../../patchers/NodePatcher.js';
 import PassthroughPatcher from '../../patchers/PassthroughPatcher.js';
+import ProgramPatcher from './patchers/ProgramPatcher.js';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage.js';
 import WhilePatcher from './patchers/WhilePatcher.js';
 import type { Node } from '../../patchers/types.js';
@@ -25,6 +26,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'While':
         return WhilePatcher;
+
+      case 'Program':
+        return ProgramPatcher;
 
       default:
         return PassthroughPatcher;

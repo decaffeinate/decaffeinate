@@ -21,6 +21,10 @@ export default class ProgramPatcher extends NodePatcher {
     this._indentString = null;
   }
 
+  shouldTrimContentRange() {
+    return true;
+  }
+
   canPatchAsExpression(): boolean {
     return false;
   }

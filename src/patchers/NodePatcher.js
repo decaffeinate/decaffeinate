@@ -27,7 +27,7 @@ export default class NodePatcher {
   outerEndTokenIndex: SourceTokenListIndex;
 
   adjustedIndentLevel: number = 0;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor) {
     this.log = logger(this.constructor.name);
 
@@ -72,6 +72,10 @@ export default class NodePatcher {
      */
     this.contentStart = node.range[0];
     this.contentEnd = node.range[1];
+
+    if (this.shouldTrimContentRange()) {
+      this.trimContentRange();
+    }
 
     let tokens = context.sourceTokens;
     let firstSourceTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
@@ -161,10 +165,48 @@ export default class NodePatcher {
   }
 
   /**
+   * Called to trim the range of content for this node. Override in subclasses
+   * to customize its behavior, or override `shouldTrimContentRange` to enable
+   * or disable it.
+   */
+  trimContentRange() {
+    let context = this.context;
+
+    for (;;) {
+      let startChar = context.source[this.contentStart];
+      this.log('START CHAR', JSON.stringify(startChar));
+
+      if (startChar === ' ' || startChar === '\t') {
+        this.log('MOVING START OF', this.node.type);
+        this.contentStart++;
+      } else {
+        break;
+      }
+    }
+
+    for (;;) {
+      let lastChar = context.source[this.contentEnd - 1];
+      this.log('LAST CHAR', JSON.stringify(lastChar));
+
+      if (lastChar === ' ' || lastChar === '\t') {
+        this.log('MOVING END OF', this.node.type, 'FROM', this.contentEnd);
+        this.contentEnd--;
+      } else {
+        break;
+      }
+    }
+  }
+
+  /**
+   * Decides whether to trim the content range of this node.
+   */
+  shouldTrimContentRange() {
+    return false;
+  }
+
+  /**
    * Called when the patcher tree is complete so we can do any processing that
    * requires communication with other patchers.
-   *
-   * @private
    */
   initialize() {}
 
@@ -509,7 +551,7 @@ export default class NodePatcher {
   /**
    * Determines whether, when appearing as a statement, this patcher's node
    * needs to be surrounded by parentheses.
-   * 
+   *
    * Subclasses should override this and, typically, delegate to their leftmost
    * child patcher. Subclasses may return `false` when they will insert text at
    * the start of the node.
