@@ -8,6 +8,10 @@ describe('decaffeinate', () => {
     check(`a `, `a; `);
     check(`a\t`, `a;\t`);
   });
+
+  it('handles empty programs', () => {
+    check(``, ``);
+  });
 });
 
 describe('automatic conversions', () => {

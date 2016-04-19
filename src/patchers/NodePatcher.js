@@ -81,6 +81,15 @@ export default class NodePatcher {
     let firstSourceTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
     let lastSourceTokenIndex = tokens.indexOfTokenEndingAtSourceIndex(this.contentEnd);
 
+    if (!firstSourceTokenIndex || !lastSourceTokenIndex) {
+      if (node.type === 'Program') {
+        // Just an empty program.
+        return;
+      }
+
+      throw this.error(`cannot find first or last token in node`);
+    }
+
     this.contentStartTokenIndex = firstSourceTokenIndex;
     this.contentEndTokenIndex = lastSourceTokenIndex;
 

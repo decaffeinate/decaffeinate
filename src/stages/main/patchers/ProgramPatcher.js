@@ -9,11 +9,11 @@ import type { Editor, Node, ParseContext, SourceToken } from './../../../patcher
 const BLOCK_COMMENT_DELIMITER = '###';
 
 export default class ProgramPatcher extends NodePatcher {
-  body: BlockPatcher;
+  body: ?BlockPatcher;
   helpers: { [key: string]: string };
   _indentString: ?string;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, body: BlockPatcher) {
+  constructor(node: Node, context: ParseContext, editor: Editor, body: ?BlockPatcher) {
     super(node, context, editor);
     this.body = body;
 
@@ -30,7 +30,9 @@ export default class ProgramPatcher extends NodePatcher {
   }
 
   patchAsStatement() {
-    this.body.patch({ leftBrace: false, rightBrace: false });
+    if (this.body) {
+      this.body.patch({ leftBrace: false, rightBrace: false });
+    }
     this.patchComments();
 
     for (let helper in this.helpers) {
