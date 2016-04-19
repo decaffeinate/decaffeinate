@@ -198,7 +198,7 @@
     this.clearOutput();
 
     try {
-      transformed = decaffeinate.convert(code);
+      transformed = decaffeinate.convert(code).code;
     } catch (err) {
       this.printError(err.message);
       throw err;
