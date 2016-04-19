@@ -1,7 +1,6 @@
 import { basename } from 'path';
 import { convert } from 'esnext';
 import { logger } from '../../utils/debug.js';
-import { parse } from 'babel-eslint';
 
 export default class EsnextStage {
   static run(content: string, filename: string): { code: string, map: Object } {
@@ -9,12 +8,11 @@ export default class EsnextStage {
     log(content);
 
     let { code, map } = convert(content, {
-      parse,
       'declarations.block-scope': {
-        disableConst(node: Object): boolean {
+        disableConst({ node, parent }): boolean {
           return (
             // Only use `const` for top-level variables…
-            node.parentNode.type !== 'Program' ||
+            parent && parent.type !== 'Program' ||
             // … as the only variable in its declaration …
             node.declarations.length !== 1 ||
             // … without any sort of destructuring …
