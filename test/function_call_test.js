@@ -202,4 +202,33 @@ describe('function calls', () => {
       a()();
     `);
   });
+
+  it('works with a call that returns an existential function call', () => {
+    check(`
+      if (true)
+        f?()
+    `, `
+      if (true) {
+        if (typeof f === 'function') {
+          f();
+        }
+      }
+    `);
+  });
+
+  it('works with an expression that returns an existential function call', () => {
+    check(`
+      a = f?()
+    `, `
+      let a = typeof f === 'function' ? f() : undefined;
+    `);
+  });
+
+  it('works with a complicated expression that returns an existential function call', () => {
+    check(`
+      a = f()?()
+    `, `
+      let a = typeof f === 'function' ? f() : undefined;
+    `);
+  });
 });
