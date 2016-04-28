@@ -81,4 +81,12 @@ describe('string interpolation', () => {
       ({ a: \`\${b}\` });
     `);
   });
+
+  it.skip('works with two string interpolations separated by something', () => {
+    check(`
+      "#{a} #{b}"
+    `, `
+      \`\${a} \${b}\`;
+    `);
+  });
 });
