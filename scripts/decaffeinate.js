@@ -4609,7 +4609,12 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
       }
       this.args.forEach(function (arg, i, args) {
         arg.patch();
-        if (i !== args.length - 1 && !arg.hasSourceTokenAfter(coffeeLex.COMMA)) {
+        var isLast = i === args.length - 1;
+        var commaTokenIndex = arg.node.virtual ? null : _this2.indexOfSourceTokenAfterSourceTokenIndex(arg.outerEndTokenIndex, coffeeLex.COMMA, isSemanticToken);
+        var commaToken = commaTokenIndex && _this2.sourceTokenAtIndex(commaTokenIndex);
+        if (isLast && commaToken) {
+          _this2.remove(arg.outerEnd, commaToken.end);
+        } else if (!isLast && !commaToken) {
           _this2.insert(arg.outerEnd, ',');
         }
       });
@@ -8568,7 +8573,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.7.3";
+var version = "2.7.4";
 
 /**
  * Run the script with the user-supplied arguments.
