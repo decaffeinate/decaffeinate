@@ -1,11 +1,12 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 import { CALL_START, COMMA } from 'coffee-lex';
+import { isSemanticToken } from '../../../utils/types.js';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
   args: Array<NodePatcher>;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, fn: NodePatcher, args: Array<NodePatcher>) {
     super(node, context, editor);
     this.fn = fn;
@@ -33,7 +34,16 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     }
     this.args.forEach((arg, i, args) => {
       arg.patch();
-      if (i !== args.length - 1 && !arg.hasSourceTokenAfter(COMMA)) {
+      let isLast = i === args.length - 1;
+      let commaTokenIndex = arg.node.virtual ? null : this.indexOfSourceTokenAfterSourceTokenIndex(
+        arg.outerEndTokenIndex,
+        COMMA,
+        isSemanticToken
+      );
+      let commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
+      if (isLast && commaToken) {
+        this.remove(arg.outerEnd, commaToken.end);
+      } else if (!isLast && !commaToken) {
         this.insert(arg.outerEnd, ',');
       }
     });

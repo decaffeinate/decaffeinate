@@ -202,4 +202,12 @@ describe('function calls', () => {
       a()();
     `);
   });
+
+  it('deletes trailing comma after the last argument', () => {
+    check(`
+      x(1,)
+    `, `
+      x(1);
+    `);
+  });
 });
