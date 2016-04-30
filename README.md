@@ -12,18 +12,13 @@ JavaScript with decaffeinate.
 $ npm install -g decaffeinate
 ```
 
-To use the development version of decaffeinate, use the `@dev` tag:
-
-```
-$ npm install -g decaffeinate@dev
-```
-
-The dev version is based on the `master` branch and may be incomplete or broken.
+See the [Conversion Guide](https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md).
 
 ## Status
 
-**Incomplete.** Check the [issues] page for outstanding bugs and incomplete
-features. This project should not yet be relied upon for production use.
+**Mostly complete.** Check the [issues] page for outstanding bugs and incomplete
+features. This project may be relied upon for production use, but no guarantees
+are made.
 
 ## Goals
 
