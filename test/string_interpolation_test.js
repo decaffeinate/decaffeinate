@@ -82,7 +82,7 @@ describe('string interpolation', () => {
     `);
   });
 
-  it.skip('works with two string interpolations separated by something', () => {
+  it('works with two string interpolations separated by something', () => {
     check(`
       "#{a} #{b}"
     `, `
