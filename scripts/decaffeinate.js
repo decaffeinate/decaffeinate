@@ -8593,7 +8593,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.7.5";
+var version = "2.7.6";
 
 /**
  * Run the script with the user-supplied arguments.
@@ -9045,7 +9045,7 @@ exports.run = run;
 
   function addVariableDeclarations(source) {
     var editor = arguments.length <= 1 || arguments[1] === undefined ? new MagicString(source) : arguments[1];
-    var ast = arguments.length <= 2 || arguments[2] === undefined ? babylon.parse(source, { plugins: BABYLON_PLUGINS }) : arguments[2];
+    var ast = arguments.length <= 2 || arguments[2] === undefined ? babylon.parse(source, { plugins: BABYLON_PLUGINS, sourceType: 'module' }) : arguments[2];
 
     var state = null;
     var seen = new Set();
