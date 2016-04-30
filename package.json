@@ -8,7 +8,7 @@
     "decaffeinate": "./bin/decaffeinate"
   },
   "scripts": {
-    "lint": "eslint --rulesdir eslint-rules src test",
+    "lint": "eslint src test",
     "pretest": "npm run build",
     "test": "mocha",
     "prebuild": "npm run lint",
@@ -58,6 +58,7 @@
     "browserify": "^13.0.0",
     "eslint": "^1.10.3",
     "eslint-plugin-babel": "^3.1.0",
+    "eslint-plugin-decaffeinate": "file:eslint-rules",
     "mocha": "^2.4.5",
     "mversion": "^1.10.1",
     "rollup": "^0.25.4",

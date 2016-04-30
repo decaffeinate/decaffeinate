@@ -15,11 +15,12 @@
     "babel/object-shorthand": 1,
     "babel/generator-star-spacing": 1,
     "babel/new-cap": 1,
-    "require-import-extension": 2,
-    "no-const-except-at-top": 2
+    "decaffeinate/require-import-extension": 2,
+    "decaffeinate/no-const-except-at-top": 2
   },
   "plugins": [
-    "eslint-plugin-babel"
+    "babel",
+    "decaffeinate"
   ],
   "globals": {
     "Class": true
