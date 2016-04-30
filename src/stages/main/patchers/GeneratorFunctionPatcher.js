@@ -5,10 +5,13 @@ import FunctionPatcher from './FunctionPatcher.js';
  */
 export default class GeneratorFunctionPatcher extends FunctionPatcher {
 
-  patchFunctionStart() {
+  patchFunctionStart({ method=false }) {
+    this.log('Running with method=' + method);
     let arrow = this.getArrowToken();
 
-    this.insert(this.contentStart, 'function*');
+    if (!method) {
+      this.insert(this.contentStart, 'function*');
+    }
     
     if (!this.hasParamStart()) {
       this.insert(this.contentStart, '() ');
