@@ -8,7 +8,9 @@ import ThisPatcher from './ThisPatcher.js';
 export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatcher {
   patchAsProperty() {
     if (this.key.node === this.expression.node) {
-      this.patchAsShorthand();
+      this.patchAsShorthand({
+        expand: this.key.node.type !== 'Identifier'
+      });
     } else {
       super.patchAsProperty();
     }
@@ -19,6 +21,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
    */
   patchAsShorthand({ expand=false }={}) {
     let { key } = this;
+    key.patch();
     if (key instanceof MemberAccessOpPatcher) {
       // e.g. `{ @name }`
       let memberAccessKey = (key: MemberAccessOpPatcher);
@@ -34,10 +37,20 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
         `${memberAccessKey.getMemberName()}: `
       );
     } else if (expand) {
+      let isComputed = !key.isRepeatable();
+
+      if (isComputed) {
+        // `{ `a = ${1 + 1}` }` → `{ [`a = ${1 + 1}`] }`
+        //                           ^              ^
+        this.insert(key.outerStart, '[');
+        this.insert(key.outerEnd, ']');
+      }
+
+      let keyAgain = key.makeRepeatable();
+
       // `{ a } → { a: a }`
-      //            ^^^
-      this.insert(key.outerStart, `${this.slice(key.contentStart, key.contentEnd)}: `);
+      //             ^^^
+      this.insert(key.outerEnd, `: ${keyAgain}`);
     }
-    key.patch();
   }
 }

@@ -252,4 +252,21 @@ describe('objects', () => {
       ({a}.b = c);
     `);
   });
+
+  it('expands shorthand string-key object members', () => {
+    check(`
+      x = {"FOO", "BAR", "BAZ"}
+    `, `
+      let x = {"FOO": "FOO", "BAR": "BAR", "BAZ": "BAZ"};
+    `);
+  });
+
+  it('expands shorthand string-key computed object members', () => {
+    check(`
+      x = {"a#{b}c"}
+    `, `
+      let ref;
+      let x = {[ref = \`a\${b}c\`]: ref};
+    `);
+  });
 });
