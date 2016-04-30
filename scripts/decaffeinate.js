@@ -8593,7 +8593,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.7.6";
+var version = "2.7.7";
 
 /**
  * Run the script with the user-supplied arguments.
@@ -27138,16 +27138,16 @@ module.exports = function(haystack, needle, comparator, low, high) {
     /* Note that "(low + high) >>> 1" may overflow, and results in a typecast
      * to double (which gives the wrong results). */
     mid = low + (high - low >> 1);
-    cmp = +comparator(haystack[mid], needle);
+    cmp = +comparator(haystack[mid], needle, mid, haystack);
 
     /* Too low. */
-    if(cmp < 0.0) 
+    if(cmp < 0.0)
       low  = mid + 1;
 
     /* Too high. */
     else if(cmp > 0.0)
       high = mid - 1;
-    
+
     /* Key found. */
     else
       return mid;
@@ -40913,10 +40913,21 @@ function coerce(val) {
           };
         }
 
+        function buildQuasiWithString(range, raw) {
+          var loc = mapper.invert(range[0]);
+          return {
+            type: 'String',
+            data: raw,
+            raw: source.slice.apply(source, babelHelpers.toConsumableArray(range)),
+            line: loc.line + 1,
+            column: loc.column,
+            range: range
+          };
+        }
+
         function quotesMatch(string) {
           var leftTripleQuoted = string.slice(0, 3) === '"""';
           var rightTripleQuoted = string.slice(-3) === '"""';
-
           if (string.slice(-4) === '\\"""') {
             // Don't count escaped quotes.
             rightTripleQuoted = false;
@@ -40937,7 +40948,6 @@ function coerce(val) {
             // Don't count escaped quotes.
             rightSingleQuoted = false;
           }
-
           if (leftSingleQuoted !== rightSingleQuoted) {
             // Unbalanced.
             return false;
@@ -40946,7 +40956,6 @@ function coerce(val) {
             return string.length >= 2;
           }
         }
-
         elements.forEach(function (element, i) {
           if (i === 0) {
             if (element.type === 'String') {
@@ -40969,11 +40978,16 @@ function coerce(val) {
             if (quasis.length === 0) {
               // This element is interpolated and is first, i.e. "#{a}".
               quasis.push(buildFirstQuasi());
+              expressions.push(element);
+            } else if (element.data && element.data.search(/^"(.*?)"$/) === 0) {
+              quasis.push(buildQuasiWithString(element.range, element.raw));
             } else if (quasis.length < expressions.length + 1) {
               var borderIndex = source.lastIndexOf('}#{', element.range[0]);
               quasis.push(buildQuasi([borderIndex + 1, borderIndex + 1]));
+              expressions.push(element);
+            } else {
+              expressions.push(element);
             }
-            expressions.push(element);
           }
         });
 
