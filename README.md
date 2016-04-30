@@ -1,4 +1,4 @@
-# decaffeinate
+# decaffeinate [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate)
 
 CoffeeScript in, modern JavaScript out.
 
