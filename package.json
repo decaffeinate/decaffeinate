@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "eslint --rulesdir eslint-rules src test",
     "pretest": "npm run build",
-    "test": "mocha --compilers js:./test/support/babel-register.js --recursive",
+    "test": "mocha",
     "prebuild": "npm run lint",
     "build": "rollup -c rollup.cjs.config.js && rollup -c rollup.es6.config.js",
     "prepublish": "npm run build"

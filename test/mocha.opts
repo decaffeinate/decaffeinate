@@ -1,0 +1,2 @@
+--compilers js:./test/support/babel-register.js
+--recursive
