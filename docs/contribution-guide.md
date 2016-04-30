@@ -19,6 +19,18 @@ Run the tests to make sure everything works as expected:
 $ npm test
 ```
 
+## How is decaffeinate structured?
+
+decaffeinate's main operations are performed by a collection of patchers, objects
+that know how to transform a particular CoffeeScript node type to JavaScript.
+They work by editing the original CoffeeScript source code, such as inserting
+missing punctuation. Patchers wrap their node and have access to them with the
+`node` property, though you may not need to access it directly in many cases.
+
+The root patcher is `ProgramPatcher`, which wraps the `Program` root node.
+Each patcher calls `patch()` on its children in the appropriate order, so
+calling `patch()` on the root patcher will patch the whole tree.
+
 ## Debugging
 
 The patchers log the edits they make if a matching environment variable is set.
@@ -40,11 +52,6 @@ patchAsExpression() {
 ```
 
 ## Adding features
-
-Decaffeinate is implemented primarily as a collection of patchers, objects that
-know how to transform a particular CoffeeScript node type to JavaScript. They
-work by editing the original CoffeeScript source code, such as inserting missing
-punctuation.
 
 ### Stages
 
@@ -332,6 +339,32 @@ the `right` patcher knows to patch using `patchAsExpression` instead of
 all handled by [`BinaryOpPatcher`][BinaryOpPatcher].
 
 [BinaryOpPatcher]: https://github.com/decaffeinate/decaffeinate/blob/master/src/stages/main/patchers/BinaryOpPatcher.js
+
+Finally, we can omit `patchAsStatement` in this case because all it does is
+delegate to `patchAsExpression`, which is the default behavior.
+
+```js
+import NodePatcher from './NodePatcher.js';
+import type { Node, ParseContext, Editor } from './types.js';
+
+export default class PlusOpPatcher extends NodePatcher {
+  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
+    super(node, context, editor);
+    this.left = left;
+    this.right = right;
+  }
+  
+  initialize() {
+    this.left.setRequiresExpression();
+    this.right.setRequiresExpression();
+  }
+  
+  patchAsExpression() {
+    this.left.patch();
+    this.right.patch();
+  }
+}
+```
 
 #### Temporary variables & repeating code
 
