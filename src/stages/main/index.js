@@ -61,6 +61,9 @@ import UnaryMathOpPatcher from './patchers/UnaryMathOpPatcher.js';
 import UnaryOpPatcher from './patchers/UnaryOpPatcher.js';
 import UnaryTypeofOpPatcher from './patchers/UnaryTypeofOpPatcher.js';
 import WhilePatcher from './patchers/WhilePatcher.js';
+import GeneratorFunctionPatcher from './patchers/GeneratorFunctionPatcher.js';
+import YieldPatcher from './patchers/YieldPatcher.js';
+import YieldFromPatcher from './patchers/YieldFromPatcher.js';
 import type NodePatcher from './../../patchers/NodePatcher.js';
 import type { Node } from '../../patchers/types.js';
 
@@ -109,7 +112,16 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'This':
         return ThisPatcher;
-
+  
+      case 'Yield':
+       return YieldPatcher;
+    
+      case 'YieldFrom':
+       return YieldFromPatcher;
+    
+      case 'GeneratorFunction':
+       return GeneratorFunctionPatcher;
+    
       case 'Function':
         return FunctionPatcher;
 

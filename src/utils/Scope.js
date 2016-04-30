@@ -105,6 +105,7 @@ export default class Scope {
 
       case 'Function':
       case 'BoundFunction':
+      case 'GeneratorFunction':
         getBindingsForNode(node).forEach(identifier => this.declares(identifier.data, identifier));
         break;
 
@@ -149,6 +150,7 @@ export default class Scope {
 function getBindingsForNode(node) {
   switch (node.type) {
     case 'Function':
+    case 'GeneratorFunction':
     case 'BoundFunction':
       return flatMap(node.parameters, getBindingsForNode);
 
