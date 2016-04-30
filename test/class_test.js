@@ -340,4 +340,20 @@ describe('classes', () => {
       };
     `);
   });
+
+  it('converts instance properties with multi-line object values correctly', () => {
+    check(`
+      class A
+        a:
+          b: c
+          d: e
+    `, `
+      class A {
+        a = {
+          b: c,
+          d: e
+        };
+      }
+    `);
+  });
 });

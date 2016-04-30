@@ -5,6 +5,7 @@ import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
 import ThisPatcher from './ThisPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Node } from './../../../patchers/types.js';
+import { COLON } from 'coffee-lex';
 
 export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
@@ -44,7 +45,16 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   patchAsProperty() {
     // `name: null` → `name = null`
     //      ^^             ^^^
-    this.overwrite(this.key.outerEnd, this.expression.outerStart, ' = ');
+    let colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+      this.key,
+      this.expression,
+      token => token.type === COLON
+    );
+    if (!colonIndex) {
+      throw this.error('expected a colon between the key and expression of a class property');
+    }
+    let colonToken = this.sourceTokenAtIndex(colonIndex);
+    this.overwrite(colonToken.start, colonToken.end, ' =');
     this.patchExpression();
   }
 
