@@ -1,9 +1,9 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
+import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
 
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
-  body: ?BlockPatcher;
+  body: ?NodePatcher;
   
   constructor(node: Node, context: ParseContext, editor: Editor, parameters: Array<NodePatcher>, body: ?NodePatcher) {
     super(node, context, editor);
@@ -17,7 +17,7 @@ export default class FunctionPatcher extends NodePatcher {
     // This is detected and used by the MemberAccessOpPatcher to claim a free binding for this parameter
     // (from the functions scope, not the body's scope)
 
-    const assignments = [];
+    let assignments = [];
     this.node._assignMember = function(memberName: string){
       let varName = this.claimFreeBinding(memberName);
       assignments.push(`@${memberName} = ${varName}`);
