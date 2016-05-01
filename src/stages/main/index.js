@@ -142,7 +142,6 @@ export default class MainStage extends TransformCoffeeScriptStage {
           default:
             return CompoundAssignOpPatcher;
         }
-        break;
 
       case 'Return':
         return ReturnPatcher;

@@ -1,5 +1,7 @@
 import type Scope from '../utils/Scope.js';
 
+export type Range = [number, number];
+
 export type Node = {
   type: string,
   range: Range,
@@ -8,8 +10,6 @@ export type Node = {
   line: number,
   column: number,
 };
-
-export type Range = [number, number];
 
 export type ParseContext = {
   source: string,
