@@ -1,10 +1,7 @@
 # decaffeinate [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate)
 
 CoffeeScript in, modern JavaScript out.
-
-JavaScript is the future, in part thanks to CoffeeScript. Now that it has served
-its purpose, it's time to move on. Convert your CoffeeScript source to modern
-JavaScript with decaffeinate.
+Convert your CoffeeScript source to modern JavaScript with decaffeinate.
 
 ## Install
 
