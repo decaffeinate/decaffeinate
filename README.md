@@ -12,7 +12,7 @@ JavaScript with decaffeinate.
 $ npm install -g decaffeinate
 ```
 
-See the [Conversion Guide](https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md).
+See the [Conversion Guide][conversion-guide].
 
 ## Status
 
@@ -32,6 +32,5 @@ are made.
 
 See the output of `decaffeinate --help` after installing.
 
-<hr>
-
 [issues]: https://github.com/decaffeinate/decaffeinate/issues
+[conversion-guide]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md
