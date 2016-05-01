@@ -93,6 +93,50 @@ describe('classes', () => {
     `);
   });
 
+  describe('assign properties from method parameters', () => {
+    it('constructor without function body', () => {
+      check(`
+        class A
+          constructor: ([@a = 1], {test: @b = 2}, @c) ->
+      `, `
+        class A {
+          constructor([a = 1], {test: b = 2}, c) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+          }
+        }
+      `);
+    });
+    it('constructor with function body', () => {
+      check(`
+        class A
+          constructor: (@a) ->
+            return
+      `, `
+        class A {
+          constructor(a) {
+            this.a = a;
+            return;
+          }
+        }
+      `);
+    });
+    it('method', () => {
+      check(`
+        class A
+          method: (@a) ->
+      `, `
+        class A {
+          method(a) {
+            this.a = a;
+            return;
+          }
+        }
+      `);
+    });
+  });
+
   it('preserves class constructors extending superclasses', () => {
     check(`
       class A extends B
