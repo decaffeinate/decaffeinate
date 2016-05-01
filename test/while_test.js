@@ -235,8 +235,8 @@ describe('while', () => {
         yield a while true
     `, `
       (function*() { return yield* (function*() { let result = []; while (false) {
-        result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield a); } return result1; })());
-      } return result; })(); });
+        result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield a); } return result1; }).call(this));
+      } return result; }).call(this); });
     `);
   });
 });

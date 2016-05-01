@@ -131,7 +131,8 @@ export default class WhilePatcher extends NodePatcher {
     this._yielding = null;
     let prefix = isYielding ? 'yield* (function*()' : '(() =>';
     this.insert(this.contentStart, `${prefix} { ${resultBinding} = []; `);
-    this.insert(this.contentEnd, ` return ${resultBinding}; })()`);
+    let postfix = isYielding ? '.call(this)' : '()';
+    this.insert(this.contentEnd, ` return ${resultBinding}; })${postfix}`);
     if (isYielding) {
       this.yields();
     }
