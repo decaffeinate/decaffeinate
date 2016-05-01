@@ -20,6 +20,7 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'MemberAccessOp':
         return MemberAccessOpPatcher;
 
+      case 'BoundFunction':
       case 'Function':
         return FunctionPatcher;
 

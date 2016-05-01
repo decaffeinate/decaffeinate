@@ -135,6 +135,23 @@ describe('classes', () => {
         }
       `);
     });
+    it('bound method', () => {
+      check(`
+        class A
+          method: (@a) =>
+      `, `
+        class A {
+          constructor() {
+            this.method = this.method.bind(this);
+          }
+        
+          method(a) {
+            this.a = a;
+            return;
+          }
+        }
+      `);
+    });
   });
 
   it('preserves class constructors extending superclasses', () => {
