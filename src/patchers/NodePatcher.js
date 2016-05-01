@@ -869,4 +869,14 @@ export default class NodePatcher {
   allCodePathsPresent(): boolean {
     return true;
   }
+
+  yields() {
+    let receiver = this.parent;
+    while (receiver) {
+      if (receiver.yieldController) {
+        return receiver.yieldController(this);
+      }
+      receiver = receiver.parent;
+    }
+  }
 }

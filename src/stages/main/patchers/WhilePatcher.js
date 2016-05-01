@@ -125,9 +125,20 @@ export default class WhilePatcher extends NodePatcher {
   patchAsExpression() {
     this.body.setImplicitlyReturns();
     let resultBinding = this.getResultArrayBinding();
-    this.insert(this.contentStart, `(() => { ${resultBinding} = []; `);
+    this._yielding = null;
     this.patchAsStatement();
+    let isYielding = !!this._yielding;
+    this._yielding = null;
+    let prefix = isYielding ? 'yield* (function*()' : '(() =>';
+    this.insert(this.contentStart, `${prefix} { ${resultBinding} = []; `);
     this.insert(this.contentEnd, ` return ${resultBinding}; })()`);
+    if (isYielding) {
+      this.yields();
+    }
+  }
+
+  yieldController(node) {
+    this._yielding = node;
   }
 
   /**

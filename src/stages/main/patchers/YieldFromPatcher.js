@@ -19,5 +19,6 @@ export default class YieldFromPatcher extends NodePatcher {
     this.overwrite(this.contentStart, fromToken.end, 'yield*');
     
     this.expression.patch({ needsParens });
+    this.yields();
   }
 }
