@@ -172,7 +172,7 @@ describe('automatic conversions', () => {
       `);
     });
 
-    it('handles object literals with function property values followed by comments', () => {
+    it.skip('handles object literals with function property values followed by comments', () => {
       check(`
         a
           b: ->
