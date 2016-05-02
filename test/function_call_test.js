@@ -45,7 +45,7 @@ describe('function calls', () => {
     `);
   });
 
-  it.skip('inserts commas on the same line when the property value is an interpolated string', () => {
+  it('inserts commas on the same line when the property value is an interpolated string', () => {
     check(`
       a
         b: "#{c}"
@@ -82,16 +82,29 @@ describe('function calls', () => {
     `);
   });
 
-  it.skip('places parentheses in calls with multi-line function arguments after the closing brace', () => {
+  it('places parentheses in calls with multi-line function arguments after the closing brace', () => {
     check(`
       promise.then ->
+        a()
         b # c
       d
     `, `
       promise.then(function() {
+        a();
         return b; // c
       });
       d;
+    `);
+  });
+
+  it('places parentheses in calls with fat arrow function arguments after the closing brace', () => {
+    check(`
+      promise.then (a)->
+        b
+      c
+    `, `
+      promise.then(a=> b);
+      c;
     `);
   });
 

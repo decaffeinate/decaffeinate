@@ -154,7 +154,7 @@ describe('automatic conversions', () => {
       check('a; b', 'a; b;');
     });
 
-    it.skip('handles object literals with function property values', () => {
+    it('handles object literals with function property values', () => {
       check(`
         a
           b: ->
@@ -172,7 +172,7 @@ describe('automatic conversions', () => {
       `);
     });
 
-    it.skip('handles object literals with function property values followed by comments', () => {
+    it('handles object literals with function property values followed by comments', () => {
       check(`
         a
           b: ->
@@ -193,7 +193,7 @@ describe('automatic conversions', () => {
     });
 
     it.skip('handles simple binary existential operators', () => {
-      check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
+      check(`d`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });
 
     it.skip('deals gracefully with extra parens in simple binary existential operators', () => {

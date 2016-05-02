@@ -207,7 +207,7 @@ describe('conditionals', () => {
     `);
   });
 
-  it.skip('keeps single-line POST-`if`', () => {
+  it('keeps single-line POST-`if`', () => {
     check(`a if b`, `if (b) { a; }`);
     check(`
       ->
@@ -221,7 +221,7 @@ describe('conditionals', () => {
     `);
   });
 
-  it.skip('keeps single-line POST-`unless`', () => {
+  it('keeps single-line POST-`unless`', () => {
     check(`a unless b`, `if (!b) { a; }`);
   });
 
