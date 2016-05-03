@@ -193,7 +193,7 @@ describe('automatic conversions', () => {
     });
 
     it.skip('handles simple binary existential operators', () => {
-      check(`d`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
+      check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
     });
 
     it.skip('deals gracefully with extra parens in simple binary existential operators', () => {

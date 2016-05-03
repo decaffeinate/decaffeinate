@@ -97,7 +97,7 @@ describe('function calls', () => {
     `);
   });
 
-  it('places parentheses in calls with fat arrow function arguments after the closing brace', () => {
+  it('places parentheses in calls with single line that short hand into fat arrow function', () => {
     check(`
       promise.then (a)->
         b
