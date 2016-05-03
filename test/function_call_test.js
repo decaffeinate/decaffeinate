@@ -108,13 +108,15 @@ describe('function calls', () => {
     `);
   });
 
-  it.skip('places parentheses in calls short single line into fat arrow function with comment', () => {
+  it.skip('preserves comments in functions that will become arrow functions', () => {
     check(`
-      promise.then (a)->
+      promise.then (a) ->
         b # c
       d
     `, `
-      promise.then(a=> b); # c
+      promise.then(a =>
+        b // c
+      );
       d;
     `);
   });
