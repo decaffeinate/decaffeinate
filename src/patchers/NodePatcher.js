@@ -87,7 +87,7 @@ export default class NodePatcher {
         return;
       }
 
-      throw this.error(`cannot find first or last token in node`);
+      throw this.error(`cannot find first or last token in ${node.type} node`);
     }
 
     this.contentStartTokenIndex = firstSourceTokenIndex;
