@@ -108,6 +108,17 @@ describe('function calls', () => {
     `);
   });
 
+  it.skip('places parentheses in calls short single line into fat arrow function with comment', () => {
+    check(`
+      promise.then (a)->
+        b # c
+      d
+    `, `
+      promise.then(a=> b); # c
+      d;
+    `);
+  });
+
   it('replaces the space between the callee and the first argument for first arg on same line', () => {
     check(`a 1, 2`, `a(1, 2);`);
   });
