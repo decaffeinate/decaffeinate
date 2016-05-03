@@ -114,7 +114,7 @@ describe('automatic conversions', () => {
         `);
       });
 
-      it.skip('inserts commas for braceless objects', () => {
+      it('inserts commas for braceless objects', () => {
         check(`
           a: b
           c: d
@@ -154,7 +154,7 @@ describe('automatic conversions', () => {
       check('a; b', 'a; b;');
     });
 
-    it.skip('handles object literals with function property values', () => {
+    it('handles object literals with function property values', () => {
       check(`
         a
           b: ->
@@ -172,7 +172,7 @@ describe('automatic conversions', () => {
       `);
     });
 
-    it.skip('handles object literals with function property values followed by comments', () => {
+    it('handles object literals with function property values followed by comments', () => {
       check(`
         a
           b: ->
