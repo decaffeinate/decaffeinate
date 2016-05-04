@@ -179,6 +179,28 @@ describe('classes', () => {
         }
       `);
     });
+
+    it('uses correct value for default param when using another member', () => {
+      check(`
+        (@a, b = @c) ->
+      `, `
+        (function(a, b = this.c) {
+          this.a = a;
+          return;
+        });
+      `);
+    });
+
+    it.skip('uses correct value for default param when reusing an already implicitly assigned param', () => {
+      check(`
+        (@a, b = @a) ->
+      `, `
+        (function(a, b = a) {
+          this.a = a;
+          return;
+        });
+      `);
+    });
   });
 
   it('preserves class constructors extending superclasses', () => {
