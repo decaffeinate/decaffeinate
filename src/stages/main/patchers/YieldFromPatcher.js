@@ -14,9 +14,8 @@ export default class YieldFromPatcher extends NodePatcher {
    * YIELD FROM EXPRESSION
    */
   patchAsExpression({ needsParens=true }={}) {
-    let from = this.indexOfSourceTokenAfterSourceTokenIndex(this.contentStartTokenIndex, YIELDFROM);
-    let fromToken = this.sourceTokenAtIndex(from);
-    this.overwrite(this.contentStart, fromToken.end, 'yield*');
+    let src = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+    this.overwrite(src.start, src.end, 'yield*');
     
     this.expression.patch({ needsParens });
     this.yields();
