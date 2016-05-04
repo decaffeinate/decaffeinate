@@ -664,14 +664,25 @@ export default class NodePatcher {
 
   /**
    * Determines whether this patcher's node is surrounded by parentheses.
+   * Also check if these parents are matching, to avoid false positives on things like `(a) && (b)`
    */
   isSurroundedByParentheses(): boolean {
     let beforeToken = this.sourceTokenAtIndex(this.outerStartTokenIndex);
+    if (!beforeToken || beforeToken.type !== LPAREN) return false;
+
     let afterToken = this.sourceTokenAtIndex(this.outerEndTokenIndex);
-    return (
-      beforeToken && beforeToken.type === LPAREN &&
-      afterToken && afterToken.type === RPAREN
-    );
+    if (!afterToken || afterToken.type !== RPAREN) return false;
+
+    let parenRange = this.getProgramSourceTokens()
+        .rangeOfMatchingTokensContainingTokenIndex(
+            LPAREN,
+            RPAREN,
+            this.outerStartTokenIndex
+        );
+    if (!parenRange) return false;
+    let rparenIndex = parenRange[1].previous();
+    let rparen = this.sourceTokenAtIndex(rparenIndex);
+    return rparen.end == afterToken.end;
   }
 
   getBoundingPatcher(): ?NodePatcher {

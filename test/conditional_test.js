@@ -304,4 +304,12 @@ describe('conditionals', () => {
       Math.pow(a, b ? c : d);
     `);
   });
+
+  it('adds parenthesis if needed', () => {
+    check(`
+      alert if (a) and (b)
+    `, `
+      if ((a) && (b)) { alert; }
+    `);
+  });
 });
