@@ -874,7 +874,7 @@ export default class NodePatcher {
     let receiver = this.parent;
     while (receiver) {
       if (receiver.yieldController) {
-        return receiver.yieldController(this);
+        return receiver.yieldController();
       }
       receiver = receiver.parent;
     }
