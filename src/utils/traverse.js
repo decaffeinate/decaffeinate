@@ -126,9 +126,9 @@ const ORDER = {
   UnaryPlusOp: ['expression'],
   Undefined: [],
   UnsignedRightShiftOp: ['left', 'right'],
-  While: ['condition', 'guard', 'body']
+  While: ['condition', 'guard', 'body'],
   Yield: ['expression'],
-  YieldFrom: ['expression'],
+  YieldFrom: ['expression']
 };
 
 /**
