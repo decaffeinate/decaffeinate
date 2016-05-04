@@ -108,6 +108,7 @@ describe('classes', () => {
         }
       `);
     });
+    
     it('constructor with function body', () => {
       check(`
         class A
@@ -122,6 +123,7 @@ describe('classes', () => {
         }
       `);
     });
+    
     it('method', () => {
       check(`
         class A
@@ -135,6 +137,7 @@ describe('classes', () => {
         }
       `);
     });
+
     it('bound method', () => {
       check(`
         class A
@@ -150,6 +153,19 @@ describe('classes', () => {
             return;
           }
         }
+      `);
+    });
+
+    it('chooses variables that do not conflict', () => {
+      check(`
+        (@a) ->
+          a = 1
+      `, `
+        (function(a1) {
+          let a;
+          this.a = a1;
+          return a = 1;
+        });
       `);
     });
   });

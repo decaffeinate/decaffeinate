@@ -18,16 +18,16 @@ export default class FunctionPatcher extends NodePatcher {
     // (from the functions scope, not the body's scope)
 
     let assignments = [];
-    this.node._assignMember = function(memberName: string){
+    this.addStatementAtScopeHeader = (memberName: string) => {
       let varName = this.claimFreeBinding(memberName);
       assignments.push(`@${memberName} = ${varName}`);
       this.log(`Replacing parameter @${memberName} with ${varName}`);
       return varName;
-    }.bind(this);
+    };
 
     this.parameters.forEach(parameter => parameter.patch());
 
-    delete this.node._assignMember;
+    delete this.addStatementAtScopeHeader;
 
     // If there were assignments from parameters insert them
     if (this.body) {

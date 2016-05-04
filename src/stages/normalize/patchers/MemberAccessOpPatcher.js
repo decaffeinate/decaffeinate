@@ -1,4 +1,5 @@
 import PassthroughPatcher from '../../../patchers/PassthroughPatcher.js';
+import DefaultParamPatcher from './DefaultParamPatcher.js';
 
 export default class MemberAccessOpPatcher extends PassthroughPatcher {
   shouldTrimContentRange() {
@@ -7,19 +8,19 @@ export default class MemberAccessOpPatcher extends PassthroughPatcher {
 
   patch() {
     super.patch();
-    let cb = this.findAssignMemberCallback();
-    if (cb) {
+    let callback = this.findAddStatementCallback();
+    if (callback) {
       let content = this.slice(this.contentStart, this.contentEnd);
-      this.overwrite(this.contentStart, this.contentEnd, cb(this.node.memberName, content));
+      this.overwrite(this.contentStart, this.contentEnd, callback(this.node.memberName, content));
     }
   }
 
-  findAssignMemberCallback() {
-    let node = this.node;
+  findAddStatementCallback() {
+    let patcher = this.parent;
     // if we traverse up through DefaultParam, we're on the right hand side
-    while (node && node.type != 'DefaultParam') {
-      if (node._assignMember) return node._assignMember;
-      node = node.parentNode;
+    while (patcher && !(patcher instanceof DefaultParamPatcher)) {
+      if (patcher.addStatementAtScopeHeader) return patcher.addStatementAtScopeHeader;
+      patcher = patcher.parent;
     }
   }
 }
