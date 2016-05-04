@@ -93,6 +93,116 @@ describe('classes', () => {
     `);
   });
 
+  describe('assign properties from method parameters', () => {
+    it('constructor without function body', () => {
+      check(`
+        class A
+          constructor: ([@a = 1], {test: @b = 2}, @c) ->
+      `, `
+        class A {
+          constructor([a = 1], {test: b = 2}, c) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+          }
+        }
+      `);
+    });
+    
+    it('constructor with function body', () => {
+      check(`
+        class A
+          constructor: (@a) ->
+            return
+      `, `
+        class A {
+          constructor(a) {
+            this.a = a;
+            return;
+          }
+        }
+      `);
+    });
+    
+    it('method', () => {
+      check(`
+        class A
+          method: (@a) ->
+      `, `
+        class A {
+          method(a) {
+            this.a = a;
+            return;
+          }
+        }
+      `);
+    });
+
+    it('bound method', () => {
+      check(`
+        class A
+          method: (@a) =>
+      `, `
+        class A {
+          constructor() {
+            this.method = this.method.bind(this);
+          }
+        
+          method(a) {
+            this.a = a;
+            return;
+          }
+        }
+      `);
+    });
+
+    it('chooses variables that do not conflict', () => {
+      check(`
+        (@a) ->
+          a = 1
+      `, `
+        (function(a1) {
+          let a;
+          this.a = a1;
+          return a = 1;
+        });
+      `);
+    });
+
+    it('prepends assignments in single-line methods', () => {
+      check(`
+        class A
+          member: (@a) -> console.log(@a)
+      `, `
+        class A {
+          member(a) { this.a = a; return console.log(this.a); }
+        }
+      `);
+    });
+
+    it('uses correct value for default param when using another member', () => {
+      check(`
+        (@a, b = @c) ->
+      `, `
+        (function(a, b = this.c) {
+          this.a = a;
+          return;
+        });
+      `);
+    });
+
+    it.skip('uses correct value for default param when reusing an already implicitly assigned param', () => {
+      check(`
+        (@a, b = @a) ->
+      `, `
+        (function(a, b = a) {
+          this.a = a;
+          return;
+        });
+      `);
+    });
+  });
+
   it('preserves class constructors extending superclasses', () => {
     check(`
       class A extends B
