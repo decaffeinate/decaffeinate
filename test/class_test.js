@@ -168,6 +168,17 @@ describe('classes', () => {
         });
       `);
     });
+
+    it('prepends assignments in single-line methods', () => {
+      check(`
+        class A
+          member: (@a) -> console.log(@a)
+      `, `
+        class A {
+          member(a) { this.a = a; return console.log(this.a); }
+        }
+      `);
+    });
   });
 
   it('preserves class constructors extending superclasses', () => {

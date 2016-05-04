@@ -33,9 +33,14 @@ export default class FunctionPatcher extends NodePatcher {
     if (this.body) {
       // before the actual body
       if (assignments.length) {
-        let indent = this.body.getIndent(0);
-        let text = assignments.join(`\n${indent}`);
-        this.insert(this.body.contentStart, `${text}\n${indent}`);
+        let text;
+        if (this.body.node.inline) {
+          text = `${assignments.join('; ')}; `;
+        } else {
+          let indent = this.body.getIndent(0);
+          text = `${assignments.join(`\n${indent}`)}\n${indent}`;
+        }
+        this.insert(this.body.contentStart, `${text}`);
       }
       this.body.patch();
     } else if (assignments.length) {
