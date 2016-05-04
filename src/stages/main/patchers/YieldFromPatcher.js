@@ -1,6 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
-import { YIELDFROM } from 'coffee-lex';
 
 export default class YieldFromPatcher extends NodePatcher {
   expression: NodePatcher;
