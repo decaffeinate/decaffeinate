@@ -4612,10 +4612,19 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
       var _this2 = this;
 
       var implicitCall = this.isImplicitCall();
+      var args = this.args;
+
+
       this.fn.patch();
+
+      if (implicitCall && args.length === 0) {
+        this.insert(this.fn.outerEnd, '()');
+        return;
+      }
+
       if (implicitCall) {
-        var firstArg = this.args[0];
-        var hasOneArg = this.args.length === 1;
+        var firstArg = args[0];
+        var hasOneArg = args.length === 1;
         var firstArgIsOnNextLine = !firstArg ? false : /[\r\n]/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
         if (hasOneArg && firstArg.node.virtual || firstArgIsOnNextLine) {
           this.insert(this.fn.outerEnd, '(');
@@ -4623,7 +4632,8 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
           this.overwrite(this.fn.outerEnd, firstArg.outerStart, '(');
         }
       }
-      this.args.forEach(function (arg, i, args) {
+
+      args.forEach(function (arg, i) {
         arg.patch();
         var isLast = i === args.length - 1;
         var commaTokenIndex = arg.node.virtual ? null : _this2.indexOfSourceTokenAfterSourceTokenIndex(arg.outerEndTokenIndex, coffeeLex.COMMA, isSemanticToken);
@@ -4634,6 +4644,7 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
           _this2.insert(arg.outerEnd, ',');
         }
       });
+
       if (implicitCall) {
         this.insert(this.innerEnd, ')');
       }
@@ -5209,65 +5220,16 @@ var LogicalOpPatcher = function (_BinaryOpPatcher) {
  * Handles construction of objects with `new`.
  */
 
-var NewOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(NewOpPatcher, _NodePatcher);
+var NewOpPatcher = function (_FunctionApplicationP) {
+  babelHelpers.inherits(NewOpPatcher, _FunctionApplicationP);
 
-  function NewOpPatcher(node, context, editor, ctor, args) {
+  function NewOpPatcher() {
     babelHelpers.classCallCheck(this, NewOpPatcher);
-
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(NewOpPatcher).call(this, node, context, editor));
-
-    _this.ctor = ctor;
-    _this.args = args;
-    return _this;
+    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(NewOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(NewOpPatcher, [{
-    key: 'initialize',
-    value: function initialize() {
-      this.ctor.setRequiresExpression();
-      this.args.forEach(function (arg) {
-        return arg.setRequiresExpression();
-      });
-    }
-  }, {
-    key: 'patchAsExpression',
-    value: function patchAsExpression() {
-      var _this2 = this;
-
-      this.ctor.patch();
-      var implicitCall = this.isImplicitCall();
-      if (this.args.length > 0) {
-        if (implicitCall) {
-          this.overwrite(this.ctor.outerEnd, this.args[0].outerStart, '(');
-        }
-        this.args.forEach(function (arg, i, args) {
-          arg.patch();
-          var isLast = i === args.length - 1;
-          if (!isLast && !arg.hasSourceTokenAfter(coffeeLex.COMMA)) {
-            _this2.insert(arg.outerEnd, ',');
-          }
-        });
-        if (implicitCall) {
-          this.insert(this.args[this.args.length - 1].outerEnd, ')');
-        }
-      } else if (implicitCall) {
-        this.insert(this.ctor.outerEnd, '()');
-      }
-    }
-
-    /**
-     * @private
-     */
-
-  }, {
-    key: 'isImplicitCall',
-    value: function isImplicitCall() {
-      return this.context.source[this.ctor.outerEnd] !== '(';
-    }
-  }]);
   return NewOpPatcher;
-}(NodePatcher);
+}(FunctionApplicationPatcher);
 
 /**
  * Handles object properties.
@@ -8764,7 +8726,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.8.0";
+var version = "2.8.1";
 
 /**
  * Run the script with the user-supplied arguments.
