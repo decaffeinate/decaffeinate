@@ -69,6 +69,7 @@ const ORDER = {
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
   Function: ['parameters', 'body'],
   FunctionApplication: ['function', 'arguments'],
+  GeneratorFunction: ['parameters', 'body'],
   GTEOp: ['left', 'right'],
   GTOp: ['left', 'right'],
   Herestring: [],
@@ -103,9 +104,6 @@ const ORDER = {
   RemOp: ['left', 'right'],
   Rest: ['expression'],
   Return: ['expression'],
-  GeneratorFunction: ['parameters', 'body'],
-  Yield: ['expression'],
-  YieldFrom: ['expression'],
   SeqOp: ['left', 'right'],
   SignedRightShiftOp: ['left', 'right'],
   Slice: ['expression', 'left', 'right'],
@@ -129,6 +127,8 @@ const ORDER = {
   Undefined: [],
   UnsignedRightShiftOp: ['left', 'right'],
   While: ['condition', 'guard', 'body']
+  Yield: ['expression'],
+  YieldFrom: ['expression'],
 };
 
 /**
