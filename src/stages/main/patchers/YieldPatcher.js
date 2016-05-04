@@ -10,7 +10,7 @@ export default class YieldPatcher extends NodePatcher {
   }
 
   /**
-   * YIELD EXPRESSION
+   * 'yield' EXPRESSION
    */
   patchAsExpression({ needsParens=true }={}) {
     this.expression.patch({ needsParens });
