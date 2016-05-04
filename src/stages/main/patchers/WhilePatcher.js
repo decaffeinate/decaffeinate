@@ -13,6 +13,7 @@ export default class WhilePatcher extends NodePatcher {
   condition: NodePatcher;
   guard: ?NodePatcher;
   body: BlockPatcher;
+  yielding: boolean;
   
   constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: BlockPatcher) {
     super(node, context, editor);
@@ -125,21 +126,16 @@ export default class WhilePatcher extends NodePatcher {
   patchAsExpression() {
     this.body.setImplicitlyReturns();
     let resultBinding = this.getResultArrayBinding();
-    this._yielding = null;
     this.patchAsStatement();
-    let isYielding = !!this._yielding;
-    this._yielding = null;
-    let prefix = isYielding ? 'yield* (function*()' : '(() =>';
+    let prefix = this.yielding ? 'yield* (function*()' : '(() =>';
     this.insert(this.contentStart, `${prefix} { ${resultBinding} = []; `);
-    let postfix = isYielding ? '.call(this)' : '()';
+    let postfix = this.yielding ? '.call(this)' : '()';
     this.insert(this.contentEnd, ` return ${resultBinding}; })${postfix}`);
-    if (isYielding) {
-      this.yields();
-    }
   }
 
-  yieldController(node) {
-    this._yielding = node;
+  yieldController() {
+    this.yielding = true;
+    this.yields();
   }
 
   /**

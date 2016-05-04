@@ -8,12 +8,15 @@ export default class YieldPatcher extends NodePatcher {
     super(node, context, editor);
     this.expression = expression;
   }
+  
+  initialize() {
+    this.yields();
+  }
 
   /**
    * 'yield' EXPRESSION
    */
   patchAsExpression({ needsParens=true }={}) {
     this.expression.patch({ needsParens });
-    this.yields();
   }
 }

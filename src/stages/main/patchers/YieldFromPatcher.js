@@ -8,6 +8,10 @@ export default class YieldFromPatcher extends NodePatcher {
     super(node, context, editor);
     this.expression = expression;
   }
+  
+  initialize() {
+    this.yields();
+  }
 
   /**
    * 'yield' 'from' EXPRESSION
@@ -17,6 +21,5 @@ export default class YieldFromPatcher extends NodePatcher {
     this.overwrite(src.start, src.end, 'yield*');
     
     this.expression.patch({ needsParens });
-    this.yields();
   }
 }
