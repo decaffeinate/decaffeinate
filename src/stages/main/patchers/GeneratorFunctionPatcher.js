@@ -1,10 +1,9 @@
 import FunctionPatcher from './FunctionPatcher.js';
 
 /**
- * Handles bound functions, i.e. "fat arrows".
+ * Handles generator functions, i.e. produced by embedding `yield` statements.
  */
 export default class GeneratorFunctionPatcher extends FunctionPatcher {
-
   patchFunctionStart({ method=false }) {
     this.log('Running with method=' + method);
     let arrow = this.getArrowToken();
@@ -19,6 +18,4 @@ export default class GeneratorFunctionPatcher extends FunctionPatcher {
 
     this.overwrite(arrow.start, arrow.end, '{');
   }
-
-
 }
