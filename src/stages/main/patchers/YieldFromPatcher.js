@@ -10,7 +10,7 @@ export default class YieldFromPatcher extends NodePatcher {
   }
 
   /**
-   * YIELD FROM EXPRESSION
+   * 'yield' 'from' EXPRESSION
    */
   patchAsExpression({ needsParens=true }={}) {
     let src = this.sourceTokenAtIndex(this.contentStartTokenIndex);
