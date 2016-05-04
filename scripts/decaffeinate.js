@@ -1271,14 +1271,23 @@ var NodePatcher = function () {
 
     /**
      * Determines whether this patcher's node is surrounded by parentheses.
+     * Also check if these parents are matching, to avoid false positives on things like `(a) && (b)`
      */
 
   }, {
     key: 'isSurroundedByParentheses',
     value: function isSurroundedByParentheses() {
       var beforeToken = this.sourceTokenAtIndex(this.outerStartTokenIndex);
+      if (!beforeToken || beforeToken.type !== coffeeLex.LPAREN) return false;
+
       var afterToken = this.sourceTokenAtIndex(this.outerEndTokenIndex);
-      return beforeToken && beforeToken.type === coffeeLex.LPAREN && afterToken && afterToken.type === coffeeLex.RPAREN;
+      if (!afterToken || afterToken.type !== coffeeLex.RPAREN) return false;
+
+      var parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(coffeeLex.LPAREN, coffeeLex.RPAREN, this.outerStartTokenIndex);
+      if (!parenRange) return false;
+      var rparenIndex = parenRange[1].previous();
+      var rparen = this.sourceTokenAtIndex(rparenIndex);
+      return rparen === afterToken;
     }
   }, {
     key: 'getBoundingPatcher',
@@ -5568,11 +5577,30 @@ var ProgramPatcher = function (_NodePatcher) {
       if (this.body) {
         this.body.patch({ leftBrace: false, rightBrace: false });
       }
+      this.patchContinuations();
       this.patchComments();
 
       for (var helper in this.helpers) {
         this.editor.append('\n' + this.helpers[helper]);
       }
+    }
+
+    /**
+     * Removes continuation tokens (i.e. '\' at the end of a line).
+     *
+     * @private
+     */
+
+  }, {
+    key: 'patchContinuations',
+    value: function patchContinuations() {
+      var _this2 = this;
+
+      this.getProgramSourceTokens().forEach(function (token) {
+        if (token.type === coffeeLex.CONTINUATION) {
+          _this2.remove(token.start, token.end);
+        }
+      });
     }
 
     /**
@@ -5584,19 +5612,19 @@ var ProgramPatcher = function (_NodePatcher) {
   }, {
     key: 'patchComments',
     value: function patchComments() {
-      var _this2 = this;
+      var _this3 = this;
 
       var source = this.context.source;
 
       this.getProgramSourceTokens().forEach(function (token) {
         if (token.type === coffeeLex.COMMENT) {
           if (token.start === 0 && source[1] === '!') {
-            _this2.patchShebangComment(token);
+            _this3.patchShebangComment(token);
           } else {
-            _this2.patchLineComment(token);
+            _this3.patchLineComment(token);
           }
         } else if (token.type === coffeeLex.HERECOMMENT) {
-          _this2.patchBlockComment(token);
+          _this3.patchBlockComment(token);
         }
       });
     }
@@ -5610,7 +5638,7 @@ var ProgramPatcher = function (_NodePatcher) {
   }, {
     key: 'patchBlockComment',
     value: function patchBlockComment(comment) {
-      var _this3 = this;
+      var _this4 = this;
 
       var start = comment.start;
       var end = comment.end;
@@ -5658,7 +5686,7 @@ var ProgramPatcher = function (_NodePatcher) {
       }
 
       leadingHashIndexes.forEach(function (index) {
-        _this3.overwrite(index, index + '#'.length, lineUpAsterisks ? ' *' : '*');
+        _this4.overwrite(index, index + '#'.length, lineUpAsterisks ? ' *' : '*');
       });
 
       this.overwrite(end - BLOCK_COMMENT_DELIMITER.length, end, isMultiline && lineUpAsterisks ? ' */' : '*/');
@@ -6222,6 +6250,23 @@ var SlicePatcher = function (_NodePatcher) {
   return SlicePatcher;
 }(NodePatcher);
 
+var SoakedFunctionApplicationPatcher = function (_FunctionApplicationP) {
+  babelHelpers.inherits(SoakedFunctionApplicationPatcher, _FunctionApplicationP);
+
+  function SoakedFunctionApplicationPatcher() {
+    babelHelpers.classCallCheck(this, SoakedFunctionApplicationPatcher);
+    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SoakedFunctionApplicationPatcher).apply(this, arguments));
+  }
+
+  babelHelpers.createClass(SoakedFunctionApplicationPatcher, [{
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      throw this.error('cannot patch soaked function calls (e.g. `a?()`) yet, ' + 'see https://github.com/decaffeinate/decaffeinate/issues/176');
+    }
+  }]);
+  return SoakedFunctionApplicationPatcher;
+}(FunctionApplicationPatcher);
+
 var SoakedMemberAccessOpPatcher = function (_NodePatcher) {
   babelHelpers.inherits(SoakedMemberAccessOpPatcher, _NodePatcher);
 
@@ -6233,7 +6278,7 @@ var SoakedMemberAccessOpPatcher = function (_NodePatcher) {
   babelHelpers.createClass(SoakedMemberAccessOpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
-      throw this.error('cannot patch soaked member access (e.g. `a?.b`) yet');
+      throw this.error('cannot patch soaked member access (e.g. `a?.b`) yet,' + 'see https://github.com/decaffeinate/decaffeinate/issues/176');
     }
   }]);
   return SoakedMemberAccessOpPatcher;
@@ -8043,6 +8088,9 @@ var MainStage = function (_TransformCoffeeScrip) {
         case 'FunctionApplication':
           return FunctionApplicationPatcher;
 
+        case 'SoakedFunctionApplication':
+          return SoakedFunctionApplicationPatcher;
+
         case 'MemberAccessOp':
           return MemberAccessOpPatcher;
 
@@ -8592,7 +8640,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.7.9";
+var version = "2.7.11";
 
 /**
  * Run the script with the user-supplied arguments.
