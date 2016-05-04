@@ -8600,6 +8600,120 @@ var WhilePatcher$1 = function (_NodePatcher) {
   return WhilePatcher;
 }(NodePatcher);
 
+var DefaultParamPatcher$1 = function (_PassthroughPatcher) {
+  babelHelpers.inherits(DefaultParamPatcher, _PassthroughPatcher);
+
+  function DefaultParamPatcher() {
+    babelHelpers.classCallCheck(this, DefaultParamPatcher);
+    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(DefaultParamPatcher).apply(this, arguments));
+  }
+
+  return DefaultParamPatcher;
+}(PassthroughPatcher);
+
+var MemberAccessOpPatcher$1 = function (_PassthroughPatcher) {
+  babelHelpers.inherits(MemberAccessOpPatcher, _PassthroughPatcher);
+
+  function MemberAccessOpPatcher() {
+    babelHelpers.classCallCheck(this, MemberAccessOpPatcher);
+    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(MemberAccessOpPatcher).apply(this, arguments));
+  }
+
+  babelHelpers.createClass(MemberAccessOpPatcher, [{
+    key: 'shouldTrimContentRange',
+    value: function shouldTrimContentRange() {
+      return true;
+    }
+  }, {
+    key: 'patch',
+    value: function patch() {
+      babelHelpers.get(Object.getPrototypeOf(MemberAccessOpPatcher.prototype), 'patch', this).call(this);
+      var callback = this.findAddStatementCallback();
+      if (callback) {
+        var content = this.slice(this.contentStart, this.contentEnd);
+        this.overwrite(this.contentStart, this.contentEnd, callback(this.node.memberName, content));
+      }
+    }
+  }, {
+    key: 'findAddStatementCallback',
+    value: function findAddStatementCallback() {
+      var patcher = this.parent;
+      // if we traverse up through DefaultParam, we're on the right hand side
+      while (patcher && !(patcher instanceof DefaultParamPatcher$1)) {
+        if (patcher.addStatementAtScopeHeader) return patcher.addStatementAtScopeHeader;
+        patcher = patcher.parent;
+      }
+    }
+  }]);
+  return MemberAccessOpPatcher;
+}(PassthroughPatcher);
+
+var FunctionPatcher$1 = function (_NodePatcher) {
+  babelHelpers.inherits(FunctionPatcher, _NodePatcher);
+
+  function FunctionPatcher(node, context, editor, parameters, body) {
+    babelHelpers.classCallCheck(this, FunctionPatcher);
+
+    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(FunctionPatcher).call(this, node, context, editor));
+
+    _this.parameters = parameters;
+    _this.body = body;
+    return _this;
+  }
+
+  babelHelpers.createClass(FunctionPatcher, [{
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      var _this2 = this;
+
+      // To avoid knowledge of all the details how assignments can be nested in nodes,
+      // we add a callback to the function node before patching the parameters and remove it afterwards.
+      // This is detected and used by the MemberAccessOpPatcher to claim a free binding for this parameter
+      // (from the functions scope, not the body's scope)
+
+      var assignments = [];
+      this.addStatementAtScopeHeader = function (memberName) {
+        var varName = _this2.claimFreeBinding(memberName);
+        assignments.push('@' + memberName + ' = ' + varName);
+        _this2.log('Replacing parameter @' + memberName + ' with ' + varName);
+        return varName;
+      };
+
+      this.parameters.forEach(function (parameter) {
+        return parameter.patch();
+      });
+
+      delete this.addStatementAtScopeHeader;
+
+      // If there were assignments from parameters insert them
+      if (this.body) {
+        // before the actual body
+        if (assignments.length) {
+          var text = undefined;
+          if (this.body.node.inline) {
+            text = assignments.join('; ') + '; ';
+          } else {
+            var indent = this.body.getIndent(0);
+            text = assignments.join('\n' + indent) + '\n' + indent;
+          }
+          this.insert(this.body.contentStart, '' + text);
+        }
+        this.body.patch();
+      } else if (assignments.length) {
+        // as the body if there is no body
+        // Add a return statement for non-constructor methods without body to avoid bad implict return
+        if (this.node.parentNode.type != 'Constructor') {
+          assignments.push('return');
+        }
+        var indent = this.getIndent(1);
+        var text = assignments.join('\n' + indent);
+        this.insert(this.contentEnd, '\n' + indent + text);
+      }
+    }
+  }]);
+  return FunctionPatcher;
+}(NodePatcher);
+
 var NormalizeStage = function (_TransformCoffeeScrip) {
   babelHelpers.inherits(NormalizeStage, _TransformCoffeeScrip);
 
@@ -8612,6 +8726,13 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
     key: 'patcherConstructorForNode',
     value: function patcherConstructorForNode(node) {
       switch (node.type) {
+        case 'MemberAccessOp':
+          return MemberAccessOpPatcher$1;
+
+        case 'BoundFunction':
+        case 'Function':
+          return FunctionPatcher$1;
+
         case 'Conditional':
           return ConditionalPatcher$1;
 
@@ -8627,6 +8748,9 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
         case 'Program':
           return ProgramPatcher$1;
 
+        case 'DefaultParam':
+          return DefaultParamPatcher$1;
+
         default:
           return PassthroughPatcher;
       }
@@ -8640,7 +8764,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.7.11";
+var version = "2.8.0";
 
 /**
  * Run the script with the user-supplied arguments.
