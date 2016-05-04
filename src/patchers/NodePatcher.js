@@ -674,15 +674,15 @@ export default class NodePatcher {
     if (!afterToken || afterToken.type !== RPAREN) return false;
 
     let parenRange = this.getProgramSourceTokens()
-        .rangeOfMatchingTokensContainingTokenIndex(
-            LPAREN,
-            RPAREN,
-            this.outerStartTokenIndex
-        );
+      .rangeOfMatchingTokensContainingTokenIndex(
+        LPAREN,
+        RPAREN,
+        this.outerStartTokenIndex
+      );
     if (!parenRange) return false;
     let rparenIndex = parenRange[1].previous();
     let rparen = this.sourceTokenAtIndex(rparenIndex);
-    return rparen.end == afterToken.end;
+    return rparen === afterToken;
   }
 
   getBoundingPatcher(): ?NodePatcher {
