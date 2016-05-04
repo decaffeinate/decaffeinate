@@ -30,4 +30,17 @@ describe('`new` operator', () => {
       new Object();
     `);
   });
+
+  it('inserts missing parentheses before an implicit object brace', () => {
+    check(`
+      new A
+        a: a
+        b: b
+    `, `
+      new A({
+        a,
+        b
+      });
+    `);
+  });
 });

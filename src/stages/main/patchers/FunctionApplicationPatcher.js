@@ -20,10 +20,18 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
   patchAsExpression() {
     let implicitCall = this.isImplicitCall();
+    let { args } = this;
+
     this.fn.patch();
+
+    if (implicitCall && args.length === 0) {
+      this.insert(this.fn.outerEnd, '()');
+      return;
+    }
+
     if (implicitCall) {
-      let firstArg = this.args[0];
-      let hasOneArg = this.args.length === 1;
+      let firstArg = args[0];
+      let hasOneArg = args.length === 1;
       let firstArgIsOnNextLine = !firstArg ? false :
         /[\r\n]/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
       if ((hasOneArg && firstArg.node.virtual) || firstArgIsOnNextLine) {
@@ -32,7 +40,8 @@ export default class FunctionApplicationPatcher extends NodePatcher {
         this.overwrite(this.fn.outerEnd, firstArg.outerStart, '(');
       }
     }
-    this.args.forEach((arg, i, args) => {
+
+    args.forEach((arg, i) => {
       arg.patch();
       let isLast = i === args.length - 1;
       let commaTokenIndex = arg.node.virtual ? null : this.indexOfSourceTokenAfterSourceTokenIndex(
@@ -47,6 +56,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
         this.insert(arg.outerEnd, ',');
       }
     });
+
     if (implicitCall) {
       this.insert(this.innerEnd, ')');
     }
