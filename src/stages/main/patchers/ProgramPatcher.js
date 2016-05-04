@@ -2,7 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import blank from '../../../utils/blank.js';
 import determineIndent from '../../../utils/determineIndent.js';
 import getIndent from '../../../utils/getIndent.js';
-import { COMMENT, HERECOMMENT} from 'coffee-lex';
+import { COMMENT, CONTINUATION, HERECOMMENT} from 'coffee-lex';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Editor, Node, ParseContext, SourceToken } from './../../../patchers/types.js';
 
@@ -33,11 +33,25 @@ export default class ProgramPatcher extends NodePatcher {
     if (this.body) {
       this.body.patch({ leftBrace: false, rightBrace: false });
     }
+    this.patchContinuations();
     this.patchComments();
 
     for (let helper in this.helpers) {
       this.editor.append(`\n${this.helpers[helper]}`);
     }
+  }
+
+  /**
+   * Removes continuation tokens (i.e. '\' at the end of a line).
+   *
+   * @private
+   */
+  patchContinuations() {
+    this.getProgramSourceTokens().forEach(token => {
+      if (token.type === CONTINUATION) {
+        this.remove(token.start, token.end);
+      }
+    });
   }
 
   /**
