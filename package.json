@@ -30,7 +30,7 @@
   "author": "Brian Donovan",
   "license": "MIT",
   "dependencies": {
-    "add-variable-declarations": "^1.4.0",
+    "add-variable-declarations": "^1.5.0",
     "ast-processor-babylon-config": "^1.0.0",
     "automatic-semicolon-insertion": "^1.0.1",
     "babylon": "^6.7.0",

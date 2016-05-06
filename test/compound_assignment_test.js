@@ -34,6 +34,7 @@ describe('compound assignment', () => {
       check(`
         [a ||= b]
       `, `
+        let a;
         [a || (a = b)];
       `);
     });
@@ -42,6 +43,7 @@ describe('compound assignment', () => {
       check(`
         [a &&= b]
       `, `
+        let a;
         [a && (a = b)];
       `);
     });
@@ -177,14 +179,6 @@ describe('compound assignment', () => {
       `);
     });
 
-    it('handles simple existence assignment of a global variable', () => {
-      check(`
-        [a ?= 2]
-      `, `
-        [typeof a !== 'undefined' && a !== null ? a : (a = 2)];
-      `);
-    });
-
     it('handles simple existence assignment of a bound variable', () => {
       check(`
         a = 1
@@ -253,7 +247,7 @@ describe('compound assignment', () => {
       check(`
         a ||= b
       `, `
-        if (!a) { a = b; }
+        if (!a) { var a = b; }
       `);
     });
 
@@ -261,7 +255,7 @@ describe('compound assignment', () => {
       check(`
         a &&= b
       `, `
-        if (a) { a = b; }
+        if (a) { var a = b; }
       `);
     });
 
