@@ -13,7 +13,7 @@ const IN_HELPER =
  */
 export default class InOpPatcher extends BinaryOpPatcher {
   negated: boolean;
-  
+
   /**
    * `node` is of type `InOp`.
    */
@@ -34,7 +34,6 @@ export default class InOpPatcher extends BinaryOpPatcher {
    * LEFT 'in' RIGHT
    */
   patchAsExpression() {
-    let needsParens = !this.isSurroundedByParentheses();
     let helper = this.registerHelper('__in__', IN_HELPER);
 
     if (this.negated) {
@@ -42,15 +41,9 @@ export default class InOpPatcher extends BinaryOpPatcher {
       this.insert(this.left.outerStart, '!');
     }
 
-    // `a in b` → `__in__a in b`
+    // `a in b` → `__in__(a in b`
     //             ^^^^^^^
-    this.insert(this.left.outerStart, helper);
-
-    if (needsParens) {
-      // `__in__a in b` → `__in__(a in b`
-      //                         ^
-      this.insert(this.left.outerStart, '(');
-    }
+    this.insert(this.left.outerStart, `${helper}(`);
 
     this.left.patch();
 
@@ -60,11 +53,9 @@ export default class InOpPatcher extends BinaryOpPatcher {
 
     this.right.patch();
 
-    if (needsParens) {
-      // `__in__(a, b` → `__in__(a, b)`
-      //                             ^
-      this.insert(this.right.outerEnd, ')');
-    }
+    // `__in__(a, b` → `__in__(a, b)`
+    //                             ^
+    this.insert(this.right.outerEnd, ')');
   }
 
   /**

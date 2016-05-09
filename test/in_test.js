@@ -94,6 +94,34 @@ describe('in operator', () => {
 
   it('handles negation with `unless`', () => {
     check(`
+      unless a in b
+        c
+    `, `
+      if (!__in__(a, b)) {
+        c;
+      }
+      function __in__(needle, haystack) {
+        return haystack.indexOf(needle) >= 0;
+      }
+    `);
+  });
+
+  it('handles negation with `if not`', () => {
+    check(`
+      if not (a in b)
+        c
+    `, `
+      if (!(__in__(a, b))) {
+        c;
+      }
+      function __in__(needle, haystack) {
+        return haystack.indexOf(needle) >= 0;
+      }
+    `);
+  });
+
+  it('handles double negation with `unless`', () => {
+    check(`
       unless a not in b
         c
     `, `

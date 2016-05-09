@@ -7,7 +7,7 @@ export default class ConditionalPatcher extends NodePatcher {
   condition: NodePatcher;
   consequent: BlockPatcher;
   alternate: ?BlockPatcher;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, consequent: BlockPatcher, alternate: ?BlockPatcher) {
     super(node, context, editor);
     this.condition = condition;
