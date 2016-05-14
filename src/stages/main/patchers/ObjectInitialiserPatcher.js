@@ -9,7 +9,7 @@ import { isSemanticToken } from '../../../utils/types.js';
  */
 export default class ObjectInitialiserPatcher extends NodePatcher {
   members: Array<NodePatcher>;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, members: Array<NodePatcher>) {
     super(node, context, editor);
     this.members = members;
@@ -33,7 +33,11 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
           textToInsert = `{\n${this.getIndent()}`;
           shouldIndent = true;
         } else {
-          let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex.previous();
+          let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex;
+          if (!this.isSurroundedByParentheses()) {
+            tokenIndexBeforeOuterStartTokenIndex = tokenIndexBeforeOuterStartTokenIndex.previous();
+          }
+
           if (tokenIndexBeforeOuterStartTokenIndex) {
             let precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
               isSemanticToken,
@@ -63,7 +67,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     }
     this.patchMembers();
     if (implicitObject) {
-      if (this.shouldExpandCurlyBraces()) {
+      if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
         this.appendLineAfter('}', -1);
       } else {
         this.insert(this.innerEnd, '}');
