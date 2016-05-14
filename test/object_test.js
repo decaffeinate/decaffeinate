@@ -283,4 +283,21 @@ describe('objects', () => {
       });
     `);
   });
+
+  it('adds braces when explicitly returning an implicit multi-line object wrapped in parens', () => {
+    check(`
+      ->
+        return (
+          a: b
+          c: d
+        )
+    `, `
+      () =>
+        ({
+          a: b,
+          c: d
+        })
+      ;
+    `);
+  });
 });

@@ -95,7 +95,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
       this.insert(this.contentStart, '(');
     }
     if (implicitObject) {
-      if (this.shouldExpandCurlyBraces()) {
+      if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
         this.insert(this.innerStart, `{\n${this.getIndent()}`);
         this.indent();
       } else {
@@ -104,7 +104,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     }
     this.patchMembers();
     if (implicitObject) {
-      if (this.shouldExpandCurlyBraces()) {
+      if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
         this.appendLineAfter('}', -1);
       } else {
         this.insert(this.innerEnd, '}');
