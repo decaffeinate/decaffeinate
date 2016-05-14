@@ -300,4 +300,21 @@ describe('objects', () => {
       ;
     `);
   });
+
+  it('adds braces when implicitly returning an implicit multi-line object wrapped in parens', () => {
+    check(`
+      ->
+        (
+          a: b
+          c: d
+        )
+    `, `
+      () =>
+        ({
+          a: b,
+          c: d
+        })
+      ;
+    `);
+  });
 });

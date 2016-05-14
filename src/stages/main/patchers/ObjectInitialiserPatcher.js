@@ -29,7 +29,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
       let textToInsert = '{';
       let shouldIndent = false;
       if (this.shouldExpandCurlyBraces()) {
-        if (this.implicitlyReturns()) {
+        if (this.implicitlyReturns() && !this.isSurroundedByParentheses()) {
           textToInsert = `{\n${this.getIndent()}`;
           shouldIndent = true;
         } else {
