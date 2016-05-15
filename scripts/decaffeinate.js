@@ -496,7 +496,7 @@ function adjustIndent(source, offset, adjustment) {
 function isFunction(node) {
   var allowBound = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
-  return node.type === 'Function' || allowBound && node.type === 'BoundFunction';
+  return node.type === 'Function' || node.type === 'GeneratorFunction' || allowBound && node.type === 'BoundFunction';
 }
 
 var NON_SEMANTIC_SOURCE_TOKEN_TYPES = [coffeeLex.COMMENT, coffeeLex.HERECOMMENT, coffeeLex.NEWLINE];
@@ -1533,6 +1533,17 @@ var NodePatcher = function () {
     value: function allCodePathsPresent() {
       return true;
     }
+  }, {
+    key: 'yields',
+    value: function yields() {
+      var receiver = this.parent;
+      while (receiver) {
+        if (receiver.yieldController) {
+          return receiver.yieldController();
+        }
+        receiver = receiver.parent;
+      }
+    }
   }], [{
     key: 'patcherClassForChildNode',
     value: function patcherClassForChildNode() {
@@ -2149,6 +2160,7 @@ var ORDER = {
   ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
   Function: ['parameters', 'body'],
   FunctionApplication: ['function', 'arguments'],
+  GeneratorFunction: ['parameters', 'body'],
   GTEOp: ['left', 'right'],
   GTOp: ['left', 'right'],
   Herestring: [],
@@ -2205,7 +2217,9 @@ var ORDER = {
   UnaryPlusOp: ['expression'],
   Undefined: [],
   UnsignedRightShiftOp: ['left', 'right'],
-  While: ['condition', 'guard', 'body']
+  While: ['condition', 'guard', 'body'],
+  Yield: ['expression'],
+  YieldFrom: ['expression']
 };
 
 /**
@@ -2645,6 +2659,41 @@ var MemberAccessOpPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 /**
+ * Handles generator functions, i.e. produced by embedding `yield` statements.
+ */
+
+var GeneratorFunctionPatcher = function (_FunctionPatcher) {
+  babelHelpers.inherits(GeneratorFunctionPatcher, _FunctionPatcher);
+
+  function GeneratorFunctionPatcher() {
+    babelHelpers.classCallCheck(this, GeneratorFunctionPatcher);
+    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(GeneratorFunctionPatcher).apply(this, arguments));
+  }
+
+  babelHelpers.createClass(GeneratorFunctionPatcher, [{
+    key: 'patchFunctionStart',
+    value: function patchFunctionStart(_ref) {
+      var _ref$method = _ref.method;
+      var method = _ref$method === undefined ? false : _ref$method;
+
+      this.log('Running with method=' + method);
+      var arrow = this.getArrowToken();
+
+      if (!method) {
+        this.insert(this.contentStart, 'function*');
+      }
+
+      if (!this.hasParamStart()) {
+        this.insert(this.contentStart, '() ');
+      }
+
+      this.overwrite(arrow.start, arrow.end, '{');
+    }
+  }]);
+  return GeneratorFunctionPatcher;
+}(FunctionPatcher);
+
+/**
  * Handles object properties.
  */
 
@@ -2686,6 +2735,9 @@ var ObjectBodyMemberPatcher = function (_NodePatcher) {
   }, {
     key: 'patchAsMethod',
     value: function patchAsMethod() {
+      if (this.isGeneratorMethod()) {
+        this.insert(this.key.outerStart, '*');
+      }
       var computedKey = this.isComputed();
       if (computedKey) {
         // `{ 'hi there': ->` → `{ ['hi there': ->`
@@ -2739,7 +2791,17 @@ var ObjectBodyMemberPatcher = function (_NodePatcher) {
   }, {
     key: 'isMethod',
     value: function isMethod() {
-      return this.expression instanceof FunctionPatcher;
+      return this.expression instanceof FunctionPatcher || this.isGeneratorMethod();
+    }
+
+    /**
+     * @protected
+     */
+
+  }, {
+    key: 'isGeneratorMethod',
+    value: function isGeneratorMethod() {
+      return this.expression instanceof GeneratorFunctionPatcher;
     }
 
     /**
@@ -7051,6 +7113,7 @@ var Scope = function () {
 
         case 'Function':
         case 'BoundFunction':
+        case 'GeneratorFunction':
           getBindingsForNode(node).forEach(function (identifier) {
             return _this3.declares(identifier.data, identifier);
           });
@@ -7099,6 +7162,7 @@ var Scope = function () {
 function getBindingsForNode(node) {
   switch (node.type) {
     case 'Function':
+    case 'GeneratorFunction':
     case 'BoundFunction':
       return flatMap(node.parameters, getBindingsForNode);
 
@@ -7138,6 +7202,7 @@ function attachScope(node) {
 
     case 'Function':
     case 'BoundFunction':
+    case 'GeneratorFunction':
       node.scope = new Scope(node.parentNode.scope);
       break;
 
@@ -7841,9 +7906,17 @@ var WhilePatcher = function (_NodePatcher) {
     value: function patchAsExpression() {
       this.body.setImplicitlyReturns();
       var resultBinding = this.getResultArrayBinding();
-      this.insert(this.contentStart, '(() => { ' + resultBinding + ' = []; ');
       this.patchAsStatement();
-      this.insert(this.contentEnd, ' return ' + resultBinding + '; })()');
+      var prefix = !this.yielding ? '(() =>' : 'yield* (function*()';
+      this.insert(this.contentStart, prefix + ' { ' + resultBinding + ' = []; ');
+      var suffix = !this.yielding ? '()' : this.referencesArguments() ? '.apply(this, arguments)' : '.call(this)';
+      this.insert(this.contentEnd, ' return ' + resultBinding + '; })' + suffix);
+    }
+  }, {
+    key: 'yieldController',
+    value: function yieldController() {
+      this.yielding = true;
+      this.yields();
     }
 
     /**
@@ -8012,8 +8085,107 @@ var WhilePatcher = function (_NodePatcher) {
         });
       }
     }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: 'referencesArguments',
+    value: function referencesArguments() {
+      var result = false;
+
+      traverse(this.node, function (node) {
+        if (result || isFunction(node)) {
+          return false;
+        }
+
+        if (node.type === 'Identifier' && node.data === 'arguments') {
+          result = true;
+        }
+      });
+
+      return result;
+    }
   }]);
   return WhilePatcher;
+}(NodePatcher);
+
+var YieldPatcher = function (_NodePatcher) {
+  babelHelpers.inherits(YieldPatcher, _NodePatcher);
+
+  function YieldPatcher(node, context, editor, expression) {
+    babelHelpers.classCallCheck(this, YieldPatcher);
+
+    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(YieldPatcher).call(this, node, context, editor));
+
+    _this.expression = expression;
+    return _this;
+  }
+
+  babelHelpers.createClass(YieldPatcher, [{
+    key: 'initialize',
+    value: function initialize() {
+      this.yields();
+      this.expression.setRequiresExpression();
+    }
+
+    /**
+     * 'yield' EXPRESSION
+     */
+
+  }, {
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref$needsParens = _ref.needsParens;
+      var needsParens = _ref$needsParens === undefined ? true : _ref$needsParens;
+
+      this.expression.patch({ needsParens: needsParens });
+    }
+  }]);
+  return YieldPatcher;
+}(NodePatcher);
+
+var YieldFromPatcher = function (_NodePatcher) {
+  babelHelpers.inherits(YieldFromPatcher, _NodePatcher);
+
+  function YieldFromPatcher(node, context, editor, expression) {
+    babelHelpers.classCallCheck(this, YieldFromPatcher);
+
+    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(YieldFromPatcher).call(this, node, context, editor));
+
+    _this.expression = expression;
+    return _this;
+  }
+
+  babelHelpers.createClass(YieldFromPatcher, [{
+    key: 'initialize',
+    value: function initialize() {
+      this.yields();
+      this.expression.setRequiresExpression();
+    }
+
+    /**
+     * 'yield' 'from' EXPRESSION
+     */
+
+  }, {
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref$needsParens = _ref.needsParens;
+      var needsParens = _ref$needsParens === undefined ? true : _ref$needsParens;
+
+      var src = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+      this.overwrite(src.start, src.end, 'yield*');
+
+      this.expression.patch({ needsParens: needsParens });
+    }
+  }]);
+  return YieldFromPatcher;
 }(NodePatcher);
 
 var MainStage = function (_TransformCoffeeScrip) {
@@ -8070,6 +8242,15 @@ var MainStage = function (_TransformCoffeeScrip) {
 
         case 'This':
           return ThisPatcher;
+
+        case 'Yield':
+          return YieldPatcher;
+
+        case 'YieldFrom':
+          return YieldFromPatcher;
+
+        case 'GeneratorFunction':
+          return GeneratorFunctionPatcher;
 
         case 'Function':
           return FunctionPatcher;
@@ -8721,7 +8902,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.9.2";
+var version = "2.10.0";
 
 /**
  * Run the script with the user-supplied arguments.
