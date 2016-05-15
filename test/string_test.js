@@ -84,4 +84,44 @@ describe('strings', () => {
       line2\`);
     `);
   });
+
+  it('joins multi line doubled quoted strings on new lines and removes indentation', () => {
+    check(`
+     a = "multi line
+          double\\nquote
+          string"
+     `, `
+     let a = "multi line double\\nquote string";
+     `);
+  });
+
+  it('joins multi line single quoted strings on new lines and removes indentation', () => {
+    check(`
+     a = 'multi line
+          double\\nquote
+          string'
+     `, `
+     let a = 'multi line double\\nquote string';
+     `);
+  });
+
+  it('joins multi line triple double quoted strings on new lines, removes indentation and adds new line characters', () => {
+    check(`
+     a = """multi line
+          double\\nquote
+          string"""
+     `, `
+     let a = \`multi line\\ndouble\\nquote\\nstring\`;
+     `);
+  });
+
+  it('joins multi line triple single quoted strings on new lines, removes indentation and adds new line characters', () => {
+    check(`
+     a = '''multi line
+          double\\nquote
+          string'''
+     `, `
+     let a = \`multi line\\ndouble\\nquote\\nstring\`;
+     `);
+  });
 });

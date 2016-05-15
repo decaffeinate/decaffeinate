@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import escape, { escapeTemplateStringContents } from '../../../utils/escape.js';
+import joinMultilineString from '../../../utils/joinMultilineString.js';
 
 const HERESTRING_DELIMITER_LENGTH = 3;
 
@@ -26,5 +27,6 @@ export default class HerestringPatcher extends NodePatcher {
       this.remove(contentEnd + 1, this.contentEnd);
       escape(this.editor, [source[this.contentStart]], contentStart, contentEnd);
     }
+    joinMultilineString(this, this.node.raw, this.contentStart);
   }
 }
