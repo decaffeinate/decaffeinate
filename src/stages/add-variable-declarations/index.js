@@ -9,7 +9,19 @@ export default class AddVariableDeclarationsStage {
     log(content);
 
     let editor = new MagicString(content);
-    addVariableDeclarations(content, editor);
+    try {
+      addVariableDeclarations(content, editor);
+    } catch (err) {
+      if (err.loc) {
+        let {line, column} = err.loc;
+        let lines = content.split('\n');
+        let l = '-'.repeat(column) + '^';
+        lines.splice(line, 0, l, '').join('\n');
+        content = lines.join('\n');
+      }
+      err.message += '\n' + content;
+      throw(err);
+    }
     return {
       code: editor.toString(),
       map: editor.generateMap({
