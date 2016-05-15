@@ -227,4 +227,16 @@ describe('while', () => {
       }
     `);
   });
+
+
+  it('supports yields in bodies', () => {
+    check(`
+      -> while false
+        yield a while true
+    `, `
+      (function*() { return yield* (function*() { let result = []; while (false) {
+        result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield a); } return result1; }).call(this));
+      } return result; }).call(this); });
+    `);
+  });
 });

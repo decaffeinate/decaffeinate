@@ -81,7 +81,7 @@ export function isDynamicMemberAccessOp(node) {
  * @returns {boolean}
  */
 export function isFunction(node, allowBound=true) {
-  return node.type === 'Function' || (allowBound && node.type === 'BoundFunction');
+  return node.type === 'Function' || node.type === 'GeneratorFunction' || (allowBound && node.type === 'BoundFunction');
 }
 
 /**
@@ -244,6 +244,10 @@ export function isStaticMethod(node) {
   }
 
   if (node.expression.type !== 'Function') {
+    return false;
+  }
+
+  if (node.expression.type !== 'GeneratorFunction') {
     return false;
   }
 

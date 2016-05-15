@@ -126,4 +126,20 @@ describe('functions', () => {
       (function() { return arguments[0]; }.bind(this));
     `);
   });
+  
+  it('turns functions containing a `yield` statement into generator functions', () => {
+    check(`
+      -> yield fn()
+    `, `
+      (function*() { return yield fn(); });
+    `);
+  });
+
+  it('turns functions containing a `yield from` statement into generator functions', () => {
+    check(`
+      -> yield from fn()
+    `, `
+      (function*() { return yield* fn(); });
+    `);
+  });
 });

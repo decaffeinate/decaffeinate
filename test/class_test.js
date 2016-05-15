@@ -53,6 +53,19 @@ describe('classes', () => {
       ;
     `);
   });
+  it('preservces class body generator functions as generator method definitions', () => {
+    check(`
+      class A
+        'a a': ->
+          yield 1
+    `, `
+      class A {
+        *['a a']() {
+          return yield 1;
+        }
+      }
+    `);
+  });
 
   it('preserves anonymous subclasses', () => {
     check(`

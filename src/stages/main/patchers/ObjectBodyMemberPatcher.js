@@ -1,5 +1,6 @@
 import BoundFunctionPatcher from './BoundFunctionPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
+import GeneratorFunctionPatcher from './GeneratorFunctionPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
@@ -34,6 +35,9 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   }
 
   patchAsMethod() {
+    if (this.isGeneratorMethod()) {
+      this.insert(this.key.outerStart, '*');
+    }
     let computedKey = this.isComputed();
     if (computedKey) {
       // `{ 'hi there': ->` → `{ ['hi there': ->`
@@ -78,7 +82,14 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
    * @protected
    */
   isMethod(): boolean {
-    return this.expression instanceof FunctionPatcher;
+    return this.expression instanceof FunctionPatcher || this.isGeneratorMethod();
+  }
+
+  /**
+   * @protected
+   */
+  isGeneratorMethod(): boolean {
+    return this.expression instanceof GeneratorFunctionPatcher;
   }
 
   /**
