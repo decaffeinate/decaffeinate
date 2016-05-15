@@ -11,6 +11,7 @@ export default class YieldFromPatcher extends NodePatcher {
   
   initialize() {
     this.yields();
+    this.expression.setRequiresExpression();
   }
 
   /**
