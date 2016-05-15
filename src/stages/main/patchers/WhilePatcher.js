@@ -1,7 +1,9 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
+import traverse from '../../../utils/traverse.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Editor, Node, ParseContext, SourceTokenListIndex } from './../../../patchers/types.js';
 import { LOOP, THEN, WHILE } from 'coffee-lex';
+import { isFunction } from '../../../utils/types.js';
 
 /**
  * Handles `while` loops, e.g.
@@ -127,10 +129,10 @@ export default class WhilePatcher extends NodePatcher {
     this.body.setImplicitlyReturns();
     let resultBinding = this.getResultArrayBinding();
     this.patchAsStatement();
-    let prefix = this.yielding ? 'yield* (function*()' : '(() =>';
+    let prefix = !this.yielding ? '(() =>' : 'yield* (function*()';
     this.insert(this.contentStart, `${prefix} { ${resultBinding} = []; `);
-    let postfix = this.yielding ? '.call(this)' : '()';
-    this.insert(this.contentEnd, ` return ${resultBinding}; })${postfix}`);
+    let suffix = !this.yielding ? '()' : this.referencesArguments() ? '.apply(this, arguments)' : '.call(this)';
+    this.insert(this.contentEnd, ` return ${resultBinding}; })${suffix}`);
   }
 
   yieldController() {
@@ -279,5 +281,24 @@ export default class WhilePatcher extends NodePatcher {
         token => token.type === THEN
       );
     }
+  }
+
+  /**
+   * @private
+   */
+  referencesArguments() {
+    let result = false;
+
+    traverse(this.node, node => {
+      if (result || isFunction(node)) {
+        return false;
+      }
+
+      if (node.type === 'Identifier' && node.data === 'arguments') {
+        result = true;
+      }
+    });
+
+    return result;
   }
 }

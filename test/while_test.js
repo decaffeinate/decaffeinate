@@ -228,7 +228,6 @@ describe('while', () => {
     `);
   });
 
-
   it('supports yields in bodies', () => {
     check(`
       -> while false
@@ -237,6 +236,34 @@ describe('while', () => {
       (function*() { return yield* (function*() { let result = []; while (false) {
         result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield a); } return result1; }).call(this));
       } return result; }).call(this); });
+    `);
+  });
+
+  it('supports yields in bodies referencing `arguments`', () => {
+    check(`
+      ->
+        while false
+          yield arguments.length while true
+    `, `
+      (function*() {
+        return yield* (function*() { let result = []; while (false) {
+          result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield arguments.length); } return result1; }).apply(this, arguments));
+        } return result; }).apply(this, arguments);
+      });
+    `);
+  });
+
+  it('supports yields in bodies referencing `arguments` in a nested function', () => {
+    check(`
+      ->
+        while false
+          yield (-> arguments.length) while true
+    `, `
+      (function*() {
+        return yield* (function*() { let result = []; while (false) {
+          result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield (function() { return arguments.length; })); } return result1; }).call(this));
+        } return result; }).call(this);
+      });
     `);
   });
 });
