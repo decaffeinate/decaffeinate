@@ -269,4 +269,52 @@ describe('objects', () => {
       let x = {[ref = \`a\${b}c\`]: ref};
     `);
   });
+
+  it('adds braces when implicit multi-line object is wrapped in parens', () => {
+    check(`
+      x = (
+        a: b
+        c: d
+      )
+    `, `
+      let x = ({
+        a: b,
+        c: d
+      });
+    `);
+  });
+
+  it('adds braces when explicitly returning an implicit multi-line object wrapped in parens', () => {
+    check(`
+      ->
+        return (
+          a: b
+          c: d
+        )
+    `, `
+      () =>
+        ({
+          a: b,
+          c: d
+        })
+      ;
+    `);
+  });
+
+  it('adds braces when implicitly returning an implicit multi-line object wrapped in parens', () => {
+    check(`
+      ->
+        (
+          a: b
+          c: d
+        )
+    `, `
+      () =>
+        ({
+          a: b,
+          c: d
+        })
+      ;
+    `);
+  });
 });

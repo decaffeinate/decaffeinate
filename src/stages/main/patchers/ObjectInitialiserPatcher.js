@@ -9,7 +9,7 @@ import { isSemanticToken } from '../../../utils/types.js';
  */
 export default class ObjectInitialiserPatcher extends NodePatcher {
   members: Array<NodePatcher>;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, members: Array<NodePatcher>) {
     super(node, context, editor);
     this.members = members;
@@ -29,11 +29,15 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
       let textToInsert = '{';
       let shouldIndent = false;
       if (this.shouldExpandCurlyBraces()) {
-        if (this.implicitlyReturns()) {
+        if (this.implicitlyReturns() && !this.isSurroundedByParentheses()) {
           textToInsert = `{\n${this.getIndent()}`;
           shouldIndent = true;
         } else {
-          let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex.previous();
+          let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex;
+          if (!this.isSurroundedByParentheses()) {
+            tokenIndexBeforeOuterStartTokenIndex = tokenIndexBeforeOuterStartTokenIndex.previous();
+          }
+
           if (tokenIndexBeforeOuterStartTokenIndex) {
             let precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
               isSemanticToken,
@@ -63,7 +67,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     }
     this.patchMembers();
     if (implicitObject) {
-      if (this.shouldExpandCurlyBraces()) {
+      if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
         this.appendLineAfter('}', -1);
       } else {
         this.insert(this.innerEnd, '}');
@@ -91,7 +95,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
       this.insert(this.contentStart, '(');
     }
     if (implicitObject) {
-      if (this.shouldExpandCurlyBraces()) {
+      if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
         this.insert(this.innerStart, `{\n${this.getIndent()}`);
         this.indent();
       } else {
@@ -100,7 +104,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     }
     this.patchMembers();
     if (implicitObject) {
-      if (this.shouldExpandCurlyBraces()) {
+      if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
         this.appendLineAfter('}', -1);
       } else {
         this.insert(this.innerEnd, '}');
