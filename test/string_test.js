@@ -85,7 +85,7 @@ describe('strings', () => {
     `);
   });
 
-  it('joins multi line doubled quoted strings on new lines and removes indentation', () => {
+  xit('joins multi line doubled quoted strings on new lines and removes indentation', () => {
     check(`
      a = "multi line
           double\\nquote
@@ -95,7 +95,7 @@ describe('strings', () => {
      `);
   });
 
-  it('joins multi line single quoted strings on new lines and removes indentation', () => {
+  xit('joins multi line single quoted strings on new lines and removes indentation', () => {
     check(`
      a = 'multi line
           double\\nquote
@@ -105,7 +105,7 @@ describe('strings', () => {
      `);
   });
 
-  it('joins multi line triple double quoted strings on new lines, removes indentation and adds new line characters', () => {
+  xit('joins multi line triple double quoted strings on new lines, removes indentation and adds new line characters', () => {
     check(`
      a = """multi line
           double\\nquote
@@ -115,7 +115,7 @@ describe('strings', () => {
      `);
   });
 
-  it('joins multi line triple single quoted strings on new lines, removes indentation and adds new line characters', () => {
+  xit('joins multi line triple single quoted strings on new lines, removes indentation and adds new line characters', () => {
     check(`
      a = '''multi line
           double\\nquote

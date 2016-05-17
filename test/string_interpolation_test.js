@@ -90,7 +90,7 @@ describe('string interpolation', () => {
     `);
   });
 
-  it('joins multi line doubled quoted strings on new lines and removes indentation with variable interpolation', () => {
+  xit('joins multi line doubled quoted strings on new lines and removes indentation with variable interpolation', () => {
     check(`
      a = "multi line
           double\\nquote
@@ -100,7 +100,7 @@ describe('string interpolation', () => {
      `);
   });
 
-  it('joins multi line single quoted strings on new lines and removes indentation without variable interpolation', () => {
+  xit('joins multi line single quoted strings on new lines and removes indentation without variable interpolation', () => {
     check(`
      a = 'multi line
           double\\nquote
