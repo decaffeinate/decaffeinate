@@ -22,8 +22,8 @@ export default class TemplateLiteralPatcher extends NodePatcher {
     } else {
       this.overwrite(contentStart, contentStart + '"'.length, '`');
       this.overwrite(contentEnd - '"'.length, contentEnd, '`');
-      joinMultilineString(this, this.node.raw, contentStart);
     }
+    joinMultilineString(this, this.node.raw, contentStart);
 
     for (let i = 0; i < quasis.length - 1; i++) {
       let quasi = quasis[i];

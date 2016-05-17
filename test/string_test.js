@@ -133,7 +133,9 @@ describe('string integration test', () => {
                     ['\'\'\'', 'triple single quote'],
                     ['"""', 'triple double quote']];
   let newLineTypes = [['', 'without new lines'],
-                      ['\n            ', 'with new lines']];
+                      ['\n            ', 'with new lines'],
+                      ['\n\n           ', 'with new lines, empty lines'],
+                      ['\n             \n           ', 'with new lines, indented empty lines']];
   let interpolations = [['', 'without interpolation'],
                         ['#{testVariable}', 'with string variable interpolation'],
                         ['#{ 22 / 7}', 'with numerical interpolation']];
@@ -148,7 +150,7 @@ describe('string integration test', () => {
           validate(
 `() ->
   testVariable = "only testing!"
-  return ${quoteType}a line of text${newLineType}perhaps some${interpolation}${newLineType}and then${quoteType}
+  return ${quoteType}START a line of text${newLineType}perhaps some${interpolation}${newLineType}and END${quoteType}
 `);
         });
       }
