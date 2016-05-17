@@ -1,4 +1,5 @@
 import check from './support/check.js';
+import validate from './support/validate.js';
 
 describe('strings', () => {
   it('changes single-line triple-double-quotes to double-quotes', () => {
@@ -124,4 +125,33 @@ describe('strings', () => {
      let a = \`multi line\\ndouble\\nquote\\nstring\`;
      `);
   });
+});
+
+describe('string integration test', () => {
+  let quoteTypes = [['\'', 'single quote'],
+                    ['"', 'double quote'],
+                    ['\'\'\'', 'triple single quote'],
+                    ['"""', 'triple double quote']];
+  let newLineTypes = [['', 'without new lines'],
+                      ['\n            ', 'with new lines']];
+  let interpolations = [['', 'without interpolation'],
+                        ['#{testVariable}', 'with string variable interpolation'],
+                        ['#{ 22 / 7}', 'with numerical interpolation']];
+
+  for (let quote of quoteTypes) {
+    for (let newLine of newLineTypes) {
+      for (let interp of interpolations) {
+        let [quoteType, quoteTypeFriendly] = quote;
+        let [newLineType, newLineTypeFriendly] = newLine;
+        let [interpolation, interpolationFriendly] = interp;
+        it(quoteTypeFriendly + ' ' + newLineTypeFriendly + ' and ' + interpolationFriendly, () => {
+          validate(
+`() ->
+  testVariable = "only testing!"
+  return ${quoteType}a line of text${newLineType}perhaps some${interpolation}${newLineType}and then${quoteType}
+`);
+        });
+      }
+    }
+  }
 });
