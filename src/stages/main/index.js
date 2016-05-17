@@ -49,6 +49,7 @@ import SoakedFunctionApplicationPatcher from './patchers/SoakedFunctionApplicati
 import SoakedMemberAccessOpPatcher from './patchers/SoakedMemberAccessOpPatcher.js';
 import SpreadPatcher from './patchers/SpreadPatcher.js';
 import SuperPatcher from './patchers/SuperPatcher.js';
+import StringPatcher from './patchers/StringPatcher.js';
 import SwitchCasePatcher from './patchers/SwitchCasePatcher.js';
 import SwitchPatcher from './patchers/SwitchPatcher.js';
 import TemplateLiteralPatcher from './patchers/TemplateLiteralPatcher.js';
@@ -74,6 +75,7 @@ export default class MainStage extends TransformCoffeeScriptStage {
         return IdentifierPatcher;
 
       case 'String':
+        return StringPatcher;
       case 'Int':
       case 'Float':
       case 'Null':
@@ -112,16 +114,16 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'This':
         return ThisPatcher;
-  
+
       case 'Yield':
        return YieldPatcher;
-    
+
       case 'YieldFrom':
        return YieldFromPatcher;
-    
+
       case 'GeneratorFunction':
        return GeneratorFunctionPatcher;
-    
+
       case 'Function':
         return FunctionPatcher;
 

@@ -89,4 +89,24 @@ describe('string interpolation', () => {
       \`\${a} \${b}\`;
     `);
   });
+
+  xit('joins multi line doubled quoted strings on new lines and removes indentation with variable interpolation', () => {
+    check(`
+     a = "multi line
+          double\\nquote
+          #{variable}"
+     `, `
+     let a = \`multi line double\\nquote \${variable}\`;
+     `);
+  });
+
+  xit('joins multi line single quoted strings on new lines and removes indentation without variable interpolation', () => {
+    check(`
+     a = 'multi line
+          double\\nquote
+          #{variable}'
+     `, `
+     let a = \`multi line double\\nquote \#{variable}\`;
+     `);
+  });
 });
