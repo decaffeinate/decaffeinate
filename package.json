@@ -59,7 +59,7 @@
     "eslint": "^2.10.1",
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-decaffeinate": "file:eslint-rules",
-    "mocha": "^2.4.5",
+    "mocha": "^2.5.0",
     "mversion": "^1.10.1",
     "rollup": "^0.26.1",
     "rollup-plugin-babel": "^2.4.0",
