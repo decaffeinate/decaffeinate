@@ -16,7 +16,8 @@ export type ParseContext = {
 };
 
 export type Editor = {
-  insert: (start: number, end: number, content: string) => void,
+  insertLeft: (index: number, content: string) => void,
+  insertRight: (index: number, content: string) => void,
   overwrite: (start: number, end: number, content: string) => void,
   remove: (start: number, end: number) => void,
   slice: (start: number, end: number) => string,

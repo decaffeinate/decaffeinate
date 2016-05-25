@@ -15,7 +15,7 @@ export default function escape(patcher, characters, start, end) {
     if (source[i] === '\\') {
       i++;
     } else if (predicate(source[i], i, source)) {
-      patcher.insert(i, '\\');
+      patcher.insertRight(i, '\\');
     }
   }
 }

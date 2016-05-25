@@ -285,14 +285,35 @@ export default class NodePatcher {
   /**
    * Insert content at the specified index.
    */
-  insert(index: number, content: string) {
+  insertLeft(index: number, content: string) {
     if (typeof index !== 'number') {
       throw new Error(
         `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
       );
     }
     this.log(
-      'INSERT',
+      'INSERT LEFT',
+      index,
+      JSON.stringify(content),
+      'AFTER',
+      JSON.stringify(this.context.source.slice(index - 8, index))
+    );
+
+    this.adjustBoundsToInclude(index);
+    this.editor.insertLeft(index, content);
+  }
+
+  /**
+   * Insert content at the specified index.
+   */
+  insertRight(index: number, content: string) {
+    if (typeof index !== 'number') {
+      throw new Error(
+        `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
+      );
+    }
+    this.log(
+      'INSERT RIGHT',
       index,
       JSON.stringify(content),
       'BEFORE',
@@ -300,7 +321,14 @@ export default class NodePatcher {
     );
 
     this.adjustBoundsToInclude(index);
-    this.editor.insert(index, content);
+    this.editor.insertLeft(index, content);
+  }
+
+  /**
+   * Alias for `#insertRight`.
+   */
+  insert(index: number, content: string) {
+    this.insertRight(index, content);
   }
 
   allowPatchingOuterBounds(): boolean {

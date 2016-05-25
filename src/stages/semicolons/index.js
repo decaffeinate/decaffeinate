@@ -33,7 +33,7 @@ export default class SemicolonsStage {
 
     asi(config);
 
-    config.insertions.forEach(({ index, content }) => editor.insert(index, content));
+    config.insertions.forEach(({ index, content }) => editor.insertLeft(index, content));
     config.removals.forEach(({ start, end }) => editor.remove(start, end));
 
     return {
