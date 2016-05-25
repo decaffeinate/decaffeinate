@@ -8928,7 +8928,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.11.0";
+var version = "2.11.1";
 
 /**
  * Run the script with the user-supplied arguments.
@@ -41210,7 +41210,8 @@ function coerce(val) {
         return programNode;
       }
 
-      if (node.locationData) {
+      if (node.locationData && type(node) !== 'Literal') {
+        // should't trim Literal, i.e. "(".
         trimNonMatchingParentheses(source, node.locationData, mapper);
       }
 
@@ -41920,7 +41921,7 @@ function coerce(val) {
               // This element is interpolated and is first, i.e. "#{a}".
               quasis.push(buildFirstQuasi());
               expressions.push(element);
-            } else if (element.data && element.data.search(/^"(.*?)"$/) === 0) {
+            } else if (/^"(.*?)"$/.test(element.data)) {
               quasis.push(buildQuasiWithString(element.range, element.raw));
             } else if (quasis.length < expressions.length + 1) {
               var borderIndex = source.lastIndexOf('}#{', element.range[0]);
