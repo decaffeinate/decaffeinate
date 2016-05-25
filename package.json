@@ -35,7 +35,7 @@
     "automatic-semicolon-insertion": "^1.0.1",
     "babylon": "^6.7.0",
     "coffee-lex": "^1.4.1",
-    "decaffeinate-parser": "^1.2.21",
+    "decaffeinate-parser": "^1.2.22",
     "detect-indent": "^4.0.0",
     "esnext": "^2.0.0",
     "magic-string": "^0.15.0",
