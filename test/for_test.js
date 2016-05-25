@@ -520,4 +520,18 @@ describe('for loops', () => {
       for (let i = 0; i < b.length; i++) { let a = b[i]; (() => console.log('foo'))(); }
     `);
   });
+
+  it('handles destructuring as the first statement in a `for` body', () => {
+    check(`
+      for entry in someArray
+        {x, y} = getPoint(entry)
+        console.log x + ', ' + y;
+    `, `
+      for (let i = 0; i < someArray.length; i++) {
+        let entry = someArray[i];
+        let {x, y} = getPoint(entry);
+        console.log(x + ', ' + y);
+      }
+    `);
+  });
 });

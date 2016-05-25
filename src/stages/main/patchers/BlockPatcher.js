@@ -98,7 +98,7 @@ export default class BlockPatcher extends NodePatcher {
    * Insert statements somewhere in this block.
    */
   insertStatementsAtIndex(statements: Array<string>, index: number) {
-    let separator = this.inline() ? '; ' : '\n';
+    let separator = this.inline() ? '; ' : ';\n';
     if (index === this.statements.length) {
       let lastStatement = this.statements[this.statements.length - 1];
       let terminatorTokenIndex = this.context.sourceTokens.indexOfTokenMatchingPredicate(
