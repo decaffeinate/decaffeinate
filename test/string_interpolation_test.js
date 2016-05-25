@@ -89,4 +89,12 @@ describe('string interpolation', () => {
       \`\${a} \${b}\`;
     `);
   });
+
+  it('handles parentheses before interpolations (#212)', () => {
+    check(`
+      "(#{a}"
+    `, `
+      \`(\${a}\`;
+    `);
+  });
 });
