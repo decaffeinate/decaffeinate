@@ -1845,7 +1845,7 @@ var BlockPatcher = function (_NodePatcher) {
     value: function insertStatementsAtIndex(statements, index) {
       var _this4 = this;
 
-      var separator = this.inline() ? '; ' : '\n';
+      var separator = this.inline() ? '; ' : ';\n';
       if (index === this.statements.length) {
         (function () {
           var lastStatement = _this4.statements[_this4.statements.length - 1];
@@ -8928,7 +8928,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.11.1";
+var version = "2.11.2";
 
 /**
  * Run the script with the user-supplied arguments.
