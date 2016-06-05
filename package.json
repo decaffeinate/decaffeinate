@@ -49,6 +49,7 @@
   ],
   "devDependencies": {
     "babel": "^6.5.2",
+    "babel-core": "^6.9.1",
     "babel-eslint": "^6.0.4",
     "babel-plugin-syntax-class-properties": "^6.5.0",
     "babel-plugin-syntax-flow": "^6.5.0",
@@ -59,6 +60,7 @@
     "babel-register": "^6.7.2",
     "babelrc-rollup": "^1.1.0",
     "browserify": "^13.0.0",
+    "coffee-script": "^1.10.0",
     "cz-conventional-changelog": "^1.1.6",
     "eslint": "^3.0.1",
     "eslint-plugin-babel": "^3.2.0",

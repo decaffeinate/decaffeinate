@@ -84,4 +84,24 @@ describe('strings', () => {
       line2\`);
     `);
   });
+
+  it('converts multi line string assignment', () => {
+    check(`
+      a = "this is a 
+           multi line
+           string"
+      `, `
+      let a = "this is a multi line string";
+    `);
+  });
+
+  it('converts multi line string in function call', () => {
+    check(`
+      fn("this is a 
+          multi line
+          string")
+      `, `
+      fn("this is a multi line string");
+    `);
+  });
 });
