@@ -47,6 +47,7 @@
   ],
   "devDependencies": {
     "babel": "^6.5.2",
+    "babel-core": "^6.9.1",
     "babel-eslint": "^6.0.4",
     "babel-plugin-syntax-class-properties": "^6.5.0",
     "babel-plugin-syntax-flow": "^6.5.0",
@@ -56,6 +57,7 @@
     "babel-preset-es2015-rollup": "^1.1.1",
     "babel-register": "^6.7.2",
     "browserify": "^13.0.0",
+    "coffee-script": "^1.10.0",
     "eslint": "^2.10.1",
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-decaffeinate": "file:eslint-rules",
