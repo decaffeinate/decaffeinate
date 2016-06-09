@@ -86,4 +86,18 @@ describe('chained comparison', () => {
       }
     `);
   });
+
+  it('adds variable declarations to enclosing method', () => {
+    check(`
+      d: ->
+        a < b() < c
+    `,`
+      ({
+        d() {
+          let middle;
+          return a < (middle = b()) && middle < c;
+        }
+      });
+    `);
+  });
 });
