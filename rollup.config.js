@@ -4,18 +4,26 @@
 
 import babel from 'rollup-plugin-babel';
 import json from 'rollup-plugin-json';
-import { readFileSync } from 'fs';
+import babelrc from 'babelrc-rollup';
 
-var babelConfig = JSON.parse(readFileSync('.babelrc', { encoding: 'utf8' }));
-babelConfig.babelrc = false;
-babelConfig.presets = babelConfig.presets.map(function(preset) {
-  return preset === 'es2015' ? 'es2015-rollup' : preset;
-});
+const pkg = require('./package.json');
+const external = Object.keys(pkg.dependencies).concat(['path', 'fs']);
 
 export default {
   entry: 'src/index.js',
   plugins: [
     json(),
-    babel(babelConfig)
+    babel(babelrc())
+  ],
+  external: external,
+  targets: [
+    {
+      format: 'cjs',
+      dest: pkg['main']
+    },
+    {
+      format: 'es6',
+      dest: pkg['jsnext:main']
+    }
   ]
 };
