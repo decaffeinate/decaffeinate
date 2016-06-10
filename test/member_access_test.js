@@ -60,4 +60,12 @@ describe('member access', () => {
       a.b = function() {};
     `);
   });
+
+  it('transforms calling the result of a dynamic member access properly', () => {
+    check(`
+      a[b]()
+    `, `
+      a[b]();
+    `);
+  });
 });
