@@ -8930,7 +8930,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.12.0";
+var version = "2.13.0";
 
 /**
  * Run the script with the user-supplied arguments.
@@ -51910,20 +51910,55 @@ function coerce(val) {
   binarySearch = 'default' in binarySearch ? binarySearch['default'] : binarySearch;
   var lex__default = 'default' in lex ? lex['default'] : lex;
 
-  var babelHelpers = {};
-  babelHelpers.typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  /**
+   * @param {string} source
+   * @returns {function(number, number): number}
+   */
+  function lineColumnMapper(source) {
+    var offsets = [0];
+    var offset = 0;
+
+    while ((offset = source.indexOf('\n', offset)) > 0) {
+      offset += '\n'.length;
+      offsets.push(offset);
+    }
+
+    var result = function result(line, column) {
+      return offsets[line] + column;
+    };
+    result.invert = function (offset) {
+      for (var line = offsets.length - 1; line >= 0; line--) {
+        var lineStart = offsets[line];
+        if (offset >= lineStart) {
+          return { line: line, column: offset - lineStart };
+        }
+      }
+    };
+    return result;
+  }
+
+  /**
+   * @param {Object} first
+   * @param {Object} second
+   * @returns {boolean}
+   */
+  function locationsEqual(first, second) {
+    return first.first_line === second.first_line && first.first_column === second.first_column && first.last_line === second.last_line && first.last_column === second.last_column;
+  }
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
     return typeof obj;
   } : function (obj) {
     return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
   };
 
-  babelHelpers.classCallCheck = function (instance, Constructor) {
+  var classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
     }
   };
 
-  babelHelpers.createClass = function () {
+  var createClass = function () {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
         var descriptor = props[i];
@@ -51941,7 +51976,7 @@ function coerce(val) {
     };
   }();
 
-  babelHelpers.inherits = function (subClass, superClass) {
+  var inherits = function (subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
     }
@@ -51957,7 +51992,7 @@ function coerce(val) {
     if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   };
 
-  babelHelpers.possibleConstructorReturn = function (self, call) {
+  var possibleConstructorReturn = function (self, call) {
     if (!self) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
@@ -51965,7 +52000,7 @@ function coerce(val) {
     return call && (typeof call === "object" || typeof call === "function") ? call : self;
   };
 
-  babelHelpers.slicedToArray = function () {
+  var slicedToArray = function () {
     function sliceIterator(arr, i) {
       var _arr = [];
       var _n = true;
@@ -52003,7 +52038,7 @@ function coerce(val) {
     };
   }();
 
-  babelHelpers.toConsumableArray = function (arr) {
+  var toConsumableArray = function (arr) {
     if (Array.isArray(arr)) {
       for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
 
@@ -52013,51 +52048,13 @@ function coerce(val) {
     }
   };
 
-  babelHelpers;
-
-  /**
-   * @param {string} source
-   * @returns {function(number, number): number}
-   */
-  function lineColumnMapper(source) {
-    var offsets = [0];
-    var offset = 0;
-
-    while ((offset = source.indexOf('\n', offset)) > 0) {
-      offset += '\n'.length;
-      offsets.push(offset);
-    }
-
-    var result = function result(line, column) {
-      return offsets[line] + column;
-    };
-    result.invert = function (offset) {
-      for (var line = offsets.length - 1; line >= 0; line--) {
-        var lineStart = offsets[line];
-        if (offset >= lineStart) {
-          return { line: line, column: offset - lineStart };
-        }
-      }
-    };
-    return result;
-  }
-
-  /**
-   * @param {Object} first
-   * @param {Object} second
-   * @returns {boolean}
-   */
-  function locationsEqual(first, second) {
-    return first.first_line === second.first_line && first.first_column === second.first_column && first.last_line === second.last_line && first.last_column === second.last_column;
-  }
-
   var ParseError = function (_Error) {
-    babelHelpers.inherits(ParseError, _Error);
+    inherits(ParseError, _Error);
 
     function ParseError(syntaxError) {
-      babelHelpers.classCallCheck(this, ParseError);
+      classCallCheck(this, ParseError);
 
-      var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ParseError).call(this, syntaxError.message));
+      var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ParseError).call(this, syntaxError.message));
 
       _this.syntaxError = syntaxError;
       return _this;
@@ -52075,7 +52072,7 @@ function coerce(val) {
      */
 
     function ParseContext(source, tokens, sourceTokens, ast) {
-      babelHelpers.classCallCheck(this, ParseContext);
+      classCallCheck(this, ParseContext);
 
       this.source = source;
       this.lineMap = lineColumnMapper(source);
@@ -52093,7 +52090,7 @@ function coerce(val) {
      */
 
 
-    babelHelpers.createClass(ParseContext, [{
+    createClass(ParseContext, [{
       key: 'getRange',
       value: function getRange(locatable) {
         if ('range' in locatable) {
@@ -52116,7 +52113,7 @@ function coerce(val) {
       value: function tokensForNode(node) {
         var _getRange = this.getRange(node);
 
-        var _getRange2 = babelHelpers.slicedToArray(_getRange, 2);
+        var _getRange2 = slicedToArray(_getRange, 2);
 
         var start = _getRange2[0];
         var end = _getRange2[1];
@@ -52436,7 +52433,7 @@ function coerce(val) {
 
     if (indentSize) {
       ranges.forEach(function (_ref) {
-        var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+        var _ref2 = slicedToArray(_ref, 2);
 
         var start = _ref2[0];
         var end = _ref2[1];
@@ -52452,7 +52449,7 @@ function coerce(val) {
     }
 
     for (var i = padding.length - 1; i >= 0; i--) {
-      var _padding$i = babelHelpers.slicedToArray(padding[i], 2);
+      var _padding$i = slicedToArray(padding[i], 2);
 
       var start = _padding$i[0];
       var end = _padding$i[1];
@@ -52672,7 +52669,7 @@ function coerce(val) {
     var size = null;
 
     ranges.forEach(function (_ref3) {
-      var _ref4 = babelHelpers.slicedToArray(_ref3, 2);
+      var _ref4 = slicedToArray(_ref3, 2);
 
       var start = _ref4[0];
       var end = _ref4[1];
@@ -52801,7 +52798,7 @@ function coerce(val) {
         return mergeLocations(nodes[0].locationData, nodes[1].locationData);
 
       default:
-        return mergeLocations(nodes[0].locationData, locationContainingNodes.apply(undefined, babelHelpers.toConsumableArray(nodes.slice(1))));
+        return mergeLocations(nodes[0].locationData, locationContainingNodes.apply(undefined, toConsumableArray(nodes.slice(1))));
     }
   }
 
@@ -52871,7 +52868,7 @@ function coerce(val) {
 
       node.eachChild(function (child) {
         if (child && child.locationData) {
-          fixLocations(child, [node].concat(babelHelpers.toConsumableArray(ancestors)));
+          fixLocations(child, [node].concat(toConsumableArray(ancestors)));
         }
       });
       switch (type(node)) {
@@ -52884,19 +52881,34 @@ function coerce(val) {
             break;
           }
 
+        case 'Index':
+        case 'Slice':
+          {
+            var rangeOfBrackets = rangeOfBracketTokensForIndexNode(node);
+            var lbracket = context.sourceTokens.tokenAtIndex(rangeOfBrackets[0]);
+            var lbracketLoc = mapper.invert(lbracket.start);
+            var rbracket = context.sourceTokens.tokenAtIndex(rangeOfBrackets[1].previous());
+            var rbracketLoc = mapper.invert(rbracket.start);
+            node.locationData = {
+              first_line: lbracketLoc.line,
+              first_column: lbracketLoc.column,
+              last_line: rbracketLoc.line,
+              last_column: rbracketLoc.column
+            };
+            break;
+          }
+
         case 'Access':
         case 'Arr':
         case 'Bool':
         case 'Comment':
         case 'Existence':
         case 'Expansion':
-        case 'Index':
         case 'Literal':
         case 'Null':
         case 'Parens':
         case 'Range':
         case 'Return':
-        case 'Slice':
         case 'Splat':
         case 'Throw':
         case 'Undefined':
@@ -53032,6 +53044,16 @@ function coerce(val) {
       }
     }
 
+    function rangeOfBracketTokensForIndexNode(indexNode) {
+      var start = mapper(indexNode.locationData.first_line, indexNode.locationData.first_column);
+      var startTokenIndex = context.sourceTokens.indexOfTokenStartingAtSourceIndex(start);
+      var range = context.sourceTokens.rangeOfMatchingTokensContainingTokenIndex(lex.LBRACKET, lex.RBRACKET, startTokenIndex);
+      if (!range) {
+        throw new Error('cannot find braces surrounding index at ' + (indexNode.locationData.first_line + 1 + ':' + indexNode.locationData.first_column + ': ') + ('' + util.inspect(indexNode)));
+      }
+      return range;
+    }
+
     /**
      * @param {Object} node
      * @param ancestors
@@ -53110,7 +53132,7 @@ function coerce(val) {
                   };
                 }();
 
-                if ((typeof _ret === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret)) === "object") return _ret.v;
+                if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
               }
               return makeNode('Identifier', node.locationData, { data: node.value });
             } else if (literal.type === 'error') {
@@ -53201,7 +53223,7 @@ function coerce(val) {
               };
             }();
 
-            if ((typeof _ret2 === 'undefined' ? 'undefined' : babelHelpers.typeof(_ret2)) === "object") return _ret2.v;
+            if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
           }
 
         case 'Op':
@@ -53380,7 +53402,7 @@ function coerce(val) {
 
         case 'For':
           if (locationsEqual(node.body.locationData, node.locationData)) {
-            node.body.locationData = locationContainingNodes.apply(undefined, babelHelpers.toConsumableArray(node.body.expressions));
+            node.body.locationData = locationContainingNodes.apply(undefined, toConsumableArray(node.body.expressions));
           }
           if (node.object) {
             return makeNode('ForOf', node.locationData, {
@@ -53488,7 +53510,7 @@ function coerce(val) {
           return makeNode('Switch', node.locationData, {
             expression: convertChild(node.subject),
             cases: node.cases.map(function (_ref) {
-              var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+              var _ref2 = slicedToArray(_ref, 2);
 
               var conditions = _ref2[0];
               var body = _ref2[1];
@@ -53582,7 +53604,7 @@ function coerce(val) {
             return node;
           });
         } else {
-          return convertNode(child, [].concat(babelHelpers.toConsumableArray(ancestors), [node]));
+          return convertNode(child, [].concat(toConsumableArray(ancestors), [node]));
         }
       }
 
@@ -53649,7 +53671,7 @@ function coerce(val) {
         var lastToken = tokens.tokenAtIndex(interpolatedStringTokenRange[1].previous());
         op.type = 'TemplateLiteral';
         op.range = [firstToken.start, lastToken.end];
-        op.raw = source.slice.apply(source, babelHelpers.toConsumableArray(op.range));
+        op.raw = source.slice.apply(source, toConsumableArray(op.range));
 
         var elements = [];
 
@@ -53696,7 +53718,7 @@ function coerce(val) {
           return {
             type: 'String',
             data: '',
-            raw: source.slice.apply(source, babelHelpers.toConsumableArray(range)),
+            raw: source.slice.apply(source, toConsumableArray(range)),
             line: loc.line + 1,
             column: loc.column + 1,
             range: range
@@ -53708,7 +53730,7 @@ function coerce(val) {
           return {
             type: 'String',
             data: raw,
-            raw: source.slice.apply(source, babelHelpers.toConsumableArray(range)),
+            raw: source.slice.apply(source, toConsumableArray(range)),
             line: loc.line + 1,
             column: loc.column,
             range: range
@@ -53806,13 +53828,13 @@ function coerce(val) {
             });
 
           case 'Index':
-            return makeNode(prop.soak ? 'SoakedDynamicMemberAccessOp' : 'DynamicMemberAccessOp', expandLocationRightThrough(mergeLocations(loc, prop.locationData), ']'), {
+            return makeNode(prop.soak ? 'SoakedDynamicMemberAccessOp' : 'DynamicMemberAccessOp', mergeLocations(loc, prop.locationData), {
               expression: expression,
-              indexingExpr: convertNode(prop.index, [].concat(babelHelpers.toConsumableArray(ancestors), [node, prop]))
+              indexingExpr: convertNode(prop.index, [].concat(toConsumableArray(ancestors), [node, prop]))
             });
 
           case 'Slice':
-            return makeNode('Slice', expandLocationRightThrough(mergeLocations(loc, prop.locationData), ']'), {
+            return makeNode('Slice', mergeLocations(loc, prop.locationData), {
               expression: expression,
               left: convertChild(prop.range.from),
               right: convertChild(prop.range.to),
@@ -53917,8 +53939,8 @@ function coerce(val) {
           }
 
           var _result2 = makeNode(nodeType, op.locationData, {
-            left: convertNode(op.first, [].concat(babelHelpers.toConsumableArray(ancestors), [op])),
-            right: convertNode(op.second, [].concat(babelHelpers.toConsumableArray(ancestors), [op]))
+            left: convertNode(op.first, [].concat(toConsumableArray(ancestors), [op])),
+            right: convertNode(op.second, [].concat(toConsumableArray(ancestors), [op]))
           });
           if (_result2.type === 'InstanceofOp' || _result2.type === 'OfOp') {
             var _lastTokenIndexOfLeft = context.sourceTokens.indexOfTokenEndingAtSourceIndex(_result2.left.range[1]);
@@ -53992,27 +54014,9 @@ function coerce(val) {
           }
 
           return makeNode(nodeType, op.locationData, {
-            expression: convertNode(op.first, [].concat(babelHelpers.toConsumableArray(ancestors), [op]))
+            expression: convertNode(op.first, [].concat(toConsumableArray(ancestors), [op]))
           });
         }
-      }
-
-      function expandLocationRightThrough(loc, string) {
-        var offset = mapper(loc.last_line, loc.last_column) + 1;
-        offset = source.indexOf(string, offset);
-
-        if (offset < 0) {
-          throw new Error('unable to expand location ending at ' + (loc.last_line + 1) + ':' + (loc.last_column + 1) + ' ' + ('because it is not followed by ' + JSON.stringify(string)));
-        }
-
-        var newLoc = mapper.invert(offset + string.length - 1);
-
-        return {
-          first_line: loc.first_line,
-          first_column: loc.first_column,
-          last_line: newLoc.line,
-          last_column: newLoc.column
-        };
       }
 
       function expandLocationLeftThrough(loc, string) {
@@ -54036,6 +54040,8 @@ function coerce(val) {
   }
 
   exports.parse = parse;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
 },{"binary-search":338,"coffee-lex":342,"coffee-script":343,"util":568}],454:[function(require,module,exports){
