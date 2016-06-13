@@ -19,20 +19,33 @@ var coffeeLex = require('coffee-lex');
 var decaffeinateParser = require('decaffeinate-parser');
 var fs = require('fs');
 
-var babelHelpers = {};
-babelHelpers.typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-};
+function logger(name) {
+  if (isLoggingEnabled(name)) {
+    return function () {
+      var _console;
 
-babelHelpers.classCallCheck = function (instance, Constructor) {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return (_console = console).log.apply(_console, [name].concat(args));
+    };
+  } else {
+    return function () {};
+  }
+}
+
+function isLoggingEnabled(name) {
+  return process.env['DEBUG:' + name] || process.env['DEBUG:*'];
+}
+
+var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 };
 
-babelHelpers.createClass = function () {
+var createClass = function () {
   function defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
       var descriptor = props[i];
@@ -50,7 +63,7 @@ babelHelpers.createClass = function () {
   };
 }();
 
-babelHelpers.get = function get(object, property, receiver) {
+var get = function get(object, property, receiver) {
   if (object === null) object = Function.prototype;
   var desc = Object.getOwnPropertyDescriptor(object, property);
 
@@ -75,7 +88,7 @@ babelHelpers.get = function get(object, property, receiver) {
   }
 };
 
-babelHelpers.inherits = function (subClass, superClass) {
+var inherits = function (subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
   }
@@ -91,7 +104,7 @@ babelHelpers.inherits = function (subClass, superClass) {
   if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
 };
 
-babelHelpers.possibleConstructorReturn = function (self, call) {
+var possibleConstructorReturn = function (self, call) {
   if (!self) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
@@ -99,7 +112,7 @@ babelHelpers.possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
-babelHelpers.slicedToArray = function () {
+var slicedToArray = function () {
   function sliceIterator(arr, i) {
     var _arr = [];
     var _n = true;
@@ -137,7 +150,7 @@ babelHelpers.slicedToArray = function () {
   };
 }();
 
-babelHelpers.toConsumableArray = function (arr) {
+var toConsumableArray = function (arr) {
   if (Array.isArray(arr)) {
     for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
 
@@ -147,34 +160,12 @@ babelHelpers.toConsumableArray = function (arr) {
   }
 };
 
-babelHelpers;
-
-function logger(name) {
-  if (isLoggingEnabled(name)) {
-    return function () {
-      var _console;
-
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      return (_console = console).log.apply(_console, [name].concat(args));
-    };
-  } else {
-    return function () {};
-  }
-}
-
-function isLoggingEnabled(name) {
-  return process.env['DEBUG:' + name] || process.env['DEBUG:*'];
-}
-
 var AddVariableDeclarationsStage = function () {
   function AddVariableDeclarationsStage() {
-    babelHelpers.classCallCheck(this, AddVariableDeclarationsStage);
+    classCallCheck(this, AddVariableDeclarationsStage);
   }
 
-  babelHelpers.createClass(AddVariableDeclarationsStage, null, [{
+  createClass(AddVariableDeclarationsStage, null, [{
     key: 'run',
     value: function run(content, filename) {
       var log = logger(this.name);
@@ -199,10 +190,10 @@ var BABYLON_PLUGINS = ['flow', 'jsx', 'asyncFunctions', 'asyncGenerators', 'clas
 
 var SemicolonsStage = function () {
   function SemicolonsStage() {
-    babelHelpers.classCallCheck(this, SemicolonsStage);
+    classCallCheck(this, SemicolonsStage);
   }
 
-  babelHelpers.createClass(SemicolonsStage, null, [{
+  createClass(SemicolonsStage, null, [{
     key: 'run',
     value: function run(content, filename) {
       var log = logger(this.name);
@@ -240,10 +231,10 @@ var SemicolonsStage = function () {
 
 var EsnextStage = function () {
   function EsnextStage() {
-    babelHelpers.classCallCheck(this, EsnextStage);
+    classCallCheck(this, EsnextStage);
   }
 
-  babelHelpers.createClass(EsnextStage, null, [{
+  createClass(EsnextStage, null, [{
     key: 'run',
     value: function run(content, filename) {
       var log = logger(this.name);
@@ -311,12 +302,12 @@ function printTable(table) {
 }
 
 var PatchError = function (_Error) {
-  babelHelpers.inherits(PatchError, _Error);
+  inherits(PatchError, _Error);
 
   function PatchError(message, context, start, end, error) {
-    babelHelpers.classCallCheck(this, PatchError);
+    classCallCheck(this, PatchError);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(PatchError).call(this, message));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(PatchError).call(this, message));
 
     _this.message = message;
     _this.context = context;
@@ -326,7 +317,7 @@ var PatchError = function (_Error) {
     return _this;
   }
 
-  babelHelpers.createClass(PatchError, [{
+  createClass(PatchError, [{
     key: 'toString',
     value: function toString() {
       return this.message;
@@ -515,7 +506,7 @@ var NodePatcher = function () {
   function NodePatcher(node, context, editor) {
     var _this = this;
 
-    babelHelpers.classCallCheck(this, NodePatcher);
+    classCallCheck(this, NodePatcher);
     this.adjustedIndentLevel = 0;
 
     this.log = logger(this.constructor.name);
@@ -534,7 +525,7 @@ var NodePatcher = function () {
    */
 
 
-  babelHelpers.createClass(NodePatcher, [{
+  createClass(NodePatcher, [{
     key: 'setupLocationInformation',
 
 
@@ -860,7 +851,7 @@ var NodePatcher = function () {
     value: function isIndexEditable(index) {
       var _getEditingBounds = this.getEditingBounds();
 
-      var _getEditingBounds2 = babelHelpers.slicedToArray(_getEditingBounds, 2);
+      var _getEditingBounds2 = slicedToArray(_getEditingBounds, 2);
 
       var start = _getEditingBounds2[0];
       var end = _getEditingBounds2[1];
@@ -878,7 +869,7 @@ var NodePatcher = function () {
       if (!this.isIndexEditable(index)) {
         var _getEditingBounds3 = this.getEditingBounds();
 
-        var _getEditingBounds4 = babelHelpers.slicedToArray(_getEditingBounds3, 2);
+        var _getEditingBounds4 = slicedToArray(_getEditingBounds3, 2);
 
         var start = _getEditingBounds4[0];
         var end = _getEditingBounds4[1];
@@ -1593,18 +1584,18 @@ var NodePatcher = function () {
 }();
 
 var ArrayInitialiserPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ArrayInitialiserPatcher, _NodePatcher);
+  inherits(ArrayInitialiserPatcher, _NodePatcher);
 
   function ArrayInitialiserPatcher(node, context, editor, members) {
-    babelHelpers.classCallCheck(this, ArrayInitialiserPatcher);
+    classCallCheck(this, ArrayInitialiserPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ArrayInitialiserPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ArrayInitialiserPatcher).call(this, node, context, editor));
 
     _this.members = members;
     return _this;
   }
 
-  babelHelpers.createClass(ArrayInitialiserPatcher, [{
+  createClass(ArrayInitialiserPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.members.forEach(function (member) {
@@ -1630,19 +1621,19 @@ var ArrayInitialiserPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var AssignOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(AssignOpPatcher, _NodePatcher);
+  inherits(AssignOpPatcher, _NodePatcher);
 
   function AssignOpPatcher(node, context, editor, assignee, expression) {
-    babelHelpers.classCallCheck(this, AssignOpPatcher);
+    classCallCheck(this, AssignOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(AssignOpPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(AssignOpPatcher).call(this, node, context, editor));
 
     _this.assignee = assignee;
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(AssignOpPatcher, [{
+  createClass(AssignOpPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.assignee.setRequiresExpression();
@@ -1669,19 +1660,19 @@ var AssignOpPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var BinaryOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(BinaryOpPatcher, _NodePatcher);
+  inherits(BinaryOpPatcher, _NodePatcher);
 
   function BinaryOpPatcher(node, context, editor, left, right) {
-    babelHelpers.classCallCheck(this, BinaryOpPatcher);
+    classCallCheck(this, BinaryOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(BinaryOpPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(BinaryOpPatcher).call(this, node, context, editor));
 
     _this.left = left;
     _this.right = right;
     return _this;
   }
 
-  babelHelpers.createClass(BinaryOpPatcher, [{
+  createClass(BinaryOpPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.left.setRequiresExpression();
@@ -1729,18 +1720,18 @@ var BinaryOpPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var BlockPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(BlockPatcher, _NodePatcher);
+  inherits(BlockPatcher, _NodePatcher);
 
   function BlockPatcher(node, context, editor, statements) {
-    babelHelpers.classCallCheck(this, BlockPatcher);
+    classCallCheck(this, BlockPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(BlockPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(BlockPatcher).call(this, node, context, editor));
 
     _this.statements = statements;
     return _this;
   }
 
-  babelHelpers.createClass(BlockPatcher, [{
+  createClass(BlockPatcher, [{
     key: 'canPatchAsExpression',
     value: function canPatchAsExpression() {
       return this.statements.every(function (statement) {
@@ -1752,7 +1743,7 @@ var BlockPatcher = function (_NodePatcher) {
     value: function setExpression() {
       var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
-      var willPatchAsExpression = babelHelpers.get(Object.getPrototypeOf(BlockPatcher.prototype), 'setExpression', this).call(this, force);
+      var willPatchAsExpression = get(Object.getPrototypeOf(BlockPatcher.prototype), 'setExpression', this).call(this, force);
       if (willPatchAsExpression && this.prefersToPatchAsExpression()) {
         this.statements.forEach(function (statement) {
           return statement.setExpression();
@@ -1909,14 +1900,14 @@ var BlockPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var BoolPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(BoolPatcher, _NodePatcher);
+  inherits(BoolPatcher, _NodePatcher);
 
   function BoolPatcher() {
-    babelHelpers.classCallCheck(this, BoolPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(BoolPatcher).apply(this, arguments));
+    classCallCheck(this, BoolPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(BoolPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(BoolPatcher, [{
+  createClass(BoolPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       switch (this.getOriginalSource()) {
@@ -1936,19 +1927,19 @@ var BoolPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var FunctionPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(FunctionPatcher, _NodePatcher);
+  inherits(FunctionPatcher, _NodePatcher);
 
   function FunctionPatcher(node, context, editor, parameters, body) {
-    babelHelpers.classCallCheck(this, FunctionPatcher);
+    classCallCheck(this, FunctionPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(FunctionPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(FunctionPatcher).call(this, node, context, editor));
 
     _this.parameters = parameters;
     _this.body = body;
     return _this;
   }
 
-  babelHelpers.createClass(FunctionPatcher, [{
+  createClass(FunctionPatcher, [{
     key: 'initialize',
     value: function initialize() {
       if (this.body && !this.implicitReturnsDisabled()) {
@@ -2091,19 +2082,83 @@ var FunctionPatcher = function (_NodePatcher) {
   return FunctionPatcher;
 }(NodePatcher);
 
+var PassthroughPatcher = function (_NodePatcher) {
+  inherits(PassthroughPatcher, _NodePatcher);
+
+  function PassthroughPatcher(node, context, editor) {
+    classCallCheck(this, PassthroughPatcher);
+
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(PassthroughPatcher).call(this, node, context, editor));
+
+    for (var _len = arguments.length, children = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+      children[_key - 3] = arguments[_key];
+    }
+
+    _this.children = children;
+    return _this;
+  }
+
+  createClass(PassthroughPatcher, [{
+    key: 'patch',
+    value: function patch() {
+      var _this2 = this;
+
+      this.withPrettyErrors(function () {
+        _this2.children.forEach(function (child) {
+          if (Array.isArray(child)) {
+            child.forEach(function (child) {
+              return child && child.patch();
+            });
+          } else if (child) {
+            child.patch();
+          }
+        });
+      });
+    }
+  }, {
+    key: 'isRepeatable',
+    value: function isRepeatable() {
+      return true;
+    }
+  }]);
+  return PassthroughPatcher;
+}(NodePatcher);
+
+var IdentifierPatcher = function (_PassthroughPatcher) {
+  inherits(IdentifierPatcher, _PassthroughPatcher);
+
+  function IdentifierPatcher() {
+    classCallCheck(this, IdentifierPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(IdentifierPatcher).apply(this, arguments));
+  }
+
+  createClass(IdentifierPatcher, [{
+    key: 'negate',
+    value: function negate() {
+      this.insert(this.contentStart, '!');
+    }
+  }, {
+    key: 'isRepeatable',
+    value: function isRepeatable() {
+      return true;
+    }
+  }]);
+  return IdentifierPatcher;
+}(PassthroughPatcher);
+
 /**
  * Handles bound functions that cannot become arrow functions.
  */
 
 var ManuallyBoundFunctionPatcher = function (_FunctionPatcher) {
-  babelHelpers.inherits(ManuallyBoundFunctionPatcher, _FunctionPatcher);
+  inherits(ManuallyBoundFunctionPatcher, _FunctionPatcher);
 
   function ManuallyBoundFunctionPatcher() {
-    babelHelpers.classCallCheck(this, ManuallyBoundFunctionPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ManuallyBoundFunctionPatcher).apply(this, arguments));
+    classCallCheck(this, ManuallyBoundFunctionPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ManuallyBoundFunctionPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ManuallyBoundFunctionPatcher, [{
+  createClass(ManuallyBoundFunctionPatcher, [{
     key: 'patchAsStatement',
     value: function patchAsStatement() {
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -2269,17 +2324,17 @@ function childPropertyNames(node) {
  */
 
 var BoundFunctionPatcher = function (_FunctionPatcher) {
-  babelHelpers.inherits(BoundFunctionPatcher, _FunctionPatcher);
+  inherits(BoundFunctionPatcher, _FunctionPatcher);
 
   function BoundFunctionPatcher() {
-    babelHelpers.classCallCheck(this, BoundFunctionPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(BoundFunctionPatcher).apply(this, arguments));
+    classCallCheck(this, BoundFunctionPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(BoundFunctionPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(BoundFunctionPatcher, [{
+  createClass(BoundFunctionPatcher, [{
     key: 'initialize',
     value: function initialize() {
-      babelHelpers.get(Object.getPrototypeOf(BoundFunctionPatcher.prototype), 'initialize', this).call(this);
+      get(Object.getPrototypeOf(BoundFunctionPatcher.prototype), 'initialize', this).call(this);
       if (this.hasInlineBody()) {
         this.body.setExpression();
       }
@@ -2307,8 +2362,8 @@ var BoundFunctionPatcher = function (_FunctionPatcher) {
 
       if (!this.hasParamStart()) {
         this.insert(this.contentStart, '() ');
-      } else if (this.parameters.length === 1) {
-        var _parameters = babelHelpers.slicedToArray(this.parameters, 1);
+      } else if (!this.parameterListNeedsParentheses()) {
+        var _parameters = slicedToArray(this.parameters, 1);
 
         var param = _parameters[0];
 
@@ -2321,6 +2376,21 @@ var BoundFunctionPatcher = function (_FunctionPatcher) {
       if (!this.willPatchBodyInline()) {
         this.insert(arrow.end, ' {');
       }
+    }
+  }, {
+    key: 'parameterListNeedsParentheses',
+    value: function parameterListNeedsParentheses() {
+      var parameters = this.parameters;
+
+      if (parameters.length !== 1) {
+        return true;
+      }
+
+      var _parameters2 = slicedToArray(parameters, 1);
+
+      var param = _parameters2[0];
+
+      return !(param instanceof IdentifierPatcher);
     }
   }, {
     key: 'patchFunctionBody',
@@ -2394,7 +2464,7 @@ var BoundFunctionPatcher = function (_FunctionPatcher) {
  */
 
 var ChainedComparisonOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ChainedComparisonOpPatcher, _NodePatcher);
+  inherits(ChainedComparisonOpPatcher, _NodePatcher);
 
 
   /**
@@ -2402,16 +2472,16 @@ var ChainedComparisonOpPatcher = function (_NodePatcher) {
    */
 
   function ChainedComparisonOpPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, ChainedComparisonOpPatcher);
+    classCallCheck(this, ChainedComparisonOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ChainedComparisonOpPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ChainedComparisonOpPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     _this.negated = false;
     return _this;
   }
 
-  babelHelpers.createClass(ChainedComparisonOpPatcher, [{
+  createClass(ChainedComparisonOpPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.expression.setRequiresExpression();
@@ -2470,14 +2540,14 @@ var ChainedComparisonOpPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var ClassBoundMethodFunctionPatcher = function (_FunctionPatcher) {
-  babelHelpers.inherits(ClassBoundMethodFunctionPatcher, _FunctionPatcher);
+  inherits(ClassBoundMethodFunctionPatcher, _FunctionPatcher);
 
   function ClassBoundMethodFunctionPatcher() {
-    babelHelpers.classCallCheck(this, ClassBoundMethodFunctionPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ClassBoundMethodFunctionPatcher).apply(this, arguments));
+    classCallCheck(this, ClassBoundMethodFunctionPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ClassBoundMethodFunctionPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ClassBoundMethodFunctionPatcher, [{
+  createClass(ClassBoundMethodFunctionPatcher, [{
     key: 'expectedArrowType',
     value: function expectedArrowType() {
       return '=>';
@@ -2486,83 +2556,19 @@ var ClassBoundMethodFunctionPatcher = function (_FunctionPatcher) {
   return ClassBoundMethodFunctionPatcher;
 }(FunctionPatcher);
 
-var PassthroughPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(PassthroughPatcher, _NodePatcher);
-
-  function PassthroughPatcher(node, context, editor) {
-    babelHelpers.classCallCheck(this, PassthroughPatcher);
-
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(PassthroughPatcher).call(this, node, context, editor));
-
-    for (var _len = arguments.length, children = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-      children[_key - 3] = arguments[_key];
-    }
-
-    _this.children = children;
-    return _this;
-  }
-
-  babelHelpers.createClass(PassthroughPatcher, [{
-    key: 'patch',
-    value: function patch() {
-      var _this2 = this;
-
-      this.withPrettyErrors(function () {
-        _this2.children.forEach(function (child) {
-          if (Array.isArray(child)) {
-            child.forEach(function (child) {
-              return child && child.patch();
-            });
-          } else if (child) {
-            child.patch();
-          }
-        });
-      });
-    }
-  }, {
-    key: 'isRepeatable',
-    value: function isRepeatable() {
-      return true;
-    }
-  }]);
-  return PassthroughPatcher;
-}(NodePatcher);
-
-var IdentifierPatcher = function (_PassthroughPatcher) {
-  babelHelpers.inherits(IdentifierPatcher, _PassthroughPatcher);
-
-  function IdentifierPatcher() {
-    babelHelpers.classCallCheck(this, IdentifierPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(IdentifierPatcher).apply(this, arguments));
-  }
-
-  babelHelpers.createClass(IdentifierPatcher, [{
-    key: 'negate',
-    value: function negate() {
-      this.insert(this.contentStart, '!');
-    }
-  }, {
-    key: 'isRepeatable',
-    value: function isRepeatable() {
-      return true;
-    }
-  }]);
-  return IdentifierPatcher;
-}(PassthroughPatcher);
-
 var MemberAccessOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(MemberAccessOpPatcher, _NodePatcher);
+  inherits(MemberAccessOpPatcher, _NodePatcher);
 
   function MemberAccessOpPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, MemberAccessOpPatcher);
+    classCallCheck(this, MemberAccessOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(MemberAccessOpPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(MemberAccessOpPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(MemberAccessOpPatcher, [{
+  createClass(MemberAccessOpPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.expression.setRequiresExpression();
@@ -2691,14 +2697,14 @@ var MemberAccessOpPatcher = function (_NodePatcher) {
  */
 
 var GeneratorFunctionPatcher = function (_FunctionPatcher) {
-  babelHelpers.inherits(GeneratorFunctionPatcher, _FunctionPatcher);
+  inherits(GeneratorFunctionPatcher, _FunctionPatcher);
 
   function GeneratorFunctionPatcher() {
-    babelHelpers.classCallCheck(this, GeneratorFunctionPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(GeneratorFunctionPatcher).apply(this, arguments));
+    classCallCheck(this, GeneratorFunctionPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(GeneratorFunctionPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(GeneratorFunctionPatcher, [{
+  createClass(GeneratorFunctionPatcher, [{
     key: 'patchFunctionStart',
     value: function patchFunctionStart(_ref) {
       var _ref$method = _ref.method;
@@ -2726,19 +2732,19 @@ var GeneratorFunctionPatcher = function (_FunctionPatcher) {
  */
 
 var ObjectBodyMemberPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ObjectBodyMemberPatcher, _NodePatcher);
+  inherits(ObjectBodyMemberPatcher, _NodePatcher);
 
   function ObjectBodyMemberPatcher(node, context, editor, key, expression) {
-    babelHelpers.classCallCheck(this, ObjectBodyMemberPatcher);
+    classCallCheck(this, ObjectBodyMemberPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ObjectBodyMemberPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ObjectBodyMemberPatcher).call(this, node, context, editor));
 
     _this.key = key;
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(ObjectBodyMemberPatcher, [{
+  createClass(ObjectBodyMemberPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.key.setRequiresExpression();
@@ -2846,14 +2852,14 @@ var ObjectBodyMemberPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var ThisPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ThisPatcher, _NodePatcher);
+  inherits(ThisPatcher, _NodePatcher);
 
   function ThisPatcher() {
-    babelHelpers.classCallCheck(this, ThisPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ThisPatcher).apply(this, arguments));
+    classCallCheck(this, ThisPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ThisPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ThisPatcher, [{
+  createClass(ThisPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       if (this.isShorthandThis()) {
@@ -2882,14 +2888,14 @@ var ThisPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var ClassAssignOpPatcher = function (_ObjectBodyMemberPatc) {
-  babelHelpers.inherits(ClassAssignOpPatcher, _ObjectBodyMemberPatc);
+  inherits(ClassAssignOpPatcher, _ObjectBodyMemberPatc);
 
   function ClassAssignOpPatcher() {
-    babelHelpers.classCallCheck(this, ClassAssignOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ClassAssignOpPatcher).apply(this, arguments));
+    classCallCheck(this, ClassAssignOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ClassAssignOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ClassAssignOpPatcher, [{
+  createClass(ClassAssignOpPatcher, [{
     key: 'statementNeedsSemicolon',
 
 
@@ -2902,7 +2908,7 @@ var ClassAssignOpPatcher = function (_ObjectBodyMemberPatc) {
   }, {
     key: 'patchAsExpression',
     value: function patchAsExpression() {
-      babelHelpers.get(Object.getPrototypeOf(ClassAssignOpPatcher.prototype), 'patchAsExpression', this).call(this);
+      get(Object.getPrototypeOf(ClassAssignOpPatcher.prototype), 'patchAsExpression', this).call(this);
       if (this.isStaticMethod()) {
         // `this.a: ->` → `static a: ->`
         //  ^^^^^          ^^^^^^^
@@ -2950,7 +2956,7 @@ var ClassAssignOpPatcher = function (_ObjectBodyMemberPatc) {
   }, {
     key: 'isComputed',
     value: function isComputed() {
-      if (!babelHelpers.get(Object.getPrototypeOf(ClassAssignOpPatcher.prototype), 'isComputed', this).call(this)) {
+      if (!get(Object.getPrototypeOf(ClassAssignOpPatcher.prototype), 'isComputed', this).call(this)) {
         return false;
       }
       return !this.isStaticMethod();
@@ -3001,28 +3007,28 @@ var ClassAssignOpPatcher = function (_ObjectBodyMemberPatc) {
 }(ObjectBodyMemberPatcher);
 
 var ConstructorPatcher = function (_ObjectBodyMemberPatc) {
-  babelHelpers.inherits(ConstructorPatcher, _ObjectBodyMemberPatc);
+  inherits(ConstructorPatcher, _ObjectBodyMemberPatc);
 
   function ConstructorPatcher(node, context, editor, assignee, expression) {
-    babelHelpers.classCallCheck(this, ConstructorPatcher);
+    classCallCheck(this, ConstructorPatcher);
 
 
     // Constructor methods do not have implicit returns.
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ConstructorPatcher).call(this, node, context, editor, assignee, expression));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ConstructorPatcher).call(this, node, context, editor, assignee, expression));
 
     expression.disableImplicitReturns();
     return _this;
   }
 
-  babelHelpers.createClass(ConstructorPatcher, [{
+  createClass(ConstructorPatcher, [{
     key: 'patch',
     value: function patch() {
       var _this2 = this;
 
       var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      babelHelpers.get(Object.getPrototypeOf(ConstructorPatcher.prototype), 'patch', this).call(this, options);
+      get(Object.getPrototypeOf(ConstructorPatcher.prototype), 'patch', this).call(this, options);
       var boundMethods = this.parent.boundInstanceMethods();
       if (boundMethods.length > 0) {
         var statements = this.expression.body.statements;
@@ -3075,14 +3081,14 @@ var ConstructorPatcher = function (_ObjectBodyMemberPatc) {
 }(ObjectBodyMemberPatcher);
 
 var ClassBlockPatcher = function (_BlockPatcher) {
-  babelHelpers.inherits(ClassBlockPatcher, _BlockPatcher);
+  inherits(ClassBlockPatcher, _BlockPatcher);
 
   function ClassBlockPatcher() {
-    babelHelpers.classCallCheck(this, ClassBlockPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ClassBlockPatcher).apply(this, arguments));
+    classCallCheck(this, ClassBlockPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ClassBlockPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ClassBlockPatcher, [{
+  createClass(ClassBlockPatcher, [{
     key: 'patch',
     value: function patch() {
       var _this2 = this;
@@ -3113,7 +3119,7 @@ var ClassBlockPatcher = function (_BlockPatcher) {
           })();
         }
       }
-      babelHelpers.get(Object.getPrototypeOf(ClassBlockPatcher.prototype), 'patch', this).call(this, options);
+      get(Object.getPrototypeOf(ClassBlockPatcher.prototype), 'patch', this).call(this, options);
     }
   }, {
     key: 'getClassPatcher',
@@ -3155,12 +3161,12 @@ var ClassBlockPatcher = function (_BlockPatcher) {
 }(BlockPatcher);
 
 var ClassPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ClassPatcher, _NodePatcher);
+  inherits(ClassPatcher, _NodePatcher);
 
   function ClassPatcher(node, context, editor, nameAssignee, parent, body) {
-    babelHelpers.classCallCheck(this, ClassPatcher);
+    classCallCheck(this, ClassPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ClassPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ClassPatcher).call(this, node, context, editor));
 
     _this.nameAssignee = nameAssignee;
     _this.superclass = parent;
@@ -3168,7 +3174,7 @@ var ClassPatcher = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(ClassPatcher, [{
+  createClass(ClassPatcher, [{
     key: 'initialize',
     value: function initialize() {
       if (this.nameAssignee) {
@@ -3337,14 +3343,14 @@ var ClassPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var CompoundAssignOpPatcher = function (_AssignOpPatcher) {
-  babelHelpers.inherits(CompoundAssignOpPatcher, _AssignOpPatcher);
+  inherits(CompoundAssignOpPatcher, _AssignOpPatcher);
 
   function CompoundAssignOpPatcher() {
-    babelHelpers.classCallCheck(this, CompoundAssignOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(CompoundAssignOpPatcher).apply(this, arguments));
+    classCallCheck(this, CompoundAssignOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(CompoundAssignOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(CompoundAssignOpPatcher, [{
+  createClass(CompoundAssignOpPatcher, [{
     key: 'getOperatorToken',
     value: function getOperatorToken() {
       var operatorIndex = this.indexOfSourceTokenBetweenPatchersMatching(this.assignee, this.expression, function (token) {
@@ -3370,12 +3376,12 @@ var CompoundAssignOpPatcher = function (_AssignOpPatcher) {
 }(AssignOpPatcher);
 
 var ConditionalPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ConditionalPatcher, _NodePatcher);
+  inherits(ConditionalPatcher, _NodePatcher);
 
   function ConditionalPatcher(node, context, editor, condition, consequent, alternate) {
-    babelHelpers.classCallCheck(this, ConditionalPatcher);
+    classCallCheck(this, ConditionalPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ConditionalPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ConditionalPatcher).call(this, node, context, editor));
 
     _this.condition = condition;
     _this.consequent = consequent;
@@ -3383,7 +3389,7 @@ var ConditionalPatcher = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(ConditionalPatcher, [{
+  createClass(ConditionalPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.condition.setRequiresExpression();
@@ -3404,7 +3410,7 @@ var ConditionalPatcher = function (_NodePatcher) {
     value: function setExpression() {
       var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
-      var willPatchAsExpression = babelHelpers.get(Object.getPrototypeOf(ConditionalPatcher.prototype), 'setExpression', this).call(this, force);
+      var willPatchAsExpression = get(Object.getPrototypeOf(ConditionalPatcher.prototype), 'setExpression', this).call(this, force);
       if (willPatchAsExpression && this.willPatchAsTernary()) {
         this.consequent.setRequiresExpression();
         if (this.alternate) {
@@ -3673,19 +3679,19 @@ var ConditionalPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var DefaultParamPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(DefaultParamPatcher, _NodePatcher);
+  inherits(DefaultParamPatcher, _NodePatcher);
 
   function DefaultParamPatcher(node, context, editor, param, value) {
-    babelHelpers.classCallCheck(this, DefaultParamPatcher);
+    classCallCheck(this, DefaultParamPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(DefaultParamPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(DefaultParamPatcher).call(this, node, context, editor));
 
     _this.param = param;
     _this.value = value;
     return _this;
   }
 
-  babelHelpers.createClass(DefaultParamPatcher, [{
+  createClass(DefaultParamPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.param.setRequiresExpression();
@@ -3702,18 +3708,18 @@ var DefaultParamPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var DoOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(DoOpPatcher, _NodePatcher);
+  inherits(DoOpPatcher, _NodePatcher);
 
   function DoOpPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, DoOpPatcher);
+    classCallCheck(this, DoOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(DoOpPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(DoOpPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(DoOpPatcher, [{
+  createClass(DoOpPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.expression.setRequiresExpression();
@@ -3775,19 +3781,19 @@ var DoOpPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var DynamicMemberAccessOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(DynamicMemberAccessOpPatcher, _NodePatcher);
+  inherits(DynamicMemberAccessOpPatcher, _NodePatcher);
 
   function DynamicMemberAccessOpPatcher(node, context, editor, expression, indexingExpr) {
-    babelHelpers.classCallCheck(this, DynamicMemberAccessOpPatcher);
+    classCallCheck(this, DynamicMemberAccessOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(DynamicMemberAccessOpPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(DynamicMemberAccessOpPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     _this.indexingExpr = indexingExpr;
     return _this;
   }
 
-  babelHelpers.createClass(DynamicMemberAccessOpPatcher, [{
+  createClass(DynamicMemberAccessOpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       this.expression.patch();
@@ -3842,23 +3848,23 @@ var DynamicMemberAccessOpPatcher = function (_NodePatcher) {
  */
 
 var EqualityPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(EqualityPatcher, _BinaryOpPatcher);
+  inherits(EqualityPatcher, _BinaryOpPatcher);
 
   function EqualityPatcher() {
     var _Object$getPrototypeO;
 
     var _temp, _this, _ret;
 
-    babelHelpers.classCallCheck(this, EqualityPatcher);
+    classCallCheck(this, EqualityPatcher);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = babelHelpers.possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(EqualityPatcher)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.negated = false, _temp), babelHelpers.possibleConstructorReturn(_this, _ret);
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(EqualityPatcher)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.negated = false, _temp), possibleConstructorReturn(_this, _ret);
   }
 
-  babelHelpers.createClass(EqualityPatcher, [{
+  createClass(EqualityPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       this.left.patch();
@@ -3933,14 +3939,14 @@ var EqualityPatcher = function (_BinaryOpPatcher) {
  */
 
 var ExpOpPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(ExpOpPatcher, _BinaryOpPatcher);
+  inherits(ExpOpPatcher, _BinaryOpPatcher);
 
   function ExpOpPatcher() {
-    babelHelpers.classCallCheck(this, ExpOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ExpOpPatcher).apply(this, arguments));
+    classCallCheck(this, ExpOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ExpOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ExpOpPatcher, [{
+  createClass(ExpOpPatcher, [{
     key: 'patchAsExpression',
 
     /**
@@ -3978,14 +3984,14 @@ var ExpOpPatcher = function (_BinaryOpPatcher) {
 }(BinaryOpPatcher);
 
 var ExistsOpCompoundAssignOpPatcher = function (_CompoundAssignOpPatc) {
-  babelHelpers.inherits(ExistsOpCompoundAssignOpPatcher, _CompoundAssignOpPatc);
+  inherits(ExistsOpCompoundAssignOpPatcher, _CompoundAssignOpPatc);
 
   function ExistsOpCompoundAssignOpPatcher() {
-    babelHelpers.classCallCheck(this, ExistsOpCompoundAssignOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ExistsOpCompoundAssignOpPatcher).apply(this, arguments));
+    classCallCheck(this, ExistsOpCompoundAssignOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ExistsOpCompoundAssignOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ExistsOpCompoundAssignOpPatcher, [{
+  createClass(ExistsOpCompoundAssignOpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       var assigneeAgain = void 0;
@@ -4064,14 +4070,14 @@ var ExistsOpCompoundAssignOpPatcher = function (_CompoundAssignOpPatc) {
 }(CompoundAssignOpPatcher);
 
 var ExistsOpPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(ExistsOpPatcher, _BinaryOpPatcher);
+  inherits(ExistsOpPatcher, _BinaryOpPatcher);
 
   function ExistsOpPatcher() {
-    babelHelpers.classCallCheck(this, ExistsOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ExistsOpPatcher).apply(this, arguments));
+    classCallCheck(this, ExistsOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ExistsOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ExistsOpPatcher, [{
+  createClass(ExistsOpPatcher, [{
     key: 'patchAsExpression',
 
     /**
@@ -4147,14 +4153,14 @@ var EXTENDS_HELPER = '\nfunction __extends__(child, parent) {\n  Object.getOwnPr
  */
 
 var ExtendsOpPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(ExtendsOpPatcher, _BinaryOpPatcher);
+  inherits(ExtendsOpPatcher, _BinaryOpPatcher);
 
   function ExtendsOpPatcher() {
-    babelHelpers.classCallCheck(this, ExtendsOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ExtendsOpPatcher).apply(this, arguments));
+    classCallCheck(this, ExtendsOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ExtendsOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ExtendsOpPatcher, [{
+  createClass(ExtendsOpPatcher, [{
     key: 'patchAsExpression',
 
     /**
@@ -4183,14 +4189,14 @@ var ExtendsOpPatcher = function (_BinaryOpPatcher) {
 }(BinaryOpPatcher);
 
 var FloorDivideOpPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(FloorDivideOpPatcher, _BinaryOpPatcher);
+  inherits(FloorDivideOpPatcher, _BinaryOpPatcher);
 
   function FloorDivideOpPatcher() {
-    babelHelpers.classCallCheck(this, FloorDivideOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(FloorDivideOpPatcher).apply(this, arguments));
+    classCallCheck(this, FloorDivideOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(FloorDivideOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(FloorDivideOpPatcher, [{
+  createClass(FloorDivideOpPatcher, [{
     key: 'patchAsExpression',
 
     /**
@@ -4230,12 +4236,12 @@ var FloorDivideOpPatcher = function (_BinaryOpPatcher) {
 }(BinaryOpPatcher);
 
 var ForPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ForPatcher, _NodePatcher);
+  inherits(ForPatcher, _NodePatcher);
 
   function ForPatcher(node, context, editor, keyAssignee, valAssignee, target, filter, body) {
-    babelHelpers.classCallCheck(this, ForPatcher);
+    classCallCheck(this, ForPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ForPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ForPatcher).call(this, node, context, editor));
 
     _this.keyAssignee = keyAssignee;
     _this.valAssignee = valAssignee;
@@ -4245,7 +4251,7 @@ var ForPatcher = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(ForPatcher, [{
+  createClass(ForPatcher, [{
     key: 'initialize',
     value: function initialize() {
       if (this.keyAssignee) {
@@ -4404,21 +4410,21 @@ var ForPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var ForInPatcher = function (_ForPatcher) {
-  babelHelpers.inherits(ForInPatcher, _ForPatcher);
+  inherits(ForInPatcher, _ForPatcher);
 
   function ForInPatcher(node, context, editor, keyAssignee, valAssignee, target, step, filter, body) {
-    babelHelpers.classCallCheck(this, ForInPatcher);
+    classCallCheck(this, ForInPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ForInPatcher).call(this, node, context, editor, keyAssignee, valAssignee, target, filter, body));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ForInPatcher).call(this, node, context, editor, keyAssignee, valAssignee, target, filter, body));
 
     _this.step = step;
     return _this;
   }
 
-  babelHelpers.createClass(ForInPatcher, [{
+  createClass(ForInPatcher, [{
     key: 'initialize',
     value: function initialize() {
-      babelHelpers.get(Object.getPrototypeOf(ForInPatcher.prototype), 'initialize', this).call(this);
+      get(Object.getPrototypeOf(ForInPatcher.prototype), 'initialize', this).call(this);
       if (this.step) {
         this.step.setRequiresExpression();
       }
@@ -4574,7 +4580,7 @@ var ForInPatcher = function (_ForPatcher) {
 }(ForPatcher);
 
 var Step = function Step(patcher) {
-  babelHelpers.classCallCheck(this, Step);
+  classCallCheck(this, Step);
 
   var negated = false;
   var root = patcher;
@@ -4608,14 +4614,14 @@ var Step = function Step(patcher) {
 };
 
 var ForOfPatcher = function (_ForPatcher) {
-  babelHelpers.inherits(ForOfPatcher, _ForPatcher);
+  inherits(ForOfPatcher, _ForPatcher);
 
   function ForOfPatcher() {
-    babelHelpers.classCallCheck(this, ForOfPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ForOfPatcher).apply(this, arguments));
+    classCallCheck(this, ForOfPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ForOfPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ForOfPatcher, [{
+  createClass(ForOfPatcher, [{
     key: 'patchAsStatement',
     value: function patchAsStatement() {
       if (this.node.isOwn) {
@@ -4676,19 +4682,19 @@ var ForOfPatcher = function (_ForPatcher) {
 }(ForPatcher);
 
 var FunctionApplicationPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(FunctionApplicationPatcher, _NodePatcher);
+  inherits(FunctionApplicationPatcher, _NodePatcher);
 
   function FunctionApplicationPatcher(node, context, editor, fn, args) {
-    babelHelpers.classCallCheck(this, FunctionApplicationPatcher);
+    classCallCheck(this, FunctionApplicationPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(FunctionApplicationPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(FunctionApplicationPatcher).call(this, node, context, editor));
 
     _this.fn = fn;
     _this.args = args;
     return _this;
   }
 
-  babelHelpers.createClass(FunctionApplicationPatcher, [{
+  createClass(FunctionApplicationPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.fn.setRequiresExpression();
@@ -4796,14 +4802,14 @@ function escapeTemplateStringContents(patcher, start, end) {
 var HERESTRING_DELIMITER_LENGTH = 3;
 
 var HerestringPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(HerestringPatcher, _NodePatcher);
+  inherits(HerestringPatcher, _NodePatcher);
 
   function HerestringPatcher() {
-    babelHelpers.classCallCheck(this, HerestringPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(HerestringPatcher).apply(this, arguments));
+    classCallCheck(this, HerestringPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(HerestringPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(HerestringPatcher, [{
+  createClass(HerestringPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       var _this2 = this;
@@ -4819,7 +4825,7 @@ var HerestringPatcher = function (_NodePatcher) {
       var data = _node.data;
 
       padding.forEach(function (_ref) {
-        var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+        var _ref2 = slicedToArray(_ref, 2);
 
         var start = _ref2[0];
         var end = _ref2[1];
@@ -4850,7 +4856,7 @@ var IN_HELPER = 'function __in__(needle, haystack) {\n  return haystack.indexOf(
  */
 
 var InOpPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(InOpPatcher, _BinaryOpPatcher);
+  inherits(InOpPatcher, _BinaryOpPatcher);
 
 
   /**
@@ -4858,15 +4864,15 @@ var InOpPatcher = function (_BinaryOpPatcher) {
    */
 
   function InOpPatcher(node, context, editor, left, right) {
-    babelHelpers.classCallCheck(this, InOpPatcher);
+    classCallCheck(this, InOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(InOpPatcher).call(this, node, context, editor, left, right));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(InOpPatcher).call(this, node, context, editor, left, right));
 
     _this.negated = node.isNot;
     return _this;
   }
 
-  babelHelpers.createClass(InOpPatcher, [{
+  createClass(InOpPatcher, [{
     key: 'negate',
     value: function negate() {
       this.negated = !this.negated;
@@ -4928,18 +4934,18 @@ var InOpPatcher = function (_BinaryOpPatcher) {
  */
 
 var NegatableBinaryOpPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(NegatableBinaryOpPatcher, _BinaryOpPatcher);
+  inherits(NegatableBinaryOpPatcher, _BinaryOpPatcher);
 
   function NegatableBinaryOpPatcher(node, context, editor, left, right) {
-    babelHelpers.classCallCheck(this, NegatableBinaryOpPatcher);
+    classCallCheck(this, NegatableBinaryOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(NegatableBinaryOpPatcher).call(this, node, context, editor, left, right));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(NegatableBinaryOpPatcher).call(this, node, context, editor, left, right));
 
     _this.negated = node.isNot;
     return _this;
   }
 
-  babelHelpers.createClass(NegatableBinaryOpPatcher, [{
+  createClass(NegatableBinaryOpPatcher, [{
     key: 'negate',
     value: function negate() {
       this.negated = !this.negated;
@@ -4974,7 +4980,7 @@ var NegatableBinaryOpPatcher = function (_BinaryOpPatcher) {
       }
 
       // Patch LEFT and RIGHT.
-      babelHelpers.get(Object.getPrototypeOf(NegatableBinaryOpPatcher.prototype), 'patchAsExpression', this).call(this);
+      get(Object.getPrototypeOf(NegatableBinaryOpPatcher.prototype), 'patchAsExpression', this).call(this);
 
       if (needsParens) {
         // `!(a not instanceof b` → `!(a not instanceof b)`
@@ -5008,7 +5014,7 @@ var NegatableBinaryOpPatcher = function (_BinaryOpPatcher) {
       if (this.negated) {
         return false;
       } else {
-        return babelHelpers.get(Object.getPrototypeOf(NegatableBinaryOpPatcher.prototype), 'statementNeedsParens', this).call(this);
+        return get(Object.getPrototypeOf(NegatableBinaryOpPatcher.prototype), 'statementNeedsParens', this).call(this);
       }
     }
   }]);
@@ -5020,14 +5026,14 @@ var NegatableBinaryOpPatcher = function (_BinaryOpPatcher) {
  */
 
 var InstanceofOpPatcher = function (_NegatableBinaryOpPat) {
-  babelHelpers.inherits(InstanceofOpPatcher, _NegatableBinaryOpPat);
+  inherits(InstanceofOpPatcher, _NegatableBinaryOpPat);
 
   function InstanceofOpPatcher() {
-    babelHelpers.classCallCheck(this, InstanceofOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(InstanceofOpPatcher).apply(this, arguments));
+    classCallCheck(this, InstanceofOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(InstanceofOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(InstanceofOpPatcher, [{
+  createClass(InstanceofOpPatcher, [{
     key: 'javaScriptOperator',
     value: function javaScriptOperator() {
       return 'instanceof';
@@ -5041,14 +5047,14 @@ var InstanceofOpPatcher = function (_NegatableBinaryOpPat) {
  */
 
 var JavaScriptPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(JavaScriptPatcher, _NodePatcher);
+  inherits(JavaScriptPatcher, _NodePatcher);
 
   function JavaScriptPatcher() {
-    babelHelpers.classCallCheck(this, JavaScriptPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(JavaScriptPatcher).apply(this, arguments));
+    classCallCheck(this, JavaScriptPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(JavaScriptPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(JavaScriptPatcher, [{
+  createClass(JavaScriptPatcher, [{
     key: 'patchAsExpression',
 
     /**
@@ -5067,18 +5073,18 @@ var JavaScriptPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var UnaryOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(UnaryOpPatcher, _NodePatcher);
+  inherits(UnaryOpPatcher, _NodePatcher);
 
   function UnaryOpPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, UnaryOpPatcher);
+    classCallCheck(this, UnaryOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(UnaryOpPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(UnaryOpPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(UnaryOpPatcher, [{
+  createClass(UnaryOpPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.expression.setRequiresExpression();
@@ -5113,14 +5119,14 @@ var UnaryOpPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var LogicalNotOpPatcher = function (_UnaryOpPatcher) {
-  babelHelpers.inherits(LogicalNotOpPatcher, _UnaryOpPatcher);
+  inherits(LogicalNotOpPatcher, _UnaryOpPatcher);
 
   function LogicalNotOpPatcher() {
-    babelHelpers.classCallCheck(this, LogicalNotOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(LogicalNotOpPatcher).apply(this, arguments));
+    classCallCheck(this, LogicalNotOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(LogicalNotOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(LogicalNotOpPatcher, [{
+  createClass(LogicalNotOpPatcher, [{
     key: 'patchAsExpression',
 
     /**
@@ -5130,21 +5136,21 @@ var LogicalNotOpPatcher = function (_UnaryOpPatcher) {
       // `not a` → `!a`
       //  ^^^^      ^
       this.overwrite(this.contentStart, this.expression.outerStart, '!');
-      babelHelpers.get(Object.getPrototypeOf(LogicalNotOpPatcher.prototype), 'patchAsExpression', this).call(this);
+      get(Object.getPrototypeOf(LogicalNotOpPatcher.prototype), 'patchAsExpression', this).call(this);
     }
   }]);
   return LogicalNotOpPatcher;
 }(UnaryOpPatcher);
 
 var LogicalOpCompoundAssignOpPatcher = function (_CompoundAssignOpPatc) {
-  babelHelpers.inherits(LogicalOpCompoundAssignOpPatcher, _CompoundAssignOpPatc);
+  inherits(LogicalOpCompoundAssignOpPatcher, _CompoundAssignOpPatc);
 
   function LogicalOpCompoundAssignOpPatcher() {
-    babelHelpers.classCallCheck(this, LogicalOpCompoundAssignOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(LogicalOpCompoundAssignOpPatcher).apply(this, arguments));
+    classCallCheck(this, LogicalOpCompoundAssignOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(LogicalOpCompoundAssignOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(LogicalOpCompoundAssignOpPatcher, [{
+  createClass(LogicalOpCompoundAssignOpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       var operator = this.getOperatorToken();
@@ -5231,7 +5237,7 @@ var LogicalOpCompoundAssignOpPatcher = function (_CompoundAssignOpPatc) {
  */
 
 var LogicalOpPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(LogicalOpPatcher, _BinaryOpPatcher);
+  inherits(LogicalOpPatcher, _BinaryOpPatcher);
 
 
   /**
@@ -5239,9 +5245,9 @@ var LogicalOpPatcher = function (_BinaryOpPatcher) {
    */
 
   function LogicalOpPatcher(node, context, editor, left, right) {
-    babelHelpers.classCallCheck(this, LogicalOpPatcher);
+    classCallCheck(this, LogicalOpPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(LogicalOpPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(LogicalOpPatcher).call(this, node, context, editor));
 
     _this.negated = false;
 
@@ -5255,7 +5261,7 @@ var LogicalOpPatcher = function (_BinaryOpPatcher) {
    */
 
 
-  babelHelpers.createClass(LogicalOpPatcher, [{
+  createClass(LogicalOpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       this.left.patch();
@@ -5302,11 +5308,11 @@ var LogicalOpPatcher = function (_BinaryOpPatcher) {
  */
 
 var NewOpPatcher = function (_FunctionApplicationP) {
-  babelHelpers.inherits(NewOpPatcher, _FunctionApplicationP);
+  inherits(NewOpPatcher, _FunctionApplicationP);
 
   function NewOpPatcher() {
-    babelHelpers.classCallCheck(this, NewOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(NewOpPatcher).apply(this, arguments));
+    classCallCheck(this, NewOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(NewOpPatcher).apply(this, arguments));
   }
 
   return NewOpPatcher;
@@ -5317,14 +5323,14 @@ var NewOpPatcher = function (_FunctionApplicationP) {
  */
 
 var ObjectInitialiserMemberPatcher = function (_ObjectBodyMemberPatc) {
-  babelHelpers.inherits(ObjectInitialiserMemberPatcher, _ObjectBodyMemberPatc);
+  inherits(ObjectInitialiserMemberPatcher, _ObjectBodyMemberPatc);
 
   function ObjectInitialiserMemberPatcher() {
-    babelHelpers.classCallCheck(this, ObjectInitialiserMemberPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ObjectInitialiserMemberPatcher).apply(this, arguments));
+    classCallCheck(this, ObjectInitialiserMemberPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ObjectInitialiserMemberPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ObjectInitialiserMemberPatcher, [{
+  createClass(ObjectInitialiserMemberPatcher, [{
     key: 'patchAsProperty',
     value: function patchAsProperty() {
       if (this.key.node === this.expression.node) {
@@ -5332,7 +5338,7 @@ var ObjectInitialiserMemberPatcher = function (_ObjectBodyMemberPatc) {
           expand: this.key.node.type !== 'Identifier'
         });
       } else {
-        babelHelpers.get(Object.getPrototypeOf(ObjectInitialiserMemberPatcher.prototype), 'patchAsProperty', this).call(this);
+        get(Object.getPrototypeOf(ObjectInitialiserMemberPatcher.prototype), 'patchAsProperty', this).call(this);
       }
     }
 
@@ -5385,18 +5391,18 @@ var ObjectInitialiserMemberPatcher = function (_ObjectBodyMemberPatc) {
  */
 
 var ObjectInitialiserPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ObjectInitialiserPatcher, _NodePatcher);
+  inherits(ObjectInitialiserPatcher, _NodePatcher);
 
   function ObjectInitialiserPatcher(node, context, editor, members) {
-    babelHelpers.classCallCheck(this, ObjectInitialiserPatcher);
+    classCallCheck(this, ObjectInitialiserPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ObjectInitialiserPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ObjectInitialiserPatcher).call(this, node, context, editor));
 
     _this.members = members;
     return _this;
   }
 
-  babelHelpers.createClass(ObjectInitialiserPatcher, [{
+  createClass(ObjectInitialiserPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.members.forEach(function (member) {
@@ -5561,14 +5567,14 @@ var ObjectInitialiserPatcher = function (_NodePatcher) {
  */
 
 var OfOpPatcher = function (_NegatableBinaryOpPat) {
-  babelHelpers.inherits(OfOpPatcher, _NegatableBinaryOpPat);
+  inherits(OfOpPatcher, _NegatableBinaryOpPat);
 
   function OfOpPatcher() {
-    babelHelpers.classCallCheck(this, OfOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(OfOpPatcher).apply(this, arguments));
+    classCallCheck(this, OfOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(OfOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(OfOpPatcher, [{
+  createClass(OfOpPatcher, [{
     key: 'operatorTokenPredicate',
     value: function operatorTokenPredicate() {
       return function (token) {
@@ -5594,12 +5600,12 @@ function blank() {
 var BLOCK_COMMENT_DELIMITER = '###';
 
 var ProgramPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ProgramPatcher, _NodePatcher);
+  inherits(ProgramPatcher, _NodePatcher);
 
   function ProgramPatcher(node, context, editor, body) {
-    babelHelpers.classCallCheck(this, ProgramPatcher);
+    classCallCheck(this, ProgramPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ProgramPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ProgramPatcher).call(this, node, context, editor));
 
     _this.body = body;
 
@@ -5608,7 +5614,7 @@ var ProgramPatcher = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(ProgramPatcher, [{
+  createClass(ProgramPatcher, [{
     key: 'shouldTrimContentRange',
     value: function shouldTrimContentRange() {
       return true;
@@ -5830,14 +5836,14 @@ var ProgramPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var ProtoMemberAccessOpPatcher = function (_MemberAccessOpPatche) {
-  babelHelpers.inherits(ProtoMemberAccessOpPatcher, _MemberAccessOpPatche);
+  inherits(ProtoMemberAccessOpPatcher, _MemberAccessOpPatche);
 
   function ProtoMemberAccessOpPatcher() {
-    babelHelpers.classCallCheck(this, ProtoMemberAccessOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ProtoMemberAccessOpPatcher).apply(this, arguments));
+    classCallCheck(this, ProtoMemberAccessOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ProtoMemberAccessOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ProtoMemberAccessOpPatcher, [{
+  createClass(ProtoMemberAccessOpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       this.expression.patch();
@@ -5865,14 +5871,14 @@ var RANGE_HELPER = 'function __range__(left, right, inclusive) {\n  let range = 
 var MAXIMUM_LITERAL_RANGE_ELEMENTS = 21;
 
 var RangePatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(RangePatcher, _BinaryOpPatcher);
+  inherits(RangePatcher, _BinaryOpPatcher);
 
   function RangePatcher() {
-    babelHelpers.classCallCheck(this, RangePatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(RangePatcher).apply(this, arguments));
+    classCallCheck(this, RangePatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(RangePatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(RangePatcher, [{
+  createClass(RangePatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       if (this.canBecomeLiteralArray()) {
@@ -5953,7 +5959,7 @@ var RangePatcher = function (_BinaryOpPatcher) {
         return false;
       }
 
-      var _range = babelHelpers.slicedToArray(range, 2);
+      var _range = slicedToArray(range, 2);
 
       var first = _range[0];
       var last = _range[1];
@@ -6002,14 +6008,14 @@ var RangePatcher = function (_BinaryOpPatcher) {
  */
 
 var RegExpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(RegExpPatcher, _NodePatcher);
+  inherits(RegExpPatcher, _NodePatcher);
 
   function RegExpPatcher() {
-    babelHelpers.classCallCheck(this, RegExpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(RegExpPatcher).apply(this, arguments));
+    classCallCheck(this, RegExpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(RegExpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(RegExpPatcher, [{
+  createClass(RegExpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       this.overwrite(this.contentStart, this.contentEnd, this.node.data);
@@ -6023,18 +6029,18 @@ var RegExpPatcher = function (_NodePatcher) {
  */
 
 var SpreadPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(SpreadPatcher, _NodePatcher);
+  inherits(SpreadPatcher, _NodePatcher);
 
   function SpreadPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, SpreadPatcher);
+    classCallCheck(this, SpreadPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SpreadPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(SpreadPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(SpreadPatcher, [{
+  createClass(SpreadPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.expression.setRequiresExpression();
@@ -6065,29 +6071,29 @@ var SpreadPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var RestPatcher = function (_SpreadPatcher) {
-  babelHelpers.inherits(RestPatcher, _SpreadPatcher);
+  inherits(RestPatcher, _SpreadPatcher);
 
   function RestPatcher() {
-    babelHelpers.classCallCheck(this, RestPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(RestPatcher).apply(this, arguments));
+    classCallCheck(this, RestPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(RestPatcher).apply(this, arguments));
   }
 
   return RestPatcher;
 }(SpreadPatcher);
 
 var ReturnPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ReturnPatcher, _NodePatcher);
+  inherits(ReturnPatcher, _NodePatcher);
 
   function ReturnPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, ReturnPatcher);
+    classCallCheck(this, ReturnPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ReturnPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ReturnPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(ReturnPatcher, [{
+  createClass(ReturnPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.setExplicitlyReturns();
@@ -6118,14 +6124,14 @@ var ReturnPatcher = function (_NodePatcher) {
  */
 
 var SeqOpPatcher = function (_BinaryOpPatcher) {
-  babelHelpers.inherits(SeqOpPatcher, _BinaryOpPatcher);
+  inherits(SeqOpPatcher, _BinaryOpPatcher);
 
   function SeqOpPatcher() {
-    babelHelpers.classCallCheck(this, SeqOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SeqOpPatcher).apply(this, arguments));
+    classCallCheck(this, SeqOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(SeqOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(SeqOpPatcher, [{
+  createClass(SeqOpPatcher, [{
     key: 'patchAsExpression',
 
     /**
@@ -6162,7 +6168,7 @@ var SeqOpPatcher = function (_BinaryOpPatcher) {
  */
 
 var SlicePatcher = function (_NodePatcher) {
-  babelHelpers.inherits(SlicePatcher, _NodePatcher);
+  inherits(SlicePatcher, _NodePatcher);
 
 
   /**
@@ -6170,9 +6176,9 @@ var SlicePatcher = function (_NodePatcher) {
    */
 
   function SlicePatcher(node, context, editor, expression, left, right) {
-    babelHelpers.classCallCheck(this, SlicePatcher);
+    classCallCheck(this, SlicePatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SlicePatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(SlicePatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     _this.left = left;
@@ -6185,7 +6191,7 @@ var SlicePatcher = function (_NodePatcher) {
    */
 
 
-  babelHelpers.createClass(SlicePatcher, [{
+  createClass(SlicePatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       var indexStart = this.getIndexStartSourceToken();
@@ -6298,14 +6304,14 @@ var SlicePatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var SoakedFunctionApplicationPatcher = function (_FunctionApplicationP) {
-  babelHelpers.inherits(SoakedFunctionApplicationPatcher, _FunctionApplicationP);
+  inherits(SoakedFunctionApplicationPatcher, _FunctionApplicationP);
 
   function SoakedFunctionApplicationPatcher() {
-    babelHelpers.classCallCheck(this, SoakedFunctionApplicationPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SoakedFunctionApplicationPatcher).apply(this, arguments));
+    classCallCheck(this, SoakedFunctionApplicationPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(SoakedFunctionApplicationPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(SoakedFunctionApplicationPatcher, [{
+  createClass(SoakedFunctionApplicationPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       throw this.error('cannot patch soaked function calls (e.g. `a?()`) yet, ' + 'see https://github.com/decaffeinate/decaffeinate/issues/176');
@@ -6315,14 +6321,14 @@ var SoakedFunctionApplicationPatcher = function (_FunctionApplicationP) {
 }(FunctionApplicationPatcher);
 
 var SoakedMemberAccessOpPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(SoakedMemberAccessOpPatcher, _NodePatcher);
+  inherits(SoakedMemberAccessOpPatcher, _NodePatcher);
 
   function SoakedMemberAccessOpPatcher() {
-    babelHelpers.classCallCheck(this, SoakedMemberAccessOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SoakedMemberAccessOpPatcher).apply(this, arguments));
+    classCallCheck(this, SoakedMemberAccessOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(SoakedMemberAccessOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(SoakedMemberAccessOpPatcher, [{
+  createClass(SoakedMemberAccessOpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       throw this.error('cannot patch soaked member access (e.g. `a?.b`) yet,' + 'see https://github.com/decaffeinate/decaffeinate/issues/176');
@@ -6332,14 +6338,14 @@ var SoakedMemberAccessOpPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var SuperPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(SuperPatcher, _NodePatcher);
+  inherits(SuperPatcher, _NodePatcher);
 
   function SuperPatcher() {
-    babelHelpers.classCallCheck(this, SuperPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SuperPatcher).apply(this, arguments));
+    classCallCheck(this, SuperPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(SuperPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(SuperPatcher, [{
+  createClass(SuperPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       var name = this.getContainingMethodName();
@@ -6376,19 +6382,19 @@ var SuperPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var SwitchCasePatcher = function (_NodePatcher) {
-  babelHelpers.inherits(SwitchCasePatcher, _NodePatcher);
+  inherits(SwitchCasePatcher, _NodePatcher);
 
   function SwitchCasePatcher(node, context, editor, conditions, consequent) {
-    babelHelpers.classCallCheck(this, SwitchCasePatcher);
+    classCallCheck(this, SwitchCasePatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SwitchCasePatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(SwitchCasePatcher).call(this, node, context, editor));
 
     _this.conditions = conditions;
     _this.consequent = consequent;
     return _this;
   }
 
-  babelHelpers.createClass(SwitchCasePatcher, [{
+  createClass(SwitchCasePatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.conditions.forEach(function (condition) {
@@ -6444,7 +6450,7 @@ var SwitchCasePatcher = function (_NodePatcher) {
   }, {
     key: 'setImplicitlyReturns',
     value: function setImplicitlyReturns() {
-      babelHelpers.get(Object.getPrototypeOf(SwitchCasePatcher.prototype), 'setImplicitlyReturns', this).call(this);
+      get(Object.getPrototypeOf(SwitchCasePatcher.prototype), 'setImplicitlyReturns', this).call(this);
       this.consequent.setImplicitlyReturns();
     }
   }, {
@@ -6533,12 +6539,12 @@ var SwitchCasePatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var SwitchPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(SwitchPatcher, _NodePatcher);
+  inherits(SwitchPatcher, _NodePatcher);
 
   function SwitchPatcher(node, context, editor, expression, cases, alternate) {
-    babelHelpers.classCallCheck(this, SwitchPatcher);
+    classCallCheck(this, SwitchPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(SwitchPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(SwitchPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     _this.cases = cases;
@@ -6546,7 +6552,7 @@ var SwitchPatcher = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(SwitchPatcher, [{
+  createClass(SwitchPatcher, [{
     key: 'patchAsStatement',
     value: function patchAsStatement() {
       if (this.expression) {
@@ -6756,7 +6762,7 @@ function sharedIndentSize(ranges) {
   var size = null;
 
   ranges.forEach(function (_ref) {
-    var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+    var _ref2 = slicedToArray(_ref, 2);
 
     var start = _ref2[0];
     var end = _ref2[1];
@@ -6776,7 +6782,7 @@ var TRIPLE_QUOTE_LENGTH = 3;
  * @param {MagicString} patcher
  */
 function replaceTripleQuotes(node, patcher) {
-  var _node$range = babelHelpers.slicedToArray(node.range, 2);
+  var _node$range = slicedToArray(node.range, 2);
 
   var start = _node$range[0];
   var end = _node$range[1];
@@ -6791,7 +6797,7 @@ function replaceTripleQuotes(node, patcher) {
       var indents = getIndentInfo(source, contentStart, contentEnd);
       var indentSize = sharedIndentSize(indents.ranges);
       indents.ranges.forEach(function (_ref) {
-        var _ref2 = babelHelpers.slicedToArray(_ref, 2);
+        var _ref2 = slicedToArray(_ref, 2);
 
         var start = _ref2[0];
         var end = _ref2[1];
@@ -6812,19 +6818,19 @@ function replaceTripleQuotes(node, patcher) {
 }
 
 var TemplateLiteralPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(TemplateLiteralPatcher, _NodePatcher);
+  inherits(TemplateLiteralPatcher, _NodePatcher);
 
   function TemplateLiteralPatcher(node, context, editor, quasis, expressions) {
-    babelHelpers.classCallCheck(this, TemplateLiteralPatcher);
+    classCallCheck(this, TemplateLiteralPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(TemplateLiteralPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(TemplateLiteralPatcher).call(this, node, context, editor));
 
     _this.quasis = quasis;
     _this.expressions = expressions;
     return _this;
   }
 
-  babelHelpers.createClass(TemplateLiteralPatcher, [{
+  createClass(TemplateLiteralPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       var quasis = this.quasis;
@@ -6855,12 +6861,12 @@ var TemplateLiteralPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var ThrowPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(ThrowPatcher, _NodePatcher);
+  inherits(ThrowPatcher, _NodePatcher);
 
   function ThrowPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, ThrowPatcher);
+    classCallCheck(this, ThrowPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ThrowPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ThrowPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     return _this;
@@ -6871,7 +6877,7 @@ var ThrowPatcher = function (_NodePatcher) {
    */
 
 
-  babelHelpers.createClass(ThrowPatcher, [{
+  createClass(ThrowPatcher, [{
     key: 'prefersToPatchAsExpression',
     value: function prefersToPatchAsExpression() {
       return false;
@@ -7002,13 +7008,13 @@ function leftHandIdentifiers(node) {
 
 var Scope = function () {
   function Scope(parent) {
-    babelHelpers.classCallCheck(this, Scope);
+    classCallCheck(this, Scope);
 
     this.parent = parent;
     this.bindings = Object.create(parent ? parent.bindings : null);
   }
 
-  babelHelpers.createClass(Scope, [{
+  createClass(Scope, [{
     key: 'getBinding',
     value: function getBinding(name) {
       return this.bindings[this.key(name)] || null;
@@ -7243,7 +7249,7 @@ function attachScope(node) {
 }
 
 var TransformCoffeeScriptStage = function () {
-  babelHelpers.createClass(TransformCoffeeScriptStage, null, [{
+  createClass(TransformCoffeeScriptStage, null, [{
     key: 'run',
     value: function run(content, filename) {
       var log = logger(this.name);
@@ -7276,7 +7282,7 @@ var TransformCoffeeScriptStage = function () {
   }]);
 
   function TransformCoffeeScriptStage(ast, context, editor) {
-    babelHelpers.classCallCheck(this, TransformCoffeeScriptStage);
+    classCallCheck(this, TransformCoffeeScriptStage);
 
     this.ast = ast;
     this.context = context;
@@ -7290,7 +7296,7 @@ var TransformCoffeeScriptStage = function () {
    */
 
 
-  babelHelpers.createClass(TransformCoffeeScriptStage, [{
+  createClass(TransformCoffeeScriptStage, [{
     key: 'patcherConstructorForNode',
     value: function patcherConstructorForNode(node) {
       // eslint-disable-line no-unused-vars
@@ -7335,7 +7341,7 @@ var TransformCoffeeScriptStage = function () {
         }
       });
 
-      var patcher = new (Function.prototype.bind.apply(constructor, [null].concat([node, this.context, this.editor], babelHelpers.toConsumableArray(children))))();
+      var patcher = new (Function.prototype.bind.apply(constructor, [null].concat([node, this.context, this.editor], toConsumableArray(children))))();
       this.patchers.push(patcher);
       this.associateParent(patcher, children);
 
@@ -7361,7 +7367,7 @@ var TransformCoffeeScriptStage = function () {
 
       if (constructor === null) {
         var props = childPropertyNames(node);
-        throw new (Function.prototype.bind.apply(PatchError, [null].concat(['no patcher available for node type: ' + node.type + ('' + (props.length ? ' (props: ' + props.join(', ') + ')' : '')), this.context], babelHelpers.toConsumableArray(node.range))))();
+        throw new (Function.prototype.bind.apply(PatchError, [null].concat(['no patcher available for node type: ' + node.type + ('' + (props.length ? ' (props: ' + props.join(', ') + ')' : '')), this.context], toConsumableArray(node.range))))();
       }
 
       return constructor.patcherClassOverrideForNode(node) || constructor;
@@ -7375,12 +7381,12 @@ var TransformCoffeeScriptStage = function () {
  */
 
 var TryPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(TryPatcher, _NodePatcher);
+  inherits(TryPatcher, _NodePatcher);
 
   function TryPatcher(node, context, editor, body, catchAssignee, catchBody, finallyBody) {
-    babelHelpers.classCallCheck(this, TryPatcher);
+    classCallCheck(this, TryPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(TryPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(TryPatcher).call(this, node, context, editor));
 
     _this.body = body;
     _this.catchAssignee = catchAssignee;
@@ -7389,7 +7395,7 @@ var TryPatcher = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(TryPatcher, [{
+  createClass(TryPatcher, [{
     key: 'initialize',
     value: function initialize() {
       if (this.catchAssignee) {
@@ -7609,23 +7615,23 @@ var TryPatcher = function (_NodePatcher) {
  */
 
 var UnaryExistsOpPatcher = function (_UnaryOpPatcher) {
-  babelHelpers.inherits(UnaryExistsOpPatcher, _UnaryOpPatcher);
+  inherits(UnaryExistsOpPatcher, _UnaryOpPatcher);
 
   function UnaryExistsOpPatcher() {
     var _Object$getPrototypeO;
 
     var _temp, _this, _ret;
 
-    babelHelpers.classCallCheck(this, UnaryExistsOpPatcher);
+    classCallCheck(this, UnaryExistsOpPatcher);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = babelHelpers.possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(UnaryExistsOpPatcher)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.negated = false, _temp), babelHelpers.possibleConstructorReturn(_this, _ret);
+    return _ret = (_temp = (_this = possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(UnaryExistsOpPatcher)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.negated = false, _temp), possibleConstructorReturn(_this, _ret);
   }
 
-  babelHelpers.createClass(UnaryExistsOpPatcher, [{
+  createClass(UnaryExistsOpPatcher, [{
     key: 'patchAsExpression',
 
 
@@ -7759,14 +7765,14 @@ var UnaryExistsOpPatcher = function (_UnaryOpPatcher) {
  */
 
 var UnaryMathOpPatcher = function (_UnaryOpPatcher) {
-  babelHelpers.inherits(UnaryMathOpPatcher, _UnaryOpPatcher);
+  inherits(UnaryMathOpPatcher, _UnaryOpPatcher);
 
   function UnaryMathOpPatcher() {
-    babelHelpers.classCallCheck(this, UnaryMathOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(UnaryMathOpPatcher).apply(this, arguments));
+    classCallCheck(this, UnaryMathOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(UnaryMathOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(UnaryMathOpPatcher, [{
+  createClass(UnaryMathOpPatcher, [{
     key: 'isRepeatable',
 
     /**
@@ -7786,14 +7792,14 @@ var UnaryMathOpPatcher = function (_UnaryOpPatcher) {
  */
 
 var UnaryTypeofOpPatcher = function (_UnaryOpPatcher) {
-  babelHelpers.inherits(UnaryTypeofOpPatcher, _UnaryOpPatcher);
+  inherits(UnaryTypeofOpPatcher, _UnaryOpPatcher);
 
   function UnaryTypeofOpPatcher() {
-    babelHelpers.classCallCheck(this, UnaryTypeofOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(UnaryTypeofOpPatcher).apply(this, arguments));
+    classCallCheck(this, UnaryTypeofOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(UnaryTypeofOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(UnaryTypeofOpPatcher, [{
+  createClass(UnaryTypeofOpPatcher, [{
     key: 'isRepeatable',
 
     /**
@@ -7824,12 +7830,12 @@ var UnaryTypeofOpPatcher = function (_UnaryOpPatcher) {
  */
 
 var WhilePatcher = function (_NodePatcher) {
-  babelHelpers.inherits(WhilePatcher, _NodePatcher);
+  inherits(WhilePatcher, _NodePatcher);
 
   function WhilePatcher(node, context, editor, condition, guard, body) {
-    babelHelpers.classCallCheck(this, WhilePatcher);
+    classCallCheck(this, WhilePatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(WhilePatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(WhilePatcher).call(this, node, context, editor));
 
     _this.condition = condition;
     _this.guard = guard;
@@ -7845,7 +7851,7 @@ var WhilePatcher = function (_NodePatcher) {
    */
 
 
-  babelHelpers.createClass(WhilePatcher, [{
+  createClass(WhilePatcher, [{
     key: 'patchAsStatement',
     value: function patchAsStatement() {
       // `until a` → `while a`
@@ -7960,7 +7966,7 @@ var WhilePatcher = function (_NodePatcher) {
       if (this.willPatchAsExpression()) {
         return false;
       } else {
-        return babelHelpers.get(Object.getPrototypeOf(WhilePatcher.prototype), 'implicitReturnWillBreak', this).call(this);
+        return get(Object.getPrototypeOf(WhilePatcher.prototype), 'implicitReturnWillBreak', this).call(this);
       }
     }
 
@@ -7976,7 +7982,7 @@ var WhilePatcher = function (_NodePatcher) {
       if (this.willPatchAsExpression()) {
         return this;
       } else {
-        return babelHelpers.get(Object.getPrototypeOf(WhilePatcher.prototype), 'implicitReturnPatcher', this).call(this);
+        return get(Object.getPrototypeOf(WhilePatcher.prototype), 'implicitReturnPatcher', this).call(this);
       }
     }
 
@@ -8140,18 +8146,18 @@ var WhilePatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var YieldPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(YieldPatcher, _NodePatcher);
+  inherits(YieldPatcher, _NodePatcher);
 
   function YieldPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, YieldPatcher);
+    classCallCheck(this, YieldPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(YieldPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(YieldPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(YieldPatcher, [{
+  createClass(YieldPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.yields();
@@ -8177,18 +8183,18 @@ var YieldPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var YieldFromPatcher = function (_NodePatcher) {
-  babelHelpers.inherits(YieldFromPatcher, _NodePatcher);
+  inherits(YieldFromPatcher, _NodePatcher);
 
   function YieldFromPatcher(node, context, editor, expression) {
-    babelHelpers.classCallCheck(this, YieldFromPatcher);
+    classCallCheck(this, YieldFromPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(YieldFromPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(YieldFromPatcher).call(this, node, context, editor));
 
     _this.expression = expression;
     return _this;
   }
 
-  babelHelpers.createClass(YieldFromPatcher, [{
+  createClass(YieldFromPatcher, [{
     key: 'initialize',
     value: function initialize() {
       this.yields();
@@ -8217,14 +8223,14 @@ var YieldFromPatcher = function (_NodePatcher) {
 }(NodePatcher);
 
 var MainStage = function (_TransformCoffeeScrip) {
-  babelHelpers.inherits(MainStage, _TransformCoffeeScrip);
+  inherits(MainStage, _TransformCoffeeScrip);
 
   function MainStage() {
-    babelHelpers.classCallCheck(this, MainStage);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(MainStage).apply(this, arguments));
+    classCallCheck(this, MainStage);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(MainStage).apply(this, arguments));
   }
 
-  babelHelpers.createClass(MainStage, [{
+  createClass(MainStage, [{
     key: 'patcherConstructorForNode',
     value: function patcherConstructorForNode(node) {
       switch (node.type) {
@@ -8472,12 +8478,12 @@ var MainStage = function (_TransformCoffeeScrip) {
  */
 
 var ConditionalPatcher$1 = function (_NodePatcher) {
-  babelHelpers.inherits(ConditionalPatcher, _NodePatcher);
+  inherits(ConditionalPatcher, _NodePatcher);
 
   function ConditionalPatcher(node, context, editor, condition, consequent, alternate) {
-    babelHelpers.classCallCheck(this, ConditionalPatcher);
+    classCallCheck(this, ConditionalPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ConditionalPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ConditionalPatcher).call(this, node, context, editor));
 
     _this.condition = condition;
     _this.consequent = consequent;
@@ -8485,7 +8491,7 @@ var ConditionalPatcher$1 = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(ConditionalPatcher, [{
+  createClass(ConditionalPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       if (this.isPostIf()) {
@@ -8521,12 +8527,12 @@ var ConditionalPatcher$1 = function (_NodePatcher) {
 }(NodePatcher);
 
 var ForPatcher$1 = function (_NodePatcher) {
-  babelHelpers.inherits(ForPatcher, _NodePatcher);
+  inherits(ForPatcher, _NodePatcher);
 
   function ForPatcher(node, context, editor, keyAssignee, valAssignee, target, filter, body) {
-    babelHelpers.classCallCheck(this, ForPatcher);
+    classCallCheck(this, ForPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ForPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ForPatcher).call(this, node, context, editor));
 
     _this.keyAssignee = keyAssignee;
     _this.valAssignee = valAssignee;
@@ -8536,7 +8542,7 @@ var ForPatcher$1 = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(ForPatcher, [{
+  createClass(ForPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       if (this.keyAssignee) {
@@ -8640,21 +8646,21 @@ var ForPatcher$1 = function (_NodePatcher) {
 }(NodePatcher);
 
 var ForInPatcher$1 = function (_ForPatcher) {
-  babelHelpers.inherits(ForInPatcher, _ForPatcher);
+  inherits(ForInPatcher, _ForPatcher);
 
   function ForInPatcher(node, context, editor, keyAssignee, valAssignee, target, step, filter, body) {
-    babelHelpers.classCallCheck(this, ForInPatcher);
+    classCallCheck(this, ForInPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ForInPatcher).call(this, node, context, editor, keyAssignee, valAssignee, target, filter, body));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ForInPatcher).call(this, node, context, editor, keyAssignee, valAssignee, target, filter, body));
 
     _this.step = step;
     return _this;
   }
 
-  babelHelpers.createClass(ForInPatcher, [{
+  createClass(ForInPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
-      babelHelpers.get(Object.getPrototypeOf(ForInPatcher.prototype), 'patchAsExpression', this).call(this);
+      get(Object.getPrototypeOf(ForInPatcher.prototype), 'patchAsExpression', this).call(this);
       if (this.step) {
         this.step.patch();
       }
@@ -8664,25 +8670,25 @@ var ForInPatcher$1 = function (_ForPatcher) {
 }(ForPatcher$1);
 
 var ForOfPatcher$1 = function (_ForPatcher) {
-  babelHelpers.inherits(ForOfPatcher, _ForPatcher);
+  inherits(ForOfPatcher, _ForPatcher);
 
   function ForOfPatcher() {
-    babelHelpers.classCallCheck(this, ForOfPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ForOfPatcher).apply(this, arguments));
+    classCallCheck(this, ForOfPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ForOfPatcher).apply(this, arguments));
   }
 
   return ForOfPatcher;
 }(ForPatcher$1);
 
 var ProgramPatcher$1 = function (_PassthroughPatcher) {
-  babelHelpers.inherits(ProgramPatcher, _PassthroughPatcher);
+  inherits(ProgramPatcher, _PassthroughPatcher);
 
   function ProgramPatcher() {
-    babelHelpers.classCallCheck(this, ProgramPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(ProgramPatcher).apply(this, arguments));
+    classCallCheck(this, ProgramPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ProgramPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(ProgramPatcher, [{
+  createClass(ProgramPatcher, [{
     key: 'shouldTrimContentRange',
     value: function shouldTrimContentRange() {
       return true;
@@ -8702,12 +8708,12 @@ var ProgramPatcher$1 = function (_PassthroughPatcher) {
  */
 
 var WhilePatcher$1 = function (_NodePatcher) {
-  babelHelpers.inherits(WhilePatcher, _NodePatcher);
+  inherits(WhilePatcher, _NodePatcher);
 
   function WhilePatcher(node, context, editor, condition, guard, body) {
-    babelHelpers.classCallCheck(this, WhilePatcher);
+    classCallCheck(this, WhilePatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(WhilePatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(WhilePatcher).call(this, node, context, editor));
 
     _this.condition = condition;
     _this.guard = guard;
@@ -8715,7 +8721,7 @@ var WhilePatcher$1 = function (_NodePatcher) {
     return _this;
   }
 
-  babelHelpers.createClass(WhilePatcher, [{
+  createClass(WhilePatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       this.condition.patch();
@@ -8767,25 +8773,25 @@ var WhilePatcher$1 = function (_NodePatcher) {
 }(NodePatcher);
 
 var DefaultParamPatcher$1 = function (_PassthroughPatcher) {
-  babelHelpers.inherits(DefaultParamPatcher, _PassthroughPatcher);
+  inherits(DefaultParamPatcher, _PassthroughPatcher);
 
   function DefaultParamPatcher() {
-    babelHelpers.classCallCheck(this, DefaultParamPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(DefaultParamPatcher).apply(this, arguments));
+    classCallCheck(this, DefaultParamPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(DefaultParamPatcher).apply(this, arguments));
   }
 
   return DefaultParamPatcher;
 }(PassthroughPatcher);
 
 var MemberAccessOpPatcher$1 = function (_PassthroughPatcher) {
-  babelHelpers.inherits(MemberAccessOpPatcher, _PassthroughPatcher);
+  inherits(MemberAccessOpPatcher, _PassthroughPatcher);
 
   function MemberAccessOpPatcher() {
-    babelHelpers.classCallCheck(this, MemberAccessOpPatcher);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(MemberAccessOpPatcher).apply(this, arguments));
+    classCallCheck(this, MemberAccessOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(MemberAccessOpPatcher).apply(this, arguments));
   }
 
-  babelHelpers.createClass(MemberAccessOpPatcher, [{
+  createClass(MemberAccessOpPatcher, [{
     key: 'shouldTrimContentRange',
     value: function shouldTrimContentRange() {
       return true;
@@ -8793,7 +8799,7 @@ var MemberAccessOpPatcher$1 = function (_PassthroughPatcher) {
   }, {
     key: 'patch',
     value: function patch() {
-      babelHelpers.get(Object.getPrototypeOf(MemberAccessOpPatcher.prototype), 'patch', this).call(this);
+      get(Object.getPrototypeOf(MemberAccessOpPatcher.prototype), 'patch', this).call(this);
       var callback = this.findAddStatementCallback();
       if (callback) {
         var content = this.slice(this.contentStart, this.contentEnd);
@@ -8815,19 +8821,19 @@ var MemberAccessOpPatcher$1 = function (_PassthroughPatcher) {
 }(PassthroughPatcher);
 
 var FunctionPatcher$1 = function (_NodePatcher) {
-  babelHelpers.inherits(FunctionPatcher, _NodePatcher);
+  inherits(FunctionPatcher, _NodePatcher);
 
   function FunctionPatcher(node, context, editor, parameters, body) {
-    babelHelpers.classCallCheck(this, FunctionPatcher);
+    classCallCheck(this, FunctionPatcher);
 
-    var _this = babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(FunctionPatcher).call(this, node, context, editor));
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(FunctionPatcher).call(this, node, context, editor));
 
     _this.parameters = parameters;
     _this.body = body;
     return _this;
   }
 
-  babelHelpers.createClass(FunctionPatcher, [{
+  createClass(FunctionPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       var _this2 = this;
@@ -8881,14 +8887,14 @@ var FunctionPatcher$1 = function (_NodePatcher) {
 }(NodePatcher);
 
 var NormalizeStage = function (_TransformCoffeeScrip) {
-  babelHelpers.inherits(NormalizeStage, _TransformCoffeeScrip);
+  inherits(NormalizeStage, _TransformCoffeeScrip);
 
   function NormalizeStage() {
-    babelHelpers.classCallCheck(this, NormalizeStage);
-    return babelHelpers.possibleConstructorReturn(this, Object.getPrototypeOf(NormalizeStage).apply(this, arguments));
+    classCallCheck(this, NormalizeStage);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(NormalizeStage).apply(this, arguments));
   }
 
-  babelHelpers.createClass(NormalizeStage, [{
+  createClass(NormalizeStage, [{
     key: 'patcherConstructorForNode',
     value: function patcherConstructorForNode(node) {
       switch (node.type) {
@@ -8930,7 +8936,7 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.13.0";
+var version = "2.13.1";
 
 /**
  * Run the script with the user-supplied arguments.
@@ -8998,7 +9004,7 @@ function runWithPaths(paths) {
       if (err) {
         errors.push(err);
       } else {
-        pending.unshift.apply(pending, babelHelpers.toConsumableArray(children.filter(function (child) {
+        pending.unshift.apply(pending, toConsumableArray(children.filter(function (child) {
           return path.extname(child) === '.coffee';
         }).map(function (child) {
           return path.join(path$$, child);
@@ -38503,1086 +38509,8 @@ arguments[4][69][0].apply(exports,arguments)
 },{"../tokenizer/types":333,"../util/whitespace":336,"./index":321,"babel-runtime/core-js/get-iterator":258,"babel-runtime/core-js/object/create":261,"dup":69}],326:[function(require,module,exports){
 arguments[4][70][0].apply(exports,arguments)
 },{"../tokenizer/types":333,"../util/whitespace":336,"./index":321,"dup":70}],327:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports.default = function (instance) {
-  // plain function return types: function name(): string {}
-  instance.extend("parseFunctionBody", function (inner) {
-    return function (node, allowExpression) {
-      if (this.match(_types.types.colon) && !allowExpression) {
-        // if allowExpression is true then we're parsing an arrow function and if
-        // there's a return type then it's been handled elsewhere
-        node.returnType = this.flowParseTypeAnnotation();
-      }
-
-      return inner.call(this, node, allowExpression);
-    };
-  });
-
-  // interfaces
-  instance.extend("parseStatement", function (inner) {
-    return function (declaration, topLevel) {
-      // strict mode handling of `interface` since it's a reserved word
-      if (this.state.strict && this.match(_types.types.name) && this.state.value === "interface") {
-        var node = this.startNode();
-        this.next();
-        return this.flowParseInterface(node);
-      } else {
-        return inner.call(this, declaration, topLevel);
-      }
-    };
-  });
-
-  // declares, interfaces and type aliases
-  instance.extend("parseExpressionStatement", function (inner) {
-    return function (node, expr) {
-      if (expr.type === "Identifier") {
-        if (expr.name === "declare") {
-          if (this.match(_types.types._class) || this.match(_types.types.name) || this.match(_types.types._function) || this.match(_types.types._var)) {
-            return this.flowParseDeclare(node);
-          }
-        } else if (this.match(_types.types.name)) {
-          if (expr.name === "interface") {
-            return this.flowParseInterface(node);
-          } else if (expr.name === "type") {
-            return this.flowParseTypeAlias(node);
-          }
-        }
-      }
-
-      return inner.call(this, node, expr);
-    };
-  });
-
-  // export type
-  instance.extend("shouldParseExportDeclaration", function (inner) {
-    return function () {
-      return this.isContextual("type") || this.isContextual("interface") || inner.call(this);
-    };
-  });
-
-  instance.extend("parseParenItem", function () {
-    return function (node, startLoc, startPos, forceArrow) {
-      var canBeArrow = this.state.potentialArrowAt = startPos;
-      if (this.match(_types.types.colon)) {
-        var typeCastNode = this.startNodeAt(startLoc, startPos);
-        typeCastNode.expression = node;
-        typeCastNode.typeAnnotation = this.flowParseTypeAnnotation();
-
-        if (forceArrow && !this.match(_types.types.arrow)) {
-          this.unexpected();
-        }
-
-        if (canBeArrow && this.eat(_types.types.arrow)) {
-          // ((lol): number => {});
-          var params = node.type === "SequenceExpression" ? node.expressions : [node];
-          var func = this.parseArrowExpression(this.startNodeAt(startLoc, startPos), params);
-          func.returnType = typeCastNode.typeAnnotation;
-          return func;
-        } else {
-          return this.finishNode(typeCastNode, "TypeCastExpression");
-        }
-      } else {
-        return node;
-      }
-    };
-  });
-
-  instance.extend("parseExport", function (inner) {
-    return function (node) {
-      node = inner.call(this, node);
-      if (node.type === "ExportNamedDeclaration") {
-        node.exportKind = node.exportKind || "value";
-      }
-      return node;
-    };
-  });
-
-  instance.extend("parseExportDeclaration", function (inner) {
-    return function (node) {
-      if (this.isContextual("type")) {
-        node.exportKind = "type";
-
-        var declarationNode = this.startNode();
-        this.next();
-
-        if (this.match(_types.types.braceL)) {
-          // export type { foo, bar };
-          node.specifiers = this.parseExportSpecifiers();
-          this.parseExportFrom(node);
-          return null;
-        } else {
-          // export type Foo = Bar;
-          return this.flowParseTypeAlias(declarationNode);
-        }
-      } else if (this.isContextual("interface")) {
-        node.exportKind = "type";
-        var _declarationNode = this.startNode();
-        this.next();
-        return this.flowParseInterface(_declarationNode);
-      } else {
-        return inner.call(this, node);
-      }
-    };
-  });
-
-  instance.extend("parseClassId", function (inner) {
-    return function (node) {
-      inner.apply(this, arguments);
-      if (this.isRelational("<")) {
-        node.typeParameters = this.flowParseTypeParameterDeclaration();
-      }
-    };
-  });
-
-  // don't consider `void` to be a keyword as then it'll use the void token type
-  // and set startExpr
-  instance.extend("isKeyword", function (inner) {
-    return function (name) {
-      if (this.state.inType && name === "void") {
-        return false;
-      } else {
-        return inner.call(this, name);
-      }
-    };
-  });
-
-  // ensure that inside flow types, we bypass the jsx parser plugin
-  instance.extend("readToken", function (inner) {
-    return function (code) {
-      if (this.state.inType && (code === 62 || code === 60)) {
-        return this.finishOp(_types.types.relational, 1);
-      } else {
-        return inner.call(this, code);
-      }
-    };
-  });
-
-  // don't lex any token as a jsx one inside a flow type
-  instance.extend("jsx_readToken", function (inner) {
-    return function () {
-      if (!this.state.inType) return inner.call(this);
-    };
-  });
-
-  function typeCastToParameter(node) {
-    node.expression.typeAnnotation = node.typeAnnotation;
-    return node.expression;
-  }
-
-  instance.extend("toAssignable", function (inner) {
-    return function (node) {
-      if (node.type === "TypeCastExpression") {
-        return typeCastToParameter(node);
-      } else {
-        return inner.apply(this, arguments);
-      }
-    };
-  });
-
-  // turn type casts that we found in function parameter head into type annotated params
-  instance.extend("toAssignableList", function (inner) {
-    return function (exprList, isBinding) {
-      for (var i = 0; i < exprList.length; i++) {
-        var expr = exprList[i];
-        if (expr && expr.type === "TypeCastExpression") {
-          exprList[i] = typeCastToParameter(expr);
-        }
-      }
-      return inner.call(this, exprList, isBinding);
-    };
-  });
-
-  // this is a list of nodes, from something like a call expression, we need to filter the
-  // type casts that we've found that are illegal in this context
-  instance.extend("toReferencedList", function () {
-    return function (exprList) {
-      for (var i = 0; i < exprList.length; i++) {
-        var expr = exprList[i];
-        if (expr && expr._exprListItem && expr.type === "TypeCastExpression") {
-          this.raise(expr.start, "Unexpected type cast");
-        }
-      }
-
-      return exprList;
-    };
-  });
-
-  // parse an item inside a expression list eg. `(NODE, NODE)` where NODE represents
-  // the position where this function is cal;ed
-  instance.extend("parseExprListItem", function (inner) {
-    return function (allowEmpty, refShorthandDefaultPos) {
-      var container = this.startNode();
-      var node = inner.call(this, allowEmpty, refShorthandDefaultPos);
-      if (this.match(_types.types.colon)) {
-        container._exprListItem = true;
-        container.expression = node;
-        container.typeAnnotation = this.flowParseTypeAnnotation();
-        return this.finishNode(container, "TypeCastExpression");
-      } else {
-        return node;
-      }
-    };
-  });
-
-  instance.extend("checkLVal", function (inner) {
-    return function (node) {
-      if (node.type !== "TypeCastExpression") {
-        return inner.apply(this, arguments);
-      }
-    };
-  });
-
-  // parse class property type annotations
-  instance.extend("parseClassProperty", function (inner) {
-    return function (node) {
-      if (this.match(_types.types.colon)) {
-        node.typeAnnotation = this.flowParseTypeAnnotation();
-      }
-      return inner.call(this, node);
-    };
-  });
-
-  // determine whether or not we're currently in the position where a class property would appear
-  instance.extend("isClassProperty", function (inner) {
-    return function () {
-      return this.match(_types.types.colon) || inner.call(this);
-    };
-  });
-
-  // parse type parameters for class methods
-  instance.extend("parseClassMethod", function () {
-    return function (classBody, method, isGenerator, isAsync) {
-      if (this.isRelational("<")) {
-        method.typeParameters = this.flowParseTypeParameterDeclaration();
-      }
-      this.parseMethod(method, isGenerator, isAsync);
-      classBody.body.push(this.finishNode(method, "ClassMethod"));
-    };
-  });
-
-  // parse a the super class type parameters and implements
-  instance.extend("parseClassSuper", function (inner) {
-    return function (node, isStatement) {
-      inner.call(this, node, isStatement);
-      if (node.superClass && this.isRelational("<")) {
-        node.superTypeParameters = this.flowParseTypeParameterInstantiation();
-      }
-      if (this.isContextual("implements")) {
-        this.next();
-        var implemented = node.implements = [];
-        do {
-          var _node = this.startNode();
-          _node.id = this.parseIdentifier();
-          if (this.isRelational("<")) {
-            _node.typeParameters = this.flowParseTypeParameterInstantiation();
-          } else {
-            _node.typeParameters = null;
-          }
-          implemented.push(this.finishNode(_node, "ClassImplements"));
-        } while (this.eat(_types.types.comma));
-      }
-    };
-  });
-
-  // parse type parameters for object method shorthand
-  instance.extend("parseObjPropValue", function (inner) {
-    return function (prop) {
-      var typeParameters = void 0;
-
-      // method shorthand
-      if (this.isRelational("<")) {
-        typeParameters = this.flowParseTypeParameterDeclaration();
-        if (!this.match(_types.types.parenL)) this.unexpected();
-      }
-
-      inner.apply(this, arguments);
-
-      // add typeParameters if we found them
-      if (typeParameters) {
-        (prop.value || prop).typeParameters = typeParameters;
-      }
-    };
-  });
-
-  instance.extend("parseAssignableListItemTypes", function () {
-    return function (param) {
-      if (this.eat(_types.types.question)) {
-        param.optional = true;
-      }
-      if (this.match(_types.types.colon)) {
-        param.typeAnnotation = this.flowParseTypeAnnotation();
-      }
-      this.finishNode(param, param.type);
-      return param;
-    };
-  });
-
-  // parse typeof and type imports
-  instance.extend("parseImportSpecifiers", function (inner) {
-    return function (node) {
-      node.importKind = "value";
-
-      var kind = null;
-      if (this.match(_types.types._typeof)) {
-        kind = "typeof";
-      } else if (this.isContextual("type")) {
-        kind = "type";
-      }
-      if (kind) {
-        var lh = this.lookahead();
-        if (lh.type === _types.types.name && lh.value !== "from" || lh.type === _types.types.braceL || lh.type === _types.types.star) {
-          this.next();
-          node.importKind = kind;
-        }
-      }
-
-      inner.call(this, node);
-    };
-  });
-
-  // parse function type parameters - function foo<T>() {}
-  instance.extend("parseFunctionParams", function (inner) {
-    return function (node) {
-      if (this.isRelational("<")) {
-        node.typeParameters = this.flowParseTypeParameterDeclaration();
-      }
-      inner.call(this, node);
-    };
-  });
-
-  // parse flow type annotations on variable declarator heads - let foo: string = bar
-  instance.extend("parseVarHead", function (inner) {
-    return function (decl) {
-      inner.call(this, decl);
-      if (this.match(_types.types.colon)) {
-        decl.id.typeAnnotation = this.flowParseTypeAnnotation();
-        this.finishNode(decl.id, decl.id.type);
-      }
-    };
-  });
-
-  // parse the return type of an async arrow function - let foo = (async (): number => {});
-  instance.extend("parseAsyncArrowFromCallExpression", function (inner) {
-    return function (node, call) {
-      if (this.match(_types.types.colon)) {
-        node.returnType = this.flowParseTypeAnnotation();
-      }
-
-      return inner.call(this, node, call);
-    };
-  });
-
-  // todo description
-  instance.extend("shouldParseAsyncArrow", function (inner) {
-    return function () {
-      return this.match(_types.types.colon) || inner.call(this);
-    };
-  });
-
-  // handle return types for arrow functions
-  instance.extend("parseParenAndDistinguishExpression", function (inner) {
-    return function (startPos, startLoc, canBeArrow, isAsync) {
-      startPos = startPos || this.state.start;
-      startLoc = startLoc || this.state.startLoc;
-
-      if (canBeArrow && this.lookahead().type === _types.types.parenR) {
-        // let foo = (): number => {};
-        this.expect(_types.types.parenL);
-        this.expect(_types.types.parenR);
-
-        var node = this.startNodeAt(startPos, startLoc);
-        if (this.match(_types.types.colon)) node.returnType = this.flowParseTypeAnnotation();
-        this.expect(_types.types.arrow);
-        return this.parseArrowExpression(node, [], isAsync);
-      } else {
-        // let foo = (foo): number => {};
-        var _node2 = inner.call(this, startPos, startLoc, canBeArrow, isAsync, this.hasPlugin("trailingFunctionCommas"));
-
-        if (this.match(_types.types.colon)) {
-          var state = this.state.clone();
-          try {
-            return this.parseParenItem(_node2, startPos, startLoc, true);
-          } catch (err) {
-            if (err instanceof SyntaxError) {
-              this.state = state;
-              return _node2;
-            } else {
-              throw err;
-            }
-          }
-        } else {
-          return _node2;
-        }
-      }
-    };
-  });
-};
-
-var _types = require("../tokenizer/types");
-
-var _parser = require("../parser");
-
-var _parser2 = _interopRequireDefault(_parser);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/* eslint indent: 0 */
-/* eslint max-len: 0 */
-
-var pp = _parser2.default.prototype;
-
-pp.flowParseTypeInitialiser = function (tok, allowLeadingPipeOrAnd) {
-  var oldInType = this.state.inType;
-  this.state.inType = true;
-  this.expect(tok || _types.types.colon);
-  if (allowLeadingPipeOrAnd) {
-    if (this.match(_types.types.bitwiseAND) || this.match(_types.types.bitwiseOR)) {
-      this.next();
-    }
-  }
-  var type = this.flowParseType();
-  this.state.inType = oldInType;
-  return type;
-};
-
-pp.flowParseDeclareClass = function (node) {
-  this.next();
-  this.flowParseInterfaceish(node, true);
-  return this.finishNode(node, "DeclareClass");
-};
-
-pp.flowParseDeclareFunction = function (node) {
-  this.next();
-
-  var id = node.id = this.parseIdentifier();
-
-  var typeNode = this.startNode();
-  var typeContainer = this.startNode();
-
-  if (this.isRelational("<")) {
-    typeNode.typeParameters = this.flowParseTypeParameterDeclaration();
-  } else {
-    typeNode.typeParameters = null;
-  }
-
-  this.expect(_types.types.parenL);
-  var tmp = this.flowParseFunctionTypeParams();
-  typeNode.params = tmp.params;
-  typeNode.rest = tmp.rest;
-  this.expect(_types.types.parenR);
-  typeNode.returnType = this.flowParseTypeInitialiser();
-
-  typeContainer.typeAnnotation = this.finishNode(typeNode, "FunctionTypeAnnotation");
-  id.typeAnnotation = this.finishNode(typeContainer, "TypeAnnotation");
-
-  this.finishNode(id, id.type);
-
-  this.semicolon();
-
-  return this.finishNode(node, "DeclareFunction");
-};
-
-pp.flowParseDeclare = function (node) {
-  if (this.match(_types.types._class)) {
-    return this.flowParseDeclareClass(node);
-  } else if (this.match(_types.types._function)) {
-    return this.flowParseDeclareFunction(node);
-  } else if (this.match(_types.types._var)) {
-    return this.flowParseDeclareVariable(node);
-  } else if (this.isContextual("module")) {
-    return this.flowParseDeclareModule(node);
-  } else if (this.isContextual("type")) {
-    return this.flowParseDeclareTypeAlias(node);
-  } else if (this.isContextual("interface")) {
-    return this.flowParseDeclareInterface(node);
-  } else {
-    this.unexpected();
-  }
-};
-
-pp.flowParseDeclareVariable = function (node) {
-  this.next();
-  node.id = this.flowParseTypeAnnotatableIdentifier();
-  this.semicolon();
-  return this.finishNode(node, "DeclareVariable");
-};
-
-pp.flowParseDeclareModule = function (node) {
-  this.next();
-
-  if (this.match(_types.types.string)) {
-    node.id = this.parseExprAtom();
-  } else {
-    node.id = this.parseIdentifier();
-  }
-
-  var bodyNode = node.body = this.startNode();
-  var body = bodyNode.body = [];
-  this.expect(_types.types.braceL);
-  while (!this.match(_types.types.braceR)) {
-    var node2 = this.startNode();
-
-    // todo: declare check
-    this.next();
-
-    body.push(this.flowParseDeclare(node2));
-  }
-  this.expect(_types.types.braceR);
-
-  this.finishNode(bodyNode, "BlockStatement");
-  return this.finishNode(node, "DeclareModule");
-};
-
-pp.flowParseDeclareTypeAlias = function (node) {
-  this.next();
-  this.flowParseTypeAlias(node);
-  return this.finishNode(node, "DeclareTypeAlias");
-};
-
-pp.flowParseDeclareInterface = function (node) {
-  this.next();
-  this.flowParseInterfaceish(node);
-  return this.finishNode(node, "DeclareInterface");
-};
-
-// Interfaces
-
-pp.flowParseInterfaceish = function (node, allowStatic) {
-  node.id = this.parseIdentifier();
-
-  if (this.isRelational("<")) {
-    node.typeParameters = this.flowParseTypeParameterDeclaration();
-  } else {
-    node.typeParameters = null;
-  }
-
-  node.extends = [];
-  node.mixins = [];
-
-  if (this.eat(_types.types._extends)) {
-    do {
-      node.extends.push(this.flowParseInterfaceExtends());
-    } while (this.eat(_types.types.comma));
-  }
-
-  if (this.isContextual("mixins")) {
-    this.next();
-    do {
-      node.mixins.push(this.flowParseInterfaceExtends());
-    } while (this.eat(_types.types.comma));
-  }
-
-  node.body = this.flowParseObjectType(allowStatic);
-};
-
-pp.flowParseInterfaceExtends = function () {
-  var node = this.startNode();
-
-  node.id = this.parseIdentifier();
-  if (this.isRelational("<")) {
-    node.typeParameters = this.flowParseTypeParameterInstantiation();
-  } else {
-    node.typeParameters = null;
-  }
-
-  return this.finishNode(node, "InterfaceExtends");
-};
-
-pp.flowParseInterface = function (node) {
-  this.flowParseInterfaceish(node, false);
-  return this.finishNode(node, "InterfaceDeclaration");
-};
-
-// Type aliases
-
-pp.flowParseTypeAlias = function (node) {
-  node.id = this.parseIdentifier();
-
-  if (this.isRelational("<")) {
-    node.typeParameters = this.flowParseTypeParameterDeclaration();
-  } else {
-    node.typeParameters = null;
-  }
-
-  node.right = this.flowParseTypeInitialiser(_types.types.eq,
-  /*allowLeadingPipeOrAnd*/true);
-  this.semicolon();
-
-  return this.finishNode(node, "TypeAlias");
-};
-
-// Type annotations
-
-pp.flowParseTypeParameterDeclaration = function () {
-  var node = this.startNode();
-  node.params = [];
-
-  this.expectRelational("<");
-  while (!this.isRelational(">")) {
-    node.params.push(this.flowParseExistentialTypeParam() || this.flowParseTypeAnnotatableIdentifier());
-    if (!this.isRelational(">")) {
-      this.expect(_types.types.comma);
-    }
-  }
-  this.expectRelational(">");
-
-  return this.finishNode(node, "TypeParameterDeclaration");
-};
-
-pp.flowParseExistentialTypeParam = function () {
-  if (this.match(_types.types.star)) {
-    var node = this.startNode();
-    this.next();
-    return this.finishNode(node, "ExistentialTypeParam");
-  }
-};
-
-pp.flowParseTypeParameterInstantiation = function () {
-  var node = this.startNode(),
-      oldInType = this.state.inType;
-  node.params = [];
-
-  this.state.inType = true;
-
-  this.expectRelational("<");
-  while (!this.isRelational(">")) {
-    node.params.push(this.flowParseExistentialTypeParam() || this.flowParseType());
-    if (!this.isRelational(">")) {
-      this.expect(_types.types.comma);
-    }
-  }
-  this.expectRelational(">");
-
-  this.state.inType = oldInType;
-
-  return this.finishNode(node, "TypeParameterInstantiation");
-};
-
-pp.flowParseObjectPropertyKey = function () {
-  return this.match(_types.types.num) || this.match(_types.types.string) ? this.parseExprAtom() : this.parseIdentifier(true);
-};
-
-pp.flowParseObjectTypeIndexer = function (node, isStatic) {
-  node.static = isStatic;
-
-  this.expect(_types.types.bracketL);
-  node.id = this.flowParseObjectPropertyKey();
-  node.key = this.flowParseTypeInitialiser();
-  this.expect(_types.types.bracketR);
-  node.value = this.flowParseTypeInitialiser();
-
-  this.flowObjectTypeSemicolon();
-  return this.finishNode(node, "ObjectTypeIndexer");
-};
-
-pp.flowParseObjectTypeMethodish = function (node) {
-  node.params = [];
-  node.rest = null;
-  node.typeParameters = null;
-
-  if (this.isRelational("<")) {
-    node.typeParameters = this.flowParseTypeParameterDeclaration();
-  }
-
-  this.expect(_types.types.parenL);
-  while (this.match(_types.types.name)) {
-    node.params.push(this.flowParseFunctionTypeParam());
-    if (!this.match(_types.types.parenR)) {
-      this.expect(_types.types.comma);
-    }
-  }
-
-  if (this.eat(_types.types.ellipsis)) {
-    node.rest = this.flowParseFunctionTypeParam();
-  }
-  this.expect(_types.types.parenR);
-  node.returnType = this.flowParseTypeInitialiser();
-
-  return this.finishNode(node, "FunctionTypeAnnotation");
-};
-
-pp.flowParseObjectTypeMethod = function (startPos, startLoc, isStatic, key) {
-  var node = this.startNodeAt(startPos, startLoc);
-  node.value = this.flowParseObjectTypeMethodish(this.startNodeAt(startPos, startLoc));
-  node.static = isStatic;
-  node.key = key;
-  node.optional = false;
-  this.flowObjectTypeSemicolon();
-  return this.finishNode(node, "ObjectTypeProperty");
-};
-
-pp.flowParseObjectTypeCallProperty = function (node, isStatic) {
-  var valueNode = this.startNode();
-  node.static = isStatic;
-  node.value = this.flowParseObjectTypeMethodish(valueNode);
-  this.flowObjectTypeSemicolon();
-  return this.finishNode(node, "ObjectTypeCallProperty");
-};
-
-pp.flowParseObjectType = function (allowStatic) {
-  var nodeStart = this.startNode();
-  var node = void 0;
-  var propertyKey = void 0;
-  var isStatic = void 0;
-
-  nodeStart.callProperties = [];
-  nodeStart.properties = [];
-  nodeStart.indexers = [];
-
-  this.expect(_types.types.braceL);
-
-  while (!this.match(_types.types.braceR)) {
-    var optional = false;
-    var startPos = this.state.start,
-        startLoc = this.state.startLoc;
-    node = this.startNode();
-    if (allowStatic && this.isContextual("static")) {
-      this.next();
-      isStatic = true;
-    }
-
-    if (this.match(_types.types.bracketL)) {
-      nodeStart.indexers.push(this.flowParseObjectTypeIndexer(node, isStatic));
-    } else if (this.match(_types.types.parenL) || this.isRelational("<")) {
-      nodeStart.callProperties.push(this.flowParseObjectTypeCallProperty(node, allowStatic));
-    } else {
-      if (isStatic && this.match(_types.types.colon)) {
-        propertyKey = this.parseIdentifier();
-      } else {
-        propertyKey = this.flowParseObjectPropertyKey();
-      }
-      if (this.isRelational("<") || this.match(_types.types.parenL)) {
-        // This is a method property
-        nodeStart.properties.push(this.flowParseObjectTypeMethod(startPos, startLoc, isStatic, propertyKey));
-      } else {
-        if (this.eat(_types.types.question)) {
-          optional = true;
-        }
-        node.key = propertyKey;
-        node.value = this.flowParseTypeInitialiser();
-        node.optional = optional;
-        node.static = isStatic;
-        this.flowObjectTypeSemicolon();
-        nodeStart.properties.push(this.finishNode(node, "ObjectTypeProperty"));
-      }
-    }
-  }
-
-  this.expect(_types.types.braceR);
-
-  return this.finishNode(nodeStart, "ObjectTypeAnnotation");
-};
-
-pp.flowObjectTypeSemicolon = function () {
-  if (!this.eat(_types.types.semi) && !this.eat(_types.types.comma) && !this.match(_types.types.braceR)) {
-    this.unexpected();
-  }
-};
-
-pp.flowParseGenericType = function (startPos, startLoc, id) {
-  var node = this.startNodeAt(startPos, startLoc);
-
-  node.typeParameters = null;
-  node.id = id;
-
-  while (this.eat(_types.types.dot)) {
-    var node2 = this.startNodeAt(startPos, startLoc);
-    node2.qualification = node.id;
-    node2.id = this.parseIdentifier();
-    node.id = this.finishNode(node2, "QualifiedTypeIdentifier");
-  }
-
-  if (this.isRelational("<")) {
-    node.typeParameters = this.flowParseTypeParameterInstantiation();
-  }
-
-  return this.finishNode(node, "GenericTypeAnnotation");
-};
-
-pp.flowParseTypeofType = function () {
-  var node = this.startNode();
-  this.expect(_types.types._typeof);
-  node.argument = this.flowParsePrimaryType();
-  return this.finishNode(node, "TypeofTypeAnnotation");
-};
-
-pp.flowParseTupleType = function () {
-  var node = this.startNode();
-  node.types = [];
-  this.expect(_types.types.bracketL);
-  // We allow trailing commas
-  while (this.state.pos < this.input.length && !this.match(_types.types.bracketR)) {
-    node.types.push(this.flowParseType());
-    if (this.match(_types.types.bracketR)) break;
-    this.expect(_types.types.comma);
-  }
-  this.expect(_types.types.bracketR);
-  return this.finishNode(node, "TupleTypeAnnotation");
-};
-
-pp.flowParseFunctionTypeParam = function () {
-  var optional = false;
-  var node = this.startNode();
-  node.name = this.parseIdentifier();
-  if (this.eat(_types.types.question)) {
-    optional = true;
-  }
-  node.optional = optional;
-  node.typeAnnotation = this.flowParseTypeInitialiser();
-  return this.finishNode(node, "FunctionTypeParam");
-};
-
-pp.flowParseFunctionTypeParams = function () {
-  var ret = { params: [], rest: null };
-  while (this.match(_types.types.name)) {
-    ret.params.push(this.flowParseFunctionTypeParam());
-    if (!this.match(_types.types.parenR)) {
-      this.expect(_types.types.comma);
-    }
-  }
-  if (this.eat(_types.types.ellipsis)) {
-    ret.rest = this.flowParseFunctionTypeParam();
-  }
-  return ret;
-};
-
-pp.flowIdentToTypeAnnotation = function (startPos, startLoc, node, id) {
-  switch (id.name) {
-    case "any":
-      return this.finishNode(node, "AnyTypeAnnotation");
-
-    case "void":
-      return this.finishNode(node, "VoidTypeAnnotation");
-
-    case "bool":
-    case "boolean":
-      return this.finishNode(node, "BooleanTypeAnnotation");
-
-    case "mixed":
-      return this.finishNode(node, "MixedTypeAnnotation");
-
-    case "number":
-      return this.finishNode(node, "NumberTypeAnnotation");
-
-    case "string":
-      return this.finishNode(node, "StringTypeAnnotation");
-
-    default:
-      return this.flowParseGenericType(startPos, startLoc, id);
-  }
-};
-
-// The parsing of types roughly parallels the parsing of expressions, and
-// primary types are kind of like primary expressions...they're the
-// primitives with which other types are constructed.
-pp.flowParsePrimaryType = function () {
-  var startPos = this.state.start,
-      startLoc = this.state.startLoc;
-  var node = this.startNode();
-  var tmp = void 0;
-  var type = void 0;
-  var isGroupedType = false;
-
-  switch (this.state.type) {
-    case _types.types.name:
-      return this.flowIdentToTypeAnnotation(startPos, startLoc, node, this.parseIdentifier());
-
-    case _types.types.braceL:
-      return this.flowParseObjectType();
-
-    case _types.types.bracketL:
-      return this.flowParseTupleType();
-
-    case _types.types.relational:
-      if (this.state.value === "<") {
-        node.typeParameters = this.flowParseTypeParameterDeclaration();
-        this.expect(_types.types.parenL);
-        tmp = this.flowParseFunctionTypeParams();
-        node.params = tmp.params;
-        node.rest = tmp.rest;
-        this.expect(_types.types.parenR);
-
-        this.expect(_types.types.arrow);
-
-        node.returnType = this.flowParseType();
-
-        return this.finishNode(node, "FunctionTypeAnnotation");
-      }
-
-    case _types.types.parenL:
-      this.next();
-
-      // Check to see if this is actually a grouped type
-      if (!this.match(_types.types.parenR) && !this.match(_types.types.ellipsis)) {
-        if (this.match(_types.types.name)) {
-          var token = this.lookahead().type;
-          isGroupedType = token !== _types.types.question && token !== _types.types.colon;
-        } else {
-          isGroupedType = true;
-        }
-      }
-
-      if (isGroupedType) {
-        type = this.flowParseType();
-        this.expect(_types.types.parenR);
-
-        // If we see a => next then someone was probably confused about
-        // function types, so we can provide a better error message
-        if (this.eat(_types.types.arrow)) {
-          this.raise(node, "Unexpected token =>. It looks like " + "you are trying to write a function type, but you ended up " + "writing a grouped type followed by an =>, which is a syntax " + "error. Remember, function type parameters are named so function " + "types look like (name1: type1, name2: type2) => returnType. You " + "probably wrote (type1) => returnType");
-        }
-
-        return type;
-      }
-
-      tmp = this.flowParseFunctionTypeParams();
-      node.params = tmp.params;
-      node.rest = tmp.rest;
-
-      this.expect(_types.types.parenR);
-
-      this.expect(_types.types.arrow);
-
-      node.returnType = this.flowParseType();
-      node.typeParameters = null;
-
-      return this.finishNode(node, "FunctionTypeAnnotation");
-
-    case _types.types.string:
-      node.value = this.state.value;
-      this.addExtra(node, "rawValue", node.value);
-      this.addExtra(node, "raw", this.input.slice(this.state.start, this.state.end));
-      this.next();
-      return this.finishNode(node, "StringLiteralTypeAnnotation");
-
-    case _types.types._true:case _types.types._false:
-      node.value = this.match(_types.types._true);
-      this.next();
-      return this.finishNode(node, "BooleanLiteralTypeAnnotation");
-
-    case _types.types.num:
-      node.value = this.state.value;
-      this.addExtra(node, "rawValue", node.value);
-      this.addExtra(node, "raw", this.input.slice(this.state.start, this.state.end));
-      this.next();
-      return this.finishNode(node, "NumericLiteralTypeAnnotation");
-
-    case _types.types._null:
-      node.value = this.match(_types.types._null);
-      this.next();
-      return this.finishNode(node, "NullLiteralTypeAnnotation");
-
-    case _types.types._this:
-      node.value = this.match(_types.types._this);
-      this.next();
-      return this.finishNode(node, "ThisTypeAnnotation");
-
-    default:
-      if (this.state.type.keyword === "typeof") {
-        return this.flowParseTypeofType();
-      }
-  }
-
-  this.unexpected();
-};
-
-pp.flowParsePostfixType = function () {
-  var node = this.startNode();
-  var type = node.elementType = this.flowParsePrimaryType();
-  if (this.match(_types.types.bracketL)) {
-    this.expect(_types.types.bracketL);
-    this.expect(_types.types.bracketR);
-    return this.finishNode(node, "ArrayTypeAnnotation");
-  } else {
-    return type;
-  }
-};
-
-pp.flowParsePrefixType = function () {
-  var node = this.startNode();
-  if (this.eat(_types.types.question)) {
-    node.typeAnnotation = this.flowParsePrefixType();
-    return this.finishNode(node, "NullableTypeAnnotation");
-  } else {
-    return this.flowParsePostfixType();
-  }
-};
-
-pp.flowParseIntersectionType = function () {
-  var node = this.startNode();
-  var type = this.flowParsePrefixType();
-  node.types = [type];
-  while (this.eat(_types.types.bitwiseAND)) {
-    node.types.push(this.flowParsePrefixType());
-  }
-  return node.types.length === 1 ? type : this.finishNode(node, "IntersectionTypeAnnotation");
-};
-
-pp.flowParseUnionType = function () {
-  var node = this.startNode();
-  var type = this.flowParseIntersectionType();
-  node.types = [type];
-  while (this.eat(_types.types.bitwiseOR)) {
-    node.types.push(this.flowParseIntersectionType());
-  }
-  return node.types.length === 1 ? type : this.finishNode(node, "UnionTypeAnnotation");
-};
-
-pp.flowParseType = function () {
-  var oldInType = this.state.inType;
-  this.state.inType = true;
-  var type = this.flowParseUnionType();
-  this.state.inType = oldInType;
-  return type;
-};
-
-pp.flowParseTypeAnnotation = function () {
-  var node = this.startNode();
-  node.typeAnnotation = this.flowParseTypeInitialiser();
-  return this.finishNode(node, "TypeAnnotation");
-};
-
-pp.flowParseTypeAnnotatableIdentifier = function (requireTypeAnnotation, canBeOptionalParam) {
-  var variance = void 0;
-  if (this.match(_types.types.plusMin)) {
-    if (this.state.value === "+") {
-      variance = "plus";
-    } else if (this.state.value === "-") {
-      variance = "minus";
-    }
-    this.eat(_types.types.plusMin);
-  }
-
-  var ident = this.parseIdentifier();
-  var isOptionalParam = false;
-
-  if (variance) {
-    ident.variance = variance;
-  }
-
-  if (canBeOptionalParam && this.eat(_types.types.question)) {
-    this.expect(_types.types.question);
-    isOptionalParam = true;
-  }
-
-  if (requireTypeAnnotation || this.match(_types.types.colon)) {
-    ident.typeAnnotation = this.flowParseTypeAnnotation();
-    this.finishNode(ident, ident.type);
-  }
-
-  if (isOptionalParam) {
-    ident.optional = true;
-    this.finishNode(ident, ident.type);
-  }
-
-  return ident;
-};
-},{"../parser":321,"../tokenizer/types":333}],328:[function(require,module,exports){
+arguments[4][71][0].apply(exports,arguments)
+},{"../parser":321,"../tokenizer/types":333,"dup":71}],328:[function(require,module,exports){
 arguments[4][72][0].apply(exports,arguments)
 },{"../../parser":321,"../../tokenizer/context":330,"../../tokenizer/types":333,"../../util/identifier":334,"../../util/whitespace":336,"./xhtml":329,"dup":72}],329:[function(require,module,exports){
 arguments[4][73][0].apply(exports,arguments)
@@ -62877,7 +61805,7 @@ var _btoa;
 if ( typeof window !== 'undefined' && typeof window.btoa === 'function' ) {
 	_btoa = window.btoa;
 } else if ( typeof Buffer === 'function' ) {
-	_btoa = function ( str ) { return new Buffer( str ).toString( 'base64' ); };
+	_btoa = function (str) { return new Buffer( str ).toString( 'base64' ); };
 } else {
 	_btoa = function () {
 		throw new Error( 'Unsupported environment: `window.btoa` or `Buffer` should be supported.' );
@@ -62909,8 +61837,8 @@ SourceMap.prototype = {
 function guessIndent ( code ) {
 	var lines = code.split( '\n' );
 
-	var tabbed = lines.filter( function ( line ) { return /^\t+/.test( line ); } );
-	var spaced = lines.filter( function ( line ) { return /^ {2,}/.test( line ); } );
+	var tabbed = lines.filter( function (line) { return /^\t+/.test( line ); } );
+	var spaced = lines.filter( function (line) { return /^ {2,}/.test( line ); } );
 
 	if ( tabbed.length === 0 && spaced.length === 0 ) {
 		return null;
@@ -62968,6 +61896,8 @@ function getLocator ( source ) {
 	};
 }
 
+var nonWhitespace = /\S/;
+
 function encodeMappings ( original, intro, chunk, hires, sourcemapLocations, sourceIndex, offsets, names ) {
 	var rawLines = [];
 
@@ -62979,7 +61909,7 @@ function encodeMappings ( original, intro, chunk, hires, sourcemapLocations, sou
 	var locate = getLocator( original );
 
 	function addEdit ( content, original, loc, nameIndex, i ) {
-		if ( i || content.length ) {
+		if ( i || ( content.length && nonWhitespace.test( content ) ) ) {
 			rawSegments.push({
 				generatedCodeLine: generatedCodeLine,
 				generatedCodeColumn: generatedCodeColumn,
@@ -63044,22 +61974,26 @@ function encodeMappings ( original, intro, chunk, hires, sourcemapLocations, sou
 		}
 	}
 
+	var hasContent = false;
+
 	while ( chunk ) {
 		var loc = locate( chunk.start );
 
 		if ( chunk.intro.length ) {
-			addEdit( chunk.intro, '', loc, -1, !!chunk.previous );
+			addEdit( chunk.intro, '', loc, -1, hasContent );
 		}
 
 		if ( chunk.edited ) {
-			addEdit( chunk.content, chunk.original, loc, chunk.storeName ? names.indexOf( chunk.original ) : -1, !!chunk.previous );
+			addEdit( chunk.content, chunk.original, loc, chunk.storeName ? names.indexOf( chunk.original ) : -1, hasContent );
 		} else {
 			addUneditedChunk( chunk, loc );
 		}
 
 		if ( chunk.outro.length ) {
-			addEdit( chunk.outro, '', loc, -1, !!chunk.previous );
+			addEdit( chunk.outro, '', loc, -1, hasContent );
 		}
+
+		if ( chunk.content || chunk.intro || chunk.outro ) hasContent = true;
 
 		var nextChunk = chunk.next;
 		chunk = nextChunk;
@@ -63070,10 +62004,10 @@ function encodeMappings ( original, intro, chunk, hires, sourcemapLocations, sou
 	offsets.sourceCodeColumn = offsets.sourceCodeColumn || 0;
 	offsets.sourceCodeName = offsets.sourceCodeName || 0;
 
-	var encoded = rawLines.map( function ( segments ) {
+	var encoded = rawLines.map( function (segments) {
 		var generatedCodeColumn = 0;
 
-		return segments.map( function ( segment ) {
+		return segments.map( function (segment) {
 			var arr = [
 				segment.generatedCodeColumn - generatedCodeColumn,
 				segment.sourceIndex - offsets.sourceIndex,
@@ -63190,10 +62124,10 @@ MagicString.prototype = {
 		if ( this.indentExclusionRanges ) {
 			cloned.indentExclusionRanges = typeof this.indentExclusionRanges[0] === 'number' ?
 				[ this.indentExclusionRanges[0], this.indentExclusionRanges[1] ] :
-				this.indentExclusionRanges.map( function ( range ) { return [ range.start, range.end ]; } );
+				this.indentExclusionRanges.map( function (range) { return [ range.start, range.end ]; } );
 		}
 
-		Object.keys( this.sourcemapLocations ).forEach( function ( loc ) {
+		Object.keys( this.sourcemapLocations ).forEach( function (loc) {
 			cloned.sourcemapLocations[ loc ] = true;
 		});
 
@@ -63247,7 +62181,7 @@ MagicString.prototype = {
 
 		if ( options.exclude ) {
 			var exclusions = typeof options.exclude[0] === 'number' ? [ options.exclude ] : options.exclude;
-			exclusions.forEach( function ( exclusion ) {
+			exclusions.forEach( function (exclusion) {
 				for ( var i = exclusion[0]; i < exclusion[1]; i += 1 ) {
 					isExcluded[i] = true;
 				}
@@ -63255,7 +62189,7 @@ MagicString.prototype = {
 		}
 
 		var shouldIndentNextCharacter = options.indentStart !== false;
-		var replacer = function ( match ) {
+		var replacer = function (match) {
 			if ( shouldIndentNextCharacter ) return ("" + indentStr + match);
 			shouldIndentNextCharacter = true;
 			return match;
@@ -63682,7 +62616,7 @@ Bundle.prototype = {
 			throw new Error( 'bundle.addSource() takes an object with a `content` property, which should be an instance of MagicString, and an optional `filename`' );
 		}
 
-		[ 'filename', 'indentExclusionRanges', 'separator' ].forEach( function ( option ) {
+		[ 'filename', 'indentExclusionRanges', 'separator' ].forEach( function (option) {
 			if ( !hasOwnProp.call( source, option ) ) source[ option ] = source.content[ option ];
 		});
 
@@ -63721,7 +62655,7 @@ Bundle.prototype = {
 			separator: this.separator
 		});
 
-		this.sources.forEach( function ( source ) {
+		this.sources.forEach( function (source) {
 			bundle.addSource({
 				filename: source.filename,
 				content: source.content.clone(),
@@ -63738,8 +62672,8 @@ Bundle.prototype = {
 		var offsets = {};
 
 		var names = [];
-		this.sources.forEach( function ( source ) {
-			Object.keys( source.content.storedNames ).forEach( function ( name ) {
+		this.sources.forEach( function (source) {
+			Object.keys( source.content.storedNames ).forEach( function (name) {
 				if ( !~names.indexOf( name ) ) names.push( name );
 			});
 		});
@@ -63764,10 +62698,10 @@ Bundle.prototype = {
 
 		return new SourceMap({
 			file: ( options.file ? options.file.split( /[\/\\]/ ).pop() : null ),
-			sources: this.uniqueSources.map( function ( source ) {
+			sources: this.uniqueSources.map( function (source) {
 				return options.file ? getRelativePath( options.file, source.filename ) : source.filename;
 			}),
-			sourcesContent: this.uniqueSources.map( function ( source ) {
+			sourcesContent: this.uniqueSources.map( function (source) {
 				return options.includeContent ? source.content : null;
 			}),
 			names: names,
@@ -63778,7 +62712,7 @@ Bundle.prototype = {
 	getIndentString: function getIndentString () {
 		var indentStringCounts = {};
 
-		this.sources.forEach( function ( source ) {
+		this.sources.forEach( function (source) {
 			var indentStr = source.content.indentStr;
 
 			if ( indentStr === null ) return;
