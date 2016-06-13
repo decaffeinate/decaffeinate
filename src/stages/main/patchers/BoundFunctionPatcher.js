@@ -1,4 +1,5 @@
 import FunctionPatcher from './FunctionPatcher.js';
+import IdentifierPatcher from './IdentifierPatcher.js';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import traverse from '../../../utils/traverse.js';
@@ -52,7 +53,7 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
 
     if (!this.hasParamStart()) {
       this.insert(this.contentStart, '() ');
-    } else if (this.parameters.length === 1) {
+    } else if (!this.parameterListNeedsParentheses()) {
       let [ param ] = this.parameters;
       if (param.isSurroundedByParentheses()) {
         this.remove(param.outerStart, param.contentStart);
@@ -63,6 +64,17 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
     if (!this.willPatchBodyInline()) {
       this.insert(arrow.end, ' {');
     }
+  }
+
+  parameterListNeedsParentheses(): boolean {
+    let parameters = this.parameters;
+
+    if (parameters.length !== 1) {
+      return true;
+    }
+
+    let [ param ] = parameters;
+    return !(param instanceof IdentifierPatcher);
   }
 
   patchFunctionBody() {
