@@ -126,7 +126,7 @@ describe('functions', () => {
       (function() { return arguments[0]; }.bind(this));
     `);
   });
-  
+
   it('turns functions containing a `yield` statement into generator functions', () => {
     check(`
       -> yield fn()
@@ -141,5 +141,13 @@ describe('functions', () => {
     `, `
       (function*() { return yield* fn(); });
     `);
+  });
+
+  it('keeps function with a spread in baces', () => {
+    check(`(args...) =>`, `(...args) => {};`);
+  });
+
+  it('keeps function with a single assignment as a parameter in braces', () => {
+    check(`(args=false) =>`, `(args=false) => {};`);
   });
 });
