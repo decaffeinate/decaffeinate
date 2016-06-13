@@ -143,7 +143,7 @@ describe('functions', () => {
     `);
   });
 
-  it('keeps function with a spread in baces', () => {
+  it('keeps function with a spread in braces', () => {
     check(`(args...) =>`, `(...args) => {};`);
   });
 
