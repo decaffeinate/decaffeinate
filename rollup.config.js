@@ -6,8 +6,8 @@ import babel from 'rollup-plugin-babel';
 import json from 'rollup-plugin-json';
 import babelrc from 'babelrc-rollup';
 
-const pkg = require('./package.json');
-const external = Object.keys(pkg.dependencies).concat(['path', 'fs']);
+var pkg = require('./package.json');
+var external = Object.keys(pkg.dependencies).concat(['path', 'fs']);
 
 export default {
   entry: 'src/index.js',
