@@ -2,8 +2,8 @@
   "name": "decaffeinate",
   "version": "2.13.1",
   "description": "Move your CoffeeScript source to modern JavaScript.",
-  "main": "dist/decaffeinate.cjs.js",
-  "jsnext:main": "dist/decaffeinate.es6.js",
+  "main": "dist/decaffeinate.js",
+  "jsnext:main": "dist/decaffeinate.mjs",
   "bin": {
     "decaffeinate": "./bin/decaffeinate"
   },
@@ -11,7 +11,7 @@
     "lint": "eslint src test",
     "pretest": "npm run build",
     "test": "mocha",
-    "prebuild": "npm run lint",
+    "prebuild": "rm -rf dist && mkdir -p dist && npm run lint",
     "build": "rollup -c",
     "prepublish": "npm run build"
   },

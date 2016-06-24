@@ -16,6 +16,7 @@ export default {
     babel(babelrc())
   ],
   external: external,
+  sourceMap: true,
   targets: [
     {
       format: 'cjs',
