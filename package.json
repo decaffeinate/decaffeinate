@@ -39,7 +39,7 @@
     "detect-indent": "^4.0.0",
     "esnext": "^2.0.0",
     "magic-string": "^0.15.0",
-    "repeating": "^2.0.0"
+    "repeating": "^3.0.0"
   },
   "files": [
     "bin",
