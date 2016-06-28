@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+
+'use strict';
+
+let get = require('https').get;
+let format = require('url').format;
+let parse = require('url').parse;
+
+let pkg = require('../package.json');
+let publishConfig = pkg['publishConfig'];
+let registry = publishConfig['registry'] || 'https://registry.npmjs.org/';
+
+let args = process.argv.slice(2);
+
+if (args.length !== 1) {
+  console.error('latest-version PACKAGE_NAME');
+  process.exit(-1);
+}
+
+let url = parse(registry);
+url.pathname = `/${args[0]}`;
+
+get(format(url), response => {
+  let body = '';
+  response.setEncoding('utf8');
+  response.on('data', chunk => body += chunk);
+  response.on('end', () => {
+    if (response.statusCode !== 200) {
+      throw new Error(`unable to get latest version (code=${response.statusCode}): ${body}`);
+    }
+
+    let packageInfo = JSON.parse(body);
+    console.log(packageInfo['dist-tags']['latest']);
+  });
+});

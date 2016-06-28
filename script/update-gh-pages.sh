@@ -5,10 +5,10 @@ set -e
 source $(dirname $0)/helpers.sh
 
 # Get the current version.
-VERSION=$(node -e 'console.log(require("./package.json").version)')
+VERSION=$(./script/latest-version $(node -e 'console.log(require("./package.json")["name"])'))
 
 # Build the browser version.
-browserify -e dist/decaffeinate.cjs.js -s decaffeinate -o decaffeinate.js
+browserify -e dist/decaffeinate.js -s decaffeinate -o decaffeinate.js
 
 # Switch to gh-pages branch.
 git fetch origin
