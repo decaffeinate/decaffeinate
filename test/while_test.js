@@ -104,8 +104,8 @@ describe('while', () => {
             f
       )
     `, `
-      a(
-        (() => { let result = []; while (b) {
+      a((() => { let result = []; 
+        while (b) {
           let item;
           if (c) {
             item = d;
@@ -113,8 +113,8 @@ describe('while', () => {
             item = f;
           }
           result.push(item);
-        } return result; })()
-      );
+
+        } return result; })());
     `);
   });
 
@@ -129,8 +129,8 @@ describe('while', () => {
               f
       )
     `, `
-      a(
-        (() => { let result = []; while (b) {
+      a((() => { let result = []; 
+        while (b) {
           switch (c) {
             case d:
               result.push(e);
@@ -138,8 +138,8 @@ describe('while', () => {
             default:
               result.push(f);
           }
-        } return result; })()
-      );
+
+        } return result; })());
     `);
   });
 

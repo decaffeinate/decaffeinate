@@ -16,7 +16,7 @@ export default class WhilePatcher extends NodePatcher {
   guard: ?NodePatcher;
   body: BlockPatcher;
   yielding: boolean;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: BlockPatcher) {
     super(node, context, editor);
     this.condition = condition;
@@ -130,9 +130,9 @@ export default class WhilePatcher extends NodePatcher {
     let resultBinding = this.getResultArrayBinding();
     this.patchAsStatement();
     let prefix = !this.yielding ? '(() =>' : 'yield* (function*()';
-    this.insert(this.contentStart, `${prefix} { ${resultBinding} = []; `);
+    this.insert(this.innerStart, `${prefix} { ${resultBinding} = []; `);
     let suffix = !this.yielding ? '()' : this.referencesArguments() ? '.apply(this, arguments)' : '.call(this)';
-    this.insert(this.contentEnd, ` return ${resultBinding}; })${suffix}`);
+    this.insert(this.innerEnd, ` return ${resultBinding}; })${suffix}`);
   }
 
   yieldController() {
