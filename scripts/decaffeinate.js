@@ -589,11 +589,11 @@ var NodePatcher = function () {
         var previousSurroundingToken = tokens.tokenAtIndex(previousSurroundingTokenIndex);
         var nextSurroundingToken = tokens.tokenAtIndex(nextSurroundingTokenIndex);
 
-        if (!previousSurroundingToken || previousSurroundingToken.type !== coffeeLex.LPAREN) {
+        if (!previousSurroundingToken || previousSurroundingToken.type !== coffeeLex.LPAREN && previousSurroundingToken.type !== coffeeLex.CALL_START) {
           break;
         }
 
-        if (!nextSurroundingToken || nextSurroundingToken.type !== coffeeLex.RPAREN) {
+        if (!nextSurroundingToken || nextSurroundingToken.type !== coffeeLex.RPAREN && nextSurroundingToken.type !== coffeeLex.CALL_END) {
           break;
         }
 
@@ -1297,12 +1297,25 @@ var NodePatcher = function () {
     key: 'isSurroundedByParentheses',
     value: function isSurroundedByParentheses() {
       var beforeToken = this.sourceTokenAtIndex(this.outerStartTokenIndex);
-      if (!beforeToken || beforeToken.type !== coffeeLex.LPAREN) return false;
-
       var afterToken = this.sourceTokenAtIndex(this.outerEndTokenIndex);
-      if (!afterToken || afterToken.type !== coffeeLex.RPAREN) return false;
 
-      var parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(coffeeLex.LPAREN, coffeeLex.RPAREN, this.outerStartTokenIndex);
+      if (!beforeToken || !afterToken) {
+        return false;
+      }
+
+      var leftTokenType = coffeeLex.LPAREN;
+      var rightTokenType = coffeeLex.RPAREN;
+
+      if (beforeToken.type === coffeeLex.LPAREN && afterToken.type === coffeeLex.RPAREN) {
+        // nothing
+      } else if (beforeToken.type === coffeeLex.CALL_START && afterToken.type === coffeeLex.CALL_END) {
+          leftTokenType = coffeeLex.CALL_START;
+          rightTokenType = coffeeLex.CALL_END;
+        } else {
+          return false;
+        }
+
+      var parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(leftTokenType, rightTokenType, this.outerStartTokenIndex);
       if (!parenRange) return false;
       var rparenIndex = parenRange[1].previous();
       var rparen = this.sourceTokenAtIndex(rparenIndex);
@@ -7942,9 +7955,9 @@ var WhilePatcher = function (_NodePatcher) {
       var resultBinding = this.getResultArrayBinding();
       this.patchAsStatement();
       var prefix = !this.yielding ? '(() =>' : 'yield* (function*()';
-      this.insert(this.contentStart, prefix + ' { ' + resultBinding + ' = []; ');
+      this.insert(this.innerStart, prefix + ' { ' + resultBinding + ' = []; ');
       var suffix = !this.yielding ? '()' : this.referencesArguments() ? '.apply(this, arguments)' : '.call(this)';
-      this.insert(this.contentEnd, ' return ' + resultBinding + '; })' + suffix);
+      this.insert(this.innerEnd, ' return ' + resultBinding + '; })' + suffix);
     }
   }, {
     key: 'yieldController',
@@ -8936,8 +8949,6 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
   return NormalizeStage;
 }(TransformCoffeeScriptStage);
 
-var version = "2.13.1";
-
 /**
  * Run the script with the user-supplied arguments.
  */
@@ -8960,12 +8971,6 @@ function parseArguments(args) {
       case '-h':
       case '--help':
         usage();
-        process.exit(0);
-        break;
-
-      case '-v':
-      case '--version':
-        console.log('decaffeinate v' + version);
         process.exit(0);
         break;
 
@@ -9089,7 +9094,6 @@ function usage() {
   console.log('OPTIONS');
   console.log();
   console.log('  -h, --help     Display this help message.');
-  console.log('  -v, --version  Display the current version (v' + version + ').');
   console.log();
   console.log('EXAMPLES');
   console.log();
@@ -9139,8 +9143,8 @@ function runStages(initialContent, initialFilename, stages) {
 }
 
 exports.convert = convert$1;
-exports.version = version;
 exports.run = run;
+
 }).call(this,require('_process'))
 },{"_process":561,"add-variable-declarations":2,"ast-processor-babylon-config":254,"automatic-semicolon-insertion":255,"babylon":317,"coffee-lex":342,"decaffeinate-parser":453,"detect-indent":454,"esnext":456,"fs":339,"magic-string":556,"path":560,"repeating":562}],2:[function(require,module,exports){
 (function (global, factory) {
