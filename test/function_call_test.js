@@ -236,4 +236,13 @@ describe('function calls', () => {
       x(1);
     `);
   });
+
+  it('places the closing braces for a multi-line function argument', () => {
+    check(`
+      a(() ->
+        0)
+    `, `
+      a(() => 0);
+    `);
+  });
 });

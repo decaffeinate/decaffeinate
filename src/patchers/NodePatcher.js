@@ -2,7 +2,7 @@ import PatcherError from '../utils/PatchError.js';
 import adjustIndent from '../utils/adjustIndent.js';
 import repeat from 'repeating';
 import type { SourceType, SourceToken, SourceTokenListIndex, Editor, Node, ParseContext, SourceTokenList } from './types.js';
-import { LPAREN, RPAREN } from 'coffee-lex';
+import { CALL_START, CALL_END, LPAREN, RPAREN } from 'coffee-lex';
 import { isSemanticToken } from '../utils/types.js';
 import { logger } from '../utils/debug.js';
 
@@ -116,11 +116,11 @@ export default class NodePatcher {
       let previousSurroundingToken = tokens.tokenAtIndex(previousSurroundingTokenIndex);
       let nextSurroundingToken = tokens.tokenAtIndex(nextSurroundingTokenIndex);
 
-      if (!previousSurroundingToken || previousSurroundingToken.type !== LPAREN) {
+      if (!previousSurroundingToken || (previousSurroundingToken.type !== LPAREN && previousSurroundingToken.type !== CALL_START)) {
         break;
       }
 
-      if (!nextSurroundingToken || nextSurroundingToken.type !== RPAREN) {
+      if (!nextSurroundingToken || (nextSurroundingToken.type !== RPAREN && nextSurroundingToken.type !== CALL_END)) {
         break;
       }
 
@@ -696,15 +696,28 @@ export default class NodePatcher {
    */
   isSurroundedByParentheses(): boolean {
     let beforeToken = this.sourceTokenAtIndex(this.outerStartTokenIndex);
-    if (!beforeToken || beforeToken.type !== LPAREN) return false;
-
     let afterToken = this.sourceTokenAtIndex(this.outerEndTokenIndex);
-    if (!afterToken || afterToken.type !== RPAREN) return false;
+
+    if (!beforeToken || !afterToken) {
+      return false;
+    }
+
+    let leftTokenType = LPAREN;
+    let rightTokenType = RPAREN;
+
+    if (beforeToken.type === LPAREN && afterToken.type === RPAREN) {
+      // nothing
+    } else if (beforeToken.type === CALL_START && afterToken.type === CALL_END) {
+      leftTokenType = CALL_START;
+      rightTokenType = CALL_END;
+    } else {
+      return false;
+    }
 
     let parenRange = this.getProgramSourceTokens()
       .rangeOfMatchingTokensContainingTokenIndex(
-        LPAREN,
-        RPAREN,
+        leftTokenType,
+        rightTokenType,
         this.outerStartTokenIndex
       );
     if (!parenRange) return false;
