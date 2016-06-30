@@ -20,7 +20,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
   patchAsExpression() {
     let implicitCall = this.isImplicitCall();
-    let { args } = this;
+    let { args, outerEndTokenIndex } = this;
 
     this.fn.patch();
 
@@ -49,6 +49,10 @@ export default class FunctionApplicationPatcher extends NodePatcher {
         COMMA,
         isSemanticToken
       );
+      // Ignore commas after the end of the function call.
+      if (commaTokenIndex && commaTokenIndex.compare(outerEndTokenIndex) <= 0) {
+        commaTokenIndex = null;
+      }
       let commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
       if (isLast && commaToken) {
         this.remove(arg.outerEnd, commaToken.end);
