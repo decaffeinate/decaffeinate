@@ -3462,7 +3462,7 @@ var ConditionalPatcher = function (_NodePatcher) {
 
       // `if a then b` → `a then b`
       //  ^^^
-      this.overwrite(this.contentStart, this.condition.contentStart, addParens ? '(' : '');
+      this.overwrite(this.contentStart, this.condition.outerStart, addParens ? '(' : '');
 
       this.condition.patch();
 
