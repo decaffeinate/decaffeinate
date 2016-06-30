@@ -312,4 +312,12 @@ describe('conditionals', () => {
       if ((a) && (b)) { alert; }
     `);
   });
+
+  it('does not remove parentheses around conditions in conditional expressions', () => {
+    check(`
+      r = if (f is 0.5) then a else b
+    `, `
+      let r = (f === 0.5) ? a : b;
+    `);
+  });
 });

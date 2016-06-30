@@ -66,7 +66,7 @@ export default class ConditionalPatcher extends NodePatcher {
     //  ^^^
     this.overwrite(
       this.contentStart,
-      this.condition.contentStart,
+      this.condition.outerStart,
       addParens ? '(' : ''
     );
 
