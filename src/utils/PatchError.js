@@ -1,3 +1,4 @@
+import LinesAndColumns from 'lines-and-columns';
 import printTable from './printTable.js';
 import repeat from 'repeating';
 
@@ -25,7 +26,7 @@ export default class PatchError extends Error {
    * Due to babel's inability to simulate extending native types, we have our
    * own method for determining whether an object is an instance of
    * `PatchError`.
-   * 
+   *
    * @see http://stackoverflow.com/a/33837088/549363
    */
   static isA(error: Error): boolean {
@@ -39,9 +40,9 @@ export default class PatchError extends Error {
 
   static prettyPrint(error: PatchError) {
     let { source, start, end, message } = error;
-    let lineMap = lineColumnMapper(source);
-    let startLoc = lineMap.invert(start);
-    let endLoc = lineMap.invert(end);
+    let lineMap = new LinesAndColumns(source);
+    let startLoc = lineMap.locationForIndex(start);
+    let endLoc = lineMap.locationForIndex(end);
 
     let displayStartLine = Math.max(0, startLoc.line - 2);
     let displayEndLine = endLoc.line + 2;
@@ -49,8 +50,8 @@ export default class PatchError extends Error {
     let rows = [];
 
     for (let line = displayStartLine; line <= displayEndLine; line++) {
-      let startOfLine = lineMap(line, 0);
-      let endOfLine = lineMap(line + 1, 0);
+      let startOfLine = lineMap.indexForLocation({ line, column: 0 });
+      let endOfLine = lineMap.indexForLocation({ line: line + 1, column: 0 });
       if (isNaN(endOfLine)) {
         if (isNaN(startOfLine)) {
           break;
@@ -93,27 +94,4 @@ export default class PatchError extends Error {
 
 function trimRight(string: string): string {
   return string.replace(/\s+$/, '');
-}
-
-function lineColumnMapper(source) {
-  let offsets = [0];
-  let offset = 0;
-
-  while ((offset = source.indexOf('\n', offset)) >= 0) {
-    offset += '\n'.length;
-    offsets.push(offset);
-  }
-
-  let result = function result(line, column) {
-    return offsets[line] + column;
-  };
-  result.invert = function (offset) {
-    for (let line = offsets.length - 1; line >= 0; line--) {
-      let lineStart = offsets[line];
-      if (offset >= lineStart) {
-        return { line, column: offset - lineStart };
-      }
-    }
-  };
-  return result;
 }

@@ -12,7 +12,7 @@ import DefaultParamPatcher from './patchers/DefaultParamPatcher.js';
 import type { Node } from '../../patchers/types.js';
 
 export default class NormalizeStage extends TransformCoffeeScriptStage {
-  static get outputExtension() {
+  static get outputExtension(): string {
     return '.coffee';
   }
 

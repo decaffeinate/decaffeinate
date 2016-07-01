@@ -17,6 +17,7 @@ type ConversionResult = {
 };
 
 type Stage = {
+  name: string;
   run: (content: string, filename: string) => { code: string, map: Object }
 };
 
@@ -56,7 +57,7 @@ function runStage(stage: Stage, content: string, filename: string): { code: stri
     if (err instanceof SyntaxError) {
       let { pos } = err;
       throw new PatchError(
-        'an intermediate stage failed to parse: ' + err.message,
+        `${stage.name} failed to parse: ${err.message}`,
         content,
         pos,
         pos + 1
