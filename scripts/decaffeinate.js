@@ -13,6 +13,7 @@ var asi = _interopDefault(require('automatic-semicolon-insertion'));
 var buildConfig = _interopDefault(require('ast-processor-babylon-config'));
 var babylon = require('babylon');
 var esnext = require('esnext');
+var LinesAndColumns = _interopDefault(require('lines-and-columns'));
 var repeat = _interopDefault(require('repeating'));
 var detectIndent = _interopDefault(require('detect-indent'));
 var coffeeLex = require('coffee-lex');
@@ -304,13 +305,13 @@ function printTable(table) {
 var PatchError = function (_Error) {
   inherits(PatchError, _Error);
 
-  function PatchError(message, context, start, end, error) {
+  function PatchError(message, source, start, end, error) {
     classCallCheck(this, PatchError);
 
     var _this = possibleConstructorReturn(this, Object.getPrototypeOf(PatchError).call(this, message));
 
     _this.message = message;
-    _this.context = context;
+    _this.source = source;
     _this.start = start;
     _this.end = end;
     _this.error = error;
@@ -327,27 +328,26 @@ var PatchError = function (_Error) {
      * Due to babel's inability to simulate extending native types, we have our
      * own method for determining whether an object is an instance of
      * `PatchError`.
-     * 
+     *
      * @see http://stackoverflow.com/a/33837088/549363
      */
 
   }], [{
     key: 'isA',
     value: function isA(error) {
-      return error instanceof Error && 'context' in error && 'start' in error && 'end' in error;
+      return error instanceof Error && 'source' in error && 'start' in error && 'end' in error;
     }
   }, {
     key: 'prettyPrint',
     value: function prettyPrint(error) {
-      var _error$context = error.context;
-      var source = _error$context.source;
-      var lineMap = _error$context.lineMap;
+      var source = error.source;
       var start = error.start;
       var end = error.end;
       var message = error.message;
 
-      var startLoc = lineMap.invert(start);
-      var endLoc = lineMap.invert(end);
+      var lineMap = new LinesAndColumns(source);
+      var startLoc = lineMap.locationForIndex(start);
+      var endLoc = lineMap.locationForIndex(end);
 
       var displayStartLine = Math.max(0, startLoc.line - 2);
       var displayEndLine = endLoc.line + 2;
@@ -355,8 +355,8 @@ var PatchError = function (_Error) {
       var rows = [];
 
       for (var line = displayStartLine; line <= displayEndLine; line++) {
-        var startOfLine = lineMap(line, 0);
-        var endOfLine = lineMap(line + 1, 0);
+        var startOfLine = lineMap.indexForLocation({ line: line, column: 0 });
+        var endOfLine = lineMap.indexForLocation({ line: line + 1, column: 0 });
         if (isNaN(endOfLine)) {
           if (isNaN(startOfLine)) {
             break;
@@ -1486,7 +1486,7 @@ var NodePatcher = function () {
 
       var _error = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
 
-      var patcherError = new PatchError(message, this.context, start, end, _error);
+      var patcherError = new PatchError(message, this.context.source, start, end, _error);
       if (_error) {
         patcherError.stack = _error.stack;
       }
@@ -7456,7 +7456,7 @@ var TransformCoffeeScriptStage = function () {
 
       if (constructor === null) {
         var props = childPropertyNames(node);
-        throw new (Function.prototype.bind.apply(PatchError, [null].concat(['no patcher available for node type: ' + node.type + ('' + (props.length ? ' (props: ' + props.join(', ') + ')' : '')), this.context], toConsumableArray(node.range))))();
+        throw new (Function.prototype.bind.apply(PatchError, [null].concat(['no patcher available for node type: ' + node.type + ('' + (props.length ? ' (props: ' + props.join(', ') + ')' : '')), this.context.source], toConsumableArray(node.range))))();
       }
 
       return constructor.patcherClassOverrideForNode(node) || constructor;
@@ -9204,10 +9204,10 @@ function runStages(initialContent, initialFilename, stages) {
   var content = initialContent;
   var filename = initialFilename;
   stages.forEach(function (stage) {
-    var _stage$run = stage.run(content, filename);
+    var _runStage = runStage(stage, content, filename);
 
-    var code = _stage$run.code;
-    var map = _stage$run.map;
+    var code = _runStage.code;
+    var map = _runStage.map;
 
     if (code !== content) {
       maps.push(map);
@@ -9218,11 +9218,24 @@ function runStages(initialContent, initialFilename, stages) {
   return { code: content, maps: maps };
 }
 
+function runStage(stage, content, filename) {
+  try {
+    return stage.run(content, filename);
+  } catch (err) {
+    if (err instanceof SyntaxError) {
+      var pos = err.pos;
+
+      throw new PatchError(stage.name + ' failed to parse: ' + err.message, content, pos, pos + 1);
+    }
+    throw err;
+  }
+}
+
 exports.convert = convert$1;
 exports.run = run;
 
 }).call(this,require('_process'))
-},{"_process":821,"add-variable-declarations":2,"ast-processor-babylon-config":352,"automatic-semicolon-insertion":702,"babylon":703,"coffee-lex":826,"decaffeinate-parser":827,"detect-indent":837,"esnext":838,"fs":814,"magic-string":1376,"path":820,"repeating":1378}],2:[function(require,module,exports){
+},{"_process":821,"add-variable-declarations":2,"ast-processor-babylon-config":352,"automatic-semicolon-insertion":702,"babylon":703,"coffee-lex":826,"decaffeinate-parser":827,"detect-indent":837,"esnext":838,"fs":814,"lines-and-columns":1376,"magic-string":1377,"path":820,"repeating":1379}],2:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('magic-string'), require('babel-traverse'), require('babylon')) :
   typeof define === 'function' && define.amd ? define(['magic-string', 'babel-traverse', 'babylon'], factory) :
@@ -9608,7 +9621,7 @@ exports.run = run;
   return addVariableDeclarations;
 
 }));
-},{"babel-traverse":6,"babylon":703,"magic-string":1376}],3:[function(require,module,exports){
+},{"babel-traverse":6,"babylon":703,"magic-string":1377}],3:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -50466,7 +50479,7 @@ module.exports = function (str) {
 	};
 };
 
-},{"repeating":1378}],838:[function(require,module,exports){
+},{"repeating":1379}],838:[function(require,module,exports){
 (function (process){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('shebang-regex'), require('babel-traverse'), require('magic-string'), require('babylon'), require('path'), require('fs'), require('mkdirp'), require('babel-types'), require('util')) :
@@ -55325,6 +55338,100 @@ mkdirP.sync = function sync (p, opts, made) {
 module.exports = /^#!(.*)/;
 
 },{}],1376:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var LF = '\n';
+var CR = '\r';
+
+var LinesAndColumns = function () {
+  function LinesAndColumns(string) {
+    _classCallCheck(this, LinesAndColumns);
+
+    this._string = string;
+
+    var offsets = [0];
+
+    for (var offset = 0; offset < string.length;) {
+      switch (string[offset]) {
+        case LF:
+          offset += LF.length;
+          offsets.push(offset);
+          break;
+
+        case CR:
+          offset += CR.length;
+          if (string[offset] === LF) {
+            offset += LF.length;
+          }
+          offsets.push(offset);
+          break;
+
+        default:
+          offset++;
+          break;
+      }
+    }
+
+    this._offsets = offsets;
+  }
+
+  _createClass(LinesAndColumns, [{
+    key: 'locationForIndex',
+    value: function locationForIndex(index) {
+      if (index < 0 || index > this._string.length) {
+        return null;
+      }
+
+      var line = 0;
+      var offsets = this._offsets;
+
+      while (offsets[line + 1] <= index) {
+        line++;
+      }
+
+      var column = index - offsets[line];
+      return { line: line, column: column };
+    }
+  }, {
+    key: 'indexForLocation',
+    value: function indexForLocation(location) {
+      var line = location.line;
+      var column = location.column;
+
+
+      if (line < 0 || line >= this._offsets.length) {
+        return null;
+      }
+
+      if (column < 0 || column > this._lengthOfLine(line)) {
+        return null;
+      }
+
+      return this._offsets[line] + column;
+    }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: '_lengthOfLine',
+    value: function _lengthOfLine(line) {
+      var offset = this._offsets[line];
+      var nextOffset = line === this._offsets.length - 1 ? this._string.length : this._offsets[line + 1];
+      return nextOffset - offset;
+    }
+  }]);
+
+  return LinesAndColumns;
+}();
+
+module.exports = LinesAndColumns;
+},{}],1377:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 
@@ -56520,9 +56627,9 @@ MagicString.Bundle = Bundle;
 module.exports = MagicString;
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":815,"vlq":1377}],1377:[function(require,module,exports){
+},{"buffer":815,"vlq":1378}],1378:[function(require,module,exports){
 arguments[4][1373][0].apply(exports,arguments)
-},{"dup":1373}],1378:[function(require,module,exports){
+},{"dup":1373}],1379:[function(require,module,exports){
 'use strict';
 var isFinite = require('is-finite');
 
@@ -56548,7 +56655,7 @@ module.exports = function (str, n) {
 	return ret;
 };
 
-},{"is-finite":1379}],1379:[function(require,module,exports){
+},{"is-finite":1380}],1380:[function(require,module,exports){
 'use strict';
 var numberIsNan = require('number-is-nan');
 
@@ -56556,7 +56663,7 @@ module.exports = Number.isFinite || function (val) {
 	return !(typeof val !== 'number' || numberIsNan(val) || val === Infinity || val === -Infinity);
 };
 
-},{"number-is-nan":1380}],1380:[function(require,module,exports){
+},{"number-is-nan":1381}],1381:[function(require,module,exports){
 'use strict';
 module.exports = Number.isNaN || function (x) {
 	return x !== x;
