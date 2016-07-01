@@ -25,18 +25,13 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
     this.right = right;
   }
 
-  /**
-   * LEFT OP RIGHT
-   */
-  patchAsExpression() {
-    this.left.patch();
+  patchOperator() {
     let operatorToken = this.getOperatorToken();
     this.overwrite(
       operatorToken.start,
       operatorToken.end,
       this.getOperator()
     );
-    this.right.patch();
   }
 
   /**
