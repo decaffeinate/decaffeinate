@@ -3,6 +3,7 @@ import SemicolonsStage from './stages/semicolons/index.js';
 import EsnextStage from './stages/esnext/index.js';
 import MainStage from './stages/main/index.js';
 import NormalizeStage from './stages/normalize/index.js';
+import PatchError from './utils/PatchError.js';
 
 export { default as run } from './cli';
 
@@ -38,7 +39,7 @@ function runStages(initialContent: string, initialFilename: string, stages: Arra
   let content = initialContent;
   let filename = initialFilename;
   stages.forEach(stage => {
-    let { code, map } = stage.run(content, filename);
+    let { code, map } = runStage(stage, content, filename);
     if (code !== content) {
       maps.push(map);
       content = code;
@@ -46,4 +47,21 @@ function runStages(initialContent: string, initialFilename: string, stages: Arra
     }
   });
   return { code: content, maps };
+}
+
+function runStage(stage: Stage, content: string, filename: string): { code: string, map: Object } {
+  try {
+    return stage.run(content, filename);
+  } catch (err) {
+    if (err instanceof SyntaxError) {
+      let { pos } = err;
+      throw new PatchError(
+        'an intermediate stage failed to parse: ' + err.message,
+        content,
+        pos,
+        pos + 1
+      );
+    }
+    throw err;
+  }
 }

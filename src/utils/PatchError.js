@@ -1,18 +1,17 @@
 import printTable from './printTable.js';
 import repeat from 'repeating';
-import type { ParseContext } from '../patchers/types.js';
 
 export default class PatchError extends Error {
   message: string;
-  context: ParseContext;
+  source: string;
   start: number;
   end: number;
   error: ?Error;
 
-  constructor(message: string, context: ParseContext, start: number, end: number, error: ?Error) {
+  constructor(message: string, source: string, start: number, end: number, error: ?Error) {
     super(message);
     this.message = message;
-    this.context = context;
+    this.source = source;
     this.start = start;
     this.end = end;
     this.error = error;
@@ -32,14 +31,15 @@ export default class PatchError extends Error {
   static isA(error: Error): boolean {
     return (
       error instanceof Error &&
-      'context' in error &&
+      'source' in error &&
       'start' in error &&
       'end' in error
     );
   }
 
   static prettyPrint(error: PatchError) {
-    let { context: { source, lineMap }, start, end, message } = error;
+    let { source, start, end, message } = error;
+    let lineMap = lineColumnMapper(source);
     let startLoc = lineMap.invert(start);
     let endLoc = lineMap.invert(end);
 
@@ -93,4 +93,27 @@ export default class PatchError extends Error {
 
 function trimRight(string: string): string {
   return string.replace(/\s+$/, '');
+}
+
+function lineColumnMapper(source) {
+  let offsets = [0];
+  let offset = 0;
+
+  while ((offset = source.indexOf('\n', offset)) >= 0) {
+    offset += '\n'.length;
+    offsets.push(offset);
+  }
+
+  let result = function result(line, column) {
+    return offsets[line] + column;
+  };
+  result.invert = function (offset) {
+    for (let line = offsets.length - 1; line >= 0; line--) {
+      let lineStart = offsets[line];
+      if (offset >= lineStart) {
+        return { line, column: offset - lineStart };
+      }
+    }
+  };
+  return result;
 }

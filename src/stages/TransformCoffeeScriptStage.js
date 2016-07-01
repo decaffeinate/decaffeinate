@@ -102,7 +102,7 @@ export default class TransformCoffeeScriptStage {
       throw new PatchError(
         `no patcher available for node type: ${node.type}` +
         `${props.length ? ` (props: ${props.join(', ')})` : ''}`,
-        this.context,
+        this.context.source,
         ...node.range
       );
     }
