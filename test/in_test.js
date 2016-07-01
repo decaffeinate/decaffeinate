@@ -133,4 +133,74 @@ describe('in operator', () => {
       }
     `);
   });
+
+  it('turns into comparisons joined by logical operators for literal arrays', () => {
+    check(`
+      if a in [yes, no]
+        b
+    `, `
+      if (a === true || a === false) {
+        b;
+      }
+    `);
+  });
+
+  it('turns into comparisons joined by logical operators for literal arrays with negation', () => {
+    check(`
+      if a not in [yes, no]
+        b
+    `, `
+      if (a !== true && a !== false) {
+        b;
+      }
+    `);
+  });
+
+  it('turns into a single comparison literal arrays with a single element', () => {
+    check(`
+      if a in [yes]
+        b
+    `, `
+      if (a === true) {
+        b;
+      }
+    `);
+  });
+
+  it('turns into comparisons joined by logical operators for literal arrays with not-safe-to-repeat element', () => {
+    check(`
+      if a() in [yes, no]
+        b
+    `, `
+      let ref;
+      if ((ref = a()) === true || ref === false) {
+        b;
+      }
+    `);
+  });
+
+  it('adds parens around elements that would be ambiguous', () => {
+    check(`
+      if a in [b and c, +d]
+        e
+    `, `
+      if (a === (b && c) || a === +d) {
+        e;
+      }
+    `);
+  });
+
+  it('uses the indexOf approach for empty arrays', () => {
+    check(`
+      if a in []
+        b
+    `, `
+      if (__in__(a, [])) {
+        b;
+      }
+      function __in__(needle, haystack) {
+        return haystack.indexOf(needle) >= 0;
+      }
+    `);
+  });
 });

@@ -5,7 +5,7 @@ import { OPERATOR } from 'coffee-lex';
 export default class BinaryOpPatcher extends NodePatcher {
   left: NodePatcher;
   right: NodePatcher;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
     super(node, context, editor);
     this.left = left;
@@ -20,9 +20,33 @@ export default class BinaryOpPatcher extends NodePatcher {
   /**
    * LEFT OP RIGHT
    */
-  patchAsExpression() {
-    this.left.patch({ needsParens: true });
-    this.right.patch({ needsParens: true });
+  patchAsExpression({ needsParens=false }={}) {
+    let addParens = needsParens && !this.isSurroundedByParentheses();
+    if (addParens) {
+      this.insert(this.outerStart, '(');
+    }
+    if (this.left instanceof BinaryOpPatcher) {
+      this.left.patch({ needsParens: this.getOperator() !== this.left.getOperator() });
+    } else {
+      this.left.patch({ needsParens: true });
+    }
+    this.patchOperator();
+    if (this.right instanceof BinaryOpPatcher) {
+      this.right.patch({ needsParens: this.getOperator() !== this.right.getOperator() });
+    } else {
+      this.right.patch({ needsParens: true });
+    }
+    if (addParens) {
+      this.insert(this.outerEnd, ')');
+    }
+  }
+
+  patchOperator() {
+    // override point for subclasses
+  }
+
+  getOperator(): string {
+    return this.sourceOfToken(this.getOperatorToken());
   }
 
   getOperatorToken(): SourceToken {

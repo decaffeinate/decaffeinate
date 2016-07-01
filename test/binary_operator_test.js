@@ -30,8 +30,8 @@ describe('binary operators', () => {
       a - b & c
       a & b - c
     `, `
-      a - b & c;
-      a & b - c;
+      (a - b) & c;
+      a & (b - c);
     `);
   });
 
@@ -40,8 +40,8 @@ describe('binary operators', () => {
       a - b | c
       a | b - c
     `, `
-      a - b | c;
-      a | b - c;
+      (a - b) | c;
+      a | (b - c);
     `);
   });
 
@@ -130,7 +130,7 @@ describe('binary operators', () => {
     check(`
       value = object.id << 8 | object.type
     `, `
-      let value = object.id << 8 | object.type;
+      let value = (object.id << 8) | object.type;
     `);
   });
 
