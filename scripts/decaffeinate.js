@@ -1699,8 +1699,39 @@ var BinaryOpPatcher = function (_NodePatcher) {
   }, {
     key: 'patchAsExpression',
     value: function patchAsExpression() {
-      this.left.patch({ needsParens: true });
-      this.right.patch({ needsParens: true });
+      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref$needsParens = _ref.needsParens;
+      var needsParens = _ref$needsParens === undefined ? false : _ref$needsParens;
+
+      var addParens = needsParens && !this.isSurroundedByParentheses();
+      if (addParens) {
+        this.insert(this.outerStart, '(');
+      }
+      if (this.left instanceof BinaryOpPatcher) {
+        this.left.patch({ needsParens: this.getOperator() !== this.left.getOperator() });
+      } else {
+        this.left.patch({ needsParens: true });
+      }
+      this.patchOperator();
+      if (this.right instanceof BinaryOpPatcher) {
+        this.right.patch({ needsParens: this.getOperator() !== this.right.getOperator() });
+      } else {
+        this.right.patch({ needsParens: true });
+      }
+      if (addParens) {
+        this.insert(this.outerEnd, ')');
+      }
+    }
+  }, {
+    key: 'patchOperator',
+    value: function patchOperator() {
+      // override point for subclasses
+    }
+  }, {
+    key: 'getOperator',
+    value: function getOperator() {
+      return this.sourceOfToken(this.getOperatorToken());
     }
   }, {
     key: 'getOperatorToken',
@@ -4905,10 +4936,62 @@ var InOpPatcher = function (_BinaryOpPatcher) {
   }, {
     key: 'patchAsExpression',
     value: function patchAsExpression() {
+      if (this.right instanceof ArrayInitialiserPatcher && this.right.members.length > 0) {
+        this.patchAsLogicalOperators(this.right.members);
+      } else {
+        this.patchAsIndexLookup();
+      }
+    }
+
+    /**
+     * LEFT 'in' '[' ELEMENT, … ']'
+     *
+     * @private
+     */
+
+  }, {
+    key: 'patchAsLogicalOperators',
+    value: function patchAsLogicalOperators(elements) {
+      var comparison = this.negated ? '!==' : '===';
+      var operator = this.negated ? '&&' : '||';
+      var leftAgain = this.left.makeRepeatable(true);
+      this.left.patch();
+
+      // `a in [b, c]` → `a === b, c]`
+      //    ^^^^            ^^^^^
+      this.overwrite(this.left.outerEnd, elements[0].outerStart, ' ' + comparison + ' ');
+
+      for (var i = 0; i < elements.length - 1; i++) {
+        var element = elements[i];
+        element.patch({ needsParens: true });
+
+        // `a === b, c]` → `a === b || a === c]`
+        //         ^^               ^^^^^^^^^^
+        this.overwrite(element.outerEnd, elements[i + 1].outerStart, ' ' + operator + ' ' + leftAgain + ' ' + comparison + ' ');
+      }
+
+      var lastElement = elements[elements.length - 1];
+      lastElement.patch({ needsParens: true });
+
+      // `a === b || a === c]` → `a === b || a === c`
+      //                     ^
+      this.remove(lastElement.outerEnd, this.right.outerEnd);
+    }
+
+    /**
+     * LEFT 'in' RIGHT
+     *
+     * @private
+     */
+
+  }, {
+    key: 'patchAsIndexLookup',
+    value: function patchAsIndexLookup() {
       var helper = this.registerHelper('__in__', IN_HELPER);
 
       if (this.negated) {
         // `a in b` → `!a in b`
+        //             ^
         this.insert(this.left.outerStart, '!');
       }
 
@@ -5269,18 +5352,11 @@ var LogicalOpPatcher = function (_BinaryOpPatcher) {
     return _this;
   }
 
-  /**
-   * LEFT OP RIGHT
-   */
-
-
   createClass(LogicalOpPatcher, [{
-    key: 'patchAsExpression',
-    value: function patchAsExpression() {
-      this.left.patch();
+    key: 'patchOperator',
+    value: function patchOperator() {
       var operatorToken = this.getOperatorToken();
       this.overwrite(operatorToken.start, operatorToken.end, this.getOperator());
-      this.right.patch();
     }
 
     /**
