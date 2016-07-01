@@ -245,4 +245,12 @@ describe('function calls', () => {
       a(() => 0);
     `);
   });
+
+  it('keeps commas immediately after function applications', () => {
+    check(`
+      a(b(c), d)
+    `, `
+      a(b(c), d);
+    `);
+  });
 });
