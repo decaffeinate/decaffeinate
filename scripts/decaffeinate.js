@@ -4753,6 +4753,7 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
 
       var implicitCall = this.isImplicitCall();
       var args = this.args;
+      var outerEndTokenIndex = this.outerEndTokenIndex;
 
 
       this.fn.patch();
@@ -4777,6 +4778,10 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
         arg.patch();
         var isLast = i === args.length - 1;
         var commaTokenIndex = arg.node.virtual ? null : _this2.indexOfSourceTokenAfterSourceTokenIndex(arg.outerEndTokenIndex, coffeeLex.COMMA, isSemanticToken);
+        // Ignore commas after the end of the function call.
+        if (commaTokenIndex && commaTokenIndex.compare(outerEndTokenIndex) <= 0) {
+          commaTokenIndex = null;
+        }
         var commaToken = commaTokenIndex && _this2.sourceTokenAtIndex(commaTokenIndex);
         if (isLast && commaToken) {
           _this2.remove(arg.outerEnd, commaToken.end);
