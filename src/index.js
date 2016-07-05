@@ -5,8 +5,8 @@ import MainStage from './stages/main/index.js';
 import NormalizeStage from './stages/normalize/index.js';
 import PatchError from './utils/PatchError.js';
 
-export { default as PatchError } from './utils/PatchError.js';
 export { default as run } from './cli';
+export { PatchError };
 
 type Options = {
   filename?: string
