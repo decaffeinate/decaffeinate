@@ -52,8 +52,8 @@ export default class PatchError extends Error {
     for (let line = displayStartLine; line <= displayEndLine; line++) {
       let startOfLine = lineMap.indexForLocation({ line, column: 0 });
       let endOfLine = lineMap.indexForLocation({ line: line + 1, column: 0 });
-      if (isNaN(endOfLine)) {
-        if (isNaN(startOfLine)) {
+      if (endOfLine === null) {
+        if (startOfLine === null) {
           break;
         } else {
           endOfLine = source.length;
