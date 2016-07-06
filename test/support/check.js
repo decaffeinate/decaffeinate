@@ -11,7 +11,7 @@ export default function check(source, expected) {
     let converted = convert(source);
     strictEqual(converted.code, expected);
   } catch (err) {
-    if (PatchError.isA(err)) {
+    if (PatchError.detect(err)) {
       console.error(PatchError.prettyPrint(err));
     }
     throw err;

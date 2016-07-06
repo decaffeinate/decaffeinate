@@ -29,7 +29,7 @@ export default class PatchError extends Error {
    *
    * @see http://stackoverflow.com/a/33837088/549363
    */
-  static isA(error: Error): boolean {
+  static detect(error: Error): boolean {
     return (
       error instanceof Error &&
       'source' in error &&

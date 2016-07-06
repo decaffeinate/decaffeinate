@@ -239,7 +239,7 @@ export default class NodePatcher {
     try {
       body();
     } catch (err) {
-      if (!PatcherError.isA(err)) {
+      if (!PatcherError.detect(err)) {
         throw this.error(
           err.message,
           this.contentStart,
