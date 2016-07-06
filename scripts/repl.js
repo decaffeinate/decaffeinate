@@ -200,7 +200,11 @@
     try {
       transformed = decaffeinate.convert(code).code;
     } catch (err) {
-      this.printError(err.message);
+      if (decaffeinate.PatchError.isA(err)) {
+        this.printError(decaffeinate.PatchError.prettyPrint(err));
+      } else {
+        this.printError(err.message);
+      }
       throw err;
     }
 
