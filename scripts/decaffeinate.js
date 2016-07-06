@@ -333,8 +333,8 @@ var PatchError = function (_Error) {
      */
 
   }], [{
-    key: 'isA',
-    value: function isA(error) {
+    key: 'detect',
+    value: function detect(error) {
       return error instanceof Error && 'source' in error && 'start' in error && 'end' in error;
     }
   }, {
@@ -731,7 +731,7 @@ var NodePatcher = function () {
       try {
         body();
       } catch (err) {
-        if (!PatchError.isA(err)) {
+        if (!PatchError.detect(err)) {
           throw this.error(err.message, this.contentStart, this.contentEnd, err);
         } else {
           throw err;
@@ -9140,7 +9140,7 @@ function runWithStream(name, input, output, callback) {
     try {
       converted = convert$1(data);
     } catch (err) {
-      if (PatchError.isA(err)) {
+      if (PatchError.detect(err)) {
         console.error(name + ': ' + PatchError.prettyPrint(err));
         process.exit(1);
       } else {
