@@ -357,8 +357,8 @@ var PatchError = function (_Error) {
       for (var line = displayStartLine; line <= displayEndLine; line++) {
         var startOfLine = lineMap.indexForLocation({ line: line, column: 0 });
         var endOfLine = lineMap.indexForLocation({ line: line + 1, column: 0 });
-        if (isNaN(endOfLine)) {
-          if (isNaN(startOfLine)) {
+        if (endOfLine === null) {
+          if (startOfLine === null) {
             break;
           } else {
             endOfLine = source.length;
