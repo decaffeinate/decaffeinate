@@ -59,7 +59,7 @@
     "babelrc-rollup": "^1.1.0",
     "browserify": "^13.0.0",
     "cz-conventional-changelog": "^1.1.6",
-    "eslint": "^3.0.0",
+    "eslint": "^3.0.1",
     "eslint-plugin-babel": "^3.2.0",
     "eslint-plugin-decaffeinate": "file:eslint-rules",
     "mocha": "^2.4.5",
