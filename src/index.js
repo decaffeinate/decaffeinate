@@ -6,6 +6,7 @@ import NormalizeStage from './stages/normalize/index.js';
 import PatchError from './utils/PatchError.js';
 
 export { default as run } from './cli';
+export { PatchError };
 
 type Options = {
   filename?: string
