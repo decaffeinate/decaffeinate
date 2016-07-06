@@ -9236,7 +9236,6 @@ function runStage(stage, content, filename) {
   }
 }
 
-exports.PatchError = PatchError;
 exports.convert = convert$1;
 exports.run = run;
 
