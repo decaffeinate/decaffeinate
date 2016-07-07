@@ -11,9 +11,12 @@ describe('return', () => {
 
   it('works without a return value', () =>
     check(`
-      -> return
+      ->
+        return if a
     `, `
-      (function() { return; });
+      (function() {
+        if (a) { return; }
+      });
     `)
   );
 });
