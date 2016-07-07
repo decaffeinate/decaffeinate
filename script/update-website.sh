@@ -27,4 +27,5 @@ perl -p -i -e "s/v\d+\.\d+\.\d+/v$VERSION/" repl/index.html
 if hasChanges; then
   git commit -av -m "Update decaffeinate.js."
   git push origin HEAD:gh-pages
+  surge --project .
 fi
