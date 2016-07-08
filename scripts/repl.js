@@ -27,7 +27,7 @@
   };
 
   UriUtils.parseQuery = function () {
-    var query = window.location.hash.replace(/^\#\?/, '');
+    var query = window.location.hash.replace(/^#\?/, '');
 
     if (!query) {
       return null;
@@ -154,7 +154,9 @@
     this.options = _.assign(new Options(), state);
 
     this.input = new Editor('.decaffeinate-repl-input .ace_editor', 'ace/mode/coffee').editor;
-    this.input.setValue(UriUtils.decode(state.code || ''));
+    if (state.code) {
+      this.input.setValue(UriUtils.decode(state.code));
+    }
 
     this.output = new Editor('.decaffeinate-repl-output .ace_editor', 'ace/mode/javascript').editor;
     this.output.setReadOnly(true);
