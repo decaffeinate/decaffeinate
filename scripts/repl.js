@@ -150,7 +150,7 @@
     this.storage = new StorageService();
     var state = this.storage.get('replState') || {};
     var parsedQuery = UriUtils.parseQuery()
-    if(parsedQuery && parsedQuery.code || state && state.code) {
+    if(parsedQuery && parsedQuery.code || state.code) {
       _.assign(state, UriUtils.parseQuery());
     } else {
       var demoCode = $(".decaffeinate-repl-demo-code").text();
