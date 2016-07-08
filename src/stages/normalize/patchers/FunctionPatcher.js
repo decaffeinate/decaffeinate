@@ -46,7 +46,7 @@ export default class FunctionPatcher extends NodePatcher {
     } else if (assignments.length) {
       // as the body if there is no body
       // Add a return statement for non-constructor methods without body to avoid bad implicit return
-      if (this.node.parentNode.type != 'Constructor') {
+      if (this.node.parentNode.type !== 'Constructor') {
         assignments.push('return');
       }
       let indent = this.getIndent(1);
