@@ -11,6 +11,9 @@ export default class ReturnPatcher extends NodePatcher {
 
   initialize() {
     this.setExplicitlyReturns();
+    if (this.expression !== null) {
+      this.expression.setRequiresExpression();
+    }
   }
 
   /**

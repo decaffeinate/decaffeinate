@@ -16,4 +16,12 @@ describe('return', () => {
       (function() { return; });
     `)
   );
+
+  it('forces the return value to be an expression', () =>
+    check(`
+      -> return if true then null
+    `, `
+      () => true ? null : undefined;
+    `)
+  );
 });
