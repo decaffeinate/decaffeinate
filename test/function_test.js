@@ -8,30 +8,34 @@ describe('functions', () => {
   it('put the closing curly brace on a new line', () => {
     check(`
       ->
-        return
+        0
+        return 0
     `, `
       (function() {
-        return;
+        0;
+        return 0;
       });
     `);
   });
 
   it('put the closing curly brace on the same line if the original is a single line', () => {
     check(`
-      -> return
+      -> 0; return 0
     `, `
-      (function() { return; });
+      (function() { 0; return 0; });
     `);
   });
 
   it('puts the closing curly brace before any trailing comments on the last statement in the body', () => {
     check(`
       ->
-        return # hey
+        0
+        return 0 # hey
       b
     `, `
       (function() {
-        return; // hey
+        0;
+        return 0; // hey
       });
       b;
     `);
@@ -39,19 +43,21 @@ describe('functions', () => {
 
   it('puts the closing punctuation before trailing comments for one-line functions', () => {
     check(`
-      -> return # b
+      -> 0; return 0 # b
     `, `
-      (function() { return; }); // b
+      (function() { 0; return 0; }); // b
     `);
   });
 
   it('puts the closing punctuation before trailing comments for parentheses-wrapped functions', () => {
     check(`
       (->
-        return) # b
+        0
+        return 0) # b
     `, `
       (function() {
-        return;}); // b
+        0;
+        return 0;}); // b
     `);
   });
 

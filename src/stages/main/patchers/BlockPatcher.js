@@ -1,4 +1,6 @@
+import FunctionPatcher from './FunctionPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
+import ReturnPatcher from './ReturnPatcher.js';
 import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
 import { NEWLINE, SEMICOLON } from 'coffee-lex';
 
@@ -33,7 +35,18 @@ export default class BlockPatcher extends NodePatcher {
     }
 
     this.statements.forEach(
-      statement => {
+      (statement, i, statements) => {
+        if (i === statements.length - 1 && this.parent instanceof FunctionPatcher) {
+          let previousStatement = statements[i - 1];
+          if (statement instanceof ReturnPatcher && !statement.expression) {
+            this.remove(
+              previousStatement ?
+                previousStatement.outerEnd :
+                statement.outerStart,
+              statement.outerEnd
+            );
+          }
+        }
         if (statement.isSurroundedByParentheses()) {
           statement.setRequiresExpression();
         }

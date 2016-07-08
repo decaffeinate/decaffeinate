@@ -121,22 +121,20 @@ describe('classes', () => {
         }
       `);
     });
-    
+
     it('constructor with function body', () => {
       check(`
         class A
           constructor: (@a) ->
-            return
       `, `
         class A {
           constructor(a) {
             this.a = a;
-            return;
           }
         }
       `);
     });
-    
+
     it('method', () => {
       check(`
         class A
@@ -145,7 +143,6 @@ describe('classes', () => {
         class A {
           method(a) {
             this.a = a;
-            return;
           }
         }
       `);
@@ -163,7 +160,6 @@ describe('classes', () => {
         
           method(a) {
             this.a = a;
-            return;
           }
         }
       `);
@@ -199,7 +195,6 @@ describe('classes', () => {
       `, `
         (function(a, b = this.c) {
           this.a = a;
-          return;
         });
       `);
     });
@@ -210,7 +205,6 @@ describe('classes', () => {
       `, `
         (function(a, b = a) {
           this.a = a;
-          return;
         });
       `);
     });
