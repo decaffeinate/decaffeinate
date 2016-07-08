@@ -1763,213 +1763,6 @@ var BinaryOpPatcher = function (_NodePatcher) {
   return BinaryOpPatcher;
 }(NodePatcher);
 
-var BlockPatcher = function (_NodePatcher) {
-  inherits(BlockPatcher, _NodePatcher);
-
-  function BlockPatcher(node, context, editor, statements) {
-    classCallCheck(this, BlockPatcher);
-
-    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(BlockPatcher).call(this, node, context, editor));
-
-    _this.statements = statements;
-    return _this;
-  }
-
-  createClass(BlockPatcher, [{
-    key: 'canPatchAsExpression',
-    value: function canPatchAsExpression() {
-      return this.statements.every(function (statement) {
-        return statement.prefersToPatchAsExpression();
-      });
-    }
-  }, {
-    key: 'setExpression',
-    value: function setExpression() {
-      var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-
-      var willPatchAsExpression = get(Object.getPrototypeOf(BlockPatcher.prototype), 'setExpression', this).call(this, force);
-      if (willPatchAsExpression && this.prefersToPatchAsExpression()) {
-        this.statements.forEach(function (statement) {
-          return statement.setExpression();
-        });
-      }
-    }
-  }, {
-    key: 'setImplicitlyReturns',
-    value: function setImplicitlyReturns() {
-      this.statements[this.statements.length - 1].setImplicitlyReturns();
-    }
-  }, {
-    key: 'patchAsStatement',
-    value: function patchAsStatement() {
-      var _this2 = this;
-
-      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var _ref$leftBrace = _ref.leftBrace;
-      var leftBrace = _ref$leftBrace === undefined ? true : _ref$leftBrace;
-      var _ref$rightBrace = _ref.rightBrace;
-      var rightBrace = _ref$rightBrace === undefined ? true : _ref$rightBrace;
-
-      if (leftBrace) {
-        this.insert(this.innerStart, '{');
-      }
-
-      this.statements.forEach(function (statement) {
-        if (statement.isSurroundedByParentheses()) {
-          statement.setRequiresExpression();
-        }
-        var hasImplicitReturn = statement.implicitlyReturns() && !statement.explicitlyReturns();
-        var implicitReturnPatcher = hasImplicitReturn ? _this2.implicitReturnPatcher() : null;
-        if (implicitReturnPatcher) {
-          implicitReturnPatcher.patchImplicitReturnStart(statement);
-        }
-        statement.patch();
-        if (implicitReturnPatcher) {
-          implicitReturnPatcher.patchImplicitReturnEnd(statement);
-        }
-        if (statement.statementNeedsSemicolon()) {
-          _this2.insert(statement.outerEnd, ';');
-        }
-      });
-
-      if (rightBrace) {
-        if (this.inline()) {
-          this.insert(this.innerEnd, ' }');
-        } else {
-          this.appendLineAfter('}', -1);
-        }
-      }
-    }
-  }, {
-    key: 'patchAsExpression',
-    value: function patchAsExpression() {
-      var _this3 = this;
-
-      var _ref2 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var _ref2$leftBrace = _ref2.leftBrace;
-      var leftBrace = _ref2$leftBrace === undefined ? this.statements.length > 1 : _ref2$leftBrace;
-      var _ref2$rightBrace = _ref2.rightBrace;
-      var rightBrace = _ref2$rightBrace === undefined ? this.statements.length > 1 : _ref2$rightBrace;
-
-      if (leftBrace) {
-        this.insert(this.innerStart, '(');
-      }
-      this.statements.forEach(function (statement, i, statements) {
-        statement.patch();
-        if (i !== statements.length - 1) {
-          var semicolonTokenIndex = _this3.getSemicolonSourceTokenBetween(statement, statements[i + 1]);
-          if (semicolonTokenIndex) {
-            var semicolonToken = _this3.sourceTokenAtIndex(semicolonTokenIndex);
-            _this3.overwrite(semicolonToken.start, semicolonToken.end, ',');
-          } else {
-            _this3.insert(statement.outerEnd, ',');
-          }
-        }
-      });
-      if (rightBrace) {
-        this.insert(this.innerEnd, ')');
-      }
-    }
-
-    /**
-     * Insert statements somewhere in this block.
-     */
-
-  }, {
-    key: 'insertStatementsAtIndex',
-    value: function insertStatementsAtIndex(statements, index) {
-      var _this4 = this;
-
-      var separator = this.inline() ? '; ' : ';\n';
-      if (index === this.statements.length) {
-        (function () {
-          var lastStatement = _this4.statements[_this4.statements.length - 1];
-          var terminatorTokenIndex = _this4.context.sourceTokens.indexOfTokenMatchingPredicate(function (token) {
-            return token.type === coffeeLex.NEWLINE || token.type === coffeeLex.SEMICOLON;
-          }, lastStatement.outerEndTokenIndex);
-          var insertionPoint = terminatorTokenIndex ? _this4.sourceTokenAtIndex(terminatorTokenIndex).start : lastStatement.outerEnd;
-          var indent = lastStatement.getIndent();
-          statements.forEach(function (line) {
-            return _this4.insert(insertionPoint, '' + separator + indent + line);
-          });
-        })();
-      } else {
-        (function () {
-          var statementToInsertBefore = _this4.statements[index];
-          var insertionPoint = statementToInsertBefore.outerStart;
-          var indent = statementToInsertBefore.getIndent();
-          statements.forEach(function (line) {
-            return _this4.insert(insertionPoint, '' + line + separator + indent);
-          });
-        })();
-      }
-    }
-
-    /**
-     * @private
-     */
-
-  }, {
-    key: 'getSemicolonSourceTokenBetween',
-    value: function getSemicolonSourceTokenBetween(left, right) {
-      return this.indexOfSourceTokenBetweenPatchersMatching(left, right, function (token) {
-        return token.type === coffeeLex.SEMICOLON;
-      });
-    }
-
-    /**
-     * Gets whether this patcher's block is inline (on the same line as the node
-     * that contains it) or not.
-     */
-
-  }, {
-    key: 'inline',
-    value: function inline() {
-      return this.node.inline;
-    }
-
-    /**
-     * Blocks only exit via the last statement, so we check its code paths.
-     */
-
-  }, {
-    key: 'allCodePathsPresent',
-    value: function allCodePathsPresent() {
-      return this.statements[this.statements.length - 1].allCodePathsPresent();
-    }
-  }]);
-  return BlockPatcher;
-}(NodePatcher);
-
-var BoolPatcher = function (_NodePatcher) {
-  inherits(BoolPatcher, _NodePatcher);
-
-  function BoolPatcher() {
-    classCallCheck(this, BoolPatcher);
-    return possibleConstructorReturn(this, Object.getPrototypeOf(BoolPatcher).apply(this, arguments));
-  }
-
-  createClass(BoolPatcher, [{
-    key: 'patchAsExpression',
-    value: function patchAsExpression() {
-      switch (this.getOriginalSource()) {
-        case 'off':
-        case 'no':
-          this.overwrite(this.contentStart, this.contentEnd, 'false');
-          break;
-
-        case 'on':
-        case 'yes':
-          this.overwrite(this.contentStart, this.contentEnd, 'true');
-          break;
-      }
-    }
-  }]);
-  return BoolPatcher;
-}(NodePatcher);
-
 var FunctionPatcher = function (_NodePatcher) {
   inherits(FunctionPatcher, _NodePatcher);
 
@@ -2124,6 +1917,257 @@ var FunctionPatcher = function (_NodePatcher) {
     }
   }]);
   return FunctionPatcher;
+}(NodePatcher);
+
+var ReturnPatcher = function (_NodePatcher) {
+  inherits(ReturnPatcher, _NodePatcher);
+
+  function ReturnPatcher(node, context, editor, expression) {
+    classCallCheck(this, ReturnPatcher);
+
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ReturnPatcher).call(this, node, context, editor));
+
+    _this.expression = expression;
+    return _this;
+  }
+
+  createClass(ReturnPatcher, [{
+    key: 'initialize',
+    value: function initialize() {
+      this.setExplicitlyReturns();
+    }
+
+    /**
+     * Return statements cannot be expressions.
+     */
+
+  }, {
+    key: 'canPatchAsExpression',
+    value: function canPatchAsExpression() {
+      return false;
+    }
+  }, {
+    key: 'patchAsStatement',
+    value: function patchAsStatement() {
+      if (this.expression) {
+        this.expression.patch();
+      }
+    }
+  }]);
+  return ReturnPatcher;
+}(NodePatcher);
+
+var BlockPatcher = function (_NodePatcher) {
+  inherits(BlockPatcher, _NodePatcher);
+
+  function BlockPatcher(node, context, editor, statements) {
+    classCallCheck(this, BlockPatcher);
+
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(BlockPatcher).call(this, node, context, editor));
+
+    _this.statements = statements;
+    return _this;
+  }
+
+  createClass(BlockPatcher, [{
+    key: 'canPatchAsExpression',
+    value: function canPatchAsExpression() {
+      return this.statements.every(function (statement) {
+        return statement.prefersToPatchAsExpression();
+      });
+    }
+  }, {
+    key: 'setExpression',
+    value: function setExpression() {
+      var force = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+      var willPatchAsExpression = get(Object.getPrototypeOf(BlockPatcher.prototype), 'setExpression', this).call(this, force);
+      if (willPatchAsExpression && this.prefersToPatchAsExpression()) {
+        this.statements.forEach(function (statement) {
+          return statement.setExpression();
+        });
+      }
+    }
+  }, {
+    key: 'setImplicitlyReturns',
+    value: function setImplicitlyReturns() {
+      this.statements[this.statements.length - 1].setImplicitlyReturns();
+    }
+  }, {
+    key: 'patchAsStatement',
+    value: function patchAsStatement() {
+      var _this2 = this;
+
+      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref$leftBrace = _ref.leftBrace;
+      var leftBrace = _ref$leftBrace === undefined ? true : _ref$leftBrace;
+      var _ref$rightBrace = _ref.rightBrace;
+      var rightBrace = _ref$rightBrace === undefined ? true : _ref$rightBrace;
+
+      if (leftBrace) {
+        this.insert(this.innerStart, '{');
+      }
+
+      this.statements.forEach(function (statement, i, statements) {
+        if (i === statements.length - 1 && _this2.parent instanceof FunctionPatcher) {
+          var previousStatement = statements[i - 1];
+          if (statement instanceof ReturnPatcher && !statement.expression) {
+            _this2.remove(previousStatement ? previousStatement.outerEnd : statement.outerStart, statement.outerEnd);
+          }
+        }
+        if (statement.isSurroundedByParentheses()) {
+          statement.setRequiresExpression();
+        }
+        var hasImplicitReturn = statement.implicitlyReturns() && !statement.explicitlyReturns();
+        var implicitReturnPatcher = hasImplicitReturn ? _this2.implicitReturnPatcher() : null;
+        if (implicitReturnPatcher) {
+          implicitReturnPatcher.patchImplicitReturnStart(statement);
+        }
+        statement.patch();
+        if (implicitReturnPatcher) {
+          implicitReturnPatcher.patchImplicitReturnEnd(statement);
+        }
+        if (statement.statementNeedsSemicolon()) {
+          _this2.insert(statement.outerEnd, ';');
+        }
+      });
+
+      if (rightBrace) {
+        if (this.inline()) {
+          this.insert(this.innerEnd, ' }');
+        } else {
+          this.appendLineAfter('}', -1);
+        }
+      }
+    }
+  }, {
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      var _this3 = this;
+
+      var _ref2 = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref2$leftBrace = _ref2.leftBrace;
+      var leftBrace = _ref2$leftBrace === undefined ? this.statements.length > 1 : _ref2$leftBrace;
+      var _ref2$rightBrace = _ref2.rightBrace;
+      var rightBrace = _ref2$rightBrace === undefined ? this.statements.length > 1 : _ref2$rightBrace;
+
+      if (leftBrace) {
+        this.insert(this.innerStart, '(');
+      }
+      this.statements.forEach(function (statement, i, statements) {
+        statement.patch();
+        if (i !== statements.length - 1) {
+          var semicolonTokenIndex = _this3.getSemicolonSourceTokenBetween(statement, statements[i + 1]);
+          if (semicolonTokenIndex) {
+            var semicolonToken = _this3.sourceTokenAtIndex(semicolonTokenIndex);
+            _this3.overwrite(semicolonToken.start, semicolonToken.end, ',');
+          } else {
+            _this3.insert(statement.outerEnd, ',');
+          }
+        }
+      });
+      if (rightBrace) {
+        this.insert(this.innerEnd, ')');
+      }
+    }
+
+    /**
+     * Insert statements somewhere in this block.
+     */
+
+  }, {
+    key: 'insertStatementsAtIndex',
+    value: function insertStatementsAtIndex(statements, index) {
+      var _this4 = this;
+
+      var separator = this.inline() ? '; ' : ';\n';
+      if (index === this.statements.length) {
+        (function () {
+          var lastStatement = _this4.statements[_this4.statements.length - 1];
+          var terminatorTokenIndex = _this4.context.sourceTokens.indexOfTokenMatchingPredicate(function (token) {
+            return token.type === coffeeLex.NEWLINE || token.type === coffeeLex.SEMICOLON;
+          }, lastStatement.outerEndTokenIndex);
+          var insertionPoint = terminatorTokenIndex ? _this4.sourceTokenAtIndex(terminatorTokenIndex).start : lastStatement.outerEnd;
+          var indent = lastStatement.getIndent();
+          statements.forEach(function (line) {
+            return _this4.insert(insertionPoint, '' + separator + indent + line);
+          });
+        })();
+      } else {
+        (function () {
+          var statementToInsertBefore = _this4.statements[index];
+          var insertionPoint = statementToInsertBefore.outerStart;
+          var indent = statementToInsertBefore.getIndent();
+          statements.forEach(function (line) {
+            return _this4.insert(insertionPoint, '' + line + separator + indent);
+          });
+        })();
+      }
+    }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: 'getSemicolonSourceTokenBetween',
+    value: function getSemicolonSourceTokenBetween(left, right) {
+      return this.indexOfSourceTokenBetweenPatchersMatching(left, right, function (token) {
+        return token.type === coffeeLex.SEMICOLON;
+      });
+    }
+
+    /**
+     * Gets whether this patcher's block is inline (on the same line as the node
+     * that contains it) or not.
+     */
+
+  }, {
+    key: 'inline',
+    value: function inline() {
+      return this.node.inline;
+    }
+
+    /**
+     * Blocks only exit via the last statement, so we check its code paths.
+     */
+
+  }, {
+    key: 'allCodePathsPresent',
+    value: function allCodePathsPresent() {
+      return this.statements[this.statements.length - 1].allCodePathsPresent();
+    }
+  }]);
+  return BlockPatcher;
+}(NodePatcher);
+
+var BoolPatcher = function (_NodePatcher) {
+  inherits(BoolPatcher, _NodePatcher);
+
+  function BoolPatcher() {
+    classCallCheck(this, BoolPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(BoolPatcher).apply(this, arguments));
+  }
+
+  createClass(BoolPatcher, [{
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      switch (this.getOriginalSource()) {
+        case 'off':
+        case 'no':
+          this.overwrite(this.contentStart, this.contentEnd, 'false');
+          break;
+
+        case 'on':
+        case 'yes':
+          this.overwrite(this.contentStart, this.contentEnd, 'true');
+          break;
+      }
+    }
+  }]);
+  return BoolPatcher;
 }(NodePatcher);
 
 var PassthroughPatcher = function (_NodePatcher) {
@@ -6175,44 +6219,6 @@ var RestPatcher = function (_SpreadPatcher) {
   return RestPatcher;
 }(SpreadPatcher);
 
-var ReturnPatcher = function (_NodePatcher) {
-  inherits(ReturnPatcher, _NodePatcher);
-
-  function ReturnPatcher(node, context, editor, expression) {
-    classCallCheck(this, ReturnPatcher);
-
-    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ReturnPatcher).call(this, node, context, editor));
-
-    _this.expression = expression;
-    return _this;
-  }
-
-  createClass(ReturnPatcher, [{
-    key: 'initialize',
-    value: function initialize() {
-      this.setExplicitlyReturns();
-    }
-
-    /**
-     * Return statements cannot be expressions.
-     */
-
-  }, {
-    key: 'canPatchAsExpression',
-    value: function canPatchAsExpression() {
-      return false;
-    }
-  }, {
-    key: 'patchAsStatement',
-    value: function patchAsStatement() {
-      if (this.expression) {
-        this.expression.patch();
-      }
-    }
-  }]);
-  return ReturnPatcher;
-}(NodePatcher);
-
 /**
  * Handles sequence expressions, e.g `a; b`.
  */
@@ -8967,7 +8973,7 @@ var FunctionPatcher$1 = function (_NodePatcher) {
         this.body.patch();
       } else if (assignments.length) {
         // as the body if there is no body
-        // Add a return statement for non-constructor methods without body to avoid bad implict return
+        // Add a return statement for non-constructor methods without body to avoid bad implicit return
         if (this.node.parentNode.type != 'Constructor') {
           assignments.push('return');
         }
