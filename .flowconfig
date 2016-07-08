@@ -1,6 +1,7 @@
 [ignore]
 <PROJECT_ROOT>/node_modules/config-chain/.*
 <PROJECT_ROOT>/node_modules/npmconf/.*
+<PROJECT_ROOT>/node_modules/semantic-release/.*
 
 [include]
 
