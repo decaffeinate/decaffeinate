@@ -6440,6 +6440,179 @@ var SoakedMemberAccessOpPatcher = function (_NodePatcher) {
   return SoakedMemberAccessOpPatcher;
 }(NodePatcher);
 
+/* parseMutlilineString takes a raw string as input and returns
+ * an array of 'line' objects representing each line of the string.
+ * These can then be used to patch a string ensuring the output
+ * is identical to coffee script.
+ */
+function parseMultilineString(string, offsetStart, quoteLen) {
+  var output = [];
+  var offset = offsetStart + quoteLen;
+  string = string.slice(quoteLen, string.length - quoteLen);
+
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = string.split('\n')[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var line = _step.value;
+
+      var textStartOffset = getTextStartOffset(line);
+      var textEndOffset = getTextEndOffset(line);
+      var _empty = textStartOffset === null && textEndOffset === null;
+
+      output.push({
+        content: line,
+        length: line.length,
+        indent: textStartOffset,
+        start: offset,
+        end: offset + line.length + 1,
+        textStart: textStartOffset === null ? null : offset + textStartOffset,
+        textEnd: textEndOffset === null ? null : offset + textEndOffset,
+        prev: null,
+        next: null,
+        empty: _empty,
+        first: false,
+        last: false
+      });
+      offset = offset + line.length + '\n'.length;
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  for (var i = 0; i < output.length - 1; i++) {
+    if (i > 0) {
+      output[i].prev = output[i - 1];
+    }
+    if (i < output.length - 1) {
+      output[i].next = output[i + 1];
+    }
+  }
+
+  output[0].first = true;
+  output[output.length - 1].last = true;
+  output[output.length - 1].end = output[output.length - 1].end - '\n'.length;
+  return output;
+}
+
+/* return the offset within the string of the
+ * first non white space character, returns
+ * null if the string is 0 length or if the line
+ * is all white space.
+ */
+function getTextStartOffset(line) {
+  for (var i = 0; i < line.length; i++) {
+    if (line[i] !== ' ') {
+      return i;
+    }
+  }
+  return null;
+}
+
+/* return the offset within the string of the last
+ * non white space character, returns null if the
+ * string is 0 length or if the line is all white
+ * space.
+ */
+function getTextEndOffset(line) {
+  for (var i = line.length - 1; i >= 0; i--) {
+    if (line[i] !== ' ') {
+      return i;
+    }
+  }
+  return null;
+}
+
+var StringPatcher = function (_PassthroughPatcher) {
+  inherits(StringPatcher, _PassthroughPatcher);
+
+  function StringPatcher() {
+    classCallCheck(this, StringPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(StringPatcher).apply(this, arguments));
+  }
+
+  createClass(StringPatcher, [{
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      if (this.node.raw.indexOf('\n') >= 0) {
+        patchMultilineString(this, this.node.raw, this.contentStart);
+      }
+    }
+  }, {
+    key: 'patch',
+    value: function patch() {
+      var _this2 = this;
+
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      get(Object.getPrototypeOf(StringPatcher.prototype), 'patch', this).call(this, options);
+      // This is copied from NodePatcher.js, we need functionality from
+      // both PassthroughPatcher and NodePatcher for this patcher to work.
+      this.withPrettyErrors(function () {
+        if (_this2.forcedToPatchAsExpression()) {
+          _this2.patchAsForcedExpression(options);
+        } else if (_this2.willPatchAsExpression()) {
+          _this2.patchAsExpression(options);
+        } else {
+          _this2.patchAsStatement(options);
+        }
+      });
+    }
+  }]);
+  return StringPatcher;
+}(PassthroughPatcher);
+
+function patchMultilineString(patcher, characters, start) {
+  var lines = parseMultilineString(characters, start, 1);
+
+  lines.forEach(function (line) {
+    if (line.first) {
+      if (!line.empty && !line.next.empty) {
+        patcher.overwrite(line.textEnd + 1, line.end, ' ');
+      } else if (!line.empty && line.next.empty) {
+        patcher.remove(line.textEnd + 1, line.end);
+      } else if (line.empty) {
+        patcher.remove(line.start, line.end);
+      }
+    } else if (line.last) {
+      if (line.textStart !== null && line.textStart !== line.start) {
+        patcher.remove(line.start, line.textStart);
+      } else if (line.textStart === null && line.textEnd === null && line.length !== 0) {
+        patcher.remove(line.start - 1, line.end);
+      }
+    } else {
+      if (!line.empty && !line.next.empty) {
+        patcher.overwrite(line.textEnd + 1, line.end, ' ');
+        patcher.remove(line.start, line.textStart);
+      } else if (!line.empty && line.next.empty) {
+        patcher.remove(line.textEnd + 1, line.end);
+        patcher.remove(line.start, line.textStart);
+      } else if (line.empty && line.next.empty) {
+        patcher.remove(line.start, line.end);
+      } else if (line.empty && !line.next.empty) {
+        if (line.prev.empty) {
+          patcher.remove(line.start, line.end);
+        } else {
+          patcher.overwrite(line.start, line.end, ' ');
+        }
+      }
+    }
+  });
+}
+
 var SuperPatcher = function (_NodePatcher) {
   inherits(SuperPatcher, _NodePatcher);
 
@@ -8341,6 +8514,7 @@ var MainStage = function (_TransformCoffeeScrip) {
           return IdentifierPatcher;
 
         case 'String':
+          return StringPatcher;
         case 'Int':
         case 'Float':
         case 'Null':
@@ -8977,7 +9151,7 @@ var FunctionPatcher$1 = function (_NodePatcher) {
       } else if (assignments.length) {
         // as the body if there is no body
         // Add a return statement for non-constructor methods without body to avoid bad implicit return
-        if (this.node.parentNode.type != 'Constructor') {
+        if (this.node.parentNode.type !== 'Constructor') {
           assignments.push('return');
         }
         var _indent = this.getIndent(1);
