@@ -149,7 +149,16 @@
   function REPL () {
     this.storage = new StorageService();
     var state = this.storage.get('replState') || {};
-    _.assign(state, UriUtils.parseQuery());
+    var parsedQuery = UriUtils.parseQuery()
+    if(parsedQuery && parsedQuery.code || state.code) {
+      _.assign(state, UriUtils.parseQuery());
+    } else {
+      var demoCode = $(".decaffeinate-repl-demo-code").text();
+      _.assign(state, {
+        "evaluate": true,
+        "code": demoCode
+      });
+    }
 
     this.options = _.assign(new Options(), state);
 

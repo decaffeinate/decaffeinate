@@ -2364,3 +2364,5 @@ h1:target::before, .h1:target::before, h2:target::before, .h2:target::before, h3
 .decaffeinate-repl-errors { left: 0; border-right: 1px solid #e2e2e2; }
 
 .decaffeinate-repl-console { right: 0; }
+
+.decaffeinate-repl-demo-code { display:none; }
