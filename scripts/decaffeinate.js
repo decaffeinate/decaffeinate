@@ -6191,6 +6191,9 @@ var ReturnPatcher = function (_NodePatcher) {
     key: 'initialize',
     value: function initialize() {
       this.setExplicitlyReturns();
+      if (this.expression !== null) {
+        this.expression.setRequiresExpression();
+      }
     }
 
     /**
