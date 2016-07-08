@@ -7,10 +7,11 @@
     "decaffeinate": "./bin/decaffeinate"
   },
   "scripts": {
+    "flow": "flow check",
     "lint": "eslint src test",
     "pretest": "npm run build",
     "test": "mocha",
-    "prebuild": "rm -rf dist && mkdir -p dist && npm run lint",
+    "prebuild": "rm -rf dist && mkdir -p dist && npm run flow && npm run lint",
     "build": "rollup -c",
     "prepublish": "npm run build",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
