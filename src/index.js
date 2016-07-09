@@ -57,6 +57,9 @@ function runStage(stage: Stage, content: string, filename: string): { code: stri
   } catch (err) {
     if (err instanceof SyntaxError) {
       let { pos } = err;
+      if (pos === content.length) {
+        pos--;
+      }
       throw new PatchError(
         `${stage.name} failed to parse: ${err.message}`,
         content,
