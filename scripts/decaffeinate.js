@@ -17,6 +17,7 @@ var LinesAndColumns = _interopDefault(require('lines-and-columns'));
 var repeat = _interopDefault(require('repeating'));
 var detectIndent = _interopDefault(require('detect-indent'));
 var coffeeLex = require('coffee-lex');
+var util = require('util');
 var decaffeinateParser = require('decaffeinate-parser');
 var fs = require('fs');
 
@@ -37,7 +38,7 @@ function logger(name) {
 }
 
 function isLoggingEnabled(name) {
-  return process.env['DEBUG:' + name] || process.env['DEBUG:*'];
+  return !!process.env['DEBUG:' + name] || !!process.env['DEBUG:*'];
 }
 
 var classCallCheck = function (instance, Constructor) {
@@ -349,6 +350,10 @@ var PatchError = function (_Error) {
       var startLoc = lineMap.locationForIndex(start);
       var endLoc = lineMap.locationForIndex(end);
 
+      if (!startLoc || !endLoc) {
+        throw new Error('unable to find locations for range: [' + start + ', ' + end + ')');
+      }
+
       var displayStartLine = Math.max(0, startLoc.line - 2);
       var displayEndLine = endLoc.line + 2;
 
@@ -357,12 +362,11 @@ var PatchError = function (_Error) {
       for (var line = displayStartLine; line <= displayEndLine; line++) {
         var startOfLine = lineMap.indexForLocation({ line: line, column: 0 });
         var endOfLine = lineMap.indexForLocation({ line: line + 1, column: 0 });
+        if (startOfLine === null) {
+          break;
+        }
         if (endOfLine === null) {
-          if (startOfLine === null) {
-            break;
-          } else {
-            endOfLine = source.length;
-          }
+          endOfLine = source.length;
         }
         var lineSource = trimRight(source.slice(startOfLine, endOfLine));
         if (startLoc.line !== endLoc.line) {
@@ -392,12 +396,9 @@ function trimRight(string) {
 
 var DEFAULT_INDENT = '  ';
 
-/**
- * @param {string} source
- * @returns {string}
- */
 function determineIndent(source) {
   var indent = detectIndent(source);
+  console.log(indent.typ);
   if (indent.type === 'space' && indent.amount % 2 === 1) {
     return DEFAULT_INDENT;
   }
@@ -406,10 +407,6 @@ function determineIndent(source) {
 
 /**
  * Gets the indent string for the line containing offset.
- *
- * @param {string} source
- * @param {number} offset
- * @returns {string}
  */
 function getIndent(source, offset) {
   var startOfLine = getStartOfLine(source, offset);
@@ -435,10 +432,6 @@ function getIndent(source, offset) {
 
 /**
  * Finds the start of the line for the character at offset.
- *
- * @param {string} source
- * @param {number} offset
- * @returns {number}
  */
 function getStartOfLine(source, offset) {
   var lfIndex = source.lastIndexOf('\n', offset - 1);
@@ -458,11 +451,6 @@ function getStartOfLine(source, offset) {
 
 /**
  * Adjust an indent in source at a specific offset by an amount.
- *
- * @param {string} source
- * @param {number} offset
- * @param {number} adjustment
- * @returns {string}
  */
 function adjustIndent(source, offset, adjustment) {
   var currentIndent = getIndent(source, offset);
@@ -481,10 +469,6 @@ function adjustIndent(source, offset, adjustment) {
 
 /**
  * Determines whether a node represents a function, i.e. `->` or `=>`.
- *
- * @param {Object} node
- * @param {boolean=} allowBound
- * @returns {boolean}
  */
 function isFunction(node) {
   var allowBound = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
@@ -2270,9 +2254,6 @@ var ManuallyBoundFunctionPatcher = function (_FunctionPatcher) {
 /**
  * Traverses an AST node, calling a callback for each node in the hierarchy in
  * source order.
- *
- * @param {Object} node
- * @param {function(Object, function(Object), boolean): ?boolean} callback
  */
 function traverse(node, callback) {
   var descended = false;
@@ -2396,10 +2377,6 @@ var ORDER = {
   YieldFrom: ['expression']
 };
 
-/**
- * @param {Object} node
- * @returns {string[]}
- */
 function childPropertyNames(node) {
   var names = ORDER[node.type];
 
@@ -4862,11 +4839,6 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
 
 /**
  * Inserts string escape characters before certain characters to be escaped.
- *
- * @param {MagicString} patcher
- * @param {string[]|function(string): boolean} characters
- * @param {number} start
- * @param {number} end
  */
 function escape(patcher, characters, start, end) {
   var source = patcher.original;
@@ -4884,10 +4856,6 @@ function escape(patcher, characters, start, end) {
 
 /**
  * Escape characters to be within a template string, i.e. ` and $ before {.
- *
- * @param {MagicString} patcher
- * @param {number} start
- * @param {number} end
  */
 function escapeTemplateStringContents(patcher, start, end) {
   escape(patcher, function (chr, i, source) {
@@ -6971,22 +6939,12 @@ var SwitchPatcher = function (_NodePatcher) {
 
 /**
  * Determines whether the given node spans multiple lines.
- *
- * @param {string} source
- * @param {Object} node
- * @returns {boolean}
  */
 function isMultiline(source, node) {
   var newlineIndex = source.indexOf('\n', node.range[0]);
   return newlineIndex >= 0 && newlineIndex < node.range[1];
 }
 
-/**
- * @param {string} source
- * @param {number=} start
- * @param {number=} end
- * @returns {{leadingMargin: number, trailingMargin: number, ranges: Array<Array<number>>}}
- */
 function getIndentInfo(source) {
   var start = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
   var end = arguments.length <= 2 || arguments[2] === undefined ? source.length : arguments[2];
@@ -7030,10 +6988,6 @@ function getIndentInfo(source) {
   };
 }
 
-/**
- * @param {Array<Array<number>>} ranges
- * @returns {number}
- */
 function sharedIndentSize(ranges) {
   var size = null;
 
@@ -7053,10 +7007,6 @@ function sharedIndentSize(ranges) {
 
 var TRIPLE_QUOTE_LENGTH = 3;
 
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
 function replaceTripleQuotes(node, patcher) {
   var _node$range = slicedToArray(node.range, 2);
 
@@ -7219,28 +7169,24 @@ var ThrowPatcher = function (_NodePatcher) {
   return ThrowPatcher;
 }(NodePatcher);
 
-var find = Array.prototype.find ? function (array, iterator) {
-  var context = arguments.length <= 2 || arguments[2] === undefined ? undefined : arguments[2];
+function nativeFind(array, iterator, context) {
   return array.find(iterator, context);
-} : function (array, iterator) {
-  var context = arguments.length <= 2 || arguments[2] === undefined ? undefined : arguments[2];
+}
 
-  for (var i = 0; i < array.length; i++) {
-    var element = array[i];
-    if (iterator.call(context, element, i, array)) {
-      return element;
+function find(array, iterator, context) {
+  for (var _i = 0; _i < array.length; _i++) {
+    var _element = array[_i];
+    if (iterator.call(context, _element, _i, array)) {
+      return _element;
     }
   }
   return undefined;
-};
+}
+
+var find$1 = Array.prototype.find ? nativeFind : find;
 
 /**
  * Maps a list to another list by combining lists.
- *
- * @param {Array<T>} list
- * @param {function(T): Array<U>} map
- * @returns {Array<U>}
- * @template {T, U}
  */
 function flatMap(list, map) {
   return list.reduce(function (memo, item) {
@@ -7257,9 +7203,6 @@ function flatMap(list, map) {
  *   Given `[a, b]`, returns [`a`, `b`].
  *   Given `{a, b: c}`, returns [`a`, `c`].
  *   Given `[a, {b, c: d}]`, returns [`a`, `b`, `d`].
- *
- * @param {Object} node
- * @returns {Object[]}
  */
 function leftHandIdentifiers(node) {
   if (node.type === 'Identifier') {
@@ -7277,13 +7220,11 @@ function leftHandIdentifiers(node) {
 
 /**
  * Represents a CoffeeScript scope and its bindings.
- *
- * @param {?Scope} parent
- * @constructor
  */
 
 var Scope = function () {
-  function Scope(parent) {
+  function Scope() {
+    var parent = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
     classCallCheck(this, Scope);
 
     this.parent = parent;
@@ -7300,11 +7241,6 @@ var Scope = function () {
     value: function hasBinding(name) {
       return this.getBinding(name) !== null;
     }
-
-    /**
-     * @returns {string[]}
-     */
-
   }, {
     key: 'getOwnNames',
     value: function getOwnNames() {
@@ -7314,24 +7250,12 @@ var Scope = function () {
         return _this.unkey(key);
       });
     }
-
-    /**
-     * @param {string} name
-     * @param {Object} node
-     */
-
   }, {
     key: 'declares',
     value: function declares(name, node) {
       var key = this.key(name);
       this.bindings[key] = node;
     }
-
-    /**
-     * @param {string} name
-     * @param {Object} node
-     */
-
   }, {
     key: 'assigns',
     value: function assigns(name, node) {
@@ -7340,13 +7264,6 @@ var Scope = function () {
         this.declares(name, node);
       }
     }
-
-    /**
-     * @param {Object} node
-     * @param {string|Array<string>=} name
-     * @returns {string}
-     */
-
   }, {
     key: 'claimFreeBinding',
     value: function claimFreeBinding(node) {
@@ -7358,7 +7275,7 @@ var Scope = function () {
         name = 'ref';
       }
       var names = Array.isArray(name) ? name : [name];
-      var binding = find(names, function (name) {
+      var binding = find$1(names, function (name) {
         return !_this2.getBinding(name);
       });
 
@@ -7367,7 +7284,7 @@ var Scope = function () {
           var counter = 0;
           while (!binding) {
             counter += 1;
-            binding = find(names, function (name) {
+            binding = find$1(names, function (name) {
               return !_this2.getBinding('' + name + counter);
             });
           }
@@ -7380,8 +7297,6 @@ var Scope = function () {
     }
 
     /**
-     * @param {string} name
-     * @returns {string}
      * @private
      */
 
@@ -7392,8 +7307,6 @@ var Scope = function () {
     }
 
     /**
-     * @param {string} key
-     * @returns {string}
      * @private
      */
 
@@ -7405,8 +7318,6 @@ var Scope = function () {
 
     /**
      * Handles declarations or assigns for any bindings for a given node.
-     *
-     * @param {Object} node
      */
 
   }, {
@@ -7441,25 +7352,15 @@ var Scope = function () {
           break;
       }
     }
-
-    /**
-     * @returns {string}
-     */
-
   }, {
     key: 'toString',
     value: function toString() {
       var parts = this.getOwnNames();
       if (this.parent) {
-        parts.push('parent = ' + this.parent);
+        parts.push('parent = ' + this.parent.toString());
       }
       return this.constructor.name + ' {' + (parts.length > 0 ? ' ' + parts.join(', ') + ' ' : '') + '}';
     }
-
-    /**
-     * @returns {string}
-     */
-
   }, {
     key: 'inspect',
     value: function inspect() {
@@ -9308,7 +9209,9 @@ function runWithPaths(paths) {
 /**
  * Run decaffeinate reading from input and writing to corresponding output.
  */
-function runWithStream(name, input, output, callback) {
+function runWithStream(name, input, output) {
+  var callback = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+
   var error = null;
   var data = '';
 
@@ -9330,14 +9233,16 @@ function runWithStream(name, input, output, callback) {
         throw err;
       }
     }
-    var _converted = converted;
-    var code = _converted.code;
+    if (converted) {
+      var _converted = converted;
+      var code = _converted.code;
 
-    output.end(code, function () {
-      if (callback) {
-        callback(error);
-      }
-    });
+      output.end(code, function () {
+        if (callback) {
+          callback(error);
+        }
+      });
+    }
   });
 
   output.on('error', function (err) {
@@ -9423,9 +9328,8 @@ exports.PatchError = PatchError;
 exports.convert = convert$1;
 exports.run = run;
 
-
 }).call(this,require('_process'))
-},{"_process":821,"add-variable-declarations":2,"ast-processor-babylon-config":352,"automatic-semicolon-insertion":702,"babylon":703,"coffee-lex":826,"decaffeinate-parser":827,"detect-indent":837,"esnext":838,"fs":814,"lines-and-columns":1485,"magic-string":1486,"path":820,"repeating":1488}],2:[function(require,module,exports){
+},{"_process":821,"add-variable-declarations":2,"ast-processor-babylon-config":352,"automatic-semicolon-insertion":702,"babylon":703,"coffee-lex":826,"decaffeinate-parser":827,"detect-indent":837,"esnext":838,"fs":814,"lines-and-columns":1485,"magic-string":1486,"path":820,"repeating":1488,"util":823}],2:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('magic-string'), require('babel-traverse'), require('babylon')) :
   typeof define === 'function' && define.amd ? define(['magic-string', 'babel-traverse', 'babylon'], factory) :
@@ -40995,20 +40899,20 @@ module.exports = function(arr, obj){
       if (char === ' ' || char === '\t') {
         // Just part of the margin.
       } else if (char === '\n') {
-          // End of the margin.
-          return i + '\n'.length;
-        } else if (char === '\r') {
-          if (source.charAt(i + '\r'.length) === '\n') {
-            // Ends with \r\n.
-            return i + '\r\n'.length;
-          } else {
-            // Only ends with \r.
-            return i + '\r'.length;
-          }
+        // End of the margin.
+        return i + '\n'.length;
+      } else if (char === '\r') {
+        if (source.charAt(i + '\r'.length) === '\n') {
+          // Ends with \r\n.
+          return i + '\r\n'.length;
         } else {
-          // Non-space before a newline, so there is no margin.
-          return marginStart;
+          // Only ends with \r.
+          return i + '\r'.length;
         }
+      } else {
+        // Non-space before a newline, so there is no margin.
+        return marginStart;
+      }
     }
 
     throw new Error('unexpected EOF while looking for end of margin at offset ' + marginStart);
@@ -41021,20 +40925,20 @@ module.exports = function(arr, obj){
       if (char === ' ' || char === '\t') {
         // Just part of the margin.
       } else if (char === '\n') {
-          if (source.charAt(i - '\n'.length) === '\r') {
-            // Starts with \r\n.
-            return i - '\r'.length;
-          } else {
-            // Only ends with \n.
-            return i;
-          }
-        } else if (char === '\r') {
-          // Start of the margin.
-          return i;
+        if (source.charAt(i - '\n'.length) === '\r') {
+          // Starts with \r\n.
+          return i - '\r'.length;
         } else {
-          // Non-space before the ending, so there is no margin.
-          return marginEnd;
+          // Only ends with \n.
+          return i;
         }
+      } else if (char === '\r') {
+        // Start of the margin.
+        return i;
+      } else {
+        // Non-space before the ending, so there is no margin.
+        return marginEnd;
+      }
     }
 
     throw new Error('unexpected SOF while looking for stat of margin at offset ' + marginEnd);
@@ -41655,11 +41559,11 @@ module.exports = function(arr, obj){
           case INTERPOLATION_END:
             var _interpolationStack$p = interpolationStack.pop();
 
-            var type = _interpolationStack$p.type;
-            var braces = _interpolationStack$p.braces;
+            var _type = _interpolationStack$p.type;
+            var _braces = _interpolationStack$p.braces;
 
-            setType(type);
-            braceStack = braces;
+            setType(_type);
+            braceStack = _braces;
             break;
 
           case HEREGEXP:
