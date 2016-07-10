@@ -27,4 +27,32 @@ describe('return', () => {
       () => true ? null : undefined;
     `)
   );
+
+  it('preserves comments when removing trailing empty returns', () =>
+    check(`
+      ->
+        a  # b
+        return
+    `, `
+      (function() {
+        a;  // b
+      });
+    `)
+  );
+
+  it('correctly removes trailing empty returns on the same line as another statement', () =>
+    check(`
+      -> a; return
+    `, `
+      (function() { a; });
+    `)
+  );
+
+  it('correctly removes trailing empty returns as the only function statement', () =>
+    check(`
+      -> return
+    `, `
+      (function() {  });
+    `)
+  );
 });

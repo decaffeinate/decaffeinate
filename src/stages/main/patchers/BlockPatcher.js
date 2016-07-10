@@ -37,14 +37,22 @@ export default class BlockPatcher extends NodePatcher {
     this.statements.forEach(
       (statement, i, statements) => {
         if (i === statements.length - 1 && this.parent instanceof FunctionPatcher) {
-          let previousStatement = statements[i - 1];
           if (statement instanceof ReturnPatcher && !statement.expression) {
+            let removeStart;
+            if (statements.length > 1) {
+              let startOfLineIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
+                token => token.type === NEWLINE || token.type === SEMICOLON,
+                statement.outerStartTokenIndex
+              );
+              removeStart = this.sourceTokenAtIndex(startOfLineIndex).start;
+            } else {
+              removeStart = statement.outerStart;
+            }
             this.remove(
-              previousStatement ?
-                previousStatement.outerEnd :
-                statement.outerStart,
+              removeStart,
               statement.outerEnd
             );
+            return;
           }
         }
         if (statement.isSurroundedByParentheses()) {
