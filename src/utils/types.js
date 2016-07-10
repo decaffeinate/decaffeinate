@@ -1,14 +1,13 @@
+/* @flow */
+
+import type { Node, SourceToken } from '../patchers/types.js';
 import { COMMENT, HERECOMMENT, NEWLINE } from 'coffee-lex';
-import type { SourceToken } from '../patchers/types.js';
+import { inspect } from 'util';
 
 /**
  * Determines whether the node is a boolean, optionally with the given value.
- *
- * @param {Object} node
- * @param {boolean|string=} value
- * @returns {boolean}
  */
-export function isBool(node, value=undefined) {
+export function isBool(node: Node, value?: ?(boolean | string)=undefined): boolean {
   if (node.type !== 'Bool') {
     return false;
   }
@@ -24,24 +23,21 @@ export function isBool(node, value=undefined) {
       return node.raw === value;
 
     default:
-      throw new Error(`Invalid boolean test value: ${value}. Expected a boolean or string.`);
+      throw new Error(`Invalid boolean test value: ${inspect(value)}. Expected a boolean or string.`);
   }
 }
 
 /**
  * Determines whether a node is a member access operation.
  */
-export function isMemberAccessOp(node) {
+export function isMemberAccessOp(node: Node): boolean {
   return isStaticMemberAccessOp(node) || isDynamicMemberAccessOp(node);
 }
 
 /**
  * Determines whether a node is a static member access, e.g. `a.b`.
- *
- * @param {Object} node
- * @returns {boolean}
  */
-export function isStaticMemberAccessOp(node) {
+export function isStaticMemberAccessOp(node: Node): boolean {
   switch (node.type) {
     case 'MemberAccessOp':
     case 'ProtoMemberAccessOp':
@@ -56,11 +52,8 @@ export function isStaticMemberAccessOp(node) {
 
 /**
  * Determines whether a node is a dynamic member access, e.g. `a[b]`.
- *
- * @param {Object} node
- * @returns {boolean}
  */
-export function isDynamicMemberAccessOp(node) {
+export function isDynamicMemberAccessOp(node: Node): boolean {
   switch (node.type) {
     case 'DynamicMemberAccessOp':
     case 'DynamicProtoMemberAccessOp':
@@ -75,12 +68,8 @@ export function isDynamicMemberAccessOp(node) {
 
 /**
  * Determines whether a node represents a function, i.e. `->` or `=>`.
- *
- * @param {Object} node
- * @param {boolean=} allowBound
- * @returns {boolean}
  */
-export function isFunction(node, allowBound=true) {
+export function isFunction(node: Node, allowBound: boolean=true): boolean {
   return node.type === 'Function' || node.type === 'GeneratorFunction' || (allowBound && node.type === 'BoundFunction');
 }
 
@@ -93,12 +82,8 @@ export function isFunction(node, allowBound=true) {
  *
  *   ->
  *     2   # the block containing `2` as a statement is the function body
- *
- * @param node
- * @param {boolean=} allowBound
- * @returns {boolean}
  */
-export function isFunctionBody(node, allowBound=true) {
+export function isFunctionBody(node: Node, allowBound: boolean=true): boolean {
   let { parentNode } = node;
 
   if (!parentNode) {
@@ -110,41 +95,29 @@ export function isFunctionBody(node, allowBound=true) {
 
 /**
  * Determines whether the node is a conditional (i.e. `if` or `unless`).
- *
- * @param {Object} node
- * @returns {boolean}
  */
-export function isConditional(node) {
+export function isConditional(node: Node): boolean {
   return node.type === 'Conditional';
 }
 
 /**
  * Determines whether a node represents a `for` loop.
- *
- * @param {Object} node
- * @returns {boolean}
  */
-export function isForLoop(node) {
+export function isForLoop(node: Node): boolean {
   return node.type === 'ForIn' || node.type === 'ForOf';
 }
 
 /**
  * Determines whether a node represents a `while` loop.
- *
- * @param {Object} node
- * @returns {boolean}
  */
-export function isWhile(node) {
+export function isWhile(node: Node): boolean {
   return node.type === 'While';
 }
 
 /**
  * Determines whether a node is the true-part or false-part of a conditional.
- *
- * @param {Object} node
- * @returns {boolean}
  */
-export function isConsequentOrAlternate(node) {
+export function isConsequentOrAlternate(node: Node): boolean {
   let { parentNode } = node;
   return parentNode && parentNode.type === 'Conditional' && (
     parentNode.consequent === node ||
@@ -152,11 +125,7 @@ export function isConsequentOrAlternate(node) {
   );
 }
 
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-export function isBinaryOperator(node) {
+export function isBinaryOperator(node: Node): boolean {
   switch (node.type) {
     case 'BitAndOp':
     case 'BitOrOp':
@@ -189,11 +158,7 @@ export function isBinaryOperator(node) {
   }
 }
 
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-export function isCall(node) {
+export function isCall(node: Node): boolean {
   switch (node && node.type) {
     case 'FunctionApplication':
     case 'NewOp':
@@ -204,11 +169,7 @@ export function isCall(node) {
   }
 }
 
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-export function isCallArgument(node) {
+export function isCallArgument(node: Node): boolean {
   if (node && isCall(node.parentNode)) {
     return node.parentNode.arguments.indexOf(node) >= 0;
   } else {
@@ -216,19 +177,11 @@ export function isCallArgument(node) {
   }
 }
 
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-export function isShorthandThisObjectMember(node) {
+export function isShorthandThisObjectMember(node: Node): boolean {
   return node.type === 'ObjectInitialiserMember' && /^@\w+$/.test(node.raw);
 }
 
-/**
- * @param {Object} node
- * @returns {boolean}
- */
-export function isStaticMethod(node) {
+export function isStaticMethod(node: Node): boolean {
   if (node.type !== 'AssignOp') {
     return false;
   }

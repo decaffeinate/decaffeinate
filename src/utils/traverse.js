@@ -1,11 +1,12 @@
+/* @flow */
+
+import type { Node } from '../patchers/types.js';
+
 /**
  * Traverses an AST node, calling a callback for each node in the hierarchy in
  * source order.
- *
- * @param {Object} node
- * @param {function(Object, function(Object), boolean): ?boolean} callback
  */
-export default function traverse(node, callback) {
+export default function traverse(node: Node, callback: (node: Node, descend: (node: Node) => void, hasChildren: boolean) => ?boolean) {
   let descended = false;
 
   function descend(parent) {
@@ -131,11 +132,7 @@ const ORDER = {
   YieldFrom: ['expression']
 };
 
-/**
- * @param {Object} node
- * @returns {string[]}
- */
-export function childPropertyNames(node) {
+export function childPropertyNames(node: Node): Array<string> {
   let names = ORDER[node.type];
 
   if (!names) {

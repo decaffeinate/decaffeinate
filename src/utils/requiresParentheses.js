@@ -1,11 +1,12 @@
+/* @flow */
+
+import type { Node } from '../patchers/types.js';
+
 /**
  * Determines whether the given node, when used as part of a larger expression
  * node, would require parentheses around it.
- *
- * @param {Object} node
- * @returns {boolean}
  */
-export default function requiresParentheses(node) {
+export default function requiresParentheses(node: Node): boolean {
   switch (node.type) {
     case 'AssignOp':
     case 'BitAndOp':

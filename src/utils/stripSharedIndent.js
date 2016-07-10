@@ -1,23 +1,16 @@
+/* @flow */
+
 /**
  * Removes indentation shared by all lines.
- *
- * @param {string} source
- * @returns {string}
  */
-export default function stripSharedIndent(source) {
+export default function stripSharedIndent(source: string): string {
   let indents = getIndentInfo(source);
   let minimumIndent = sharedIndentSize(indents.ranges);
   let lines = source.slice(indents.leadingMargin, source.length - indents.trailingMargin).split('\n');
   return lines.map(line => line.slice(minimumIndent)).join('\n');
 }
 
-/**
- * @param {string} source
- * @param {number=} start
- * @param {number=} end
- * @returns {{leadingMargin: number, trailingMargin: number, ranges: Array<Array<number>>}}
- */
-export function getIndentInfo(source, start=0, end=source.length) {
+export function getIndentInfo(source: string, start: number=0, end: number=source.length): { leadingMargin: number, trailingMargin: number, ranges: Array<[number, number]> } {
   let ranges = [];
 
   let leadingMargin = 0;
@@ -57,11 +50,7 @@ export function getIndentInfo(source, start=0, end=source.length) {
   };
 }
 
-/**
- * @param {Array<Array<number>>} ranges
- * @returns {number}
- */
-export function sharedIndentSize(ranges) {
+export function sharedIndentSize(ranges: Array<[number, number]>): number {
   let size = null;
 
   ranges.forEach(([start, end]) => {

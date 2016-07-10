@@ -1,6 +1,9 @@
+/* @flow */
 /* eslint-disable no-process-exit */
 
 import PatchError from './utils/PatchError.js';
+import type { Readable, Writable } from 'stream';
+import type { WriteStream } from 'tty';
 import { convert } from './index.js';
 import { join, dirname, basename, extname } from 'path';
 import { stat, readdir, createReadStream, createWriteStream } from 'fs';
@@ -33,7 +36,7 @@ function parseArguments(args: Array<string>): Options {
         usage();
         process.exit(0);
         break;
-      
+
       default:
         paths.push(arg);
         break;
@@ -100,21 +103,10 @@ function runWithPaths(paths: Array<string>, callback: ?((errors: Array<Error>) =
   processNext();
 }
 
-type ReadableStream = {
-  setEncoding: (encoding: string) => void,
-  on: (event: string, callback: Function) => void
-};
-
-type WritableStream = {
-  write: (data: string) => void,
-  end: (data?: string, callback?: Function) => void,
-  on: (event: string, callback: Function) => void
-};
-
 /**
  * Run decaffeinate reading from input and writing to corresponding output.
  */
-function runWithStream(name: string, input: ReadableStream, output: WritableStream, callback: (error?: ?Error) => void) {
+function runWithStream(name: string, input: Readable, output: Writable | WriteStream, callback: ?((error?: ?Error) => void) = null) {
   let error = null;
   let data = '';
 
@@ -134,12 +126,14 @@ function runWithStream(name: string, input: ReadableStream, output: WritableStre
         throw err;
       }
     }
-    let { code } = converted;
-    output.end(code, () => {
-      if (callback) {
-        callback(error);
-      }
-    });
+    if (converted) {
+      let { code } = converted;
+      output.end(code, () => {
+        if (callback) {
+          callback(error);
+        }
+      });
+    }
   });
 
   output.on('error', err => error = err);

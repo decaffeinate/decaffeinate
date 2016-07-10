@@ -1,3 +1,5 @@
+/* @flow */
+
 export function logger(name: string): (...args: Array<any>) => void {
   if (isLoggingEnabled(name)) {
     return (...args) => console.log(name, ...args);
@@ -7,5 +9,5 @@ export function logger(name: string): (...args: Array<any>) => void {
 }
 
 function isLoggingEnabled(name: string): boolean {
-  return process.env[`DEBUG:${name}`] || process.env['DEBUG:*'];
+  return !!process.env[`DEBUG:${name}`] || !!process.env['DEBUG:*'];
 }

@@ -1,14 +1,14 @@
+/* @flow */
+
 import escape, { escapeTemplateStringContents } from '../utils/escape.js';
 import isMultiline from '../utils/isMultiline.js';
+import type MagicString from 'magic-string';
+import type { Node } from '../patchers/types.js';
 import { getIndentInfo, sharedIndentSize } from '../utils/stripSharedIndent.js';
 
 const TRIPLE_QUOTE_LENGTH = 3;
 
-/**
- * @param {Object} node
- * @param {MagicString} patcher
- */
-export default function replaceTripleQuotes(node, patcher) {
+export default function replaceTripleQuotes(node: Node, patcher: MagicString) {
   let [start, end] = node.range;
   let contentStart = start + TRIPLE_QUOTE_LENGTH;
   let contentEnd = end - TRIPLE_QUOTE_LENGTH;

@@ -1,11 +1,9 @@
+/* @flow */
+
 /**
  * Gets the indent string for the line containing offset.
- *
- * @param {string} source
- * @param {number} offset
- * @returns {string}
  */
-export default function getIndent(source, offset) {
+export default function getIndent(source: string, offset: number): string {
   let startOfLine = getStartOfLine(source, offset);
   let indentOffset = startOfLine;
   let indentCharacter;
@@ -29,12 +27,8 @@ export default function getIndent(source, offset) {
 
 /**
  * Finds the start of the line for the character at offset.
- *
- * @param {string} source
- * @param {number} offset
- * @returns {number}
  */
-function getStartOfLine(source, offset) {
+function getStartOfLine(source: string, offset: number): number {
   let lfIndex = source.lastIndexOf('\n', offset - 1);
 
   if (lfIndex < 0) {

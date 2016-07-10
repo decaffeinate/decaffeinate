@@ -1,3 +1,5 @@
+/* @flow */
+
 import LinesAndColumns from 'lines-and-columns';
 import printTable from './printTable.js';
 import repeat from 'repeating';
@@ -38,11 +40,15 @@ export default class PatchError extends Error {
     );
   }
 
-  static prettyPrint(error: PatchError) {
+  static prettyPrint(error: PatchError): string {
     let { source, start, end, message } = error;
     let lineMap = new LinesAndColumns(source);
     let startLoc = lineMap.locationForIndex(start);
     let endLoc = lineMap.locationForIndex(end);
+
+    if (!startLoc || !endLoc) {
+      throw new Error(`unable to find locations for range: [${start}, ${end})`);
+    }
 
     let displayStartLine = Math.max(0, startLoc.line - 2);
     let displayEndLine = endLoc.line + 2;
@@ -52,12 +58,11 @@ export default class PatchError extends Error {
     for (let line = displayStartLine; line <= displayEndLine; line++) {
       let startOfLine = lineMap.indexForLocation({ line, column: 0 });
       let endOfLine = lineMap.indexForLocation({ line: line + 1, column: 0 });
+      if (startOfLine === null) {
+        break;
+      }
       if (endOfLine === null) {
-        if (startOfLine === null) {
-          break;
-        } else {
-          endOfLine = source.length;
-        }
+        endOfLine = source.length;
       }
       let lineSource = trimRight(source.slice(startOfLine, endOfLine));
       if (startLoc.line !== endLoc.line) {
