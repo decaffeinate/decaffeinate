@@ -1,12 +1,11 @@
+/* @flow */
+
+import type MagicString from 'magic-string';
+
 /**
  * Inserts string escape characters before certain characters to be escaped.
- *
- * @param {MagicString} patcher
- * @param {string[]|function(string): boolean} characters
- * @param {number} start
- * @param {number} end
  */
-export default function escape(patcher, characters, start, end) {
+export default function escape(patcher: MagicString, characters: Array<string>|(char: string, index: number, source: string) => boolean, start: number, end: number) {
   let source = patcher.original;
   let predicate = typeof characters !== 'function' ?
     (chr => characters.indexOf(chr) >= 0) :
@@ -22,12 +21,8 @@ export default function escape(patcher, characters, start, end) {
 
 /**
  * Escape characters to be within a template string, i.e. ` and $ before {.
- *
- * @param {MagicString} patcher
- * @param {number} start
- * @param {number} end
  */
-export function escapeTemplateStringContents(patcher, start, end) {
+export function escapeTemplateStringContents(patcher: MagicString, start: number, end: number) {
   escape(
     patcher,
     (chr, i, source) => chr === '`' || (chr === '$' && source[i + 1] === '{'),

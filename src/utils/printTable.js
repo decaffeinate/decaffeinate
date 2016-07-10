@@ -1,3 +1,5 @@
+/* @flow */
+
 import repeat from 'repeating';
 
 type Table = {

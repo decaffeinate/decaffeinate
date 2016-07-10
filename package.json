@@ -35,7 +35,7 @@
     "ast-processor-babylon-config": "^1.0.0",
     "automatic-semicolon-insertion": "^1.0.1",
     "babylon": "^6.7.0",
-    "coffee-lex": "^1.4.1",
+    "coffee-lex": "^1.4.4",
     "decaffeinate-parser": "^2.0.0",
     "detect-indent": "^4.0.0",
     "esnext": "^2.1.1",

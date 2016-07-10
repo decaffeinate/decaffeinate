@@ -1,15 +1,12 @@
+/* @flow */
+
 import determineIndent from './determineIndent.js';
 import getIndent from './getIndent.js';
 
 /**
  * Adjust an indent in source at a specific offset by an amount.
- *
- * @param {string} source
- * @param {number} offset
- * @param {number} adjustment
- * @returns {string}
  */
-export default function adjustIndent(source, offset, adjustment) {
+export default function adjustIndent(source: string, offset: number, adjustment: number): string {
   let currentIndent = getIndent(source, offset);
   let determinedIndent = determineIndent(source);
 

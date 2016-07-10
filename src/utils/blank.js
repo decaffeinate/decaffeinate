@@ -1,3 +1,5 @@
+/* @flow */
+
 /**
  * Generates a blank object with no prototype.
  */

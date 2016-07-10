@@ -1,3 +1,5 @@
+/* @flow */
+
 import Scope from './Scope.js';
 import traverse from './traverse.js';
 import type { Node } from '../patchers/types.js';
