@@ -1997,9 +1997,18 @@ var BlockPatcher = function (_NodePatcher) {
 
       this.statements.forEach(function (statement, i, statements) {
         if (i === statements.length - 1 && _this2.parent instanceof FunctionPatcher) {
-          var previousStatement = statements[i - 1];
           if (statement instanceof ReturnPatcher && !statement.expression) {
-            _this2.remove(previousStatement ? previousStatement.outerEnd : statement.outerStart, statement.outerEnd);
+            var removeStart = void 0;
+            if (statements.length > 1) {
+              var startOfLineIndex = _this2.context.sourceTokens.lastIndexOfTokenMatchingPredicate(function (token) {
+                return token.type === coffeeLex.NEWLINE || token.type === coffeeLex.SEMICOLON;
+              }, statement.outerStartTokenIndex);
+              removeStart = _this2.sourceTokenAtIndex(startOfLineIndex).start;
+            } else {
+              removeStart = statement.outerStart;
+            }
+            _this2.remove(removeStart, statement.outerEnd);
+            return;
           }
         }
         if (statement.isSurroundedByParentheses()) {
@@ -9329,6 +9338,7 @@ function runStage(stage, content, filename) {
 exports.PatchError = PatchError;
 exports.convert = convert$1;
 exports.run = run;
+
 
 }).call(this,require('_process'))
 },{"_process":821,"add-variable-declarations":2,"ast-processor-babylon-config":352,"automatic-semicolon-insertion":702,"babylon":703,"coffee-lex":826,"decaffeinate-parser":827,"detect-indent":837,"esnext":838,"fs":814,"lines-and-columns":1485,"magic-string":1486,"path":820,"repeating":1488,"util":823}],2:[function(require,module,exports){
