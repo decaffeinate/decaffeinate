@@ -398,7 +398,6 @@ var DEFAULT_INDENT = '  ';
 
 function determineIndent(source) {
   var indent = detectIndent(source);
-  console.log(indent.typ);
   if (indent.type === 'space' && indent.amount % 2 === 1) {
     return DEFAULT_INDENT;
   }
