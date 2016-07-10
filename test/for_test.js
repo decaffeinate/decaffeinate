@@ -534,4 +534,17 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles for...when loops ending in implicit function calls', () =>
+    check(`
+      for a in b when c
+        d e
+    `, `
+      for (let i = 0; i < b.length; i++) {
+        let a = b[i];
+        if (c) {
+          d(e);
+        }
+      }
+    `));
 });
