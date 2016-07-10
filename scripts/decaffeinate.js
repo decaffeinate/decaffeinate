@@ -4550,27 +4550,24 @@ var ForInPatcher = function (_ForPatcher) {
     value: function patchForLoopBody() {
       this.removeThenToken();
 
-      var intro = [];
-      var outro = [];
-
       var valueAssignment = this.getValueBinding() + ' = ' + this.getTargetReference() + '[' + this.getIndexBinding() + ']';
       if (this.valAssignee.statementNeedsParens()) {
         valueAssignment = '(' + valueAssignment + ')';
       }
-      intro.push(valueAssignment);
 
       var filter = this.filter;
       var body = this.body;
-      if (filter) {
-        intro.push('if (' + this.getFilterCode() + ') {');
-        outro.push('}');
-      }
 
-      body.insertStatementsAtIndex(intro, 0);
-      body.insertStatementsAtIndex(outro, body.statements.length);
-      body.patch({ leftBrace: false });
+
+      body.insertStatementsAtIndex([valueAssignment], 0);
       if (filter) {
+        body.insertStatementsAtIndex(['if (' + this.getFilterCode() + ') {'], 0);
+        body.patch({ leftBrace: false, rightBrace: false });
         body.indent();
+        body.appendLineAfter('}', -1);
+        body.appendLineAfter('}', -2);
+      } else {
+        body.patch({ leftBrace: false });
       }
     }
   }, {
