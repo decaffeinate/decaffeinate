@@ -9317,6 +9317,9 @@ function runStage(stage, content, filename) {
     if (err instanceof SyntaxError) {
       var pos = err.pos;
 
+      if (pos === content.length) {
+        pos--;
+      }
       throw new PatchError(stage.name + ' failed to parse: ' + err.message, content, pos, pos + 1);
     }
     throw err;
