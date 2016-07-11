@@ -17,11 +17,14 @@
     "babel/generator-star-spacing": 1,
     "babel/new-cap": 1,
     "decaffeinate/require-import-extension": 2,
-    "decaffeinate/no-const-except-at-top": 2
+    "decaffeinate/no-const-except-at-top": 2,
+    "flow-vars/define-flow-type": 1,
+    "flow-vars/use-flow-type": 1
   },
   "plugins": [
     "babel",
-    "decaffeinate"
+    "decaffeinate",
+    "flow-vars"
   ],
   "globals": {
     "Class": true
