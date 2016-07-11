@@ -156,4 +156,24 @@ describe('functions', () => {
   it('keeps function with a single assignment as a parameter in braces', () => {
     check(`(args=false) =>`, `(args=false) => {};`);
   });
+
+  it('places the function end in the right place when ending in an implicit function call', () =>
+    check(`
+      A = {
+        b: ->
+          return c d,
+            e,
+              f
+      }
+      G
+    `, `
+      const A = {
+        b() {
+          return c(d,
+            e,
+              f);
+        }
+      };
+      G;
+    `));
 });

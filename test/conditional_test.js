@@ -267,6 +267,15 @@ describe('conditionals', () => {
 
   it('works with nested POST-`if`', () => {
     check(`
+      a(b) if c(d) unless e(f)
+    `, `
+      if (!e(f)) { if (c(d)) { a(b); } }
+    `);
+  });
+
+  // TODO: Enable once https://github.com/Rich-Harris/magic-string/pull/89 lands.
+  it.skip('works with nested POST-`if` with implicit calls', () => {
+    check(`
       a b if c d unless e f
     `, `
       if (!e(f)) { if (c(d)) { a(b); } }
