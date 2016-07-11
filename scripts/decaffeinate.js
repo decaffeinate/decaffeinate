@@ -1224,8 +1224,7 @@ var NodePatcher = function () {
   }, {
     key: 'isMultiline',
     value: function isMultiline() {
-      return (/[\r\n]/.test(this.getOriginalSource())
-      );
+      return !this.node.virtual && /[\r\n]/.test(this.getOriginalSource());
     }
 
     /**
@@ -4775,33 +4774,22 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
         return arg.setRequiresExpression();
       });
     }
+
+    /**
+     * Note that we don't need to worry about implicit function applications,
+     * since the normalize stage would have already added parens.
+     */
+
   }, {
     key: 'patchAsExpression',
     value: function patchAsExpression() {
       var _this2 = this;
 
-      var implicitCall = this.isImplicitCall();
       var args = this.args;
       var outerEndTokenIndex = this.outerEndTokenIndex;
 
 
       this.fn.patch();
-
-      if (implicitCall && args.length === 0) {
-        this.insert(this.fn.outerEnd, '()');
-        return;
-      }
-
-      if (implicitCall) {
-        var firstArg = args[0];
-        var hasOneArg = args.length === 1;
-        var firstArgIsOnNextLine = !firstArg ? false : /[\r\n]/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
-        if (hasOneArg && firstArg.node.virtual || firstArgIsOnNextLine) {
-          this.insert(this.fn.outerEnd, '(');
-        } else {
-          this.overwrite(this.fn.outerEnd, firstArg.outerStart, '(');
-        }
-      }
 
       args.forEach(function (arg, i) {
         arg.patch();
@@ -4818,15 +4806,6 @@ var FunctionApplicationPatcher = function (_NodePatcher) {
           _this2.insert(arg.outerEnd, ',');
         }
       });
-
-      if (implicitCall) {
-        this.insert(this.innerEnd, ')');
-      }
-    }
-  }, {
-    key: 'isImplicitCall',
-    value: function isImplicitCall() {
-      return !this.fn.hasSourceTokenAfter(coffeeLex.CALL_START);
     }
 
     /**
@@ -8863,6 +8842,66 @@ var ForOfPatcher$1 = function (_ForPatcher) {
   return ForOfPatcher;
 }(ForPatcher$1);
 
+var FunctionApplicationPatcher$1 = function (_NodePatcher) {
+  inherits(FunctionApplicationPatcher, _NodePatcher);
+
+  function FunctionApplicationPatcher(node, context, editor, fn, args) {
+    classCallCheck(this, FunctionApplicationPatcher);
+
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(FunctionApplicationPatcher).call(this, node, context, editor));
+
+    _this.fn = fn;
+    _this.args = args;
+    return _this;
+  }
+
+  createClass(FunctionApplicationPatcher, [{
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      var implicitCall = this.isImplicitCall();
+      var args = this.args;
+
+
+      this.fn.patch();
+
+      if (implicitCall && args.length === 0) {
+        this.insert(this.fn.outerEnd, '()');
+        return;
+      }
+
+      if (implicitCall) {
+        var firstArg = args[0];
+        var hasOneArg = args.length === 1;
+        var firstArgIsOnNextLine = !firstArg ? false : /[\r\n]/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
+        if (hasOneArg && firstArg.node.virtual || firstArgIsOnNextLine) {
+          this.insert(this.fn.outerEnd, '(');
+        } else {
+          this.overwrite(this.fn.outerEnd, firstArg.outerStart, '(');
+        }
+      }
+
+      args.forEach(function (arg) {
+        return arg.patch();
+      });
+
+      if (implicitCall) {
+        var lastArg = args[args.length - 1];
+        if (lastArg.isMultiline()) {
+          this.appendLineAfter(')');
+        } else {
+          this.insert(this.innerEnd, ')');
+        }
+      }
+    }
+  }, {
+    key: 'isImplicitCall',
+    value: function isImplicitCall() {
+      return !this.fn.hasSourceTokenAfter(coffeeLex.CALL_START);
+    }
+  }]);
+  return FunctionApplicationPatcher;
+}(NodePatcher);
+
 var ProgramPatcher$1 = function (_PassthroughPatcher) {
   inherits(ProgramPatcher, _PassthroughPatcher);
 
@@ -9096,6 +9135,10 @@ var NormalizeStage = function (_TransformCoffeeScrip) {
 
         case 'ForOf':
           return ForOfPatcher$1;
+
+        case 'FunctionApplication':
+        case 'NewOp':
+          return FunctionApplicationPatcher$1;
 
         case 'While':
           return WhilePatcher$1;
