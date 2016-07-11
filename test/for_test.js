@@ -547,4 +547,16 @@ describe('for loops', () => {
         }
       }
     `));
+
+  it('handles for loops over implicit function calls', () =>
+    check(`
+      for a in b c
+        d()
+    `, `
+      let iterable = b(c);
+      for (let i = 0; i < iterable.length; i++) {
+        let a = iterable[i];
+        d();
+      }
+    `));
 });
