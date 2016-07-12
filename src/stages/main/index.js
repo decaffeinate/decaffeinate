@@ -32,6 +32,7 @@ import LogicalNotOpPatcher from './patchers/LogicalNotOpPatcher.js';
 import LogicalOpCompoundAssignOpPatcher from './patchers/LogicalOpCompoundAssignOpPatcher.js';
 import LogicalOpPatcher from './patchers/LogicalOpPatcher.js';
 import MemberAccessOpPatcher from './patchers/MemberAccessOpPatcher.js';
+import ModuloOpPatcher from './patchers/ModuloOpPatcher.js';
 import NewOpPatcher from './patchers/NewOpPatcher.js';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher.js';
 import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher.js';
@@ -176,6 +177,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'SignedRightShiftOp':
       case 'UnsignedRightShiftOp':
         return BinaryOpPatcher;
+
+      case 'ModuloOp':
+        return ModuloOpPatcher;
 
       case 'RegExp':
         return RegExpPatcher;

@@ -142,6 +142,7 @@ export function isBinaryOperator(node: Node): boolean {
     case 'LeftShiftOp':
     case 'LogicalAndOp':
     case 'LogicalOrOp':
+    case 'ModuloOp':
     case 'MultiplyOp':
     case 'NEQOp':
     case 'OfOp':

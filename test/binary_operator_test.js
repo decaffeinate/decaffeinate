@@ -134,6 +134,32 @@ describe('binary operators', () => {
     `);
   });
 
+  it('handles modulo operator', () => {
+    check(`
+      a %% b
+    `, `
+      __mod__(a, b);
+      function __mod__(a, b) {
+        a = +a;
+        b = +b;
+        return (a % b + b) % b;
+      }
+    `);
+  });
+
+  it('handles modulo operator applied multiple times', () => {
+    check(`
+      a(b() %% c(d) %% e + f)
+    `, `
+      a(__mod__(__mod__(b(), c(d)), e) + f);
+      function __mod__(a, b) {
+        a = +a;
+        b = +b;
+        return (a % b + b) % b;
+      }
+    `);
+  });
+
   it('handles `extends` operator', () => {
     check(`
       a extends b
