@@ -2338,6 +2338,7 @@ var ORDER = {
   LogicalNotOp: ['expression'],
   LogicalOrOp: ['left', 'right'],
   MemberAccessOp: ['expression'],
+  ModuloOp: ['left', 'right'],
   MultiplyOp: ['left', 'right'],
   NEQOp: ['left', 'right'],
   NewOp: ['ctor', 'arguments'],
@@ -5394,6 +5395,59 @@ var LogicalOpPatcher = function (_BinaryOpPatcher) {
     }
   }]);
   return LogicalOpPatcher;
+}(BinaryOpPatcher);
+
+var MOD_HELPER = 'function __mod__(a, b) {\n  a = +a;\n  b = +b;\n  return (a % b + b) % b;\n}';
+
+/**
+ * Handles modulo operator, e.g. `a %% b`.
+ */
+
+var ModuloOpPatcher = function (_BinaryOpPatcher) {
+  inherits(ModuloOpPatcher, _BinaryOpPatcher);
+
+  /**
+   * `node` is of type `ModuloOp`.
+   */
+
+  function ModuloOpPatcher(node, context, editor, left, right) {
+    classCallCheck(this, ModuloOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ModuloOpPatcher).call(this, node, context, editor, left, right));
+  }
+
+  createClass(ModuloOpPatcher, [{
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      var helper = this.registerHelper('__mod__', MOD_HELPER);
+
+      // `a %% b` → `__mod__(a %% b`
+      //             ^^^^^^^^
+      this.insert(this.left.outerStart, helper + '(');
+
+      this.left.patch();
+
+      // `__mod__(a %% b` → `__mod__(a, b`
+      //           ^^^^               ^^
+      this.overwrite(this.left.outerEnd, this.right.outerStart, ', ');
+
+      this.right.patch();
+
+      // `__mod__(a, b` → `__mod__(a, b)`
+      //                               ^
+      this.insert(this.right.outerEnd, ')');
+    }
+
+    /**
+     * We always prefix with `__mod__` so no parens needed.
+     */
+
+  }, {
+    key: 'statementNeedsParens',
+    value: function statementNeedsParens() {
+      return false;
+    }
+  }]);
+  return ModuloOpPatcher;
 }(BinaryOpPatcher);
 
 /**
@@ -8500,6 +8554,9 @@ var MainStage = function (_TransformCoffeeScrip) {
         case 'SignedRightShiftOp':
         case 'UnsignedRightShiftOp':
           return BinaryOpPatcher;
+
+        case 'ModuloOp':
+          return ModuloOpPatcher;
 
         case 'RegExp':
           return RegExpPatcher;
