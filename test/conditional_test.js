@@ -329,4 +329,19 @@ describe('conditionals', () => {
       let r = (f === 0.5) ? a : b;
     `);
   });
+
+  it('handles implicit function calls in the else clause', () =>
+    check(`
+      if a
+        b
+      else
+        c d
+    `, `
+      if (a) {
+        b;
+      } else {
+        c(d);
+      }
+    `)
+  );
 });

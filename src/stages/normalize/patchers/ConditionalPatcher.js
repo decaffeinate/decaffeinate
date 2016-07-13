@@ -28,6 +28,9 @@ export default class ConditionalPatcher extends NodePatcher {
     } else {
       this.condition.patch();
       this.consequent.patch();
+      if (this.alternate !== null) {
+        this.alternate.patch();
+      }
     }
   }
 
