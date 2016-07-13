@@ -139,6 +139,7 @@ function getBindingsForNode(node: Node): Array<Node> {
     case 'Rest':
       return getBindingsForNode(node.expression);
 
+    case 'Expansion':
     case 'MemberAccessOp':
       return [];
 

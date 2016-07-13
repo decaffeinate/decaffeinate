@@ -17,6 +17,7 @@ import EqualityPatcher from './patchers/EqualityPatcher.js';
 import ExpOpPatcher from './patchers/ExpOpPatcher.js';
 import ExistsOpCompoundAssignOpPatcher from './patchers/ExistsOpCompoundAssignOpPatcher.js';
 import ExistsOpPatcher from './patchers/ExistsOpPatcher.js';
+import ExpansionPatcher from './patchers/ExpansionPatcher.js';
 import ExtendsOpPatcher from './patchers/ExtendsOpPatcher.js';
 import FloorDivideOpPatcher from './patchers/FloorDivideOpPatcher.js';
 import ForInPatcher from './patchers/ForInPatcher.js';
@@ -220,6 +221,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'Slice':
         return SlicePatcher;
+
+      case 'Expansion':
+        return ExpansionPatcher;
 
       case 'Rest':
         return RestPatcher;
