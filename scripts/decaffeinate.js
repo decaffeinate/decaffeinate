@@ -9701,6 +9701,7 @@ exports.run = run;
       case 'FunctionExpression':
       case 'ForStatement':
       case 'ObjectMethod':
+      case 'ClassMethod':
         return getFirstStatementInBlock(node.body);
 
       case 'ArrowFunctionExpression':
@@ -16012,16 +16013,16 @@ function mergePair(dest, src) {
   }
 }
 },{"./path/lib/virtual-types":20,"babel-messages":42,"babel-runtime/core-js/get-iterator":43,"babel-runtime/core-js/object/keys":49,"babel-runtime/helpers/typeof":55,"babel-types":166,"lodash/clone":312}],28:[function(require,module,exports){
-/*istanbul ignore next*/"use strict";
+"use strict";
 
 exports.__esModule = true;
 
 exports.default = function (rawLines, lineNumber, colNumber) {
-  /*istanbul ignore next*/var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
   colNumber = Math.max(colNumber, 0);
 
-  var highlighted = opts.highlightCode && /*istanbul ignore next*/_chalk2.default.supportsColor;
+  var highlighted = opts.highlightCode && _chalk2.default.supportsColor;
   if (highlighted) rawLines = highlight(rawLines);
 
   var lines = rawLines.split(NEWLINE);
@@ -16037,43 +16038,37 @@ exports.default = function (rawLines, lineNumber, colNumber) {
 
   var frame = lines.slice(start, end).map(function (line, index) {
     var number = start + 1 + index;
-    var paddedNumber = /*istanbul ignore next*/(" " + number).slice(-numberMaxWidth);
-    var gutter = /*istanbul ignore next*/" " + paddedNumber + " | ";
+    var paddedNumber = (" " + number).slice(-numberMaxWidth);
+    var gutter = " " + paddedNumber + " | ";
     if (number === lineNumber) {
       var markerLine = "";
       if (colNumber) {
         var markerSpacing = line.slice(0, colNumber - 1).replace(/[^\t]/g, " ");
-        markerLine = /*istanbul ignore next*/"\n " + gutter.replace(/\d/g, " ") + markerSpacing + "^";
+        markerLine = "\n " + gutter.replace(/\d/g, " ") + markerSpacing + "^";
       }
-      return (/*istanbul ignore next*/">" + gutter + line + markerLine
-      );
+      return ">" + gutter + line + markerLine;
     } else {
-      return (/*istanbul ignore next*/" " + gutter + line
-      );
+      return " " + gutter + line;
     }
   }).join("\n");
 
   if (highlighted) {
-    return (/*istanbul ignore next*/_chalk2.default.reset(frame)
-    );
+    return _chalk2.default.reset(frame);
   } else {
     return frame;
   }
 };
 
-var /*istanbul ignore next*/_jsTokens = require("js-tokens");
+var _jsTokens = require("js-tokens");
 
-/*istanbul ignore next*/
 var _jsTokens2 = _interopRequireDefault(_jsTokens);
 
-var /*istanbul ignore next*/_esutils = require("esutils");
+var _esutils = require("esutils");
 
-/*istanbul ignore next*/
 var _esutils2 = _interopRequireDefault(_esutils);
 
-var /*istanbul ignore next*/_chalk = require("chalk");
+var _chalk = require("chalk");
 
-/*istanbul ignore next*/
 var _chalk2 = _interopRequireDefault(_chalk);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -16083,16 +16078,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 
 var defs = {
-  string: /*istanbul ignore next*/_chalk2.default.red,
-  punctuator: /*istanbul ignore next*/_chalk2.default.bold,
-  curly: /*istanbul ignore next*/_chalk2.default.green,
-  parens: /*istanbul ignore next*/_chalk2.default.blue.bold,
-  square: /*istanbul ignore next*/_chalk2.default.yellow,
-  keyword: /*istanbul ignore next*/_chalk2.default.cyan,
-  number: /*istanbul ignore next*/_chalk2.default.magenta,
-  regex: /*istanbul ignore next*/_chalk2.default.magenta,
-  comment: /*istanbul ignore next*/_chalk2.default.grey,
-  invalid: /*istanbul ignore next*/_chalk2.default.inverse
+  string: _chalk2.default.red,
+  punctuator: _chalk2.default.bold,
+  curly: _chalk2.default.green,
+  parens: _chalk2.default.blue.bold,
+  square: _chalk2.default.yellow,
+  keyword: _chalk2.default.cyan,
+  number: _chalk2.default.magenta,
+  regex: _chalk2.default.magenta,
+  comment: _chalk2.default.grey,
+  invalid: _chalk2.default.inverse
 };
 
 /**
@@ -16106,8 +16101,8 @@ var NEWLINE = /\r\n|[\n\r\u2028\u2029]/;
  */
 
 function getTokenType(match) {
-  var token = /*istanbul ignore next*/_jsTokens2.default.matchToToken(match);
-  if (token.type === "name" && /*istanbul ignore next*/_esutils2.default.keyword.isReservedWordES6(token.value)) {
+  var token = _jsTokens2.default.matchToToken(match);
+  if (token.type === "name" && _esutils2.default.keyword.isReservedWordES6(token.value)) {
     return "keyword";
   }
 
@@ -16133,8 +16128,7 @@ function getTokenType(match) {
  */
 
 function highlight(text) {
-  return text.replace( /*istanbul ignore next*/_jsTokens2.default, function () {
-    /*istanbul ignore next*/
+  return text.replace(_jsTokens2.default, function () {
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
@@ -16142,7 +16136,7 @@ function highlight(text) {
     var type = getTokenType(args);
     var colorize = defs[type];
     if (colorize) {
-      return args[0].split(NEWLINE).map(function (str) /*istanbul ignore next*/{
+      return args[0].split(NEWLINE).map(function (str) {
         return colorize(str);
       }).join("\n");
     } else {
@@ -16155,7 +16149,7 @@ function highlight(text) {
  * Create a code frame, adding line numbers, code highlighting, and pointing to a given position.
  */
 
-/*istanbul ignore next*/module.exports = exports["default"];
+module.exports = exports["default"];
 },{"chalk":29,"esutils":40,"js-tokens":41}],29:[function(require,module,exports){
 (function (process){
 'use strict';
@@ -16923,7 +16917,7 @@ module.exports = (function () {
 
 // This regex comes from regex.coffee, and is inserted here by generate-index.js
 // (run `npm run build`).
-module.exports = /((['"])(?:(?!\2|\\).|\\(?:\r\n|[\s\S]))*(\2)?|`(?:[^`\\$]|\\[\s\S]|\$(?!\{)|\$\{(?:[^{}]|\{[^}]*\}?)*\}?)*(`)?)|(\/\/.*)|(\/\*(?:[^*]|\*(?!\/))*(\*\/)?)|(\/(?!\*)(?:\[(?:(?![\]\\]).|\\.)*\]|(?![\/\]\\]).|\\.)+\/(?:(?!\s*(?:\b|[\u0080-\uFFFF$\\'"~({]|[+\-!](?!=)|\.?\d))|[gmiyu]{1,5}\b(?![\u0080-\uFFFF$\\]|\s*(?:[+\-*%&|^<>!=?({]|\/(?![\/*])))))|(0[xX][\da-fA-F]+|0[oO][0-7]+|0[bB][01]+|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?)|((?!\d)(?:(?!\s)[$\w\u0080-\uFFFF]|\\u[\da-fA-F]{4}|\\u\{[\da-fA-F]{1,6}\})+)|(--|\+\+|&&|\|\||=>|\.{3}|(?:[+\-*\/%&|^]|<{1,2}|>{1,3}|!=?|={1,2})=?|[?~.,:;[\](){}])|(\s+)|(^$|[\s\S])/g
+module.exports = /((['"])(?:(?!\2|\\).|\\(?:\r\n|[\s\S]))*(\2)?|`(?:[^`\\$]|\\[\s\S]|\$(?!\{)|\$\{(?:[^{}]|\{[^}]*\}?)*\}?)*(`)?)|(\/\/.*)|(\/\*(?:[^*]|\*(?!\/))*(\*\/)?)|(\/(?!\*)(?:\[(?:(?![\]\\]).|\\.)*\]|(?![\/\]\\]).|\\.)+\/(?:(?!\s*(?:\b|[\u0080-\uFFFF$\\'"~({]|[+\-!](?!=)|\.?\d))|[gmiyu]{1,5}\b(?![\u0080-\uFFFF$\\]|\s*(?:[+\-*%&|^<>!=?({]|\/(?![\/*])))))|(0[xX][\da-fA-F]+|0[oO][0-7]+|0[bB][01]+|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?)|((?!\d)(?:(?!\s)[$\w\u0080-\uFFFF]|\\u[\da-fA-F]{4}|\\u\{[\da-fA-F]{1,6}\})+)|(--|\+\+|&&|\|\||=>|\.{3}|(?:[+\-\/%&|^]|\*{1,2}|<{1,2}|>{1,3}|!=?|={1,2})=?|[?~.,:;[\](){}])|(\s+)|(^$|[\s\S])/g
 
 module.exports.matchToToken = function(match) {
   var token = {type: "invalid", value: match[0]}
@@ -20878,6 +20872,9 @@ function defineType(type) {
   for (var key in opts.fields) {
     var field = opts.fields[key];
 
+    if (opts.builder.indexOf(key) === -1) {
+      field.optional = true;
+    }
     if (field.default === undefined) {
       field.default = null;
     } else if (!field.validate) {
@@ -29672,8 +29669,151 @@ arguments[4][26][0].apply(exports,arguments)
 },{"../binding":374,"babel-runtime/helpers/classCallCheck":404,"babel-types":516,"dup":26}],377:[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
 },{"./path/lib/virtual-types":370,"babel-messages":392,"babel-runtime/core-js/get-iterator":393,"babel-runtime/core-js/object/keys":399,"babel-runtime/helpers/typeof":405,"babel-types":516,"dup":27,"lodash/clone":662}],378:[function(require,module,exports){
-arguments[4][28][0].apply(exports,arguments)
-},{"chalk":379,"dup":28,"esutils":390,"js-tokens":391}],379:[function(require,module,exports){
+/*istanbul ignore next*/"use strict";
+
+exports.__esModule = true;
+
+exports.default = function (rawLines, lineNumber, colNumber) {
+  /*istanbul ignore next*/var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+  colNumber = Math.max(colNumber, 0);
+
+  var highlighted = opts.highlightCode && /*istanbul ignore next*/_chalk2.default.supportsColor;
+  if (highlighted) rawLines = highlight(rawLines);
+
+  var lines = rawLines.split(NEWLINE);
+  var start = Math.max(lineNumber - 3, 0);
+  var end = Math.min(lines.length, lineNumber + 3);
+
+  if (!lineNumber && !colNumber) {
+    start = 0;
+    end = lines.length;
+  }
+
+  var numberMaxWidth = String(end).length;
+
+  var frame = lines.slice(start, end).map(function (line, index) {
+    var number = start + 1 + index;
+    var paddedNumber = /*istanbul ignore next*/(" " + number).slice(-numberMaxWidth);
+    var gutter = /*istanbul ignore next*/" " + paddedNumber + " | ";
+    if (number === lineNumber) {
+      var markerLine = "";
+      if (colNumber) {
+        var markerSpacing = line.slice(0, colNumber - 1).replace(/[^\t]/g, " ");
+        markerLine = /*istanbul ignore next*/"\n " + gutter.replace(/\d/g, " ") + markerSpacing + "^";
+      }
+      return (/*istanbul ignore next*/">" + gutter + line + markerLine
+      );
+    } else {
+      return (/*istanbul ignore next*/" " + gutter + line
+      );
+    }
+  }).join("\n");
+
+  if (highlighted) {
+    return (/*istanbul ignore next*/_chalk2.default.reset(frame)
+    );
+  } else {
+    return frame;
+  }
+};
+
+var /*istanbul ignore next*/_jsTokens = require("js-tokens");
+
+/*istanbul ignore next*/
+var _jsTokens2 = _interopRequireDefault(_jsTokens);
+
+var /*istanbul ignore next*/_esutils = require("esutils");
+
+/*istanbul ignore next*/
+var _esutils2 = _interopRequireDefault(_esutils);
+
+var /*istanbul ignore next*/_chalk = require("chalk");
+
+/*istanbul ignore next*/
+var _chalk2 = _interopRequireDefault(_chalk);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Chalk styles for token types.
+ */
+
+var defs = {
+  string: /*istanbul ignore next*/_chalk2.default.red,
+  punctuator: /*istanbul ignore next*/_chalk2.default.bold,
+  curly: /*istanbul ignore next*/_chalk2.default.green,
+  parens: /*istanbul ignore next*/_chalk2.default.blue.bold,
+  square: /*istanbul ignore next*/_chalk2.default.yellow,
+  keyword: /*istanbul ignore next*/_chalk2.default.cyan,
+  number: /*istanbul ignore next*/_chalk2.default.magenta,
+  regex: /*istanbul ignore next*/_chalk2.default.magenta,
+  comment: /*istanbul ignore next*/_chalk2.default.grey,
+  invalid: /*istanbul ignore next*/_chalk2.default.inverse
+};
+
+/**
+ * RegExp to test for newlines in terminal.
+ */
+
+var NEWLINE = /\r\n|[\n\r\u2028\u2029]/;
+
+/**
+ * Get the type of token, specifying punctuator type.
+ */
+
+function getTokenType(match) {
+  var token = /*istanbul ignore next*/_jsTokens2.default.matchToToken(match);
+  if (token.type === "name" && /*istanbul ignore next*/_esutils2.default.keyword.isReservedWordES6(token.value)) {
+    return "keyword";
+  }
+
+  if (token.type === "punctuator") {
+    switch (token.value) {
+      case "{":
+      case "}":
+        return "curly";
+      case "(":
+      case ")":
+        return "parens";
+      case "[":
+      case "]":
+        return "square";
+    }
+  }
+
+  return token.type;
+}
+
+/**
+ * Highlight `text`.
+ */
+
+function highlight(text) {
+  return text.replace( /*istanbul ignore next*/_jsTokens2.default, function () {
+    /*istanbul ignore next*/
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    var type = getTokenType(args);
+    var colorize = defs[type];
+    if (colorize) {
+      return args[0].split(NEWLINE).map(function (str) /*istanbul ignore next*/{
+        return colorize(str);
+      }).join("\n");
+    } else {
+      return args[0];
+    }
+  });
+}
+
+/**
+ * Create a code frame, adding line numbers, code highlighting, and pointing to a given position.
+ */
+
+/*istanbul ignore next*/module.exports = exports["default"];
+},{"chalk":379,"esutils":390,"js-tokens":391}],379:[function(require,module,exports){
 arguments[4][29][0].apply(exports,arguments)
 },{"_process":821,"ansi-styles":380,"dup":29,"escape-string-regexp":381,"has-ansi":382,"strip-ansi":384,"supports-color":386}],380:[function(require,module,exports){
 arguments[4][30][0].apply(exports,arguments)
@@ -29698,8 +29838,27 @@ arguments[4][39][0].apply(exports,arguments)
 },{"./code":388,"dup":39}],390:[function(require,module,exports){
 arguments[4][40][0].apply(exports,arguments)
 },{"./ast":387,"./code":388,"./keyword":389,"dup":40}],391:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"dup":41}],392:[function(require,module,exports){
+// Copyright 2014, 2015, 2016 Simon Lydell
+// X11 (“MIT”) Licensed. (See LICENSE.)
+
+// This regex comes from regex.coffee, and is inserted here by generate-index.js
+// (run `npm run build`).
+module.exports = /((['"])(?:(?!\2|\\).|\\(?:\r\n|[\s\S]))*(\2)?|`(?:[^`\\$]|\\[\s\S]|\$(?!\{)|\$\{(?:[^{}]|\{[^}]*\}?)*\}?)*(`)?)|(\/\/.*)|(\/\*(?:[^*]|\*(?!\/))*(\*\/)?)|(\/(?!\*)(?:\[(?:(?![\]\\]).|\\.)*\]|(?![\/\]\\]).|\\.)+\/(?:(?!\s*(?:\b|[\u0080-\uFFFF$\\'"~({]|[+\-!](?!=)|\.?\d))|[gmiyu]{1,5}\b(?![\u0080-\uFFFF$\\]|\s*(?:[+\-*%&|^<>!=?({]|\/(?![\/*])))))|(0[xX][\da-fA-F]+|0[oO][0-7]+|0[bB][01]+|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?)|((?!\d)(?:(?!\s)[$\w\u0080-\uFFFF]|\\u[\da-fA-F]{4}|\\u\{[\da-fA-F]{1,6}\})+)|(--|\+\+|&&|\|\||=>|\.{3}|(?:[+\-*\/%&|^]|<{1,2}|>{1,3}|!=?|={1,2})=?|[?~.,:;[\](){}])|(\s+)|(^$|[\s\S])/g
+
+module.exports.matchToToken = function(match) {
+  var token = {type: "invalid", value: match[0]}
+       if (match[ 1]) token.type = "string" , token.closed = !!(match[3] || match[4])
+  else if (match[ 5]) token.type = "comment"
+  else if (match[ 6]) token.type = "comment", token.closed = !!match[7]
+  else if (match[ 8]) token.type = "regex"
+  else if (match[ 9]) token.type = "number"
+  else if (match[10]) token.type = "name"
+  else if (match[11]) token.type = "punctuator"
+  else if (match[12]) token.type = "whitespace"
+  return token
+}
+
+},{}],392:[function(require,module,exports){
 arguments[4][42][0].apply(exports,arguments)
 },{"babel-runtime/core-js/json/stringify":394,"dup":42,"util":823}],393:[function(require,module,exports){
 arguments[4][43][0].apply(exports,arguments)
@@ -29938,8 +30097,254 @@ arguments[4][159][0].apply(exports,arguments)
 },{"./index":511,"dup":159}],510:[function(require,module,exports){
 arguments[4][160][0].apply(exports,arguments)
 },{"./index":511,"dup":160}],511:[function(require,module,exports){
-arguments[4][161][0].apply(exports,arguments)
-},{"../index":516,"babel-runtime/core-js/get-iterator":393,"babel-runtime/core-js/json/stringify":394,"babel-runtime/helpers/typeof":405,"dup":161}],512:[function(require,module,exports){
+"use strict";
+
+exports.__esModule = true;
+exports.DEPRECATED_KEYS = exports.BUILDER_KEYS = exports.NODE_FIELDS = exports.ALIAS_KEYS = exports.VISITOR_KEYS = undefined;
+
+var _getIterator2 = require("babel-runtime/core-js/get-iterator");
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+var _stringify = require("babel-runtime/core-js/json/stringify");
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+var _typeof2 = require("babel-runtime/helpers/typeof");
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
+exports.assertEach = assertEach;
+exports.assertOneOf = assertOneOf;
+exports.assertNodeType = assertNodeType;
+exports.assertNodeOrValueType = assertNodeOrValueType;
+exports.assertValueType = assertValueType;
+exports.chain = chain;
+exports.default = defineType;
+
+var _index = require("../index");
+
+var t = _interopRequireWildcard(_index);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var VISITOR_KEYS = exports.VISITOR_KEYS = {};
+var ALIAS_KEYS = exports.ALIAS_KEYS = {};
+var NODE_FIELDS = exports.NODE_FIELDS = {};
+var BUILDER_KEYS = exports.BUILDER_KEYS = {};
+var DEPRECATED_KEYS = exports.DEPRECATED_KEYS = {};
+
+function getType(val) {
+  if (Array.isArray(val)) {
+    return "array";
+  } else if (val === null) {
+    return "null";
+  } else if (val === undefined) {
+    return "undefined";
+  } else {
+    return typeof val === "undefined" ? "undefined" : (0, _typeof3.default)(val);
+  }
+}
+
+function assertEach(callback) {
+  function validator(node, key, val) {
+    if (!Array.isArray(val)) return;
+
+    for (var i = 0; i < val.length; i++) {
+      callback(node, key + "[" + i + "]", val[i]);
+    }
+  }
+  validator.each = callback;
+  return validator;
+}
+
+function assertOneOf() {
+  for (var _len = arguments.length, vals = Array(_len), _key = 0; _key < _len; _key++) {
+    vals[_key] = arguments[_key];
+  }
+
+  function validate(node, key, val) {
+    if (vals.indexOf(val) < 0) {
+      throw new TypeError("Property " + key + " expected value to be one of " + (0, _stringify2.default)(vals) + " but got " + (0, _stringify2.default)(val));
+    }
+  }
+
+  validate.oneOf = vals;
+
+  return validate;
+}
+
+function assertNodeType() {
+  for (var _len2 = arguments.length, types = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+    types[_key2] = arguments[_key2];
+  }
+
+  function validate(node, key, val) {
+    var valid = false;
+
+    for (var _iterator = types, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : (0, _getIterator3.default)(_iterator);;) {
+      var _ref;
+
+      if (_isArray) {
+        if (_i >= _iterator.length) break;
+        _ref = _iterator[_i++];
+      } else {
+        _i = _iterator.next();
+        if (_i.done) break;
+        _ref = _i.value;
+      }
+
+      var type = _ref;
+
+      if (t.is(type, val)) {
+        valid = true;
+        break;
+      }
+    }
+
+    if (!valid) {
+      throw new TypeError("Property " + key + " of " + node.type + " expected node to be of a type " + (0, _stringify2.default)(types) + " " + ("but instead got " + (0, _stringify2.default)(val && val.type)));
+    }
+  }
+
+  validate.oneOfNodeTypes = types;
+
+  return validate;
+}
+
+function assertNodeOrValueType() {
+  for (var _len3 = arguments.length, types = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    types[_key3] = arguments[_key3];
+  }
+
+  function validate(node, key, val) {
+    var valid = false;
+
+    for (var _iterator2 = types, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : (0, _getIterator3.default)(_iterator2);;) {
+      var _ref2;
+
+      if (_isArray2) {
+        if (_i2 >= _iterator2.length) break;
+        _ref2 = _iterator2[_i2++];
+      } else {
+        _i2 = _iterator2.next();
+        if (_i2.done) break;
+        _ref2 = _i2.value;
+      }
+
+      var type = _ref2;
+
+      if (getType(val) === type || t.is(type, val)) {
+        valid = true;
+        break;
+      }
+    }
+
+    if (!valid) {
+      throw new TypeError("Property " + key + " of " + node.type + " expected node to be of a type " + (0, _stringify2.default)(types) + " " + ("but instead got " + (0, _stringify2.default)(val && val.type)));
+    }
+  }
+
+  validate.oneOfNodeOrValueTypes = types;
+
+  return validate;
+}
+
+function assertValueType(type) {
+  function validate(node, key, val) {
+    var valid = getType(val) === type;
+
+    if (!valid) {
+      throw new TypeError("Property " + key + " expected type of " + type + " but got " + getType(val));
+    }
+  }
+
+  validate.type = type;
+
+  return validate;
+}
+
+function chain() {
+  for (var _len4 = arguments.length, fns = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+    fns[_key4] = arguments[_key4];
+  }
+
+  function validate() {
+    for (var _iterator3 = fns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : (0, _getIterator3.default)(_iterator3);;) {
+      var _ref3;
+
+      if (_isArray3) {
+        if (_i3 >= _iterator3.length) break;
+        _ref3 = _iterator3[_i3++];
+      } else {
+        _i3 = _iterator3.next();
+        if (_i3.done) break;
+        _ref3 = _i3.value;
+      }
+
+      var fn = _ref3;
+
+      fn.apply(undefined, arguments);
+    }
+  }
+  validate.chainOf = fns;
+  return validate;
+}
+
+function defineType(type) {
+  var opts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+  var inherits = opts.inherits && store[opts.inherits] || {};
+
+  opts.fields = opts.fields || inherits.fields || {};
+  opts.visitor = opts.visitor || inherits.visitor || [];
+  opts.aliases = opts.aliases || inherits.aliases || [];
+  opts.builder = opts.builder || inherits.builder || opts.visitor || [];
+
+  if (opts.deprecatedAlias) {
+    DEPRECATED_KEYS[opts.deprecatedAlias] = type;
+  }
+
+  // ensure all field keys are represented in `fields`
+  for (var _iterator4 = opts.visitor.concat(opts.builder), _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : (0, _getIterator3.default)(_iterator4);;) {
+    var _ref4;
+
+    if (_isArray4) {
+      if (_i4 >= _iterator4.length) break;
+      _ref4 = _iterator4[_i4++];
+    } else {
+      _i4 = _iterator4.next();
+      if (_i4.done) break;
+      _ref4 = _i4.value;
+    }
+
+    var _key5 = _ref4;
+
+    opts.fields[_key5] = opts.fields[_key5] || {};
+  }
+
+  for (var key in opts.fields) {
+    var field = opts.fields[key];
+
+    if (field.default === undefined) {
+      field.default = null;
+    } else if (!field.validate) {
+      field.validate = assertValueType(getType(field.default));
+    }
+  }
+
+  VISITOR_KEYS[type] = opts.visitor;
+  BUILDER_KEYS[type] = opts.builder;
+  NODE_FIELDS[type] = opts.fields;
+  ALIAS_KEYS[type] = opts.aliases;
+
+  store[type] = opts;
+}
+
+var store = {};
+},{"../index":516,"babel-runtime/core-js/get-iterator":393,"babel-runtime/core-js/json/stringify":394,"babel-runtime/helpers/typeof":405}],512:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./core":507,"./es2015":508,"./experimental":509,"./flow":510,"./index":511,"./jsx":513,"./misc":514,"dup":162}],513:[function(require,module,exports){
 arguments[4][163][0].apply(exports,arguments)
@@ -53812,144 +54217,8 @@ arguments[4][26][0].apply(exports,arguments)
 },{"../binding":860,"babel-runtime/helpers/classCallCheck":888,"babel-types":1126,"dup":26}],863:[function(require,module,exports){
 arguments[4][27][0].apply(exports,arguments)
 },{"./path/lib/virtual-types":856,"babel-messages":878,"babel-runtime/core-js/get-iterator":879,"babel-runtime/core-js/object/keys":884,"babel-runtime/helpers/typeof":889,"babel-types":1126,"dup":27,"lodash/clone":1089}],864:[function(require,module,exports){
-"use strict";
-
-exports.__esModule = true;
-
-exports.default = function (rawLines, lineNumber, colNumber) {
-  var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-
-  colNumber = Math.max(colNumber, 0);
-
-  var highlighted = opts.highlightCode && _chalk2.default.supportsColor;
-  if (highlighted) rawLines = highlight(rawLines);
-
-  var lines = rawLines.split(NEWLINE);
-  var start = Math.max(lineNumber - 3, 0);
-  var end = Math.min(lines.length, lineNumber + 3);
-
-  if (!lineNumber && !colNumber) {
-    start = 0;
-    end = lines.length;
-  }
-
-  var numberMaxWidth = String(end).length;
-
-  var frame = lines.slice(start, end).map(function (line, index) {
-    var number = start + 1 + index;
-    var paddedNumber = (" " + number).slice(-numberMaxWidth);
-    var gutter = " " + paddedNumber + " | ";
-    if (number === lineNumber) {
-      var markerLine = "";
-      if (colNumber) {
-        var markerSpacing = line.slice(0, colNumber - 1).replace(/[^\t]/g, " ");
-        markerLine = "\n " + gutter.replace(/\d/g, " ") + markerSpacing + "^";
-      }
-      return ">" + gutter + line + markerLine;
-    } else {
-      return " " + gutter + line;
-    }
-  }).join("\n");
-
-  if (highlighted) {
-    return _chalk2.default.reset(frame);
-  } else {
-    return frame;
-  }
-};
-
-var _jsTokens = require("js-tokens");
-
-var _jsTokens2 = _interopRequireDefault(_jsTokens);
-
-var _esutils = require("esutils");
-
-var _esutils2 = _interopRequireDefault(_esutils);
-
-var _chalk = require("chalk");
-
-var _chalk2 = _interopRequireDefault(_chalk);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Chalk styles for token types.
- */
-
-var defs = {
-  string: _chalk2.default.red,
-  punctuator: _chalk2.default.bold,
-  curly: _chalk2.default.green,
-  parens: _chalk2.default.blue.bold,
-  square: _chalk2.default.yellow,
-  keyword: _chalk2.default.cyan,
-  number: _chalk2.default.magenta,
-  regex: _chalk2.default.magenta,
-  comment: _chalk2.default.grey,
-  invalid: _chalk2.default.inverse
-};
-
-/**
- * RegExp to test for newlines in terminal.
- */
-
-var NEWLINE = /\r\n|[\n\r\u2028\u2029]/;
-
-/**
- * Get the type of token, specifying punctuator type.
- */
-
-function getTokenType(match) {
-  var token = _jsTokens2.default.matchToToken(match);
-  if (token.type === "name" && _esutils2.default.keyword.isReservedWordES6(token.value)) {
-    return "keyword";
-  }
-
-  if (token.type === "punctuator") {
-    switch (token.value) {
-      case "{":
-      case "}":
-        return "curly";
-      case "(":
-      case ")":
-        return "parens";
-      case "[":
-      case "]":
-        return "square";
-    }
-  }
-
-  return token.type;
-}
-
-/**
- * Highlight `text`.
- */
-
-function highlight(text) {
-  return text.replace(_jsTokens2.default, function () {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    var type = getTokenType(args);
-    var colorize = defs[type];
-    if (colorize) {
-      return args[0].split(NEWLINE).map(function (str) {
-        return colorize(str);
-      }).join("\n");
-    } else {
-      return args[0];
-    }
-  });
-}
-
-/**
- * Create a code frame, adding line numbers, code highlighting, and pointing to a given position.
- */
-
-module.exports = exports["default"];
-},{"chalk":865,"esutils":876,"js-tokens":877}],865:[function(require,module,exports){
+arguments[4][28][0].apply(exports,arguments)
+},{"chalk":865,"dup":28,"esutils":876,"js-tokens":877}],865:[function(require,module,exports){
 arguments[4][29][0].apply(exports,arguments)
 },{"_process":821,"ansi-styles":866,"dup":29,"escape-string-regexp":867,"has-ansi":868,"strip-ansi":870,"supports-color":872}],866:[function(require,module,exports){
 arguments[4][30][0].apply(exports,arguments)
@@ -53974,27 +54243,8 @@ arguments[4][39][0].apply(exports,arguments)
 },{"./code":874,"dup":39}],876:[function(require,module,exports){
 arguments[4][40][0].apply(exports,arguments)
 },{"./ast":873,"./code":874,"./keyword":875,"dup":40}],877:[function(require,module,exports){
-// Copyright 2014, 2015, 2016 Simon Lydell
-// X11 (“MIT”) Licensed. (See LICENSE.)
-
-// This regex comes from regex.coffee, and is inserted here by generate-index.js
-// (run `npm run build`).
-module.exports = /((['"])(?:(?!\2|\\).|\\(?:\r\n|[\s\S]))*(\2)?|`(?:[^`\\$]|\\[\s\S]|\$(?!\{)|\$\{(?:[^{}]|\{[^}]*\}?)*\}?)*(`)?)|(\/\/.*)|(\/\*(?:[^*]|\*(?!\/))*(\*\/)?)|(\/(?!\*)(?:\[(?:(?![\]\\]).|\\.)*\]|(?![\/\]\\]).|\\.)+\/(?:(?!\s*(?:\b|[\u0080-\uFFFF$\\'"~({]|[+\-!](?!=)|\.?\d))|[gmiyu]{1,5}\b(?![\u0080-\uFFFF$\\]|\s*(?:[+\-*%&|^<>!=?({]|\/(?![\/*])))))|(0[xX][\da-fA-F]+|0[oO][0-7]+|0[bB][01]+|(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?)|((?!\d)(?:(?!\s)[$\w\u0080-\uFFFF]|\\u[\da-fA-F]{4}|\\u\{[\da-fA-F]{1,6}\})+)|(--|\+\+|&&|\|\||=>|\.{3}|(?:[+\-\/%&|^]|\*{1,2}|<{1,2}|>{1,3}|!=?|={1,2})=?|[?~.,:;[\](){}])|(\s+)|(^$|[\s\S])/g
-
-module.exports.matchToToken = function(match) {
-  var token = {type: "invalid", value: match[0]}
-       if (match[ 1]) token.type = "string" , token.closed = !!(match[3] || match[4])
-  else if (match[ 5]) token.type = "comment"
-  else if (match[ 6]) token.type = "comment", token.closed = !!match[7]
-  else if (match[ 8]) token.type = "regex"
-  else if (match[ 9]) token.type = "number"
-  else if (match[10]) token.type = "name"
-  else if (match[11]) token.type = "punctuator"
-  else if (match[12]) token.type = "whitespace"
-  return token
-}
-
-},{}],878:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41}],878:[function(require,module,exports){
 arguments[4][42][0].apply(exports,arguments)
 },{"babel-runtime/core-js/json/stringify":880,"dup":42,"util":823}],879:[function(require,module,exports){
 arguments[4][43][0].apply(exports,arguments)
@@ -54481,257 +54731,8 @@ arguments[4][159][0].apply(exports,arguments)
 },{"./index":1121,"dup":159}],1120:[function(require,module,exports){
 arguments[4][160][0].apply(exports,arguments)
 },{"./index":1121,"dup":160}],1121:[function(require,module,exports){
-"use strict";
-
-exports.__esModule = true;
-exports.DEPRECATED_KEYS = exports.BUILDER_KEYS = exports.NODE_FIELDS = exports.ALIAS_KEYS = exports.VISITOR_KEYS = undefined;
-
-var _getIterator2 = require("babel-runtime/core-js/get-iterator");
-
-var _getIterator3 = _interopRequireDefault(_getIterator2);
-
-var _stringify = require("babel-runtime/core-js/json/stringify");
-
-var _stringify2 = _interopRequireDefault(_stringify);
-
-var _typeof2 = require("babel-runtime/helpers/typeof");
-
-var _typeof3 = _interopRequireDefault(_typeof2);
-
-exports.assertEach = assertEach;
-exports.assertOneOf = assertOneOf;
-exports.assertNodeType = assertNodeType;
-exports.assertNodeOrValueType = assertNodeOrValueType;
-exports.assertValueType = assertValueType;
-exports.chain = chain;
-exports.default = defineType;
-
-var _index = require("../index");
-
-var t = _interopRequireWildcard(_index);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var VISITOR_KEYS = exports.VISITOR_KEYS = {};
-var ALIAS_KEYS = exports.ALIAS_KEYS = {};
-var NODE_FIELDS = exports.NODE_FIELDS = {};
-var BUILDER_KEYS = exports.BUILDER_KEYS = {};
-var DEPRECATED_KEYS = exports.DEPRECATED_KEYS = {};
-
-function getType(val) {
-  if (Array.isArray(val)) {
-    return "array";
-  } else if (val === null) {
-    return "null";
-  } else if (val === undefined) {
-    return "undefined";
-  } else {
-    return typeof val === "undefined" ? "undefined" : (0, _typeof3.default)(val);
-  }
-}
-
-function assertEach(callback) {
-  function validator(node, key, val) {
-    if (!Array.isArray(val)) return;
-
-    for (var i = 0; i < val.length; i++) {
-      callback(node, key + "[" + i + "]", val[i]);
-    }
-  }
-  validator.each = callback;
-  return validator;
-}
-
-function assertOneOf() {
-  for (var _len = arguments.length, vals = Array(_len), _key = 0; _key < _len; _key++) {
-    vals[_key] = arguments[_key];
-  }
-
-  function validate(node, key, val) {
-    if (vals.indexOf(val) < 0) {
-      throw new TypeError("Property " + key + " expected value to be one of " + (0, _stringify2.default)(vals) + " but got " + (0, _stringify2.default)(val));
-    }
-  }
-
-  validate.oneOf = vals;
-
-  return validate;
-}
-
-function assertNodeType() {
-  for (var _len2 = arguments.length, types = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-    types[_key2] = arguments[_key2];
-  }
-
-  function validate(node, key, val) {
-    var valid = false;
-
-    for (var _iterator = types, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : (0, _getIterator3.default)(_iterator);;) {
-      var _ref;
-
-      if (_isArray) {
-        if (_i >= _iterator.length) break;
-        _ref = _iterator[_i++];
-      } else {
-        _i = _iterator.next();
-        if (_i.done) break;
-        _ref = _i.value;
-      }
-
-      var type = _ref;
-
-      if (t.is(type, val)) {
-        valid = true;
-        break;
-      }
-    }
-
-    if (!valid) {
-      throw new TypeError("Property " + key + " of " + node.type + " expected node to be of a type " + (0, _stringify2.default)(types) + " " + ("but instead got " + (0, _stringify2.default)(val && val.type)));
-    }
-  }
-
-  validate.oneOfNodeTypes = types;
-
-  return validate;
-}
-
-function assertNodeOrValueType() {
-  for (var _len3 = arguments.length, types = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-    types[_key3] = arguments[_key3];
-  }
-
-  function validate(node, key, val) {
-    var valid = false;
-
-    for (var _iterator2 = types, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : (0, _getIterator3.default)(_iterator2);;) {
-      var _ref2;
-
-      if (_isArray2) {
-        if (_i2 >= _iterator2.length) break;
-        _ref2 = _iterator2[_i2++];
-      } else {
-        _i2 = _iterator2.next();
-        if (_i2.done) break;
-        _ref2 = _i2.value;
-      }
-
-      var type = _ref2;
-
-      if (getType(val) === type || t.is(type, val)) {
-        valid = true;
-        break;
-      }
-    }
-
-    if (!valid) {
-      throw new TypeError("Property " + key + " of " + node.type + " expected node to be of a type " + (0, _stringify2.default)(types) + " " + ("but instead got " + (0, _stringify2.default)(val && val.type)));
-    }
-  }
-
-  validate.oneOfNodeOrValueTypes = types;
-
-  return validate;
-}
-
-function assertValueType(type) {
-  function validate(node, key, val) {
-    var valid = getType(val) === type;
-
-    if (!valid) {
-      throw new TypeError("Property " + key + " expected type of " + type + " but got " + getType(val));
-    }
-  }
-
-  validate.type = type;
-
-  return validate;
-}
-
-function chain() {
-  for (var _len4 = arguments.length, fns = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-    fns[_key4] = arguments[_key4];
-  }
-
-  function validate() {
-    for (var _iterator3 = fns, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : (0, _getIterator3.default)(_iterator3);;) {
-      var _ref3;
-
-      if (_isArray3) {
-        if (_i3 >= _iterator3.length) break;
-        _ref3 = _iterator3[_i3++];
-      } else {
-        _i3 = _iterator3.next();
-        if (_i3.done) break;
-        _ref3 = _i3.value;
-      }
-
-      var fn = _ref3;
-
-      fn.apply(undefined, arguments);
-    }
-  }
-  validate.chainOf = fns;
-  return validate;
-}
-
-function defineType(type) {
-  var opts = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-  var inherits = opts.inherits && store[opts.inherits] || {};
-
-  opts.fields = opts.fields || inherits.fields || {};
-  opts.visitor = opts.visitor || inherits.visitor || [];
-  opts.aliases = opts.aliases || inherits.aliases || [];
-  opts.builder = opts.builder || inherits.builder || opts.visitor || [];
-
-  if (opts.deprecatedAlias) {
-    DEPRECATED_KEYS[opts.deprecatedAlias] = type;
-  }
-
-  // ensure all field keys are represented in `fields`
-  for (var _iterator4 = opts.visitor.concat(opts.builder), _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : (0, _getIterator3.default)(_iterator4);;) {
-    var _ref4;
-
-    if (_isArray4) {
-      if (_i4 >= _iterator4.length) break;
-      _ref4 = _iterator4[_i4++];
-    } else {
-      _i4 = _iterator4.next();
-      if (_i4.done) break;
-      _ref4 = _i4.value;
-    }
-
-    var _key5 = _ref4;
-
-    opts.fields[_key5] = opts.fields[_key5] || {};
-  }
-
-  for (var key in opts.fields) {
-    var field = opts.fields[key];
-
-    if (opts.builder.indexOf(key) === -1) {
-      field.optional = true;
-    }
-    if (field.default === undefined) {
-      field.default = null;
-    } else if (!field.validate) {
-      field.validate = assertValueType(getType(field.default));
-    }
-  }
-
-  VISITOR_KEYS[type] = opts.visitor;
-  BUILDER_KEYS[type] = opts.builder;
-  NODE_FIELDS[type] = opts.fields;
-  ALIAS_KEYS[type] = opts.aliases;
-
-  store[type] = opts;
-}
-
-var store = {};
-},{"../index":1126,"babel-runtime/core-js/get-iterator":1130,"babel-runtime/core-js/json/stringify":1131,"babel-runtime/helpers/typeof":1138}],1122:[function(require,module,exports){
+arguments[4][161][0].apply(exports,arguments)
+},{"../index":1126,"babel-runtime/core-js/get-iterator":1130,"babel-runtime/core-js/json/stringify":1131,"babel-runtime/helpers/typeof":1138,"dup":161}],1122:[function(require,module,exports){
 arguments[4][162][0].apply(exports,arguments)
 },{"./core":1117,"./es2015":1118,"./experimental":1119,"./flow":1120,"./index":1121,"./jsx":1123,"./misc":1124,"dup":162}],1123:[function(require,module,exports){
 arguments[4][163][0].apply(exports,arguments)
