@@ -9581,7 +9581,7 @@ exports.run = run;
 
 
 }).call(this,require('_process'))
-},{"_process":821,"add-variable-declarations":2,"ast-processor-babylon-config":352,"automatic-semicolon-insertion":702,"babylon":703,"coffee-lex":826,"decaffeinate-parser":827,"detect-indent":837,"esnext":838,"fs":814,"lines-and-columns":1485,"magic-string":1486,"path":820,"repeating":1488,"util":823}],2:[function(require,module,exports){
+},{"_process":821,"add-variable-declarations":2,"ast-processor-babylon-config":352,"automatic-semicolon-insertion":702,"babylon":703,"coffee-lex":826,"decaffeinate-parser":836,"detect-indent":837,"esnext":838,"fs":814,"lines-and-columns":1485,"magic-string":1486,"path":820,"repeating":1488,"util":823}],2:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('magic-string'), require('babel-traverse'), require('babylon')) :
   typeof define === 'function' && define.amd ? define(['magic-string', 'babel-traverse', 'babylon'], factory) :
@@ -42560,2090 +42560,6 @@ module.exports = function(arr, obj){
 
 }));
 },{}],827:[function(require,module,exports){
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('coffee-script'), require('coffee-lex'), require('util')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'coffee-script', 'coffee-lex', 'util'], factory) :
-  (factory((global.decaffeinate = global.decaffeinate || {}, global.decaffeinate.parser = global.decaffeinate.parser || {}),global.CoffeeScript,global.lex,global.util));
-}(this, function (exports,CoffeeScript,lex,util) { 'use strict';
-
-  var lex__default = 'default' in lex ? lex['default'] : lex;
-
-  /**
-   * @param {string} source
-   * @returns {function(number, number): number}
-   */
-  function lineColumnMapper(source) {
-    var offsets = [0];
-    var offset = 0;
-
-    while ((offset = source.indexOf('\n', offset)) >= 0) {
-      offset += '\n'.length;
-      offsets.push(offset);
-    }
-
-    var result = function result(line, column) {
-      return offsets[line] + column;
-    };
-    result.invert = function (offset) {
-      for (var line = offsets.length - 1; line >= 0; line--) {
-        var lineStart = offsets[line];
-        if (offset >= lineStart) {
-          return { line: line, column: offset - lineStart };
-        }
-      }
-    };
-    return result;
-  }
-
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
-  };
-
-  var classCallCheck = function (instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  };
-
-  var createClass = function () {
-    function defineProperties(target, props) {
-      for (var i = 0; i < props.length; i++) {
-        var descriptor = props[i];
-        descriptor.enumerable = descriptor.enumerable || false;
-        descriptor.configurable = true;
-        if ("value" in descriptor) descriptor.writable = true;
-        Object.defineProperty(target, descriptor.key, descriptor);
-      }
-    }
-
-    return function (Constructor, protoProps, staticProps) {
-      if (protoProps) defineProperties(Constructor.prototype, protoProps);
-      if (staticProps) defineProperties(Constructor, staticProps);
-      return Constructor;
-    };
-  }();
-
-  var inherits = function (subClass, superClass) {
-    if (typeof superClass !== "function" && superClass !== null) {
-      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
-    }
-
-    subClass.prototype = Object.create(superClass && superClass.prototype, {
-      constructor: {
-        value: subClass,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-  };
-
-  var possibleConstructorReturn = function (self, call) {
-    if (!self) {
-      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-    }
-
-    return call && (typeof call === "object" || typeof call === "function") ? call : self;
-  };
-
-  var slicedToArray = function () {
-    function sliceIterator(arr, i) {
-      var _arr = [];
-      var _n = true;
-      var _d = false;
-      var _e = undefined;
-
-      try {
-        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-          _arr.push(_s.value);
-
-          if (i && _arr.length === i) break;
-        }
-      } catch (err) {
-        _d = true;
-        _e = err;
-      } finally {
-        try {
-          if (!_n && _i["return"]) _i["return"]();
-        } finally {
-          if (_d) throw _e;
-        }
-      }
-
-      return _arr;
-    }
-
-    return function (arr, i) {
-      if (Array.isArray(arr)) {
-        return arr;
-      } else if (Symbol.iterator in Object(arr)) {
-        return sliceIterator(arr, i);
-      } else {
-        throw new TypeError("Invalid attempt to destructure non-iterable instance");
-      }
-    };
-  }();
-
-  var toConsumableArray = function (arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-      return arr2;
-    } else {
-      return Array.from(arr);
-    }
-  };
-
-  var ParseError = function (_Error) {
-    inherits(ParseError, _Error);
-
-    function ParseError(syntaxError) {
-      classCallCheck(this, ParseError);
-
-      var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ParseError).call(this, syntaxError.message));
-
-      _this.syntaxError = syntaxError;
-      return _this;
-    }
-
-    return ParseError;
-  }(Error);
-
-  var ParseContext = function () {
-    /**
-     * @param {string} source
-     * @param {SourceTokenList} sourceTokens
-     * @param {Object} ast
-     */
-
-    function ParseContext(source, sourceTokens, ast) {
-      classCallCheck(this, ParseContext);
-
-      this.source = source;
-      this.lineMap = lineColumnMapper(source);
-      this.ast = ast;
-      this.sourceTokens = sourceTokens;
-    }
-
-    /**
-     * @param {Object} locatable
-     * @returns {number[]}
-     */
-
-
-    createClass(ParseContext, [{
-      key: 'getRange',
-      value: function getRange(locatable) {
-        if ('range' in locatable) {
-          return locatable.range;
-        } else if ('locationData' in locatable) {
-          return this.getRange(locatable.locationData);
-        } else {
-          return [this.lineMap(locatable.first_line, locatable.first_column), this.lineMap(locatable.last_line, locatable.last_column) + 1];
-        }
-      }
-
-      /**
-       * @param {string} source
-       * @param {function(string): SourceTokenList} sourceLex
-       * @param {function(string|Array): Object} parse
-       * @returns {ParseContext}
-       */
-
-    }], [{
-      key: 'fromSource',
-      value: function fromSource(source, sourceLex, parse) {
-        try {
-          var sourceTokens = sourceLex(source);
-          return new ParseContext(source, sourceTokens, parse(source));
-        } catch (ex) {
-          if (ex instanceof SyntaxError) {
-            throw new ParseError(ex);
-          } else {
-            throw ex;
-          }
-        }
-      }
-    }]);
-    return ParseContext;
-  }();
-
-  /**
-   * @param {Object} node A CoffeeScript node.
-   * @returns {string}
-   */
-  function type(node) {
-    return node.constructor.name;
-  }
-
-  /**
-   * @param {Object} node A CoffeeScript node.
-   * @returns {boolean}
-   */
-  function isChainedComparison(node) {
-    if (type(node) === 'Op' && isComparisonOperator(node)) {
-      return isComparisonOperator(node.first) || isComparisonOperator(node.second);
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * @param {Object} node A CoffeeScript node.
-   * @returns {boolean}
-   */
-  function isComparisonOperator(node) {
-    switch (node.operator) {
-      case '<':
-      case '>':
-      case '<=':
-      case '>=':
-        return true;
-
-      default:
-        return false;
-    }
-  }
-
-  /**
-   * @param {Object} node
-   * @param {Array<Object>} ancestors
-   * @param {ParseContext} context
-   * @returns boolean
-   */
-  function isInterpolatedString(node, ancestors, context) {
-    var range = rangeOfInterpolatedStringForNode(node, context);
-
-    if (!range) {
-      return false;
-    }
-
-    var parentOp = void 0;
-    for (var i = ancestors.length - 1; i >= 0; i--) {
-      if (type(ancestors[i]) === 'Op') {
-        parentOp = ancestors[i];
-        break;
-      }
-    }
-
-    if (!parentOp) {
-      // `node` is in an interpolated string but there is no containing
-      // operator, so it must be a root.
-      return true;
-    }
-
-    var parentRange = rangeOfInterpolatedStringForNode(parentOp, context);
-
-    if (!parentRange) {
-      // There's a containing operator, but there's no interpolated string.
-      return true;
-    }
-
-    // There's a string interpolation containing the parent operator, but is it
-    // the same one? If not, then this node is the root of an interpolated string.
-    return parentRange[0] !== range[0] || parentRange[1] !== range[1];
-  }
-
-  function rangeOfInterpolatedStringForNode(node, context) {
-    if (node.operator !== '+' || !node.second) {
-      return null;
-    }
-
-    var range = context.getRange(node);
-    var tokens = context.sourceTokens;
-    var startTokenIndex = tokens.indexOfTokenContainingSourceIndex(range[0]);
-    if (!startTokenIndex) {
-      throw new Error('no token containing start of node at ' + range[0] + ' found');
-    }
-    return tokens.rangeOfInterpolatedStringTokensContainingTokenIndex(startTokenIndex);
-  }
-
-  /**
-   * @param {Object} first
-   * @param {Object} second
-   * @returns {boolean}
-   */
-  function locationsEqual(first, second) {
-    return first.first_line === second.first_line && first.first_column === second.first_column && first.last_line === second.last_line && first.last_column === second.last_column;
-  }
-
-  /**
-   * @param {string} string
-   * @param {number=} offset
-   * @returns {*}
-   */
-  function parseLiteral(string) {
-    var offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-
-    if (string.slice(0, 3) === '"""' || string.slice(-3) === '"""') {
-      return parseHerestring(string, '"""', offset);
-    } else if (string.slice(0, 3) === "'''" || string.slice(-3) === "'''") {
-      return parseHerestring(string, "'''", offset);
-    } else if (string[0] === "'" || string[string.length - 1] === "'") {
-      return parseQuotedString(string, "'");
-    } else if (string[0] === '"' || string[string.length - 1] === '"') {
-      return parseQuotedString(string, '"');
-    } else if (/^\d+$/.test(string)) {
-      return parseInteger(string);
-    } else if (/^\d*\.\d+$/.test(string)) {
-      return parseFloatingPoint(string);
-    } else if (/^0x[\da-f]+$/i.test(string)) {
-      return parseHexidecimal(string);
-    } else if (/^0o[0-7]+$/i.test(string)) {
-      return parseOctal(string);
-    }
-  }
-
-  function parseHerestring(string, quote) {
-    var offset = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
-
-    var _parseQuotedString = parseQuotedString(string, quote);
-
-    var error = _parseQuotedString.error;
-    var data = _parseQuotedString.data;
-
-    if (error) {
-      return { type: 'error', error: error };
-    }
-
-    var _getIndentInfo = getIndentInfo(string, 3, string.length - 3);
-
-    var leadingMargin = _getIndentInfo.leadingMargin;
-    var trailingMargin = _getIndentInfo.trailingMargin;
-    var ranges = _getIndentInfo.ranges;
-
-    var indentSize = sharedIndentSize(ranges);
-
-    var padding = [];
-    var contentStart = offset + 3;
-    var contentEnd = offset + string.length - 3;
-
-    if (leadingMargin) {
-      padding.push([contentStart, contentStart + leadingMargin]);
-    }
-
-    if (indentSize) {
-      ranges.forEach(function (_ref) {
-        var _ref2 = slicedToArray(_ref, 2);
-
-        var start = _ref2[0];
-        var end = _ref2[1];
-
-        if (end - start >= indentSize) {
-          padding.push([offset + start, offset + start + indentSize]);
-        }
-      });
-    }
-
-    if (trailingMargin) {
-      padding.push([contentEnd - trailingMargin, contentEnd]);
-    }
-
-    for (var i = padding.length - 1; i >= 0; i--) {
-      var _padding$i = slicedToArray(padding[i], 2);
-
-      var start = _padding$i[0];
-      var end = _padding$i[1];
-
-      data = data.slice(0, start - contentStart) + data.slice(end - contentStart);
-    }
-
-    return { type: 'Herestring', data: data, padding: padding };
-  }
-
-  /**
-   * @param {string} string
-   * @param {string} quote
-   * @returns {*}
-   */
-  function parseQuotedString(string, quote) {
-    if (string.slice(0, quote.length) !== quote || string.slice(-quote.length) !== quote) {
-      return {
-        type: 'error',
-        error: {
-          type: 'unbalanced-quotes',
-          message: 'tried to parse quoted string not wrapped in quotes: ' + string
-        }
-      };
-    }
-
-    var p = quote.length;
-    var result = '';
-
-    function hex(count) {
-      var digits = '';
-      while (count-- > 0) {
-        var chr = string[p++];
-        if (/^[\da-f]$/i.test(chr)) {
-          digits += chr;
-        } else {
-          return {
-            type: 'error',
-            error: {
-              type: 'invalid-hex-character',
-              message: 'found ' + chr + ' when looking for a hex character'
-            }
-          };
-        }
-      }
-      return parseInt(digits, 16);
-    }
-
-    while (p < string.length - quote.length) {
-      var chr = void 0;
-      switch (chr = string[p++]) {
-        case '\\':
-          switch (chr = string[p++]) {
-            case quote[0]:
-              result += chr;
-              break;
-
-            case 'n':
-              result += '\n';
-              break;
-
-            case 'r':
-              result += '\r';
-              break;
-
-            case 't':
-              result += '\t';
-              break;
-
-            case 'b':
-              result += '\b';
-              break;
-
-            case 'v':
-              result += '\v';
-              break;
-
-            case 'f':
-              result += '\f';
-              break;
-
-            case 'x':
-              var x = hex(2);
-              if (x.type === 'error') {
-                return x;
-              }
-              result += String.fromCharCode(x);
-              break;
-
-            case 'u':
-              var u = hex(4);
-              if (u.type === 'error') {
-                return u;
-              }
-              result += String.fromCharCode(u);
-              break;
-
-            case '0':
-              result += String.fromCharCode(0);
-              break;
-
-            default:
-              result += chr;
-              break;
-          }
-          break;
-
-        case quote[0]:
-          if (string.slice(p - 1, p - 1 + quote.length) === quote) {
-            return {
-              type: 'error',
-              error: {
-                type: 'unexpected-closing-quote',
-                message: 'unexpected closing quote before the end of the string'
-              }
-            };
-          } else {
-            result += chr;
-          }
-          break;
-
-        default:
-          result += chr;
-          break;
-      }
-    }
-
-    return { type: 'string', data: result };
-  }
-
-  /**
-   * @param {string} string
-   * @returns {{type: string, data: number}}
-   */
-  function parseInteger(string) {
-    return { type: 'int', data: parseInt(string, 10) };
-  }
-
-  /**
-   * @param {string} string
-   * @returns {{type: string, data: number}}
-   */
-  function parseFloatingPoint(string) {
-    return { type: 'float', data: parseFloat(string) };
-  }
-
-  /**
-   * @param {string} string
-   * @returns {{type: string, data: number}}
-   */
-  function parseHexidecimal(string) {
-    return { type: 'int', data: parseInt(string.slice(2), 16) };
-  }
-
-  /**
-   * @param {string} string
-   * @returns {{type: string, data: number}}
-   */
-  function parseOctal(string) {
-    return { type: 'int', data: parseInt(string.slice(2), 8) };
-  }
-
-  /**
-   * @param {string} source
-   * @param {number=} start
-   * @param {number=} end
-   * @returns {{leadingMargin: number, trailingMargin: number, ranges: Array<Array<number>>}}
-   */
-  function getIndentInfo(source) {
-    var start = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-    var end = arguments.length <= 2 || arguments[2] === undefined ? source.length : arguments[2];
-
-    var ranges = [];
-
-    var leadingMargin = 0;
-    while (source[start + leadingMargin] === ' ') {
-      leadingMargin += ' '.length;
-    }
-    if (source[start + leadingMargin] === '\n') {
-      leadingMargin += '\n'.length;
-      start += leadingMargin;
-    }
-
-    var trailingMargin = 0;
-    while (source[end - trailingMargin - ' '.length] === ' ') {
-      trailingMargin += ' '.length;
-    }
-    if (source[end - trailingMargin - '\n'.length] === '\n') {
-      trailingMargin += '\n'.length;
-      end -= trailingMargin;
-    }
-
-    for (var index = start; index < end; index++) {
-      if (index === start || source[index - 1] === '\n') {
-        if (source[index] !== '\n') {
-          var _start = index;
-          while (source[index] === ' ') {
-            index++;
-          }
-          ranges.push([_start, index]);
-        }
-      }
-    }
-
-    return {
-      leadingMargin: leadingMargin,
-      trailingMargin: trailingMargin,
-      ranges: ranges
-    };
-  }
-
-  /**
-   * @param {Array<Array<number>>} ranges
-   * @returns {number}
-   */
-  function sharedIndentSize(ranges) {
-    var size = null;
-
-    ranges.forEach(function (_ref3) {
-      var _ref4 = slicedToArray(_ref3, 2);
-
-      var start = _ref4[0];
-      var end = _ref4[1];
-
-      if (size === null || start !== end && end - start < size) {
-        size = end - start;
-      }
-    });
-
-    return size === null ? 0 : size;
-  }
-
-  /**
-   * @param {string} source
-   * @param {{first_line: number, first_column: number, last_line: number, last_column: number}} loc
-   * @param {function(number, number): number} mapper
-   */
-  function trimNonMatchingParentheses(source, loc, mapper) {
-    var first = mapper(loc.first_line, loc.first_column);
-    var last = mapper(loc.last_line, loc.last_column);
-
-    // Ensure first & last are in bounds.
-
-    if (first < 0) {
-      first = 0;
-      var firstLoc = mapper.invert(first);
-      loc.first_line = firstLoc.line;
-      loc.first_column = firstLoc.column;
-    }
-
-    if (last >= source.length) {
-      last = source.length - 1;
-      var lastLoc = mapper.invert(last);
-      loc.last_line = lastLoc.line;
-      loc.last_column = lastLoc.column;
-    }
-
-    var level = 0;
-    var lastBalancedIndex = first;
-
-    for (var index = first; index <= last; index++) {
-      if (source[index] === '(') {
-        level++;
-      } else if (source[index] === ')') {
-        level--;
-        if (level < 0) {
-          break;
-        }
-      }
-      if (level === 0) {
-        lastBalancedIndex = index;
-      }
-    }
-
-    if (level !== 0 && lastBalancedIndex !== last) {
-      last = lastBalancedIndex;
-      var _lastLoc = mapper.invert(last);
-      loc.last_line = _lastLoc.line;
-      loc.last_column = _lastLoc.column;
-    }
-  }
-
-  function patchCoffeeScript(_ref) {
-    var parse = _ref.nodes;
-
-    var Op = parse('a + b').expressions[0].constructor;
-    var Base = Op.__super__.constructor;
-
-    Op.prototype.invert = invert;
-    Base.prototype.invert = invert;
-  }
-
-  function invert() {
-    this.inverted = !this.inverted;
-    return this;
-  }
-
-  var HEREGEX_PATTERN = /^\/\/\/((?:.|\n)*)\/\/\/([gimy]*)$/;
-
-  /**
-   * @param {string} source
-   * @param {{coffeeScript: {nodes: function(string): Object, tokens: function(string): Array}}} options
-   * @returns {Program}
-   */
-  function parse(source) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-    var CS = options.coffeeScript || CoffeeScript;
-
-    patchCoffeeScript(CS);
-
-    var context = ParseContext.fromSource(source, lex__default, CS.nodes);
-
-    if (source.length === 0) {
-      var program = {
-        type: 'Program',
-        line: 1,
-        column: 1,
-        raw: source,
-        range: [0, 0],
-        body: null
-      };
-
-      Object.defineProperty(program, 'context', { value: context });
-      return (/** @type Program */program
-      );
-    }
-
-    return (/** @type Program */convert(context)
-    );
-  }
-
-  function locationContainingNodes() {
-    for (var _len = arguments.length, nodes = Array(_len), _key = 0; _key < _len; _key++) {
-      nodes[_key] = arguments[_key];
-    }
-
-    switch (nodes.length) {
-      case 0:
-        return null;
-
-      case 1:
-        return nodes[0].locationData;
-
-      case 2:
-        return mergeLocations(nodes[0].locationData, nodes[1].locationData);
-
-      default:
-        return mergeLocations(nodes[0].locationData, locationContainingNodes.apply(undefined, toConsumableArray(nodes.slice(1))));
-    }
-  }
-
-  function locationWithLastPosition(loc, last) {
-    return {
-      first_line: loc.first_line,
-      first_column: loc.first_column,
-      last_line: last.last_line,
-      last_column: last.last_column
-    };
-  }
-
-  function mergeLocations(left, right) {
-    var first_line = void 0;
-    var first_column = void 0;
-    var last_line = void 0;
-    var last_column = void 0;
-
-    if (left.first_line < right.first_line) {
-      first_line = left.first_line;
-      first_column = left.first_column;
-    } else if (left.first_line > right.first_line) {
-      first_line = right.first_line;
-      first_column = right.first_column;
-    } else if (left.first_column < right.first_column) {
-      first_line = left.first_line;
-      first_column = left.first_column;
-    } else {
-      first_line = right.first_line;
-      first_column = right.first_column;
-    }
-
-    if (left.last_line < right.last_line) {
-      last_line = right.last_line;
-      last_column = right.last_column;
-    } else if (left.last_line > right.last_line) {
-      last_line = left.last_line;
-      last_column = left.last_column;
-    } else if (left.last_column < right.last_column) {
-      last_line = right.last_line;
-      last_column = right.last_column;
-    } else {
-      last_line = left.last_line;
-      last_column = left.last_column;
-    }
-
-    return { first_line: first_line, first_column: first_column, last_line: last_line, last_column: last_column };
-  }
-
-  /**
-   * @param {ParseContext} context
-   * @returns {Node}
-   */
-  function convert(context) {
-    var source = context.source;
-    var mapper = context.lineMap;
-
-    fixLocations(context.ast);
-    return convertNode(context.ast);
-
-    /**
-     * @param {Object} node
-     * @param ancestors
-     */
-    function fixLocations(node) {
-      var ancestors = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
-
-      node.eachChild(function (child) {
-        if (child && child.locationData) {
-          fixLocations(child, [node].concat(toConsumableArray(ancestors)));
-        }
-      });
-      switch (type(node)) {
-        case 'Value':
-          {
-            var lastChild = node.properties[node.properties.length - 1];
-            if (lastChild) {
-              node.locationData = locationWithLastPosition(node.locationData, lastChild.locationData);
-            }
-            break;
-          }
-
-        case 'Index':
-        case 'Slice':
-          {
-            var rangeOfBrackets = rangeOfBracketTokensForIndexNode(node);
-            var lbracket = context.sourceTokens.tokenAtIndex(rangeOfBrackets[0]);
-            var lbracketLoc = mapper.invert(lbracket.start);
-            var rbracket = context.sourceTokens.tokenAtIndex(rangeOfBrackets[1].previous());
-            var rbracketLoc = mapper.invert(rbracket.start);
-            node.locationData = {
-              first_line: lbracketLoc.line,
-              first_column: lbracketLoc.column,
-              last_line: rbracketLoc.line,
-              last_column: rbracketLoc.column
-            };
-            break;
-          }
-
-        case 'Access':
-        case 'Arr':
-        case 'Bool':
-        case 'Comment':
-        case 'Existence':
-        case 'Expansion':
-        case 'Literal':
-        case 'Null':
-        case 'Parens':
-        case 'Range':
-        case 'Return':
-        case 'Splat':
-        case 'Throw':
-        case 'Undefined':
-          break;
-
-        case 'Obj':
-          {
-            var loc = node.locationData;
-            var start = mapper(loc.first_line, loc.first_column);
-            var isImplicitObject = source[start] !== '{';
-            if (isImplicitObject) {
-              var _lastChild = node.properties[node.properties.length - 1];
-              node.locationData = locationWithLastPosition(node.locationData, _lastChild.locationData);
-            }
-            break;
-          }
-
-        case 'Op':
-          {
-            var _lastChild2 = node.second;
-            if (_lastChild2) {
-              node.locationData = locationWithLastPosition(node.locationData, _lastChild2.locationData);
-            }
-            break;
-          }
-
-        case 'Assign':
-          {
-            var _lastChild3 = node.value;
-            node.locationData = locationWithLastPosition(node.locationData, _lastChild3.locationData);
-            break;
-          }
-
-        case 'In':
-          {
-            var _lastChild4 = node.array;
-            node.locationData = locationWithLastPosition(node.locationData, _lastChild4.locationData);
-            break;
-          }
-
-        case 'Call':
-          {
-            if (node.variable) {
-              // `super` won't have a callee (i.e. `node.variable`)
-              var calleeLoc = node.variable.locationData;
-              var calleeEnd = mapper(calleeLoc.last_line, calleeLoc.last_column) + 1;
-              // Account for soaked calls, e.g. `a?()`.
-              if (source[calleeEnd] === '?') {
-                calleeEnd += 1;
-              }
-              var isImplicitCall = source[calleeEnd] !== '(';
-              if (isImplicitCall) {
-                var _lastChild5 = node.args[node.args.length - 1] || node.variable;
-                if (_lastChild5) {
-                  node.locationData = locationWithLastPosition(node.locationData, _lastChild5.locationData);
-                }
-              }
-            }
-            break;
-          }
-
-        case 'Block':
-          {
-            var _lastChild6 = node.expressions[node.expressions.length - 1];
-            if (_lastChild6) {
-              node.locationData = locationWithLastPosition(node.locationData, _lastChild6.locationData);
-            }
-            break;
-          }
-
-        case 'If':
-          {
-            var _lastChild7 = node.elseBody || node.body;
-            node.locationData = mergeLocations(node.locationData, _lastChild7.locationData);
-            break;
-          }
-
-        case 'For':
-        case 'While':
-          {
-            var _lastChild8 = node.body;
-            node.locationData = locationWithLastPosition(node.locationData, _lastChild8.locationData);
-            break;
-          }
-
-        case 'Param':
-          {
-            if (!node.splat) {
-              var _lastChild9 = node.value || node.name;
-              node.locationData = locationWithLastPosition(node.locationData, _lastChild9.locationData);
-            }
-            break;
-          }
-
-        case 'Code':
-          {
-            if (node.body) {
-              node.locationData = locationWithLastPosition(node.locationData, node.body.locationData);
-            }
-            break;
-          }
-
-        case 'Class':
-          {
-            var _lastChild10 = node.body;
-            node.locationData = locationWithLastPosition(node.locationData, _lastChild10.locationData);
-            break;
-          }
-
-        case 'Switch':
-          {
-            var _lastChild11 = node.otherwise || node.cases[node.cases.length - 1][1];
-            node.locationData = locationWithLastPosition(node.locationData, _lastChild11.locationData);
-            break;
-          }
-
-        case 'Try':
-          {
-            var _lastChild12 = node.ensure || node.recovery || node.errorVariable || node.attempt;
-            node.locationData = locationWithLastPosition(node.locationData, _lastChild12.locationData);
-            break;
-          }
-
-        case 'Extends':
-          {
-            var _lastChild13 = node.parent;
-            node.locationData = locationWithLastPosition(node.locationData, _lastChild13.locationData);
-            break;
-          }
-
-        default:
-          throw new Error('cannot fix location data for ' + type(node) + ' at ' + (node.locationData.first_line + 1 + ':' + (node.locationData.first_column + 1) + ': ') + util.inspect(node));
-      }
-    }
-
-    function rangeOfBracketTokensForIndexNode(indexNode) {
-      var start = mapper(indexNode.locationData.first_line, indexNode.locationData.first_column);
-      var startTokenIndex = context.sourceTokens.indexOfTokenStartingAtSourceIndex(start);
-      var range = context.sourceTokens.rangeOfMatchingTokensContainingTokenIndex(lex.LBRACKET, lex.RBRACKET, startTokenIndex);
-      if (!range) {
-        throw new Error('cannot find braces surrounding index at ' + (indexNode.locationData.first_line + 1 + ':' + indexNode.locationData.first_column + ': ') + ('' + util.inspect(indexNode)));
-      }
-      return range;
-    }
-
-    /**
-     * @param {Object} node
-     * @param ancestors
-     * @returns {Node}
-     */
-    function convertNode(node) {
-      var ancestors = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
-
-      if (ancestors.length === 0) {
-        var programNode = {
-          type: 'Program',
-          line: 1,
-          column: 1,
-          range: [0, source.length],
-          raw: source,
-          body: makeNode('Block', node.locationData, {
-            statements: convertChild(node.expressions)
-          })
-        };
-        Object.defineProperty(programNode, 'context', {
-          value: context,
-          enumerable: false
-        });
-        return programNode;
-      }
-
-      if (node.locationData && type(node) !== 'Literal') {
-        // should't trim Literal, i.e. "(".
-        trimNonMatchingParentheses(source, node.locationData, mapper);
-      }
-
-      var _ret = function () {
-        switch (type(node)) {
-          case 'Value':
-            var value = convertChild(node.base);
-            node.properties.forEach(function (prop) {
-              value = accessOpForProperty(value, prop, node.base.locationData);
-              if (value.type === 'MemberAccessOp' && value.expression.type === 'MemberAccessOp') {
-                if (value.expression.memberName === 'prototype' && value.expression.raw.slice(-2) === '::') {
-                  // Un-expand shorthand prototype access.
-                  value = {
-                    type: 'ProtoMemberAccessOp',
-                    line: value.line,
-                    column: value.column,
-                    range: value.range,
-                    raw: value.raw,
-                    expression: value.expression.expression,
-                    memberName: value.memberName
-                  };
-                }
-              }
-            });
-            return {
-              v: value
-            };
-
-          case 'Literal':
-            if (node.value === 'this') {
-              return {
-                v: makeNode('This', node.locationData)
-              };
-            } else {
-              var start = mapper(node.locationData.first_line, node.locationData.first_column);
-              var end = mapper(node.locationData.last_line, node.locationData.last_column) + 1;
-              var raw = source.slice(start, end);
-              var literal = parseLiteral(raw, start);
-              if (!literal) {
-                if (raw[0] === '`' && raw[raw.length - 1] === '`') {
-                  return {
-                    v: makeNode('JavaScript', node.locationData, { data: node.value })
-                  };
-                } else if (raw.slice(0, '///'.length) === '///') {
-                  var _ret2 = function () {
-                    var flags = raw.match(HEREGEX_PATTERN)[2];
-                    return {
-                      v: {
-                        v: makeNode('RegExp', node.locationData, {
-                          data: node.value,
-                          flags: ['g', 'i', 'm', 'y'].reduce(function (memo, flag) {
-                            memo[flag] = flags.indexOf(flag) >= 0;
-                            return memo;
-                          }, {})
-                        })
-                      }
-                    };
-                  }();
-
-                  if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
-                }
-                return {
-                  v: makeNode('Identifier', node.locationData, { data: node.value })
-                };
-              } else if (literal.type === 'error') {
-                if (literal.error.type === 'unbalanced-quotes') {
-                  // This is probably part of an interpolated string.
-                  literal = parseLiteral(node.value);
-                  return {
-                    v: makeNode('String', node.locationData, { data: parseLiteral(node.value).data })
-                  };
-                }
-                throw new Error(literal.error.message);
-              } else if (literal.type === 'string') {
-                return {
-                  v: makeNode('String', node.locationData, { data: literal.data })
-                };
-              } else if (literal.type === 'int') {
-                return {
-                  v: makeNode('Int', node.locationData, { data: literal.data })
-                };
-              } else if (literal.type === 'float') {
-                return {
-                  v: makeNode('Float', node.locationData, { data: literal.data })
-                };
-              } else if (literal.type === 'Herestring') {
-                return {
-                  v: makeNode('Herestring', node.locationData, { data: literal.data, padding: literal.padding })
-                };
-              } else if (literal.type === 'RegExp') {
-                return {
-                  v: makeNode('RegExp', node.locationData, { data: literal.data, flags: literal.flags })
-                };
-              } else {
-                throw new Error('unknown literal type for value: ' + JSON.stringify(literal));
-              }
-            }
-
-          case 'Call':
-            if (node.isNew) {
-              return {
-                v: makeNode('NewOp', expandLocationLeftThrough(node.locationData, 'new'), {
-                  ctor: convertChild(node.variable),
-                  arguments: convertChild(node.args)
-                })
-              };
-            } else if (node.isSuper) {
-              if (node.args.length === 1 && type(node.args[0]) === 'Splat' && locationsEqual(node.args[0].locationData, node.locationData)) {
-                // Virtual splat argument.
-                return {
-                  v: makeNode('FunctionApplication', node.locationData, {
-                    function: makeNode('Super', node.locationData),
-                    arguments: [{
-                      type: 'Spread',
-                      virtual: true,
-                      expression: {
-                        type: 'Identifier',
-                        data: 'arguments',
-                        virtual: true
-                      }
-                    }]
-                  })
-                };
-              }
-              var superLocationData = {
-                first_line: node.locationData.first_line,
-                first_column: node.locationData.first_column,
-                last_line: node.locationData.first_line,
-                last_column: node.locationData.first_column + 'super'.length - 1
-              };
-              return {
-                v: makeNode('FunctionApplication', node.locationData, {
-                  function: makeNode('Super', superLocationData),
-                  arguments: convertChild(node.args)
-                })
-              };
-            } else {
-              var _ret3 = function () {
-                var result = makeNode(node.soak ? 'SoakedFunctionApplication' : 'FunctionApplication', node.locationData, {
-                  function: convertChild(node.variable),
-                  arguments: convertChild(node.args)
-                });
-
-                if (node.do) {
-                  result.type = 'DoOp';
-                  result.expression = result.function;
-                  // The argument to `do` may not always be a function literal.
-                  if (result.expression.parameters) {
-                    result.expression.parameters = result.expression.parameters.map(function (param, i) {
-                      var arg = result.arguments[i];
-
-                      if (arg.type === 'Identifier' && arg.data === param.data) {
-                        return param;
-                      }
-
-                      return makeNode('DefaultParam', locationContainingNodes(node.args[i], node.variable.params[i]), {
-                        param: param,
-                        default: arg
-                      });
-                    });
-                  }
-                  delete result.function;
-                  delete result.arguments;
-                }
-
-                return {
-                  v: {
-                    v: result
-                  }
-                };
-              }();
-
-              if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
-            }
-
-          case 'Op':
-            var op = convertOperator(node);
-            if (isInterpolatedString(node, ancestors, context)) {
-              return {
-                v: createTemplateLiteral(op)
-              };
-            }
-            if (isChainedComparison(node) && !isChainedComparison(ancestors[ancestors.length - 1])) {
-              return {
-                v: makeNode('ChainedComparisonOp', node.locationData, {
-                  expression: op
-                })
-              };
-            }
-            return {
-              v: op
-            };
-
-          case 'Assign':
-            if (node.context === 'object') {
-              return {
-                v: makeNode('ObjectInitialiserMember', node.locationData, {
-                  key: convertChild(node.variable),
-                  expression: convertChild(node.value)
-                })
-              };
-            } else if (node.context && node.context.slice(-1) === '=') {
-              return {
-                v: makeNode('CompoundAssignOp', node.locationData, {
-                  assignee: convertChild(node.variable),
-                  expression: convertChild(node.value),
-                  op: binaryOperatorNodeType(node.context.slice(0, -1))
-                })
-              };
-            } else {
-              return {
-                v: makeNode('AssignOp', node.locationData, {
-                  assignee: convertChild(node.variable),
-                  expression: convertChild(node.value)
-                })
-              };
-            }
-
-          case 'Obj':
-            return {
-              v: makeNode('ObjectInitialiser', node.locationData, {
-                members: node.properties.map(function (property) {
-                  if (type(property) === 'Value') {
-                    // shorthand property
-                    var keyValue = convertChild(property);
-                    return makeNode('ObjectInitialiserMember', property.locationData, {
-                      key: keyValue,
-                      expression: keyValue
-                    });
-                  }
-
-                  return convertChild(property);
-                }).filter(function (node) {
-                  return node;
-                })
-              })
-            };
-
-          case 'Arr':
-            return {
-              v: makeNode('ArrayInitialiser', node.locationData, {
-                members: convertChild(node.objects)
-              })
-            };
-
-          case 'Parens':
-            if (type(node.body) === 'Block') {
-              var expressions = node.body.expressions;
-              if (expressions.length === 1) {
-                return {
-                  v: convertChild(expressions[0])
-                };
-              } else {
-                var lastExpression = expressions[expressions.length - 1];
-                var _result2 = convertChild(lastExpression);
-                for (var i = expressions.length - 2; i >= 0; i--) {
-                  var left = expressions[i];
-                  _result2 = makeNode('SeqOp', locationContainingNodes(left, lastExpression), {
-                    left: convertChild(left),
-                    right: _result2
-                  });
-                }
-                return {
-                  v: _result2
-                };
-              }
-            } else {
-              return {
-                v: convertChild(node.body)
-              };
-            }
-
-          case 'If':
-            {
-              var condition = convertChild(node.condition);
-              var consequent = convertChild(node.body);
-              var alternate = convertChild(node.elseBody);
-              var isUnless = false;
-
-              if (consequent && consequent.range[0] < condition.range[0]) {
-                // POST-if, so look for tokens between the consequent and the condition
-                consequent.inline = true;
-                var lastConsequentTokenIndex = context.sourceTokens.indexOfTokenEndingAtSourceIndex(consequent.range[1]);
-                var firstConditionTokenIndex = context.sourceTokens.indexOfTokenStartingAtSourceIndex(condition.range[0]);
-
-                for (var _i = lastConsequentTokenIndex; _i !== firstConditionTokenIndex; _i = _i.next()) {
-                  var token = context.sourceTokens.tokenAtIndex(_i);
-                  if (token.type === lex.IF) {
-                    isUnless = source.slice(token.start, token.end) === 'unless';
-                    break;
-                  }
-                }
-              } else {
-                // Regular `if`, so look at the start of the node.
-                var _firstConditionTokenIndex = context.sourceTokens.indexOfTokenStartingAtSourceIndex(condition.range[0]);
-
-                for (var _i2 = _firstConditionTokenIndex; _i2 !== null; _i2 = _i2.previous()) {
-                  var _token = context.sourceTokens.tokenAtIndex(_i2);
-                  if (_token.type === lex.IF) {
-                    isUnless = source.slice(_token.start, _token.end) === 'unless';
-                    break;
-                  }
-                }
-              }
-
-              return {
-                v: makeNode('Conditional', node.locationData, {
-                  isUnless: isUnless,
-                  condition: condition,
-                  consequent: consequent,
-                  alternate: alternate
-                })
-              };
-            }
-
-          case 'Code':
-            var fnType = node.bound ? 'BoundFunction' : node.isGenerator ? 'GeneratorFunction' : 'Function';
-            return {
-              v: makeNode(fnType, node.locationData, {
-                body: convertChild(node.body),
-                parameters: convertChild(node.params)
-              })
-            };
-
-          case 'Param':
-            var param = convertChild(node.name);
-            if (node.value) {
-              return {
-                v: makeNode('DefaultParam', node.locationData, {
-                  default: convertChild(node.value),
-                  param: param
-                })
-              };
-            }
-            if (node.splat) {
-              return {
-                v: makeNode('Rest', node.locationData, {
-                  expression: param
-                })
-              };
-            }
-            return {
-              v: param
-            };
-
-          case 'Block':
-            if (node.expressions.length === 0) {
-              return {
-                v: null
-              };
-            } else {
-              var block = makeNode('Block', node.locationData, {
-                statements: convertChild(node.expressions)
-              });
-              block.inline = false;
-              for (var _i3 = block.range[0] - 1; _i3 >= 0; _i3--) {
-                var char = source[_i3];
-                if (char === '\n') {
-                  break;
-                } else if (char !== ' ' && char !== '\t') {
-                  block.inline = true;
-                  break;
-                }
-              }
-              return {
-                v: block
-              };
-            }
-
-          case 'Bool':
-            return {
-              v: makeNode('Bool', node.locationData, {
-                data: JSON.parse(node.val)
-              })
-            };
-
-          case 'Null':
-            return {
-              v: makeNode('Null', node.locationData)
-            };
-
-          case 'Undefined':
-            return {
-              v: makeNode('Undefined', node.locationData)
-            };
-
-          case 'Return':
-            return {
-              v: makeNode('Return', node.locationData, {
-                expression: node.expression ? convertChild(node.expression) : null
-              })
-            };
-
-          case 'For':
-            if (locationsEqual(node.body.locationData, node.locationData)) {
-              node.body.locationData = locationContainingNodes.apply(undefined, toConsumableArray(node.body.expressions));
-            }
-            if (node.object) {
-              return {
-                v: makeNode('ForOf', node.locationData, {
-                  keyAssignee: convertChild(node.index),
-                  valAssignee: convertChild(node.name),
-                  body: convertChild(node.body),
-                  target: convertChild(node.source),
-                  filter: convertChild(node.guard),
-                  isOwn: node.own
-                })
-              };
-            } else {
-              return {
-                v: makeNode('ForIn', node.locationData, {
-                  keyAssignee: convertChild(node.index),
-                  valAssignee: convertChild(node.name),
-                  body: convertChild(node.body),
-                  target: convertChild(node.source),
-                  filter: convertChild(node.guard),
-                  step: convertChild(node.step)
-                })
-              };
-            }
-
-          case 'While':
-            var result = makeNode('While', locationContainingNodes(node, node.condition, node.body), {
-              condition: convertChild(node.condition),
-              guard: convertChild(node.guard),
-              body: convertChild(node.body),
-              isUntil: node.condition.inverted === true
-            });
-            if (result.raw.indexOf('loop') === 0) {
-              result.condition = {
-                type: 'Bool',
-                data: true,
-                virtual: true
-              };
-            }
-            return {
-              v: result
-            };
-
-          case 'Existence':
-            return {
-              v: makeNode('UnaryExistsOp', node.locationData, {
-                expression: convertChild(node.expression)
-              })
-            };
-
-          case 'Class':
-            var nameNode = node.variable ? convertChild(node.variable) : null;
-
-            var ctor = null;
-            var boundMembers = [];
-            var body = !node.body || node.body.expressions.length === 0 ? null : makeNode('Block', node.body.locationData, {
-              statements: node.body.expressions.reduce(function (statements, expr) {
-                if (type(expr) === 'Value' && type(expr.base) === 'Obj') {
-                  expr.base.properties.forEach(function (property) {
-                    var key = void 0;
-                    var value = void 0;
-                    switch (type(property)) {
-                      case 'Value':
-                        // shorthand property
-                        key = value = convertChild(property);
-                        break;
-
-                      case 'Comment':
-                        return;
-
-                      default:
-                        key = convertChild(property.variable);
-                        value = convertChild(property.value);
-                        break;
-                    }
-                    if (key.data === 'constructor') {
-                      statements.push(ctor = makeNode('Constructor', property.locationData, {
-                        assignee: key,
-                        expression: value
-                      }));
-                    } else if (key.type === 'MemberAccessOp' && key.expression.type === 'This') {
-                      statements.push(makeNode('AssignOp', property.locationData, {
-                        assignee: key,
-                        expression: value
-                      }));
-                    } else {
-                      statements.push(makeNode('ClassProtoAssignOp', property.locationData, {
-                        assignee: key,
-                        expression: value
-                      }));
-                    }
-                    if (value.type === 'BoundFunction') {
-                      boundMembers.push(statements[statements.length - 1]);
-                    }
-                  });
-                } else {
-                  statements.push(convertChild(expr));
-                }
-                return statements;
-              }, [])
-            });
-
-            return {
-              v: makeNode('Class', node.locationData, {
-                name: nameNode,
-                nameAssignee: nameNode,
-                body: body,
-                boundMembers: boundMembers,
-                parent: node.parent ? convertChild(node.parent) : null,
-                ctor: ctor
-              })
-            };
-
-          case 'Switch':
-            return {
-              v: makeNode('Switch', node.locationData, {
-                expression: convertChild(node.subject),
-                cases: node.cases.map(function (_ref2) {
-                  var _ref3 = slicedToArray(_ref2, 2);
-
-                  var conditions = _ref3[0];
-                  var body = _ref3[1];
-
-                  if (!Array.isArray(conditions)) {
-                    conditions = [conditions];
-                  }
-                  var loc = expandLocationLeftThrough(locationContainingNodes(conditions[0], body), 'when ');
-                  return makeNode('SwitchCase', loc, {
-                    conditions: convertChild(conditions),
-                    consequent: convertChild(body)
-                  });
-                }).filter(function (node) {
-                  return node;
-                }),
-                alternate: convertChild(node.otherwise)
-              })
-            };
-
-          case 'Splat':
-            return {
-              v: makeNode('Spread', node.locationData, {
-                expression: convertChild(node.name)
-              })
-            };
-
-          case 'Throw':
-            return {
-              v: makeNode('Throw', node.locationData, {
-                expression: convertChild(node.expression)
-              })
-            };
-
-          case 'Try':
-            return {
-              v: makeNode('Try', node.locationData, {
-                body: convertChild(node.attempt),
-                catchAssignee: convertChild(node.errorVariable),
-                catchBody: convertChild(node.recovery),
-                finallyBody: convertChild(node.ensure)
-              })
-            };
-
-          case 'Range':
-            return {
-              v: makeNode('Range', node.locationData, {
-                left: convertChild(node.from),
-                right: convertChild(node.to),
-                isInclusive: !node.exclusive
-              })
-            };
-
-          case 'In':
-            {
-              // We don't use the `negated` flag on `node` because it gets set to
-              // `true` when a parent `If` is an `unless`.
-              var _left = convertChild(node.object);
-              var right = convertChild(node.array);
-              var isNot = false;
-
-              var lastTokenIndexOfLeft = context.sourceTokens.indexOfTokenEndingAtSourceIndex(_left.range[1]);
-              var firstTokenIndexOfRight = context.sourceTokens.indexOfTokenStartingAtSourceIndex(right.range[0]);
-
-              for (var _i4 = lastTokenIndexOfLeft.next(); _i4 !== firstTokenIndexOfRight; _i4 = _i4.next()) {
-                var _token2 = context.sourceTokens.tokenAtIndex(_i4);
-                if (_token2.type === lex.RELATION) {
-                  isNot = source.slice(_token2.start, _token2.end) !== 'in';
-                }
-              }
-
-              return {
-                v: makeNode('InOp', node.locationData, {
-                  left: _left,
-                  right: right,
-                  isNot: isNot
-                })
-              };
-            }
-
-          case 'Expansion':
-            return {
-              v: makeNode('Expansion', node.locationData)
-            };
-
-          case 'Comment':
-            return {
-              v: null
-            };
-
-          case 'Extends':
-            return {
-              v: makeNode('ExtendsOp', node.locationData, {
-                left: convertChild(node.child),
-                right: convertChild(node.parent)
-              })
-            };
-
-          default:
-            throw new Error('unknown node type: ' + type(node) + '\n' + JSON.stringify(node, null, 2));
-            break;
-        }
-      }();
-
-      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-      function convertChild(child) {
-        if (!child) {
-          return null;
-        } else if (Array.isArray(child)) {
-          return child.map(convertChild).filter(function (node) {
-            return node;
-          });
-        } else {
-          return convertNode(child, [].concat(toConsumableArray(ancestors), [node]));
-        }
-      }
-
-      function makeNode(type, loc) {
-        var attrs = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-        var result = { type: type };
-        if (loc) {
-          var start = mapper(loc.first_line, loc.first_column);
-          var end = mapper(loc.last_line, loc.last_column) + 1;
-          result.line = loc.first_line + 1;
-          result.column = loc.first_column + 1;
-          result.range = [start, end];
-        } else {
-          result.virtual = true;
-        }
-        for (var _key2 in attrs) {
-          if (attrs.hasOwnProperty(_key2)) {
-            var _value = attrs[_key2];
-            result[_key2] = _value;
-            if (_value && result.range) {
-              (Array.isArray(_value) ? _value : [_value]).forEach(function (node) {
-                if (node.range) {
-                  // Expand the range to contain all the children.
-                  if (result.range[0] > node.range[0]) {
-                    result.range[0] = node.range[0];
-                  }
-                  if (result.range[1] < node.range[1]) {
-                    result.range[1] = node.range[1];
-                  }
-                }
-              });
-            }
-          }
-        }
-        if (result.range) {
-          // Shrink to be within the size of the source.
-          if (result.range[0] < 0) {
-            result.range[0] = 0;
-          }
-          if (result.range[1] > source.length) {
-            result.range[1] = source.length;
-          }
-          // Shrink the end to the nearest semantic token.
-          var lastTokenIndexOfNode = context.sourceTokens.lastIndexOfTokenMatchingPredicate(function (token) {
-            return token.end <= result.range[1] && token.type !== lex.NEWLINE && token.type !== lex.COMMENT && token.type !== lex.HERECOMMENT;
-          });
-
-          var lastTokenOfNode = context.sourceTokens.tokenAtIndex(lastTokenIndexOfNode);
-          result.range[1] = lastTokenOfNode.end;
-          result.raw = source.slice(result.range[0], result.range[1]);
-        }
-        return result;
-      }
-
-      function createTemplateLiteral(op) {
-        var tokens = context.sourceTokens;
-        var startTokenIndex = tokens.indexOfTokenContainingSourceIndex(op.range[0]);
-        var interpolatedStringTokenRange = tokens.rangeOfInterpolatedStringTokensContainingTokenIndex(startTokenIndex);
-        if (!interpolatedStringTokenRange) {
-          throw new Error('cannot find interpolation end for node');
-        }
-        var firstToken = tokens.tokenAtIndex(interpolatedStringTokenRange[0]);
-        var lastToken = tokens.tokenAtIndex(interpolatedStringTokenRange[1].previous());
-        op.type = 'TemplateLiteral';
-        op.range = [firstToken.start, lastToken.end];
-        op.raw = source.slice.apply(source, toConsumableArray(op.range));
-
-        var elements = [];
-
-        function addElements(_ref) {
-          var left = _ref.left;
-          var right = _ref.right;
-
-          if (left.type === 'PlusOp') {
-            addElements(left);
-          } else {
-            elements.push(left);
-          }
-          elements.push(right);
-        }
-        addElements(op);
-
-        var quasis = [];
-        var expressions = [];
-        var quote = op.raw.slice(0, 3) === '"""' ? '"""' : '"';
-
-        function buildFirstQuasi() {
-          // Find the start of the first interpolation, i.e. "#{a}".
-          //                                                  ^
-          var startOfInterpolation = op.range[0];
-          while (source[startOfInterpolation] !== '#') {
-            startOfInterpolation += 1;
-          }
-          var range = [op.range[0], startOfInterpolation];
-          return buildQuasi(range);
-        }
-
-        function buildLastQuasi() {
-          // Find the close of the last interpolation, i.e. "a#{b}".
-          //                                                     ^
-          var endOfInterpolation = op.range[1];
-          while (source[endOfInterpolation] !== '}') {
-            endOfInterpolation -= 1;
-          }
-          return buildQuasi([endOfInterpolation + 1, op.range[1]]);
-        }
-
-        function buildQuasi(range) {
-          var loc = mapper.invert(range[0]);
-          return {
-            type: 'String',
-            data: '',
-            raw: source.slice.apply(source, toConsumableArray(range)),
-            line: loc.line + 1,
-            column: loc.column + 1,
-            range: range
-          };
-        }
-
-        function buildQuasiWithString(range, raw) {
-          var loc = mapper.invert(range[0]);
-          return {
-            type: 'String',
-            data: raw,
-            raw: source.slice.apply(source, toConsumableArray(range)),
-            line: loc.line + 1,
-            column: loc.column,
-            range: range
-          };
-        }
-
-        function quotesMatch(string) {
-          var leftTripleQuoted = string.slice(0, 3) === '"""';
-          var rightTripleQuoted = string.slice(-3) === '"""';
-          if (string.slice(-4) === '\\"""') {
-            // Don't count escaped quotes.
-            rightTripleQuoted = false;
-          }
-
-          if (leftTripleQuoted !== rightTripleQuoted) {
-            // Unbalanced.
-            return false;
-          } else if (leftTripleQuoted && rightTripleQuoted) {
-            // We're set as long as we didn't double count.
-            return string.length >= 6;
-          }
-
-          var leftSingleQuoted = string.slice(0, 1) === '"';
-          var rightSingleQuoted = string.slice(-1) === '"';
-
-          if (string.slice(-2) === '\\"') {
-            // Don't count escaped quotes.
-            rightSingleQuoted = false;
-          }
-          if (leftSingleQuoted !== rightSingleQuoted) {
-            // Unbalanced.
-            return false;
-          } else if (leftSingleQuoted && rightSingleQuoted) {
-            // We're set as long as we didn't double count.
-            return string.length >= 2;
-          }
-        }
-        elements.forEach(function (element, i) {
-          if (i === 0) {
-            if (element.type === 'String') {
-              if (element.range[0] === op.range[0]) {
-                // This string is not interpolated, it's part of the string interpolation.
-                if (element.data === '' && element.raw.length > quote.length) {
-                  // CoffeeScript includes the `#` in the raw value of a leading
-                  // empty quasi string, but it shouldn't be there.
-                  element = buildFirstQuasi();
-                }
-                quasis.push(element);
-                return;
-              }
-            }
-          }
-
-          if (element.type === 'String' && !quotesMatch(element.raw)) {
-            quasis.push(element);
-          } else {
-            if (quasis.length === 0) {
-              // This element is interpolated and is first, i.e. "#{a}".
-              quasis.push(buildFirstQuasi());
-              expressions.push(element);
-            } else if (/^"(.*?)"$/.test(element.data)) {
-              quasis.push(buildQuasiWithString(element.range, element.raw));
-            } else if (quasis.length < expressions.length + 1) {
-              var borderIndex = source.lastIndexOf('}#{', element.range[0]);
-              quasis.push(buildQuasi([borderIndex + 1, borderIndex + 1]));
-              expressions.push(element);
-            } else {
-              expressions.push(element);
-            }
-          }
-        });
-
-        if (quasis.length < expressions.length + 1) {
-          quasis.push(buildLastQuasi());
-        }
-
-        op.quasis = quasis;
-        op.expressions = expressions;
-        delete op.left;
-        delete op.right;
-        return op;
-      }
-
-      /**
-       * @param expression converted base
-       * @param prop CS node to convertNode
-       * @param loc CS location data for original base
-       */
-      function accessOpForProperty(expression, prop, loc) {
-        switch (type(prop)) {
-          case 'Access':
-            return makeNode(prop.soak ? 'SoakedMemberAccessOp' : 'MemberAccessOp', mergeLocations(loc, prop.locationData), {
-              expression: expression,
-              memberName: prop.name.value
-            });
-
-          case 'Index':
-            return makeNode(prop.soak ? 'SoakedDynamicMemberAccessOp' : 'DynamicMemberAccessOp', mergeLocations(loc, prop.locationData), {
-              expression: expression,
-              indexingExpr: convertNode(prop.index, [].concat(toConsumableArray(ancestors), [node, prop]))
-            });
-
-          case 'Slice':
-            return makeNode('Slice', mergeLocations(loc, prop.locationData), {
-              expression: expression,
-              left: convertChild(prop.range.from),
-              right: convertChild(prop.range.to),
-              isInclusive: !prop.range.exclusive
-            });
-
-          default:
-            throw new Error('unknown property type: ' + type(prop) + '\n' + JSON.stringify(prop, null, 2));
-        }
-      }
-
-      function binaryOperatorNodeType(operator) {
-        switch (operator) {
-          case '===':
-            return 'EQOp';
-
-          case '!==':
-            return 'NEQOp';
-
-          case '&&':
-            return 'LogicalAndOp';
-
-          case '||':
-            return 'LogicalOrOp';
-
-          case '+':
-            return 'PlusOp';
-
-          case '-':
-            return 'SubtractOp';
-
-          case '*':
-            return 'MultiplyOp';
-
-          case '/':
-            return 'DivideOp';
-
-          case '%':
-            return 'RemOp';
-
-          case '%%':
-            return 'ModuloOp';
-
-          case '&':
-            return 'BitAndOp';
-
-          case '|':
-            return 'BitOrOp';
-
-          case '^':
-            return 'BitXorOp';
-
-          case '<':
-            return 'LTOp';
-
-          case '>':
-            return 'GTOp';
-
-          case '<=':
-            return 'LTEOp';
-
-          case '>=':
-            return 'GTEOp';
-
-          case 'in':
-            return 'OfOp';
-
-          case '?':
-            return 'ExistsOp';
-
-          case 'instanceof':
-            return 'InstanceofOp';
-
-          case '<<':
-            return 'LeftShiftOp';
-
-          case '>>':
-            return 'SignedRightShiftOp';
-
-          case '>>>':
-            return 'UnsignedRightShiftOp';
-
-          case '**':
-            return 'ExpOp';
-
-          case '//':
-            return 'FloorDivideOp';
-
-          default:
-            return null;
-        }
-      }
-
-      function convertOperator(op) {
-        var nodeType = void 0;
-
-        if (op.second) {
-          nodeType = binaryOperatorNodeType(op.operator);
-
-          if (!nodeType) {
-            throw new Error('unknown binary operator: ' + op.operator);
-          }
-
-          var _result = makeNode(nodeType, op.locationData, {
-            left: convertNode(op.first, [].concat(toConsumableArray(ancestors), [op])),
-            right: convertNode(op.second, [].concat(toConsumableArray(ancestors), [op]))
-          });
-          if (_result.type === 'InstanceofOp' || _result.type === 'OfOp') {
-            var lastTokenIndexOfLeft = context.sourceTokens.indexOfTokenEndingAtSourceIndex(_result.left.range[1]);
-            var firstTokenIndexOfRight = context.sourceTokens.indexOfTokenStartingAtSourceIndex(_result.right.range[0]);
-            var isNot = false;
-
-            for (var i = lastTokenIndexOfLeft.next(); i !== firstTokenIndexOfRight; i = i.next()) {
-              var token = context.sourceTokens.tokenAtIndex(i);
-              if (token.type === lex.OPERATOR || token.type === lex.RELATION) {
-                isNot = source.slice(token.start, token.start + 'not'.length) === 'not';
-                break;
-              }
-            }
-
-            _result.isNot = isNot;
-          }
-          return _result;
-        } else {
-          switch (op.operator) {
-            case '+':
-              nodeType = 'UnaryPlusOp';
-              break;
-
-            case '-':
-              nodeType = 'UnaryNegateOp';
-              break;
-
-            case 'typeof':
-              nodeType = 'TypeofOp';
-              break;
-
-            case '!':
-              nodeType = 'LogicalNotOp';
-              break;
-
-            case '~':
-              nodeType = 'BitNotOp';
-              break;
-
-            case '--':
-              nodeType = op.flip ? 'PostDecrementOp' : 'PreDecrementOp';
-              break;
-
-            case '++':
-              nodeType = op.flip ? 'PostIncrementOp' : 'PreIncrementOp';
-              break;
-
-            case 'delete':
-              nodeType = 'DeleteOp';
-              break;
-
-            case 'new':
-              // Parentheses-less "new".
-              return makeNode('NewOp', op.locationData, {
-                ctor: convertChild(op.first),
-                arguments: []
-              });
-
-            case 'yield':
-              return makeNode('Yield', op.locationData, {
-                expression: convertChild(op.first)
-              });
-
-            case 'yield*':
-              return makeNode('YieldFrom', op.locationData, {
-                expression: convertChild(op.first)
-              });
-
-            default:
-              throw new Error('unknown unary operator: ' + op.operator);
-          }
-
-          return makeNode(nodeType, op.locationData, {
-            expression: convertNode(op.first, [].concat(toConsumableArray(ancestors), [op]))
-          });
-        }
-      }
-
-      function expandLocationLeftThrough(loc, string) {
-        var offset = mapper(loc.first_line, loc.first_column);
-        offset = source.lastIndexOf(string, offset);
-
-        if (offset < 0) {
-          throw new Error('unable to expand location starting at ' + (loc.first_line + 1) + ':' + (loc.first_column + 1) + ' ' + ('because it is not preceded by ' + JSON.stringify(string)));
-        }
-
-        var newLoc = mapper.invert(offset);
-
-        return {
-          first_line: newLoc.line,
-          first_column: newLoc.column,
-          last_line: loc.last_line,
-          last_column: loc.last_column
-        };
-      }
-    }
-  }
-
-  exports.parse = parse;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
-
-}));
-},{"coffee-lex":826,"coffee-script":828,"util":823}],828:[function(require,module,exports){
 (function (process,global){
 // Generated by CoffeeScript 1.10.0
 (function() {
@@ -45023,7 +42939,7 @@ module.exports = function(arr, obj){
 }).call(this);
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./helpers":829,"./lexer":830,"./nodes":831,"./parser":832,"./register":833,"./sourcemap":836,"_process":821,"fs":814,"module":814,"path":820,"vm":824}],829:[function(require,module,exports){
+},{"./helpers":828,"./lexer":829,"./nodes":830,"./parser":831,"./register":832,"./sourcemap":835,"_process":821,"fs":814,"module":814,"path":820,"vm":824}],828:[function(require,module,exports){
 (function (process){
 // Generated by CoffeeScript 1.10.0
 (function() {
@@ -45275,7 +43191,7 @@ module.exports = function(arr, obj){
 }).call(this);
 
 }).call(this,require('_process'))
-},{"_process":821}],830:[function(require,module,exports){
+},{"_process":821}],829:[function(require,module,exports){
 // Generated by CoffeeScript 1.10.0
 (function() {
   var BOM, BOOL, CALLABLE, CODE, COFFEE_ALIASES, COFFEE_ALIAS_MAP, COFFEE_KEYWORDS, COMMENT, COMPARE, COMPOUND_ASSIGN, HERECOMMENT_ILLEGAL, HEREDOC_DOUBLE, HEREDOC_INDENT, HEREDOC_SINGLE, HEREGEX, HEREGEX_OMIT, IDENTIFIER, INDENTABLE_CLOSERS, INDEXABLE, INVALID_ESCAPE, INVERSES, JSTOKEN, JS_FORBIDDEN, JS_KEYWORDS, LEADING_BLANK_LINE, LINE_BREAK, LINE_CONTINUER, LOGIC, Lexer, MATH, MULTI_DENT, NOT_REGEX, NUMBER, OPERATOR, POSSIBLY_DIVISION, REGEX, REGEX_FLAGS, REGEX_ILLEGAL, RELATION, RESERVED, Rewriter, SHIFT, SIMPLE_STRING_OMIT, STRICT_PROSCRIBED, STRING_DOUBLE, STRING_OMIT, STRING_SINGLE, STRING_START, TRAILING_BLANK_LINE, TRAILING_SPACES, UNARY, UNARY_MATH, VALID_FLAGS, WHITESPACE, compact, count, invertLiterate, key, locationDataToString, ref, ref1, repeat, starts, throwSyntaxError,
@@ -46288,7 +44204,7 @@ module.exports = function(arr, obj){
 
 }).call(this);
 
-},{"./helpers":829,"./rewriter":834}],831:[function(require,module,exports){
+},{"./helpers":828,"./rewriter":833}],830:[function(require,module,exports){
 // Generated by CoffeeScript 1.10.0
 (function() {
   var Access, Arr, Assign, Base, Block, Call, Class, Code, CodeFragment, Comment, Existence, Expansion, Extends, For, HEXNUM, IDENTIFIER, IS_REGEX, IS_STRING, If, In, Index, LEVEL_ACCESS, LEVEL_COND, LEVEL_LIST, LEVEL_OP, LEVEL_PAREN, LEVEL_TOP, Literal, NEGATE, NO, NUMBER, Obj, Op, Param, Parens, RESERVED, Range, Return, SIMPLENUM, STRICT_PROSCRIBED, Scope, Slice, Splat, Switch, TAB, THIS, Throw, Try, UTILITIES, Value, While, YES, addLocationDataFn, compact, del, ends, extend, flatten, fragmentsToText, isComplexOrAssignable, isLiteralArguments, isLiteralThis, locationDataToString, merge, multident, parseNum, ref1, ref2, some, starts, throwSyntaxError, unfoldSoak, utility,
@@ -49597,7 +47513,7 @@ module.exports = function(arr, obj){
 
 }).call(this);
 
-},{"./helpers":829,"./lexer":830,"./scope":835}],832:[function(require,module,exports){
+},{"./helpers":828,"./lexer":829,"./scope":834}],831:[function(require,module,exports){
 (function (process){
 /* parser generated by jison 0.4.15 */
 /*
@@ -50335,7 +48251,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 }
 }
 }).call(this,require('_process'))
-},{"_process":821,"fs":814,"path":820}],833:[function(require,module,exports){
+},{"_process":821,"fs":814,"path":820}],832:[function(require,module,exports){
 // Generated by CoffeeScript 1.10.0
 (function() {
   var CoffeeScript, Module, binary, child_process, ext, findExtension, fork, helpers, i, len, loadFile, path, ref;
@@ -50403,7 +48319,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 
 }).call(this);
 
-},{"./coffee-script":828,"./helpers":829,"child_process":814,"module":814,"path":820}],834:[function(require,module,exports){
+},{"./coffee-script":827,"./helpers":828,"child_process":814,"module":814,"path":820}],833:[function(require,module,exports){
 // Generated by CoffeeScript 1.10.0
 (function() {
   var BALANCED_PAIRS, CALL_CLOSERS, EXPRESSION_CLOSE, EXPRESSION_END, EXPRESSION_START, IMPLICIT_CALL, IMPLICIT_END, IMPLICIT_FUNC, IMPLICIT_UNSPACED_CALL, INVERSES, LINEBREAKS, SINGLE_CLOSERS, SINGLE_LINERS, generate, k, left, len, ref, rite,
@@ -50909,7 +48825,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 
 }).call(this);
 
-},{}],835:[function(require,module,exports){
+},{}],834:[function(require,module,exports){
 // Generated by CoffeeScript 1.10.0
 (function() {
   var Scope,
@@ -51066,7 +48982,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 
 }).call(this);
 
-},{}],836:[function(require,module,exports){
+},{}],835:[function(require,module,exports){
 // Generated by CoffeeScript 1.10.0
 (function() {
   var LineMap, SourceMap;
@@ -51229,7 +49145,2100 @@ if (typeof module !== 'undefined' && require.main === module) {
 
 }).call(this);
 
-},{}],837:[function(require,module,exports){
+},{}],836:[function(require,module,exports){
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('coffee-script'), require('lines-and-columns'), require('coffee-lex'), require('util')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'coffee-script', 'lines-and-columns', 'coffee-lex', 'util'], factory) :
+  (factory((global.decaffeinate = global.decaffeinate || {}, global.decaffeinate.parser = global.decaffeinate.parser || {}),global.CoffeeScript,global.LinesAndColumns,global.lex,global.util));
+}(this, function (exports,CoffeeScript,LinesAndColumns,lex,util) { 'use strict';
+
+  LinesAndColumns = 'default' in LinesAndColumns ? LinesAndColumns['default'] : LinesAndColumns;
+  var lex__default = 'default' in lex ? lex['default'] : lex;
+
+  /**
+   * @param {string} source
+   * @returns {function(number, number): number}
+   * @deprecated
+   */
+  function lineColumnMapper(source) {
+    var offsets = [0];
+    var offset = 0;
+
+    while ((offset = source.indexOf('\n', offset)) >= 0) {
+      offset += '\n'.length;
+      offsets.push(offset);
+    }
+
+    var result = function result(line, column) {
+      return offsets[line] + column;
+    };
+    result.invert = function (offset) {
+      for (var line = offsets.length - 1; line >= 0; line--) {
+        var lineStart = offsets[line];
+        if (offset >= lineStart) {
+          return { line: line, column: offset - lineStart };
+        }
+      }
+    };
+    return result;
+  }
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+  };
+
+  var classCallCheck = function (instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  };
+
+  var createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  var inherits = function (subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+  };
+
+  var possibleConstructorReturn = function (self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
+  };
+
+  var slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  var toConsumableArray = function (arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  };
+
+  var ParseError = function (_Error) {
+    inherits(ParseError, _Error);
+
+    function ParseError(syntaxError) {
+      classCallCheck(this, ParseError);
+
+      var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ParseError).call(this, syntaxError.message));
+
+      _this.syntaxError = syntaxError;
+      return _this;
+    }
+
+    return ParseError;
+  }(Error);
+
+  var ParseContext = function () {
+    /**
+     * @param {string} source
+     * @param {SourceTokenList} sourceTokens
+     * @param {Object} ast
+     */
+
+    function ParseContext(source, sourceTokens, ast) {
+      classCallCheck(this, ParseContext);
+
+      this.source = source;
+      /**
+       * Use `linesAndColumns` instead.
+       * 
+       * @deprecated
+       */
+      this.lineMap = lineColumnMapper(source);
+      this.linesAndColumns = new LinesAndColumns(source);
+      this.ast = ast;
+      this.sourceTokens = sourceTokens;
+    }
+
+    /**
+     * @param {Object} locatable
+     * @returns {number[]}
+     */
+
+
+    createClass(ParseContext, [{
+      key: 'getRange',
+      value: function getRange(locatable) {
+        if ('range' in locatable) {
+          return locatable.range;
+        } else if ('locationData' in locatable) {
+          return this.getRange(locatable.locationData);
+        } else {
+          return [this.linesAndColumns.indexForLocation({ line: locatable.first_line, column: locatable.first_column }), this.linesAndColumns.indexForLocation({ line: locatable.last_line, column: locatable.last_column })];
+        }
+      }
+
+      /**
+       * @param {string} source
+       * @param {function(string): SourceTokenList} sourceLex
+       * @param {function(string|Array): Object} parse
+       * @returns {ParseContext}
+       */
+
+    }], [{
+      key: 'fromSource',
+      value: function fromSource(source, sourceLex, parse) {
+        try {
+          var sourceTokens = sourceLex(source);
+          return new ParseContext(source, sourceTokens, parse(source));
+        } catch (ex) {
+          if (ex instanceof SyntaxError) {
+            throw new ParseError(ex);
+          } else {
+            throw ex;
+          }
+        }
+      }
+    }]);
+    return ParseContext;
+  }();
+
+  /**
+   * @param {Object} node A CoffeeScript node.
+   * @returns {string}
+   */
+  function type(node) {
+    return node.constructor.name;
+  }
+
+  /**
+   * @param {Object} node A CoffeeScript node.
+   * @returns {boolean}
+   */
+  function isChainedComparison(node) {
+    if (type(node) === 'Op' && isComparisonOperator(node)) {
+      return isComparisonOperator(node.first) || isComparisonOperator(node.second);
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * @param {Object} node A CoffeeScript node.
+   * @returns {boolean}
+   */
+  function isComparisonOperator(node) {
+    switch (node.operator) {
+      case '<':
+      case '>':
+      case '<=':
+      case '>=':
+        return true;
+
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * @param {Object} node
+   * @param {Array<Object>} ancestors
+   * @param {ParseContext} context
+   * @returns boolean
+   */
+  function isInterpolatedString(node, ancestors, context) {
+    var range = rangeOfInterpolatedStringForNode(node, context);
+
+    if (!range) {
+      return false;
+    }
+
+    var parentOp = void 0;
+    for (var i = ancestors.length - 1; i >= 0; i--) {
+      if (type(ancestors[i]) === 'Op') {
+        parentOp = ancestors[i];
+        break;
+      }
+    }
+
+    if (!parentOp) {
+      // `node` is in an interpolated string but there is no containing
+      // operator, so it must be a root.
+      return true;
+    }
+
+    var parentRange = rangeOfInterpolatedStringForNode(parentOp, context);
+
+    if (!parentRange) {
+      // There's a containing operator, but there's no interpolated string.
+      return true;
+    }
+
+    // There's a string interpolation containing the parent operator, but is it
+    // the same one? If not, then this node is the root of an interpolated string.
+    return parentRange[0] !== range[0] || parentRange[1] !== range[1];
+  }
+
+  function rangeOfInterpolatedStringForNode(node, context) {
+    if (node.operator !== '+' || !node.second) {
+      return null;
+    }
+
+    var range = context.getRange(node);
+    var tokens = context.sourceTokens;
+    var startTokenIndex = tokens.indexOfTokenContainingSourceIndex(range[0]);
+    if (!startTokenIndex) {
+      throw new Error('no token containing start of node at ' + range[0] + ' found');
+    }
+    return tokens.rangeOfInterpolatedStringTokensContainingTokenIndex(startTokenIndex);
+  }
+
+  /**
+   * Assumes first_line/first_column are correct.
+   */
+  function fixInvalidLocationData(locationData, linesAndColumns) {
+    var last_line = locationData.last_line;
+    var last_column = locationData.last_column;
+
+    var indexForLocation = linesAndColumns.indexForLocation({ line: last_line, column: last_column });
+
+    if (indexForLocation !== null) {
+      return locationData;
+    } else {
+      var offset = 1;
+
+      for (;;) {
+        var index = linesAndColumns.indexForLocation({ line: last_line, column: last_column - offset });
+
+        offset++;
+
+        if (index !== null) {
+          var location = linesAndColumns.locationForIndex(index + offset);
+
+          if (!location) {
+            throw new Error('Unable to determine adjustment offset for incorrect location data: ' + (JSON.stringify(locationData) + '. No valid location found for index: ') + ('' + (index + offset)));
+          }
+
+          last_line = location.line;
+          last_column = location.column;
+          break;
+        }
+      }
+
+      return _extends({}, locationData, {
+        last_line: last_line,
+        last_column: last_column
+      });
+    }
+  }
+
+  /**
+   * @param {Object} first
+   * @param {Object} second
+   * @returns {boolean}
+   */
+  function locationsEqual(first, second) {
+    return first.first_line === second.first_line && first.first_column === second.first_column && first.last_line === second.last_line && first.last_column === second.last_column;
+  }
+
+  /**
+   * @param {string} string
+   * @param {number=} offset
+   * @returns {*}
+   */
+  function parseLiteral(string) {
+    var offset = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+
+    if (string.slice(0, 3) === '"""' || string.slice(-3) === '"""') {
+      return parseHerestring(string, '"""', offset);
+    } else if (string.slice(0, 3) === "'''" || string.slice(-3) === "'''") {
+      return parseHerestring(string, "'''", offset);
+    } else if (string[0] === "'" || string[string.length - 1] === "'") {
+      return parseQuotedString(string, "'");
+    } else if (string[0] === '"' || string[string.length - 1] === '"') {
+      return parseQuotedString(string, '"');
+    } else if (/^\d+$/.test(string)) {
+      return parseInteger(string);
+    } else if (/^\d*\.\d+$/.test(string)) {
+      return parseFloatingPoint(string);
+    } else if (/^0x[\da-f]+$/i.test(string)) {
+      return parseHexidecimal(string);
+    } else if (/^0o[0-7]+$/i.test(string)) {
+      return parseOctal(string);
+    }
+  }
+
+  function parseHerestring(string, quote) {
+    var offset = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+
+    var _parseQuotedString = parseQuotedString(string, quote);
+
+    var error = _parseQuotedString.error;
+    var data = _parseQuotedString.data;
+
+    if (error) {
+      return { type: 'error', error: error };
+    }
+
+    var _getIndentInfo = getIndentInfo(string, 3, string.length - 3);
+
+    var leadingMargin = _getIndentInfo.leadingMargin;
+    var trailingMargin = _getIndentInfo.trailingMargin;
+    var ranges = _getIndentInfo.ranges;
+
+    var indentSize = sharedIndentSize(ranges);
+
+    var padding = [];
+    var contentStart = offset + 3;
+    var contentEnd = offset + string.length - 3;
+
+    if (leadingMargin) {
+      padding.push([contentStart, contentStart + leadingMargin]);
+    }
+
+    if (indentSize) {
+      ranges.forEach(function (_ref) {
+        var _ref2 = slicedToArray(_ref, 2);
+
+        var start = _ref2[0];
+        var end = _ref2[1];
+
+        if (end - start >= indentSize) {
+          padding.push([offset + start, offset + start + indentSize]);
+        }
+      });
+    }
+
+    if (trailingMargin) {
+      padding.push([contentEnd - trailingMargin, contentEnd]);
+    }
+
+    for (var i = padding.length - 1; i >= 0; i--) {
+      var _padding$i = slicedToArray(padding[i], 2);
+
+      var start = _padding$i[0];
+      var end = _padding$i[1];
+
+      data = data.slice(0, start - contentStart) + data.slice(end - contentStart);
+    }
+
+    return { type: 'Herestring', data: data, padding: padding };
+  }
+
+  /**
+   * @param {string} string
+   * @param {string} quote
+   * @returns {*}
+   */
+  function parseQuotedString(string, quote) {
+    if (string.slice(0, quote.length) !== quote || string.slice(-quote.length) !== quote) {
+      return {
+        type: 'error',
+        error: {
+          type: 'unbalanced-quotes',
+          message: 'tried to parse quoted string not wrapped in quotes: ' + string
+        }
+      };
+    }
+
+    var p = quote.length;
+    var result = '';
+
+    function hex(count) {
+      var digits = '';
+      while (count-- > 0) {
+        var chr = string[p++];
+        if (/^[\da-f]$/i.test(chr)) {
+          digits += chr;
+        } else {
+          return {
+            type: 'error',
+            error: {
+              type: 'invalid-hex-character',
+              message: 'found ' + chr + ' when looking for a hex character'
+            }
+          };
+        }
+      }
+      return parseInt(digits, 16);
+    }
+
+    while (p < string.length - quote.length) {
+      var chr = void 0;
+      switch (chr = string[p++]) {
+        case '\\':
+          switch (chr = string[p++]) {
+            case quote[0]:
+              result += chr;
+              break;
+
+            case 'n':
+              result += '\n';
+              break;
+
+            case 'r':
+              result += '\r';
+              break;
+
+            case 't':
+              result += '\t';
+              break;
+
+            case 'b':
+              result += '\b';
+              break;
+
+            case 'v':
+              result += '\v';
+              break;
+
+            case 'f':
+              result += '\f';
+              break;
+
+            case 'x':
+              var x = hex(2);
+              if (x.type === 'error') {
+                return x;
+              }
+              result += String.fromCharCode(x);
+              break;
+
+            case 'u':
+              var u = hex(4);
+              if (u.type === 'error') {
+                return u;
+              }
+              result += String.fromCharCode(u);
+              break;
+
+            case '0':
+              result += String.fromCharCode(0);
+              break;
+
+            default:
+              result += chr;
+              break;
+          }
+          break;
+
+        case quote[0]:
+          if (string.slice(p - 1, p - 1 + quote.length) === quote) {
+            return {
+              type: 'error',
+              error: {
+                type: 'unexpected-closing-quote',
+                message: 'unexpected closing quote before the end of the string'
+              }
+            };
+          } else {
+            result += chr;
+          }
+          break;
+
+        default:
+          result += chr;
+          break;
+      }
+    }
+
+    return { type: 'string', data: result };
+  }
+
+  /**
+   * @param {string} string
+   * @returns {{type: string, data: number}}
+   */
+  function parseInteger(string) {
+    return { type: 'int', data: parseInt(string, 10) };
+  }
+
+  /**
+   * @param {string} string
+   * @returns {{type: string, data: number}}
+   */
+  function parseFloatingPoint(string) {
+    return { type: 'float', data: parseFloat(string) };
+  }
+
+  /**
+   * @param {string} string
+   * @returns {{type: string, data: number}}
+   */
+  function parseHexidecimal(string) {
+    return { type: 'int', data: parseInt(string.slice(2), 16) };
+  }
+
+  /**
+   * @param {string} string
+   * @returns {{type: string, data: number}}
+   */
+  function parseOctal(string) {
+    return { type: 'int', data: parseInt(string.slice(2), 8) };
+  }
+
+  /**
+   * @param {string} source
+   * @param {number=} start
+   * @param {number=} end
+   * @returns {{leadingMargin: number, trailingMargin: number, ranges: Array<Array<number>>}}
+   */
+  function getIndentInfo(source) {
+    var start = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+    var end = arguments.length <= 2 || arguments[2] === undefined ? source.length : arguments[2];
+
+    var ranges = [];
+
+    var leadingMargin = 0;
+    while (source[start + leadingMargin] === ' ') {
+      leadingMargin += ' '.length;
+    }
+    if (source[start + leadingMargin] === '\n') {
+      leadingMargin += '\n'.length;
+      start += leadingMargin;
+    }
+
+    var trailingMargin = 0;
+    while (source[end - trailingMargin - ' '.length] === ' ') {
+      trailingMargin += ' '.length;
+    }
+    if (source[end - trailingMargin - '\n'.length] === '\n') {
+      trailingMargin += '\n'.length;
+      end -= trailingMargin;
+    }
+
+    for (var index = start; index < end; index++) {
+      if (index === start || source[index - 1] === '\n') {
+        if (source[index] !== '\n') {
+          var _start = index;
+          while (source[index] === ' ') {
+            index++;
+          }
+          ranges.push([_start, index]);
+        }
+      }
+    }
+
+    return {
+      leadingMargin: leadingMargin,
+      trailingMargin: trailingMargin,
+      ranges: ranges
+    };
+  }
+
+  /**
+   * @param {Array<Array<number>>} ranges
+   * @returns {number}
+   */
+  function sharedIndentSize(ranges) {
+    var size = null;
+
+    ranges.forEach(function (_ref3) {
+      var _ref4 = slicedToArray(_ref3, 2);
+
+      var start = _ref4[0];
+      var end = _ref4[1];
+
+      if (size === null || start !== end && end - start < size) {
+        size = end - start;
+      }
+    });
+
+    return size === null ? 0 : size;
+  }
+
+  function patchCoffeeScript(_ref) {
+    var parse = _ref.nodes;
+
+    var Op = parse('a + b').expressions[0].constructor;
+    var Base = Op.__super__.constructor;
+
+    Op.prototype.invert = invert;
+    Base.prototype.invert = invert;
+  }
+
+  function invert() {
+    this.inverted = !this.inverted;
+    return this;
+  }
+
+  var HEREGEX_PATTERN = /^\/\/\/((?:.|\n)*)\/\/\/([gimy]*)$/;
+
+  /**
+   * @param {string} source
+   * @param {{coffeeScript: {nodes: function(string): Object, tokens: function(string): Array}}} options
+   * @returns {Program}
+   */
+  function parse(source) {
+    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+    var CS = options.coffeeScript || CoffeeScript;
+
+    patchCoffeeScript(CS);
+
+    var context = ParseContext.fromSource(source, lex__default, CS.nodes);
+
+    if (source.length === 0) {
+      var program = {
+        type: 'Program',
+        line: 1,
+        column: 1,
+        raw: source,
+        range: [0, 0],
+        body: null
+      };
+
+      Object.defineProperty(program, 'context', { value: context });
+      return (/** @type Program */program
+      );
+    }
+
+    return (/** @type Program */convert(context)
+    );
+  }
+
+  function locationContainingNodes() {
+    for (var _len = arguments.length, nodes = Array(_len), _key = 0; _key < _len; _key++) {
+      nodes[_key] = arguments[_key];
+    }
+
+    switch (nodes.length) {
+      case 0:
+        return null;
+
+      case 1:
+        return nodes[0].locationData;
+
+      case 2:
+        return mergeLocations(nodes[0].locationData, nodes[1].locationData);
+
+      default:
+        return mergeLocations(nodes[0].locationData, locationContainingNodes.apply(undefined, toConsumableArray(nodes.slice(1))));
+    }
+  }
+
+  function locationWithLastPosition(loc, last) {
+    return {
+      first_line: loc.first_line,
+      first_column: loc.first_column,
+      last_line: last.last_line,
+      last_column: last.last_column
+    };
+  }
+
+  function mergeLocations(left, right) {
+    var first_line = void 0;
+    var first_column = void 0;
+    var last_line = void 0;
+    var last_column = void 0;
+
+    if (left.first_line < right.first_line) {
+      first_line = left.first_line;
+      first_column = left.first_column;
+    } else if (left.first_line > right.first_line) {
+      first_line = right.first_line;
+      first_column = right.first_column;
+    } else if (left.first_column < right.first_column) {
+      first_line = left.first_line;
+      first_column = left.first_column;
+    } else {
+      first_line = right.first_line;
+      first_column = right.first_column;
+    }
+
+    if (left.last_line < right.last_line) {
+      last_line = right.last_line;
+      last_column = right.last_column;
+    } else if (left.last_line > right.last_line) {
+      last_line = left.last_line;
+      last_column = left.last_column;
+    } else if (left.last_column < right.last_column) {
+      last_line = right.last_line;
+      last_column = right.last_column;
+    } else {
+      last_line = left.last_line;
+      last_column = left.last_column;
+    }
+
+    return { first_line: first_line, first_column: first_column, last_line: last_line, last_column: last_column };
+  }
+
+  /**
+   * @param {ParseContext} context
+   * @returns {Node}
+   */
+  function convert(context) {
+    var source = context.source;
+    var linesAndColumns = context.linesAndColumns;
+
+    fixLocations(context.ast);
+    return convertNode(context.ast);
+
+    /**
+     * @param {Object} node
+     * @param ancestors
+     */
+    function fixLocations(node) {
+      var ancestors = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+
+      node.eachChild(function (child) {
+        if (child && child.locationData) {
+          fixLocations(child, [node].concat(toConsumableArray(ancestors)));
+        }
+      });
+
+      node.locationData = fixInvalidLocationData(node.locationData, context.linesAndColumns);
+
+      switch (type(node)) {
+        case 'Value':
+          {
+            var lastChild = node.properties[node.properties.length - 1];
+            if (lastChild) {
+              node.locationData = locationWithLastPosition(node.locationData, lastChild.locationData);
+            }
+            break;
+          }
+
+        case 'Index':
+        case 'Slice':
+          {
+            var rangeOfBrackets = rangeOfBracketTokensForIndexNode(node);
+            var lbracket = context.sourceTokens.tokenAtIndex(rangeOfBrackets[0]);
+            var lbracketLoc = linesAndColumns.locationForIndex(lbracket.start);
+            var rbracket = context.sourceTokens.tokenAtIndex(rangeOfBrackets[1].previous());
+            var rbracketLoc = linesAndColumns.locationForIndex(rbracket.start);
+            node.locationData = {
+              first_line: lbracketLoc.line,
+              first_column: lbracketLoc.column,
+              last_line: rbracketLoc.line,
+              last_column: rbracketLoc.column
+            };
+            break;
+          }
+
+        case 'Access':
+        case 'Arr':
+        case 'Bool':
+        case 'Comment':
+        case 'Existence':
+        case 'Expansion':
+        case 'Literal':
+        case 'Null':
+        case 'Parens':
+        case 'Range':
+        case 'Return':
+        case 'Splat':
+        case 'Throw':
+        case 'Undefined':
+          break;
+
+        case 'Obj':
+          {
+            var loc = node.locationData;
+            var start = linesAndColumns.indexForLocation({ line: loc.first_line, column: loc.first_column });
+            var isImplicitObject = source[start] !== '{';
+            if (isImplicitObject) {
+              var _lastChild = node.properties[node.properties.length - 1];
+              node.locationData = locationWithLastPosition(node.locationData, _lastChild.locationData);
+            }
+            break;
+          }
+
+        case 'Op':
+          {
+            var _lastChild2 = node.second;
+            if (_lastChild2) {
+              node.locationData = locationWithLastPosition(node.locationData, _lastChild2.locationData);
+            }
+            break;
+          }
+
+        case 'Assign':
+          {
+            var _lastChild3 = node.value;
+            node.locationData = locationWithLastPosition(node.locationData, _lastChild3.locationData);
+            break;
+          }
+
+        case 'In':
+          {
+            var _lastChild4 = node.array;
+            node.locationData = locationWithLastPosition(node.locationData, _lastChild4.locationData);
+            break;
+          }
+
+        case 'Call':
+          {
+            if (node.variable) {
+              // `super` won't have a callee (i.e. `node.variable`)
+              var calleeLoc = node.variable.locationData;
+              var calleeEnd = linesAndColumns.indexForLocation({ line: calleeLoc.last_line, column: calleeLoc.last_column }) + 1;
+              // Account for soaked calls, e.g. `a?()`.
+              if (source[calleeEnd] === '?') {
+                calleeEnd += 1;
+              }
+              var isImplicitCall = source[calleeEnd] !== '(';
+              if (isImplicitCall) {
+                var _lastChild5 = node.args[node.args.length - 1] || node.variable;
+                if (_lastChild5) {
+                  node.locationData = locationWithLastPosition(node.locationData, _lastChild5.locationData);
+                }
+              }
+            }
+            break;
+          }
+
+        case 'Block':
+          {
+            var _lastChild6 = node.expressions[node.expressions.length - 1];
+            if (_lastChild6) {
+              node.locationData = locationWithLastPosition(node.locationData, _lastChild6.locationData);
+            }
+            break;
+          }
+
+        case 'If':
+          {
+            var _lastChild7 = node.elseBody || node.body;
+            node.locationData = mergeLocations(node.locationData, _lastChild7.locationData);
+            break;
+          }
+
+        case 'For':
+        case 'While':
+          {
+            var _lastChild8 = node.body;
+            node.locationData = locationWithLastPosition(node.locationData, _lastChild8.locationData);
+            break;
+          }
+
+        case 'Param':
+          {
+            if (!node.splat) {
+              var _lastChild9 = node.value || node.name;
+              node.locationData = locationWithLastPosition(node.locationData, _lastChild9.locationData);
+            }
+            break;
+          }
+
+        case 'Code':
+          {
+            if (node.body) {
+              node.locationData = locationWithLastPosition(node.locationData, node.body.locationData);
+            }
+            break;
+          }
+
+        case 'Class':
+          {
+            var _lastChild10 = node.body;
+            node.locationData = locationWithLastPosition(node.locationData, _lastChild10.locationData);
+            break;
+          }
+
+        case 'Switch':
+          {
+            var _lastChild11 = node.otherwise || node.cases[node.cases.length - 1][1];
+            node.locationData = locationWithLastPosition(node.locationData, _lastChild11.locationData);
+            break;
+          }
+
+        case 'Try':
+          {
+            var _lastChild12 = node.ensure || node.recovery || node.errorVariable || node.attempt;
+            node.locationData = locationWithLastPosition(node.locationData, _lastChild12.locationData);
+            break;
+          }
+
+        case 'Extends':
+          {
+            var _lastChild13 = node.parent;
+            node.locationData = locationWithLastPosition(node.locationData, _lastChild13.locationData);
+            break;
+          }
+
+        default:
+          throw new Error('cannot fix location data for ' + type(node) + ' at ' + (node.locationData.first_line + 1 + ':' + (node.locationData.first_column + 1) + ': ') + util.inspect(node));
+      }
+    }
+
+    function rangeOfBracketTokensForIndexNode(indexNode) {
+      var start = linesAndColumns.indexForLocation({ line: indexNode.locationData.first_line, column: indexNode.locationData.first_column });
+      var startTokenIndex = context.sourceTokens.indexOfTokenStartingAtSourceIndex(start);
+      var range = context.sourceTokens.rangeOfMatchingTokensContainingTokenIndex(lex.LBRACKET, lex.RBRACKET, startTokenIndex);
+      if (!range) {
+        throw new Error('cannot find braces surrounding index at ' + (indexNode.locationData.first_line + 1 + ':' + indexNode.locationData.first_column + ': ') + ('' + util.inspect(indexNode)));
+      }
+      return range;
+    }
+
+    /**
+     * @param {Object} node
+     * @param ancestors
+     * @returns {Node}
+     */
+    function convertNode(node) {
+      var ancestors = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+
+      if (ancestors.length === 0) {
+        var programNode = {
+          type: 'Program',
+          line: 1,
+          column: 1,
+          range: [0, source.length],
+          raw: source,
+          body: makeNode('Block', node.locationData, {
+            statements: convertChild(node.expressions)
+          })
+        };
+        Object.defineProperty(programNode, 'context', {
+          value: context,
+          enumerable: false
+        });
+        return programNode;
+      }
+
+      var _ret = function () {
+        switch (type(node)) {
+          case 'Value':
+            var value = convertChild(node.base);
+            node.properties.forEach(function (prop) {
+              value = accessOpForProperty(value, prop, node.base.locationData);
+              if (value.type === 'MemberAccessOp' && value.expression.type === 'MemberAccessOp') {
+                if (value.expression.memberName === 'prototype' && value.expression.raw.slice(-2) === '::') {
+                  // Un-expand shorthand prototype access.
+                  value = {
+                    type: 'ProtoMemberAccessOp',
+                    line: value.line,
+                    column: value.column,
+                    range: value.range,
+                    raw: value.raw,
+                    expression: value.expression.expression,
+                    memberName: value.memberName
+                  };
+                }
+              }
+            });
+            return {
+              v: value
+            };
+
+          case 'Literal':
+            if (node.value === 'this') {
+              return {
+                v: makeNode('This', node.locationData)
+              };
+            } else {
+              var start = linesAndColumns.indexForLocation({ line: node.locationData.first_line, column: node.locationData.first_column });
+              var end = linesAndColumns.indexForLocation({ line: node.locationData.last_line, column: node.locationData.last_column }) + 1;
+              var raw = source.slice(start, end);
+              var literal = parseLiteral(raw, start);
+              if (!literal) {
+                if (raw[0] === '`' && raw[raw.length - 1] === '`') {
+                  return {
+                    v: makeNode('JavaScript', node.locationData, { data: node.value })
+                  };
+                } else if (raw.slice(0, '///'.length) === '///') {
+                  var _ret2 = function () {
+                    var flags = raw.match(HEREGEX_PATTERN)[2];
+                    return {
+                      v: {
+                        v: makeNode('RegExp', node.locationData, {
+                          data: node.value,
+                          flags: ['g', 'i', 'm', 'y'].reduce(function (memo, flag) {
+                            memo[flag] = flags.indexOf(flag) >= 0;
+                            return memo;
+                          }, {})
+                        })
+                      }
+                    };
+                  }();
+
+                  if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
+                }
+                return {
+                  v: makeNode('Identifier', node.locationData, { data: node.value })
+                };
+              } else if (literal.type === 'error') {
+                if (literal.error.type === 'unbalanced-quotes') {
+                  // This is probably part of an interpolated string.
+                  literal = parseLiteral(node.value);
+                  return {
+                    v: makeNode('String', node.locationData, { data: parseLiteral(node.value).data })
+                  };
+                }
+                throw new Error(literal.error.message);
+              } else if (literal.type === 'string') {
+                return {
+                  v: makeNode('String', node.locationData, { data: literal.data })
+                };
+              } else if (literal.type === 'int') {
+                return {
+                  v: makeNode('Int', node.locationData, { data: literal.data })
+                };
+              } else if (literal.type === 'float') {
+                return {
+                  v: makeNode('Float', node.locationData, { data: literal.data })
+                };
+              } else if (literal.type === 'Herestring') {
+                return {
+                  v: makeNode('Herestring', node.locationData, { data: literal.data, padding: literal.padding })
+                };
+              } else if (literal.type === 'RegExp') {
+                return {
+                  v: makeNode('RegExp', node.locationData, { data: literal.data, flags: literal.flags })
+                };
+              } else {
+                throw new Error('unknown literal type for value: ' + JSON.stringify(literal));
+              }
+            }
+
+          case 'Call':
+            if (node.isNew) {
+              return {
+                v: makeNode('NewOp', expandLocationLeftThrough(node.locationData, 'new'), {
+                  ctor: convertChild(node.variable),
+                  arguments: convertChild(node.args)
+                })
+              };
+            } else if (node.isSuper) {
+              if (node.args.length === 1 && type(node.args[0]) === 'Splat' && locationsEqual(node.args[0].locationData, node.locationData)) {
+                // Virtual splat argument.
+                return {
+                  v: makeNode('FunctionApplication', node.locationData, {
+                    function: makeNode('Super', node.locationData),
+                    arguments: [{
+                      type: 'Spread',
+                      virtual: true,
+                      expression: {
+                        type: 'Identifier',
+                        data: 'arguments',
+                        virtual: true
+                      }
+                    }]
+                  })
+                };
+              }
+              var superLocationData = {
+                first_line: node.locationData.first_line,
+                first_column: node.locationData.first_column,
+                last_line: node.locationData.first_line,
+                last_column: node.locationData.first_column + 'super'.length - 1
+              };
+              return {
+                v: makeNode('FunctionApplication', node.locationData, {
+                  function: makeNode('Super', superLocationData),
+                  arguments: convertChild(node.args)
+                })
+              };
+            } else {
+              var _ret3 = function () {
+                var result = makeNode(node.soak ? 'SoakedFunctionApplication' : 'FunctionApplication', node.locationData, {
+                  function: convertChild(node.variable),
+                  arguments: convertChild(node.args)
+                });
+
+                if (node.do) {
+                  result.type = 'DoOp';
+                  result.expression = result.function;
+                  // The argument to `do` may not always be a function literal.
+                  if (result.expression.parameters) {
+                    result.expression.parameters = result.expression.parameters.map(function (param, i) {
+                      var arg = result.arguments[i];
+
+                      if (arg.type === 'Identifier' && arg.data === param.data) {
+                        return param;
+                      }
+
+                      return makeNode('DefaultParam', locationContainingNodes(node.args[i], node.variable.params[i]), {
+                        param: param,
+                        default: arg
+                      });
+                    });
+                  }
+                  delete result.function;
+                  delete result.arguments;
+                }
+
+                return {
+                  v: {
+                    v: result
+                  }
+                };
+              }();
+
+              if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
+            }
+
+          case 'Op':
+            var op = convertOperator(node);
+            if (isInterpolatedString(node, ancestors, context)) {
+              return {
+                v: createTemplateLiteral(op)
+              };
+            }
+            if (isChainedComparison(node) && !isChainedComparison(ancestors[ancestors.length - 1])) {
+              return {
+                v: makeNode('ChainedComparisonOp', node.locationData, {
+                  expression: op
+                })
+              };
+            }
+            return {
+              v: op
+            };
+
+          case 'Assign':
+            if (node.context === 'object') {
+              return {
+                v: makeNode('ObjectInitialiserMember', node.locationData, {
+                  key: convertChild(node.variable),
+                  expression: convertChild(node.value)
+                })
+              };
+            } else if (node.context && node.context.slice(-1) === '=') {
+              return {
+                v: makeNode('CompoundAssignOp', node.locationData, {
+                  assignee: convertChild(node.variable),
+                  expression: convertChild(node.value),
+                  op: binaryOperatorNodeType(node.context.slice(0, -1))
+                })
+              };
+            } else {
+              return {
+                v: makeNode('AssignOp', node.locationData, {
+                  assignee: convertChild(node.variable),
+                  expression: convertChild(node.value)
+                })
+              };
+            }
+
+          case 'Obj':
+            return {
+              v: makeNode('ObjectInitialiser', node.locationData, {
+                members: node.properties.map(function (property) {
+                  if (type(property) === 'Value') {
+                    // shorthand property
+                    var keyValue = convertChild(property);
+                    return makeNode('ObjectInitialiserMember', property.locationData, {
+                      key: keyValue,
+                      expression: keyValue
+                    });
+                  }
+
+                  return convertChild(property);
+                }).filter(function (node) {
+                  return node;
+                })
+              })
+            };
+
+          case 'Arr':
+            return {
+              v: makeNode('ArrayInitialiser', node.locationData, {
+                members: convertChild(node.objects)
+              })
+            };
+
+          case 'Parens':
+            if (type(node.body) === 'Block') {
+              var expressions = node.body.expressions;
+              if (expressions.length === 1) {
+                return {
+                  v: convertChild(expressions[0])
+                };
+              } else {
+                var lastExpression = expressions[expressions.length - 1];
+                var _result2 = convertChild(lastExpression);
+                for (var i = expressions.length - 2; i >= 0; i--) {
+                  var left = expressions[i];
+                  _result2 = makeNode('SeqOp', locationContainingNodes(left, lastExpression), {
+                    left: convertChild(left),
+                    right: _result2
+                  });
+                }
+                return {
+                  v: _result2
+                };
+              }
+            } else {
+              return {
+                v: convertChild(node.body)
+              };
+            }
+
+          case 'If':
+            {
+              var condition = convertChild(node.condition);
+              var consequent = convertChild(node.body);
+              var alternate = convertChild(node.elseBody);
+              var isUnless = false;
+
+              if (consequent && consequent.range[0] < condition.range[0]) {
+                // POST-if, so look for tokens between the consequent and the condition
+                consequent.inline = true;
+                var lastConsequentTokenIndex = context.sourceTokens.indexOfTokenEndingAtSourceIndex(consequent.range[1]);
+                var firstConditionTokenIndex = context.sourceTokens.indexOfTokenStartingAtSourceIndex(condition.range[0]);
+
+                for (var _i = lastConsequentTokenIndex; _i !== firstConditionTokenIndex; _i = _i.next()) {
+                  var token = context.sourceTokens.tokenAtIndex(_i);
+                  if (token.type === lex.IF) {
+                    isUnless = source.slice(token.start, token.end) === 'unless';
+                    break;
+                  }
+                }
+              } else {
+                // Regular `if`, so look at the start of the node.
+                var _firstConditionTokenIndex = context.sourceTokens.indexOfTokenStartingAtSourceIndex(condition.range[0]);
+
+                for (var _i2 = _firstConditionTokenIndex; _i2 !== null; _i2 = _i2.previous()) {
+                  var _token = context.sourceTokens.tokenAtIndex(_i2);
+                  if (_token.type === lex.IF) {
+                    isUnless = source.slice(_token.start, _token.end) === 'unless';
+                    break;
+                  }
+                }
+              }
+
+              return {
+                v: makeNode('Conditional', node.locationData, {
+                  isUnless: isUnless,
+                  condition: condition,
+                  consequent: consequent,
+                  alternate: alternate
+                })
+              };
+            }
+
+          case 'Code':
+            var fnType = node.bound ? 'BoundFunction' : node.isGenerator ? 'GeneratorFunction' : 'Function';
+            return {
+              v: makeNode(fnType, node.locationData, {
+                body: convertChild(node.body),
+                parameters: convertChild(node.params)
+              })
+            };
+
+          case 'Param':
+            var param = convertChild(node.name);
+            if (node.value) {
+              return {
+                v: makeNode('DefaultParam', node.locationData, {
+                  default: convertChild(node.value),
+                  param: param
+                })
+              };
+            }
+            if (node.splat) {
+              return {
+                v: makeNode('Rest', node.locationData, {
+                  expression: param
+                })
+              };
+            }
+            return {
+              v: param
+            };
+
+          case 'Block':
+            if (node.expressions.length === 0) {
+              return {
+                v: null
+              };
+            } else {
+              var block = makeNode('Block', node.locationData, {
+                statements: convertChild(node.expressions)
+              });
+              block.inline = false;
+              for (var _i3 = block.range[0] - 1; _i3 >= 0; _i3--) {
+                var char = source[_i3];
+                if (char === '\n') {
+                  break;
+                } else if (char !== ' ' && char !== '\t') {
+                  block.inline = true;
+                  break;
+                }
+              }
+              return {
+                v: block
+              };
+            }
+
+          case 'Bool':
+            return {
+              v: makeNode('Bool', node.locationData, {
+                data: JSON.parse(node.val)
+              })
+            };
+
+          case 'Null':
+            return {
+              v: makeNode('Null', node.locationData)
+            };
+
+          case 'Undefined':
+            return {
+              v: makeNode('Undefined', node.locationData)
+            };
+
+          case 'Return':
+            return {
+              v: makeNode('Return', node.locationData, {
+                expression: node.expression ? convertChild(node.expression) : null
+              })
+            };
+
+          case 'For':
+            if (locationsEqual(node.body.locationData, node.locationData)) {
+              node.body.locationData = locationContainingNodes.apply(undefined, toConsumableArray(node.body.expressions));
+            }
+            if (node.object) {
+              return {
+                v: makeNode('ForOf', node.locationData, {
+                  keyAssignee: convertChild(node.index),
+                  valAssignee: convertChild(node.name),
+                  body: convertChild(node.body),
+                  target: convertChild(node.source),
+                  filter: convertChild(node.guard),
+                  isOwn: node.own
+                })
+              };
+            } else {
+              return {
+                v: makeNode('ForIn', node.locationData, {
+                  keyAssignee: convertChild(node.index),
+                  valAssignee: convertChild(node.name),
+                  body: convertChild(node.body),
+                  target: convertChild(node.source),
+                  filter: convertChild(node.guard),
+                  step: convertChild(node.step)
+                })
+              };
+            }
+
+          case 'While':
+            var result = makeNode('While', locationContainingNodes(node, node.condition, node.body), {
+              condition: convertChild(node.condition),
+              guard: convertChild(node.guard),
+              body: convertChild(node.body),
+              isUntil: node.condition.inverted === true
+            });
+            if (result.raw.indexOf('loop') === 0) {
+              result.condition = {
+                type: 'Bool',
+                data: true,
+                virtual: true
+              };
+            }
+            return {
+              v: result
+            };
+
+          case 'Existence':
+            return {
+              v: makeNode('UnaryExistsOp', node.locationData, {
+                expression: convertChild(node.expression)
+              })
+            };
+
+          case 'Class':
+            var nameNode = node.variable ? convertChild(node.variable) : null;
+
+            var ctor = null;
+            var boundMembers = [];
+            var body = !node.body || node.body.expressions.length === 0 ? null : makeNode('Block', node.body.locationData, {
+              statements: node.body.expressions.reduce(function (statements, expr) {
+                if (type(expr) === 'Value' && type(expr.base) === 'Obj') {
+                  expr.base.properties.forEach(function (property) {
+                    var key = void 0;
+                    var value = void 0;
+                    switch (type(property)) {
+                      case 'Value':
+                        // shorthand property
+                        key = value = convertChild(property);
+                        break;
+
+                      case 'Comment':
+                        return;
+
+                      default:
+                        key = convertChild(property.variable);
+                        value = convertChild(property.value);
+                        break;
+                    }
+                    if (key.data === 'constructor') {
+                      statements.push(ctor = makeNode('Constructor', property.locationData, {
+                        assignee: key,
+                        expression: value
+                      }));
+                    } else if (key.type === 'MemberAccessOp' && key.expression.type === 'This') {
+                      statements.push(makeNode('AssignOp', property.locationData, {
+                        assignee: key,
+                        expression: value
+                      }));
+                    } else {
+                      statements.push(makeNode('ClassProtoAssignOp', property.locationData, {
+                        assignee: key,
+                        expression: value
+                      }));
+                    }
+                    if (value.type === 'BoundFunction') {
+                      boundMembers.push(statements[statements.length - 1]);
+                    }
+                  });
+                } else {
+                  statements.push(convertChild(expr));
+                }
+                return statements;
+              }, [])
+            });
+
+            return {
+              v: makeNode('Class', node.locationData, {
+                name: nameNode,
+                nameAssignee: nameNode,
+                body: body,
+                boundMembers: boundMembers,
+                parent: node.parent ? convertChild(node.parent) : null,
+                ctor: ctor
+              })
+            };
+
+          case 'Switch':
+            return {
+              v: makeNode('Switch', node.locationData, {
+                expression: convertChild(node.subject),
+                cases: node.cases.map(function (_ref2) {
+                  var _ref3 = slicedToArray(_ref2, 2);
+
+                  var conditions = _ref3[0];
+                  var body = _ref3[1];
+
+                  if (!Array.isArray(conditions)) {
+                    conditions = [conditions];
+                  }
+                  var loc = expandLocationLeftThrough(locationContainingNodes(conditions[0], body), 'when ');
+                  return makeNode('SwitchCase', loc, {
+                    conditions: convertChild(conditions),
+                    consequent: convertChild(body)
+                  });
+                }).filter(function (node) {
+                  return node;
+                }),
+                alternate: convertChild(node.otherwise)
+              })
+            };
+
+          case 'Splat':
+            return {
+              v: makeNode('Spread', node.locationData, {
+                expression: convertChild(node.name)
+              })
+            };
+
+          case 'Throw':
+            return {
+              v: makeNode('Throw', node.locationData, {
+                expression: convertChild(node.expression)
+              })
+            };
+
+          case 'Try':
+            return {
+              v: makeNode('Try', node.locationData, {
+                body: convertChild(node.attempt),
+                catchAssignee: convertChild(node.errorVariable),
+                catchBody: convertChild(node.recovery),
+                finallyBody: convertChild(node.ensure)
+              })
+            };
+
+          case 'Range':
+            return {
+              v: makeNode('Range', node.locationData, {
+                left: convertChild(node.from),
+                right: convertChild(node.to),
+                isInclusive: !node.exclusive
+              })
+            };
+
+          case 'In':
+            {
+              // We don't use the `negated` flag on `node` because it gets set to
+              // `true` when a parent `If` is an `unless`.
+              var _left = convertChild(node.object);
+              var right = convertChild(node.array);
+              var isNot = false;
+
+              var lastTokenIndexOfLeft = context.sourceTokens.indexOfTokenEndingAtSourceIndex(_left.range[1]);
+              var firstTokenIndexOfRight = context.sourceTokens.indexOfTokenStartingAtSourceIndex(right.range[0]);
+
+              for (var _i4 = lastTokenIndexOfLeft.next(); _i4 !== firstTokenIndexOfRight; _i4 = _i4.next()) {
+                var _token2 = context.sourceTokens.tokenAtIndex(_i4);
+                if (_token2.type === lex.RELATION) {
+                  isNot = source.slice(_token2.start, _token2.end) !== 'in';
+                }
+              }
+
+              return {
+                v: makeNode('InOp', node.locationData, {
+                  left: _left,
+                  right: right,
+                  isNot: isNot
+                })
+              };
+            }
+
+          case 'Expansion':
+            return {
+              v: makeNode('Expansion', node.locationData)
+            };
+
+          case 'Comment':
+            return {
+              v: null
+            };
+
+          case 'Extends':
+            return {
+              v: makeNode('ExtendsOp', node.locationData, {
+                left: convertChild(node.child),
+                right: convertChild(node.parent)
+              })
+            };
+
+          default:
+            throw new Error('unknown node type: ' + type(node) + '\n' + JSON.stringify(node, null, 2));
+            break;
+        }
+      }();
+
+      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+      function convertChild(child) {
+        if (!child) {
+          return null;
+        } else if (Array.isArray(child)) {
+          return child.map(convertChild).filter(function (node) {
+            return node;
+          });
+        } else {
+          return convertNode(child, [].concat(toConsumableArray(ancestors), [node]));
+        }
+      }
+
+      function makeNode(type, loc) {
+        var attrs = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+        var result = { type: type };
+        if (loc) {
+          var start = linesAndColumns.indexForLocation({ line: loc.first_line, column: loc.first_column });
+          var end = linesAndColumns.indexForLocation({ line: loc.last_line, column: loc.last_column }) + 1;
+          result.line = loc.first_line + 1;
+          result.column = loc.first_column + 1;
+          result.range = [start, end];
+        } else {
+          result.virtual = true;
+        }
+        for (var _key2 in attrs) {
+          if (attrs.hasOwnProperty(_key2)) {
+            var _value = attrs[_key2];
+            result[_key2] = _value;
+            if (_value && result.range) {
+              (Array.isArray(_value) ? _value : [_value]).forEach(function (node) {
+                if (node.range) {
+                  // Expand the range to contain all the children.
+                  if (result.range[0] > node.range[0]) {
+                    result.range[0] = node.range[0];
+                  }
+                  if (result.range[1] < node.range[1]) {
+                    result.range[1] = node.range[1];
+                  }
+                }
+              });
+            }
+          }
+        }
+        if (result.range) {
+          // Shrink to be within the size of the source.
+          if (result.range[0] < 0) {
+            result.range[0] = 0;
+          }
+          if (result.range[1] > source.length) {
+            result.range[1] = source.length;
+          }
+          // Shrink the end to the nearest semantic token.
+          var lastTokenIndexOfNode = context.sourceTokens.lastIndexOfTokenMatchingPredicate(function (token) {
+            return token.end <= result.range[1] && token.type !== lex.NEWLINE && token.type !== lex.COMMENT && token.type !== lex.HERECOMMENT;
+          });
+
+          var lastTokenOfNode = context.sourceTokens.tokenAtIndex(lastTokenIndexOfNode);
+          result.range[1] = lastTokenOfNode.end;
+          result.raw = source.slice(result.range[0], result.range[1]);
+        }
+        return result;
+      }
+
+      function createTemplateLiteral(op) {
+        var tokens = context.sourceTokens;
+        var startTokenIndex = tokens.indexOfTokenContainingSourceIndex(op.range[0]);
+        var interpolatedStringTokenRange = tokens.rangeOfInterpolatedStringTokensContainingTokenIndex(startTokenIndex);
+        if (!interpolatedStringTokenRange) {
+          throw new Error('cannot find interpolation end for node');
+        }
+        var firstToken = tokens.tokenAtIndex(interpolatedStringTokenRange[0]);
+        var lastToken = tokens.tokenAtIndex(interpolatedStringTokenRange[1].previous());
+        op.type = 'TemplateLiteral';
+        op.range = [firstToken.start, lastToken.end];
+        op.raw = source.slice.apply(source, toConsumableArray(op.range));
+
+        var elements = [];
+
+        function addElements(_ref) {
+          var left = _ref.left;
+          var right = _ref.right;
+
+          if (left.type === 'PlusOp') {
+            addElements(left);
+          } else {
+            elements.push(left);
+          }
+          elements.push(right);
+        }
+        addElements(op);
+
+        var quasis = [];
+        var expressions = [];
+        var quote = op.raw.slice(0, 3) === '"""' ? '"""' : '"';
+
+        function buildFirstQuasi() {
+          // Find the start of the first interpolation, i.e. "#{a}".
+          //                                                  ^
+          var startOfInterpolation = op.range[0];
+          while (source[startOfInterpolation] !== '#') {
+            startOfInterpolation += 1;
+          }
+          var range = [op.range[0], startOfInterpolation];
+          return buildQuasi(range);
+        }
+
+        function buildLastQuasi() {
+          // Find the close of the last interpolation, i.e. "a#{b}".
+          //                                                     ^
+          var endOfInterpolation = op.range[1];
+          while (source[endOfInterpolation] !== '}') {
+            endOfInterpolation -= 1;
+          }
+          return buildQuasi([endOfInterpolation + 1, op.range[1]]);
+        }
+
+        function buildQuasi(range) {
+          var loc = linesAndColumns.locationForIndex(range[0]);
+          return {
+            type: 'String',
+            data: '',
+            raw: source.slice.apply(source, toConsumableArray(range)),
+            line: loc.line + 1,
+            column: loc.column + 1,
+            range: range
+          };
+        }
+
+        function buildQuasiWithString(range, raw) {
+          var loc = linesAndColumns.locationForIndex(range[0]);
+          return {
+            type: 'String',
+            data: raw,
+            raw: source.slice.apply(source, toConsumableArray(range)),
+            line: loc.line + 1,
+            column: loc.column,
+            range: range
+          };
+        }
+
+        function quotesMatch(string) {
+          var leftTripleQuoted = string.slice(0, 3) === '"""';
+          var rightTripleQuoted = string.slice(-3) === '"""';
+          if (string.slice(-4) === '\\"""') {
+            // Don't count escaped quotes.
+            rightTripleQuoted = false;
+          }
+
+          if (leftTripleQuoted !== rightTripleQuoted) {
+            // Unbalanced.
+            return false;
+          } else if (leftTripleQuoted && rightTripleQuoted) {
+            // We're set as long as we didn't double count.
+            return string.length >= 6;
+          }
+
+          var leftSingleQuoted = string.slice(0, 1) === '"';
+          var rightSingleQuoted = string.slice(-1) === '"';
+
+          if (string.slice(-2) === '\\"') {
+            // Don't count escaped quotes.
+            rightSingleQuoted = false;
+          }
+          if (leftSingleQuoted !== rightSingleQuoted) {
+            // Unbalanced.
+            return false;
+          } else if (leftSingleQuoted && rightSingleQuoted) {
+            // We're set as long as we didn't double count.
+            return string.length >= 2;
+          }
+        }
+        elements.forEach(function (element, i) {
+          if (i === 0) {
+            if (element.type === 'String') {
+              if (element.range[0] === op.range[0]) {
+                // This string is not interpolated, it's part of the string interpolation.
+                if (element.data === '' && element.raw.length > quote.length) {
+                  // CoffeeScript includes the `#` in the raw value of a leading
+                  // empty quasi string, but it shouldn't be there.
+                  element = buildFirstQuasi();
+                }
+                quasis.push(element);
+                return;
+              }
+            }
+          }
+
+          if (element.type === 'String' && !quotesMatch(element.raw)) {
+            quasis.push(element);
+          } else {
+            if (quasis.length === 0) {
+              // This element is interpolated and is first, i.e. "#{a}".
+              quasis.push(buildFirstQuasi());
+              expressions.push(element);
+            } else if (/^"(.*?)"$/.test(element.data)) {
+              quasis.push(buildQuasiWithString(element.range, element.raw));
+            } else if (quasis.length < expressions.length + 1) {
+              var borderIndex = source.lastIndexOf('}#{', element.range[0]);
+              quasis.push(buildQuasi([borderIndex + 1, borderIndex + 1]));
+              expressions.push(element);
+            } else {
+              expressions.push(element);
+            }
+          }
+        });
+
+        if (quasis.length < expressions.length + 1) {
+          quasis.push(buildLastQuasi());
+        }
+
+        op.quasis = quasis;
+        op.expressions = expressions;
+        delete op.left;
+        delete op.right;
+        return op;
+      }
+
+      /**
+       * @param expression converted base
+       * @param prop CS node to convertNode
+       * @param loc CS location data for original base
+       */
+      function accessOpForProperty(expression, prop, loc) {
+        switch (type(prop)) {
+          case 'Access':
+            return makeNode(prop.soak ? 'SoakedMemberAccessOp' : 'MemberAccessOp', mergeLocations(loc, prop.locationData), {
+              expression: expression,
+              memberName: prop.name.value
+            });
+
+          case 'Index':
+            return makeNode(prop.soak ? 'SoakedDynamicMemberAccessOp' : 'DynamicMemberAccessOp', mergeLocations(loc, prop.locationData), {
+              expression: expression,
+              indexingExpr: convertNode(prop.index, [].concat(toConsumableArray(ancestors), [node, prop]))
+            });
+
+          case 'Slice':
+            return makeNode('Slice', mergeLocations(loc, prop.locationData), {
+              expression: expression,
+              left: convertChild(prop.range.from),
+              right: convertChild(prop.range.to),
+              isInclusive: !prop.range.exclusive
+            });
+
+          default:
+            throw new Error('unknown property type: ' + type(prop) + '\n' + JSON.stringify(prop, null, 2));
+        }
+      }
+
+      function binaryOperatorNodeType(operator) {
+        switch (operator) {
+          case '===':
+            return 'EQOp';
+
+          case '!==':
+            return 'NEQOp';
+
+          case '&&':
+            return 'LogicalAndOp';
+
+          case '||':
+            return 'LogicalOrOp';
+
+          case '+':
+            return 'PlusOp';
+
+          case '-':
+            return 'SubtractOp';
+
+          case '*':
+            return 'MultiplyOp';
+
+          case '/':
+            return 'DivideOp';
+
+          case '%':
+            return 'RemOp';
+
+          case '%%':
+            return 'ModuloOp';
+
+          case '&':
+            return 'BitAndOp';
+
+          case '|':
+            return 'BitOrOp';
+
+          case '^':
+            return 'BitXorOp';
+
+          case '<':
+            return 'LTOp';
+
+          case '>':
+            return 'GTOp';
+
+          case '<=':
+            return 'LTEOp';
+
+          case '>=':
+            return 'GTEOp';
+
+          case 'in':
+            return 'OfOp';
+
+          case '?':
+            return 'ExistsOp';
+
+          case 'instanceof':
+            return 'InstanceofOp';
+
+          case '<<':
+            return 'LeftShiftOp';
+
+          case '>>':
+            return 'SignedRightShiftOp';
+
+          case '>>>':
+            return 'UnsignedRightShiftOp';
+
+          case '**':
+            return 'ExpOp';
+
+          case '//':
+            return 'FloorDivideOp';
+
+          default:
+            return null;
+        }
+      }
+
+      function convertOperator(op) {
+        var nodeType = void 0;
+
+        if (op.second) {
+          nodeType = binaryOperatorNodeType(op.operator);
+
+          if (!nodeType) {
+            throw new Error('unknown binary operator: ' + op.operator);
+          }
+
+          var _result = makeNode(nodeType, op.locationData, {
+            left: convertNode(op.first, [].concat(toConsumableArray(ancestors), [op])),
+            right: convertNode(op.second, [].concat(toConsumableArray(ancestors), [op]))
+          });
+          if (_result.type === 'InstanceofOp' || _result.type === 'OfOp') {
+            var lastTokenIndexOfLeft = context.sourceTokens.indexOfTokenEndingAtSourceIndex(_result.left.range[1]);
+            var firstTokenIndexOfRight = context.sourceTokens.indexOfTokenStartingAtSourceIndex(_result.right.range[0]);
+            var isNot = false;
+
+            for (var i = lastTokenIndexOfLeft.next(); i !== firstTokenIndexOfRight; i = i.next()) {
+              var token = context.sourceTokens.tokenAtIndex(i);
+              if (token.type === lex.OPERATOR || token.type === lex.RELATION) {
+                isNot = source.slice(token.start, token.start + 'not'.length) === 'not';
+                break;
+              }
+            }
+
+            _result.isNot = isNot;
+          }
+          return _result;
+        } else {
+          switch (op.operator) {
+            case '+':
+              nodeType = 'UnaryPlusOp';
+              break;
+
+            case '-':
+              nodeType = 'UnaryNegateOp';
+              break;
+
+            case 'typeof':
+              nodeType = 'TypeofOp';
+              break;
+
+            case '!':
+              nodeType = 'LogicalNotOp';
+              break;
+
+            case '~':
+              nodeType = 'BitNotOp';
+              break;
+
+            case '--':
+              nodeType = op.flip ? 'PostDecrementOp' : 'PreDecrementOp';
+              break;
+
+            case '++':
+              nodeType = op.flip ? 'PostIncrementOp' : 'PreIncrementOp';
+              break;
+
+            case 'delete':
+              nodeType = 'DeleteOp';
+              break;
+
+            case 'new':
+              // Parentheses-less "new".
+              return makeNode('NewOp', op.locationData, {
+                ctor: convertChild(op.first),
+                arguments: []
+              });
+
+            case 'yield':
+              return makeNode('Yield', op.locationData, {
+                expression: convertChild(op.first)
+              });
+
+            case 'yield*':
+              return makeNode('YieldFrom', op.locationData, {
+                expression: convertChild(op.first)
+              });
+
+            default:
+              throw new Error('unknown unary operator: ' + op.operator);
+          }
+
+          return makeNode(nodeType, op.locationData, {
+            expression: convertNode(op.first, [].concat(toConsumableArray(ancestors), [op]))
+          });
+        }
+      }
+
+      function expandLocationLeftThrough(loc, string) {
+        var offset = linesAndColumns.indexForLocation({ line: loc.first_line, column: loc.first_column });
+        offset = source.lastIndexOf(string, offset);
+
+        if (offset < 0) {
+          throw new Error('unable to expand location starting at ' + (loc.first_line + 1) + ':' + (loc.first_column + 1) + ' ' + ('because it is not preceded by ' + JSON.stringify(string)));
+        }
+
+        var newLoc = linesAndColumns.locationForIndex(offset);
+
+        return {
+          first_line: newLoc.line,
+          first_column: newLoc.column,
+          last_line: loc.last_line,
+          last_column: loc.last_column
+        };
+      }
+    }
+  }
+
+  exports.parse = parse;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+}));
+},{"coffee-lex":826,"coffee-script":827,"lines-and-columns":1485,"util":823}],837:[function(require,module,exports){
 /* eslint-disable guard-for-in */
 'use strict';
 var repeating = require('repeating');
