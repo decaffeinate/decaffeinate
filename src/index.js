@@ -4,6 +4,7 @@ import EsnextStage from './stages/esnext/index.js';
 import MainStage from './stages/main/index.js';
 import NormalizeStage from './stages/normalize/index.js';
 import PatchError from './utils/PatchError.js';
+import verifyCoffeeLexLoadedOnce from './utils/verifyCoffeeLexLoadedOnce.js';
 
 export { default as run } from './cli';
 export { PatchError };
@@ -27,6 +28,7 @@ type Stage = {
  * and formatting.
  */
 export function convert(source: string, options: ?Options={}): ConversionResult {
+  verifyCoffeeLexLoadedOnce();
   return runStages(source, options.filename || 'input.coffee', [
     NormalizeStage,
     MainStage,
