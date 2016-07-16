@@ -1,4 +1,5 @@
 import check from './support/check.js';
+import validate from './support/validate.js';
 
 describe('for loops', () => {
   it('transforms basic for-of loops into for-in', () => {
@@ -318,36 +319,91 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('saves the list of results when for-in loops are used in an expression context', () => {
+  it('handles for-in loops used in an expression context', () => {
     check(`
       a(e for e in l)
     `, `
-      a((() => {
-        let result = [];
-        for (let i = 0, e; i < l.length; i++) {
-          e = l[i];
-          result.push(e);
-        }
-        return result;
-      })());
+      a(l.map((e) => e));
     `);
   });
 
-  it.skip('saves the list of results when for-in loops are used as an implicit return', () => {
+  it('handles for-in loops used as an implicit return', () => {
     check(`
       ->
         a for a in b
     `, `
-      (function() {
-        return (() => {
-          let result = [];
-          for (let i = 0, a; i < b.length; i++) {
-            a = b[i];
-            result.push(a);
-          }
-          return result;
-        })();
+      () => b.map((a) => a);
+    `);
+  });
+
+  it('handles for-in loop expressions with a filter', () => {
+    check(`
+      f(a for a in b when c)
+    `, `
+      f(b.filter((a) => c).map((a) => a));
+    `);
+  });
+
+  it('handles for-in loop expressions with an index', () => {
+    check(`
+      f(a + i for a, i in b)
+    `, `
+      f(b.map((a, i) => a + i));
+    `);
+  });
+
+  it('correctly uses map with an index in for-in loop expressions', () => {
+    validate(`
+      sum = (arr) ->
+        arr.reduce (a, b) -> a + b
+      o = sum(3*x + i + 1 for x, i in [2, 5, 8])
+    `, 51);
+  });
+
+  it.skip('handles for-in loop expressions with a block body', () => {
+    check(`
+      console.log(for x in [1, 2, 3]
+        y = x + 1
+        if y > 2
+          y -= 1
+        y + 2
+      )
+    `, `
+      console.log([1, 2, 3].map(x => {
+        let y = x + 1;
+        if (y > 2) {
+          y -= 1;
+        }
+        return y + 2;
       });
+    `);
+  });
+
+  it.skip('handles for-in loop expressions with control flow', () => {
+    // For now, the expected output is just the CoffeeScript output.
+    check(`
+      x = for a in f()
+        b = g(a)
+        if b > 3
+          break
+        b + 1
+    `, `
+      var a, b, x;
+
+      x = (function() {
+        var i, len, ref, results;
+        ref = f();
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          a = ref[i];
+          b = g(a);
+          if (b > 3) {
+            break;
+          }
+          results.push(b + 1);
+        }
+        return results;
+      })();
     `);
   });
 

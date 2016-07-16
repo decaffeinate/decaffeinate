@@ -16,6 +16,67 @@ export default class ForInPatcher extends ForPatcher {
     }
   }
 
+  patchAsExpression() {
+    if (this.step !== null) {
+      throw this.error(
+        `'for in' loop expressions with a "by" clause are not supported yet ` +
+        `(https://github.com/decaffeinate/decaffeinate/issues/156)`
+      );
+    }
+    if (!this.body.canPatchAsExpression()) {
+      throw this.error(
+        `'for in' loop expressions with non-expression bodies are not supported yet ` +
+        `(https://github.com/decaffeinate/decaffeinate/issues/156)`
+      );
+    }
+    // The high-level approach of a.filter(...).map((x, i) => ...) doesn't work,
+    // since the filter will change the indexes, so we specifically exclude that
+    // case.
+    if (this.filter !== null && this.keyAssignee !== null) {
+      throw this.error(
+        `'for in' loop expressions with both a filter and an index assignee are not supported yet ` +
+        `(https://github.com/decaffeinate/decaffeinate/issues/156)`
+      );
+    }
+
+    this.removeThenToken();
+
+    this.valAssignee.patch();
+    if (this.keyAssignee !== null) {
+      this.keyAssignee.patch();
+    }
+    this.target.patch();
+    if (this.filter !== null) {
+      this.filter.patch();
+    }
+
+    this.body.setRequiresExpression();
+    this.body.patch();
+
+    let assigneeCode = this.slice(this.valAssignee.contentStart, this.valAssignee.contentEnd);
+    if (this.keyAssignee !== null) {
+      assigneeCode += `, ${this.slice(this.keyAssignee.contentStart, this.keyAssignee.contentEnd)}`;
+    }
+
+    // for a in b when c d  ->  b when c d
+    // ("then" was removed above).
+    this.remove(this.contentStart, this.target.outerStart);
+    if (this.filter !== null) {
+      // b when c d  ->  b.filter((a) => c d
+      this.overwrite(
+        this.target.outerEnd, this.filter.outerStart,
+        `.filter((${assigneeCode}) => `
+      );
+      // b.filter((a) => c d  ->  b.filter((a) => c).map((a) => d
+      this.insert(this.filter.outerEnd, `).map((${assigneeCode}) =>`);
+    } else {
+      // b d  ->  b.map((a) => d
+      this.insert(this.target.outerEnd, `.map((${assigneeCode}) =>`);
+    }
+    // b.filter((a) => c).map((a) => d  ->  b.filter((a) => c).map((a) => d)
+    this.insert(this.body.outerEnd, ')');
+  }
+
   patchAsStatement() {
     // Run for the side-effect of patching and slicing the value.
     this.getValueBinding();

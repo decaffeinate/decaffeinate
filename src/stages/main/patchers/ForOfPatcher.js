@@ -1,6 +1,13 @@
 import ForPatcher from './ForPatcher.js';
 
 export default class ForOfPatcher extends ForPatcher {
+  patchAsExpression() {
+    throw this.error(
+      `'for of' loops used as expressions are not yet supported ` +
+      `(https://github.com/decaffeinate/decaffeinate/issues/156)`
+    );
+  }
+
   patchAsStatement() {
     if (this.node.isOwn) {
       throw this.error(

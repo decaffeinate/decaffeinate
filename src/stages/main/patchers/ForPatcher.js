@@ -89,16 +89,9 @@ export default class ForPatcher extends NodePatcher {
     this.body.patch({ leftBrace: false });
   }
 
-  patchAsExpression() {
-    throw this.error(
-      `'for' loops used as expressions are not yet supported ` +
-      `(https://github.com/decaffeinate/decaffeinate/issues/156)`
-    );
-  }
-
   getRelationToken(): SourceToken {
     let tokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.keyAssignee, this.target,
+      this.keyAssignee || this.valAssignee, this.target,
       token => token.type === RELATION
     );
     if (!tokenIndex) {

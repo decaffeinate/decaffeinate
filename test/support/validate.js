@@ -14,10 +14,13 @@ import { strictEqual } from 'assert';
  * The ES5 from both paths is run in a sandbox and then the 'o' variable
  * from the scope of each sandbox is compared. If the output is the same
  * then the test has passed.
+ *
+ * Optionally, expectedOutput can be specified. If it is, the the result of the
+ * 'o' variable must be equal to that value.
  */
-export default function validate(source: string) {
+export default function validate(source: string, expectedOutput: ?any) {
   try {
-    runValidation(source);
+    runValidation(source, expectedOutput);
   } catch (err) {
     if (PatchError.detect(err)) {
       console.error(PatchError.prettyPrint(err));
@@ -37,7 +40,7 @@ function runCodeAndExtract(source: string) {
   return sandbox.o;
 }
 
-function runValidation(source: string) {
+function runValidation(source: string, expectedOutput: ?any) {
   let coffeeES5 = compile(source, { bare: true });
   let decaffeinateES6 = convert(source).code;
   let decaffeinateES5 = babel.transform(decaffeinateES6, { presets: ['es2015'] }).code;
@@ -64,5 +67,9 @@ ${decaffeinateES5}
 COFFEE-SCRIPT ES5 compared to DECAFFEINATE/BABEL ES5
 ${err.message}`;
     throw err;
+  }
+
+  if (expectedOutput !== undefined) {
+    strictEqual(decaffeinateOutput, expectedOutput);
   }
 }
