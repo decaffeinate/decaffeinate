@@ -47,6 +47,7 @@ import RestPatcher from './patchers/RestPatcher.js';
 import ReturnPatcher from './patchers/ReturnPatcher.js';
 import SeqOpPatcher from './patchers/SeqOpPatcher.js';
 import SlicePatcher from './patchers/SlicePatcher.js';
+import SoakedDynamicMemberAccessOpPatcher from './patchers/SoakedDynamicMemberAccessOpPatcher.js';
 import SoakedFunctionApplicationPatcher from './patchers/SoakedFunctionApplicationPatcher.js';
 import SoakedMemberAccessOpPatcher from './patchers/SoakedMemberAccessOpPatcher.js';
 import SpreadPatcher from './patchers/SpreadPatcher.js';
@@ -200,6 +201,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'SoakedMemberAccessOp':
         return SoakedMemberAccessOpPatcher;
+
+      case 'SoakedDynamicMemberAccessOp':
+        return SoakedDynamicMemberAccessOpPatcher;
 
       case 'Herestring':
         return HerestringPatcher;

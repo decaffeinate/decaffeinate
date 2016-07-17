@@ -1,4 +1,4 @@
-import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
 import findSoakContainer from '../../../utils/findSoakContainer.js';
 
 const GUARD_HELPER =
@@ -6,16 +6,16 @@ const GUARD_HELPER =
   return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
 }`;
 
-export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
+export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAccessOpPatcher {
   patchAsExpression() {
     this.registerHelper('__guard__', GUARD_HELPER);
-    let memberNameToken = this.getMemberNameSourceToken();
     let soakContainer = findSoakContainer(this);
     let varName = soakContainer.claimFreeBinding('x');
-    this.overwrite(this.expression.outerEnd, memberNameToken.start, `, ${varName} => ${varName}.`);
+    this.overwrite(this.expression.outerEnd, this.indexingExpr.outerStart, `, ${varName} => ${varName}[`);
     soakContainer.insert(soakContainer.contentStart, '__guard__(');
     soakContainer.insert(soakContainer.contentEnd, ')');
 
     this.expression.patch();
+    this.indexingExpr.patch();
   }
 }
