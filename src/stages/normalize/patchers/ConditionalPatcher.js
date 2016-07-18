@@ -1,5 +1,7 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { SourceTokenListIndex } from 'coffee-lex';
+import { IF } from 'coffee-lex';
 
 /**
  * Normalizes conditionals by rewriting post-`if` into standard `if`, e.g.
@@ -39,25 +41,40 @@ export default class ConditionalPatcher extends NodePatcher {
    * `CONSEQUENT 'unless' CONDITION` → `unless CONDITION then CONSEQUENT`
    */
   patchPostIf() {
-    this.consequent.patch();
     this.condition.patch();
-    let patchedCondition = this.slice(
-      this.condition.outerStart,
-      this.condition.outerEnd
-    );
-    let patchedConsequent = this.slice(
-      this.consequent.outerStart,
-      this.consequent.outerEnd
-    );
-    let ifToken = this.node.isUnless ? 'unless' : 'if';
-    this.overwrite(
-      this.contentStart,
-      this.contentEnd,
-      `${ifToken} ${patchedCondition} then ${patchedConsequent}`
-    );
+
+    let ifTokenIndex = this.getIfTokenIndex();
+    let ifToken = this.sourceTokenAtIndex(ifTokenIndex);
+
+    if (ifToken) {
+      this.remove(this.consequent.outerEnd, ifToken.start);
+      this.move(ifToken.start, this.condition.outerEnd, this.consequent.outerStart);
+      this.insertRight(this.condition.outerEnd, ` then `);
+    }
+
+    this.consequent.patch();
   }
 
   isPostIf(): boolean {
     return this.condition.contentStart > this.consequent.contentStart;
+  }
+
+  getIfTokenIndex(): SourceTokenListIndex {
+    let start = this.contentStartTokenIndex;
+    let index = this.condition.outerStartTokenIndex;
+
+    while (index !== start) {
+      let token = this.sourceTokenAtIndex(index);
+      if (token && token.type === IF) {
+        break;
+      }
+      index = index.previous();
+    }
+
+    if (!index) {
+      throw this.error('unable to find `if` token in conditional');
+    }
+
+    return index;
   }
 }
