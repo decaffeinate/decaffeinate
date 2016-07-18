@@ -1316,17 +1316,6 @@ var NodePatcher = function () {
     }
 
     /**
-     * Determines whether this patcher's node can be negated without prepending
-     * a `!`, which turns it into a unary operator node.
-     */
-
-  }, {
-    key: 'canHandleNegationInternally',
-    value: function canHandleNegationInternally() {
-      return false;
-    }
-
-    /**
      * Negates this patcher's node when patching.
      */
 
@@ -5375,32 +5364,16 @@ var LogicalNotOpPatcher = function (_UnaryOpPatcher) {
   }
 
   createClass(LogicalNotOpPatcher, [{
-    key: 'isRepeatable',
-
-    /**
-     * Though it's possible that `!` could trigger a `valueOf` call to arbitrary
-     * code, CoffeeScript ignores that possibility and so do we.
-     */
-    value: function isRepeatable() {
-      return this.expression.isRepeatable();
-    }
-
-    /**
-     * ( `!` | `not` ) EXPRESSION
-     */
-
-  }, {
     key: 'patchAsExpression',
-    value: function patchAsExpression() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-      if (this.expression.canHandleNegationInternally()) {
-        this.expression.negate();
-        this.remove(this.contentStart, this.expression.outerStart);
-      } else {
-        this.overwrite(this.contentStart, this.expression.outerStart, '!');
-      }
-      get(Object.getPrototypeOf(LogicalNotOpPatcher.prototype), 'patchAsExpression', this).call(this, options);
+    /**
+     * '!' EXPRESSION
+     */
+    value: function patchAsExpression() {
+      // `not a` → `!a`
+      //  ^^^^      ^
+      this.overwrite(this.contentStart, this.expression.outerStart, '!');
+      get(Object.getPrototypeOf(LogicalNotOpPatcher.prototype), 'patchAsExpression', this).call(this);
     }
   }]);
   return LogicalNotOpPatcher;
@@ -8095,17 +8068,6 @@ var UnaryExistsOpPatcher = function (_UnaryOpPatcher) {
           this.overwrite(this.expression.outerEnd, this.contentEnd, ' != null');
         }
       }
-    }
-
-    /**
-     * Since we turn into an equality check, we can simply invert the operator
-     * to handle negation internally rather than by prefixing with `!`.
-     */
-
-  }, {
-    key: 'canHandleNegationInternally',
-    value: function canHandleNegationInternally() {
-      return true;
     }
 
     /**
