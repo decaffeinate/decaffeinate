@@ -2,8 +2,8 @@
 
 set -e
 
-if [ "$TRAVIS_BRANCH" != "master" ]; then
-  echo "No GitHub pages update on the $TRAVIS_BRANCH branch."
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+  echo "Refusing to update website on PR build."
   exit 0
 fi
 
