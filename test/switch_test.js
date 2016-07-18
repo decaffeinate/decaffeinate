@@ -251,6 +251,16 @@ describe('switch', () => {
     `);
   });
 
+  it.skip('works with `switch` used as an expression surrounded by parens', () => {
+    check(`
+      a(switch b
+        when c then d)
+    `, `
+      a((() => { switch (b) {
+        case c: return d; } })());
+    `);
+  });
+
   it('works with the switch from the CoffeeScript demo page', () => {
     check(`
     switch day
