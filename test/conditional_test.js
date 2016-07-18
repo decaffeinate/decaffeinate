@@ -221,6 +221,14 @@ describe('conditionals', () => {
     `);
   });
 
+  it('keeps single-line POST-`if` with implicit call as the condition', () => {
+    check(`
+      a if b c
+    `, `
+      if (b(c)) { a; }
+    `);
+  });
+
   it('keeps single-line POST-`unless`', () => {
     check(`a unless b`, `if (!b) { a; }`);
   });

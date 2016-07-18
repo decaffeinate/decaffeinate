@@ -439,6 +439,28 @@ export default class NodePatcher {
   }
 
   /**
+   * Moves content in a range to another index.
+   */
+  move(start: number, end: number, index: number) {
+    if (typeof start !== 'number' || typeof end !== 'number') {
+      throw this.error(
+        `cannot remove non-numeric range [${start}, ${end})`
+      );
+    }
+    if (typeof index !== 'number') {
+      throw this.error(
+        `cannot move to non-numeric index: ${index}`
+      );
+    }
+    this.log(
+      'MOVE', `[${start}, ${end}) → ${index}`,
+      JSON.stringify(this.context.source.slice(start, end)),
+      'BEFORE', JSON.stringify(this.context.source.slice(index, index + 8))
+    );
+    this.editor.move(start, end, index);
+  }
+
+  /**
    * Get the current content between the start and end indexes.
    */
   slice(start: number, end: number): string {

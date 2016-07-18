@@ -16,12 +16,13 @@ export type ParseContext = {
 };
 
 export type Editor = {
-  insertLeft: (index: number, content: string) => void,
-  insertRight: (index: number, content: string) => void,
-  overwrite: (start: number, end: number, content: string) => void,
-  remove: (start: number, end: number) => void,
-  slice: (start: number, end: number) => string,
-  append: (content: string) => void,
+  insertLeft: (index: number, content: string) => Editor;
+  insertRight: (index: number, content: string) => Editor;
+  overwrite: (start: number, end: number, content: string) => Editor;
+  remove: (start: number, end: number) => Editor;
+  slice: (start: number, end: number) => string;
+  append: (content: string) => Editor;
+  move: (start: number, end: number, index: number) => Editor;
 };
 
 export type SourceType = {
