@@ -94,4 +94,12 @@ describe('unary operators', () => {
       }
     `);
   });
+
+  it('converts unary existential operator handling negation from a `not` prefix', () => {
+    check(`
+      (a) -> not a?
+    `, `
+      a => a == null;
+    `);
+  });
 });
