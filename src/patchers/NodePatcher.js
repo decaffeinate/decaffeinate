@@ -737,6 +737,14 @@ export default class NodePatcher {
   }
 
   /**
+   * Determines whether this patcher's node can be negated without prepending
+   * a `!`, which turns it into a unary operator node.
+   */
+  canHandleNegationInternally(): boolean {
+    return false;
+  }
+
+  /**
    * Negates this patcher's node when patching.
    */
   negate() {

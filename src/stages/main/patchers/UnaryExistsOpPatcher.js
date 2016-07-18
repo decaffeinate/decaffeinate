@@ -89,6 +89,14 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
   }
 
   /**
+   * Since we turn into an equality check, we can simply invert the operator
+   * to handle negation internally rather than by prefixing with `!`.
+   */
+  canHandleNegationInternally(): boolean {
+    return true;
+  }
+
+  /**
    * Flips negated flag but doesn't edit anything immediately so that we can
    * use the correct operator in `patch`.
    */
