@@ -928,6 +928,23 @@ var NodePatcher = function () {
     }
 
     /**
+     * Moves content in a range to another index.
+     */
+
+  }, {
+    key: 'move',
+    value: function move(start, end, index) {
+      if (typeof start !== 'number' || typeof end !== 'number') {
+        throw this.error('cannot remove non-numeric range [' + start + ', ' + end + ')');
+      }
+      if (typeof index !== 'number') {
+        throw this.error('cannot move to non-numeric index: ' + index);
+      }
+      this.log('MOVE', '[' + start + ', ' + end + ') → ' + index, JSON.stringify(this.context.source.slice(start, end)), 'BEFORE', JSON.stringify(this.context.source.slice(index, index + 8)));
+      this.editor.move(start, end, index);
+    }
+
+    /**
      * Get the current content between the start and end indexes.
      */
 
@@ -8910,17 +8927,43 @@ var ConditionalPatcher$1 = function (_NodePatcher) {
   }, {
     key: 'patchPostIf',
     value: function patchPostIf() {
-      this.consequent.patch();
       this.condition.patch();
-      var patchedCondition = this.slice(this.condition.outerStart, this.condition.outerEnd);
-      var patchedConsequent = this.slice(this.consequent.outerStart, this.consequent.outerEnd);
-      var ifToken = this.node.isUnless ? 'unless' : 'if';
-      this.overwrite(this.contentStart, this.contentEnd, ifToken + ' ' + patchedCondition + ' then ' + patchedConsequent);
+
+      var ifTokenIndex = this.getIfTokenIndex();
+      var ifToken = this.sourceTokenAtIndex(ifTokenIndex);
+
+      if (ifToken) {
+        this.remove(this.consequent.outerEnd, ifToken.start);
+        this.move(ifToken.start, this.condition.outerEnd, this.consequent.outerStart);
+        this.insertRight(this.condition.outerEnd, ' then ');
+      }
+
+      this.consequent.patch();
     }
   }, {
     key: 'isPostIf',
     value: function isPostIf() {
       return this.condition.contentStart > this.consequent.contentStart;
+    }
+  }, {
+    key: 'getIfTokenIndex',
+    value: function getIfTokenIndex() {
+      var start = this.contentStartTokenIndex;
+      var index = this.condition.outerStartTokenIndex;
+
+      while (index !== start) {
+        var token = this.sourceTokenAtIndex(index);
+        if (token && token.type === coffeeLex.IF) {
+          break;
+        }
+        index = index.previous();
+      }
+
+      if (!index) {
+        throw this.error('unable to find `if` token in conditional');
+      }
+
+      return index;
     }
   }]);
   return ConditionalPatcher;
