@@ -1,12 +1,16 @@
 import check from './support/check.js';
+import validate from './support/validate.js';
 
-describe.skip('soaked expressions', () => {
+describe('soaked expressions', () => {
   describe('function application', () => {
     it('works with a basic function', () => {
       check(`
         a?()
       `, `
-        if (typeof a === 'function') { a(); }
+        __guardFunc__(a, f => f());
+        function __guardFunc__(func, transform) {
+          return typeof func === 'function' ? transform(func) : undefined;
+        }
       `);
     });
 
@@ -14,8 +18,10 @@ describe.skip('soaked expressions', () => {
       check(`
         a()?()
       `, `
-        let fn;
-        if (typeof (fn = a()) === 'function') { fn(); }
+        __guardFunc__(a(), f => f());
+        function __guardFunc__(func, transform) {
+          return typeof func === 'function' ? transform(func) : undefined;
+        }
       `);
     });
 
@@ -23,8 +29,10 @@ describe.skip('soaked expressions', () => {
       check(`
         a(b()?())
       `, `
-        let fn;
-        a(typeof (fn = b()) === 'function' ? fn() : undefined);
+        a(__guardFunc__(b(), f => f()));
+        function __guardFunc__(func, transform) {
+          return typeof func === 'function' ? transform(func) : undefined;
+        }
       `);
     });
 
@@ -32,16 +40,21 @@ describe.skip('soaked expressions', () => {
         check(`
         a?(1, 2, 3)
       `, `
-        if (typeof a === 'function') { a(1, 2, 3); }
+        __guardFunc__(a, f => f(1, 2, 3));
+        function __guardFunc__(func, transform) {
+          return typeof func === 'function' ? transform(func) : undefined;
+        }
       `);
     });
 
-    it('combines conditions of nested soaked function calls', () => {
+    it('handles nested soaked function calls', () => {
       check(`
         a?(1)?(2)
       `, `
-        let fn;
-        if (typeof a === 'function' && typeof (ref = a(1)) === 'function') { fn(2); }
+        __guardFunc__(__guardFunc__(a, f1 => f1(1)), f => f(2));
+        function __guardFunc__(func, transform) {
+          return typeof func === 'function' ? transform(func) : undefined;
+        }
       `);
     });
 
@@ -49,7 +62,10 @@ describe.skip('soaked expressions', () => {
       check(`
         a[b]?()
       `, `
-        if (typeof a[b] === 'function') { a[b](); }
+        __guardFunc__(a[b], f => f());
+        function __guardFunc__(func, transform) {
+          return typeof func === 'function' ? transform(func) : undefined;
+        }
       `);
     });
 
@@ -57,43 +73,83 @@ describe.skip('soaked expressions', () => {
       check(`
         a[b()]?()
       `, `
-        let fn;
-        if (typeof (fn = a[b()]) === 'function') { fn(); }
+        __guardFunc__(a[b()], f => f());
+        function __guardFunc__(func, transform) {
+          return typeof func === 'function' ? transform(func) : undefined;
+        }
       `);
+    });
+
+    it('evaluates soaked function calls', () => {
+      validate(`
+        f = -> 3
+        o = f?()
+      `, 3);
+    });
+
+    it('skips soaked function invocations on non-functions', () => {
+      validate(`
+        f = 3
+        o = f?()
+      `, undefined);
     });
   });
 
   describe('soaked member access', () => {
-    it('turns soaked member access assignment into an `if` statement', () => {
+    it('handles soaked member access assignment', () => {
       check(`
         canvasContext?.font = $('body').css('font')
       `, `
-        if (typeof canvasContext !== 'undefined' && canvasContext !== null) { canvasContext.font = $('body').css('font'); }
+        __guard__(canvasContext, x => x.font = $('body').css('font'));
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
       `);
     });
 
-    it('turns soaked member access assignment expressions into a ternary expression', () => {
+    it('handles soaked member access with conflicting variable names', () => {
+      check(`
+        x = 5
+        a?.b(x)
+      `, `
+        let x = 5;
+        __guard__(a, x1 => x1.b(x));
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it('handles soaked member access with assignment within an expression', () => {
       check(`
         a(b?.c = d)
       `, `
-        a(typeof b !== 'undefined' && b !== null ? b.c = d : undefined);
+        a(__guard__(b, x => x.c = d));
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
       `);
     });
 
-    it('converts soaked member access to a conditional', () => {
+    it('handles soaked member access with a function call', () => {
       check(`
         a?.b()
       `, `
-        if (typeof a !== 'undefined' && a !== null) { a.b(); }
+        __guard__(a, x => x.b());
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
       `);
     });
 
-    it('converts a complex soaked member access to a conditional with an assignment in the condition', () => {
+    it('handles soaked member access on the result of a function call', () => {
       check(`
         a.b()?.c
       `, `
-        let base;
-        if ((base = a.b()) != null) { base.c; }
+        __guard__(a.b(), x => x.c);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
       `);
     });
 
@@ -101,43 +157,192 @@ describe.skip('soaked expressions', () => {
       check(`
         a(b?.c)
       `, `
-        a(typeof b !== 'undefined' && b !== null ? b.c : undefined));
+        a(__guard__(b, x => x.c));
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
       `);
     });
 
-    it('converts dynamic soaked member access to a conditional', () => {
+    it('handles dynamic member access', () => {
       check(`
         a?[b]()
       `, `
-        if (typeof a !== 'undefined' && a !== null) { a[b](); }
+        __guard__(a, x => x[b]());
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
       `);
     });
 
-    it('wraps soaked member access if necessary', () => {
-      // FIXME: Ideally this would be `if (typeof a !== 'undefined' && a !== null && a.b) { c; }`
+    it('handles soaked dynamic member access followed by normal dynamic member access', () => {
+      check(`
+        a?[b].c[d]
+      `, `
+        __guard__(a, x => x[b].c[d]);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it('handles nested soaked dynamic member access', () => {
+      check(`
+        a?[b].c?[d]
+      `, `
+        __guard__(__guard__(a, x1 => x1[b].c), x => x[d]);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it('handles soaked member access within a condition', () => {
       check(`
         if a?.b then c
       `, `
-        if (typeof a !== 'undefined' && a !== null ? a.b : undefined) { c; }
+        if (__guard__(a, x => x.b)) { c; }
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
       `);
     });
 
-    it('combines conditions of nested soaks', () => {
+    it('handles nested soaked member access', () => {
       check(`
         a?.b?.c = 0;
       `, `
-        if (typeof a !== 'undefined' && a !== null && a.b != null) { a.b.c = 0; }
+        __guard__(__guard__(a, x1 => x1.b), x => x.c = 0);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
       `);
+    });
+
+    it('handles explicit parens around soaks', () => {
+      check(`
+        (a?.b).c
+      `, `
+        (__guard__(a, x => x.b)).c;
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it('keeps postfix ++ within soak expressions', () => {
+      check(`
+        a?.b++
+      `, `
+        __guard__(a, x => x.b++);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it('keeps postfix -- within soak expressions', () => {
+      check(`
+        a?.b--
+      `, `
+        __guard__(a, x => x.b--);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it.skip('keeps prefix ++ within soak expressions', () => {
+      check(`
+        ++a?.b
+      `, `
+        __guard__(a, x => ++x.b);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it.skip('keeps prefix -- within soak expressions', () => {
+      check(`
+        --a?.b
+      `, `
+        __guard__(a, x => --x.b);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it.skip('keeps delete within soak expressions', () => {
+      check(`
+        delete a?.b
+      `, `
+        __guard__(a, x => delete x.b);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it('correctly handles normal soaked access', () => {
+      validate(`
+        a = {b: 5}
+        o = a?.b
+      `, 5);
+    });
+
+    it('correctly handles missing soaked access', () => {
+      validate(`
+        a = {b: null}
+        o = a.b?.c
+      `, undefined);
+    });
+
+    it('correctly handles dynamic soaked access', () => {
+      validate(`
+        a = {b: 5}
+        o = a?['b']
+      `, 5);
+    });
+
+    it('correctly handles missing dynamic soaked access', () => {
+      validate(`
+        a = {b: null}
+        o = a.b?['c']
+      `, undefined);
+    });
+
+    it('stops evaluating the expression when hitting a soak failure', () => {
+        validate(`
+        a = {b: 5}
+        o = a.d?.e.f()
+      `, undefined);
+    });
+
+    it('skips assignment when a soak fails', () => {
+      validate(`
+        x = 1
+        y = null
+        z = {}
+        y?.a = x++
+        z?.a = x++
+        o = x
+      `, 2);
     });
   });
   
-  it('combines conditions of soaked function calls and soaked member accesses', () => {
+  it('handles a combination of soaked function calls and soaked member accesses', () => {
     check(`
       a(1)?.b?()?[c]?.d = 1
     `, `
-      let base;
-      let base1;
-      if ((base = a(1)) != null && typeof base.b === 'function' && (base1 = base.b()) != null && (base2 = base1[c]) != null) { base1.d = 1; }
+      __guard__(__guard__(__guardFunc__(__guard__(a(1), x2 => x2.b), f => f()), x1 => x1[c]), x => x.d = 1);
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+      function __guardFunc__(func, transform) {
+        return typeof func === 'function' ? transform(func) : undefined;
+      }
     `);
   });
 });
