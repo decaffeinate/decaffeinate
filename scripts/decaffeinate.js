@@ -4565,14 +4565,9 @@ var ForPatcher = function (_NodePatcher) {
       this.body.patch({ leftBrace: false });
     }
   }, {
-    key: 'patchAsExpression',
-    value: function patchAsExpression() {
-      throw this.error('\'for\' loops used as expressions are not yet supported ' + '(https://github.com/decaffeinate/decaffeinate/issues/156)');
-    }
-  }, {
     key: 'getRelationToken',
     value: function getRelationToken() {
-      var tokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(this.keyAssignee, this.target, function (token) {
+      var tokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(this.keyAssignee || this.valAssignee, this.target, function (token) {
         return token.type === coffeeLex.RELATION;
       });
       if (!tokenIndex) {
@@ -4668,6 +4663,56 @@ var ForInPatcher = function (_ForPatcher) {
       if (this.step) {
         this.step.setRequiresExpression();
       }
+    }
+  }, {
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      if (this.step !== null) {
+        throw this.error('\'for in\' loop expressions with a "by" clause are not supported yet ' + '(https://github.com/decaffeinate/decaffeinate/issues/156)');
+      }
+      if (!this.body.canPatchAsExpression()) {
+        throw this.error('\'for in\' loop expressions with non-expression bodies are not supported yet ' + '(https://github.com/decaffeinate/decaffeinate/issues/156)');
+      }
+      // The high-level approach of a.filter(...).map((x, i) => ...) doesn't work,
+      // since the filter will change the indexes, so we specifically exclude that
+      // case.
+      if (this.filter !== null && this.keyAssignee !== null) {
+        throw this.error('\'for in\' loop expressions with both a filter and an index assignee are not supported yet ' + '(https://github.com/decaffeinate/decaffeinate/issues/156)');
+      }
+
+      this.removeThenToken();
+
+      this.valAssignee.patch();
+      if (this.keyAssignee !== null) {
+        this.keyAssignee.patch();
+      }
+      this.target.patch();
+      if (this.filter !== null) {
+        this.filter.patch();
+      }
+
+      this.body.setRequiresExpression();
+      this.body.patch();
+
+      var assigneeCode = this.slice(this.valAssignee.contentStart, this.valAssignee.contentEnd);
+      if (this.keyAssignee !== null) {
+        assigneeCode += ', ' + this.slice(this.keyAssignee.contentStart, this.keyAssignee.contentEnd);
+      }
+
+      // for a in b when c d  ->  b when c d
+      // ("then" was removed above).
+      this.remove(this.contentStart, this.target.outerStart);
+      if (this.filter !== null) {
+        // b when c d  ->  b.filter((a) => c d
+        this.overwrite(this.target.outerEnd, this.filter.outerStart, '.filter((' + assigneeCode + ') => ');
+        // b.filter((a) => c d  ->  b.filter((a) => c).map((a) => d
+        this.insert(this.filter.outerEnd, ').map((' + assigneeCode + ') =>');
+      } else {
+        // b d  ->  b.map((a) => d
+        this.insert(this.target.outerEnd, '.map((' + assigneeCode + ') =>');
+      }
+      // b.filter((a) => c).map((a) => d  ->  b.filter((a) => c).map((a) => d)
+      this.insert(this.body.outerEnd, ')');
     }
   }, {
     key: 'patchAsStatement',
@@ -4859,6 +4904,11 @@ var ForOfPatcher = function (_ForPatcher) {
   }
 
   createClass(ForOfPatcher, [{
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      throw this.error('\'for of\' loops used as expressions are not yet supported ' + '(https://github.com/decaffeinate/decaffeinate/issues/156)');
+    }
+  }, {
     key: 'patchAsStatement',
     value: function patchAsStatement() {
       if (this.node.isOwn) {
@@ -6592,6 +6642,8 @@ var SlicePatcher = function (_NodePatcher) {
   return SlicePatcher;
 }(NodePatcher);
 
+var GUARD_FUNC_HELPER = 'function __guardFunc__(func, transform) {\n  return typeof func === \'function\' ? transform(func) : undefined;\n}';
+
 var SoakedFunctionApplicationPatcher = function (_FunctionApplicationP) {
   inherits(SoakedFunctionApplicationPatcher, _FunctionApplicationP);
 
@@ -6603,14 +6655,36 @@ var SoakedFunctionApplicationPatcher = function (_FunctionApplicationP) {
   createClass(SoakedFunctionApplicationPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
-      throw this.error('cannot patch soaked function calls (e.g. `a?()`) yet, ' + 'see https://github.com/decaffeinate/decaffeinate/issues/176');
+      this.registerHelper('__guardFunc__', GUARD_FUNC_HELPER);
+      var callStartToken = this.getCallStartToken();
+      var soakContainer = findSoakContainer(this);
+      var varName = soakContainer.claimFreeBinding('f');
+      this.overwrite(this.fn.outerEnd, callStartToken.end, ', ' + varName + ' => ' + varName + '(');
+      soakContainer.insert(soakContainer.contentStart, '__guardFunc__(');
+      soakContainer.insert(soakContainer.contentEnd, ')');
+
+      get(Object.getPrototypeOf(SoakedFunctionApplicationPatcher.prototype), 'patchAsExpression', this).call(this);
+    }
+  }, {
+    key: 'getCallStartToken',
+    value: function getCallStartToken() {
+      var tokens = this.context.sourceTokens;
+      var index = tokens.indexOfTokenMatchingPredicate(function (token) {
+        return token.type === coffeeLex.CALL_START;
+      }, this.fn.outerEndTokenIndex);
+      if (!index || index.isAfter(this.contentEndTokenIndex)) {
+        throw this.error('unable to find open-paren for function call');
+      }
+      return tokens.tokenAtIndex(index);
     }
   }]);
   return SoakedFunctionApplicationPatcher;
 }(FunctionApplicationPatcher);
 
-var SoakedMemberAccessOpPatcher = function (_NodePatcher) {
-  inherits(SoakedMemberAccessOpPatcher, _NodePatcher);
+var GUARD_HELPER$1 = 'function __guard__(value, transform) {\n  return (typeof value !== \'undefined\' && value !== null) ? transform(value) : undefined;\n}';
+
+var SoakedMemberAccessOpPatcher = function (_MemberAccessOpPatche) {
+  inherits(SoakedMemberAccessOpPatcher, _MemberAccessOpPatche);
 
   function SoakedMemberAccessOpPatcher() {
     classCallCheck(this, SoakedMemberAccessOpPatcher);
@@ -6620,11 +6694,91 @@ var SoakedMemberAccessOpPatcher = function (_NodePatcher) {
   createClass(SoakedMemberAccessOpPatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
-      throw this.error('cannot patch soaked member access (e.g. `a?.b`) yet,' + 'see https://github.com/decaffeinate/decaffeinate/issues/176');
+      this.registerHelper('__guard__', GUARD_HELPER$1);
+      var memberNameToken = this.getMemberNameSourceToken();
+      var soakContainer = findSoakContainer(this);
+      var varName = soakContainer.claimFreeBinding('x');
+      this.overwrite(this.expression.outerEnd, memberNameToken.start, ', ' + varName + ' => ' + varName + '.');
+      soakContainer.insert(soakContainer.contentStart, '__guard__(');
+      soakContainer.insert(soakContainer.contentEnd, ')');
+
+      this.expression.patch();
     }
   }]);
   return SoakedMemberAccessOpPatcher;
-}(NodePatcher);
+}(MemberAccessOpPatcher);
+
+/**
+ * Find the enclosing node defining the "soak range" for a given soak operation.
+ * For example, in the expression `a(b?.c.d())`, returns the `b?.c.d()` node,
+ * since that's the chain of operations that will be skipped if `b` is null or
+ * undefined.
+ */
+function findSoakContainer(patcher) {
+  var result = patcher;
+  while (canParentHandleSoak(result)) {
+    result = result.parent;
+  }
+  return result;
+}
+
+/**
+ * Determine if this "soak range" can be expanded outward.
+ */
+function canParentHandleSoak(patcher) {
+  if (patcher.parent === null) {
+    return false;
+  }
+  if (patcher.isSurroundedByParentheses()) {
+    return false;
+  }
+  if (patcher.parent instanceof MemberAccessOpPatcher && !(patcher.parent instanceof SoakedMemberAccessOpPatcher)) {
+    return true;
+  }
+  if (patcher.parent instanceof DynamicMemberAccessOpPatcher && !(patcher.parent instanceof SoakedDynamicMemberAccessOpPatcher) && patcher.parent.expression === patcher) {
+    return true;
+  }
+  if (patcher.parent instanceof FunctionApplicationPatcher && !(patcher.parent instanceof SoakedFunctionApplicationPatcher) && patcher.parent.fn === patcher) {
+    return true;
+  }
+  if (patcher.parent instanceof AssignOpPatcher && patcher.parent.assignee === patcher) {
+    return true;
+  }
+  if (['PostIncrementOp', 'PostDecrementOp'].indexOf(patcher.parent.node.type) >= 0) {
+    return true;
+  }
+  if (['PreIncrementOp', 'PreDecrementOp', 'DeleteOp'].indexOf(patcher.parent.node.type) >= 0) {
+    throw patcher.parent.error('Expressions like `++a?.b`, `--a?.b`, and `delete a?.b` are not supported yet.');
+  }
+  return false;
+}
+
+var GUARD_HELPER = 'function __guard__(value, transform) {\n  return (typeof value !== \'undefined\' && value !== null) ? transform(value) : undefined;\n}';
+
+var SoakedDynamicMemberAccessOpPatcher = function (_DynamicMemberAccessO) {
+  inherits(SoakedDynamicMemberAccessOpPatcher, _DynamicMemberAccessO);
+
+  function SoakedDynamicMemberAccessOpPatcher() {
+    classCallCheck(this, SoakedDynamicMemberAccessOpPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(SoakedDynamicMemberAccessOpPatcher).apply(this, arguments));
+  }
+
+  createClass(SoakedDynamicMemberAccessOpPatcher, [{
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      this.registerHelper('__guard__', GUARD_HELPER);
+      var soakContainer = findSoakContainer(this);
+      var varName = soakContainer.claimFreeBinding('x');
+      this.overwrite(this.expression.outerEnd, this.indexingExpr.outerStart, ', ' + varName + ' => ' + varName + '[');
+      soakContainer.insert(soakContainer.contentStart, '__guard__(');
+      soakContainer.insert(soakContainer.contentEnd, ')');
+
+      this.expression.patch();
+      this.indexingExpr.patch();
+    }
+  }]);
+  return SoakedDynamicMemberAccessOpPatcher;
+}(DynamicMemberAccessOpPatcher);
 
 /* parseMutlilineString takes a raw string as input and returns
  * an array of 'line' objects representing each line of the string.
@@ -8768,6 +8922,9 @@ var MainStage = function (_TransformCoffeeScrip) {
 
         case 'SoakedMemberAccessOp':
           return SoakedMemberAccessOpPatcher;
+
+        case 'SoakedDynamicMemberAccessOp':
+          return SoakedDynamicMemberAccessOpPatcher;
 
         case 'Herestring':
           return HerestringPatcher;
