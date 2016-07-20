@@ -24,6 +24,7 @@ export default class SlicePatcher extends NodePatcher {
    * EXPRESSION '[' LEFT? ( .. | ... ) RIGHT? ']'
    */
   patchAsExpression() {
+    this.expression.patch();
     let indexStart = this.getIndexStartSourceToken();
     // `a[0..1]` → `a.slice(0..1]`
     //   ^           ^^^^^^^

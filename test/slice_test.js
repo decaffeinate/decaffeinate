@@ -35,4 +35,8 @@ describe('slice', () => {
   it('patches the left and right', () => {
     check(`a[(b c)...(d e)]`, `a.slice((b(c)), (d(e)));`);
   });
+
+  it('patches the expression', () => {
+    check(`@a[b...c]`, `this.a.slice(b, c);`);
+  });
 });
