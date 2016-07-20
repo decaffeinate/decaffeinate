@@ -6533,6 +6533,7 @@ var SlicePatcher = function (_NodePatcher) {
   createClass(SlicePatcher, [{
     key: 'patchAsExpression',
     value: function patchAsExpression() {
+      this.expression.patch();
       var indexStart = this.getIndexStartSourceToken();
       // `a[0..1]` → `a.slice(0..1]`
       //   ^           ^^^^^^^
