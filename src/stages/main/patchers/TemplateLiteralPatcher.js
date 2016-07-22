@@ -13,6 +13,12 @@ export default class TemplateLiteralPatcher extends NodePatcher {
     this.expressions = expressions;
   }
 
+  initialize() {
+    for (let expression of this.expressions) {
+      expression.setRequiresExpression();
+    }
+  }
+
   patchAsExpression() {
     let { quasis, expressions, contentStart, contentEnd } = this;
 
