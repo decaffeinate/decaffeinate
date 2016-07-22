@@ -2421,381 +2421,6 @@ var ManuallyBoundFunctionPatcher = function (_FunctionPatcher) {
   return ManuallyBoundFunctionPatcher;
 }(FunctionPatcher);
 
-/**
- * Traverses an AST node, calling a callback for each node in the hierarchy in
- * source order.
- */
-function traverse(node, callback) {
-  var descended = false;
-
-  function descend(parent) {
-    descended = true;
-
-    childPropertyNames(parent).forEach(function (property) {
-      var value = parent[property];
-      if (Array.isArray(value)) {
-        value.forEach(function (child) {
-          child.parentNode = parent;
-          traverse(child, callback);
-        });
-      } else if (value) {
-        value.parentNode = parent;
-        traverse(value, callback);
-      }
-    });
-  }
-
-  var shouldDescend = callback(node, descend, childPropertyNames(node).length === 0);
-
-  if (!descended && shouldDescend !== false) {
-    descend(node);
-  }
-}
-
-var ORDER = {
-  ArrayInitialiser: ['members'],
-  AssignOp: ['assignee', 'expression'],
-  BitAndOp: ['left', 'right'],
-  BitNotOp: ['expression'],
-  BitOrOp: ['left', 'right'],
-  BitXorOp: ['left', 'right'],
-  Block: ['statements'],
-  Bool: [],
-  BoundFunction: ['parameters', 'body'],
-  Break: [],
-  ChainedComparisonOp: ['expression'],
-  Class: ['nameAssignee', 'parent', 'body'],
-  ClassProtoAssignOp: ['assignee', 'expression'],
-  CompoundAssignOp: ['assignee', 'expression'],
-  Conditional: ['condition', 'consequent', 'alternate'],
-  Constructor: ['assignee', 'expression'],
-  Continue: [],
-  DefaultParam: ['param', 'default'],
-  DeleteOp: ['expression'],
-  DivideOp: ['left', 'right'],
-  DoOp: ['expression'],
-  DynamicMemberAccessOp: ['expression', 'indexingExpr'],
-  EQOp: ['left', 'right'],
-  ExistsOp: ['left', 'right'],
-  Expansion: [],
-  ExpOp: ['left', 'right'],
-  ExtendsOp: ['left', 'right'],
-  Float: [],
-  FloorDivideOp: ['left', 'right'],
-  ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
-  ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
-  Function: ['parameters', 'body'],
-  FunctionApplication: ['function', 'arguments'],
-  GeneratorFunction: ['parameters', 'body'],
-  GTEOp: ['left', 'right'],
-  GTOp: ['left', 'right'],
-  Herestring: [],
-  Identifier: [],
-  InOp: ['left', 'right'],
-  InstanceofOp: ['left', 'right'],
-  Int: [],
-  JavaScript: [],
-  LTEOp: ['left', 'right'],
-  LTOp: ['left', 'right'],
-  LeftShiftOp: ['left', 'right'],
-  LogicalAndOp: ['left', 'right'],
-  LogicalNotOp: ['expression'],
-  LogicalOrOp: ['left', 'right'],
-  MemberAccessOp: ['expression'],
-  ModuloOp: ['left', 'right'],
-  MultiplyOp: ['left', 'right'],
-  NEQOp: ['left', 'right'],
-  NewOp: ['ctor', 'arguments'],
-  Null: [],
-  ObjectInitialiser: ['members'],
-  ObjectInitialiserMember: ['key', 'expression'],
-  OfOp: ['left', 'right'],
-  PlusOp: ['left', 'right'],
-  PostDecrementOp: ['expression'],
-  PostIncrementOp: ['expression'],
-  PreDecrementOp: ['expression'],
-  PreIncrementOp: ['expression'],
-  Program: ['body'],
-  ProtoMemberAccessOp: ['expression'],
-  Range: ['left', 'right'],
-  RegExp: [],
-  RemOp: ['left', 'right'],
-  Rest: ['expression'],
-  Return: ['expression'],
-  SeqOp: ['left', 'right'],
-  SignedRightShiftOp: ['left', 'right'],
-  Slice: ['expression', 'left', 'right'],
-  SoakedDynamicMemberAccessOp: ['expression', 'indexingExpr'],
-  SoakedFunctionApplication: ['function', 'arguments'],
-  SoakedMemberAccessOp: ['expression'],
-  Spread: ['expression'],
-  String: [],
-  SubtractOp: ['left', 'right'],
-  Super: [],
-  Switch: ['expression', 'cases', 'alternate'],
-  SwitchCase: ['conditions', 'consequent'],
-  TemplateLiteral: ['quasis', 'expressions'],
-  This: [],
-  Throw: ['expression'],
-  Try: ['body', 'catchAssignee', 'catchBody', 'finallyBody'],
-  TypeofOp: ['expression'],
-  UnaryExistsOp: ['expression'],
-  UnaryNegateOp: ['expression'],
-  UnaryPlusOp: ['expression'],
-  Undefined: [],
-  UnsignedRightShiftOp: ['left', 'right'],
-  While: ['condition', 'guard', 'body'],
-  Yield: ['expression'],
-  YieldFrom: ['expression']
-};
-
-function childPropertyNames(node) {
-  var names = ORDER[node.type];
-
-  if (!names) {
-    throw new Error('cannot traverse unknown node type: ' + node.type);
-  }
-
-  return names;
-}
-
-/**
- * Handles bound functions, i.e. "fat arrows".
- */
-
-var BoundFunctionPatcher = function (_FunctionPatcher) {
-  inherits(BoundFunctionPatcher, _FunctionPatcher);
-
-  function BoundFunctionPatcher() {
-    classCallCheck(this, BoundFunctionPatcher);
-    return possibleConstructorReturn(this, Object.getPrototypeOf(BoundFunctionPatcher).apply(this, arguments));
-  }
-
-  createClass(BoundFunctionPatcher, [{
-    key: 'initialize',
-    value: function initialize() {
-      get(Object.getPrototypeOf(BoundFunctionPatcher.prototype), 'initialize', this).call(this);
-      if (this.hasInlineBody()) {
-        this.body.setExpression();
-      }
-    }
-
-    /**
-     * Use a slightly-modified version of the regular `FunctionPatcher` when
-     * we can't use arrow functions.
-     */
-
-  }, {
-    key: 'patchAsStatement',
-
-
-    // There's no difference between statement and expression arrow functions.
-    value: function patchAsStatement() {
-      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      this.patchAsExpression(options);
-    }
-  }, {
-    key: 'patchFunctionStart',
-    value: function patchFunctionStart() {
-      var arrow = this.getArrowToken();
-
-      if (!this.hasParamStart()) {
-        this.insert(this.contentStart, '() ');
-      } else if (!this.parameterListNeedsParentheses()) {
-        var _parameters = slicedToArray(this.parameters, 1);
-
-        var param = _parameters[0];
-
-        if (param.isSurroundedByParentheses()) {
-          this.remove(param.outerStart, param.contentStart);
-          this.remove(param.contentEnd, param.outerEnd);
-        }
-      }
-
-      if (!this.willPatchBodyInline()) {
-        this.insert(arrow.end, ' {');
-      }
-    }
-  }, {
-    key: 'parameterListNeedsParentheses',
-    value: function parameterListNeedsParentheses() {
-      var parameters = this.parameters;
-
-      if (parameters.length !== 1) {
-        return true;
-      }
-
-      var _parameters2 = slicedToArray(parameters, 1);
-
-      var param = _parameters2[0];
-
-      return !(param instanceof IdentifierPatcher);
-    }
-  }, {
-    key: 'patchFunctionBody',
-    value: function patchFunctionBody() {
-      if (this.body) {
-        if (!this.willPatchBodyInline()) {
-          this.body.patch({ leftBrace: false });
-        } else {
-          this.body.patch();
-        }
-      } else {
-        // No body, so BlockPatcher can't insert it for us.
-        this.insert(this.innerEnd, '}');
-      }
-    }
-  }, {
-    key: 'expectedArrowType',
-    value: function expectedArrowType() {
-      return '=>';
-    }
-  }, {
-    key: 'willPatchBodyInline',
-    value: function willPatchBodyInline() {
-      return this.body ? this.body.willPatchAsExpression() : false;
-    }
-  }, {
-    key: 'hasInlineBody',
-    value: function hasInlineBody() {
-      return this.body ? this.body.inline() : false;
-    }
-
-    /**
-     * Bound functions already start with a paren or a param identifier, and so
-     * are safe to start a statement.
-     */
-
-  }, {
-    key: 'statementNeedsParens',
-    value: function statementNeedsParens() {
-      return false;
-    }
-  }], [{
-    key: 'patcherClassOverrideForNode',
-    value: function patcherClassOverrideForNode(node) {
-      var referencesArguments = false;
-
-      traverse(node, function (child) {
-        if (referencesArguments) {
-          // We already found a reference, so skip this.
-          return false;
-        } else if (child.type === 'Identifier' && child.data === 'arguments') {
-          referencesArguments = true;
-        } else if (child !== node && isFunction(child)) {
-          // Don't descend into other functions.
-          return false;
-        }
-      });
-
-      if (referencesArguments) {
-        return ManuallyBoundFunctionPatcher;
-      } else {
-        return null;
-      }
-    }
-  }]);
-  return BoundFunctionPatcher;
-}(FunctionPatcher);
-
-/**
- * Handles constructs of the form `a < b < c < … < z`.
- */
-
-var ChainedComparisonOpPatcher = function (_NodePatcher) {
-  inherits(ChainedComparisonOpPatcher, _NodePatcher);
-
-
-  /**
-   * `node` should have type `ChainedComparisonOp`.
-   */
-
-  function ChainedComparisonOpPatcher(node, context, editor, expression) {
-    classCallCheck(this, ChainedComparisonOpPatcher);
-
-    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ChainedComparisonOpPatcher).call(this, node, context, editor));
-
-    _this.expression = expression;
-    _this.negated = false;
-    return _this;
-  }
-
-  createClass(ChainedComparisonOpPatcher, [{
-    key: 'initialize',
-    value: function initialize() {
-      this.expression.setRequiresExpression();
-    }
-  }, {
-    key: 'patchAsExpression',
-    value: function patchAsExpression() {
-      var _this2 = this;
-
-      this.expression.patch();
-      this.getMiddleOperands().forEach(function (middle) {
-        var middleAgain = middle.makeRepeatable(true, 'middle');
-        // `a < b < c` → `a < b && b < c`
-        //                     ^^^^^
-        _this2.insert(middle.outerEnd, ' ' + (_this2.negated ? '||' : '&&') + ' ' + middleAgain);
-      });
-    }
-
-    /**
-     * @private
-     */
-
-  }, {
-    key: 'getMiddleOperands',
-    value: function getMiddleOperands() {
-      var result = [];
-      var comparison = this.expression.left;
-      while (comparison instanceof BinaryOpPatcher) {
-        result.unshift(comparison.right);
-        comparison = comparison.left;
-      }
-      return result;
-    }
-  }, {
-    key: 'negate',
-    value: function negate() {
-      this.negated = !this.negated;
-      var comparison = this.expression;
-      while (comparison instanceof BinaryOpPatcher) {
-        comparison.negate();
-        comparison = comparison.left;
-      }
-    }
-
-    /**
-     * Forward the request to the underlying comparison operator.
-     */
-
-  }, {
-    key: 'statementNeedsParens',
-    value: function statementNeedsParens() {
-      return this.expression.statementNeedsParens();
-    }
-  }]);
-  return ChainedComparisonOpPatcher;
-}(NodePatcher);
-
-var ClassBoundMethodFunctionPatcher = function (_FunctionPatcher) {
-  inherits(ClassBoundMethodFunctionPatcher, _FunctionPatcher);
-
-  function ClassBoundMethodFunctionPatcher() {
-    classCallCheck(this, ClassBoundMethodFunctionPatcher);
-    return possibleConstructorReturn(this, Object.getPrototypeOf(ClassBoundMethodFunctionPatcher).apply(this, arguments));
-  }
-
-  createClass(ClassBoundMethodFunctionPatcher, [{
-    key: 'expectedArrowType',
-    value: function expectedArrowType() {
-      return '=>';
-    }
-  }]);
-  return ClassBoundMethodFunctionPatcher;
-}(FunctionPatcher);
-
 var MemberAccessOpPatcher = function (_NodePatcher) {
   inherits(MemberAccessOpPatcher, _NodePatcher);
 
@@ -3126,6 +2751,641 @@ var ThisPatcher = function (_NodePatcher) {
   }]);
   return ThisPatcher;
 }(NodePatcher);
+
+/**
+ * Handles object properties.
+ */
+
+var ObjectInitialiserMemberPatcher = function (_ObjectBodyMemberPatc) {
+  inherits(ObjectInitialiserMemberPatcher, _ObjectBodyMemberPatc);
+
+  function ObjectInitialiserMemberPatcher() {
+    classCallCheck(this, ObjectInitialiserMemberPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ObjectInitialiserMemberPatcher).apply(this, arguments));
+  }
+
+  createClass(ObjectInitialiserMemberPatcher, [{
+    key: 'patchAsProperty',
+    value: function patchAsProperty() {
+      if (this.key.node === this.expression.node) {
+        this.patchAsShorthand({
+          expand: this.key.node.type !== 'Identifier'
+        });
+      } else {
+        get(Object.getPrototypeOf(ObjectInitialiserMemberPatcher.prototype), 'patchAsProperty', this).call(this);
+      }
+    }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: 'patchAsShorthand',
+    value: function patchAsShorthand() {
+      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref$expand = _ref.expand;
+      var expand = _ref$expand === undefined ? false : _ref$expand;
+      var key = this.key;
+
+      key.patch();
+      if (key instanceof MemberAccessOpPatcher) {
+        // e.g. `{ @name }`
+        var memberAccessKey = key;
+        if (!(memberAccessKey.expression instanceof ThisPatcher)) {
+          throw this.error('expected property key member access on \'this\', e.g. \'@name\'');
+        }
+        // `{ @name }` → `{ name: @name }`
+        //                  ^^^^^^
+        this.insert(memberAccessKey.outerStart, memberAccessKey.getMemberName() + ': ');
+      } else if (expand) {
+        var isComputed = !key.isRepeatable();
+
+        if (isComputed) {
+          // `{ `a = ${1 + 1}` }` → `{ [`a = ${1 + 1}`] }`
+          //                           ^              ^
+          this.insert(key.outerStart, '[');
+          this.insert(key.outerEnd, ']');
+        }
+
+        var keyAgain = key.makeRepeatable();
+
+        // `{ a } → { a: a }`
+        //             ^^^
+        this.insert(key.outerEnd, ': ' + keyAgain);
+      }
+    }
+  }]);
+  return ObjectInitialiserMemberPatcher;
+}(ObjectBodyMemberPatcher);
+
+/**
+ * Handles object literals.
+ */
+
+var ObjectInitialiserPatcher = function (_NodePatcher) {
+  inherits(ObjectInitialiserPatcher, _NodePatcher);
+
+  function ObjectInitialiserPatcher(node, context, editor, members) {
+    classCallCheck(this, ObjectInitialiserPatcher);
+
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ObjectInitialiserPatcher).call(this, node, context, editor));
+
+    _this.members = members;
+    return _this;
+  }
+
+  createClass(ObjectInitialiserPatcher, [{
+    key: 'initialize',
+    value: function initialize() {
+      this.members.forEach(function (member) {
+        return member.setRequiresExpression();
+      });
+    }
+
+    /**
+     * Objects as expressions are very similar to their CoffeeScript equivalents.
+     */
+
+  }, {
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      var implicitObject = this.isImplicitObject();
+      if (implicitObject) {
+        var curlyBraceInsertionPosition = this.innerStart;
+        var textToInsert = '{';
+        var shouldIndent = false;
+        if (this.shouldExpandCurlyBraces()) {
+          if (this.implicitlyReturns() && !this.isSurroundedByParentheses()) {
+            textToInsert = '{\n' + this.getIndent();
+            shouldIndent = true;
+          } else {
+            var tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex;
+            if (!this.isSurroundedByParentheses()) {
+              tokenIndexBeforeOuterStartTokenIndex = tokenIndexBeforeOuterStartTokenIndex.previous();
+            }
+
+            if (tokenIndexBeforeOuterStartTokenIndex) {
+              var precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(isSemanticToken, tokenIndexBeforeOuterStartTokenIndex);
+              if (precedingTokenIndex) {
+                var precedingToken = this.sourceTokenAtIndex(precedingTokenIndex);
+                curlyBraceInsertionPosition = precedingToken.end;
+                var precedingTokenText = this.sourceOfToken(precedingToken);
+                var lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
+                var needsSpace = lastCharOfToken === ':' || lastCharOfToken === '=' || lastCharOfToken === ',';
+                if (needsSpace) {
+                  textToInsert = ' {';
+                }
+              }
+            }
+          }
+        }
+        this.insert(curlyBraceInsertionPosition, textToInsert);
+        if (shouldIndent) {
+          this.indent();
+        }
+      }
+      this.patchMembers();
+      if (implicitObject) {
+        if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
+          this.appendLineAfter('}', -1);
+        } else {
+          this.insert(this.innerEnd, '}');
+        }
+      }
+    }
+
+    /**
+     * Objects as statements need to be wrapped in parentheses, or else they'll be
+     * confused with blocks. That is, this is not an object [1]:
+     *
+     *   { a: 0 };
+     *
+     * But this is fine:
+     *
+     *   ({ a: 0 });
+     *
+     * [1]: It is actually valid code, though. It's a block with a labeled
+     * statement `a` with a single expression statement, being the literal 0.
+     */
+
+  }, {
+    key: 'patchAsStatement',
+    value: function patchAsStatement() {
+      var needsParentheses = !this.isSurroundedByParentheses();
+      var implicitObject = this.isImplicitObject();
+      if (needsParentheses) {
+        this.insert(this.contentStart, '(');
+      }
+      if (implicitObject) {
+        if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
+          this.insert(this.innerStart, '{\n' + this.getIndent());
+          this.indent();
+        } else {
+          this.insert(this.innerStart, '{');
+        }
+      }
+      this.patchMembers();
+      if (implicitObject) {
+        if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
+          this.appendLineAfter('}', -1);
+        } else {
+          this.insert(this.innerEnd, '}');
+        }
+      }
+      if (needsParentheses) {
+        this.insert(this.contentEnd, ')');
+      }
+    }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: 'shouldExpandCurlyBraces',
+    value: function shouldExpandCurlyBraces() {
+      return this.isMultiline() || this.parent instanceof ObjectInitialiserMemberPatcher;
+    }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: 'patchMembers',
+    value: function patchMembers() {
+      var _this2 = this;
+
+      this.members.forEach(function (member, i, members) {
+        member.patch();
+        if (i !== members.length - 1) {
+          if (!member.hasSourceTokenAfter(coffeeLex.COMMA)) {
+            _this2.insert(member.outerEnd, ',');
+          }
+        }
+      });
+    }
+
+    /**
+     * Determines whether this object is implicit, i.e. it lacks braces.
+     *
+     *   a: b      # true
+     *   { a: b }  # false
+     */
+
+  }, {
+    key: 'isImplicitObject',
+    value: function isImplicitObject() {
+      var tokens = this.context.sourceTokens;
+      var indexOfFirstToken = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
+      return tokens.tokenAtIndex(indexOfFirstToken).type !== coffeeLex.LBRACE;
+    }
+
+    /**
+     * Starting a statement with an object always requires parens.
+     */
+
+  }, {
+    key: 'statementNeedsParens',
+    value: function statementNeedsParens() {
+      return true;
+    }
+  }]);
+  return ObjectInitialiserPatcher;
+}(NodePatcher);
+
+/**
+ * Traverses an AST node, calling a callback for each node in the hierarchy in
+ * source order.
+ */
+function traverse(node, callback) {
+  var descended = false;
+
+  function descend(parent) {
+    descended = true;
+
+    childPropertyNames(parent).forEach(function (property) {
+      var value = parent[property];
+      if (Array.isArray(value)) {
+        value.forEach(function (child) {
+          child.parentNode = parent;
+          traverse(child, callback);
+        });
+      } else if (value) {
+        value.parentNode = parent;
+        traverse(value, callback);
+      }
+    });
+  }
+
+  var shouldDescend = callback(node, descend, childPropertyNames(node).length === 0);
+
+  if (!descended && shouldDescend !== false) {
+    descend(node);
+  }
+}
+
+var ORDER = {
+  ArrayInitialiser: ['members'],
+  AssignOp: ['assignee', 'expression'],
+  BitAndOp: ['left', 'right'],
+  BitNotOp: ['expression'],
+  BitOrOp: ['left', 'right'],
+  BitXorOp: ['left', 'right'],
+  Block: ['statements'],
+  Bool: [],
+  BoundFunction: ['parameters', 'body'],
+  Break: [],
+  ChainedComparisonOp: ['expression'],
+  Class: ['nameAssignee', 'parent', 'body'],
+  ClassProtoAssignOp: ['assignee', 'expression'],
+  CompoundAssignOp: ['assignee', 'expression'],
+  Conditional: ['condition', 'consequent', 'alternate'],
+  Constructor: ['assignee', 'expression'],
+  Continue: [],
+  DefaultParam: ['param', 'default'],
+  DeleteOp: ['expression'],
+  DivideOp: ['left', 'right'],
+  DoOp: ['expression'],
+  DynamicMemberAccessOp: ['expression', 'indexingExpr'],
+  EQOp: ['left', 'right'],
+  ExistsOp: ['left', 'right'],
+  Expansion: [],
+  ExpOp: ['left', 'right'],
+  ExtendsOp: ['left', 'right'],
+  Float: [],
+  FloorDivideOp: ['left', 'right'],
+  ForIn: ['keyAssignee', 'valAssignee', 'target', 'step', 'filter', 'body'],
+  ForOf: ['keyAssignee', 'valAssignee', 'target', 'filter', 'body'],
+  Function: ['parameters', 'body'],
+  FunctionApplication: ['function', 'arguments'],
+  GeneratorFunction: ['parameters', 'body'],
+  GTEOp: ['left', 'right'],
+  GTOp: ['left', 'right'],
+  Herestring: [],
+  Identifier: [],
+  InOp: ['left', 'right'],
+  InstanceofOp: ['left', 'right'],
+  Int: [],
+  JavaScript: [],
+  LTEOp: ['left', 'right'],
+  LTOp: ['left', 'right'],
+  LeftShiftOp: ['left', 'right'],
+  LogicalAndOp: ['left', 'right'],
+  LogicalNotOp: ['expression'],
+  LogicalOrOp: ['left', 'right'],
+  MemberAccessOp: ['expression'],
+  ModuloOp: ['left', 'right'],
+  MultiplyOp: ['left', 'right'],
+  NEQOp: ['left', 'right'],
+  NewOp: ['ctor', 'arguments'],
+  Null: [],
+  ObjectInitialiser: ['members'],
+  ObjectInitialiserMember: ['key', 'expression'],
+  OfOp: ['left', 'right'],
+  PlusOp: ['left', 'right'],
+  PostDecrementOp: ['expression'],
+  PostIncrementOp: ['expression'],
+  PreDecrementOp: ['expression'],
+  PreIncrementOp: ['expression'],
+  Program: ['body'],
+  ProtoMemberAccessOp: ['expression'],
+  Range: ['left', 'right'],
+  RegExp: [],
+  RemOp: ['left', 'right'],
+  Rest: ['expression'],
+  Return: ['expression'],
+  SeqOp: ['left', 'right'],
+  SignedRightShiftOp: ['left', 'right'],
+  Slice: ['expression', 'left', 'right'],
+  SoakedDynamicMemberAccessOp: ['expression', 'indexingExpr'],
+  SoakedFunctionApplication: ['function', 'arguments'],
+  SoakedMemberAccessOp: ['expression'],
+  Spread: ['expression'],
+  String: [],
+  SubtractOp: ['left', 'right'],
+  Super: [],
+  Switch: ['expression', 'cases', 'alternate'],
+  SwitchCase: ['conditions', 'consequent'],
+  TemplateLiteral: ['quasis', 'expressions'],
+  This: [],
+  Throw: ['expression'],
+  Try: ['body', 'catchAssignee', 'catchBody', 'finallyBody'],
+  TypeofOp: ['expression'],
+  UnaryExistsOp: ['expression'],
+  UnaryNegateOp: ['expression'],
+  UnaryPlusOp: ['expression'],
+  Undefined: [],
+  UnsignedRightShiftOp: ['left', 'right'],
+  While: ['condition', 'guard', 'body'],
+  Yield: ['expression'],
+  YieldFrom: ['expression']
+};
+
+function childPropertyNames(node) {
+  var names = ORDER[node.type];
+
+  if (!names) {
+    throw new Error('cannot traverse unknown node type: ' + node.type);
+  }
+
+  return names;
+}
+
+/**
+ * Handles bound functions, i.e. "fat arrows".
+ */
+
+var BoundFunctionPatcher = function (_FunctionPatcher) {
+  inherits(BoundFunctionPatcher, _FunctionPatcher);
+
+  function BoundFunctionPatcher() {
+    classCallCheck(this, BoundFunctionPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(BoundFunctionPatcher).apply(this, arguments));
+  }
+
+  createClass(BoundFunctionPatcher, [{
+    key: 'initialize',
+    value: function initialize() {
+      get(Object.getPrototypeOf(BoundFunctionPatcher.prototype), 'initialize', this).call(this);
+      if (this.hasInlineBody()) {
+        this.body.setExpression();
+      }
+    }
+
+    /**
+     * Use a slightly-modified version of the regular `FunctionPatcher` when
+     * we can't use arrow functions.
+     */
+
+  }, {
+    key: 'patchAsStatement',
+
+
+    // There's no difference between statement and expression arrow functions.
+    value: function patchAsStatement() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      this.patchAsExpression(options);
+    }
+  }, {
+    key: 'patchFunctionStart',
+    value: function patchFunctionStart() {
+      var arrow = this.getArrowToken();
+
+      if (!this.hasParamStart()) {
+        this.insert(this.contentStart, '() ');
+      } else if (!this.parameterListNeedsParentheses()) {
+        var _parameters = slicedToArray(this.parameters, 1);
+
+        var param = _parameters[0];
+
+        if (param.isSurroundedByParentheses()) {
+          this.remove(param.outerStart, param.contentStart);
+          this.remove(param.contentEnd, param.outerEnd);
+        }
+      }
+
+      if (!this.willPatchBodyInline()) {
+        this.insert(arrow.end, ' {');
+      }
+    }
+  }, {
+    key: 'parameterListNeedsParentheses',
+    value: function parameterListNeedsParentheses() {
+      var parameters = this.parameters;
+
+      if (parameters.length !== 1) {
+        return true;
+      }
+
+      var _parameters2 = slicedToArray(parameters, 1);
+
+      var param = _parameters2[0];
+
+      return !(param instanceof IdentifierPatcher);
+    }
+  }, {
+    key: 'patchFunctionBody',
+    value: function patchFunctionBody() {
+      if (this.body) {
+        if (!this.willPatchBodyInline()) {
+          this.body.patch({ leftBrace: false });
+        } else {
+          if (this.isBodyObjectInitializer()) {
+            this.surroundBodyInParens();
+          }
+          this.body.patch();
+        }
+      } else {
+        // No body, so BlockPatcher can't insert it for us.
+        this.insert(this.innerEnd, '}');
+      }
+    }
+  }, {
+    key: 'expectedArrowType',
+    value: function expectedArrowType() {
+      return '=>';
+    }
+  }, {
+    key: 'willPatchBodyInline',
+    value: function willPatchBodyInline() {
+      return this.body ? this.body.willPatchAsExpression() : false;
+    }
+  }, {
+    key: 'isBodyObjectInitializer',
+    value: function isBodyObjectInitializer() {
+      return this.body instanceof BlockPatcher && this.body.statements.length === 1 && this.body.statements[0] instanceof ObjectInitialiserPatcher;
+    }
+  }, {
+    key: 'surroundBodyInParens',
+    value: function surroundBodyInParens() {
+      if (!this.body.isSurroundedByParentheses()) {
+        this.insert(this.body.outerStart, '(');
+        this.insert(this.body.outerEnd, ')');
+      }
+    }
+  }, {
+    key: 'hasInlineBody',
+    value: function hasInlineBody() {
+      return this.body ? this.body.inline() : false;
+    }
+
+    /**
+     * Bound functions already start with a paren or a param identifier, and so
+     * are safe to start a statement.
+     */
+
+  }, {
+    key: 'statementNeedsParens',
+    value: function statementNeedsParens() {
+      return false;
+    }
+  }], [{
+    key: 'patcherClassOverrideForNode',
+    value: function patcherClassOverrideForNode(node) {
+      var referencesArguments = false;
+
+      traverse(node, function (child) {
+        if (referencesArguments) {
+          // We already found a reference, so skip this.
+          return false;
+        } else if (child.type === 'Identifier' && child.data === 'arguments') {
+          referencesArguments = true;
+        } else if (child !== node && isFunction(child)) {
+          // Don't descend into other functions.
+          return false;
+        }
+      });
+
+      if (referencesArguments) {
+        return ManuallyBoundFunctionPatcher;
+      } else {
+        return null;
+      }
+    }
+  }]);
+  return BoundFunctionPatcher;
+}(FunctionPatcher);
+
+/**
+ * Handles constructs of the form `a < b < c < … < z`.
+ */
+
+var ChainedComparisonOpPatcher = function (_NodePatcher) {
+  inherits(ChainedComparisonOpPatcher, _NodePatcher);
+
+
+  /**
+   * `node` should have type `ChainedComparisonOp`.
+   */
+
+  function ChainedComparisonOpPatcher(node, context, editor, expression) {
+    classCallCheck(this, ChainedComparisonOpPatcher);
+
+    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ChainedComparisonOpPatcher).call(this, node, context, editor));
+
+    _this.expression = expression;
+    _this.negated = false;
+    return _this;
+  }
+
+  createClass(ChainedComparisonOpPatcher, [{
+    key: 'initialize',
+    value: function initialize() {
+      this.expression.setRequiresExpression();
+    }
+  }, {
+    key: 'patchAsExpression',
+    value: function patchAsExpression() {
+      var _this2 = this;
+
+      this.expression.patch();
+      this.getMiddleOperands().forEach(function (middle) {
+        var middleAgain = middle.makeRepeatable(true, 'middle');
+        // `a < b < c` → `a < b && b < c`
+        //                     ^^^^^
+        _this2.insert(middle.outerEnd, ' ' + (_this2.negated ? '||' : '&&') + ' ' + middleAgain);
+      });
+    }
+
+    /**
+     * @private
+     */
+
+  }, {
+    key: 'getMiddleOperands',
+    value: function getMiddleOperands() {
+      var result = [];
+      var comparison = this.expression.left;
+      while (comparison instanceof BinaryOpPatcher) {
+        result.unshift(comparison.right);
+        comparison = comparison.left;
+      }
+      return result;
+    }
+  }, {
+    key: 'negate',
+    value: function negate() {
+      this.negated = !this.negated;
+      var comparison = this.expression;
+      while (comparison instanceof BinaryOpPatcher) {
+        comparison.negate();
+        comparison = comparison.left;
+      }
+    }
+
+    /**
+     * Forward the request to the underlying comparison operator.
+     */
+
+  }, {
+    key: 'statementNeedsParens',
+    value: function statementNeedsParens() {
+      return this.expression.statementNeedsParens();
+    }
+  }]);
+  return ChainedComparisonOpPatcher;
+}(NodePatcher);
+
+var ClassBoundMethodFunctionPatcher = function (_FunctionPatcher) {
+  inherits(ClassBoundMethodFunctionPatcher, _FunctionPatcher);
+
+  function ClassBoundMethodFunctionPatcher() {
+    classCallCheck(this, ClassBoundMethodFunctionPatcher);
+    return possibleConstructorReturn(this, Object.getPrototypeOf(ClassBoundMethodFunctionPatcher).apply(this, arguments));
+  }
+
+  createClass(ClassBoundMethodFunctionPatcher, [{
+    key: 'expectedArrowType',
+    value: function expectedArrowType() {
+      return '=>';
+    }
+  }]);
+  return ClassBoundMethodFunctionPatcher;
+}(FunctionPatcher);
 
 var ClassAssignOpPatcher = function (_ObjectBodyMemberPatc) {
   inherits(ClassAssignOpPatcher, _ObjectBodyMemberPatc);
@@ -5694,250 +5954,6 @@ var NewOpPatcher = function (_FunctionApplicationP) {
 
   return NewOpPatcher;
 }(FunctionApplicationPatcher);
-
-/**
- * Handles object properties.
- */
-
-var ObjectInitialiserMemberPatcher = function (_ObjectBodyMemberPatc) {
-  inherits(ObjectInitialiserMemberPatcher, _ObjectBodyMemberPatc);
-
-  function ObjectInitialiserMemberPatcher() {
-    classCallCheck(this, ObjectInitialiserMemberPatcher);
-    return possibleConstructorReturn(this, Object.getPrototypeOf(ObjectInitialiserMemberPatcher).apply(this, arguments));
-  }
-
-  createClass(ObjectInitialiserMemberPatcher, [{
-    key: 'patchAsProperty',
-    value: function patchAsProperty() {
-      if (this.key.node === this.expression.node) {
-        this.patchAsShorthand({
-          expand: this.key.node.type !== 'Identifier'
-        });
-      } else {
-        get(Object.getPrototypeOf(ObjectInitialiserMemberPatcher.prototype), 'patchAsProperty', this).call(this);
-      }
-    }
-
-    /**
-     * @private
-     */
-
-  }, {
-    key: 'patchAsShorthand',
-    value: function patchAsShorthand() {
-      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-      var _ref$expand = _ref.expand;
-      var expand = _ref$expand === undefined ? false : _ref$expand;
-      var key = this.key;
-
-      key.patch();
-      if (key instanceof MemberAccessOpPatcher) {
-        // e.g. `{ @name }`
-        var memberAccessKey = key;
-        if (!(memberAccessKey.expression instanceof ThisPatcher)) {
-          throw this.error('expected property key member access on \'this\', e.g. \'@name\'');
-        }
-        // `{ @name }` → `{ name: @name }`
-        //                  ^^^^^^
-        this.insert(memberAccessKey.outerStart, memberAccessKey.getMemberName() + ': ');
-      } else if (expand) {
-        var isComputed = !key.isRepeatable();
-
-        if (isComputed) {
-          // `{ `a = ${1 + 1}` }` → `{ [`a = ${1 + 1}`] }`
-          //                           ^              ^
-          this.insert(key.outerStart, '[');
-          this.insert(key.outerEnd, ']');
-        }
-
-        var keyAgain = key.makeRepeatable();
-
-        // `{ a } → { a: a }`
-        //             ^^^
-        this.insert(key.outerEnd, ': ' + keyAgain);
-      }
-    }
-  }]);
-  return ObjectInitialiserMemberPatcher;
-}(ObjectBodyMemberPatcher);
-
-/**
- * Handles object literals.
- */
-
-var ObjectInitialiserPatcher = function (_NodePatcher) {
-  inherits(ObjectInitialiserPatcher, _NodePatcher);
-
-  function ObjectInitialiserPatcher(node, context, editor, members) {
-    classCallCheck(this, ObjectInitialiserPatcher);
-
-    var _this = possibleConstructorReturn(this, Object.getPrototypeOf(ObjectInitialiserPatcher).call(this, node, context, editor));
-
-    _this.members = members;
-    return _this;
-  }
-
-  createClass(ObjectInitialiserPatcher, [{
-    key: 'initialize',
-    value: function initialize() {
-      this.members.forEach(function (member) {
-        return member.setRequiresExpression();
-      });
-    }
-
-    /**
-     * Objects as expressions are very similar to their CoffeeScript equivalents.
-     */
-
-  }, {
-    key: 'patchAsExpression',
-    value: function patchAsExpression() {
-      var implicitObject = this.isImplicitObject();
-      if (implicitObject) {
-        var curlyBraceInsertionPosition = this.innerStart;
-        var textToInsert = '{';
-        var shouldIndent = false;
-        if (this.shouldExpandCurlyBraces()) {
-          if (this.implicitlyReturns() && !this.isSurroundedByParentheses()) {
-            textToInsert = '{\n' + this.getIndent();
-            shouldIndent = true;
-          } else {
-            var tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex;
-            if (!this.isSurroundedByParentheses()) {
-              tokenIndexBeforeOuterStartTokenIndex = tokenIndexBeforeOuterStartTokenIndex.previous();
-            }
-
-            if (tokenIndexBeforeOuterStartTokenIndex) {
-              var precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(isSemanticToken, tokenIndexBeforeOuterStartTokenIndex);
-              if (precedingTokenIndex) {
-                var precedingToken = this.sourceTokenAtIndex(precedingTokenIndex);
-                curlyBraceInsertionPosition = precedingToken.end;
-                var precedingTokenText = this.sourceOfToken(precedingToken);
-                var lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
-                var needsSpace = lastCharOfToken === ':' || lastCharOfToken === '=' || lastCharOfToken === ',';
-                if (needsSpace) {
-                  textToInsert = ' {';
-                }
-              }
-            }
-          }
-        }
-        this.insert(curlyBraceInsertionPosition, textToInsert);
-        if (shouldIndent) {
-          this.indent();
-        }
-      }
-      this.patchMembers();
-      if (implicitObject) {
-        if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
-          this.appendLineAfter('}', -1);
-        } else {
-          this.insert(this.innerEnd, '}');
-        }
-      }
-    }
-
-    /**
-     * Objects as statements need to be wrapped in parentheses, or else they'll be
-     * confused with blocks. That is, this is not an object [1]:
-     *
-     *   { a: 0 };
-     *
-     * But this is fine:
-     *
-     *   ({ a: 0 });
-     *
-     * [1]: It is actually valid code, though. It's a block with a labeled
-     * statement `a` with a single expression statement, being the literal 0.
-     */
-
-  }, {
-    key: 'patchAsStatement',
-    value: function patchAsStatement() {
-      var needsParentheses = !this.isSurroundedByParentheses();
-      var implicitObject = this.isImplicitObject();
-      if (needsParentheses) {
-        this.insert(this.contentStart, '(');
-      }
-      if (implicitObject) {
-        if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
-          this.insert(this.innerStart, '{\n' + this.getIndent());
-          this.indent();
-        } else {
-          this.insert(this.innerStart, '{');
-        }
-      }
-      this.patchMembers();
-      if (implicitObject) {
-        if (this.shouldExpandCurlyBraces() && !this.isSurroundedByParentheses()) {
-          this.appendLineAfter('}', -1);
-        } else {
-          this.insert(this.innerEnd, '}');
-        }
-      }
-      if (needsParentheses) {
-        this.insert(this.contentEnd, ')');
-      }
-    }
-
-    /**
-     * @private
-     */
-
-  }, {
-    key: 'shouldExpandCurlyBraces',
-    value: function shouldExpandCurlyBraces() {
-      return this.isMultiline() || this.parent instanceof ObjectInitialiserMemberPatcher;
-    }
-
-    /**
-     * @private
-     */
-
-  }, {
-    key: 'patchMembers',
-    value: function patchMembers() {
-      var _this2 = this;
-
-      this.members.forEach(function (member, i, members) {
-        member.patch();
-        if (i !== members.length - 1) {
-          if (!member.hasSourceTokenAfter(coffeeLex.COMMA)) {
-            _this2.insert(member.outerEnd, ',');
-          }
-        }
-      });
-    }
-
-    /**
-     * Determines whether this object is implicit, i.e. it lacks braces.
-     *
-     *   a: b      # true
-     *   { a: b }  # false
-     */
-
-  }, {
-    key: 'isImplicitObject',
-    value: function isImplicitObject() {
-      var tokens = this.context.sourceTokens;
-      var indexOfFirstToken = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
-      return tokens.tokenAtIndex(indexOfFirstToken).type !== coffeeLex.LBRACE;
-    }
-
-    /**
-     * Starting a statement with an object always requires parens.
-     */
-
-  }, {
-    key: 'statementNeedsParens',
-    value: function statementNeedsParens() {
-      return true;
-    }
-  }]);
-  return ObjectInitialiserPatcher;
-}(NodePatcher);
 
 /**
  * Handles `of` operators, e.g. `a of b` and `a not of b`.
