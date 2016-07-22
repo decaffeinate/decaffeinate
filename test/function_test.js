@@ -175,5 +175,22 @@ describe('functions', () => {
         }
       };
       G;
-    `));
+    `)
+  );
+
+  it('puts parens around an arrow function returning a single-element object', () =>
+    check(`
+      => {a: b}
+    `, `
+      () => ({a: b});
+    `)
+  );
+
+  it('puts parens around an arrow function returning a multi-element object', () =>
+    check(`
+      => {a: b, c: d}
+    `, `
+      () => ({a: b, c: d});
+    `)
+  );
 });
