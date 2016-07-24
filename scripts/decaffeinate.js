@@ -49700,6 +49700,37 @@ if (typeof module !== 'undefined' && require.main === module) {
   }
 
   /**
+   * Determine if the operator is a fake + operator for string interpolation.
+   */
+  function isImplicitPlusOp(op, context) {
+    if (op.type !== 'PlusOp') {
+      return false;
+    }
+    var tokens = context.sourceTokens;
+    var leftEnd = tokens.indexOfTokenContainingSourceIndex(op.left.range[1] - 1);
+    var rightStart = tokens.indexOfTokenContainingSourceIndex(op.right.range[0]);
+    // Normal '+' operators should find tokens here, so if we don't, this must be
+    // an implicit '+' operator.
+    if (!leftEnd || !rightStart) {
+      return true;
+    }
+    var tokensBetweenOperands = tokens.slice(leftEnd.next(), rightStart);
+    // If we find an actual operator, this must have been a real '+'. Otherwise,
+    // this must be an implicit '+'.
+    var foundPlusToken = false;
+    tokensBetweenOperands.forEach(function (_ref) {
+      var type = _ref.type;
+      var start = _ref.start;
+      var end = _ref.end;
+
+      if (type === lex.OPERATOR && context.source.slice(start, end) === '+') {
+        foundPlusToken = true;
+      }
+    });
+    return !foundPlusToken;
+  }
+
+  /**
    * @param {Object} node
    * @param {Array<Object>} ancestors
    * @param {ParseContext} context
@@ -50631,7 +50662,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 
           case 'Op':
             var op = convertOperator(node);
-            if (isInterpolatedString(node, ancestors, context)) {
+            if (isImplicitPlusOp(op, context) && isInterpolatedString(node, ancestors, context)) {
               return {
                 v: createTemplateLiteral(op)
               };
@@ -51156,7 +51187,7 @@ if (typeof module !== 'undefined' && require.main === module) {
           var left = _ref.left;
           var right = _ref.right;
 
-          if (left.type === 'PlusOp') {
+          if (isImplicitPlusOp(left, context)) {
             addElements(left);
           } else {
             elements.push(left);
