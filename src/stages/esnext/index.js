@@ -1,13 +1,12 @@
-import { basename } from 'path';
 import { convert } from 'esnext';
 import { logger } from '../../utils/debug.js';
 
 export default class EsnextStage {
-  static run(content: string, filename: string): { code: string, map: Object } {
+  static run(content: string): { code: string } {
     let log = logger(this.name);
     log(content);
 
-    let { code, map } = convert(content, {
+    let { code } = convert(content, {
       'declarations.block-scope': {
         disableConst({ node, parent }): boolean {
           return (
@@ -23,7 +22,6 @@ export default class EsnextStage {
         }
       }
     });
-    map.file = `${basename(filename, '.js')}-${this.name}.js`;
-    return { code, map };
+    return { code, map: {} };
   }
 }
