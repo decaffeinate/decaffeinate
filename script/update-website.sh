@@ -2,34 +2,52 @@
 
 set -e
 
-if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+COMMIT=true
+FORCE=false
+
+while [ $# -gt 0 ]; do
+  case $1 in
+    --no-commit)
+      COMMIT=false
+      ;;
+
+    --force|-f)
+      FORCE=true
+      ;;
+  esac
+
+  shift
+done
+
+
+if [[ "${FORCE}" != "true" && "${TRAVIS_PULL_REQUEST}" != "false" ]]; then
   echo "Refusing to update website on PR build."
   exit 0
 fi
 
 source $(dirname $0)/helpers.sh
 
-configureGithubRemote
+configureGithubRemote website decaffeinate/decaffeinate-project.org
 
 # Get the current version.
 VERSION=$(./script/latest-version $(node -e 'console.log(require("./package.json")["name"])'))
 
-# Build the browser version.
-browserify -e dist/decaffeinate.js -s decaffeinate -o decaffeinate.js
-
 CURRENT_REF=$(git rev-parse HEAD)
 
 # Switch to gh-pages branch.
-git fetch -f origin gh-pages:gh-pages
-git reset --hard gh-pages
+git fetch -f website master:website-master
+git reset --hard website-master
 
-# Update the script in the gh-pages branch.
-mv decaffeinate.js scripts/
-perl -p -i -e "s/v\d+\.\d+\.\d+/v$VERSION/" repl/index.html
+# Update decaffeinate in the website repo.
+npm install --save-dev --save-exact decaffeinate@${VERSION}
 if hasChanges; then
-  git commit -av -m "Update decaffeinate.js."
-  git push origin HEAD:gh-pages
-  surge --project .
+  if [ "${COMMIT}" == true ]; then
+    git commit -av -m "chore: update to decaffeinate ${VERSION}"
+    git push website HEAD:master
+  else
+    echo "Not committing because --no-commit was given:"
+    git diff
+  fi
 fi
 
-git reset --hard $CURRENT_REF
+git reset --hard ${CURRENT_REF}

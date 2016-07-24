@@ -7,7 +7,7 @@ let format = require('url').format;
 let parse = require('url').parse;
 
 let pkg = require('../package.json');
-let publishConfig = pkg['publishConfig'];
+let publishConfig = pkg['publishConfig'] || {};
 let registry = publishConfig['registry'] || 'https://registry.npmjs.org/';
 
 let args = process.argv.slice(2);
