@@ -1,3 +1,4 @@
+import BlockPatcher from './patchers/BlockPatcher.js';
 import ConditionalPatcher from './patchers/ConditionalPatcher.js';
 import ForInPatcher from './patchers/ForInPatcher.js';
 import ForOfPatcher from './patchers/ForOfPatcher.js';
@@ -21,6 +22,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
     switch (node.type) {
       case 'MemberAccessOp':
         return MemberAccessOpPatcher;
+
+      case 'Block':
+        return BlockPatcher;
 
       case 'BoundFunction':
       case 'Function':
