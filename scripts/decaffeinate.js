@@ -238,7 +238,7 @@ var EsnextStage = function () {
 
   createClass(EsnextStage, null, [{
     key: 'run',
-    value: function run(content, filename) {
+    value: function run(content) {
       var log = logger(this.name);
       log(content);
 
@@ -263,10 +263,8 @@ var EsnextStage = function () {
       });
 
       var code = _convert.code;
-      var map = _convert.map;
 
-      map.file = path.basename(filename, '.js') + '-' + this.name + '.js';
-      return { code: code, map: map };
+      return { code: code, map: {} };
     }
   }]);
   return EsnextStage;
@@ -51677,10 +51675,10 @@ module.exports = function (str) {
 },{"repeating":1377}],838:[function(require,module,exports){
 (function (process){
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('magic-string'), require('babel-types'), require('util'), require('babylon'), require('shebang-regex'), require('babel-traverse'), require('path'), require('fs'), require('mkdirp')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'magic-string', 'babel-types', 'util', 'babylon', 'shebang-regex', 'babel-traverse', 'path', 'fs', 'mkdirp'], factory) :
-  (factory((global.esnext = global.esnext || {}),global.MagicString,global.t,global.util,global.babylon,global.shebangRegex,global.traverse,global.path,global.fs,global.mkdirp));
-}(this, function (exports,MagicString,t,util,babylon,shebangRegex,traverse,path,fs,mkdirp) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('babylon'), require('magic-string'), require('babel-types'), require('util'), require('shebang-regex'), require('babel-traverse'), require('path'), require('fs'), require('mkdirp')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'babylon', 'magic-string', 'babel-types', 'util', 'shebang-regex', 'babel-traverse', 'path', 'fs', 'mkdirp'], factory) :
+  (factory((global.esnext = global.esnext || {}),global.babylon,global.MagicString,global.t,global.util,global.shebangRegex,global.traverse,global.path,global.fs,global.mkdirp));
+}(this, function (exports,babylon,MagicString,t,util,shebangRegex,traverse,path,fs,mkdirp) { 'use strict';
 
   MagicString = 'default' in MagicString ? MagicString['default'] : MagicString;
   shebangRegex = 'default' in shebangRegex ? shebangRegex['default'] : shebangRegex;
@@ -51689,6 +51687,24 @@ module.exports = function (str) {
 
   function clone(object) {
     return JSON.parse(JSON.stringify(object));
+  }
+
+  var BABEL_PARSE_OPTIONS = {
+    sourceType: 'module',
+    strictMode: true,
+    allowImportExportEverywhere: false, // consistent with espree
+    allowReturnOutsideFunction: true,
+    allowSuperOutsideMethod: true,
+    plugins: ['flow', 'jsx', 'asyncFunctions', 'asyncGenerators', 'classConstructorCall', 'classProperties', 'decorators', 'doExpressions', 'exponentiationOperator', 'exportExtensions', 'functionBind', 'functionSent', 'objectRestSpread', 'trailingFunctionCommas']
+  };
+
+  Object.defineProperty(babylon.tokTypes.backQuote, 'updateContext', {
+    value: babylon.tokTypes.backQuote.updateContext,
+    configurable: false
+  });
+
+  function parse$1 (source) {
+    return babylon.parse(source, BABEL_PARSE_OPTIONS);
   }
 
   var classCallCheck = function (instance, Constructor) {
@@ -51788,21 +51804,40 @@ module.exports = function (str) {
   };
 
   var Module = function () {
-    function Module(id, source, ast) {
+    function Module(id, source) {
       classCallCheck(this, Module);
       this.metadata = {};
       this.warnings = [];
 
       this.id = id;
-      this.source = source;
-      this.ast = ast;
-      this.tokens = this.ast.tokens;
-      this.magicString = new MagicString(source, {
-        filename: id
-      });
+      this.reinit(source);
     }
 
+    /**
+     * @private
+     */
+
+
     createClass(Module, [{
+      key: 'reinit',
+      value: function reinit(source) {
+        this.source = source;
+        this.ast = parse$1(source);
+        this.tokens = this.ast.tokens;
+        this.magicString = new MagicString(source, {
+          filename: this.id
+        });
+      }
+    }, {
+      key: 'commit',
+      value: function commit() {
+        var source = this.magicString.toString();
+
+        if (source !== this.source) {
+          this.reinit(source);
+        }
+      }
+    }, {
       key: 'warn',
       value: function warn(node, type, message) {
         this.warnings.push({ node: clone(node), type: type, message: message });
@@ -51853,7 +51888,6 @@ module.exports = function (str) {
       value: function render() {
         return {
           code: this.magicString.toString(),
-          map: this.magicString.generateMap(),
           ast: this.ast,
           warnings: this.warnings.slice(),
           metadata: this.metadata
@@ -54131,24 +54165,6 @@ var objectsConcise = Object.freeze({
 
   var allPlugins = [objectsShorthand, objectsConcise, modulesCommonjs, functionsArrow, declarationsBlockScope, objectsDestructuring, stringsTemplate];
 
-  var BABEL_PARSE_OPTIONS = {
-    sourceType: 'module',
-    strictMode: true,
-    allowImportExportEverywhere: false, // consistent with espree
-    allowReturnOutsideFunction: true,
-    allowSuperOutsideMethod: true,
-    plugins: ['flow', 'jsx', 'asyncFunctions', 'asyncGenerators', 'classConstructorCall', 'classProperties', 'decorators', 'doExpressions', 'exponentiationOperator', 'exportExtensions', 'functionBind', 'functionSent', 'objectRestSpread', 'trailingFunctionCommas']
-  };
-
-  Object.defineProperty(babylon.tokTypes.backQuote, 'updateContext', {
-    value: babylon.tokTypes.backQuote.updateContext,
-    configurable: false
-  });
-
-  function parse$1 (source) {
-    return babylon.parse(source, BABEL_PARSE_OPTIONS);
-  }
-
   var OptionError = function (_Error) {
     inherits(OptionError, _Error);
 
@@ -54481,6 +54497,7 @@ var objectsConcise = Object.freeze({
 
       var pluginOptions = options[name];
       traverse(module.ast, visitor(module, pluginOptions));
+      module.commit();
     });
 
     var result = module.render();
