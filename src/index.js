@@ -3,13 +3,18 @@ import SemicolonsStage from './stages/semicolons/index.js';
 import EsnextStage from './stages/esnext/index.js';
 import MainStage from './stages/main/index.js';
 import NormalizeStage from './stages/normalize/index.js';
+import formatCoffeeLexAst from './utils/formatCoffeeLexTokens.js';
+import formatCoffeeScriptAst from './utils/formatCoffeeScriptAst.js';
+import formatDecaffeinateParserAst from './utils/formatDecaffeinateParserAst.js';
+import parse from './utils/parse.js';
 import PatchError from './utils/PatchError.js';
 
 export { default as run } from './cli';
 export { PatchError };
 
 type Options = {
-  filename?: string
+  filename: ?string,
+  runToStage: ?string,
 };
 
 type ConversionResult = {
@@ -27,13 +32,23 @@ type Stage = {
  * and formatting.
  */
 export function convert(source: string, options: ?Options={}): ConversionResult {
-  return runStages(source, options.filename || 'input.coffee', [
+  let stages = [
     NormalizeStage,
     MainStage,
     AddVariableDeclarationsStage,
     SemicolonsStage,
     EsnextStage
-  ]);
+  ];
+  let runToStage = options.runToStage;
+  if (runToStage !== null && runToStage !== undefined) {
+    let stageIndex = stages.findIndex(stage => stage.name === runToStage);
+    if (stageIndex !== -1) {
+      stages = stages.slice(0, stageIndex + 1);
+    } else {
+      return convertCustomStage(source, runToStage);
+    }
+  }
+  return runStages(source, options.filename || 'input.coffee', stages);
 }
 
 function runStages(initialContent: string, initialFilename: string, stages: Array<Stage>): ConversionResult {
@@ -68,5 +83,27 @@ function runStage(stage: Stage, content: string, filename: string): { code: stri
       );
     }
     throw err;
+  }
+}
+
+function convertCustomStage(source: string, stageName: string): ConversionResult {
+  let ast = parse(source);
+  if (stageName === 'coffeescript-parser') {
+    return {
+      code: formatCoffeeScriptAst(ast.context),
+      maps: [],
+    };
+  } else if (stageName === 'coffee-lex') {
+    return {
+      code: formatCoffeeLexAst(ast.context),
+      maps: [],
+    };
+  } else if (stageName === 'decaffeinate-parser') {
+    return {
+      code: formatDecaffeinateParserAst(ast),
+      maps: [],
+    };
+  } else {
+    throw new Error(`Unrecognized stage name: ${stageName}`);
   }
 }
