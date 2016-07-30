@@ -1,4 +1,5 @@
 import ForPatcher from './ForPatcher.js';
+import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
@@ -72,6 +73,9 @@ export default class ForInPatcher extends ForPatcher {
     } else {
       // b d  ->  b.map((a) => d
       this.insert(this.target.outerEnd, `.map((${assigneeCode}) =>`);
+    }
+    if (isObjectInitialiserBlock(this.body)) {
+      this.body.surroundInParens();
     }
     // b.filter((a) => c).map((a) => d  ->  b.filter((a) => c).map((a) => d)
     this.insert(this.body.outerEnd, ')');
