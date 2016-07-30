@@ -352,6 +352,14 @@ describe('for loops', () => {
     `);
   });
 
+  it('handles for-in loop expressions with an object literal body', () => {
+    check(`
+      f({a: c, b: c} for c in d)
+    `, `
+      f(d.map((c) => ({a: c, b: c})));
+    `);
+  });
+
   it('correctly uses map with an index in for-in loop expressions', () => {
     validate(`
       sum = (arr) ->

@@ -748,6 +748,13 @@ export default class NodePatcher {
     return rparen === afterToken;
   }
 
+  surroundInParens() {
+    if (!this.isSurroundedByParentheses()) {
+      this.insert(this.outerStart, '(');
+      this.insert(this.outerEnd, ')');
+    }
+  }
+
   getBoundingPatcher(): ?NodePatcher {
     if (this.isSurroundedByParentheses()) {
       return this;

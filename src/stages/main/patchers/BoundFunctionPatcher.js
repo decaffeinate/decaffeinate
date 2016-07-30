@@ -1,9 +1,8 @@
-import BlockPatcher from './BlockPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import ObjectInitialiserPatcher from './ObjectInitialiserPatcher.js';
+import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock.js';
 import traverse from '../../../utils/traverse.js';
 import type { Node } from './../../../patchers/types.js';
 import { isFunction } from '../../../utils/types.js';
@@ -84,8 +83,8 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
       if (!this.willPatchBodyInline()) {
         this.body.patch({ leftBrace: false });
       } else {
-        if (this.isBodyObjectInitializer()) {
-          this.surroundBodyInParens();
+        if (isObjectInitialiserBlock(this.body)) {
+          this.body.surroundInParens();
         }
         this.body.patch();
       }
@@ -101,19 +100,6 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
 
   willPatchBodyInline(): boolean {
     return this.body ? this.body.willPatchAsExpression() : false;
-  }
-
-  isBodyObjectInitializer(): boolean {
-    return this.body instanceof BlockPatcher &&
-        this.body.statements.length === 1 &&
-        this.body.statements[0] instanceof ObjectInitialiserPatcher;
-  }
-
-  surroundBodyInParens() {
-    if (!this.body.isSurroundedByParentheses()) {
-      this.insert(this.body.outerStart, '(');
-      this.insert(this.body.outerEnd, ')');
-    }
   }
 
   hasInlineBody(): boolean {
