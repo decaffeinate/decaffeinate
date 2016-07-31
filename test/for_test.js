@@ -475,67 +475,58 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('handles `for own`', () => {
+  it('handles `for own`', () => {
     check(`
       for own key of list
         console.log key
     `, `
-      for (let key in list) {
-        if (Object.prototype.hasOwnProperty.call(list, key)) {
-          console.log(key);
-        }
+      for (let key of Object.keys(list)) {
+        console.log(key);
       }
     `);
   });
 
-  it.skip('handles `for own` with an unsafe-to-repeat iterable', () => {
+  it('handles `for own` with an unsafe-to-repeat iterable', () => {
     check(`
       for own key of getList()
         console.log key
     `, `
-      let iterable;
-      for (let key in (iterable = getList())) {
-        if (Object.prototype.hasOwnProperty.call(iterable, key)) {
+      for (let key of Object.keys(getList())) {
+        console.log(key);
+      }
+    `);
+  });
+
+  it('handles `for own` with both key and value', () => {
+    check(`
+      for own key, value of list
+        console.log key, value
+    `, `
+      for (let key of Object.keys(list)) {
+        let value = list[key];
+        console.log(key, value);
+      }
+    `);
+  });
+
+  it('handles `for own` with a filter', () => {
+    check(`
+      for own key of list when key[0] is '_'
+        console.log key
+    `, `
+      for (let key of Object.keys(list)) {
+        if (key[0] === '_') {
           console.log(key);
         }
       }
     `);
   });
 
-  it.skip('handles `for own` with both key and value', () => {
-    check(`
-      for own key, value of list
-        console.log key, value
-    `, `
-      for (let key in list) {
-        if (Object.prototype.hasOwnProperty.call(list, key)) {
-          let value = list[key];
-          console.log(key, value);
-        }
-      }
-    `);
-  });
-
-  it.skip('handles `for own` with a filter', () => {
-    check(`
-      for own key of list when key[0] is '_'
-        console.log key
-    `, `
-      for (let key in list) {
-        if (Object.prototype.hasOwnProperty.call(list, key)) {
-          if (key[0] === '_') {
-            console.log(key);
-          }
-        }
-      }
-    `);
-  });
-
-  it.skip('handles single-line `for own`', () => {
+  it('handles single-line `for own`', () => {
     check(`
       for own a of b then a
     `, `
-      for (let a in b) { if (Object.prototype.hasOwnProperty.call(b, a)) { a; } }
+      for (let a of Object.keys(b)) { a; }
     `);
   });
 

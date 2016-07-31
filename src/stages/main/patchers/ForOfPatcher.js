@@ -1,4 +1,5 @@
 import ForPatcher from './ForPatcher.js';
+import {OWN} from 'coffee-lex';
 
 export default class ForOfPatcher extends ForPatcher {
   patchAsExpression() {
@@ -9,13 +10,6 @@ export default class ForOfPatcher extends ForPatcher {
   }
 
   patchAsStatement() {
-    if (this.node.isOwn) {
-      throw this.error(
-        `'for own' is not supported yet ` +
-        ` (https://github.com/decaffeinate/decaffeinate/issues/157)`
-      );
-    }
-
     let bodyLinesToPrepend = [];
     let { keyAssignee } = this;
 
@@ -24,6 +18,8 @@ export default class ForOfPatcher extends ForPatcher {
     if (this.filter) {
       this.remove(this.target.outerEnd, this.filter.outerEnd);
     }
+
+    this.removeOwnTokenIfExists();
 
     let keyBinding = this.getIndexBinding();
     this.insert(keyAssignee.outerStart, '(');
@@ -52,17 +48,38 @@ export default class ForOfPatcher extends ForPatcher {
     }
 
     let relationToken = this.getRelationToken();
-    // `for (k of o` → `for (k in o`
-    //         ^^              ^^
-    this.overwrite(relationToken.start, relationToken.end, 'in');
+    if (this.node.isOwn) {
+      // `for (k of o` → `for (k of Object.keys(o`
+      //                            ^^^^^^^^^^^^
+      this.insert(this.target.outerStart, 'Object.keys(');
 
-    // `for (k in o` → `for (k in o)`
-    //                             ^
-    this.insert(this.target.outerEnd, ') {');
+      // `for (k of o` → `for (k of Object.keys(o)) {`
+      //                                         ^^^^
+      this.insert(this.target.outerEnd, ')) {');
+    } else {
+      // `for (k of o` → `for (k in o`
+      //         ^^              ^^
+      this.overwrite(relationToken.start, relationToken.end, 'in');
+
+      // `for (k in o` → `for (k in o) {`
+      //                             ^^^
+      this.insert(this.target.outerEnd, ') {');
+    }
 
     this.removeThenToken();
     this.body.insertStatementsAtIndex(bodyLinesToPrepend, 0);
     this.patchBodyAndFilter();
+  }
+
+  removeOwnTokenIfExists() {
+    if (this.node.isOwn) {
+      let ownIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+        this.contentStartTokenIndex,
+        OWN
+      );
+      let ownToken = this.sourceTokenAtIndex(ownIndex);
+      this.remove(ownToken.start, this.keyAssignee.outerStart);
+    }
   }
 
   indexBindingCandidates(): Array<string> {
