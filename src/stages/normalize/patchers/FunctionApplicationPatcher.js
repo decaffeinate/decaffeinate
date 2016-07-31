@@ -41,9 +41,9 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     if (implicitCall) {
       let lastArg = args[args.length - 1];
       if (lastArg.isMultiline() && lastTokenType !== RBRACE && lastTokenType !== RBRACKET) {
-        this.insert(this.innerEnd, `\n${this.getIndent()})`);
+        this.insert(this.contentEnd, `\n${this.getIndent()})`);
       } else {
-        this.insert(this.innerEnd, ')');
+        this.insert(this.contentEnd, ')');
       }
     }
   }

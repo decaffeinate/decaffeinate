@@ -263,4 +263,18 @@ describe('function calls', () => {
       });
     `);
   });
+
+  it('handles implicit calls nested in another function call', () => {
+    check(`
+      a(
+        b {
+        }
+      )
+    `, `
+      a(
+        b({
+        })
+      );
+    `);
+  });
 });
