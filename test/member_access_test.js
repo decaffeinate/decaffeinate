@@ -68,4 +68,12 @@ describe('member access', () => {
       a[b]();
     `);
   });
+
+  it('forces expressions in dynamic member access', () => {
+    check(`
+      a[if b then c else d]
+    `, `
+      a[b ? c : d];
+    `);
+  });
 });

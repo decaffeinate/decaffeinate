@@ -11,6 +11,11 @@ export default class DynamicMemberAccessOpPatcher extends NodePatcher {
     this.indexingExpr = indexingExpr;
   }
 
+  initialize() {
+    this.expression.setRequiresExpression();
+    this.indexingExpr.setRequiresExpression();
+  }
+
   patchAsExpression() {
     this.expression.patch();
     this.indexingExpr.patch();
