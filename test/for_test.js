@@ -63,6 +63,20 @@ describe('for loops', () => {
     `);
   });
 
+  it('handles for-of statements with a filter', () => {
+    check(`
+      for k, v of obj when k == v
+        console.log v
+    `, `
+      for (let k in obj) {
+        let v = obj[k];
+        if (k === v) {
+          console.log(v);
+        }
+      }
+    `);
+  });
+
   it('transforms for-in loops to typical `for` loops', () => {
     check(`
       for a in b
