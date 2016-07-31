@@ -6,23 +6,40 @@ import parse from '../../src/utils/parse.js';
 describe('formatDecaffeinateParserAst', () => {
   it('formats an AST for normal CoffeeScript code', () => {
     let source = stripSharedIndent(`
-      x = a()
+      loop
+        x = a()
+        break
     `);
     let ast = parse(source);
     let formattedTokens = formatDecaffeinateParserAst(ast);
     strictEqual(formattedTokens, stripSharedIndent(`
-      Program [1:1(0)-1:8(7)] {
-        body: Block [1:1(0)-1:8(7)] {
+      Program [1:1(0)-3:8(22)] {
+        body: Block [1:1(0)-3:8(22)] {
           statements: [
-            AssignOp [1:1(0)-1:8(7)] {
-              assignee: Identifier [1:1(0)-1:2(1)] {
-                data: "x"
+            While [1:1(0)-3:8(22)] {
+              isUntil: false
+              condition: Bool (virtual) {
+                data: true
               }
-              expression: FunctionApplication [1:5(4)-1:8(7)] {
-                function: Identifier [1:5(4)-1:6(5)] {
-                  data: "a"
-                }
-                arguments: []
+              guard: null
+              body: Block [2:3(7)-3:8(22)] {
+                inline: false
+                statements: [
+                  AssignOp [2:3(7)-2:10(14)] {
+                    assignee: Identifier [2:3(7)-2:4(8)] {
+                      data: "x"
+                    }
+                    expression: FunctionApplication [2:7(11)-2:10(14)] {
+                      function: Identifier [2:7(11)-2:8(12)] {
+                        data: "a"
+                      }
+                      arguments: []
+                    }
+                  }
+                  Identifier [3:3(17)-3:8(22)] {
+                    data: "break"
+                  }
+                ]
               }
             }
           ]
