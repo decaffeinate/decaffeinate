@@ -91,8 +91,8 @@ describe('function calls', () => {
     `, `
       promise.then(function() {
         a();
-        return b; // c
-      });
+        return b;
+      }); // c
       d;
     `);
   });
@@ -251,6 +251,30 @@ describe('function calls', () => {
       a(b(c), d)
     `, `
       a(b(c), d);
+    `);
+  });
+
+  it('puts the close-paren in a nice place for implicit calls on objects', () => {
+    check(`
+      a {
+      }
+    `, `
+      a({
+      });
+    `);
+  });
+
+  it('handles implicit calls nested in another function call', () => {
+    check(`
+      a(
+        b {
+        }
+      )
+    `, `
+      a(
+        b({
+        })
+      );
     `);
   });
 });

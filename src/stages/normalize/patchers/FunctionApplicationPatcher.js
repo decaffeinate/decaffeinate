@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
-import { CALL_START } from 'coffee-lex';
+import { CALL_START, RBRACE, RBRACKET } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
@@ -37,12 +37,13 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
     args.forEach(arg => arg.patch());
 
+    let lastTokenType = this.lastToken().type;
     if (implicitCall) {
       let lastArg = args[args.length - 1];
-      if (lastArg.isMultiline()) {
-        this.appendLineAfter(')');
+      if (lastArg.isMultiline() && lastTokenType !== RBRACE && lastTokenType !== RBRACKET) {
+        this.insert(this.contentEnd, `\n${this.getIndent()})`);
       } else {
-        this.insert(this.innerEnd, ')');
+        this.insert(this.contentEnd, ')');
       }
     }
   }

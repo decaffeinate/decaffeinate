@@ -668,6 +668,13 @@ export default class NodePatcher {
   }
 
   /**
+   * Gets the last token in the content of this node.
+   */
+  lastToken() {
+    return this.sourceTokenAtIndex(this.contentEndTokenIndex);
+  }
+
+  /**
    * Gets the original source of this patcher's node.
    */
   getOriginalSource(): string {

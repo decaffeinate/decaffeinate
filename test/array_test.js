@@ -110,4 +110,14 @@ describe('arrays', () => {
       ];
     `);
   });
+
+  it('handles arrays containing implicit function calls', () => {
+    check(`
+      [a(b, c {
+      })]
+    `, `
+      [a(b, c({
+      }))];
+    `);
+  });
 });
