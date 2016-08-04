@@ -127,31 +127,8 @@ export default class ForInPatcher extends ForPatcher {
     if (this.valAssignee.statementNeedsParens()) {
       valueAssignment = `(${valueAssignment})`;
     }
-
-    let { filter, body } = this;
-
-    body.insertStatementsAtIndex([valueAssignment], 0);
-    if (filter) {
-      body.insertStatementsAtIndex([`if (${this.getFilterCode()}) {`], 0);
-      body.patch({ leftBrace: false, rightBrace: false });
-      body.indent();
-      body.appendLineAfter('}', -1);
-      body.appendLineAfter('}', -2);
-    } else {
-      body.patch({ leftBrace: false });
-    }
-  }
-
-  getFilterCode(): ?string {
-    let filter = this.filter;
-    if (!filter) {
-      return null;
-    }
-    if (!this._filterCode) {
-      filter.patch();
-      this._filterCode = this.slice(filter.contentStart, filter.contentEnd);
-    }
-    return this._filterCode;
+    this.body.insertStatementsAtIndex([valueAssignment], 0);
+    this.patchBodyAndFilter();
   }
 
   getInitCode(): string {

@@ -19,6 +19,12 @@ export default class ForOfPatcher extends ForPatcher {
     let bodyLinesToPrepend = [];
     let { keyAssignee } = this;
 
+    // Save the filter code and remove if it it's there.
+    this.getFilterCode();
+    if (this.filter) {
+      this.remove(this.target.outerEnd, this.filter.outerEnd);
+    }
+
     let keyBinding = this.getIndexBinding();
     this.insert(keyAssignee.outerStart, '(');
 
@@ -56,7 +62,7 @@ export default class ForOfPatcher extends ForPatcher {
 
     this.removeThenToken();
     this.body.insertStatementsAtIndex(bodyLinesToPrepend, 0);
-    this.body.patch({ leftBrace: false });
+    this.patchBodyAndFilter();
   }
 
   indexBindingCandidates(): Array<string> {

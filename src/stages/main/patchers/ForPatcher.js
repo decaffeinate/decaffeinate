@@ -33,60 +33,29 @@ export default class ForPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement() {
-    let bodyLinesToPrepend = [];
-    let { keyAssignee } = this;
-
-    let keyBinding = this.slice(keyAssignee.contentStart, keyAssignee.contentEnd);
-
-    // `for k of o` → `for (k of o`
-    //                     ^
-    this.insert(keyAssignee.outerStart, '(');
-    keyAssignee.patch();
-
-    if (!(keyAssignee instanceof IdentifierPatcher)) {
-      let keyAssigneeString = keyBinding;
-      keyBinding = this.claimFreeBinding('key');
-      // `for ([f, s] of o` → `for (key of o`
-      //       ^^^^^^               ^^^
-      this.overwrite(keyAssignee.contentStart, keyAssignee.contentEnd, keyBinding);
-      bodyLinesToPrepend.push(`${keyAssigneeString} = ${keyBinding}`);
+  getFilterCode(): ?string {
+    let filter = this.filter;
+    if (!filter) {
+      return null;
     }
+    if (!this._filterCode) {
+      filter.patch();
+      this._filterCode = this.slice(filter.contentStart, filter.contentEnd);
+    }
+    return this._filterCode;
+  }
 
-    let { valAssignee } = this;
-
-    if (valAssignee) {
-      valAssignee.patch();
-      let valAssigneeString = this.slice(valAssignee.contentStart, valAssignee.contentEnd);
-      // `for (k, v of o` → `for (k of o`
-      //        ^^^
-      this.remove(keyAssignee.outerEnd, valAssignee.outerEnd);
-
-      this.target.patch();
-      let targetAgain = this.target.makeRepeatable(true, 'iterable');
-
-      let valueAssignmentStatement = `${valAssigneeString} = ${targetAgain}[${keyBinding}]`;
-
-      if (valAssignee.statementNeedsParens()) {
-        valueAssignmentStatement = `(${valueAssignmentStatement})`;
-      }
-
-      bodyLinesToPrepend.push(valueAssignmentStatement);
+  patchBodyAndFilter() {
+    let {body, filter} = this;
+    if (filter) {
+      body.insertStatementsAtIndex([`if (${this.getFilterCode()}) {`], 0);
+      body.patch({ leftBrace: false, rightBrace: false });
+      body.indent();
+      body.appendLineAfter('}', -1);
+      body.appendLineAfter('}', -2);
     } else {
-      this.target.patch();
+      body.patch({ leftBrace: false });
     }
-
-    let relationToken = this.getRelationToken();
-    // `for (k of o` → `for (k in o`
-    //         ^^              ^^
-    this.overwrite(relationToken.start, relationToken.end, 'in');
-
-    // `for (k in o` → `for (k in o)`
-    //                             ^
-    this.insert(this.target.outerEnd, ') {');
-
-    this.body.insertStatementsAtIndex(bodyLinesToPrepend, 0);
-    this.body.patch({ leftBrace: false });
   }
 
   getRelationToken(): SourceToken {
