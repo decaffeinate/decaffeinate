@@ -21,10 +21,16 @@ export default class ForOfPatcher extends ForPatcher {
 
     this.removeOwnTokenIfExists();
 
+    if (this.requiresExtractingTarget()) {
+      this.insert(this.outerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getIndent()}`);
+    }
+
     let keyBinding = this.getIndexBinding();
     this.insert(keyAssignee.outerStart, '(');
 
     let { valAssignee } = this;
+
+    this.overwrite(this.target.outerStart, this.target.outerEnd, this.getTargetReference());
 
     if (valAssignee) {
       valAssignee.patch();
@@ -33,18 +39,13 @@ export default class ForOfPatcher extends ForPatcher {
       //        ^^^
       this.remove(keyAssignee.outerEnd, valAssignee.outerEnd);
 
-      this.target.patch();
-      let targetAgain = this.target.makeRepeatable(true, 'iterable');
-
-      let valueAssignmentStatement = `${valAssigneeString} = ${targetAgain}[${keyBinding}]`;
+      let valueAssignmentStatement = `${valAssigneeString} = ${this.getTargetReference()}[${keyBinding}]`;
 
       if (valAssignee.statementNeedsParens()) {
         valueAssignmentStatement = `(${valueAssignmentStatement})`;
       }
 
       bodyLinesToPrepend.push(valueAssignmentStatement);
-    } else {
-      this.target.patch();
     }
 
     let relationToken = this.getRelationToken();
@@ -80,6 +81,14 @@ export default class ForOfPatcher extends ForPatcher {
       let ownToken = this.sourceTokenAtIndex(ownIndex);
       this.remove(ownToken.start, this.keyAssignee.outerStart);
     }
+  }
+
+  requiresExtractingTarget() {
+    return !this.target.isRepeatable() && this.valAssignee;
+  }
+
+  targetBindingCandidate() {
+    return 'object';
   }
 
   indexBindingCandidates(): Array<string> {

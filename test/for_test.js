@@ -27,12 +27,12 @@ describe('for loops', () => {
 
   it('transforms for-of loops with both key and value plus unsafe-to-repeat target by saving a reference', () => {
     check(`
-      for k, v of object()
+      for k, v of getObject()
         k
     `, `
-      let iterable;
-      for (let k in (iterable = object())) {
-        let v = iterable[k];
+      let object = getObject();
+      for (let k in object) {
+        let v = object[k];
         k;
       }
     `);
@@ -52,12 +52,12 @@ describe('for loops', () => {
 
   it('transforms for-of loops with destructured value plus unsafe-to-repeat target', () => {
     check(`
-      for key, {x, y} of object()
+      for key, {x, y} of getObject()
         key + x
     `, `
-      let iterable;
-      for (let key in (iterable = object())) {
-        let {x, y} = iterable[key];
+      let object = getObject();
+      for (let key in object) {
+        let {x, y} = object[key];
         key + x;
       }
     `);
@@ -488,10 +488,10 @@ describe('for loops', () => {
 
   it('handles `for own` with an unsafe-to-repeat iterable', () => {
     check(`
-      for own key of getList()
+      for own key of getObject()
         console.log key
     `, `
-      for (let key of Object.keys(getList())) {
+      for (let key of Object.keys(getObject())) {
         console.log(key);
       }
     `);
@@ -504,6 +504,19 @@ describe('for loops', () => {
     `, `
       for (let key of Object.keys(list)) {
         let value = list[key];
+        console.log(key, value);
+      }
+    `);
+  });
+
+  it('handles `for own` with unsafe-to-repeat iterable with both key and value', () => {
+    check(`
+      for own key, value of getObject()
+        console.log key, value
+    `, `
+      let object = getObject();
+      for (let key of Object.keys(object)) {
+        let value = object[key];
         console.log(key, value);
       }
     `);
