@@ -121,4 +121,22 @@ export default class ForPatcher extends NodePatcher {
       this.remove(thenToken.start, nextToken.start);
     }
   }
+
+  getTargetCode(): string {
+    // Trigger patching the reference.
+    this.getTargetReference();
+    return this.slice(this.target.contentStart, this.target.contentEnd);
+  }
+
+  getTargetReference(): string {
+    if (!this._targetReference) {
+      this.target.patch();
+      if (this.requiresExtractingTarget()) {
+        this._targetReference = this.claimFreeBinding(this.targetBindingCandidate());
+      } else {
+        this._targetReference = this.slice(this.target.contentStart, this.target.contentEnd);
+      }
+    }
+    return this._targetReference;
+  }
 }

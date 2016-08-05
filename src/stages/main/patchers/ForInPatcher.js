@@ -100,7 +100,7 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   patchForLoopHeader() {
-    if (!this.target.isRepeatable()) {
+    if (this.requiresExtractingTarget()) {
       this.insert(this.outerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getIndent()}`);
     }
     let firstHeaderPatcher = this.valAssignee;
@@ -131,6 +131,14 @@ export default class ForInPatcher extends ForPatcher {
     this.patchBodyAndFilter();
   }
 
+  requiresExtractingTarget() {
+    return !this.target.isRepeatable();
+  }
+
+  targetBindingCandidate() {
+    return 'iterable';
+  }
+
   getInitCode(): string {
     let step = this.getStep();
     if (step.negated) {
@@ -151,24 +159,6 @@ export default class ForInPatcher extends ForPatcher {
     } else {
       return `${this.getIndexBinding()} < ${this.getTargetReference()}.length`;
     }
-  }
-
-  getTargetCode(): string {
-    // Trigger patching the reference.
-    this.getTargetReference();
-    return this.slice(this.target.contentStart, this.target.contentEnd);
-  }
-
-  getTargetReference(): string {
-    if (!this._targetReference) {
-      this.target.patch();
-      if (this.target.isRepeatable()) {
-        this._targetReference = this.slice(this.target.contentStart, this.target.contentEnd);
-      } else {
-        this._targetReference = this.claimFreeBinding('iterable');
-      }
-    }
-    return this._targetReference;
   }
 
   getUpdateCode(): string {
