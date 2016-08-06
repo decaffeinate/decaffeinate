@@ -1,6 +1,6 @@
 import * as babel from 'babel-core';
 import * as vm from 'vm';
-import { compile } from 'coffee-script';
+import { compile } from 'decaffeinate-coffeescript';
 import { convert, PatchError } from '../..'; // eslint-disable-line decaffeinate/require-import-extension
 import { strictEqual } from 'assert';
 
