@@ -23,6 +23,11 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       return;
     }
 
+    if (this.isImplicitSuper()) {
+      this.insert(this.fn.outerEnd, '(arguments...)');
+      return;
+    }
+
     if (implicitCall) {
       let firstArg = args[0];
       let hasOneArg = args.length === 1;
@@ -48,7 +53,26 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     }
   }
 
-  isImplicitCall() {
+  isImplicitCall(): boolean {
     return !this.fn.hasSourceTokenAfter(CALL_START);
+  }
+
+  isImplicitSuper(): boolean {
+    if (this.fn.node.type !== 'Super') {
+      return false;
+    }
+
+    if (this.args.length !== 1) {
+      return false;
+    }
+
+    let arg = this.args[0].node;
+
+    return (
+      arg.virtual &&
+      arg.type === 'Spread' &&
+      arg.expression.type === 'Identifier' &&
+      arg.expression.data === 'arguments'
+    );
   }
 }

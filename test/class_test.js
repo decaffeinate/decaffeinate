@@ -360,7 +360,7 @@ describe('classes', () => {
     `, `
       class A extends B {
         a() {
-          return super.a();
+          return super.a(...arguments);
         }
       }
     `);
@@ -388,7 +388,7 @@ describe('classes', () => {
     `, `
       class A extends B {
         static a() {
-          return super.a();
+          return super.a(...arguments);
         }
       }
     `);
