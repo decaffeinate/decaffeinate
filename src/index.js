@@ -1,3 +1,4 @@
+import { tokens } from 'decaffeinate-coffeescript';
 import AddVariableDeclarationsStage from './stages/add-variable-declarations/index.js';
 import SemicolonsStage from './stages/semicolons/index.js';
 import EsnextStage from './stages/esnext/index.js';
@@ -5,6 +6,7 @@ import MainStage from './stages/main/index.js';
 import NormalizeStage from './stages/normalize/index.js';
 import formatCoffeeLexAst from './utils/formatCoffeeLexTokens.js';
 import formatCoffeeScriptAst from './utils/formatCoffeeScriptAst.js';
+import formatCoffeeScriptLexerTokens from './utils/formatCoffeeScriptLexerTokens.js';
 import formatDecaffeinateParserAst from './utils/formatDecaffeinateParserAst.js';
 import parse from './utils/parse.js';
 import PatchError from './utils/PatchError.js';
@@ -88,7 +90,12 @@ function runStage(stage: Stage, content: string, filename: string): { code: stri
 
 function convertCustomStage(source: string, stageName: string): ConversionResult {
   let ast = parse(source);
-  if (stageName === 'coffeescript-parser') {
+  if (stageName === 'coffeescript-lexer') {
+    return {
+      code: formatCoffeeScriptLexerTokens(tokens(source), ast.context),
+      maps: [],
+    };
+  } else if (stageName === 'coffeescript-parser') {
     return {
       code: formatCoffeeScriptAst(ast.context),
       maps: [],

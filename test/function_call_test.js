@@ -277,4 +277,26 @@ describe('function calls', () => {
       );
     `);
   });
+
+  it('handles implicit calls across OUTDENT tokens', () => {
+    check(`
+      a {
+        b: ->
+          return c d,
+            if e
+              f
+      }
+      g
+    `, `
+      a({
+        b() {
+          return c(d,
+            e ?
+              f : undefined
+          );
+        }
+      });
+      g;
+    `);
+  });
 });
