@@ -40,7 +40,7 @@
     "detect-indent": "^4.0.0",
     "esnext": "^3.0.0",
     "lines-and-columns": "^1.1.5",
-    "magic-string": "^0.15.2",
+    "magic-string": "^0.16.0",
     "repeating": "^2.0.0"
   },
   "files": [
