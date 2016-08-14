@@ -806,6 +806,19 @@ export default class NodePatcher {
   }
 
   /**
+   * Force the indentation level of this node, adjusting it forward or backward
+   * if necessary. This also sets the "adjusted indent" level, so that later
+   * calls to getIndent will return this value.
+   */
+  setIndent(indentStr: string) {
+    let currentIndent = this.getIndent();
+    let indentLength = this.getProgramIndentString().length;
+    let currentIndentLevel = currentIndent.length / indentLength;
+    let desiredIndentLevel = indentStr.length / indentLength;
+    this.indent(desiredIndentLevel - currentIndentLevel);
+  }
+
+  /**
    * Get the amount the adjusted indent level differs from the original level.
    */
   getAdjustedIndentLevel(): number {
@@ -842,8 +855,20 @@ export default class NodePatcher {
     let start = this.outerStart;
     let end = this.outerEnd;
     let { source } = this.context;
-    let hasIndentedThisLine = false;
 
+    // See if there are already non-whitespace characters before the start. If
+    // so, skip the start to the next line, since we don't want to put
+    // indentation in the middle of a line.
+    for (let i = start - 1; i >= 0 && source[i] !== '\n' && source[i] !== '\r'; i--) {
+      if (source[i] !== '\t' && source[i] !== ' ') {
+        while (start < end && source[start] !== '\r' && source[start] !== '\n') {
+          start++;
+        }
+        break;
+      }
+    }
+
+    let hasIndentedThisLine = false;
     for (let i = start; i < end; i++) {
       switch (source[i]) {
         case '\n':
