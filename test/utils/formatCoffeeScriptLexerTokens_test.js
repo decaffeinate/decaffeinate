@@ -23,7 +23,7 @@ describe('formatCoffeeScriptLexerTokens', () => {
       [2:3(17)-2:4(18)]: IDENTIFIER: "a"
       [2:4(18)-2:5(19)]: CALL_START: "("
       [2:5(19)-2:6(20)]: CALL_END: ")"
-      [2:6(20)-2:6(20)]: OUTDENT: 2
+      [2:5(19)-2:6(20)]: OUTDENT: 2
       [2:6(20)-2:6(20)]: TERMINATOR: "\\n"
     `) + '\n');
   });
