@@ -37,6 +37,7 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'FunctionApplication':
       case 'NewOp':
+      case 'SoakedFunctionApplication':
         return FunctionApplicationPatcher;
 
       case 'While':

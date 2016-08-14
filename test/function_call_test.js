@@ -299,4 +299,26 @@ describe('function calls', () => {
       g;
     `);
   });
+
+  it('handles soaked implicit function calls', () => {
+    check(`
+      a? b
+    `, `
+      __guardFunc__(a, f => f(b));
+      function __guardFunc__(func, transform) {
+        return typeof func === 'function' ? transform(func) : undefined;
+      }
+    `);
+  });
+
+  it.skip('handles soaked implicit new expressions', () => {
+    check(`
+      new A? b
+    `, `
+      __guardFunc__(A, f => new f(b));
+      function __guardFunc__(func, transform) {
+        return typeof func === 'function' ? transform(func) : undefined;
+      }
+    `);
+  });
 });
