@@ -76,9 +76,10 @@ export default class PatchError extends Error {
           );
         }
       } else if (line === startLoc.line) {
+        let highlightLength = Math.max(endLoc.column - startLoc.column, 1);
         rows.push(
           [`>`, `${line + 1} |`, lineSource],
-          [``, `|`, repeat(' ', startLoc.column) + repeat('^', endLoc.column - startLoc.column)]
+          [``, `|`, repeat(' ', startLoc.column) + repeat('^', highlightLength)]
         );
       } else {
         rows.push(

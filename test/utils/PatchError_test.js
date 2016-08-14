@@ -12,4 +12,14 @@ describe('PatchError', function() {
     `) + '\n';
     strictEqual(PatchError.prettyPrint(error), expected);
   });
+
+  it('does not crash on an out-of-order range', () => {
+    let error = new PatchError('Sample error', 'abcdefg', 4, 2);
+    let expected = stripSharedIndent(`
+      Sample error
+      > 1 | abcdefg
+          |     ^
+    `) + '\n';
+    strictEqual(PatchError.prettyPrint(error), expected);
+  });
 });
