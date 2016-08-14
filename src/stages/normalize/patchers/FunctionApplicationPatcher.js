@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
-import { CALL_START, RBRACE, RBRACKET } from 'coffee-lex';
+import { CALL_START, EXISTENCE, RBRACE, RBRACKET } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
@@ -33,10 +33,11 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       let hasOneArg = args.length === 1;
       let firstArgIsOnNextLine = !firstArg ? false :
         /[\r\n]/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
+      let funcEnd = this.getFuncEnd();
       if ((hasOneArg && firstArg.node.virtual) || firstArgIsOnNextLine) {
-        this.insert(this.fn.outerEnd, '(');
+        this.insert(funcEnd, '(');
       } else {
-        this.overwrite(this.fn.outerEnd, firstArg.outerStart, '(');
+        this.overwrite(funcEnd, firstArg.outerStart, '(');
       }
     }
 
@@ -53,8 +54,32 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     }
   }
 
+  /**
+   * Determine if parens need to be inserted. Needs to handle both `new`
+   * expressions (which can be implicit calls with an empty argument lists) and
+   * implicit soaked function calls (where there's a question mark between the
+   * function and the args).
+   */
   isImplicitCall(): boolean {
-    return !this.fn.hasSourceTokenAfter(CALL_START);
+    let searchStart = this.fn.outerEnd;
+    let searchEnd = this.args.length === 0 ? this.outerEnd : this.args[0].outerStart;
+    return this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      searchStart, searchEnd, token => token.type === CALL_START) === null;
+  }
+
+  /**
+   * Get the source index after the function and the question mark, if any.
+   * This is the start of the region to insert an open-paren if necessary
+   */
+  getFuncEnd() {
+    if (this.node.type === 'SoakedFunctionApplication') {
+      let questionMarkTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+        this.fn.outerEndTokenIndex, EXISTENCE);
+      let questionMarkToken = this.sourceTokenAtIndex(questionMarkTokenIndex);
+      return questionMarkToken.end;
+    } else {
+      return this.fn.outerEnd;
+    }
   }
 
   isImplicitSuper(): boolean {

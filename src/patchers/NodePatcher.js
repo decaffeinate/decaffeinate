@@ -642,16 +642,23 @@ export default class NodePatcher {
    * a predicate function.
    */
   indexOfSourceTokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, predicate: (token: SourceToken) => boolean): ?SourceTokenListIndex {
-    let start = left.outerEnd;
-    let end = right.outerStart;
+    return this.indexOfSourceTokenBetweenSourceIndicesMatching(left.outerEnd, right.outerStart, predicate);
+  }
+
+  /**
+   * Gets the index of the token between source locations that matches a
+   * predicate function.
+   */
+  indexOfSourceTokenBetweenSourceIndicesMatching(left: number, right: number, predicate: (token: SourceToken) => boolean): ?SourceTokenListIndex {
     return this.getProgramSourceTokens().indexOfTokenMatchingPredicate(token => {
       return (
-        token.start >= start &&
-        token.start <= end &&
+        token.start >= left &&
+        token.start <= right &&
         predicate(token)
       );
     });
   }
+
 
   /**
    * Gets the token at a particular index.
