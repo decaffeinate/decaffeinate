@@ -82,7 +82,13 @@ describe('while', () => {
     check(`
       a(b while c)
     `, `
-      a((() => { let result = []; while (c) { result.push(b); } return result; })());
+      a((() => {
+        let result = [];
+        while (c) {
+          result.push(b);
+        }
+        return result;
+      })());
     `);
   });
 
@@ -90,7 +96,15 @@ describe('while', () => {
     check(`
       a(b while c when d)
     `, `
-      a((() => { let result = []; while (c) { if (d) { result.push(b); } } return result; })());
+      a((() => {
+        let result = [];
+        while (c) {
+          if (d) {
+            result.push(b);
+          }
+        }
+        return result;
+      })());
     `);
   });
 
@@ -104,7 +118,9 @@ describe('while', () => {
             f
       )
     `, `
-      a((() => { let result = []; 
+      a((() => {
+        let result = [];
+        
         while (b) {
           let item;
           if (c) {
@@ -114,7 +130,9 @@ describe('while', () => {
           }
           result.push(item);
 
-        } return result; })());
+        }
+        return result;
+      })());
     `);
   });
 
@@ -129,7 +147,9 @@ describe('while', () => {
               f
       )
     `, `
-      a((() => { let result = []; 
+      a((() => {
+        let result = [];
+        
         while (b) {
           switch (c) {
             case d:
@@ -139,7 +159,9 @@ describe('while', () => {
               result.push(f);
           }
 
-        } return result; })());
+        }
+        return result;
+      })());
     `);
   });
 
@@ -164,9 +186,13 @@ describe('while', () => {
           -> return a
     `, `
       () =>
-        (() => { let result = []; while (true) {
-          result.push(() => a);
-        } return result; })()
+        (() => {
+          let result = [];
+          while (true) {
+            result.push(() => a);
+          }
+          return result;
+        })()
       ;
     `);
   });
@@ -233,9 +259,19 @@ describe('while', () => {
       -> while false
         yield a while true
     `, `
-      (function*() { return yield* (function*() { let result = []; while (false) {
-        result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield a); } return result1; }).call(this));
-      } return result; }).call(this); });
+      (function*() { return yield* (function*() {
+        let result = [];
+        while (false) {
+          result.push(  yield* (function*() {
+            let result1 = [];
+            while (true) {
+              result1.push(yield a);
+            }
+            return result1;
+          }).call(this));
+        }
+        return result;
+      }).call(this); });
     `);
   });
 
@@ -246,9 +282,19 @@ describe('while', () => {
           yield arguments.length while true
     `, `
       (function*() {
-        return yield* (function*() { let result = []; while (false) {
-          result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield arguments.length); } return result1; }).apply(this, arguments));
-        } return result; }).apply(this, arguments);
+        return   yield* (function*() {
+          let result = [];
+          while (false) {
+            result.push(  yield* (function*() {
+              let result1 = [];
+              while (true) {
+                result1.push(yield arguments.length);
+              }
+              return result1;
+            }).apply(this, arguments));
+          }
+          return result;
+        }).apply(this, arguments);
       });
     `);
   });
@@ -260,9 +306,19 @@ describe('while', () => {
           yield (-> arguments.length) while true
     `, `
       (function*() {
-        return yield* (function*() { let result = []; while (false) {
-          result.push(yield* (function*() { let result1 = []; while (true) { result1.push(yield (function() { return arguments.length; })); } return result1; }).call(this));
-        } return result; }).call(this);
+        return   yield* (function*() {
+          let result = [];
+          while (false) {
+            result.push(  yield* (function*() {
+              let result1 = [];
+              while (true) {
+                result1.push(yield (function() { return arguments.length; }));
+              }
+              return result1;
+            }).call(this));
+          }
+          return result;
+        }).call(this);
       });
     `);
   });

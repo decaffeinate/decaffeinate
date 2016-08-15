@@ -6,10 +6,12 @@ import { NEWLINE, SEMICOLON } from 'coffee-lex';
 
 export default class BlockPatcher extends NodePatcher {
   statements: Array<NodePatcher>;
+  shouldPatchInline: ?boolean;
 
   constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
     super(node, context, editor);
     this.statements = statements;
+    this.shouldPatchInline = null;
   }
 
   canPatchAsExpression(): boolean {
@@ -27,6 +29,14 @@ export default class BlockPatcher extends NodePatcher {
 
   setImplicitlyReturns() {
     this.statements[this.statements.length - 1].setImplicitlyReturns();
+  }
+
+  /**
+   * Force the patcher to treat the block as inline (semicolon-separated
+   * statements) or not (newline-separated statements).
+   */
+  setShouldPatchInline(shouldPatchInline: boolean) {
+    this.shouldPatchInline = shouldPatchInline;
   }
 
   patchAsStatement({ leftBrace=true, rightBrace=true }={}) {
@@ -155,6 +165,9 @@ export default class BlockPatcher extends NodePatcher {
    * that contains it) or not.
    */
   inline(): boolean {
+    if (this.shouldPatchInline !== null) {
+      return this.shouldPatchInline;
+    }
     return this.node.inline;
   }
 

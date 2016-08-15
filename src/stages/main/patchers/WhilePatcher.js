@@ -31,6 +31,9 @@ export default class WhilePatcher extends NodePatcher {
    * 'loop' NEWLINE INDENT BODY
    */
   patchAsStatement() {
+    let loopBodyIndent = this.getIndent(1);
+    this.body.setIndent(loopBodyIndent);
+
     // `until a` → `while a`
     //  ^^^^^       ^^^^^
     let whileToken = this.sourceTokenAtIndex(this.getWhileTokenIndex());
@@ -64,13 +67,12 @@ export default class WhilePatcher extends NodePatcher {
             `${conditionNeedsParens ? ')' : ''} { if ${guardNeedsParens ? '(' : ''}`
           );
         } else {
-          let bodyIndent = this.body.getIndent();
           // `while (a when b` → `while (a) {\n  if (b`
           //          ^^^^^^              ^^^^^^^^^^^
           this.overwrite(
             this.condition.outerEnd,
             this.guard.outerStart,
-            `${conditionNeedsParens ? ')' : ''} {\n${bodyIndent}if ${guardNeedsParens ? '(' : ''}`
+            `${conditionNeedsParens ? ')' : ''} {\n${loopBodyIndent}if ${guardNeedsParens ? '(' : ''}`
           );
 
         }
@@ -94,6 +96,16 @@ export default class WhilePatcher extends NodePatcher {
       let thenToken = this.sourceTokenAtIndex(thenIndex);
       let nextToken = this.sourceTokenAtIndex(thenIndex.next());
       this.remove(thenToken.start, nextToken.start);
+    }
+
+    // IIFE-style loop expressions should always be multi-line, which sometimes
+    // means putting a newline before the start of the block.
+    if (this.willPatchAsExpression() && this.body.node.inline) {
+      this.overwrite(
+        this.guard ? this.guard.outerEnd : this.condition.outerEnd,
+        this.body.contentStart,
+        `\n${this.body.getIndent()}`
+      );
     }
 
     if (this.willPatchAsExpression() && !this.allBodyCodePathsPresent()) {
@@ -126,13 +138,19 @@ export default class WhilePatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    // We're only patched as an expression due to a parent instructing us to,
+    // and the indent level is more logically the indent level of our parent.
+    let baseIndent = this.parent.getIndent(0);
+    let iifeBodyIndent = this.parent.getIndent(1);
+    this.setIndent(iifeBodyIndent);
+    this.body.setShouldPatchInline(false);
     this.body.setImplicitlyReturns();
     let resultBinding = this.getResultArrayBinding();
     this.patchAsStatement();
     let prefix = !this.yielding ? '(() =>' : 'yield* (function*()';
-    this.insert(this.innerStart, `${prefix} { ${resultBinding} = []; `);
+    this.insert(this.innerStart, `${prefix} {\n${iifeBodyIndent}${resultBinding} = [];\n${iifeBodyIndent}`);
     let suffix = !this.yielding ? '()' : this.referencesArguments() ? '.apply(this, arguments)' : '.call(this)';
-    this.insert(this.innerEnd, ` return ${resultBinding}; })${suffix}`);
+    this.insert(this.innerEnd, `\n${iifeBodyIndent}return ${resultBinding};\n${baseIndent}})${suffix}`);
   }
 
   yieldController() {
