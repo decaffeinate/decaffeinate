@@ -89,6 +89,52 @@ describe('for loops', () => {
     `);
   });
 
+  it('handles inline for-of loop expressions', () => {
+    check(`
+      a(k + v for k, v of obj() when k)
+    `, `
+      a((() => {
+        let result = [];
+        let object = obj();
+        for (let k in object) {
+          let v = object[k];
+          if (k) {
+            result.push(k + v);
+          }
+        }
+        return result;
+      })());
+    `);
+  });
+
+  it('handles for-of loop expressions exercising many edge cases at once', () => {
+    check(`
+      a(for k, v of obj() when x
+          if k
+            k
+          else if v
+            v)
+    `, `
+      a((() => {
+        let result = [];
+        let object = obj();
+        for (let k in object) {
+          let v = object[k];
+          if (x) {
+            let item;
+            if (k) {
+              item = k;
+            } else if (v) {
+              item = v;
+            }
+            result.push(item);
+          }
+        }
+        return result;
+      })());
+    `);
+  });
+
   it('transforms for-in loops with an index to typical `for` loops', () => {
     check(`
       for a, j in b
@@ -184,6 +230,15 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles inline for-in statements with a condition', () => {
+    check(`
+      for a in b when a.c then a
+    `, `
+      for (let i = 0; i < b.length; i++) { let a = b[i]; if (a.c) { a; } }
+    `);
+  });
+
 
   it('allows using both `when` and `by` clauses', () => {
     check(`
@@ -319,7 +374,7 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('saves the list of results when for-of loops are used in an expression context', () => {
+  it('handles for-of loops used in an expression context', () => {
     check(`
       a(k for k of o)
     `, `
@@ -327,6 +382,22 @@ describe('for loops', () => {
         let result = [];
         for (let k in o) {
           result.push(k);
+        }
+        return result;
+      })());
+    `);
+  });
+
+  it('handles for-of loops with condition used in an expression context', () => {
+    check(`
+      a(k for k of o when c)
+    `, `
+      a((() => {
+        let result = [];
+        for (let k in o) {
+          if (c) {
+            result.push(k);
+          }
         }
         return result;
       })());
@@ -382,27 +453,31 @@ describe('for loops', () => {
     `, 51);
   });
 
-  it.skip('handles for-in loop expressions with a block body', () => {
+  it('handles for-in loop expressions with a block body', () => {
     check(`
       console.log(for x in [1, 2, 3]
         y = x + 1
         if y > 2
           y -= 1
-        y + 2
-      )
+        y + 2)
     `, `
-      console.log([1, 2, 3].map(x => {
-        let y = x + 1;
-        if (y > 2) {
-          y -= 1;
+      console.log((() => {
+        let result = [];
+        let iterable = [1, 2, 3];
+        for (let i = 0; i < iterable.length; i++) {
+          let x = iterable[i];
+          let y = x + 1;
+          if (y > 2) {
+            y -= 1;
+          }
+          result.push(y + 2);
         }
-        return y + 2;
-      });
+        return result;
+      })());
     `);
   });
 
-  it.skip('handles for-in loop expressions with control flow', () => {
-    // For now, the expected output is just the CoffeeScript output.
+  it('handles for-in loop expressions with control flow', () => {
     check(`
       x = for a in f()
         b = g(a)
@@ -410,26 +485,83 @@ describe('for loops', () => {
           break
         b + 1
     `, `
-      var a, b, x;
-
-      x = (function() {
-        var i, len, ref, results;
-        ref = f();
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-          a = ref[i];
-          b = g(a);
+      let x = (() => {
+        let result = [];
+        let iterable = f();
+        for (let i = 0; i < iterable.length; i++) {
+          let a = iterable[i];
+          let b = g(a);
           if (b > 3) {
             break;
           }
-          results.push(b + 1);
+          result.push(b + 1);
         }
-        return results;
+        return result;
       })();
     `);
   });
 
-  it.skip('closes the call to `result.push()` at the right position', () => {
+  it('handles for-in loop expressions with a step', () => {
+    check(`
+      a(b for c in d by e)
+    `, `
+      a((() => {
+        let result = [];
+        for (let i = 0, step = e; i < d.length; i += step) {
+          let c = d[i];
+          result.push(b);
+        }
+        return result;
+      })());
+    `);
+  });
+
+  it('handles for-in loop expressions with a filter and a key assignee', () => {
+    check(`
+      a(b for x, i in l when c)
+    `, `
+      a((() => {
+        let result = [];
+        for (let i = 0; i < l.length; i++) {
+          let x = l[i];
+          if (c) {
+            result.push(b);
+          }
+        }
+        return result;
+      })());
+    `);
+  });
+
+  it('handles for-in loop expressions exercising many edge cases at once', () => {
+    check(`
+      a(for x, i in l() when x by s
+          if i
+            x
+          else if x
+            i)
+    `, `
+      a((() => {
+        let result = [];
+        let iterable = l();
+        for (let i = 0, step = s; i < iterable.length; i += step) {
+          let x = iterable[i];
+          if (x) {
+            let item;
+            if (i) {
+              item = x;
+            } else if (x) {
+              item = i;
+            }
+            result.push(item);
+          }
+        }
+        return result;
+      })());
+    `);
+  });
+
+  it('closes the call to `result.push()` at the right position', () => {
     check(`
       ->
         for a in b
@@ -439,21 +571,21 @@ describe('for loops', () => {
       # this is here to make the real end of "a" be much later
       stuff
     `, `
-      (function() {
-        return (() => {
+      () =>
+        (() => {
           let result = [];
-          for (let i = 0, a; i < b.length; i++) {
-            a = b[i];
-            result.push((() => {
-              if (a) {
-                return b;
-              }
-            })());
+          for (let i = 0; i < b.length; i++) {
+            let a = b[i];
+            let item;
+            if (a) {
+              item = b;
+            }
+            result.push(item);
           }
           return result;
-        })();
-      });
-
+        })()
+      ;
+      
       // this is here to make the real end of "a" be much later
       stuff;
     `);
@@ -543,6 +675,34 @@ describe('for loops', () => {
     `);
   });
 
+  it('handles `for own` loop expressions exercising many edge cases at once', () => {
+    check(`
+      a(for own k, v of obj() when x
+          if k
+            k
+          else if v
+            v)
+    `, `
+      a((() => {
+        let result = [];
+        let object = obj();
+        for (let k of Object.keys(object)) {
+          let v = object[k];
+          if (x) {
+            let item;
+            if (k) {
+              item = k;
+            } else if (v) {
+              item = v;
+            }
+            result.push(item);
+          }
+        }
+        return result;
+      })());
+    `);
+  });
+
   it('does not consider a `for` loop as an implicit return if it returns itself', () => {
     check(`
       ->
@@ -558,22 +718,16 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('considers a `for` loop as an implicit return if it only returns within a function', () => {
+  it('considers a `for` loop as an implicit return if it only returns within a function', () => {
     check(`
       ->
         for a in b
           -> return a
     `, `
-      (function() {
-        return (() => {
-          let result = [];
-          for (let i = 0, a; i < b.length; i++) {
-            a = b[i];
-            result.push(function() { return a; });
-          }
-          return result;
-        })();
-      });
+      () =>
+        b.map((a) =>
+          () => a)
+      ;
     `);
   });
 

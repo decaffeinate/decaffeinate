@@ -1,23 +1,22 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
+import LoopPatcher from './LoopPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
 import { RELATION, THEN } from 'coffee-lex';
 
-export default class ForPatcher extends NodePatcher {
+export default class ForPatcher extends LoopPatcher {
   keyAssignee: ?NodePatcher;
   valAssignee: ?NodePatcher;
   target: NodePatcher;
   filter: ?NodePatcher;
-  body: BlockPatcher;
-  
+
   constructor(node: Node, context: ParseContext, editor: Editor, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
-    super(node, context, editor);
+    super(node, context, editor, body);
     this.keyAssignee = keyAssignee;
     this.valAssignee = valAssignee;
     this.target = target;
     this.filter = filter;
-    this.body = body;
   }
 
   initialize() {
@@ -45,16 +44,25 @@ export default class ForPatcher extends NodePatcher {
     return this._filterCode;
   }
 
+  getLoopBodyIndent() {
+    if (this.filter) {
+      return this.getOuterLoopBodyIndent() + this.getProgramIndentString();
+    } else {
+      return this.getOuterLoopBodyIndent();
+    }
+  }
+
   patchBodyAndFilter() {
     let {body, filter} = this;
+
     if (filter) {
-      body.insertStatementsAtIndex([`if (${this.getFilterCode()}) {`], 0);
-      body.patch({ leftBrace: false, rightBrace: false });
-      body.indent();
-      body.appendLineAfter('}', -1);
-      body.appendLineAfter('}', -2);
+      this.body.insertLineBefore(`if (${this.getFilterCode()}) {`, this.getOuterLoopBodyIndent());
+      this.patchBodyWithPossibleItemVariable();
+      body.insertLineAfter('}', this.getOuterLoopBodyIndent());
+      body.insertLineAfter('}', this.getLoopIndent());
     } else {
-      body.patch({ leftBrace: false });
+      this.patchBodyWithPossibleItemVariable();
+      body.insertLineAfter('}', this.getLoopIndent());
     }
   }
 
@@ -67,10 +75,6 @@ export default class ForPatcher extends NodePatcher {
       throw this.error(`cannot find relation keyword in 'for' loop`);
     }
     return this.sourceTokenAtIndex(tokenIndex);
-  }
-
-  statementNeedsSemicolon(): boolean {
-    return false;
   }
 
   /**

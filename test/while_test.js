@@ -129,8 +129,8 @@ describe('while', () => {
             item = f;
           }
           result.push(item);
-
         }
+
         return result;
       })());
     `);
@@ -158,8 +158,8 @@ describe('while', () => {
             default:
               result.push(f);
           }
-
         }
+
         return result;
       })());
     `);
@@ -241,6 +241,32 @@ describe('while', () => {
     `);
   });
 
+  it('handles a deeply-indented loop body in an expression context', () => {
+    check(`
+      longName(while a when b
+                  if c
+                    d
+                  else if e
+                    f)
+    `, `
+      longName((() => {
+        let result = [];
+        while (a) {
+          if (b) {
+            let item;
+            if (c) {
+              item = d;
+            } else if (e) {
+              item = f;
+            }
+            result.push(item);
+          }
+        }
+        return result;
+      })());
+    `);
+  });
+
   it('causes the condition not to add parentheses even if it normally would', () => {
     check(`
       a = b
@@ -262,7 +288,7 @@ describe('while', () => {
       (function*() { return yield* (function*() {
         let result = [];
         while (false) {
-          result.push(  yield* (function*() {
+          result.push(yield* (function*() {
             let result1 = [];
             while (true) {
               result1.push(yield a);
@@ -282,10 +308,10 @@ describe('while', () => {
           yield arguments.length while true
     `, `
       (function*() {
-        return   yield* (function*() {
+        return yield* (function*() {
           let result = [];
           while (false) {
-            result.push(  yield* (function*() {
+            result.push(yield* (function*() {
               let result1 = [];
               while (true) {
                 result1.push(yield arguments.length);
@@ -306,10 +332,10 @@ describe('while', () => {
           yield (-> arguments.length) while true
     `, `
       (function*() {
-        return   yield* (function*() {
+        return yield* (function*() {
           let result = [];
           while (false) {
-            result.push(  yield* (function*() {
+            result.push(yield* (function*() {
               let result1 = [];
               while (true) {
                 result1.push(yield (function() { return arguments.length; }));
