@@ -65,7 +65,7 @@
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-decaffeinate": "file:eslint-rules",
     "eslint-plugin-flow-vars": "^0.5.0",
-    "flow-bin": "^0.30.0",
+    "flow-bin": "^0.31.1",
     "mocha": "^3.0.0",
     "mversion": "^1.10.1",
     "rollup": "^0.34.1",
