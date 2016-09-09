@@ -20,4 +20,36 @@ describe('indentation', () => {
   it.skip('matches indentation when adding standalone lines', () => {
     check(`if a\n\tswitch b\n\t\twhen c\n\t\t\td`, `if (a) {\n\tswitch (b) {\n\t\tcase c:\n\t\t\td;\n\t\t\tbreak;\n\t}\n}`);
   });
+
+  it('handles valid inconsistent indentation', () => {
+    check(`
+      a ->
+        return
+       b
+    `, `
+      a(function() {
+        
+      });
+      b;
+    `);
+  });
+
+  it('handles deeply nested inconsistent indentation', () => {
+    check(`
+      ->
+        a
+          .b =>
+            return
+          return 3
+    `, `
+      (function() {
+        a
+          .b(() => {
+            
+          }
+        );
+        return 3;
+      });
+    `);
+  });
 });
