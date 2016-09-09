@@ -1,9 +1,8 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import traverse from '../../../utils/traverse.js';
+import LoopPatcher from './LoopPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Editor, Node, ParseContext, SourceTokenListIndex } from './../../../patchers/types.js';
 import { LOOP, THEN, WHILE } from 'coffee-lex';
-import { isFunction } from '../../../utils/types.js';
 
 /**
  * Handles `while` loops, e.g.
@@ -11,17 +10,14 @@ import { isFunction } from '../../../utils/types.js';
  *   while a
  *     b
  */
-export default class WhilePatcher extends NodePatcher {
+export default class WhilePatcher extends LoopPatcher {
   condition: NodePatcher;
   guard: ?NodePatcher;
-  body: BlockPatcher;
-  yielding: boolean;
 
   constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: BlockPatcher) {
-    super(node, context, editor);
+    super(node, context, editor, body);
     this.condition = condition;
     this.guard = guard;
-    this.body = body;
   }
 
   /**
@@ -31,8 +27,9 @@ export default class WhilePatcher extends NodePatcher {
    * 'loop' NEWLINE INDENT BODY
    */
   patchAsStatement() {
-    let loopBodyIndent = this.getIndent(1);
-    this.body.setIndent(loopBodyIndent);
+    if (!this.body.inline()) {
+      this.body.setIndent(this.getLoopBodyIndent());
+    }
 
     // `until a` → `while a`
     //  ^^^^^       ^^^^^
@@ -72,7 +69,7 @@ export default class WhilePatcher extends NodePatcher {
           this.overwrite(
             this.condition.outerEnd,
             this.guard.outerStart,
-            `${conditionNeedsParens ? ')' : ''} {\n${loopBodyIndent}if ${guardNeedsParens ? '(' : ''}`
+            `${conditionNeedsParens ? ')' : ''} {\n${this.getOuterLoopBodyIndent()}if ${guardNeedsParens ? '(' : ''}`
           );
 
         }
@@ -81,9 +78,6 @@ export default class WhilePatcher extends NodePatcher {
         // `while (a) {\n  if (b` → `while (a) {\n  if (b) {`
         //                                               ^^^
         this.insert(this.guard.outerEnd, `${guardNeedsParens ? ')' : ''} {`);
-        if (!this.body.inline()) {
-          this.body.indent();
-        }
       } else {
         // `while (a` → `while (a) {`
         //                       ^^^
@@ -98,158 +92,17 @@ export default class WhilePatcher extends NodePatcher {
       this.remove(thenToken.start, nextToken.start);
     }
 
-    // IIFE-style loop expressions should always be multi-line, which sometimes
-    // means putting a newline before the start of the block.
-    if (this.willPatchAsExpression() && this.body.node.inline) {
-      this.overwrite(
-        this.guard ? this.guard.outerEnd : this.condition.outerEnd,
-        this.body.contentStart,
-        `\n${this.body.getIndent()}`
-      );
-    }
-
-    if (this.willPatchAsExpression() && !this.allBodyCodePathsPresent()) {
-      let itemBinding = this.getResultArrayElementBinding();
-      this.body.insertStatementsAtIndex([`var ${itemBinding}`], 0);
-      this.body.patch({ leftBrace: false, rightBrace: false });
-      this.body.insertStatementsAtIndex(
-        [`${this.getResultArrayBinding()}.push(${itemBinding})`],
-        this.body.statements.length
-      );
-    } else {
-      this.body.patch({ leftBrace: false, rightBrace: false });
-    }
+    this.patchPossibleNewlineAfterLoopHeader(
+      this.guard ? this.guard.outerEnd : this.condition.outerEnd);
+    this.patchBodyWithPossibleItemVariable();
 
     if (this.guard) {
       // Close the guard's `if` consequent block.
-      if (this.body.inline()) {
-        this.insert(this.body.innerEnd, ' }');
-      } else {
-        this.body.appendLineAfter('}', -1);
-      }
+      this.body.insertLineAfter('}', this.getOuterLoopBodyIndent());
     }
 
     // Close the `while` body block.
-    if (this.body.inline()) {
-      this.insert(this.body.innerEnd, ' }');
-    } else {
-      this.appendLineAfter('}');
-    }
-  }
-
-  patchAsExpression() {
-    // We're only patched as an expression due to a parent instructing us to,
-    // and the indent level is more logically the indent level of our parent.
-    let baseIndent = this.parent.getIndent(0);
-    let iifeBodyIndent = this.parent.getIndent(1);
-    this.setIndent(iifeBodyIndent);
-    this.body.setShouldPatchInline(false);
-    this.body.setImplicitlyReturns();
-    let resultBinding = this.getResultArrayBinding();
-    this.patchAsStatement();
-    let prefix = !this.yielding ? '(() =>' : 'yield* (function*()';
-    this.insert(this.innerStart, `${prefix} {\n${iifeBodyIndent}${resultBinding} = [];\n${iifeBodyIndent}`);
-    let suffix = !this.yielding ? '()' : this.referencesArguments() ? '.apply(this, arguments)' : '.call(this)';
-    this.insert(this.innerEnd, `\n${iifeBodyIndent}return ${resultBinding};\n${baseIndent}})${suffix}`);
-  }
-
-  yieldController() {
-    this.yielding = true;
-    this.yields();
-  }
-
-  /**
-   * Most implicit returns cause program flow to break by using a `return`
-   * statement, but we don't do that since we're just collecting values in
-   * an array. This allows descendants who care about this to adjust their
-   * behavior accordingly.
-   */
-  implicitReturnWillBreak(): boolean {
-    if (this.willPatchAsExpression()) {
-      return false;
-    } else {
-      return super.implicitReturnWillBreak();
-    }
-  }
-
-  /**
-   * We decide how statements in implicit return positions are patched, if
-   * we're being used as an expression. This is because we don't want to return
-   * them, but add them to an array.
-   */
-  implicitReturnPatcher(): NodePatcher {
-    if (this.willPatchAsExpression()) {
-      return this;
-    } else {
-      return super.implicitReturnPatcher();
-    }
-  }
-
-  /**
-   * If this `while` is used as an expression, then we need to collect all the
-   * values of the statements in implicit-return position. If all the code paths
-   * in our body are present, we can just add `result.push(…)` to all
-   * implicit-return position statements. If not, we want those code paths to
-   * result in adding `undefined` to the resulting array. The way we do that is
-   * by creating an `item` local variable that we set in each code path, and
-   * when the code exits through a missing code path (i.e. `if false then b`)
-   * then `item` will naturally have the value `undefined` which we then push
-   * at the end of the `while` body.
-   */
-  patchImplicitReturnStart(patcher: NodePatcher) {
-    patcher.setRequiresExpression();
-    if (this.allBodyCodePathsPresent()) {
-      // `a + b` → `result.push(a + b`
-      //            ^^^^^^^^^^^^
-      this.insert(patcher.outerStart, `${this.getResultArrayBinding()}.push(`);
-    } else {
-      // `a + b` → `item = a + b`
-      //            ^^^^^^^
-      this.insert(patcher.outerStart, `${this.getResultArrayElementBinding()} = `);
-    }
-  }
-
-  /**
-   * @see patchImplicitReturnStart
-   */
-  patchImplicitReturnEnd(patcher: NodePatcher) {
-    if (this.allBodyCodePathsPresent()) {
-      this.insert(patcher.outerEnd, `)`);
-    }
-  }
-
-  /**
-   * @private
-   */
-  allBodyCodePathsPresent(): boolean {
-    if (this._allBodyCodePathsPresent === undefined) {
-      this._allBodyCodePathsPresent = this.body.allCodePathsPresent();
-    }
-    return this._allBodyCodePathsPresent;
-  }
-
-  /**
-   * @private
-   */
-  getResultArrayBinding(): string {
-    if (!this._resultArrayBinding) {
-      this._resultArrayBinding = this.claimFreeBinding('result');
-    }
-    return this._resultArrayBinding;
-  }
-
-  /**
-   * @private
-   */
-  getResultArrayElementBinding(): string {
-    if (!this._resultArrayElementBinding) {
-      this._resultArrayElementBinding = this.claimFreeBinding('item');
-    }
-    return this._resultArrayElementBinding;
-  }
-
-  statementNeedsSemicolon() {
-    return false;
+    this.body.insertLineAfter('}', this.getLoopIndent());
   }
 
   /**
@@ -301,22 +154,11 @@ export default class WhilePatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  referencesArguments() {
-    let result = false;
-
-    traverse(this.node, node => {
-      if (result || isFunction(node)) {
-        return false;
-      }
-
-      if (node.type === 'Identifier' && node.data === 'arguments') {
-        result = true;
-      }
-    });
-
-    return result;
+  getLoopBodyIndent() {
+    if (this.guard) {
+      return this.getOuterLoopBodyIndent() + this.getProgramIndentString();
+    } else {
+      return this.getOuterLoopBodyIndent();
+    }
   }
 }

@@ -2,15 +2,11 @@ import ForPatcher from './ForPatcher.js';
 import {OWN} from 'coffee-lex';
 
 export default class ForOfPatcher extends ForPatcher {
-  patchAsExpression() {
-    throw this.error(
-      `'for of' loops used as expressions are not yet supported ` +
-      `(https://github.com/decaffeinate/decaffeinate/issues/156)`
-    );
-  }
-
   patchAsStatement() {
-    let bodyLinesToPrepend = [];
+    if (!this.body.inline()) {
+      this.body.setIndent(this.getLoopBodyIndent());
+    }
+
     let { keyAssignee } = this;
 
     // Save the filter code and remove if it it's there.
@@ -22,7 +18,10 @@ export default class ForOfPatcher extends ForPatcher {
     this.removeOwnTokenIfExists();
 
     if (this.requiresExtractingTarget()) {
-      this.insert(this.outerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getIndent()}`);
+      this.insert(
+        this.innerStart,
+        `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`
+      );
     }
 
     let keyBinding = this.getIndexBinding();
@@ -32,6 +31,7 @@ export default class ForOfPatcher extends ForPatcher {
 
     this.overwrite(this.target.outerStart, this.target.outerEnd, this.getTargetReference());
 
+    let valueAssignment = null;
     if (valAssignee) {
       valAssignee.patch();
       let valAssigneeString = this.slice(valAssignee.contentStart, valAssignee.contentEnd);
@@ -39,13 +39,11 @@ export default class ForOfPatcher extends ForPatcher {
       //        ^^^
       this.remove(keyAssignee.outerEnd, valAssignee.outerEnd);
 
-      let valueAssignmentStatement = `${valAssigneeString} = ${this.getTargetReference()}[${keyBinding}]`;
+      valueAssignment = `${valAssigneeString} = ${this.getTargetReference()}[${keyBinding}]`;
 
       if (valAssignee.statementNeedsParens()) {
-        valueAssignmentStatement = `(${valueAssignmentStatement})`;
+        valueAssignment = `(${valueAssignment})`;
       }
-
-      bodyLinesToPrepend.push(valueAssignmentStatement);
     }
 
     let relationToken = this.getRelationToken();
@@ -68,7 +66,10 @@ export default class ForOfPatcher extends ForPatcher {
     }
 
     this.removeThenToken();
-    this.body.insertStatementsAtIndex(bodyLinesToPrepend, 0);
+    this.patchPossibleNewlineAfterLoopHeader(this.target.outerEnd);
+    if (valueAssignment !== null) {
+      this.body.insertLineBefore(valueAssignment, this.getOuterLoopBodyIndent());
+    }
     this.patchBodyAndFilter();
   }
 

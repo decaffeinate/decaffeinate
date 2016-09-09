@@ -18,28 +18,12 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   patchAsExpression() {
-    if (this.step !== null) {
-      throw this.error(
-        `'for in' loop expressions with a "by" clause are not supported yet ` +
-        `(https://github.com/decaffeinate/decaffeinate/issues/156)`
-      );
+    // When possible, we want to transform the loop into a use of `map`, but
+    // there are some cases when we can't. Use the more general approach of a
+    // statement loop within an IIFE if that's the case.
+    if (!this.canPatchAsMapExpression()) {
+      return super.patchAsExpression();
     }
-    if (!this.body.canPatchAsExpression()) {
-      throw this.error(
-        `'for in' loop expressions with non-expression bodies are not supported yet ` +
-        `(https://github.com/decaffeinate/decaffeinate/issues/156)`
-      );
-    }
-    // The high-level approach of a.filter(...).map((x, i) => ...) doesn't work,
-    // since the filter will change the indexes, so we specifically exclude that
-    // case.
-    if (this.filter !== null && this.keyAssignee !== null) {
-      throw this.error(
-        `'for in' loop expressions with both a filter and an index assignee are not supported yet ` +
-        `(https://github.com/decaffeinate/decaffeinate/issues/156)`
-      );
-    }
-
     this.removeThenToken();
 
     this.valAssignee.patch();
@@ -81,7 +65,27 @@ export default class ForInPatcher extends ForPatcher {
     this.insert(this.body.outerEnd, ')');
   }
 
+  canPatchAsMapExpression(): boolean {
+    if (this.step !== null) {
+      return false;
+    }
+    if (!this.body.canPatchAsExpression()) {
+      return false;
+    }
+    // The high-level approach of a.filter(...).map((x, i) => ...) doesn't work,
+    // since the filter will change the indexes, so we specifically exclude that
+    // case.
+    if (this.filter !== null && this.keyAssignee !== null) {
+      return false;
+    }
+    return true;
+  }
+
   patchAsStatement() {
+    if (!this.body.inline()) {
+      this.body.setIndent(this.getLoopBodyIndent());
+    }
+
     // Run for the side-effect of patching and slicing the value.
     this.getValueBinding();
     this.getFilterCode();
@@ -101,7 +105,7 @@ export default class ForInPatcher extends ForPatcher {
 
   patchForLoopHeader() {
     if (this.requiresExtractingTarget()) {
-      this.insert(this.outerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getIndent()}`);
+      this.insert(this.innerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`);
     }
     let firstHeaderPatcher = this.valAssignee;
     let lastHeaderPatcher = this.getLastHeaderPatcher();
@@ -122,12 +126,13 @@ export default class ForInPatcher extends ForPatcher {
 
   patchForLoopBody() {
     this.removeThenToken();
+    this.patchPossibleNewlineAfterLoopHeader(this.getLastHeaderPatcher().outerEnd);
 
     let valueAssignment = `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`;
     if (this.valAssignee.statementNeedsParens()) {
       valueAssignment = `(${valueAssignment})`;
     }
-    this.body.insertStatementsAtIndex([valueAssignment], 0);
+    this.body.insertLineBefore(valueAssignment, this.getOuterLoopBodyIndent());
     this.patchBodyAndFilter();
   }
 

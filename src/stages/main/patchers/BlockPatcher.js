@@ -150,6 +150,52 @@ export default class BlockPatcher extends NodePatcher {
   }
 
   /**
+   * Insert a statement before the current block. Since blocks can be patched in
+   * a number of ways, this needs to handle a few cases:
+   * - If it's completely inline, we don't deal with any indentation and just
+   *   put a semicolon-separated statement before the start.
+   * - If it's a normal non-inline block, we insert the statement beforehand
+   *   with the given indentation. However, `this.outerStart` is the first
+   *   non-whitespace character of the first line, so it's already indented, so
+   *   if we want to add a line with *less* indentation, it's a lot more tricky.
+   *   We handle this by walking backward to the previous newline and inserting
+   *   a new line from there. This allows the prepended line to have whatever
+   *   indentation level we want.
+   * - In some cases, such as nontrivial loop expressions with an inline body,
+   *   the source CoffeeScript is inline, but we want the result to be
+   *   non-inline, so we need to be a lot more careful. The normal non-inline
+   *   strategy won't work because there's no newline to walk back to in the
+   *   source CoffeeScript, so the strategy is to instead always insert at
+   *   `this.outerStart`. That means that the indentation for the actual body
+   *   needs to be done later, just before the body itself is patched. See the
+   *   uses of shouldConvertInlineBodyToNonInline in LoopPatcher for an example.
+   */
+  insertLineBefore(statement: string, indent: string) {
+    if (this.inline()) {
+      this.insert(this.outerStart, `${statement}; `);
+    } else if (this.node.inline) {
+      if (indent === null) {
+        indent = this.getIndent();
+      }
+      this.insert(this.outerStart, `${indent}${statement};\n`);
+    } else {
+      let insertIndex = this.outerStart;
+      while (insertIndex > 0 && this.context.source[insertIndex] !== '\n') {
+        insertIndex--;
+      }
+      this.insert(insertIndex, `\n${indent}${statement};`);
+    }
+  }
+
+  insertLineAfter(statement: string, indent: string) {
+    if (this.inline()) {
+      this.insert(this.outerEnd, `; ${statement}`);
+    } else {
+      this.insert(this.outerEnd, `\n${indent}${statement};`);
+    }
+  }
+
+  /**
    * @private
    */
   getSemicolonSourceTokenBetween(left: NodePatcher, right: NodePatcher): ?SourceToken {
