@@ -10,6 +10,7 @@ import formatCoffeeScriptLexerTokens from './utils/formatCoffeeScriptLexerTokens
 import formatDecaffeinateParserAst from './utils/formatDecaffeinateParserAst.js';
 import parse from './utils/parse.js';
 import PatchError from './utils/PatchError.js';
+import resolveToPatchError from './utils/resolveToPatchError.js';
 
 export { default as run } from './cli';
 export { PatchError };
@@ -72,17 +73,9 @@ function runStage(stage: Stage, content: string, filename: string): { code: stri
   try {
     return stage.run(content, filename);
   } catch (err) {
-    if (err instanceof SyntaxError) {
-      let { pos } = err;
-      if (pos === content.length) {
-        pos--;
-      }
-      throw new PatchError(
-        `${stage.name} failed to parse: ${err.message}`,
-        content,
-        pos,
-        pos + 1
-      );
+    let patchError = resolveToPatchError(err, content, stage.name);
+    if (patchError !== null) {
+      throw patchError;
     }
     throw err;
   }
