@@ -18,11 +18,6 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
     this.fn.patch();
 
-    if (implicitCall && args.length === 0) {
-      this.insert(this.fn.outerEnd, '()');
-      return;
-    }
-
     if (this.isImplicitSuper()) {
       this.insert(this.fn.outerEnd, '(arguments...)');
       return;
@@ -55,14 +50,20 @@ export default class FunctionApplicationPatcher extends NodePatcher {
   }
 
   /**
-   * Determine if parens need to be inserted. Needs to handle both `new`
-   * expressions (which can be implicit calls with an empty argument lists) and
-   * implicit soaked function calls (where there's a question mark between the
-   * function and the args).
+   * Determine if parens need to be inserted. Needs to handle implicit soaked
+   * function calls (where there's a question mark between the function and the
+   * args).
+   *
+   * Note that we do not add parentheses for constructor invocations with no
+   * arguments and no parentheses; that usage is correct in JavaScript, so we
+   * leave it as-is.
    */
   isImplicitCall(): boolean {
+    if (this.args.length === 0) {
+      return false;
+    }
     let searchStart = this.fn.outerEnd;
-    let searchEnd = this.args.length === 0 ? this.outerEnd : this.args[0].outerStart;
+    let searchEnd = this.args[0].outerStart;
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart, searchEnd, token => token.type === CALL_START) === null;
   }

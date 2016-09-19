@@ -172,10 +172,6 @@ describe('function calls', () => {
     check(`new Foo 1`, `new Foo(1);`);
   });
 
-  it('adds parens for a new expression without args', () => {
-    check(`new Foo`, `new Foo();`);
-  });
-
   it('adds parens after the properties of a member expression', () => {
     check(`a.b c`, `a.b(c);`);
   });
