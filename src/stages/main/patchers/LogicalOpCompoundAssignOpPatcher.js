@@ -57,7 +57,10 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
   isOrOp(): boolean {
     let operator = this.getOperatorToken();
     let op = this.sourceOfToken(operator);
-    return op === '||=' || op === 'or=';
+    // There could be a space in the middle of the operator, like `or =` or
+    // `|| =`, and "op" will just be the first token in that case. So just check
+    // the start of the operator.
+    return op.substr(0, 2) === '||' || op.substr(0, 2) === 'or';
   }
 
   /**
