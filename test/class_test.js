@@ -53,7 +53,7 @@ describe('classes', () => {
       ;
     `);
   });
-  it('preservces class body generator functions as generator method definitions', () => {
+  it('preserves class body generator functions as generator method definitions', () => {
     check(`
       class A
         'a a': ->
@@ -186,6 +186,16 @@ describe('classes', () => {
         class A {
           member(a) { this.a = a; return console.log(this.a); }
         }
+      `);
+    });
+
+    it('handles property assignment parameter with default', () => {
+      check(`
+        (@a = 1) ->
+      `, `
+        (function(a = 1) {
+          this.a = a;
+        });
       `);
     });
 
