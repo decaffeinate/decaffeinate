@@ -1,4 +1,6 @@
 import BlockPatcher from './patchers/BlockPatcher.js';
+import ClassPatcher from './patchers/ClassPatcher.js';
+import AssignOpPatcher from './patchers/AssignOpPatcher.js';
 import ConditionalPatcher from './patchers/ConditionalPatcher.js';
 import ForInPatcher from './patchers/ForInPatcher.js';
 import ForOfPatcher from './patchers/ForOfPatcher.js';
@@ -47,6 +49,13 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'While':
         return WhilePatcher;
+
+      case 'Class':
+        return ClassPatcher;
+
+      case 'AssignOp':
+      case 'ClassProtoAssignOp':
+        return AssignOpPatcher;
 
       case 'Program':
         return ProgramPatcher;
