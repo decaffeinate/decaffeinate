@@ -251,6 +251,14 @@ describe('compound assignment', () => {
       `);
     });
 
+    it('supports logical OR containing a space', () => {
+      check(`
+        a or = b
+      `, `
+        if (!a) { var a = b; }
+      `);
+    });
+
     it('supports LHS identifiers in logical AND', () => {
       check(`
         a &&= b
