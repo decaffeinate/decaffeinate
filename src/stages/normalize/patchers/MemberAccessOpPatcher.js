@@ -16,11 +16,19 @@ export default class MemberAccessOpPatcher extends PassthroughPatcher {
   }
 
   findAddStatementCallback() {
-    let patcher = this.parent;
-    // if we traverse up through DefaultParam, we're on the right hand side
-    while (patcher && !(patcher instanceof DefaultParamPatcher)) {
-      if (patcher.addStatementAtScopeHeader) return patcher.addStatementAtScopeHeader;
+    let patcher = this;
+
+    while (patcher) {
+      if (patcher.addStatementAtScopeHeader) {
+        return patcher.addStatementAtScopeHeader;
+      }
+      // Don't traverse up the right side of default params.
+      if (patcher.parent instanceof DefaultParamPatcher &&
+          patcher.parent.value === patcher) {
+        break;
+      }
       patcher = patcher.parent;
     }
+    return null;
   }
 }
