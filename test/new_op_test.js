@@ -23,11 +23,19 @@ describe('`new` operator', () => {
     `);
   });
 
-  it('inserts missing parentheses in a call with no arguments', () => {
+  it('leaves missing parentheses off in a call with no arguments', () => {
     check(`
       new Object
     `, `
-      new Object();
+      new Object;
+    `);
+  });
+
+  it('does not add parentheses in complicated `new` expressions where it would be incorrect', () => {
+    check(`
+      new A().B
+    `, `
+      new A().B;
     `);
   });
 
