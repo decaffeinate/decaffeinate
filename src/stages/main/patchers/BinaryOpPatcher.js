@@ -18,6 +18,15 @@ export default class BinaryOpPatcher extends NodePatcher {
   }
 
   /**
+   * Binary operators have lower precedence than negation, so we need to add
+   * parens.
+   */
+  negate() {
+    this.insert(this.innerStart, '!(');
+    this.insert(this.innerEnd, ')');
+  }
+
+  /**
    * LEFT OP RIGHT
    */
   patchAsExpression({ needsParens=false }={}) {

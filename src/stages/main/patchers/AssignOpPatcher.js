@@ -18,6 +18,15 @@ export default class AssignOpPatcher extends NodePatcher {
     this.expression.setRequiresExpression();
   }
 
+  /**
+   * Assignment operators have lower precedence than negation, so we need to add
+   * parens.
+   */
+  negate() {
+    this.insert(this.innerStart, '!(');
+    this.insert(this.innerEnd, ')');
+  }
+
   patchAsExpression() {
     if (this.isExpansionAssignment()) {
       this.patchExpansionAssignment();
