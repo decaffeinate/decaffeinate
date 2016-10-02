@@ -468,5 +468,13 @@ describe('compound assignment', () => {
         if (!this.a) { this.a = 0; }
       `);
     });
+
+    it('handles logical operators with a function on the right side', () => {
+      check(`
+        a or= -> b
+      `, `
+        if (!a) { var a = () => b; }
+      `);
+    });
   });
 });
