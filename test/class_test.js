@@ -199,6 +199,26 @@ describe('classes', () => {
       `);
     });
 
+    it('handles destructured property assignment parameters', () => {
+      check(`
+        ({@a}) ->
+      `, `
+        (function({a}) {
+          this.a = a;
+        });
+      `);
+    });
+
+    it('handles named destructured property assignment parameters', () => {
+      check(`
+        ({a: @b}) ->
+      `, `
+        (function({a: b}) {
+          this.b = b;
+        });
+      `);
+    });
+
     it('uses correct value for default param when using another member', () => {
       check(`
         (@a, b = @c) ->
