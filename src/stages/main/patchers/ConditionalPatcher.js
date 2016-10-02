@@ -47,7 +47,8 @@ export default class ConditionalPatcher extends NodePatcher {
     return (
       this.prefersToPatchAsExpression() || (
         this.forcedToPatchAsExpression() &&
-        this.consequent.prefersToPatchAsExpression()
+        this.consequent.prefersToPatchAsExpression() &&
+        (!this.alternate || this.alternate.prefersToPatchAsExpression())
       )
     );
   }
@@ -110,9 +111,11 @@ export default class ConditionalPatcher extends NodePatcher {
       // `undefined`, which is ugly (i.e. `if a then b` → `a ? b : undefined`).
       // TODO: Generate a `do` expression instead? (i.e. `do { if (a) { b; } }`)
       this.patchAsExpression();
+    } else if (this.willPatchAsIIFE()) {
+      throw new Error(
+        'Complex conditionals (ones requiring an IIFE) are not supported yet. ' +
+        'See https://github.com/decaffeinate/decaffeinate/issues/388');
     }
-
-    // TODO: IIFE
   }
 
   patchAsStatement() {
