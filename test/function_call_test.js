@@ -353,8 +353,7 @@ describe('function calls', () => {
       
         somefunc('something', ['something', function(ContactService) {}
       
-        ])
-      );
+        ]));
     `);
   });
 
