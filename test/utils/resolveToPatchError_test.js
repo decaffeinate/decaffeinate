@@ -17,7 +17,7 @@ describe('resolveToPatchError', () => {
     } catch (e) {
       let patchError = resolveToPatchError(e, content, 'testStage');
       strictEqual(PatchError.prettyPrint(patchError), stripSharedIndent(`
-        testStage failed to parse: Unexpected token (2:3)
+        testStage failed to parse: Unexpected token, expected ; (2:3)
           1 | let x = 3;
         > 2 | f())
             |    ^
