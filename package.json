@@ -34,7 +34,7 @@
     "add-variable-declarations": "^1.6.2",
     "ast-processor-babylon-config": "^1.0.0",
     "automatic-semicolon-insertion": "^1.0.2",
-    "babylon": "^6.8.4",
+    "babylon": "^6.12.0",
     "coffee-lex": "^1.4.4",
     "decaffeinate-coffeescript": "^1.10.0-patch2",
     "decaffeinate-parser": "^2.0.2",
