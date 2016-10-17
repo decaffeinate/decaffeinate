@@ -77,6 +77,52 @@ describe('conditionals', () => {
     `);
   });
 
+  it('adds parentheses when `unless` is used with an assignment', () => {
+    check(`
+      unless a = b
+        c
+    `, `
+      let a;
+      if (!(a = b)) {
+        c;
+      }
+    `);
+  });
+
+  it('keeps parentheses when `unless` is used with an assignment', () => {
+    check(`
+      unless (a = b)
+        c
+    `, `
+      let a;
+      if (!(a = b)) {
+        c;
+      }
+    `);
+  });
+
+  it('adds parentheses when `unless` is used with a normal binary operator', () => {
+    check(`
+      unless a + b
+        c
+    `, `
+      if (!(a + b)) {
+        c;
+      }
+    `);
+  });
+
+  it('keeps parentheses when `unless` is used with a normal binary operator', () => {
+    check(`
+      unless (a + b)
+        c
+    `, `
+      if (!(a + b)) {
+        c;
+      }
+    `);
+  });
+
   it('handles indented `if` statements correctly', () => {
     check(`
       if a

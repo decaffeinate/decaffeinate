@@ -26,40 +26,25 @@ export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
    */
   patchAsExpression() {
     let { negated } = this;
-    let needsParens = negated && !this.isSurroundedByParentheses();
-
     if (negated) {
-      // `a not instanceof b` → `!a not instanceof b`
-      //                         ^
-      this.insert(this.outerStart, '!');
-    }
-
-    if (needsParens) {
-      // `!a not instanceof b` → `!(a not instanceof b`
-      //                           ^
-      this.insert(this.contentStart, '(');
+      // `a not instanceof b` → `!(a not instanceof b`
+      //                         ^^
+      this.insert(this.innerStart, '!(');
     }
 
     // Patch LEFT and RIGHT.
     super.patchAsExpression();
 
-    if (needsParens) {
+    if (negated) {
       // `!(a not instanceof b` → `!(a not instanceof b)`
       //                                               ^
-      this.insert(this.contentEnd, ')');
+      this.insert(this.innerEnd, ')');
     }
 
     // `!(a not instanceof b)` → `!(a instanceof b)`
     //      ^^^^^^^^^^^^^^            ^^^^^^^^^^
     let token = this.getOperatorToken();
     this.overwrite(token.start, token.end, this.javaScriptOperator());
-  }
-
-  /**
-   * This is here so we can add the `!` outside any existing parens.
-   */
-  allowPatchingOuterBounds(): boolean {
-    return true;
   }
 
   /**
