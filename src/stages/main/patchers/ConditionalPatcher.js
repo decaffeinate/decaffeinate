@@ -47,7 +47,8 @@ export default class ConditionalPatcher extends NodePatcher {
     return (
       this.prefersToPatchAsExpression() || (
         this.forcedToPatchAsExpression() &&
-        this.consequent.prefersToPatchAsExpression()
+        this.consequent.prefersToPatchAsExpression() &&
+        (!this.alternate || this.alternate.prefersToPatchAsExpression())
       )
     );
   }
@@ -110,9 +111,25 @@ export default class ConditionalPatcher extends NodePatcher {
       // `undefined`, which is ugly (i.e. `if a then b` → `a ? b : undefined`).
       // TODO: Generate a `do` expression instead? (i.e. `do { if (a) { b; } }`)
       this.patchAsExpression();
+    } else if (this.willPatchAsIIFE()) {
+      this.patchAsIIFE();
     }
+  }
 
-    // TODO: IIFE
+  patchAsIIFE() {
+    // We're only patched as an expression due to a parent instructing us to,
+    // and the indent level is more logically the indent level of our parent.
+    let baseIndent = this.parent.getIndent(0);
+    let conditionIndent = this.parent.getIndent(1);
+    this.consequent.setShouldPatchInline(false);
+    this.consequent.setImplicitlyReturns();
+    if (this.alternate) {
+      this.alternate.setShouldPatchInline(false);
+      this.alternate.setImplicitlyReturns();
+    }
+    this.insert(this.innerStart, `(() => {\n${conditionIndent}`);
+    this.patchAsStatement();
+    this.insert(this.innerEnd, `\n${baseIndent}})()`);
   }
 
   patchAsStatement() {

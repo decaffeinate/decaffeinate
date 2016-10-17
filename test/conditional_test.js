@@ -397,4 +397,60 @@ describe('conditionals', () => {
       }
     `)
   );
+
+  it('creates an IIFE when a complicated condition is used in an expression context', () =>
+    check(`
+      a = if b
+          c
+        else if d
+          e
+    `, `
+      let a = (() => {
+        if (b) {
+          return c;
+        } else if (d) {
+          return e;
+        }
+      })();
+    `)
+  );
+
+  it('creates a properly-formatted IIFE for nested `if`s in a function body', () =>
+    check(`
+      a(if b
+          if c
+            null)
+    `, `
+      a((() => {
+        if (b) {
+          if (c) {
+            return null;
+          }
+        }
+      })());
+    `)
+  );
+
+  it('creates a properly-formatted IIFE with the `if` on the next line', () =>
+    check(`
+      c =
+        if a
+          x = 0
+          x = x + 1 if b
+          x
+        else
+          1
+    `, `
+      let c =
+        (() => {
+        if (a) {
+          let x = 0;
+          if (b) { x = x + 1; }
+          return x;
+        } else {
+          return 1;
+        }
+      })();
+    `)
+  );
 });
