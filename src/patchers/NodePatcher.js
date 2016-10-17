@@ -340,6 +340,14 @@ export default class NodePatcher {
    */
   getEditingBounds(): [number, number] {
     let boundingPatcher = this.getBoundingPatcher();
+    // When we're a function arg, there isn't a great patcher to use to
+    // determine our bounds (we're allowed to patch from the previous
+    // comma/paren to the next comma/paren), so loosen the restriction to the
+    // entire function.
+    if (boundingPatcher.parent &&
+        boundingPatcher.parent.node.type === 'FunctionApplication') {
+      boundingPatcher = boundingPatcher.parent;
+    }
     if (this.allowPatchingOuterBounds()) {
       return [boundingPatcher.outerStart, boundingPatcher.outerEnd];
     } else {
@@ -773,6 +781,10 @@ export default class NodePatcher {
     if (this.isSurroundedByParentheses()) {
       return this;
     } else if (this.parent) {
+      if (this.parent.node.type === 'FunctionApplication' &&
+          this.parent.node.arguments.some(arg => arg === this.node)) {
+        return this;
+      }
       return this.parent.getBoundingPatcher();
     } else {
       return this;

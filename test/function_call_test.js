@@ -296,6 +296,84 @@ describe('function calls', () => {
     `);
   });
 
+  it('handles a multi-line callback as the second arg within a function body (#412)', () => {
+    check(`
+      _authenticate: (authKey, cb) ->
+        @_getSession authKey, (err, {person, user, authKey, org} = {}) ->
+            return cb null, {person, authKey, user, org}
+    `, `
+      ({
+        _authenticate(authKey, cb) {
+          return this._getSession(authKey, (err, {person, user, authKey, org} = {}) => cb(null, {person, authKey, user, org}));
+        }
+      });
+    `);
+  });
+
+  it('handles a multi-line callback ending in an object as the second arg (#410)', () => {
+    check(`
+      @server.on 'sioDisconnect', =>
+        @_statuses = {}
+    `, `
+      this.server.on('sioDisconnect', () => {
+        return this._statuses = {};
+      });
+    `);
+  });
+
+  it('handles a multi-line explicit return callback as the second arg (#405)', () => {
+    check(`
+      Teacher.hasClass classId, () ->
+        return cb null, {}
+    `, `
+      Teacher.hasClass(classId, () => cb(null, {}));
+    `);
+  });
+
+  it('handles unit test style multi-line callbacks (#379)', () => {
+    check(`
+      it "should foo", ->
+        expect( bar ).to.eql [1]
+    `, `
+      it("should foo", () => expect( bar ).to.eql([1]));
+    `);
+  });
+
+  it('handles nested multi-line callbacks with inconsistent spacing (#370)', () => {
+    check(`
+      define [
+      ], () ->
+      
+        somefunc 'something', ['something', (ContactService) ->
+      
+        ]
+    `, `
+      define([
+      ], () =>
+      
+        somefunc('something', ['something', function(ContactService) {}
+      
+        ])
+      );
+    `);
+  });
+
+  it('handles a multi-line callback within a map call (#276)', () => {
+    check(`
+      (a) ->
+        (a not in b.map(a, (e) -> 
+          e)
+        )
+    `, `
+      a =>
+        !__in__(a, b.map(a, e => e))
+      ;
+      function __in__(needle, haystack) {
+        return haystack.indexOf(needle) >= 0;
+      }
+    `);
+  });
+
   it('handles soaked implicit function calls', () => {
     check(`
       a? b
