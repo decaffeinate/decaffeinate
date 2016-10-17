@@ -79,7 +79,7 @@ export default class PatchError extends Error {
         let highlightLength = Math.max(endLoc.column - startLoc.column, 1);
         rows.push(
           [`>`, `${line + 1} |`, lineSource],
-          [``, `|`, repeat(' ', startLoc.column) + repeat('^', highlightLength)]
+          [``, `|`, repeat(startLoc.column, ' ') + repeat(highlightLength, '^')]
         );
       } else {
         rows.push(
