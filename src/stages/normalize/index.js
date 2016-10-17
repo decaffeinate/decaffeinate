@@ -4,6 +4,7 @@ import ForInPatcher from './patchers/ForInPatcher.js';
 import ForOfPatcher from './patchers/ForOfPatcher.js';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher.js';
 import NodePatcher from '../../patchers/NodePatcher.js';
+import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher.js';
 import PassthroughPatcher from '../../patchers/PassthroughPatcher.js';
 import ProgramPatcher from './patchers/ProgramPatcher.js';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage.js';
@@ -52,6 +53,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'DefaultParam':
         return DefaultParamPatcher;
+
+      case 'ObjectInitialiserMember':
+        return ObjectInitialiserMemberPatcher;
       
       default:
         return PassthroughPatcher;
