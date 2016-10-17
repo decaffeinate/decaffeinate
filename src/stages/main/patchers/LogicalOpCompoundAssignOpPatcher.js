@@ -44,8 +44,6 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
     
     this.expression.patch();
 
-    this.expression.patch();
-
     // `if (a) { a = b` → `if (a) { a = b }`
     //                                   ^^
     this.insert(this.expression.outerEnd, ' }');
