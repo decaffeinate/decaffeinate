@@ -863,7 +863,7 @@ export default class NodePatcher {
 
     this.adjustedIndentLevel += offset;
     let indentString = this.getProgramIndentString();
-    let indentToChange = repeat(indentString, Math.abs(offset));
+    let indentToChange = repeat(Math.abs(offset), indentString);
     let start = this.outerStart;
     let end = this.outerEnd;
     let { source } = this.context;

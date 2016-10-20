@@ -26,7 +26,7 @@ export default function printTable(table: Table, buffer: string=' '): string {
       if (column.align === 'left') {
         output += cell;
       } else if (column.align === 'right') {
-        output += repeat(' ', widths[i] - cell.length) + cell;
+        output += repeat(widths[i] - cell.length, ' ') + cell;
       }
       if (i < row.length - 1) {
         output += buffer;
