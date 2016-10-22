@@ -4,14 +4,20 @@ import { AT, DOT, IDENTIFIER, PROTO } from 'coffee-lex';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
   expression: NodePatcher;
+  _skipImplicitDotCreation: boolean;
 
   constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {
     super(node, context, editor);
     this.expression = expression;
+    this._skipImplicitDotCreation = false;
   }
 
   initialize() {
     this.expression.setRequiresExpression();
+  }
+
+  setSkipImplicitDotCreation() {
+    this._skipImplicitDotCreation = true;
   }
 
   patchAsExpression() {
@@ -22,7 +28,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
       let operator = this.getMemberOperatorSourceToken();
       this.overwrite(operator.start, operator.end, '.prototype');
     }
-    if (this.hasImplicitOperator()) {
+    if (this.hasImplicitOperator() && !this._skipImplicitDotCreation) {
       // `@a` → `@.a`
       //          ^
       this.insert(this.expression.outerEnd, '.');
