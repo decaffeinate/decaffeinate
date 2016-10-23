@@ -289,4 +289,17 @@ describe('switch', () => {
       }
     `);
   });
+
+  it('works with switch expressions returning an object literal', () => {
+    check(`
+      a b, switch c
+        when d
+          {}
+    `, `
+      a(b, (() => { switch (c) {
+        case d:
+          return {};
+      } })());
+    `);
+  });
 });
