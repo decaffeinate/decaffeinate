@@ -35,9 +35,6 @@ export default class ForInPatcher extends ForPatcher {
       this.filter.patch();
     }
 
-    this.body.setRequiresExpression();
-    this.body.patch();
-
     let assigneeCode = this.slice(this.valAssignee.contentStart, this.valAssignee.contentEnd);
     if (this.keyAssignee !== null) {
       assigneeCode += `, ${this.slice(this.keyAssignee.contentStart, this.keyAssignee.contentEnd)}`;
@@ -58,11 +55,29 @@ export default class ForInPatcher extends ForPatcher {
       // b d  ->  b.map((a) => d
       this.insert(this.target.outerEnd, `.map((${assigneeCode}) =>`);
     }
-    if (isObjectInitialiserBlock(this.body)) {
-      this.body.surroundInParens();
-    }
+    this.patchBodyForExpressionLoop();
     // b.filter((a) => c).map((a) => d  ->  b.filter((a) => c).map((a) => d)
     this.insert(this.body.outerEnd, ')');
+  }
+
+  patchBodyForExpressionLoop() {
+    this.body.setRequiresExpression();
+    let bodyNeedsParens = isObjectInitialiserBlock(this.body)
+      && !this.body.isSurroundedByParentheses();
+    if (bodyNeedsParens) {
+      let insertPoint = this.filter ? this.filter.outerEnd : this.target.outerEnd;
+      // Handle both inline and multiline cases by either skipping the existing
+      // space or adding one.
+      if (this.slice(insertPoint, insertPoint + 1) === ' ') {
+        this.body.insert(insertPoint + 1, '(');
+      } else {
+        this.body.insert(insertPoint, ' (');
+      }
+    }
+    this.body.patch();
+    if (bodyNeedsParens) {
+      this.body.insert(this.body.outerEnd, ')');
+    }
   }
 
   canPatchAsMapExpression(): boolean {
