@@ -77,13 +77,12 @@ describe('for loops', () => {
     `);
   });
 
-  it('transforms for-in loops to typical `for` loops', () => {
+  it('transforms basic for-in loops to for-of loops', () => {
     check(`
       for a in b
         a
     `, `
-      for (let i = 0; i < b.length; i++) {
-        let a = b[i];
+      for (let a of b) {
         a;
       }
     `);
@@ -152,12 +151,24 @@ describe('for loops', () => {
       for { a, b } in c
         a + b
     `, `
+      for (let { a, b } of c) {
+        a + b;
+      }
+    `);
+  });
+
+  it('transforms for-in loops with an index and a destructured value', () => {
+    check(`
+      for { a, b }, i in c
+        a + b
+    `, `
       for (let i = 0; i < c.length; i++) {
         let { a, b } = c[i];
         a + b;
       }
     `);
   });
+
 
   it.skip('transforms `for` loops without an index', () => {
     check(`
@@ -222,6 +233,19 @@ describe('for loops', () => {
       for a in b when a.c
         a
     `, `
+      for (let a of b) {
+        if (a.c) {
+          a;
+        }
+      }
+    `);
+  });
+
+  it('allows filtering using a `when` clause with an index', () => {
+    check(`
+      for a, i in b when a.c
+        a
+    `, `
       for (let i = 0; i < b.length; i++) {
         let a = b[i];
         if (a.c) {
@@ -235,10 +259,17 @@ describe('for loops', () => {
     check(`
       for a in b when a.c then a
     `, `
-      for (let i = 0; i < b.length; i++) { let a = b[i]; if (a.c) { a; } }
+      for (let a of b) { if (a.c) { a; } }
     `);
   });
 
+  it('handles inline for-in statements with a condition and an index', () => {
+    check(`
+      for a, i in b when a.c then a
+    `, `
+      for (let i = 0; i < b.length; i++) { let a = b[i]; if (a.c) { a; } }
+    `);
+  });
 
   it('allows using both `when` and `by` clauses', () => {
     check(`
@@ -254,14 +285,25 @@ describe('for loops', () => {
     `);
   });
 
-  it('extracts unsafe-to-repeat iteration targets before the for-in loop', () => {
+  it('extracts unsafe-to-repeat iteration targets before the for-in loop when there is an index', () => {
     check(`
-      for e in list()
+      for e, i in list()
         break
     `, `
       let iterable = list();
       for (let i = 0; i < iterable.length; i++) {
         let e = iterable[i];
+        break;
+      }
+    `);
+  });
+
+  it('does not extract unsafe-to-repeat iteration when creating a for-of loop', () => {
+    check(`
+      for e in list()
+        break
+    `, `
+      for (let e of list()) {
         break;
       }
     `);
@@ -370,7 +412,7 @@ describe('for loops', () => {
     check(`
       e for e in l
     `, `
-      for (let i = 0; i < l.length; i++) { let e = l[i]; e; }
+      for (let e of l) { e; }
     `);
   });
 
@@ -463,6 +505,28 @@ describe('for loops', () => {
     `, `
       console.log((() => {
         let result = [];
+        for (let x of [1, 2, 3]) {
+          let y = x + 1;
+          if (y > 2) {
+            y -= 1;
+          }
+          result.push(y + 2);
+        }
+        return result;
+      })());
+    `);
+  });
+
+  it('handles for-in loop expressions with a block body and an index', () => {
+    check(`
+      console.log(for x, i in [1, 2, 3]
+        y = x + 1
+        if y > 2
+          y -= 1
+        y + 2)
+    `, `
+      console.log((() => {
+        let result = [];
         let iterable = [1, 2, 3];
         for (let i = 0; i < iterable.length; i++) {
           let x = iterable[i];
@@ -487,9 +551,7 @@ describe('for loops', () => {
     `, `
       let x = (() => {
         let result = [];
-        let iterable = f();
-        for (let i = 0; i < iterable.length; i++) {
-          let a = iterable[i];
+        for (let a of f()) {
           let b = g(a);
           if (b > 3) {
             break;
@@ -574,8 +636,7 @@ describe('for loops', () => {
       () =>
         (() => {
           let result = [];
-          for (let i = 0; i < b.length; i++) {
-            let a = b[i];
+          for (let a of b) {
             let item;
             if (a) {
               item = b;
@@ -593,8 +654,8 @@ describe('for loops', () => {
 
   it('generates counters for nested loops that follow typical convention', () => {
     check(`
-      for a in b
-        for c in d
+      for a in b by 1
+        for c in d by 1
           a + c
     `, `
       for (let i = 0; i < b.length; i++) {
@@ -710,8 +771,7 @@ describe('for loops', () => {
           return a
     `, `
       (function() {
-        for (let i = 0; i < b.length; i++) {
-          let a = b[i];
+        for (let a of b) {
           return a;
         }
       });
@@ -735,7 +795,7 @@ describe('for loops', () => {
     check(`
       for a in b then a()
     `, `
-      for (let i = 0; i < b.length; i++) { let a = b[i]; a(); }
+      for (let a of b) { a(); }
     `);
   });
 
@@ -753,6 +813,16 @@ describe('for loops', () => {
         console.log('foo')
       )()
     `, `
+      for (let a of b) { (() => console.log('foo'))(); }
+    `);
+  });
+
+  it('handles multi-line body with index and `then`', () => {
+    check(`
+      for a, i in b then (->
+        console.log('foo')
+      )()
+    `, `
       for (let i = 0; i < b.length; i++) { let a = b[i]; (() => console.log('foo'))(); }
     `);
   });
@@ -763,8 +833,7 @@ describe('for loops', () => {
         {x, y} = getPoint(entry)
         console.log x + ', ' + y;
     `, `
-      for (let i = 0; i < someArray.length; i++) {
-        let entry = someArray[i];
+      for (let entry of someArray) {
         let {x, y} = getPoint(entry);
         console.log(x + ', ' + y);
       }
@@ -776,8 +845,7 @@ describe('for loops', () => {
       for a in b when c
         d e
     `, `
-      for (let i = 0; i < b.length; i++) {
-        let a = b[i];
+      for (let a of b) {
         if (c) {
           d(e);
         }
@@ -787,6 +855,16 @@ describe('for loops', () => {
   it('handles for loops over implicit function calls', () =>
     check(`
       for a in b c
+        d()
+    `, `
+      for (let a of b(c)) {
+        d();
+      }
+    `));
+
+  it('handles for loops with an index over implicit function calls', () =>
+    check(`
+      for a, i in b c
         d()
     `, `
       let iterable = b(c);
@@ -815,8 +893,7 @@ describe('for loops', () => {
     `, `
       let x = (() => {
         let result = [];
-        for (let i = 0; i < b.length; i++) {
-          let a = b[i];
+        for (let a of b) {
           break;
         }
         return result;
@@ -833,8 +910,7 @@ describe('for loops', () => {
     `, `
       let x = (() => {
         let result = [];
-        for (let i = 0; i < b.length; i++) {
-          let a = b[i];
+        for (let a of b) {
           let item;
           if (a) {
             item = a;
