@@ -21,7 +21,7 @@ export default class ConditionalPatcher extends NodePatcher {
 
   prefersToPatchAsExpression(): boolean {
     let { consequent, alternate } = this;
-    if (!alternate) {
+    if (!consequent || !alternate) {
       return false;
     }
     return (
@@ -33,7 +33,9 @@ export default class ConditionalPatcher extends NodePatcher {
   setExpression(force=false): boolean {
     let willPatchAsExpression = super.setExpression(force);
     if (willPatchAsExpression && this.willPatchAsTernary()) {
-      this.consequent.setRequiresExpression();
+      if (this.consequent) {
+        this.consequent.setRequiresExpression();
+      }
       if (this.alternate) {
         this.alternate.setRequiresExpression();
       }
@@ -47,7 +49,7 @@ export default class ConditionalPatcher extends NodePatcher {
     return (
       this.prefersToPatchAsExpression() || (
         this.forcedToPatchAsExpression() &&
-        this.consequent.prefersToPatchAsExpression() &&
+        (!this.consequent || this.consequent.prefersToPatchAsExpression()) &&
         (!this.alternate || this.alternate.prefersToPatchAsExpression())
       )
     );
@@ -85,18 +87,23 @@ export default class ConditionalPatcher extends NodePatcher {
       this.insert(this.condition.outerEnd, ' ?');
     }
 
-    this.consequent.patch();
-
-    let { alternate } = this;
-    if (alternate) {
+    let { consequent, alternate } = this;
+    if (consequent && alternate) {
+      consequent.patch();
       // `a ? b else c` → `a ? b : c`
       let elseTokenIndex = this.getElseSourceTokenIndex();
       let elseToken = this.sourceTokenAtIndex(elseTokenIndex);
       this.overwrite(elseToken.start, elseToken.end, ':');
       alternate.patch();
-    } else {
+    } else if (consequent && !alternate) {
+      consequent.patch();
       // `a ? b` → `a ? b : undefined`
       this.insert(this.consequent.outerEnd, ' : undefined');
+    } else if (alternate) {
+      let elseTokenIndex = this.getElseSourceTokenIndex();
+      let elseToken = this.sourceTokenAtIndex(elseTokenIndex);
+      this.overwrite(elseToken.start, elseToken.end, 'undefined :');
+      alternate.patch();
     }
 
     if (addParens) {
@@ -121,8 +128,10 @@ export default class ConditionalPatcher extends NodePatcher {
     // and the indent level is more logically the indent level of our parent.
     let baseIndent = this.parent.getIndent(0);
     let conditionIndent = this.parent.getIndent(1);
-    this.consequent.setShouldPatchInline(false);
-    this.consequent.setImplicitlyReturns();
+    if (this.consequent) {
+      this.consequent.setShouldPatchInline(false);
+      this.consequent.setImplicitlyReturns();
+    }
     if (this.alternate) {
       this.alternate.setShouldPatchInline(false);
       this.alternate.setImplicitlyReturns();
@@ -183,9 +192,13 @@ export default class ConditionalPatcher extends NodePatcher {
       let elseToken = this.sourceTokenAtIndex(elseTokenIndex);
       let rightBracePosition = elseToken.start;
       this.insert(rightBracePosition, '} ');
-      this.consequent.patch({ leftBrace: false, rightBrace: false });
+      if (this.consequent !== null) {
+        this.consequent.patch({ leftBrace: false, rightBrace: false });
+      }
     } else {
-      this.consequent.patch({ leftBrace: false });
+      if (this.consequent !== null) {
+        this.consequent.patch({ leftBrace: false });
+      }
     }
   }
 
@@ -210,7 +223,9 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   setImplicitlyReturns() {
-    this.consequent.setImplicitlyReturns();
+    if (this.consequent) {
+      this.consequent.setImplicitlyReturns();
+    }
     if (this.alternate) {
       this.alternate.setImplicitlyReturns();
     }
@@ -253,7 +268,7 @@ export default class ConditionalPatcher extends NodePatcher {
     }
 
     let elseTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.consequent,
+      this.consequent !== null ? this.consequent : this.condition,
       this.alternate,
       token => token.type === ELSE
     );
@@ -274,6 +289,9 @@ export default class ConditionalPatcher extends NodePatcher {
    * @private
    */
   getThenTokenIndex(): ?SourceTokenListIndex {
+    if (this.consequent === null) {
+      return null;
+    }
     return this.indexOfSourceTokenBetweenPatchersMatching(
       this.condition,
       this.consequent,
@@ -286,7 +304,7 @@ export default class ConditionalPatcher extends NodePatcher {
    * consequent and alternate have all their code paths.
    */
   allCodePathsPresent(): boolean {
-    if (!this.alternate) {
+    if (!this.consequent || !this.alternate) {
       return false;
     }
 

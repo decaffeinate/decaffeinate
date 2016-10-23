@@ -14,8 +14,8 @@ import { IF } from 'coffee-lex';
  */
 export default class ConditionalPatcher extends NodePatcher {
   condition: NodePatcher;
-  guard: ?NodePatcher;
-  body: ?NodePatcher;
+  consequent: ?NodePatcher;
+  alternate: ?NodePatcher;
 
   constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, consequent: NodePatcher, alternate: ?NodePatcher) {
     super(node, context, editor);
@@ -29,7 +29,9 @@ export default class ConditionalPatcher extends NodePatcher {
       this.patchPostIf();
     } else {
       this.condition.patch();
-      this.consequent.patch();
+      if (this.consequent !== null) {
+        this.consequent.patch();
+      }
       if (this.alternate !== null) {
         this.alternate.patch();
       }
@@ -56,7 +58,8 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   isPostIf(): boolean {
-    return this.condition.contentStart > this.consequent.contentStart;
+    return this.consequent !== null
+      && this.condition.contentStart > this.consequent.contentStart;
   }
 
   getIfTokenIndex(): SourceTokenListIndex {
