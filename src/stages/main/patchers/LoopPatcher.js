@@ -155,6 +155,10 @@ export default class LoopPatcher extends NodePatcher {
    * at the end of the loop body.
    */
   patchImplicitReturnStart(patcher: NodePatcher) {
+    // Control flow statements like break and continue should be skipped.
+    if (!patcher.canPatchAsExpression()) {
+      return;
+    }
     patcher.setRequiresExpression();
     if (this.allBodyCodePathsPresent()) {
       // `a + b` → `result.push(a + b`
@@ -171,6 +175,9 @@ export default class LoopPatcher extends NodePatcher {
    * @see patchImplicitReturnStart
    */
   patchImplicitReturnEnd(patcher: NodePatcher) {
+    if (!patcher.canPatchAsExpression()) {
+      return;
+    }
     if (this.allBodyCodePathsPresent()) {
       this.insert(patcher.outerEnd, `)`);
     }

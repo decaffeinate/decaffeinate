@@ -807,4 +807,43 @@ describe('for loops', () => {
         e: f
       }));
     `));
+
+  it('handles for loop expressions ending in a break', () =>
+    check(`
+      x = for a in b
+        break
+    `, `
+      let x = (() => {
+        let result = [];
+        for (let i = 0; i < b.length; i++) {
+          let a = b[i];
+          break;
+        }
+        return result;
+      })();
+    `));
+
+  it('handles for loop expressions with multiple branches including a control flow statement', () =>
+    check(`
+      x = for a in b
+        if a
+          a
+        else if b
+          continue
+    `, `
+      let x = (() => {
+        let result = [];
+        for (let i = 0; i < b.length; i++) {
+          let a = b[i];
+          let item;
+          if (a) {
+            item = a;
+          } else if (b) {
+            continue;
+          }
+          result.push(item);
+        }
+        return result;
+      })();
+    `));
 });
