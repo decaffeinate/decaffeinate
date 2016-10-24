@@ -4,7 +4,7 @@ import { BREAK, COMMA, THEN, WHEN } from 'coffee-lex';
 
 export default class SwitchCasePatcher extends NodePatcher {
   conditions: Array<NodePatcher>;
-  consequent: NodePatcher;
+  consequent: ?NodePatcher;
   
   constructor(node: Node, context: ParseContext, editor: Editor, conditions: Array<NodePatcher>, consequent: NodePatcher) {
     super(node, context, editor);
@@ -41,10 +41,16 @@ export default class SwitchCasePatcher extends NodePatcher {
     //                          ^^^^^
     let thenToken = this.getThenToken();
     if (thenToken) {
-      this.remove(thenToken.start, this.consequent.contentStart);
+      if (this.consequent !== null) {
+        this.remove(thenToken.start, this.consequent.contentStart);
+      } else {
+        this.remove(thenToken.start, thenToken.end);
+      }
     }
 
-    this.consequent.patch({ leftBrace: false, rightBrace: false });
+    if (this.consequent !== null) {
+      this.consequent.patch({ leftBrace: false, rightBrace: false });
+    }
 
     let hasBreak = this.getBreakToken() !== null;
     let implicitReturnWillBreak = (
@@ -56,7 +62,11 @@ export default class SwitchCasePatcher extends NodePatcher {
       if (thenToken) {
         // `case a: case b: case c: then d → `case a: case b: case c: d break`
         //                                                             ^^^^^^
-        this.insert(this.consequent.contentEnd, ' break');
+        if (this.consequent !== null) {
+          this.insert(this.consequent.contentEnd, ' break');
+        } else {
+          this.insert(thenToken.end, ' break');
+        }
       } else {
         this.appendLineAfter('break', 1);
       }
@@ -65,7 +75,9 @@ export default class SwitchCasePatcher extends NodePatcher {
 
   setImplicitlyReturns() {
     super.setImplicitlyReturns();
-    this.consequent.setImplicitlyReturns();
+    if (this.consequent !== null) {
+      this.consequent.setImplicitlyReturns();
+    }
   }
 
   patchAsExpression() {
@@ -131,9 +143,9 @@ export default class SwitchCasePatcher extends NodePatcher {
    * @private
    */
   getThenToken(): ?SourceToken {
-    let thenTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.conditions[0],
-      this.consequent,
+    let thenTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      this.conditions[0].outerEnd,
+      this.consequent !== null ? this.consequent.outerStart : this.contentEnd,
       token => token.type === THEN
     );
     return thenTokenIndex ? this.sourceTokenAtIndex(thenTokenIndex) : null;
