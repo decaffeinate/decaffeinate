@@ -795,4 +795,16 @@ describe('for loops', () => {
         d();
       }
     `));
+
+  it('handles for loop expressions returning implicit objects', () =>
+    check(`
+      x = for a in b
+        c: d
+        e: f
+    `, `
+      let x = b.map((a) => ({
+        c: d,
+        e: f
+      }));
+    `));
 });
