@@ -453,4 +453,35 @@ describe('conditionals', () => {
       })();
     `)
   );
+
+  it('allows a missing consequent in an if-else', () =>
+    check(`
+      if a
+        # Do nothing
+      else
+        b
+    `, `
+      if (a) {
+        // Do nothing
+      } else {
+        b;
+      }
+    `)
+  );
+
+  it('allows a missing consequent in an expression-style if-else', () =>
+    check(`
+      x =
+        if a
+          # Do nothing
+        else
+          b
+    `, `
+      let x =
+        a ?
+          // Do nothing
+        undefined :
+          b;
+    `)
+  );
 });
