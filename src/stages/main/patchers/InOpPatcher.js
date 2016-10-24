@@ -1,13 +1,14 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher.js';
 import BinaryOpPatcher from './BinaryOpPatcher.js';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
+import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
+import HerestringPatcher from './HerestringPatcher.js';
+import IdentifierPatcher from './IdentifierPatcher.js';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
+import StringPatcher from './StringPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
 import type { SourceToken, Editor, Node, ParseContext } from './../../../patchers/types.js';
 import { RELATION } from 'coffee-lex';
-
-const IN_HELPER =
-`function __in__(needle, haystack) {
-  return haystack.indexOf(needle) >= 0;
-}`;
 
 /**
  * Handles `in` operators, e.g. `a in b` and `a not in b`.
@@ -84,33 +85,51 @@ export default class InOpPatcher extends BinaryOpPatcher {
    * @private
    */
   patchAsIndexLookup() {
-    let helper = this.registerHelper('__in__', IN_HELPER);
-
-    if (this.negated) {
-      // `a in b` → `!a in b`
-      //             ^
-      this.insert(this.left.outerStart, '!');
-    }
-
-    // `a in b` → `__in__(a in b`
-    //             ^^^^^^^
-    this.insert(this.left.outerStart, `${helper}(`);
+    // In typical cases, when converting `a in b` to `b.includes(a)`, parens
+    // won't be necessary around the `b`, but to be safe, only skip the parens
+    // in a specific set of known-good cases.
+    let arrayNeedsParens = !this.right.isSurroundedByParentheses() &&
+        !(this.right instanceof IdentifierPatcher) &&
+        !(this.right instanceof MemberAccessOpPatcher) &&
+        !(this.right instanceof DynamicMemberAccessOpPatcher) &&
+        !(this.right instanceof FunctionApplicationPatcher) &&
+        !(this.right instanceof ArrayInitialiserPatcher) &&
+        !(this.right instanceof StringPatcher) &&
+        !(this.right instanceof HerestringPatcher);
 
     this.left.patch();
+    let leftCode = this.slice(this.left.contentStart, this.left.contentEnd);
 
-    // `__in__(a in b` → `__in__(a, b`
-    //          ^^^^              ^^
-    this.overwrite(this.left.outerEnd, this.right.outerStart, ', ');
+    // `a in b` → `b`
+    //  ^^^^^
+    this.remove(this.left.outerStart, this.right.outerStart);
+
+    if (this.negated) {
+      // `b` → `!b`
+      //        ^
+      this.insert(this.right.outerStart, '!');
+    }
+    if (arrayNeedsParens) {
+      // `!b` → `!(b`
+      //          ^
+      this.insert(this.right.outerStart, '(');
+    }
 
     this.right.patch();
 
-    // `__in__(a, b` → `__in__(a, b)`
-    //                             ^
-    this.insert(this.right.outerEnd, ')');
+    if (arrayNeedsParens) {
+      // `!(b` → `!(b)`
+      //             ^
+      this.insert(this.right.outerEnd, ')');
+    }
+
+    // `!(b` → `!(b).includes(a)`
+    //              ^^^^^^^^^^^^
+    this.insert(this.right.outerEnd, `.includes(${leftCode})`);
   }
 
   /**
-   * We always prefix with `__in__` so no parens needed.
+   * Method invocations don't need parens.
    */
   statementNeedsParens(): boolean {
     return false;

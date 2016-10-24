@@ -365,11 +365,8 @@ describe('function calls', () => {
         )
     `, `
       a =>
-        !__in__(a, b.map(a, e => e))
+        !b.map(a, e => e).includes(a)
       ;
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
-      }
     `);
   });
 
