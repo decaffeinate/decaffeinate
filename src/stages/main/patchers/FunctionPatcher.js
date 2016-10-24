@@ -1,7 +1,8 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
+import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
-import { FUNCTION, LPAREN, RPAREN } from 'coffee-lex';
+import { CALL_END, FUNCTION, LPAREN, RPAREN } from 'coffee-lex';
 
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
@@ -51,6 +52,17 @@ export default class FunctionPatcher extends NodePatcher {
       if (this.isSurroundedByParentheses()) {
         this.body.patch({ leftBrace: false, rightBrace: false });
         this.insert(this.innerEnd, this.body.inline() ? ' }' : '}');
+      } else if (this.parent instanceof FunctionApplicationPatcher &&
+          this.parent.args[this.parent.args.length - 1] === this) {
+        // If we're the last argument to a function, place the } just before the
+        // close-paren. There will always be a close-paren because all implicit
+        // parentheses were added in the normalize stage.
+        this.body.patch({ leftBrace: false, rightBrace: false });
+        let closeParenIndex = this.parent.indexOfSourceTokenBetweenSourceIndicesMatching(
+          this.contentEnd, this.parent.contentEnd, token => token.type === CALL_END
+        );
+        let closeParen = this.sourceTokenAtIndex(closeParenIndex);
+        this.insert(closeParen.start, this.body.inline() ? ' }' : '}');
       } else {
         this.body.patch({ leftBrace: false });
       }

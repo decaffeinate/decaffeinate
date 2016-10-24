@@ -193,4 +193,28 @@ describe('functions', () => {
       () => ({a: b, c: d});
     `)
   );
+
+  it('properly closes a function as the only argument to a function', () =>
+    check(`
+      it ->
+        a
+        return
+    `, `
+      it(function() {
+        a;
+      });
+    `)
+  );
+
+  it('properly closes a function as the second argument to a function', () =>
+    check(`
+      it a, ->
+        b
+        return
+    `, `
+      it(a, function() {
+        b;
+      });
+    `)
+  );
 });
