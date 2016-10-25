@@ -943,8 +943,9 @@ export default class NodePatcher {
    * Appends the given content at the end of the current line.
    */
   appendToEndOfLine(content: string) {
-    let eol = this.getEndOfLine();
-    this.insert(eol, content);
+    let boundingPatcher = this.getBoundingPatcher();
+    let endOfLine = this.getEndOfLine();
+    this.insert(Math.min(endOfLine, boundingPatcher.innerEnd), content);
   }
 
   /**
