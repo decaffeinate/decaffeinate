@@ -58,13 +58,32 @@ describe('soaked expressions', () => {
       `);
     });
 
+    it('works with member access as the function', () => {
+      check(`
+        a.b?()
+      `, `
+        __guardMethod__(a, 'b', o => o.b());
+        function __guardMethod__(obj, methodName, transform) {
+          if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+            return transform(obj, methodName);
+          } else {
+            return undefined;
+          }
+        }
+      `);
+    });
+
     it('works with dynamic member access as the function', () => {
       check(`
         a[b]?()
       `, `
-        __guardFunc__(a[b], f => f());
-        function __guardFunc__(func, transform) {
-          return typeof func === 'function' ? transform(func) : undefined;
+        __guardMethod__(a, b, (o, m) => o[m]());
+        function __guardMethod__(obj, methodName, transform) {
+          if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+            return transform(obj, methodName);
+          } else {
+            return undefined;
+          }
         }
       `);
     });
@@ -73,9 +92,13 @@ describe('soaked expressions', () => {
       check(`
         a[b()]?()
       `, `
-        __guardFunc__(a[b()], f => f());
-        function __guardFunc__(func, transform) {
-          return typeof func === 'function' ? transform(func) : undefined;
+        __guardMethod__(a, b(), (o, m) => o[m]());
+        function __guardMethod__(obj, methodName, transform) {
+          if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+            return transform(obj, methodName);
+          } else {
+            return undefined;
+          }
         }
       `);
     });
@@ -92,6 +115,44 @@ describe('soaked expressions', () => {
         f = 3
         o = f?()
       `, undefined);
+    });
+
+    it('properly sets this in soaked method calls', () => {
+      validate(`
+        o = false
+        a = {
+          b: ->
+            if a == this
+              o = true
+        }
+        a.b?()
+      `, true);
+    });
+
+    it('properly sets `this` in shorthand-`this` soaked method calls', () => {
+      validate(`
+        o = false
+        a = {
+          b: ->
+            @c?()
+          c: ->
+            if a == this
+              o = true
+        }
+        a.b()
+      `, true);
+    });
+
+    it('properly sets `this` in soaked dynamic method calls', () => {
+      validate(`
+        o = false
+        a = {
+          b: ->
+            if a == this
+              o = true
+        }
+        a['b']?()
+      `, true);
     });
   });
 
@@ -331,14 +392,51 @@ describe('soaked expressions', () => {
       `, 2);
     });
   });
+
+  it('handles a soaked method call on a soaked member access', () => {
+    check(`
+      a?.b?()
+    `, `
+      __guardMethod__(a, 'b', o => o.b());
+      function __guardMethod__(obj, methodName, transform) {
+        if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+          return transform(obj, methodName);
+        } else {
+          return undefined;
+        }
+      }
+    `);
+  });
+
+  it('handles a soaked method call on a soaked dynamic member access', () => {
+    check(`
+      a?[b]?()
+    `, `
+      __guardMethod__(a, b, (o, m) => o[m]());
+      function __guardMethod__(obj, methodName, transform) {
+        if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+          return transform(obj, methodName);
+        } else {
+          return undefined;
+        }
+      }
+    `);
+  });
   
   it('handles a combination of soaked function calls and soaked member accesses', () => {
     check(`
-      a(1)?.b?()?[c]?.d = 1
+      a?(1)?.b?()?[c].d?()?.e = 1
     `, `
-      __guard__(__guard__(__guardFunc__(__guard__(a(1), x2 => x2.b), f => f()), x1 => x1[c]), x => x.d = 1);
+      __guard__(__guardMethod__(__guard__(__guardMethod__(__guardFunc__(a, f => f(1)), 'b', o1 => o1.b()), x1 => x1[c]), 'd', o => o.d()), x => x.e = 1);
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+      function __guardMethod__(obj, methodName, transform) {
+        if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+          return transform(obj, methodName);
+        } else {
+          return undefined;
+        }
       }
       function __guardFunc__(func, transform) {
         return typeof func === 'function' ? transform(func) : undefined;

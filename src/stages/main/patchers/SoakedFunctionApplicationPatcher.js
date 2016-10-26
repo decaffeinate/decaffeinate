@@ -1,4 +1,8 @@
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
+import SoakedDynamicMemberAccessOpPatcher from './SoakedDynamicMemberAccessOpPatcher.js';
+import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher.js';
 import findSoakContainer from '../../../utils/findSoakContainer.js';
 import { CALL_START } from 'coffee-lex';
 
@@ -7,8 +11,94 @@ const GUARD_FUNC_HELPER =
   return typeof func === 'function' ? transform(func) : undefined;
 }`;
 
+/**
+ * Special guard function so that the calling code can properly specify the
+ * proper `this` value in the call.
+ *
+ * Note that this method is slightly incorrect in that it's more defensive than
+ * `a.b?()`; it does a null check on `a`, when CoffeeScript code would crash on
+ * null/undefined `a`. This may be possible to correct in the future, but there
+ * are a few reasons it's useful in the current implementation:
+ * - The implementation of soak chaining requires that soak operations do
+ *   nothing if their leftmost value is undefined, e.g. that `a?.b?.c` can be
+ *   correctly rewritten as `(a?.b)?.c`. Soaked method-style function
+ *   application is a counterexample, though: `a?.b.c?()` cannot be rewritten as
+ *   `(a?.b).c?()`, since the second one crashes if `a` is null. So, instead, we
+ *   effectively treat it as `(a?.b)?.c?()`, which again isn't 100% correct, but
+ *   will properly guard on `a` being null/undefined.
+ * - We'd need a function like this anyway to transform code like `a?.b?()`, so
+ *   this avoids the need to have two slightly different functions to handle
+ *   this case which is already fairly obscure.
+ */
+const GUARD_METHOD_HELPER =
+  `function __guardMethod__(obj, methodName, transform) {
+  if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+    return transform(obj, methodName);
+  } else {
+    return undefined;
+  }
+}`;
+
 export default class SoakedFunctionApplicationPatcher extends FunctionApplicationPatcher {
   patchAsExpression() {
+    if (this.fn instanceof MemberAccessOpPatcher) {
+      this.patchMethodCall(this.fn);
+    } else if (this.fn instanceof DynamicMemberAccessOpPatcher) {
+      this.patchDynamicMethodCall(this.fn);
+    } else {
+      this.patchNonMethodCall();
+    }
+    super.patchAsExpression();
+  }
+
+  /**
+   * Change a.b?() to __guardMethod__(a, 'b', o => o.b())
+   */
+  patchMethodCall(fn: MemberAccessOpPatcher) {
+    let memberName = fn.getMemberName();
+    if (fn.hasImplicitOperator()) {
+      fn.setSkipImplicitDotCreation();
+    }
+
+    this.registerHelper('__guardMethod__', GUARD_METHOD_HELPER);
+    if (fn instanceof SoakedMemberAccessOpPatcher) {
+      fn.setShouldSkipSoakPatch();
+    }
+
+    let callStartToken = this.getCallStartToken();
+    let soakContainer = findSoakContainer(this);
+    let varName = soakContainer.claimFreeBinding('o');
+    // Since memberName is always a valid identifier, we can put it in a string
+    // literal without worrying about escaping.
+    this.overwrite(fn.expression.outerEnd, callStartToken.end,
+      `, '${memberName}', ${varName} => ${varName}.${memberName}(`);
+    soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
+    soakContainer.insert(soakContainer.contentEnd, ')');
+  }
+
+  /**
+   * Change a[b]?() to __guardMethod__(a, b, (o, m) => o[m]())
+   */
+  patchDynamicMethodCall(fn: DynamicMemberAccessOpPatcher) {
+    let {expression, indexingExpr} = fn;
+
+    this.registerHelper('__guardMethod__', GUARD_METHOD_HELPER);
+    if (fn instanceof SoakedDynamicMemberAccessOpPatcher) {
+      fn.setShouldSkipSoakPatch();
+    }
+
+    let callStartToken = this.getCallStartToken();
+    let soakContainer = findSoakContainer(this);
+    let objVarName = soakContainer.claimFreeBinding('o');
+    let methodVarName = soakContainer.claimFreeBinding('m');
+    this.overwrite(expression.outerEnd, indexingExpr.outerStart, `, `);
+    this.overwrite(indexingExpr.outerEnd, callStartToken.end,
+      `, (${objVarName}, ${methodVarName}) => ${objVarName}[${methodVarName}](`);
+    soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
+    soakContainer.insert(soakContainer.contentEnd, ')');
+  }
+
+  patchNonMethodCall() {
     this.registerHelper('__guardFunc__', GUARD_FUNC_HELPER);
     let callStartToken = this.getCallStartToken();
     let soakContainer = findSoakContainer(this);
@@ -16,8 +106,6 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     this.overwrite(this.fn.outerEnd, callStartToken.end, `, ${varName} => ${varName}(`);
     soakContainer.insert(soakContainer.contentStart, '__guardFunc__(');
     soakContainer.insert(soakContainer.contentEnd, ')');
-
-    super.patchAsExpression();
   }
 
   getCallStartToken(): SourceToken {

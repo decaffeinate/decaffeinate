@@ -25,12 +25,32 @@ export default function findSoakContainer(patcher: NodePatcher): NodePatcher {
 
 /**
  * Determine if this "soak range" can be expanded outward.
+ *
+ * In determining the soak range, we also stop when we see other soak
+ * operations. For example, in `a?.b?.c`, `a?.b` is used as the soak container
+ * for the first soak, which works because the second soak operation will
+ * "take over"; if `a` is null or undefined, then `a?.b` will be undefined, so
+ * the entire thing will evaluate to undefined. This requires all soak
+ * operations to do a null check on their leftmost value, which is why we need
+ * to make __guardMethod__ do a null check on the object arg.
  */
 function canParentHandleSoak(patcher: NodePatcher): boolean {
   if (patcher.parent === null) {
     return false;
   }
   if (patcher.isSurroundedByParentheses()) {
+    return false;
+  }
+  // If we are currently the `a?.b` in an expression like `a?.b.c?()`, we don't
+  // want to expand any further, since method-style soaked function application
+  // is a special case and the `.c?(` will be patched. In this case, the `a?.b`
+  // is what we should set as our soak container, since the method-style soak
+  // implementation will "take over" from that point.
+  if ((patcher.parent instanceof MemberAccessOpPatcher
+        || patcher.parent instanceof DynamicMemberAccessOpPatcher)
+      && patcher.parent.parent !== null
+      && patcher.parent.parent instanceof SoakedFunctionApplicationPatcher
+      && patcher.parent.parent.fn === patcher.parent) {
     return false;
   }
   if (patcher.parent instanceof MemberAccessOpPatcher
