@@ -44,17 +44,16 @@ export default class ConditionalPatcher extends NodePatcher {
    */
   patchPostIf() {
     this.condition.patch();
+    this.consequent.patch();
 
     let ifTokenIndex = this.getIfTokenIndex();
     let ifToken = this.sourceTokenAtIndex(ifTokenIndex);
 
     if (ifToken) {
-      this.remove(this.consequent.outerEnd, ifToken.start);
-      this.move(ifToken.start, this.condition.outerEnd, this.consequent.outerStart);
-      this.insertRight(this.condition.outerEnd, ` then `);
+      let consequentCode = this.slice(this.consequent.outerStart, this.consequent.outerEnd);
+      this.remove(this.consequent.outerStart, ifToken.start);
+      this.insertRight(this.condition.outerEnd, ` then ${consequentCode}`);
     }
-
-    this.consequent.patch();
   }
 
   isPostIf(): boolean {
