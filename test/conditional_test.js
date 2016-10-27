@@ -484,4 +484,34 @@ describe('conditionals', () => {
           b;
     `)
   );
+
+  it('allows a condition with an else token but not an alternate', () =>
+    check(`
+      if a
+        b
+      else
+        # Do nothing
+    `, `
+      if (a) {
+        b;
+      }
+      else {}
+        // Do nothing
+    `)
+  );
+
+  it('allows an expression-style condition with an else token but not an alternate', () =>
+    check(`
+      x =
+        if a
+          b
+        else
+          # Do nothing
+    `, `
+      let x =
+        a ?
+          b : undefined;
+          // Do nothing
+    `)
+  );
 });
