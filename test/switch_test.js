@@ -302,4 +302,23 @@ describe('switch', () => {
       } })());
     `);
   });
+
+  it('works with empty switch cases', () => {
+    check(`
+    switch a
+      when b then
+        # Do nothing
+      when c then
+        # Do nothing
+    `, `
+      switch (a) {
+        case b: then;
+          break;
+          // Do nothing
+        case c: then;
+          break;
+      }
+          // Do nothing
+    `);
+  });
 });
