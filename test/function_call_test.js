@@ -394,4 +394,60 @@ describe('function calls', () => {
       }
     `);
   });
+
+  it('handles implicit calls ending in a postfix conditional (#479)', () => {
+    check(`
+      baz () =>
+        foo if bar
+    `, `
+      baz(() => {
+        if (bar) { return foo; }
+      }
+      );
+    `);
+  });
+
+  it('handles nested implicit calls ending in a postfix conditional (#459)', () => {
+    check(`
+      define [], ->
+        something: ->
+          $.on 'click', assignThis if someCondition
+    `, `
+      define([], () =>
+        ({
+          something() {
+            if (someCondition) { return $.on('click', assignThis); }
+          }
+        })
+      );
+    `);
+  });
+
+  it('handles single-line implicit calls ending in a postfix conditional (#419)', () => {
+    check(`
+      @someMethod => 'returnValue' if condition
+    `, `
+      this.someMethod(() => { if (condition) { return 'returnValue'; } });
+    `);
+  });
+
+  it('handles simple implicit calls ending in a postfix conditional (#378)', () => {
+    check(`
+      a => b if c
+    `, `
+      a(() => { if (c) { return b; } });
+    `);
+  });
+
+
+  it('handles implicit method calls with a postfix conditional (#334)', () => {
+    check(`
+      a.then () ->
+        b if c
+    `, `
+      a.then(function() {
+        if (c) { return b; }
+      });
+    `);
+  });
 });
