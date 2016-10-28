@@ -61,7 +61,7 @@
     "babel-register": "^6.9.0",
     "babelrc-rollup": "^3.0.0",
     "cz-conventional-changelog": "^1.1.6",
-    "eslint": "^3.0.1",
+    "eslint": "^3.9.0",
     "eslint-plugin-babel": "^3.3.0",
     "eslint-plugin-decaffeinate": "file:eslint-rules",
     "eslint-plugin-flow-vars": "^0.5.0",
