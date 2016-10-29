@@ -862,4 +862,12 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles a `when` clause with a `not of` in map/filter transformations', () => {
+    check(`
+      a = (b for b in c when b not of e)
+    `, `
+      let a = (c.filter((b) => !(b in e)).map((b) => b));
+    `);
+  });
 });
