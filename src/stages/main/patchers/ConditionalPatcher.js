@@ -194,10 +194,10 @@ export default class ConditionalPatcher extends NodePatcher {
       let elseTokenIndex = this.getElseSourceTokenIndex();
       let elseToken = this.sourceTokenAtIndex(elseTokenIndex);
       let rightBracePosition = elseToken.start;
-      this.insert(rightBracePosition, '} ');
       if (this.consequent !== null) {
         this.consequent.patch({ leftBrace: false, rightBrace: false });
       }
+      this.insert(rightBracePosition, '} ');
     } else {
       if (this.consequent !== null) {
         this.consequent.patch({ leftBrace: false });
