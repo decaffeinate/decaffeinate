@@ -30,10 +30,6 @@ export default class ForInPatcher extends ForPatcher {
     if (this.keyAssignee !== null) {
       this.keyAssignee.patch();
     }
-    this.target.patch();
-    if (this.filter !== null) {
-      this.filter.patch();
-    }
 
     let assigneeCode = this.slice(this.valAssignee.contentStart, this.valAssignee.contentEnd);
     if (this.keyAssignee !== null) {
@@ -43,12 +39,14 @@ export default class ForInPatcher extends ForPatcher {
     // for a in b when c d  ->  b when c d
     // ("then" was removed above).
     this.remove(this.contentStart, this.target.outerStart);
+    this.target.patch();
     if (this.filter !== null) {
       // b when c d  ->  b.filter((a) => c d
       this.overwrite(
         this.target.outerEnd, this.filter.outerStart,
         `.filter((${assigneeCode}) => `
       );
+      this.filter.patch();
       // b.filter((a) => c d  ->  b.filter((a) => c).map((a) => d
       this.insert(this.filter.outerEnd, `).map((${assigneeCode}) =>`);
     } else {
