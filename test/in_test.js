@@ -5,10 +5,7 @@ describe('in operator', () => {
     check(`
       a in b
     `, `
-      __in__(a, b);
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
-      }
+      b.includes(a);
     `);
   });
 
@@ -16,10 +13,7 @@ describe('in operator', () => {
     check(`
       a.b in c
     `, `
-      __in__(a.b, c);
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
-      }
+      c.includes(a.b);
     `);
   });
 
@@ -27,10 +21,7 @@ describe('in operator', () => {
     check(`
       a(b, c.d in e)
     `, `
-      a(b, __in__(c.d, e));
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
-      }
+      a(b, e.includes(c.d));
     `);
   });
 
@@ -38,10 +29,7 @@ describe('in operator', () => {
     check(`
       a in b + c
     `, `
-      __in__(a, b + c);
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
-      }
+      (b + c).includes(a);
     `);
   });
 
@@ -50,11 +38,8 @@ describe('in operator', () => {
       if a + b in c + d
         e
     `, `
-      if (__in__(a + b, c + d)) {
+      if ((c + d).includes(a + b)) {
         e;
-      }
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
       }
     `);
   });
@@ -63,10 +48,7 @@ describe('in operator', () => {
     check(`
       a not in b
     `, `
-      !__in__(a, b);
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
-      }
+      !b.includes(a);
     `);
   });
 
@@ -74,10 +56,7 @@ describe('in operator', () => {
     check(`
       a or a not in b
     `, `
-      a || !__in__(a, b);
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
-      }
+      a || !b.includes(a);
     `);
   });
 
@@ -85,10 +64,7 @@ describe('in operator', () => {
     check(`
       a and a not in b
     `, `
-      a && !__in__(a, b);
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
-      }
+      a && !b.includes(a);
     `);
   });
 
@@ -97,11 +73,8 @@ describe('in operator', () => {
       unless a in b
         c
     `, `
-      if (!__in__(a, b)) {
+      if (!b.includes(a)) {
         c;
-      }
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
       }
     `);
   });
@@ -111,11 +84,8 @@ describe('in operator', () => {
       if not (a in b)
         c
     `, `
-      if (!(__in__(a, b))) {
+      if (!(b.includes(a))) {
         c;
-      }
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
       }
     `);
   });
@@ -125,11 +95,8 @@ describe('in operator', () => {
       unless a not in b
         c
     `, `
-      if (__in__(a, b)) {
+      if (b.includes(a)) {
         c;
-      }
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
       }
     `);
   });
@@ -195,11 +162,8 @@ describe('in operator', () => {
       if a in []
         b
     `, `
-      if (__in__(a, [])) {
+      if ([].includes(a)) {
         b;
-      }
-      function __in__(needle, haystack) {
-        return haystack.indexOf(needle) >= 0;
       }
     `);
   });

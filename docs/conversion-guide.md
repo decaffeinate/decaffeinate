@@ -10,6 +10,9 @@ This guide assumes a few things:
 1. You have Node v0.12 or higher installed.
 1. You have a project or set of files that currently compile using the
    official CoffeeScript compiler.
+1. Your project is able to run ES2016 code. In particular, depending on what
+   browsers/runtimes you need to support, you may need to set up Babel,
+   including standard library polyfills like `Array.prototype.includes`.
 1. You understand CoffeeScript, ES6, and the files being converted
    reasonably well.
 1. You are using Linux, Mac OS X, or a compatible OS and are comfortable
