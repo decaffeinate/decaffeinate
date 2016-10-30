@@ -268,8 +268,11 @@ describe('classes', () => {
         b: 1
     `, `
       class A {
-        b = 1;
+        static initClass() {
+          this.prototype.b = 1;
+        }
       }
+      A.initClass();
     `);
   });
 
@@ -297,8 +300,11 @@ describe('classes', () => {
         setup: _.once () ->
     `, `
       class A {
-        setup = _.once(function() {});
+        static initClass() {
+          this.prototype.setup = _.once(function() {});
+        }
       }
+      A.initClass();
     `);
   });
 
@@ -496,11 +502,158 @@ describe('classes', () => {
           d: e
     `, `
       class A {
-        a = {
-          b: c,
-          d: e
-        };
+        static initClass() {
+          this.prototype.a = {
+            b: c,
+            d: e
+          };
+        }
       }
+      A.initClass();
+    `);
+  });
+
+  it('handles code in class bodies', () => {
+    check(`
+      class A
+        doThing()
+        a: ->
+          3
+        doOtherThing()
+        b: ->
+          7
+    `, `
+      class A {
+        static initClass() {
+          doThing();
+          doOtherThing();
+        }
+        a() {
+          return 3;
+        }
+        b() {
+          return 7;
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('handles variables used within the class', () => {
+    check(`
+      class A
+        x = 3
+        a: ->
+          x + 1
+    `, `
+      let x = undefined;
+      class A {
+        static initClass() {
+          x = 3;
+        }
+        a() {
+          return x + 1;
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('handles class body code when the class has a superclass', () => {
+    check(`
+      class A extends B
+        x: 3
+    `, `
+      class A extends B {
+        static initClass() {
+          this.prototype.x = 3;
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('handles assigning values to the constructor', () => {
+    check(`
+      class A
+        @x: 3
+    `, `
+      class A {
+        static initClass() {
+          this.x = 3;
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('handles nested classes', () => {
+    check(`
+      class A
+        class B
+          classField: 2
+          x: ->
+            return 3
+        class C
+          CONSTANT = 7
+          y: ->
+            return 4
+        makeB: ->
+          new B()
+        makeC: ->
+          new C()
+    `, `
+      let B = undefined;
+      let C = undefined;
+      class A {
+        static initClass() {
+          B = class B {
+            static initClass() {
+              this.prototype.classField = 2;
+            }
+            x() {
+              return 3;
+            }
+          };
+          B.initClass();
+          let CONSTANT = undefined;
+          C = class C {
+            static initClass() {
+              CONSTANT = 7;
+            }
+            y() {
+              return 4;
+            }
+          };
+          C.initClass();
+        }
+        makeB() {
+          return new B();
+        }
+        makeC() {
+          return new C();
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('handles an equals-style constructor assignment with a colon in the body', () => {
+    check(`
+      class A
+        @values =
+          'A': 1
+          'B': 2
+    `, `
+      class A {
+        static initClass() {
+          this.values = {
+            'A': 1,
+            'B': 2
+          };
+        }
+      }
+      A.initClass();
     `);
   });
 });
