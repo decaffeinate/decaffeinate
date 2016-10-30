@@ -251,13 +251,14 @@ describe('switch', () => {
     `);
   });
 
-  it.skip('works with `switch` used as an expression surrounded by parens', () => {
+  it('works with `switch` used as an expression surrounded by parens', () => {
     check(`
       a(switch b
         when c then d)
     `, `
       a((() => { switch (b) {
-        case c: return d; } })());
+        case c: return d;
+      } })());
     `);
   });
 
@@ -319,6 +320,24 @@ describe('switch', () => {
           break;
       }
           // Do nothing
+    `);
+  });
+
+  it('handles a switch as an argument to a function call', () => {
+    check(`
+      a switch b
+        when c
+          d
+        when e
+          f
+    `, `
+      a((() => { switch (b) {
+        case c:
+          return d;
+        case e:
+          return f;
+      
+      } })());
     `);
   });
 });
