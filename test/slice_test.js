@@ -39,4 +39,12 @@ describe('slice', () => {
   it('patches the expression', () => {
     check(`@a[b...c]`, `this.a.slice(b, c);`);
   });
+
+  it('treats the left side as an expression', () => {
+    check(`
+      a = (b for c in d when e)[...2]
+    `, `
+      let a = (d.filter((c) => e).map((c) => b)).slice(0, 2);
+    `);
+  });
 });

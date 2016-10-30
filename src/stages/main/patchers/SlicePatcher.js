@@ -20,6 +20,16 @@ export default class SlicePatcher extends NodePatcher {
     this.right = right;
   }
 
+  initialize() {
+    this.expression.setRequiresExpression();
+    if (this.left) {
+      this.left.setRequiresExpression();
+    }
+    if (this.right) {
+      this.right.setRequiresExpression();
+    }
+  }
+
   /**
    * EXPRESSION '[' LEFT? ( .. | ... ) RIGHT? ']'
    */
