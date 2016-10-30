@@ -846,4 +846,20 @@ describe('for loops', () => {
         return result;
       })();
     `));
+
+  it('handles a `when` clause with existence operator', () => {
+    check(`
+      filteredData = {}
+      for k, v of data when v?
+        filteredData[k] = v
+    `, `
+      let filteredData = {};
+      for (let k in data) {
+        let v = data[k];
+        if (v != null) {
+          filteredData[k] = v;
+        }
+      }
+    `);
+  });
 });

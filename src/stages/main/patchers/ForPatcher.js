@@ -38,7 +38,7 @@ export default class ForPatcher extends LoopPatcher {
       return null;
     }
     if (!this._filterCode) {
-      filter.patch();
+      filter.patch({ needsParens: false });
       this._filterCode = this.slice(filter.contentStart, filter.contentEnd);
     }
     return this._filterCode;
