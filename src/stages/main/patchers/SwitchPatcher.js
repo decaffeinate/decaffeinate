@@ -64,7 +64,7 @@ export default class SwitchPatcher extends NodePatcher {
 
     // `` → `(() => { `
     //       ^^^^^^^^^
-    this.insert(this.outerStart, '(() => { ');
+    this.insert(this.contentStart, '(() => { ');
     this.patchAsStatement();
 
     // `` → ` })()`
