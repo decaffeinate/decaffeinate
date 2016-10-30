@@ -514,4 +514,12 @@ describe('conditionals', () => {
           // Do nothing
     `)
   );
+
+  it('handles a conditional without a space before the `else` token', () =>
+    check(`
+      if a then (b)else c
+    `, `
+      if (a) { (b);} else { c; }
+    `)
+  );
 });
