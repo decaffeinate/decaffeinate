@@ -6,8 +6,7 @@ describe('continue', () => {
       for a in b
         continue
     `, `
-      for (let i = 0; i < b.length; i++) {
-        let a = b[i];
+      for (let a of b) {
         continue;
       }
     `);

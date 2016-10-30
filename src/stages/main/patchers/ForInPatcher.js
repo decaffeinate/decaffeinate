@@ -101,12 +101,25 @@ export default class ForInPatcher extends ForPatcher {
       this.body.setIndent(this.getLoopBodyIndent());
     }
 
-    // Run for the side-effect of patching and slicing the value.
-    this.getValueBinding();
-    this.getFilterCode();
+    if (this.shouldPatchAsForOf()) {
+      this.getFilterCode();
+      this.patchForOfLoop();
+    } else {
+      // Run for the side-effect of patching and slicing the value.
+      this.getValueBinding();
+      this.getFilterCode();
 
-    this.patchForLoopHeader();
-    this.patchForLoopBody();
+      this.patchForLoopHeader();
+      this.patchForLoopBody();
+    }
+  }
+
+  /**
+   * As long as we aren't using the loop index or a step, we prefer to use JS
+   * for-of loops.
+   */
+  shouldPatchAsForOf() {
+    return this.step === null && this.keyAssignee === null;
   }
 
   getValueBinding(): string {
@@ -151,8 +164,32 @@ export default class ForInPatcher extends ForPatcher {
     this.patchBodyAndFilter();
   }
 
+  /**
+   * Special case for patching for-of case for when the loop is simple enough
+   * that for-of works. Note that for-of has slightly different semantics
+   * because it uses the iterator protocol rather than CoffeeScript's notion of
+   * an array-like object, so this transform sacrifices 100% correctness in
+   * favor of cleaner code.
+   */
+  patchForOfLoop() {
+    let relationToken = this.getRelationToken();
+
+    // Save the filter code and remove if it it's there.
+    this.getFilterCode();
+    if (this.filter) {
+      this.remove(this.target.outerEnd, this.filter.outerEnd);
+    }
+
+    this.insert(this.valAssignee.outerStart, '(');
+    this.overwrite(relationToken.start, relationToken.end, 'of');
+    this.target.patch();
+    this.insert(this.target.outerEnd, ') {');
+    this.removeThenToken();
+    this.patchBodyAndFilter();
+  }
+
   requiresExtractingTarget() {
-    return !this.target.isRepeatable();
+    return !this.target.isRepeatable() && !this.shouldPatchAsForOf();
   }
 
   targetBindingCandidate() {
