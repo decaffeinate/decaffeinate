@@ -59,13 +59,11 @@ export default class TryPatcher extends NodePatcher {
       this.remove(thenToken.start, nextToken.start);
     }
 
-    if (this.catchAssignee || this.catchBody) {
+    if (catchToken) {
       let afterCatchHeader =
         this.catchAssignee ?
           this.catchAssignee.outerEnd :
-          catchToken ?
-            catchToken.end :
-            this.body.innerEnd;
+          catchToken.end;
 
       if (this.catchAssignee) {
         let addErrorParens = !this.catchAssignee.isSurroundedByParentheses();
@@ -80,7 +78,7 @@ export default class TryPatcher extends NodePatcher {
           //                                                 ^
           this.insert(this.catchAssignee.outerEnd, ')');
         }
-      } else if (this.catchBody) {
+      } else {
         // `try { a; } catch` → `try { a; } catch (error)`
         //                                       ^^^^^^^^
         this.insert(afterCatchHeader, ` (${this.getErrorBinding()})`);
@@ -91,15 +89,19 @@ export default class TryPatcher extends NodePatcher {
         //                                                       ^^
         this.insert(afterCatchHeader, ' {');
         this.catchBody.patch({ leftBrace: false });
+      } else {
+        this.insert(afterCatchHeader, ' {}');
       }
-    } else if (!this.finallyBody) {
+    } else if (!finallyToken) {
       // `try { a; }` → `try { a; } catch (error) {}`
       //                           ^^^^^^^^^^^^^^^^^
       this.insert(this.body.innerEnd, ` catch (${this.getErrorBinding()}) {}`);
     }
 
-    if (this.finallyBody) {
-      if (this.finallyBody.inline()) {
+    if (finallyToken) {
+      if (!this.finallyBody) {
+        this.insert(finallyToken.end, ' {}');
+      } else if (this.finallyBody.inline()) {
         this.finallyBody.patch();
       } else {
         // `try { a; } finally b` → `try { a; } finally { b`
@@ -164,12 +166,19 @@ export default class TryPatcher extends NodePatcher {
    * @private
    */
   getCatchToken(): ?SourceToken {
-    if (!this.catchAssignee && !this.catchBody) {
-      return null;
+    let searchEnd;
+    if (this.catchAssignee) {
+      searchEnd = this.catchAssignee.outerStart;
+    } else if (this.catchBody) {
+      searchEnd = this.catchBody.outerStart;
+    } else if (this.finallyBody) {
+      searchEnd = this.finallyBody.outerStart;
+    } else {
+      searchEnd = this.contentEnd;
     }
-    let catchTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.body, this.catchAssignee || this.catchBody,
-      token => token.type === CATCH
+
+    let catchTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      this.body.outerEnd, searchEnd, token => token.type === CATCH
     );
     if (!catchTokenIndex) {
       return null;
@@ -194,12 +203,24 @@ export default class TryPatcher extends NodePatcher {
    * @private
    */
   getFinallyToken(): ?SourceToken {
-    if (!this.finallyBody) {
-      return null;
+    let searchStart;
+    if (this.catchBody) {
+      searchStart = this.catchBody.outerEnd;
+    } else if (this.catchAssignee) {
+      searchStart = this.catchAssignee.outerEnd;
+    } else {
+      searchStart = this.body.outerEnd;
     }
-    let finallyTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.catchBody || this.body, this.finallyBody,
-      token => token.type === FINALLY
+
+    let searchEnd;
+    if (this.finallyBody) {
+      searchEnd = this.finallyBody.outerStart;
+    } else {
+      searchEnd = this.contentEnd;
+    }
+
+    let finallyTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      searchStart, searchEnd, token => token.type === FINALLY
     );
     if (!finallyTokenIndex) {
       return null;
