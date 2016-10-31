@@ -234,7 +234,7 @@ export default class NodePatcher {
 
   /**
    * Patch the given expression and get the underlying generated code. This is
-   * more robust then calling patch and slice directly, since it also includes
+   * more robust than calling patch and slice directly, since it also includes
    * code inserted at contentStart (which normally isn't picked up by slice
    * because it's inserted to the left of the index boundary). To accomplish
    * this, we look at the range from contentStart - 1 to contentStart before and
