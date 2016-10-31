@@ -138,4 +138,42 @@ describe('try', () => {
       } catch (error1) {}
     `);
   });
+
+  it('handles try with an empty catch block', () => {
+    check(`
+      try
+        something()
+      catch
+    `, `
+      try {
+        something();
+      } catch (error) {}
+    `);
+  });
+
+  it('handles try with an empty finally block', () => {
+    check(`
+      try
+        something()
+      finally
+    `, `
+      try {
+        something();
+      } finally {}
+    `);
+  });
+
+  it('handles try with an empty catch and finally block', () => {
+    check(`
+      try
+        something()
+      catch
+      finally
+    `, `
+      try {
+        something();
+      } catch (error) {}
+      finally {}
+    `);
+  });
 });
