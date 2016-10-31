@@ -447,4 +447,23 @@ describe('function calls', () => {
       });
     `);
   });
+
+  it('handles an implicit call with nested function expressions', () => {
+    check(`
+      a b, ->
+        c: () ->
+          if d
+            e
+    `, `
+      a(b, () =>
+        ({
+          c() {
+            if (d) {
+              return e;
+            }
+          }
+        })
+      );
+    `);
+  });
 });
