@@ -106,7 +106,7 @@ describe('in operator', () => {
       if a in [yes, no]
         b
     `, `
-      if (a === true || a === false) {
+      if ([true, false].includes(a)) {
         b;
       }
     `);
@@ -117,7 +117,7 @@ describe('in operator', () => {
       if a not in [yes, no]
         b
     `, `
-      if (a !== true && a !== false) {
+      if (![true, false].includes(a)) {
         b;
       }
     `);
@@ -128,7 +128,7 @@ describe('in operator', () => {
       if a in [yes]
         b
     `, `
-      if (a === true) {
+      if ([true].includes(a)) {
         b;
       }
     `);
@@ -139,8 +139,7 @@ describe('in operator', () => {
       if a() in [yes, no]
         b
     `, `
-      let ref;
-      if ((ref = a()) === true || ref === false) {
+      if ([true, false].includes(a())) {
         b;
       }
     `);
@@ -151,7 +150,7 @@ describe('in operator', () => {
       if a in [b and c, +d]
         e
     `, `
-      if (a === (b && c) || a === +d) {
+      if ([b && c, +d].includes(a)) {
         e;
       }
     `);
