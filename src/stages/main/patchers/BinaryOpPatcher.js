@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
-import { OPERATOR } from 'coffee-lex';
+import { EXISTENCE, OPERATOR } from 'coffee-lex';
 
 export default class BinaryOpPatcher extends NodePatcher {
   left: NodePatcher;
@@ -71,7 +71,7 @@ export default class BinaryOpPatcher extends NodePatcher {
   }
 
   operatorTokenPredicate(): (token: SourceToken) => boolean {
-    return (token: SourceToken) => token.type === OPERATOR;
+    return (token: SourceToken) => token.type === OPERATOR || token.type === EXISTENCE;
   }
 
   /**

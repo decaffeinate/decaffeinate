@@ -126,6 +126,14 @@ describe('binary operators', () => {
     `);
   });
 
+  it('handles binary existence operator combined with plus', () => {
+    check(`
+      x = 1 + (y ? 0)
+    `, `
+      let x = 1 + (typeof y !== 'undefined' && y !== null ? y : 0);
+    `);
+  });
+
   it('handles left shift as a nested operator', () => {
     check(`
       value = object.id << 8 | object.type
