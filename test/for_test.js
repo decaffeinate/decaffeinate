@@ -946,4 +946,20 @@ describe('for loops', () => {
       let a = (c.filter((b) => !(b in e)).map((b) => b));
     `);
   });
+
+  it('handles a `when` clause with a `not of` operator', () => {
+    check(`
+      a = (b for b of c when d not of e)
+    `, `
+      let a = ((() => {
+        let result = [];
+        for (let b in c) {
+          if (!(d in e)) {
+            result.push(b);
+          }
+        }
+        return result;
+      })());
+    `);
+  });
 });

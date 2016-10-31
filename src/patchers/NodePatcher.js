@@ -233,6 +233,28 @@ export default class NodePatcher {
   }
 
   /**
+   * Patch the given expression and get the underlying generated code. This is
+   * more robust than calling patch and slice directly, since it also includes
+   * code inserted at contentStart (which normally isn't picked up by slice
+   * because it's inserted to the left of the index boundary). To accomplish
+   * this, we look at the range from contentStart - 1 to contentStart before and
+   * after patching and include anything new that was added.
+   */
+  patchAndGetCode(options={}) {
+    let sliceStart = this.contentStart > 0 ? this.contentStart - 1 : 0;
+    let beforeCode = this.slice(sliceStart, this.contentStart);
+    this.patch(options);
+    let code = this.slice(sliceStart, this.contentEnd);
+    let startIndex = 0;
+    while (startIndex < beforeCode.length &&
+        startIndex < code.length &&
+        beforeCode[startIndex] === code[startIndex]) {
+      startIndex++;
+    }
+    return code.substr(startIndex);
+  }
+
+  /**
    * Catch errors and throw them again annotated with the current node.
    */
   withPrettyErrors(body: () => void) {
