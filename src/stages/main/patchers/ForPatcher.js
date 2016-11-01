@@ -133,11 +133,11 @@ export default class ForPatcher extends LoopPatcher {
 
   getTargetReference(): string {
     if (!this._targetReference) {
-      this.target.patch();
       if (this.requiresExtractingTarget()) {
+        this.target.patch();
         this._targetReference = this.claimFreeBinding(this.targetBindingCandidate());
       } else {
-        this._targetReference = this.slice(this.target.contentStart, this.target.contentEnd);
+        this._targetReference = this.target.patchAndGetCode();
       }
     }
     return this._targetReference;

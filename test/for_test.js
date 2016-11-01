@@ -962,4 +962,19 @@ describe('for loops', () => {
       })());
     `);
   });
+
+  it('handles a soak operation as a loop target', () => {
+    check(`
+      for a, b of c?.d
+        console.log a
+    `, `
+      for (let a in __guard__(c, x => x.d)) {
+        let b = __guard__(c, x => x.d)[a];
+        console.log(a);
+      }
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
 });

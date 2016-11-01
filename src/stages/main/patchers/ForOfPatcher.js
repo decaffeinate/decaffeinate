@@ -22,14 +22,13 @@ export default class ForOfPatcher extends ForPatcher {
         this.innerStart,
         `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`
       );
+      this.overwrite(this.target.outerStart, this.target.outerEnd, this.getTargetReference());
     }
 
     let keyBinding = this.getIndexBinding();
     this.insert(keyAssignee.outerStart, '(');
 
     let { valAssignee } = this;
-
-    this.overwrite(this.target.outerStart, this.target.outerEnd, this.getTargetReference());
 
     let valueAssignment = null;
     if (valAssignee) {
