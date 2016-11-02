@@ -1,5 +1,6 @@
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
+import traverse from '../../../utils/traverse.js';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression() {
@@ -39,6 +40,11 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
   }
 
   patchAsStatement() {
+    if (this.lhsHasSoakOperation()) {
+      this.patchAsExpression();
+      return;
+    }
+
     let assigneeAgain;
     if (this.assignee instanceof IdentifierPatcher) {
       // `a ?= b` → `if (typeof a ?= b`
@@ -71,6 +77,26 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     // `if (a.b == null) { a.b = b` → `if (a.b == null) { a.b = b; }`
     //                                                           ^^^
     this.insert(this.expression.outerEnd, `; }`);
+  }
+
+  /**
+   * If the left-hand side of the assignment has a soak operation, then there
+   * may be a __guard__ call surrounding the whole thing, so we can't patch
+   * statement code, so instead run the expression code path.
+   */
+  lhsHasSoakOperation() {
+    let foundSoak = false;
+    traverse(this.assignee.node, node => {
+      if (foundSoak) {
+        return false;
+      }
+      if (node.type === 'SoakedDynamicMemberAccessOp' ||
+          node.type === 'SoakedFunctionApplication' ||
+          node.type === 'SoakedMemberAccessOp') {
+        foundSoak = true;
+      }
+    });
+    return foundSoak;
   }
 
   /**
