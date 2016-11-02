@@ -2,7 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import blank from '../../../utils/blank.js';
 import determineIndent from '../../../utils/determineIndent.js';
 import getIndent from '../../../utils/getIndent.js';
-import { COMMENT, CONTINUATION, HERECOMMENT} from 'coffee-lex';
+import { COMMENT, CONTINUATION, HERECOMMENT } from 'coffee-lex';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Editor, Node, ParseContext, SourceToken } from './../../../patchers/types.js';
 
