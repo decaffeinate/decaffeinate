@@ -21,7 +21,13 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    if (this.lhsNeedsParens()) {
+      this.insert(this.expression.outerStart, '(');
+    }
     this.expression.patch();
+    if (this.lhsNeedsParens()) {
+      this.insert(this.expression.outerEnd, ')');
+    }
     if (this.isShorthandPrototype()) {
       // `a::` → `a.prototype`
       //   ^^      ^^^^^^^^^^
@@ -119,5 +125,9 @@ export default class MemberAccessOpPatcher extends NodePatcher {
    */
   statementNeedsParens(): boolean {
     return this.expression.statementShouldAddParens();
+  }
+
+  lhsNeedsParens() {
+    return this.expression.node.type === 'Int';
   }
 }

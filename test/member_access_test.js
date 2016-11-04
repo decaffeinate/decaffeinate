@@ -61,6 +61,22 @@ describe('member access', () => {
     `);
   });
 
+  it('wraps parens around number literals on the left side of a member access', () => {
+    check(`
+      1.toString()
+    `, `
+      (1).toString();
+    `);
+  });
+
+  it('does not wrap parens around number literals containing a dot', () => {
+    check(`
+      1.5.toString()
+    `, `
+      1.5.toString();
+    `);
+  });
+
   it('transforms calling the result of a dynamic member access properly', () => {
     check(`
       a[b]()
