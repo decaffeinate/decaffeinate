@@ -486,4 +486,22 @@ describe('function calls', () => {
       a(b, c(() => null));
     `);
   });
+
+  it('handles an implicit call at the end of an argument list of a multiline function call', () => {
+    check(`
+      x(
+        if a
+          b c
+        if d
+          e f
+      )
+    `, `
+      x(
+        a ?
+          b(c) : undefined,
+        d ?
+          e(f) : undefined
+      );
+    `);
+  });
 });

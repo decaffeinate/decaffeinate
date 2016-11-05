@@ -56,7 +56,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    */
   insertImplicitCloseParen() {
     let lastTokenType = this.lastToken().type;
-    if (lastTokenType === RBRACE || lastTokenType === RBRACKET) {
+    if (!this.isMultiline() || lastTokenType === RBRACE || lastTokenType === RBRACKET) {
       this.insert(this.contentEnd, ')');
       return;
     }
