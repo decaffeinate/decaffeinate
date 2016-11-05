@@ -1,3 +1,4 @@
+import ArrayInitialiserPatcher from './patchers/ArrayInitialiserPatcher.js';
 import BlockPatcher from './patchers/BlockPatcher.js';
 import ClassPatcher from './patchers/ClassPatcher.js';
 import AssignOpPatcher from './patchers/AssignOpPatcher.js';
@@ -6,6 +7,7 @@ import ForInPatcher from './patchers/ForInPatcher.js';
 import ForOfPatcher from './patchers/ForOfPatcher.js';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher.js';
 import NodePatcher from '../../patchers/NodePatcher.js';
+import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher.js';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher.js';
 import PassthroughPatcher from '../../patchers/PassthroughPatcher.js';
 import ProgramPatcher from './patchers/ProgramPatcher.js';
@@ -23,6 +25,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
   patcherConstructorForNode(node: Node): ?Class<NodePatcher> {
     switch (node.type) {
+      case 'ArrayInitialiser':
+        return ArrayInitialiserPatcher;
+
       case 'MemberAccessOp':
         return MemberAccessOpPatcher;
 
@@ -62,6 +67,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'DefaultParam':
         return DefaultParamPatcher;
+
+      case 'ObjectInitialiser':
+        return ObjectInitialiserPatcher;
 
       case 'ObjectInitialiserMember':
         return ObjectInitialiserMemberPatcher;

@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
-import { CALL_START, CALL_END, EXISTENCE, NEWLINE, RBRACE, RBRACKET, RPAREN } from 'coffee-lex';
+import { CALL_START, CALL_END, COMMA, EXISTENCE, NEWLINE, RBRACE, RBRACKET, RPAREN } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
@@ -36,8 +36,17 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       }
     }
 
-    args.forEach(arg => arg.patch());
-
+    for (let arg of args) {
+      // If the last token of the arg is a comma, then the actual delimiter must
+      // be a newline and the comma is unnecessary and can cause a syntax error
+      // when combined with other normalize stage transformations. So just
+      // remove the redundant comma.
+      let lastToken = arg.lastToken();
+      if (lastToken.type === COMMA) {
+        this.remove(lastToken.start, lastToken.end);
+      }
+      arg.patch();
+    }
 
     if (implicitCall) {
       this.insertImplicitCloseParen();

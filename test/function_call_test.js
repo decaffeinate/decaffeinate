@@ -504,4 +504,58 @@ describe('function calls', () => {
       );
     `);
   });
+
+  it('handles an implicit call followed by an unnecessary comma in an array literal', () => {
+    check(`
+      [
+        if a
+          b c,
+        if d
+          e f
+      ]
+    `, `
+      [
+        a ?
+          b(c) : undefined,
+        d ?
+          e(f) : undefined
+      ];
+    `);
+  });
+
+  it('handles an implicit call followed by an unnecessary comma in a function call', () => {
+    check(`
+      x(
+        if a
+          b c,
+        if d
+          e f
+      )
+    `, `
+      x(
+        a ?
+          b(c) : undefined,
+        d ?
+          e(f) : undefined
+      );
+    `);
+  });
+
+  it('handles an implicit call followed by an unnecessary comma in an object literal', () => {
+    check(`
+      {
+        x: if a
+          b c,
+        y: if d
+          e f
+      }
+    `, `
+      ({
+        x: a ?
+          b(c) : undefined,
+        y: d ?
+          e(f) : undefined
+      });
+    `);
+  });
 });
