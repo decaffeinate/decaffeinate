@@ -178,6 +178,7 @@ export default class ForInPatcher extends ForPatcher {
       this.remove(this.target.outerEnd, this.filter.outerEnd);
     }
 
+    this.valAssignee.patch();
     this.insert(this.valAssignee.outerStart, '(');
     this.overwrite(relationToken.start, relationToken.end, 'of');
     this.target.patch();
