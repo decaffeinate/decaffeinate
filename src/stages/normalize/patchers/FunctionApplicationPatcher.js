@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
-import { CALL_START, EXISTENCE, RBRACE, RBRACKET } from 'coffee-lex';
+import { CALL_START, CALL_END, EXISTENCE, NEWLINE, RBRACE, RBRACKET, RPAREN } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
@@ -38,15 +38,63 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
     args.forEach(arg => arg.patch());
 
-    let lastTokenType = this.lastToken().type;
+
     if (implicitCall) {
-      let lastArg = args[args.length - 1];
-      if (lastArg.isMultiline() && lastTokenType !== RBRACE && lastTokenType !== RBRACKET) {
-        this.insert(this.contentEnd, `\n${this.getIndent()})`);
-      } else {
-        this.insert(this.contentEnd, ')');
-      }
+      this.insertImplicitCloseParen();
     }
+  }
+
+  /**
+   * We need to be careful when inserting the close-paren after a function call,
+   * since an incorrectly-placed close-paren can cause a parsing error in the
+   * MainStage due to subtle indentation rules in the CoffeeScript parser.
+   *
+   * In particular, we prefer to place the close paren after an existing } or ],
+   * or before an existing ), if we can, since that is least likely to confuse
+   * any indentation parsing. But in some cases it's best to instead insert the
+   * close-paren properly-indented on its own line.
+   */
+  insertImplicitCloseParen() {
+    let lastTokenType = this.lastToken().type;
+    if (lastTokenType === RBRACE || lastTokenType === RBRACKET) {
+      this.insert(this.contentEnd, ')');
+      return;
+    }
+
+    let followingCloseParen = this.getFollowingCloseParenIfExists();
+    if (followingCloseParen) {
+      this.insert(followingCloseParen.start, ')');
+      return;
+    }
+
+    let { args } = this;
+    let lastArg = args[args.length - 1];
+    if (lastArg.isMultiline()) {
+      this.insert(this.contentEnd, `\n${this.getIndent()})`);
+      return;
+    }
+
+    this.insert(this.contentEnd, ')');
+  }
+
+  getFollowingCloseParenIfExists() {
+    let tokenIndex = this.contentEndTokenIndex;
+    let token;
+    do {
+      tokenIndex = tokenIndex.next();
+      if (tokenIndex === null) {
+        return null;
+      }
+      token = this.sourceTokenAtIndex(tokenIndex);
+      if (token === null) {
+        return null;
+      }
+    } while (token.type === NEWLINE);
+
+    if (token.type === CALL_END || token.type === RPAREN) {
+      return token;
+    }
+    return null;
   }
 
   /**

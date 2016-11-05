@@ -466,4 +466,24 @@ describe('function calls', () => {
       );
     `);
   });
+
+  it('handles an implicit call before a close-paren with different indentation', () => {
+    check(`
+      (a ->
+        null
+        )
+    `, `
+      (a(() => null));
+    `);
+  });
+
+  it('handles an implicit call before a call end with different indentation', () => {
+    check(`
+      a(b, c ->
+        null
+        )
+    `, `
+      a(b, c(() => null));
+    `);
+  });
 });
