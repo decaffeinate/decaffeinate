@@ -977,4 +977,15 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles this-assignment in a loop variable', () => {
+    check(`
+      for @a in b
+        c
+    `, `
+      for (this.a of b) {
+        c;
+      }
+    `);
+  });
 });
