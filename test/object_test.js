@@ -318,4 +318,30 @@ describe('objects', () => {
       ;
     `);
   });
+
+  it('adds brackets around template literals', () => {
+    check(`
+      {"a#{b}c": d}
+    `, `
+      ({[\`a\${b}c\`]: d});
+    `);
+  });
+
+  it('adds brackets around multiline herestrings', () => {
+    check(`
+      {"""a
+      b""": c}
+    `, `
+      ({[\`a
+      b\`]: c});
+    `);
+  });
+
+  it('special-cases template literals with only a single expression', () => {
+    check(`
+      {"#{a.b}": c}
+    `, `
+      ({[a.b]: c});
+    `);
+  });
 });

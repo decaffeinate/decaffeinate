@@ -63,8 +63,8 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    *
    * @protected
    */
-  isComputed(): boolean {
-    if (!super.isComputed()) {
+  isMethodNameComputed(): boolean {
+    if (!super.isMethodNameComputed()) {
       return false;
     }
     return !this.isStaticMethod();
