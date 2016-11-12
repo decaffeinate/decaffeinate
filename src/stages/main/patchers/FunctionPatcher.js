@@ -2,7 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
-import { CALL_END, FUNCTION, LPAREN, RPAREN } from 'coffee-lex';
+import { CALL_END, COMMA, FUNCTION, LPAREN, RPAREN } from 'coffee-lex';
 
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
@@ -29,7 +29,14 @@ export default class FunctionPatcher extends NodePatcher {
 
   patchAsExpression({ method=false }={}) {
     this.patchFunctionStart({ method });
-    this.parameters.forEach(parameter => parameter.patch());
+    this.parameters.forEach((parameter, i) => {
+      let isLast = i === this.parameters.length - 1;
+      let needsComma = !isLast && !parameter.hasSourceTokenAfter(COMMA);
+      parameter.patch();
+      if (needsComma) {
+        this.insert(parameter.outerEnd, ',');
+      }
+    });
     this.patchFunctionBody({ method });
   }
 

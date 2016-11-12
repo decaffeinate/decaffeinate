@@ -217,4 +217,15 @@ describe('functions', () => {
       });
     `)
   );
+
+  it('handles functions that omit commas in the parameter list', () =>
+    check(`
+      (foo
+      bar) ->
+        return baz
+    `, `
+      (foo,
+      bar) => baz;
+    `)
+  );
 });
