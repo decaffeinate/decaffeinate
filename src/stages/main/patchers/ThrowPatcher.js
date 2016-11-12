@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import { THROW } from 'coffee-lex';
 
 export default class ThrowPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -53,6 +54,14 @@ export default class ThrowPatcher extends NodePatcher {
   }
 
   patchAsStatement() {
+    let throwToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+    if (throwToken.type !== THROW) {
+      this.error('Expected to find throw token at the start of throw statement.');
+    }
+    let spacing = this.slice(throwToken.end, this.expression.outerStart);
+    if (spacing.indexOf('\n') !== -1) {
+      this.overwrite(throwToken.end, this.expression.outerStart, ' ');
+    }
     this.expression.patch();
   }
 
