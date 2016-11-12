@@ -26,14 +26,9 @@ export default class ForInPatcher extends ForPatcher {
     }
     this.removeThenToken();
 
-    this.valAssignee.patch();
-    if (this.keyAssignee !== null) {
-      this.keyAssignee.patch();
-    }
-
-    let assigneeCode = this.slice(this.valAssignee.contentStart, this.valAssignee.contentEnd);
-    if (this.keyAssignee !== null) {
-      assigneeCode += `, ${this.slice(this.keyAssignee.contentStart, this.keyAssignee.contentEnd)}`;
+    let assigneeCode = this.getValueBinding();
+    if (this.keyAssignee) {
+      assigneeCode += `, ${this.getIndexBinding()}`;
     }
 
     // for a in b when c d  ->  b when c d
@@ -123,8 +118,11 @@ export default class ForInPatcher extends ForPatcher {
   getValueBinding(): string {
     if (!this._valueBinding) {
       let { valAssignee } = this;
-      valAssignee.patch();
-      this._valueBinding = this.slice(valAssignee.contentStart, valAssignee.contentEnd);
+      if (valAssignee) {
+        this._valueBinding = valAssignee.patchAndGetCode();
+      } else {
+        this._valueBinding = this.claimFreeBinding('value');
+      }
     }
     return this._valueBinding;
   }
@@ -133,7 +131,7 @@ export default class ForInPatcher extends ForPatcher {
     if (this.requiresExtractingTarget()) {
       this.insert(this.innerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`);
     }
-    let firstHeaderPatcher = this.valAssignee;
+    let firstHeaderPatcher = this.valAssignee || this.target;
     let lastHeaderPatcher = this.getLastHeaderPatcher();
     this.overwrite(
       firstHeaderPatcher.outerStart,
@@ -154,11 +152,13 @@ export default class ForInPatcher extends ForPatcher {
     this.removeThenToken();
     this.patchPossibleNewlineAfterLoopHeader(this.getLastHeaderPatcher().outerEnd);
 
-    let valueAssignment = `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`;
-    if (this.valAssignee.statementNeedsParens()) {
-      valueAssignment = `(${valueAssignment})`;
+    if (this.valAssignee) {
+      let valueAssignment = `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`;
+      if (this.valAssignee.statementNeedsParens()) {
+        valueAssignment = `(${valueAssignment})`;
+      }
+      this.body.insertLineBefore(valueAssignment, this.getOuterLoopBodyIndent());
     }
-    this.body.insertLineBefore(valueAssignment, this.getOuterLoopBodyIndent());
     this.patchBodyAndFilter();
   }
 
@@ -170,17 +170,23 @@ export default class ForInPatcher extends ForPatcher {
    * favor of cleaner code.
    */
   patchForOfLoop() {
-    let relationToken = this.getRelationToken();
-
     // Save the filter code and remove if it it's there.
     this.getFilterCode();
     if (this.filter) {
       this.remove(this.target.outerEnd, this.filter.outerEnd);
     }
 
-    this.valAssignee.patch();
-    this.insert(this.valAssignee.outerStart, '(');
-    this.overwrite(relationToken.start, relationToken.end, 'of');
+    if (this.valAssignee) {
+      let relationToken = this.getRelationToken();
+      this.valAssignee.patch();
+      this.insert(this.valAssignee.outerStart, '(');
+      this.overwrite(relationToken.start, relationToken.end, 'of');
+    } else {
+      // Handle loops like `for [0..2]`
+      let valueBinding = this.getValueBinding();
+      this.insert(this.target.outerStart, `(let ${valueBinding} of `);
+    }
+
     this.target.patch();
     this.insert(this.target.outerEnd, ') {');
     this.removeThenToken();
