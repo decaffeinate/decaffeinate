@@ -50,4 +50,22 @@ describe('throw', () => {
       () => { if (a) { throw b; } };
     `);
   });
+
+  it('allows multiline throw statements', () => {
+    check(`
+      throw
+        a
+    `, `
+      throw a;
+    `);
+  });
+
+  it('allows multiline throw expressions', () => {
+    check(`
+      (throw
+        a)
+    `, `
+      (() => { throw a; })();
+    `);
+  });
 });
