@@ -8,9 +8,9 @@ import PatchError from './PatchError.js';
  * Otherwise, return null.
  */
 export default function resolveToPatchError(err: any, content: string , stageName: string): ?PatchError {
-  let makePatchError = (start, end) => new PatchError(
+  let makePatchError = (start, end, source) => new PatchError(
     `${stageName} failed to parse: ${err.message}`,
-    content,
+    source,
     start,
     end
   );
@@ -21,7 +21,11 @@ export default function resolveToPatchError(err: any, content: string , stageNam
     if (pos === content.length) {
       pos--;
     }
-    return makePatchError(pos, pos + 1);
+    // In most cases, we can use the source code we already have, but for
+    // esnext, the code might be an intermediate code state, so use that from
+    // the exception if possible.
+    let source = err.source || content;
+    return makePatchError(pos, pos + 1, source);
   } else if (err.syntaxError) {
     // Handle CoffeeScript parse errors.
     let { first_line, first_column, last_line, last_column } = err.syntaxError.location;
@@ -29,7 +33,7 @@ export default function resolveToPatchError(err: any, content: string , stageNam
     let firstIndex = lineMap.indexForLocation({line: first_line, column: first_column});
     let lastIndex = lineMap.indexForLocation({line: last_line, column: last_column}) + 1;
     if (firstIndex !== null && firstIndex !== undefined && lastIndex !== null && lastIndex !== undefined) {
-      return makePatchError(firstIndex, lastIndex);
+      return makePatchError(firstIndex, lastIndex, content);
     }
   }
   return null;
