@@ -10,12 +10,12 @@ export default class HerestringPatcher extends NodePatcher {
     let contentEnd = this.contentEnd - HERESTRING_DELIMITER_LENGTH;
 
     // Remove the padding.
-    let { padding, data } = this.node;
+    let { padding } = this.node;
     padding.forEach(([start, end]) => {
       this.remove(start, end);
     });
 
-    if (data.indexOf('\n') >= 0) {
+    if (this.stringContainsNewline()) {
       // Multi-line, so use a template string.
       this.overwrite(this.contentStart, contentStart, '`');
       this.overwrite(contentEnd, this.contentEnd, '`');
@@ -26,5 +26,9 @@ export default class HerestringPatcher extends NodePatcher {
       this.remove(contentEnd + 1, this.contentEnd);
       escape(this.editor, [source[this.contentStart]], contentStart, contentEnd);
     }
+  }
+
+  stringContainsNewline() {
+    return this.node.data.indexOf('\n') >= 0;
   }
 }
