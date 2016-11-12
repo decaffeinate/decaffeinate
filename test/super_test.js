@@ -23,7 +23,7 @@ describe('super', () => {
   });
 
   // https://github.com/decaffeinate/decaffeinate/issues/375
-  it.skip('can be used as an argument to another call', () => {
+  it('can be used as an argument to another call', () => {
     check(`
       class A
         b: ->
