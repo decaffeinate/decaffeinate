@@ -101,4 +101,17 @@ describe('string interpolation', () => {
   it('handles if expressions inside interpolations', () => {
     check('"#{if a then b else c}"', '`${a ? b : c}`;');
   });
+
+
+  it('handles interpolations in indented herestrings', () => {
+    check(`
+      """
+        a
+        #{b}
+        """
+    `, `
+      \`a
+      \${b}\`;
+    `);
+  });
 });
