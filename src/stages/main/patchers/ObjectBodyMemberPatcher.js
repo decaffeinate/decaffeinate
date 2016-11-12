@@ -41,14 +41,14 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     if (this.isGeneratorMethod()) {
       this.insert(this.key.outerStart, '*');
     }
-    let computedKey = this.isComputed();
-    if (computedKey) {
+    let isComputed = this.isMethodNameComputed();
+    if (isComputed) {
       // `{ 'hi there': ->` → `{ ['hi there': ->`
       //                         ^
       this.insert(this.key.outerStart, '[');
     }
     this.patchKey();
-    if (computedKey) {
+    if (isComputed) {
       // `{ ['hi there': ->` → `{ ['hi there']: ->`
       //                                     ^
       this.insert(this.key.outerEnd, ']');
@@ -109,7 +109,7 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   /**
    * @protected
    */
-  isComputed(): boolean {
+  isMethodNameComputed(): boolean {
     return !(this.key instanceof IdentifierPatcher);
   }
 
