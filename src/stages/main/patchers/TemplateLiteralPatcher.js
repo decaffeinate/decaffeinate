@@ -2,6 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import replaceTripleQuotes from '../../../utils/replaceTripleQuotes.js';
 import { escapeTemplateStringContents } from '../../../utils/escape.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import { INTERPOLATION_START } from 'coffee-lex';
 
 export default class TemplateLiteralPatcher extends NodePatcher {
   quasis: Array<NodePatcher>;
@@ -29,9 +30,19 @@ export default class TemplateLiteralPatcher extends NodePatcher {
       this.overwrite(contentEnd - '"'.length, contentEnd, '`');
     }
 
-    for (let i = 0; i < quasis.length - 1; i++) {
-      let quasi = quasis[i];
-      this.overwrite(quasi.contentEnd, quasi.contentEnd + '#'.length, '$');
+    for (let i = 0; i < expressions.length; i++) {
+      let interpolationStartIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+        quasis[i], expressions[i], token => token.type === INTERPOLATION_START
+      );
+      if (!interpolationStartIndex) {
+        this.error('Cannot find interpolation start in template literal.');
+      }
+      let interpolationStart = this.sourceTokenAtIndex(interpolationStartIndex);
+      if (!interpolationStart ||
+          this.slice(interpolationStart.start, interpolationStart.start + 1) !== '#') {
+        this.error("Cannot find '#' in interpolation start.");
+      }
+      this.overwrite(interpolationStart.start, interpolationStart.start + 1, '$');
     }
 
     escapeTemplateStringContents(this.editor, contentStart, contentEnd);
