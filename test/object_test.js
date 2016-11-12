@@ -344,4 +344,12 @@ describe('objects', () => {
       ({[a.b]: c});
     `);
   });
+
+  it('handles methods where the function is surrounded by parens', () => {
+    check(`
+      x: (-> x)
+    `, `
+      ({x() { return x; }});
+    `);
+  });
 });

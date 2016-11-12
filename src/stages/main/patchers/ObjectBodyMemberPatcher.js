@@ -58,6 +58,10 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
       //                ^^
       this.remove(this.key.outerEnd, this.expression.outerStart);
     }
+    // The function expression might be surrounded by parens, so remove them if
+    // necessary.
+    this.remove(this.expression.outerStart, this.expression.contentStart);
+    this.remove(this.expression.contentEnd, this.expression.outerEnd);
     this.patchExpression();
   }
 
