@@ -169,26 +169,54 @@ describe('for loops', () => {
     `);
   });
 
-
-  it.skip('transforms `for` loops without an index', () => {
+  it('transforms `for` loops without an index or value', () => {
     check(`
       for [0..1]
         2
     `, `
-      for (let i = 0; i <= 1; i++) {
+      for (let value of [0, 1]) {
         2;
       }
     `);
   });
 
-  it.skip('gives `for` loops without an index an index that does not collide with existing bindings', () => {
+  it('gives `for` loops without an index an index or value that does not collide with existing bindings', () => {
     check(`
       for [0..1]
-        i
+        value = 1
     `, `
-      for (let j = 0; j <= 1; j++) {
-        i;
+      for (let value1 of [0, 1]) {
+        let value = 1;
       }
+    `);
+  });
+
+  it('transforms `for` loops without an index or value in expanded form', () => {
+    check(`
+      for [a..b] by 1
+        2
+    `, `
+      let iterable = __range__(a, b, true);
+      for (let i = 0; i < iterable.length; i++) {
+        2;
+      }
+      function __range__(left, right, inclusive) {
+        let range = [];
+        let ascending = left < right;
+        let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+        for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+          range.push(i);
+        }
+        return range;
+      }
+    `);
+  });
+
+  it('transforms expression-style `for` loops without an index or value', () => {
+    check(`
+      x = for [0..2] then a
+    `, `
+      let x = [0, 1, 2].map((value) => a);
     `);
   });
 
