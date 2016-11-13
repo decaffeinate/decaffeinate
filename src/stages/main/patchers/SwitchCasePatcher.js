@@ -55,7 +55,8 @@ export default class SwitchCasePatcher extends NodePatcher {
     let hasBreak = this.getBreakToken() !== null;
     let implicitReturnWillBreak = (
       this.implicitlyReturns() &&
-      this.implicitReturnWillBreak()
+      this.implicitReturnWillBreak() &&
+      (!this.consequent || this.consequent.allCodePathsPresent())
     );
     let shouldAddBreak = !hasBreak && !implicitReturnWillBreak;
     if (shouldAddBreak) {

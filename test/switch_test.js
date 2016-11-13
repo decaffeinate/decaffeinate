@@ -340,4 +340,32 @@ describe('switch', () => {
       } })());
     `);
   });
+
+  it('inserts break statements properly in cases containing returns', () => {
+    check(`
+      ->
+        switch a
+          when b
+            if c
+              return d
+          when e
+            if f
+              return g
+    `, `
+      (function() {
+        switch (a) {
+          case b:
+            if (c) {
+              return d;
+            }
+            break;
+          case e:
+            if (f) {
+              return g;
+            }
+            break;
+        }
+      });
+    `);
+  });
 });
