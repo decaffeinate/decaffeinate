@@ -1016,4 +1016,15 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('properly patches the target in for-of loops', () => {
+    check(`
+      for a of @b
+        c
+    `, `
+      for (let a in this.b) {
+        c;
+      }
+    `);
+  });
 });
