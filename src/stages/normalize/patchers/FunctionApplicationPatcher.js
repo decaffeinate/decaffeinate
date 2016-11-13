@@ -64,8 +64,11 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * close-paren properly-indented on its own line.
    */
   insertImplicitCloseParen() {
+    let argListCode = this.slice(
+      this.args[0].contentStart, this.args[this.args.length - 1].contentEnd);
+    let isArgListMultiline = argListCode.indexOf('\n') !== -1;
     let lastTokenType = this.lastToken().type;
-    if (!this.isMultiline() || lastTokenType === RBRACE || lastTokenType === RBRACKET) {
+    if (!isArgListMultiline || lastTokenType === RBRACE || lastTokenType === RBRACKET) {
       this.insert(this.contentEnd, ')');
       return;
     }
