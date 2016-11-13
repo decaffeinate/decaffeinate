@@ -443,4 +443,20 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('properly sets patching bounds for soaked function applications', () => {
+    check(`
+      f?(a, 
+        b: c
+        d: e)
+    `, `
+      __guardFunc__(f, f => f(a, { 
+        b: c,
+        d: e
+      }));
+      function __guardFunc__(func, transform) {
+        return typeof func === 'function' ? transform(func) : undefined;
+      }
+    `);
+  });
 });
