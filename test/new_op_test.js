@@ -51,4 +51,21 @@ describe('`new` operator', () => {
       });
     `);
   });
+
+  it('defines proper bounds for new operators', () => {
+    check(`
+      new Construct a, 
+        a: [
+          'abc'
+          'def'
+        ]
+    `, `
+      new Construct(a, { 
+        a: [
+          'abc',
+          'def'
+        ]
+      });
+    `);
+  });
 });

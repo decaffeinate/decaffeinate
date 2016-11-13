@@ -367,7 +367,7 @@ export default class NodePatcher {
     // comma/paren to the next comma/paren), so loosen the restriction to the
     // entire function.
     if (boundingPatcher.parent &&
-        boundingPatcher.parent.node.type === 'FunctionApplication') {
+        this.isNodeFunctionApplication(boundingPatcher.parent.node)) {
       boundingPatcher = boundingPatcher.parent;
     }
     if (this.allowPatchingOuterBounds()) {
@@ -803,7 +803,7 @@ export default class NodePatcher {
     if (this.isSurroundedByParentheses()) {
       return this;
     } else if (this.parent) {
-      if (this.parent.node.type === 'FunctionApplication' &&
+      if (this.isNodeFunctionApplication(this.parent.node) &&
           this.parent.node.arguments.some(arg => arg === this.node)) {
         return this;
       }
@@ -811,6 +811,12 @@ export default class NodePatcher {
     } else {
       return this;
     }
+  }
+
+  isNodeFunctionApplication(node) {
+    return node.type === 'FunctionApplication' ||
+        node.type === 'SoakedFunctionApplication' ||
+        node.type === 'NewOp';
   }
 
   /**
