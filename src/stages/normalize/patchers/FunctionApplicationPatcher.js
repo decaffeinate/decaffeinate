@@ -19,7 +19,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     this.fn.patch();
 
     if (this.isImplicitSuper()) {
-      this.insert(this.fn.outerEnd, '(arguments...)');
+      this.insert(this.fn.contentEnd, '(arguments...)');
       return;
     }
 
