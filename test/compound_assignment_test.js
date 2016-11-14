@@ -452,6 +452,17 @@ describe('compound assignment', () => {
       `);
     });
 
+    it('handles existence assignment with a soak lhs', () => {
+      check(`
+        a.b?.c ?= d
+      `, `
+        __guard__(a.b, x => x.c != null ? a.b.c : (a.b.c = d));
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
     it('patches children', () => {
       check(`
         (a or b).c or= d or e
