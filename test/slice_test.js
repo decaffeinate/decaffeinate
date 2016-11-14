@@ -19,12 +19,16 @@ describe('slice', () => {
     check(`a[0..2]`, `a.slice(0, 3);`);
   });
 
+  it('changes inclusive slices ending in -1 to not specify a second argument', () => {
+    check(`a[0..-1]`, `a.slice(0);`);
+  });
+
   it('changes inclusive slices with a literal float end of range to exclusive by inserting `+ 1`', () => {
-    check(`a[0..2.0]`, `a.slice(0, 2.0 + 1);`);
+    check(`a[0..2.0]`, `a.slice(0, 2.0 + 1 || undefined);`);
   });
 
   it('changes inclusive slices with a variable end of range to exclusive by inserting `+ 1`', () => {
-    check(`a[0..b]`, `a.slice(0, b + 1);`);
+    check(`a[0..b]`, `a.slice(0, b + 1 || undefined);`);
   });
 
   it('changes slices with no begin or end of the range to a bare call to `.slice`', () => {
