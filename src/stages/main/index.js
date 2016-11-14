@@ -4,6 +4,7 @@ import BinaryOpPatcher from './patchers/BinaryOpPatcher.js';
 import BlockPatcher from './patchers/BlockPatcher.js';
 import BoolPatcher from './patchers/BoolPatcher.js';
 import BoundFunctionPatcher from './patchers/BoundFunctionPatcher.js';
+import BoundGeneratorFunctionPatcher from './patchers/BoundGeneratorFunctionPatcher.js';
 import ChainedComparisonOpPatcher from './patchers/ChainedComparisonOpPatcher.js';
 import ClassAssignOpPatcher from './patchers/ClassAssignOpPatcher.js';
 import ClassPatcher from './patchers/ClassPatcher.js';
@@ -132,6 +133,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'BoundFunction':
         return BoundFunctionPatcher;
+
+      case 'BoundGeneratorFunction':
+        return BoundGeneratorFunctionPatcher;
 
       case 'Bool':
         return BoolPatcher;
