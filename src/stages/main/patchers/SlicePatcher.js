@@ -50,21 +50,29 @@ export default class SlicePatcher extends NodePatcher {
     let inclusive = slice.end - slice.start === '..'.length;
     let right = this.right;
     if (right) {
-      // `a.slice(0..1]` → `a.slice(0, 1]`
-      //           ^^                ^^
-      this.overwrite(slice.start, slice.end, ', ');
       if (inclusive) {
-        if (right.node.type === 'Int') {
+        if (right.node.raw === '-1') {
+          this.remove(
+            slice.start,
+            right.outerEnd
+          );
+        } else if (right.node.type === 'Int') {
           this.overwrite(
-            right.contentStart,
-            right.contentEnd,
-            `${right.node.data + 1}`
+            slice.start,
+            right.outerEnd,
+            `, ${right.node.data + 1}`
           );
         } else {
+          // `a.slice(0..1]` → `a.slice(0, 1]`
+          //           ^^                ^^
+          this.overwrite(slice.start, slice.end, ', ');
           right.patch();
-          this.insert(right.outerEnd, ' + 1');
+          this.insert(right.outerEnd, ' + 1 || undefined');
         }
       } else {
+        // `a.slice(0..1]` → `a.slice(0, 1]`
+        //           ^^                ^^
+        this.overwrite(slice.start, slice.end, ', ');
         right.patch();
       }
     } else {
