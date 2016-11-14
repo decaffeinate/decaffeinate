@@ -17,16 +17,22 @@ export default class ForOfPatcher extends ForPatcher {
 
     this.removeOwnTokenIfExists();
 
-    if (this.requiresExtractingTarget()) {
+    let shouldExtractTarget = this.requiresExtractingTarget();
+    if (shouldExtractTarget) {
       this.insert(
         this.innerStart,
         `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`
       );
-      this.overwrite(this.target.outerStart, this.target.outerEnd, this.getTargetReference());
     }
 
     let keyBinding = this.getIndexBinding();
     this.insert(keyAssignee.outerStart, '(');
+
+    // Patch the target. Also get a reference in case we need it.
+    let targetReference = this.getTargetReference();
+    if (shouldExtractTarget) {
+      this.overwrite(this.target.outerStart, this.target.outerEnd, targetReference);
+    }
 
     let { valAssignee } = this;
 
