@@ -558,4 +558,20 @@ describe('function calls', () => {
       });
     `);
   });
+
+  it('properly places implicit parens for multiline method calls', () => {
+    check(`
+      a
+        .b(c, ->
+          d
+            .e f
+        )
+    `, `
+      a
+        .b(c, () =>
+          d
+            .e(f)
+        );
+    `);
+  });
 });
