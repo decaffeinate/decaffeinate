@@ -1,8 +1,14 @@
 import ForPatcher from './ForPatcher.js';
+import RangePatcher from './RangePatcher.js';
 import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+
+const UP = 'UP';
+const DOWN = 'DOWN';
+const UNKNOWN = 'UNKNOWN';
+type IndexDirection = 'UP' | 'DOWN' | 'UNKNOWN';
 
 export default class ForInPatcher extends ForPatcher {
   constructor(node: Node, context: ParseContext, editor: Editor, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, step: ?NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
@@ -112,19 +118,35 @@ export default class ForInPatcher extends ForPatcher {
    * for-of loops.
    */
   shouldPatchAsForOf() {
-    return this.step === null && this.keyAssignee === null;
+    return (
+      !this.shouldPatchAsInitTestUpdateLoop() &&
+      this.step === null &&
+      this.keyAssignee === null
+    );
   }
 
   getValueBinding(): string {
     if (!this._valueBinding) {
-      let { valAssignee } = this;
-      if (valAssignee) {
-        this._valueBinding = valAssignee.patchAndGetCode();
+      if (this.valAssignee) {
+        this._valueBinding = this.valAssignee.patchAndGetCode();
+      } else if (this.shouldPatchAsInitTestUpdateLoop()) {
+        this._valueBinding = this.claimFreeBinding(this.indexBindingCandidates());
       } else {
         this._valueBinding = this.claimFreeBinding('value');
       }
     }
     return this._valueBinding;
+  }
+
+  /**
+   * @protected
+   */
+  computeIndexBinding(): string {
+    if (this.shouldPatchAsInitTestUpdateLoop()) {
+      return this.getValueBinding();
+    } else {
+      return super.computeIndexBinding();
+    }
   }
 
   patchForLoopHeader() {
@@ -152,7 +174,7 @@ export default class ForInPatcher extends ForPatcher {
     this.removeThenToken();
     this.patchPossibleNewlineAfterLoopHeader(this.getLastHeaderPatcher().outerEnd);
 
-    if (this.valAssignee) {
+    if (!this.shouldPatchAsInitTestUpdateLoop() && this.valAssignee) {
       let valueAssignment = `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`;
       if (this.valAssignee.statementNeedsParens()) {
         valueAssignment = `(${valueAssignment})`;
@@ -194,7 +216,11 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   requiresExtractingTarget() {
-    return !this.target.isRepeatable() && !this.shouldPatchAsForOf();
+    return (
+      !this.shouldPatchAsInitTestUpdateLoop() &&
+      !this.target.isRepeatable() &&
+      !this.shouldPatchAsForOf()
+    );
   }
 
   targetBindingCandidate() {
@@ -203,7 +229,9 @@ export default class ForInPatcher extends ForPatcher {
 
   getInitCode(): string {
     let step = this.getStep();
-    if (step.negated) {
+    if (this.shouldPatchAsInitTestUpdateLoop()) {
+      return `${this.getIndexBinding()} = ${this.target.left.patchAndGetCode()}`;
+    } else if (step.negated) {
       return `${this.getIndexBinding()} = ${this.getTargetReference()}.length - 1`;
     } else {
       let result = `${this.getIndexBinding()} = 0`;
@@ -216,7 +244,19 @@ export default class ForInPatcher extends ForPatcher {
 
   getTestCode(): string {
     let step = this.getStep();
-    if (step.negated) {
+    if (this.shouldPatchAsInitTestUpdateLoop()) {
+      let direction = this.getIndexDirection();
+      let inclusive = this.target.isInclusive();
+      let operator;
+
+      if (direction === DOWN) {
+        operator = inclusive ? '>=' : '>';
+      } else {
+        operator = inclusive ? '<=' : '<';
+      }
+
+      return `${this.getIndexBinding()} ${operator} ${this.target.right.patchAndGetCode()}`;
+    } else if (step.negated) {
       return `${this.getIndexBinding()} >= 0`;
     } else {
       return `${this.getIndexBinding()} < ${this.getTargetReference()}.length`;
@@ -226,9 +266,10 @@ export default class ForInPatcher extends ForPatcher {
   getUpdateCode(): string {
     let indexBinding = this.getIndexBinding();
     let step = this.getStep();
+    let direction = this.getIndexDirection();
     if (step.number === 1) {
-      return `${indexBinding}${step.negated ? '--' : '++'}`;
-    } else if (step.negated) {
+      return `${indexBinding}${direction === DOWN ? '--' : '++'}`;
+    } else if (direction === DOWN) {
       return `${indexBinding} -= ${step.update}`;
     } else {
       return `${indexBinding} += ${step.update}`;
@@ -241,10 +282,92 @@ export default class ForInPatcher extends ForPatcher {
     }
     return this._step;
   }
+
+  /**
+   * Can we patch using `for (;;)` style?
+   *
+   * Currently, that requires either a fixed range:
+   *
+   *   a() for [0..1]
+   *
+   * Or a dynamic range with a fixed step:
+   *
+   *   a() for [n..m] by 1
+   *
+   * Eventually, we could also support any dynamic range:
+   *
+   *   a() for [from..to]
+   *   a() for [lower()..upper()]
+   *
+   * By capturing the bounds as needed and comparing:
+   *
+   *   for (let asc = from <= to, i = from; asc ? i <= to : i >= to; asc ? i++ : i--) {
+   *     a();
+   *   }
+   *   for (let start = lower(), end = upper(), asc = start <= end, i = start; asc ? i <= end : i >= end; asc ? i++ : i--) {
+   *     a();
+   *   }
+   */
+  shouldPatchAsInitTestUpdateLoop(): boolean {
+    return this.hasFixedRange() || (this.hasDynamicRange() && this.hasExplicitStep());
+  }
+
+  /**
+   * Determines whether this `for…in` loop has an explicit `by` step.
+   */
+  hasExplicitStep(): boolean {
+    return !this.getStep().isVirtual;
+  }
+
+  /**
+   * Determines the direction of index iteration, either UP, DOWN, or UNKNOWN.
+   * UNKNOWN means that we cannot statically determine the direction.
+   */
+  getIndexDirection(): IndexDirection {
+    let step = this.getStep();
+    if (step.isVirtual && this.hasFixedRange()) {
+      let left = this.target.left.node.data;
+      let right = this.target.right.node.data;
+      return left > right ? DOWN : UP;
+    } else if (this.hasDynamicRange()) {
+      return UNKNOWN;
+    } else {
+      return step.negated ? DOWN : UP;
+    }
+  }
+
+  /**
+   * Are we looping over a range with dynamic start/end?
+   *
+   * @example
+   *
+   *   for [a..b]
+   *   for [0..b]
+   */
+  hasDynamicRange(): boolean {
+    return (this.target instanceof RangePatcher) && !this.hasFixedRange();
+  }
+
+  /**
+   * Are we looping over a range with fixed (static) start/end?
+   *
+   * @example
+   *
+   *   for [0..3]
+   *   for [7.0..10.0]
+   */
+  hasFixedRange(): boolean {
+    return (
+      this.target instanceof RangePatcher &&
+      (this.target.left.node.type === 'Int' || this.target.left.node.type === 'Float') &&
+      (this.target.right.node.type === 'Int' || this.target.right.node.type === 'Float')
+    );
+  }
 }
 
 class Step {
   isLiteral: boolean;
+  isVirtual: boolean;
   negated: boolean;
   init: string;
   update: string;
@@ -281,5 +404,6 @@ class Step {
       this.number = 1;
     }
     this.negated = negated;
+    this.isVirtual = !patcher;
   }
 }

@@ -1,7 +1,7 @@
 import check from './support/check.js';
 import validate from './support/validate.js';
 
-describe('for loops', () => {
+describe.only('for loops', () => {
   it('transforms basic for-of loops into for-in', () => {
     check(`
       for k of o
@@ -174,7 +174,7 @@ describe('for loops', () => {
       for [0..1]
         2
     `, `
-      for (let value of [0, 1]) {
+      for (let i = 0; i <= 1; i++) {
         2;
       }
     `);
@@ -183,10 +183,43 @@ describe('for loops', () => {
   it('gives `for` loops without an index an index or value that does not collide with existing bindings', () => {
     check(`
       for [0..1]
-        value = 1
+        i = 1
     `, `
-      for (let value1 of [0, 1]) {
-        let value = 1;
+      for (let j = 0; j <= 1; j++) {
+        let i = 1;
+      }
+    `);
+  });
+
+  it('allows the `by` clause to override the direction of a top-down range', () => {
+    check(`
+      for a in [10..5] by 1
+        b()
+    `, `
+      for (let a = 10; a <= 5; a++) {
+        b();
+      }
+    `);
+  });
+
+  it('transforms an exclusive range by using non-equal tests', () => {
+    check(`
+      for i in [1...3]
+        console.log(i)
+    `, `
+      for (let i = 1; i < 3; i++) {
+        console.log(i);
+      }
+    `);
+  });
+
+  it('transforms top-down ranges loops by decrementing an index', () => {
+    check(`
+      for i in [5..3]
+        console.log(i)
+    `, `
+      for (let i = 5; i >= 3; i--) {
+        console.log(i);
       }
     `);
   });
@@ -196,9 +229,19 @@ describe('for loops', () => {
       for [a..b] by 1
         2
     `, `
-      let iterable = __range__(a, b, true);
-      for (let i = 0; i < iterable.length; i++) {
+      for (let i = a; i <= b; i++) {
         2;
+      }
+    `);
+  });
+
+  it('transforms `for` loops with a range but without a step using `for…of`', () => {
+    check(`
+      for n in [a..b]
+        n
+    `, `
+      for (let n of __range__(a, b, true)) {
+        n;
       }
       function __range__(left, right, inclusive) {
         let range = [];
@@ -212,11 +255,33 @@ describe('for loops', () => {
     `);
   });
 
+  it.skip('transforms `for` loops with a range but without a step using `for(;;)`', () => {
+    check(`
+      for n in [a..b]
+        n
+    `, `
+      for (let asc = a <= b, n = a; asc ? n <= b : n >= b; asc ? n++ : n--) {
+        n;
+      }
+    `);
+  });
+
+  it.skip('transforms `for` loops with a complex range but without a step using `for(;;)`', () => {
+    check(`
+      for n in [a()..b()]
+        n
+    `, `
+      for (let start = a(), end = b(), asc = start <= end, n = start; asc ? n <= end : n >= end; asc ? n++ : n--) {
+        n;
+      }
+    `);
+  });
+
   it('transforms expression-style `for` loops without an index or value', () => {
     check(`
       x = for [0..2] then a
     `, `
-      let x = [0, 1, 2].map((value) => a);
+      let x = [0, 1, 2].map((i) => a);
     `);
   });
 
