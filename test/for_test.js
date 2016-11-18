@@ -1,7 +1,7 @@
 import check from './support/check.js';
 import validate from './support/validate.js';
 
-describe.only('for loops', () => {
+describe('for loops', () => {
   it('transforms basic for-of loops into for-in', () => {
     check(`
       for k of o
