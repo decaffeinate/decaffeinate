@@ -27,7 +27,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       let firstArg = args[0];
       let hasOneArg = args.length === 1;
       let firstArgIsOnNextLine = !firstArg ? false :
-        /[\r\n]/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
+        /\n/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
       let funcEnd = this.getFuncEnd();
       if ((hasOneArg && firstArg.node.virtual) || firstArgIsOnNextLine) {
         this.insert(funcEnd, '(');

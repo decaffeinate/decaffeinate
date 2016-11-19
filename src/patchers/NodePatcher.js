@@ -722,7 +722,7 @@ export default class NodePatcher {
    * Determines whether this patcher's node spanned multiple lines.
    */
   isMultiline(): boolean {
-    return !this.node.virtual && /[\r\n]/.test(this.getOriginalSource());
+    return !this.node.virtual && /\n/.test(this.getOriginalSource());
   }
 
   /**
@@ -899,9 +899,9 @@ export default class NodePatcher {
     // See if there are already non-whitespace characters before the start. If
     // so, skip the start to the next line, since we don't want to put
     // indentation in the middle of a line.
-    for (let i = start - 1; i >= 0 && source[i] !== '\n' && source[i] !== '\r'; i--) {
+    for (let i = start - 1; i >= 0 && source[i] !== '\n'; i--) {
       if (source[i] !== '\t' && source[i] !== ' ') {
-        while (start < end && source[start] !== '\r' && source[start] !== '\n') {
+        while (start < end && source[start] !== '\n') {
           start++;
         }
         break;
@@ -912,7 +912,6 @@ export default class NodePatcher {
     for (let i = start; i < end; i++) {
       switch (source[i]) {
         case '\n':
-        case '\r':
           hasIndentedThisLine = false;
           break;
 

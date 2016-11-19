@@ -4,6 +4,8 @@ import SemicolonsStage from './stages/semicolons/index.js';
 import EsnextStage from './stages/esnext/index.js';
 import MainStage from './stages/main/index.js';
 import NormalizeStage from './stages/normalize/index.js';
+import convertNewlines from './utils/convertNewlines.js';
+import detectNewlineStr from './utils/detectNewlineStr.js';
 import formatCoffeeLexAst from './utils/formatCoffeeLexTokens.js';
 import formatCoffeeScriptAst from './utils/formatCoffeeScriptAst.js';
 import formatCoffeeScriptLexerTokens from './utils/formatCoffeeScriptLexerTokens.js';
@@ -35,6 +37,8 @@ type Stage = {
  * and formatting.
  */
 export function convert(source: string, options: ?Options={}): ConversionResult {
+  let originalNewlineStr = detectNewlineStr(source);
+  source = convertNewlines(source, '\n');
   let stages = [
     NormalizeStage,
     MainStage,
@@ -51,7 +55,9 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
       return convertCustomStage(source, runToStage);
     }
   }
-  return runStages(source, options.filename || 'input.coffee', stages);
+  let result = runStages(source, options.filename || 'input.coffee', stages);
+  result.code = convertNewlines(result.code, originalNewlineStr);
+  return result;
 }
 
 function runStages(initialContent: string, initialFilename: string, stages: Array<Stage>): ConversionResult {
