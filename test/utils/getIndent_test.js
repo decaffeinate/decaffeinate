@@ -39,18 +39,6 @@ describe('getIndent', function() {
       }
     });
 
-    it('returns the indent for lines split by carriage returns', () => {
-      let i;
-
-      for (i = 0; i < '  abc'.length; i++) {
-        strictEqual(getIndent('  abc\rdef', i), '  ');
-      }
-
-      for (i = '  abc\r'.length; i < '  abc\rdef'.length; i++) {
-        strictEqual(getIndent('  abc\rdef', i), '');
-      }
-    });
-
     it('considers newlines as part of the previous line', () => {
       strictEqual(getIndent('a\n  b: c', 1), '');
     });
