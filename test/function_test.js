@@ -133,6 +133,41 @@ describe('functions', () => {
     `);
   });
 
+  it('turns expression-style fat arrow functions referencing `arguments` into regular functions with a `bind` call', () => {
+    check(`
+      x = => arguments[0] + this
+    `, `
+      let x = function() { return arguments[0] + this; }.bind(this);
+    `);
+  });
+
+  it('turns fat arrow object methods referencing `arguments` into regular functions with a `bind` call', () => {
+    check(`
+      {
+        x: => arguments[0] + this
+      }
+    `, `
+      ({
+        x: function() { return arguments[0] + this; }.bind(this)
+      });
+    `);
+  });
+
+  it('turns fat arrow class methods referencing `arguments` into methods bound in the constructor', () => {
+    check(`
+      class A
+        x: => arguments[0] + this
+    `, `
+      class A {
+        constructor() {
+          this.x = this.x.bind(this);
+        }
+      
+        x() { return arguments[0] + this; }
+      }
+    `);
+  });
+
   it('turns functions containing a `yield` statement into generator functions', () => {
     check(`
       -> yield fn()
@@ -146,6 +181,47 @@ describe('functions', () => {
       -> yield from fn()
     `, `
       (function*() { return yield* fn(); });
+    `);
+  });
+
+  it('turns fat arrow function containing a `yield` statement into a generator function with bind', () => {
+    check(`
+      => yield fn()
+    `, `
+      (function*() { return yield fn(); }.bind(this));
+    `);
+  });
+
+  it('correctly handles fat arrow object function values containing yield ', () => {
+    check(`
+      {
+        x: =>
+          yield fn()
+      }
+    `, `
+      ({
+        x: function*() {
+          return yield fn();
+        }.bind(this)
+      });
+    `);
+  });
+
+  it('correctly handles fat arrow class methods containing yield', () => {
+    check(`
+      class C
+        x: =>
+          yield fn()
+    `, `
+      class C {
+        constructor() {
+          this.x = this.x.bind(this);
+        }
+      
+        *x() {
+          return yield fn();
+        }
+      }
     `);
   });
 

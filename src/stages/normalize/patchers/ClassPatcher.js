@@ -108,7 +108,8 @@ export default class ClassPatcher extends NodePatcher {
     if (this.isClassAssignment(patcher.node)) {
       if (patcher.node.expression.type === 'Function' ||
           patcher.node.expression.type === 'BoundFunction' ||
-          patcher.node.expression.type === 'GeneratorFunction') {
+          patcher.node.expression.type === 'GeneratorFunction' ||
+          patcher.node.expression.type === 'BoundGeneratorFunction') {
         return true;
       }
     }

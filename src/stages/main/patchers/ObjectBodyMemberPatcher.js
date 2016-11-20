@@ -1,8 +1,10 @@
 import BoundFunctionPatcher from './BoundFunctionPatcher.js';
+import BoundGeneratorFunctionPatcher from './BoundGeneratorFunctionPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
 import GeneratorFunctionPatcher from './GeneratorFunctionPatcher.js';
 import HerestringPatcher from './HerestringPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
+import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
 import StringPatcher from './StringPatcher.js';
 import TemplateLiteralPatcher from './TemplateLiteralPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
@@ -53,11 +55,9 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
       //                                     ^
       this.insert(this.key.outerEnd, ']');
     }
-    if (!this.isBoundMethod()) {
-      // `{ ['hi there']: ->` → `{ ['hi there']->`
-      //                ^^
-      this.remove(this.key.outerEnd, this.expression.outerStart);
-    }
+    // `{ ['hi there']: ->` → `{ ['hi there']->`
+    //                ^^
+    this.remove(this.key.outerEnd, this.expression.outerStart);
     // The function expression might be surrounded by parens, so remove them if
     // necessary.
     this.remove(this.expression.outerStart, this.expression.contentStart);
@@ -118,23 +118,31 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   }
 
   /**
+   * In normal object bodies, we can use method syntax for normal arrow
+   * functions and for normal generator functions. If we need to explicitly add
+   * `.bind(this)`, then we won't be able to use the method form. But for
+   * classes, since the binding is done in the constructor, we can still use
+   * method syntax, so ClassAssignOpPatcher overrides this method for that case.
+   * We also allow ClassBoundMethodFunctionPatcher since that only comes up in
+   * the class case.
+   *
    * @protected
    */
   isMethod(): boolean {
-    return this.expression instanceof FunctionPatcher || this.isGeneratorMethod();
+    return this.expression instanceof FunctionPatcher &&
+        !(this.expression instanceof ManuallyBoundFunctionPatcher) &&
+        !(this.expression instanceof BoundFunctionPatcher);
   }
 
   /**
+   * Note that we include BoundGeneratorFunctionPatcher, even though the object
+   * case doesn't treat it as a method, since the class case should use a
+   * generator method.
+   *
    * @protected
    */
   isGeneratorMethod(): boolean {
-    return this.expression instanceof GeneratorFunctionPatcher;
-  }
-
-  /**
-   * @protected
-   */
-  isBoundMethod(): boolean {
-    return this.expression instanceof BoundFunctionPatcher;
+    return this.expression instanceof GeneratorFunctionPatcher ||
+      this.expression instanceof BoundGeneratorFunctionPatcher;
   }
 }

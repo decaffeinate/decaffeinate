@@ -1,5 +1,6 @@
 import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
+import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
 import ThisPatcher from './ThisPatcher.js';
@@ -102,7 +103,19 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   isBoundInstanceMethod(): boolean {
     return (
       !this.isStaticMethod() &&
-      this.expression.node.type === 'BoundFunction'
+      (this.expression.node.type === 'BoundFunction' ||
+        this.expression.node.type === 'BoundGeneratorFunction')
     );
+  }
+
+  /**
+   * For classes, unlike in objects, manually bound methods can use regular
+   * method syntax because the bind happens in the constructor.
+   *
+   * @protected
+   */
+  isMethod(): boolean {
+    return this.expression instanceof ManuallyBoundFunctionPatcher ||
+      super.isMethod();
   }
 }
