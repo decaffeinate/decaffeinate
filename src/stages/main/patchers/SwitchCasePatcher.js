@@ -5,11 +5,14 @@ import { BREAK, COMMA, THEN, WHEN } from 'coffee-lex';
 export default class SwitchCasePatcher extends NodePatcher {
   conditions: Array<NodePatcher>;
   consequent: ?NodePatcher;
-  
+
+  negated: boolean;
+
   constructor(node: Node, context: ParseContext, editor: Editor, conditions: Array<NodePatcher>, consequent: NodePatcher) {
     super(node, context, editor);
     this.conditions = conditions;
     this.consequent = consequent;
+    this.negated = false;
   }
 
   initialize() {
@@ -32,6 +35,9 @@ export default class SwitchCasePatcher extends NodePatcher {
       // `a b c then d` → `case a: case b: case c: then d`
       //                   ^^^^^ ^^^^^^^ ^^^^^^^ ^
       this.insert(condition.outerStart, 'case ');
+      if (this.negated) {
+        condition.negate();
+      }
       condition.patch({ leftBrace: false, rightBrace: false });
       this.insert(condition.outerEnd, ':');
     });
@@ -85,8 +91,12 @@ export default class SwitchCasePatcher extends NodePatcher {
     this.patchAsStatement();
   }
 
+  /**
+   * Don't actually negate the conditions until just before patching, since
+   * otherwise we might accidentally overwrite a ! character that gets inserted.
+   */
   negate() {
-    this.conditions.forEach(condition => condition.negate());
+    this.negated = !this.negated;
   }
 
   /**
