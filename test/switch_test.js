@@ -234,6 +234,25 @@ describe('switch', () => {
     `);
   });
 
+  it('converts a switch without an expression with function call cases', () => {
+    check(`
+      switch
+        when a()
+          'B'
+        when c()
+          'D'
+    `, `
+      switch (false) {
+        case !a():
+          'B';
+          break;
+        case !c():
+          'D';
+          break;
+      }
+    `);
+  });
+
   it('works with `switch` used as an expression', () => {
     check(`
       a = switch b
