@@ -73,6 +73,10 @@ export default class ConditionalPatcher extends NodePatcher {
       addParens ? '(' : ''
     );
 
+    if (this.node.isUnless) {
+      this.condition.negate();
+    }
+
     this.condition.patch();
 
     let thenTokenIndex = this.getThenTokenIndex();

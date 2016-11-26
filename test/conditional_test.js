@@ -335,6 +335,30 @@ describe('conditionals', () => {
     `);
   });
 
+  it('works with `unless` in an expression context', () => {
+    check(`
+      x = (a unless b)
+    `, `
+      let x = (!b ? a : undefined);
+    `);
+  });
+
+  it('works with `unless` in an object value (#566)', () => {
+    check(`
+      isValid = true
+
+      testing = {
+          test: "Hello world" unless isValid
+      }
+    `, `
+      let isValid = true;
+
+      let testing = {
+          test: !isValid ? "Hello world" : undefined
+      };
+    `);
+  });
+
   it('surrounds the conditional expression in parens as part of a binary expression', () => {
     check(`
       a + if b then c else d
