@@ -89,7 +89,7 @@ export default class StringPatcher extends NodePatcher {
    * be removed according to the lexing rules. In addition to STRING_PADDING
    * tokens, which indicate that the range should be removed, there are also
    * STRING_LINE_SEPARATOR tokens that indicate that the newlines should be
-   * replace with a space.
+   * replaced with a space.
    *
    * To preserve the formatting of multiline strings a little better, newline
    * characters are escaped rather than removed.
