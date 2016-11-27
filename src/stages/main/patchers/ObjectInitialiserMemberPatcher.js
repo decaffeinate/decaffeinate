@@ -1,5 +1,6 @@
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
+import StringPatcher from './StringPatcher.js';
 import ThisPatcher from './ThisPatcher.js';
 
 /**
@@ -21,8 +22,8 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
    */
   patchAsShorthand({ expand=false }={}) {
     let { key } = this;
-    key.patch();
     if (key instanceof MemberAccessOpPatcher) {
+      key.patch();
       // e.g. `{ @name }`
       let memberAccessKey = (key: MemberAccessOpPatcher);
       if (!(memberAccessKey.expression instanceof ThisPatcher)) {
@@ -37,20 +38,29 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
         `${memberAccessKey.getMemberName()}: `
       );
     } else if (expand) {
-      let isComputed = !key.isRepeatable();
+      let isComputed = key instanceof StringPatcher && key.shouldBecomeTemplateLiteral();
 
       if (isComputed) {
-        // `{ `a = ${1 + 1}` }` → `{ [`a = ${1 + 1}`] }`
-        //                           ^              ^
+        // `{ `a = ${1 + 1}` }` → `{ [`a = ${1 + 1}` }`
+        //                           ^
         this.insert(key.outerStart, '[');
+      }
+
+      let valueCode;
+      if (key.isRepeatable()) {
+        valueCode = key.patchAndGetCode();
+      } else {
+        key.patch();
+        valueCode = key.makeRepeatable();
+      }
+
+      if (isComputed) {
         this.insert(key.outerEnd, ']');
       }
 
-      let keyAgain = key.makeRepeatable();
-
       // `{ a } → { a: a }`
       //             ^^^
-      this.insert(key.outerEnd, `: ${keyAgain}`);
+      this.insert(key.outerEnd, `: ${valueCode}`);
     }
   }
 }

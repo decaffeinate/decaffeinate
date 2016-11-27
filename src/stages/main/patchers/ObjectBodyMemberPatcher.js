@@ -2,11 +2,9 @@ import BoundFunctionPatcher from './BoundFunctionPatcher.js';
 import BoundGeneratorFunctionPatcher from './BoundGeneratorFunctionPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
 import GeneratorFunctionPatcher from './GeneratorFunctionPatcher.js';
-import HerestringPatcher from './HerestringPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
 import StringPatcher from './StringPatcher.js';
-import TemplateLiteralPatcher from './TemplateLiteralPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 
@@ -77,9 +75,9 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
       computedKeyPatcher.patch();
       this.overwrite(computedKeyPatcher.outerEnd, this.key.outerEnd, ']');
     } else {
-      let needsBrackets = !(this.key instanceof StringPatcher) &&
-        !(this.key instanceof IdentifierPatcher) &&
-        !(this.key instanceof HerestringPatcher && !this.key.stringContainsNewline());
+      let needsBrackets =
+        !(this.key instanceof StringPatcher && !this.key.shouldBecomeTemplateLiteral()) &&
+        !(this.key instanceof IdentifierPatcher);
       if (needsBrackets) {
         this.insert(this.key.outerStart, '[');
       }
@@ -96,7 +94,7 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
    * gets the patcher for that computed key node, if any.
    */
   getComputedKeyPatcher() {
-    if (this.key instanceof TemplateLiteralPatcher &&
+    if (this.key instanceof StringPatcher &&
         this.key.quasis.length === 2 &&
         this.key.expressions.length === 1 &&
         this.key.quasis[0].node.data === '' &&

@@ -25,7 +25,6 @@ import ForInPatcher from './patchers/ForInPatcher.js';
 import ForOfPatcher from './patchers/ForOfPatcher.js';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher.js';
 import FunctionPatcher from './patchers/FunctionPatcher.js';
-import HerestringPatcher from './patchers/HerestringPatcher.js';
 import IdentifierPatcher from './patchers/IdentifierPatcher.js';
 import InOpPatcher from './patchers/InOpPatcher.js';
 import InstanceofOpPatcher from './patchers/InstanceofOpPatcher.js';
@@ -56,7 +55,6 @@ import StringPatcher from './patchers/StringPatcher.js';
 import SuperPatcher from './patchers/SuperPatcher.js';
 import SwitchCasePatcher from './patchers/SwitchCasePatcher.js';
 import SwitchPatcher from './patchers/SwitchPatcher.js';
-import TemplateLiteralPatcher from './patchers/TemplateLiteralPatcher.js';
 import ThisPatcher from './patchers/ThisPatcher.js';
 import ThrowPatcher from './patchers/ThrowPatcher.js';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage.js';
@@ -88,6 +86,7 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'PostDecrementOp':
       case 'PreIncrementOp':
       case 'PreDecrementOp':
+      case 'Quasi':
         return PassthroughPatcher;
 
       case 'FunctionApplication':
@@ -200,17 +199,11 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'LogicalNotOp':
         return LogicalNotOpPatcher;
 
-      case 'TemplateLiteral':
-        return TemplateLiteralPatcher;
-
       case 'SoakedMemberAccessOp':
         return SoakedMemberAccessOpPatcher;
 
       case 'SoakedDynamicMemberAccessOp':
         return SoakedDynamicMemberAccessOpPatcher;
-
-      case 'Herestring':
-        return HerestringPatcher;
 
       case 'ForIn':
         return ForInPatcher;

@@ -2,7 +2,6 @@ import ArrayInitialiserPatcher from './ArrayInitialiserPatcher.js';
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
-import HerestringPatcher from './HerestringPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import StringPatcher from './StringPatcher.js';
@@ -45,8 +44,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
         !(this.right instanceof DynamicMemberAccessOpPatcher) &&
         !(this.right instanceof FunctionApplicationPatcher) &&
         !(this.right instanceof ArrayInitialiserPatcher) &&
-        !(this.right instanceof StringPatcher) &&
-        !(this.right instanceof HerestringPatcher);
+        !(this.right instanceof StringPatcher);
 
     this.left.patch();
     let leftCode = this.slice(this.left.contentStart, this.left.contentEnd);
