@@ -677,6 +677,13 @@ export default class NodePatcher {
   }
 
   /**
+   * Gets the first token in the content of this node.
+   */
+  firstToken() {
+    return this.sourceTokenAtIndex(this.contentStartTokenIndex);
+  }
+
+  /**
    * Gets the last token in the content of this node.
    */
   lastToken() {

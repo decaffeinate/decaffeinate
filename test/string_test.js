@@ -34,7 +34,7 @@ describe('strings', () => {
   });
 
   it('removes a leading newline in triple-quoted strings', () => {
-    check(`'''\na'''`, `'a';`);
+    check(`'''\na'''`, '`\\\na`;');
   });
 
   it('escapes backticks when changing the quote type', () => {
@@ -42,15 +42,15 @@ describe('strings', () => {
   });
 
   it('strips shared leading spaces for each line of multi-line triple-quoted strings', () => {
-    check('"""\n  a\n  b\n   c\n"""', '`a\nb\n c`;');
+    check('"""\n  a\n  b\n   c\n"""', '`\\\na\nb\n c\\\n`;');
   });
 
   it('ignores empty lines for indent-stripping purposes', () => {
-    check('"""\n  a\n\n   c\n"""', '`a\n\n c`;');
+    check('"""\n  a\n\n   c\n"""', '`\\\na\n\n c\\\n`;');
   });
 
   it('works with multi-line strings containing all empty lines by stripping the first and last', () => {
-    check('"""\n\n\n\n"""', '`\n\n`;');
+    check('"""\n\n\n\n"""', '`\\\n\n\n\\\n`;');
   });
 
   it('works when the triple-quoted string is indented', () => {
@@ -60,8 +60,10 @@ describe('strings', () => {
            bar
           """
     `, `
-      let a = \`foo
-      bar\`;
+      let a = \`\\
+      foo
+      bar\\
+      \`;
     `);
   });
 
@@ -91,7 +93,9 @@ describe('strings', () => {
            multi line
            string"
       `, `
-      let a = "this is a multi line string";
+      let a = \`this is a \\
+      multi line \\
+      string\`;
     `);
   });
 
@@ -101,7 +105,19 @@ describe('strings', () => {
           multi line
           string")
       `, `
-      fn("this is a multi line string");
+      fn(\`this is a \\
+      multi line \\
+      string\`);
+    `);
+  });
+
+  it('allows escaping newlines in double-quoted strings', () => {
+    check(`
+      a = "a\\
+      b"
+      `, `
+      let a = \`a\\
+      b\`;
     `);
   });
 });

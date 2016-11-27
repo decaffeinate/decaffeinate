@@ -22,7 +22,7 @@ describe('string interpolation', () => {
   });
 
   it('handles multi-line triple-quoted strings correctly', () => {
-    check('a = """\n     #{b}\n     c\n    """', 'let a = `${b}\nc`;');
+    check('a = """\n     #{b}\n     c\n    """', 'let a = `\\\n${b}\nc\\\n`;');
   });
 
   it('handles double quotes inside triple-double quotes', () => {
@@ -31,7 +31,9 @@ describe('string interpolation', () => {
       bar="#{bar}"
       """
     `, `
-      let a=\`bar="\${bar}"\`;
+      let a=\`\\
+      bar="\${bar}"\\
+      \`;
     `);
   });
 
@@ -69,8 +71,10 @@ describe('string interpolation', () => {
       \${b}
       """
     `, `
-      \`\\\${a}
-      \\\${b}\`;
+      \`\\
+      \\\${a}
+      \\\${b}\\
+      \`;
     `);
   });
 
@@ -109,8 +113,38 @@ describe('string interpolation', () => {
         #{b}
         """
     `, `
-      \`a
-      \${b}\`;
+      \`\\
+      a
+      \${b}\\
+      \`;
+    `);
+  });
+
+  it('does not strip leading whitespace in an edge case in interpolated strings (#556)', () => {
+    check(`
+      """    a
+      b#{c}
+      """
+    `, `
+      \`    a
+      b\${c}\\
+      \`;
+    `);
+  });
+
+  it('removes newlines from multiline double-quoted strings (#554)', () => {
+    check(`
+      "
+      a
+      #{b}
+      c
+      "
+    `, `
+      \`\\
+      a \\
+      \${b} \\
+      c\\
+      \`;
     `);
   });
 });

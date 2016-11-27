@@ -266,8 +266,16 @@ describe('objects', () => {
     check(`
       x = {"a#{b}c"}
     `, `
+      let x = {[\`a\${b}c\`]: \`a\${b}c\`};
+    `);
+  });
+
+  it('expands shorthand string-key computed object members with a non-repeatable interpolation', () => {
+    check(`
+      x = {"a#{b()}c"}
+    `, `
       let ref;
-      let x = {[ref = \`a\${b}c\`]: ref};
+      let x = {[ref = \`a\${b()}c\`]: ref};
     `);
   });
 

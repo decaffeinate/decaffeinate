@@ -1,67 +1,120 @@
-import PassthroughPatcher from './../../../patchers/PassthroughPatcher.js';
-import { parseMultilineString } from '../../../utils/parseMultilineString.js';
+import { INTERPOLATION_START, STRING_LINE_SEPARATOR, STRING_PADDING, TSSTRING_START, TDSTRING_START } from 'coffee-lex';
+import repeat from 'repeating';
 
-export default class StringPatcher extends PassthroughPatcher {
-  patchAsExpression() {
-    if (this.node.raw.indexOf('\n') >= 0) {
-      patchMultilineString(this, this.node.raw, this.contentStart);
+import NodePatcher from './../../../patchers/NodePatcher.js';
+import escape from '../../../utils/escape.js';
+
+/**
+ * Patcher to handle all types of strings, whether or not they have
+ * interpolations and whether or not they are multiline.
+ */
+export default class StringPatcher extends NodePatcher {
+  quasis: Array<NodePatcher>;
+  expressions: Array<NodePatcher>;
+
+  constructor(node: Node, context: ParseContext, editor: Editor, quasis: Array<NodePatcher>, expressions: Array<NodePatcher>) {
+    super(node, context, editor);
+    this.quasis = quasis;
+    this.expressions = expressions;
+  }
+
+  initialize() {
+    for (let expression of this.expressions) {
+      expression.setRequiresExpression();
     }
   }
 
-  patch(options={}) {
-    super.patch(options);
-    // This is copied from NodePatcher.js, we need functionality from
-    // both PassthroughPatcher and NodePatcher for this patcher to work.
-    this.withPrettyErrors(() => {
-      if (this.forcedToPatchAsExpression()) {
-        this.patchAsForcedExpression(options);
-      } else if (this.willPatchAsExpression()) {
-        this.patchAsExpression(options);
-      } else {
-        this.patchAsStatement(options);
+  patchAsExpression() {
+    let shouldBecomeTemplateLiteral = this.shouldBecomeTemplateLiteral();
+
+    let escapeStrings = [];
+    let openQuoteToken = this.firstToken();
+    let closeQuoteToken = this.lastToken();
+
+    if (shouldBecomeTemplateLiteral) {
+      escapeStrings.push('`');
+      escapeStrings.push('${');
+      this.overwrite(openQuoteToken.start, openQuoteToken.end, '`');
+      this.overwrite(closeQuoteToken.start, closeQuoteToken.end, '`');
+    } else if (openQuoteToken.type === TSSTRING_START) {
+      escapeStrings.push('\'');
+      this.overwrite(openQuoteToken.start, openQuoteToken.end, '\'');
+      this.overwrite(closeQuoteToken.start, closeQuoteToken.end, '\'');
+    } else if (openQuoteToken.type === TDSTRING_START) {
+      escapeStrings.push('"');
+      this.overwrite(openQuoteToken.start, openQuoteToken.end, '"');
+      this.overwrite(closeQuoteToken.start, closeQuoteToken.end, '"');
+    }
+
+    for (let i = 0; i < this.expressions.length; i++) {
+      let interpolationStart = this.getInterpolationStartTokenAtIndex(i);
+      this.overwrite(interpolationStart.start, interpolationStart.start + 1, '$');
+      this.expressions[i].patch();
+    }
+
+    this.removePadding();
+
+    if (escapeStrings.length > 0) {
+      for (let quasi of this.quasis) {
+        escape(
+          this.editor,
+          escapeStrings,
+          // For now, clamp the quasi bounds to be strictly between the quotes.
+          // Ideally, decaffeinate-parser would provide better location data
+          // that would make this unnecessary.
+          Math.max(quasi.contentStart, openQuoteToken.end),
+          Math.min(quasi.contentEnd, closeQuoteToken.start),
+        );
       }
-    });
+    }
   }
-}
 
-/* convert a multi line string encosed in single or double quotes (not
- * triple quoted) to es6 ensuring that the string produced will be
- * identical to the es5 output produced by coffee-script.
- */
-function patchMultilineString(patcher, characters, start) {
-  let lines = parseMultilineString(characters, start, 1);
+  getInterpolationStartTokenAtIndex(index: number): SourceToken {
+    let interpolationStartIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+      this.quasis[index], this.expressions[index], token => token.type === INTERPOLATION_START
+    );
+    if (!interpolationStartIndex) {
+      this.error('Cannot find interpolation start for string interpolation.');
+    }
+    let interpolationStart = this.sourceTokenAtIndex(interpolationStartIndex);
+    if (!interpolationStart ||
+      this.slice(interpolationStart.start, interpolationStart.start + 1) !== '#') {
+      this.error("Cannot find '#' in interpolation start.");
+    }
+    return interpolationStart;
+  }
 
-  lines.forEach(line => {
-    if (line.first) {
-      if (!line.empty && !line.next.empty) {
-        patcher.overwrite(line.textEnd + 1, line.end, ' ');
-      } else if (!line.empty && line.next.empty) {
-        patcher.remove(line.textEnd + 1, line.end);
-      } else if (line.empty) {
-        patcher.remove(line.start, line.end);
-      }
-    } else if (line.last) {
-      if (line.textStart !== null && line.textStart !== line.start) {
-        patcher.remove(line.start, line.textStart);
-      } else if (line.textStart === null && line.textEnd === null && line.length !== 0) {
-        patcher.remove(line.start - 1, line.end);
-      }
-    } else {
-      if (!line.empty && !line.next.empty) {
-        patcher.overwrite(line.textEnd + 1, line.end, ' ');
-        patcher.remove(line.start, line.textStart);
-      } else if (!line.empty && line.next.empty) {
-        patcher.remove(line.textEnd + 1, line.end);
-        patcher.remove(line.start, line.textStart);
-      } else if (line.empty && line.next.empty) {
-        patcher.remove(line.start, line.end);
-      } else if (line.empty && !line.next.empty) {
-        if (line.prev.empty) {
-          patcher.remove(line.start, line.end);
-        } else {
-          patcher.overwrite(line.start, line.end, ' ');
+  /**
+   * Handle "padding" characters: characters like leading whitespace that should
+   * be removed according to the lexing rules. In addition to STRING_PADDING
+   * tokens, which indicate that the range should be removed, there are also
+   * STRING_LINE_SEPARATOR tokens that indicate that the newlines should be
+   * replace with a space.
+   *
+   * To preserve the formatting of multiline strings a little better, newline
+   * characters are escaped rather than removed.
+   */
+  removePadding() {
+    for (let quasi of this.quasis) {
+      let tokens = this.getProgramSourceTokens().slice(
+        quasi.contentStartTokenIndex, quasi.contentEndTokenIndex.next()).toArray();
+      for (let token of tokens) {
+        if (token.type === STRING_PADDING) {
+          let paddingCode = this.slice(token.start, token.end);
+          let numNewlines = (paddingCode.match(/\n/g) || []).length;
+          this.overwrite(token.start, token.end, repeat('\\\n', numNewlines));
+        } else if (token.type === STRING_LINE_SEPARATOR) {
+          this.insert(token.start, ' \\');
         }
       }
     }
-  });
+  }
+
+  isRepeatable() {
+    return this.expressions.every(patcher => patcher.isRepeatable());
+  }
+
+  shouldBecomeTemplateLiteral() {
+    return this.expressions.length > 0 || this.node.raw.indexOf('\n') > -1;
+  }
 }
