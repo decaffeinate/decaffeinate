@@ -14,7 +14,7 @@ export default function escape(patcher: MagicString, characters: Array<string>|(
     if (source[i] === '\\') {
       i++;
     } else if (predicate(source[i], i, source)) {
-      patcher.insertRight(i, '\\');
+      patcher.appendRight(i, '\\');
     }
   }
 }
