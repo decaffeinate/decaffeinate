@@ -52,7 +52,7 @@ export default class ConditionalPatcher extends NodePatcher {
     if (ifToken) {
       let consequentCode = this.slice(this.consequent.outerStart, this.consequent.outerEnd);
       this.remove(this.consequent.outerStart, ifToken.start);
-      this.insertRight(this.condition.outerEnd, ` then ${consequentCode}`);
+      this.insert(this.condition.outerEnd, ` then ${consequentCode}`);
     }
   }
 
