@@ -75,6 +75,7 @@ const ORDER = {
   GeneratorFunction: ['parameters', 'body'],
   GTEOp: ['left', 'right'],
   GTOp: ['left', 'right'],
+  Heregex: ['quasis', 'expressions'],
   Identifier: [],
   InOp: ['left', 'right'],
   InstanceofOp: ['left', 'right'],

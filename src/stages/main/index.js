@@ -25,6 +25,7 @@ import ForInPatcher from './patchers/ForInPatcher.js';
 import ForOfPatcher from './patchers/ForOfPatcher.js';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher.js';
 import FunctionPatcher from './patchers/FunctionPatcher.js';
+import HeregexPatcher from './patchers/HeregexPatcher.js';
 import IdentifierPatcher from './patchers/IdentifierPatcher.js';
 import InOpPatcher from './patchers/InOpPatcher.js';
 import InstanceofOpPatcher from './patchers/InstanceofOpPatcher.js';
@@ -188,6 +189,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'RegExp':
         return RegExpPatcher;
+
+      case 'Heregex':
+        return HeregexPatcher;
 
       case 'ExistsOp':
         return ExistsOpPatcher;
