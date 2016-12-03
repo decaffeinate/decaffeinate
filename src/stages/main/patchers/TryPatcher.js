@@ -190,7 +190,7 @@ export default class TryPatcher extends NodePatcher {
    * @private
    */
   getThenTokenIndex(): ?SourceTokenListIndex {
-    if (!this.catchAssignee && !this.catchBody) {
+    if (!this.catchBody) {
       return null;
     }
     return this.indexOfSourceTokenBetweenPatchersMatching(

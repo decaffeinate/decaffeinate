@@ -176,4 +176,31 @@ describe('try', () => {
       finally {}
     `);
   });
+
+  it('handles try with an empty catch block with a catch variable', () => {
+    check(`
+      try
+        something()
+      catch err
+    `, `
+      try {
+        something();
+      } catch (err) {}
+    `);
+  });
+
+
+  it('handles try with an empty catch block with a catch variable and an empty finally block', () => {
+    check(`
+      try
+        something()
+      catch err
+      finally
+    `, `
+      try {
+        something();
+      } catch (err) {}
+      finally {}
+    `);
+  });
 });
