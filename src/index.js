@@ -17,9 +17,16 @@ import resolveToPatchError from './utils/resolveToPatchError.js';
 export { default as run } from './cli';
 export { PatchError };
 
-type Options = {
+export type Options = {
   filename: ?string,
   runToStage: ?string,
+  keepCommonJS: ?boolean,
+};
+
+const DEFAULT_OPTIONS = {
+  filename: 'input.coffee',
+  runToStage: null,
+  keepCommonJS: false,
 };
 
 type ConversionResult = {
@@ -29,7 +36,7 @@ type ConversionResult = {
 
 type Stage = {
   name: string;
-  run: (content: string, filename: string) => { code: string, map: Object }
+  run: (content: string, options: Options) => { code: string, map: Object }
 };
 
 /**
@@ -37,6 +44,7 @@ type Stage = {
  * and formatting.
  */
 export function convert(source: string, options: ?Options={}): ConversionResult {
+  options = Object.assign({}, DEFAULT_OPTIONS, options);
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
   let stages = [
@@ -55,29 +63,27 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
       return convertCustomStage(source, runToStage);
     }
   }
-  let result = runStages(source, options.filename || 'input.coffee', stages);
+  let result = runStages(source, options, stages);
   result.code = convertNewlines(result.code, originalNewlineStr);
   return result;
 }
 
-function runStages(initialContent: string, initialFilename: string, stages: Array<Stage>): ConversionResult {
+function runStages(initialContent: string, options: Options, stages: Array<Stage>): ConversionResult {
   let maps = [];
   let content = initialContent;
-  let filename = initialFilename;
   stages.forEach(stage => {
-    let { code, map } = runStage(stage, content, filename);
+    let { code, map } = runStage(stage, content, options);
     if (code !== content) {
       maps.push(map);
       content = code;
-      filename = map.file;
     }
   });
   return { code: content, maps };
 }
 
-function runStage(stage: Stage, content: string, filename: string): { code: string, map: Object } {
+function runStage(stage: Stage, content: string, options: Options): { code: string, map: Object } {
   try {
-    return stage.run(content, filename);
+    return stage.run(content, options);
   } catch (err) {
     let patchError = resolveToPatchError(err, content, stage.name);
     if (patchError !== null) {

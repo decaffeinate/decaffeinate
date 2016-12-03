@@ -3,12 +3,12 @@ import stripSharedIndent from '../../src/utils/stripSharedIndent.js';
 import { convert } from '../../'; // eslint-disable-line decaffeinate/require-import-extension
 import { strictEqual } from 'assert';
 
-export default function check(source, expected) {
+export default function check(source, expected, options={}) {
   if (source[0] === '\n') { source = stripSharedIndent(source); }
   if (expected[0] === '\n') { expected = stripSharedIndent(expected); }
 
   try {
-    let converted = convert(source);
+    let converted = convert(source, options);
     strictEqual(converted.code, expected);
   } catch (err) {
     if (PatchError.detect(err)) {
