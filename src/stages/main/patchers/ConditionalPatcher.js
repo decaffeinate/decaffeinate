@@ -148,6 +148,10 @@ export default class ConditionalPatcher extends NodePatcher {
     this.insert(this.innerEnd, `\n${baseIndent}})()`);
   }
 
+  canHandleImplicitReturn(): boolean {
+    return this.willPatchAsIIFE();
+  }
+
   patchAsStatement() {
     this.patchConditionForStatement();
     this.patchConsequentForStatement();

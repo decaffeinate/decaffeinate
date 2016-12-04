@@ -95,6 +95,10 @@ export default class ForInPatcher extends ForPatcher {
     return true;
   }
 
+  willPatchAsIIFE(): boolean {
+    return this.willPatchAsExpression() && !this.canPatchAsMapExpression();
+  }
+
   patchAsStatement() {
     if (!this.body.inline()) {
       this.body.setIndent(this.getLoopBodyIndent());

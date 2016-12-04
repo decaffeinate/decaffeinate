@@ -116,6 +116,14 @@ export default class LoopPatcher extends NodePatcher {
     return this.willPatchAsExpression() && this.body.node.inline;
   }
 
+  canHandleImplicitReturn(): boolean {
+    return this.willPatchAsIIFE();
+  }
+
+  willPatchAsIIFE(): boolean {
+    throw this.error(`'willPatchAsIIFE' must be overridden in subclasses`);
+  }
+
   /**
    * Most implicit returns cause program flow to break by using a `return`
    * statement, but we don't do that since we're just collecting values in
@@ -123,24 +131,7 @@ export default class LoopPatcher extends NodePatcher {
    * behavior accordingly.
    */
   implicitReturnWillBreak(): boolean {
-    if (this.willPatchAsExpression()) {
-      return false;
-    } else {
-      return super.implicitReturnWillBreak();
-    }
-  }
-
-  /**
-   * We decide how statements in implicit return positions are patched, if
-   * we're being used as an expression. This is because we don't want to return
-   * them, but add them to an array.
-   */
-  implicitReturnPatcher(): NodePatcher {
-    if (this.willPatchAsExpression()) {
-      return this;
-    } else {
-      return super.implicitReturnPatcher();
-    }
+    return false;
   }
 
   /**
