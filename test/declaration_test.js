@@ -140,4 +140,8 @@ describe('declarations', () => {
   it('adds pre-declarations and regular declarations together properly', () => {
     check('a = 1\nb = c = 2', 'let c;\nlet a = 1;\nlet b = c = 2;');
   });
+
+  it('uses const rather than let if specified', () => {
+    check('a = 1', 'const a = 1;', { preferConst: true });
+  });
 });
