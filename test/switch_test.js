@@ -387,4 +387,50 @@ describe('switch', () => {
       });
     `);
   });
+
+  it('handles switch expressions within simple for expressions', () => {
+    check(`
+      x = for a in b
+        switch a
+          when 'c'
+            d
+          else
+            e
+    `, `
+      let x = b.map((a) =>
+        (() => { switch (a) {
+          case 'c':
+            return d;
+          default:
+            return e;
+        } })());
+    `);
+  });
+
+  it('handles switch expressions within complex for expressions', () => {
+    check(`
+      x = for a in b by 1
+        y = switch a
+          when 'c'
+            d
+          else
+            e
+        y
+    `, `
+      let x = (() => {
+        let result = [];
+        for (let i = 0; i < b.length; i++) {
+          let a = b[i];
+          let y = (() => { switch (a) {
+            case 'c':
+              return d;
+            default:
+              return e;
+          } })();
+          result.push(y);
+        }
+        return result;
+      })();
+    `);
+  });
 });

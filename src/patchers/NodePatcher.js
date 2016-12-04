@@ -549,11 +549,38 @@ export default class NodePatcher {
   }
 
   /**
-   * Gets the ancestor that can make implicit returns explicit. Classes that
-   * override this method should override `implicitReturnWillBreak`.
+   * Gets the ancestor that will decide the current implicit return behavior.
+   * That ancestor will then have implicitReturnWillBreak,
+   * patchImplicitReturnStart, and patchImplicitReturnEnd methods that describe
+   * how to handle expressions in an implicit return position (usually they are
+   * just returned, but in the case of loop IIFEs, they will be added to a
+   * list).
    */
   implicitReturnPatcher(): NodePatcher {
-    return this.parent.implicitReturnPatcher();
+    if (this.canHandleImplicitReturn()) {
+      return this;
+    } else {
+      return this.parent.implicitReturnPatcher();
+    }
+  }
+
+  /**
+   * Subclasses should return true to declare themselves as the "handler" in an
+   * implicit return situation.
+   */
+  canHandleImplicitReturn(): boolean {
+    return false;
+  }
+
+  /**
+   * Determines whether the current patcher (which has already declared that it
+   * can be an implicit return patcher) will generate code that stops execution
+   * in the current block. In the normal case of a return statement, this is
+   * true, but in loop IIFEs, there might be e.g. an assignment, which means
+   * that the control flow won't necessarily stop.
+   */
+  implicitReturnWillBreak(): boolean {
+    return true;
   }
 
   /**
@@ -562,15 +589,6 @@ export default class NodePatcher {
   patchImplicitReturnStart(patcher: NodePatcher) {
     patcher.setRequiresExpression();
     this.insert(patcher.outerStart, 'return ');
-  }
-
-  /**
-   * Determines whether the implicit return code will stop execution of
-   * statements in the current block. Classes that override this method should
-   * also override `implicitReturnPatcher`.
-   */
-  implicitReturnWillBreak(): boolean {
-    return this.parent.implicitReturnWillBreak();
   }
 
   /**

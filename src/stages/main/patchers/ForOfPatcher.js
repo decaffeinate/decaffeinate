@@ -100,4 +100,9 @@ export default class ForOfPatcher extends ForPatcher {
   indexBindingCandidates(): Array<string> {
     return ['key'];
   }
+
+  willPatchAsIIFE(): boolean {
+    return this.willPatchAsExpression();
+  }
 }
+

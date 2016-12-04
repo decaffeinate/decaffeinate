@@ -188,14 +188,7 @@ export default class ProgramPatcher extends NodePatcher {
   /**
    * Serve as the implicit return patcher for anyone not included in a function.
    */
-  implicitReturnPatcher(): NodePatcher {
-    return this;
-  }
-
-  /**
-   * Serve as the default for anyone not included in a function.
-   */
-  implicitReturnWillBreak(): boolean {
+  canHandleImplicitReturn(): boolean {
     return true;
   }
 }

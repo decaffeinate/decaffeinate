@@ -161,4 +161,8 @@ export default class WhilePatcher extends LoopPatcher {
       return this.getOuterLoopBodyIndent();
     }
   }
+
+  willPatchAsIIFE(): boolean {
+    return this.willPatchAsExpression();
+  }
 }

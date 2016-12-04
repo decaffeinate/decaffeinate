@@ -546,4 +546,36 @@ describe('conditionals', () => {
       if (a) { (b);} else { c; }
     `)
   );
+
+  it('handles an IIFE conditional within an IIFE for loop', () =>
+    check(`
+      x = for a in b by 1
+        y = 
+          if a
+            if b
+              c
+          else
+            d
+        y
+    `, `
+      let x = (() => {
+        let result = [];
+        for (let i = 0; i < b.length; i++) {
+          let a = b[i];
+          let y = 
+            (() => {
+            if (a) {
+              if (b) {
+                return c;
+              }
+            } else {
+              return d;
+            }
+          })();
+          result.push(y);
+        }
+        return result;
+      })();
+    `)
+  );
 });

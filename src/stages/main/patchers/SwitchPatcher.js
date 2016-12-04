@@ -72,6 +72,10 @@ export default class SwitchPatcher extends NodePatcher {
     this.appendToEndOfLine(' })()');
   }
 
+  canHandleImplicitReturn(): boolean {
+    return this.willPatchAsExpression();
+  }
+
   /**
    * @private
    */
