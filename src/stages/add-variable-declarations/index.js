@@ -2,9 +2,11 @@ import addVariableDeclarations from 'add-variable-declarations';
 import MagicString from 'magic-string';
 import { basename } from 'path';
 import { logger } from '../../utils/debug.js';
+import type { Options } from '../../index.js';
 
 export default class AddVariableDeclarationsStage {
-  static run(content: string, filename: string): { code: string, map: Object } {
+  static run(content: string, options: Options): { code: string, map: Object } {
+    let { filename } = options;
     let log = logger(this.name);
     log(content);
 

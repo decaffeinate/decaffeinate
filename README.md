@@ -30,7 +30,16 @@ are made.
 
 ## Usage
 
-See the output of `decaffeinate --help` after installing.
+```
+$ decaffeinate input.coffee
+input.coffee → input.js
+```
+
+Options:
+* `--keep-commonjs`: Do not convert `require` and `module.exports` to `import`
+  and `export`.
+
+For more usages examples, see the output of `decaffeinate --help`.
 
 [issues]: https://github.com/decaffeinate/decaffeinate/issues
 [conversion-guide]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md

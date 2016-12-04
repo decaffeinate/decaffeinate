@@ -5,6 +5,7 @@ import PatchError from './utils/PatchError.js';
 import type { Readable, Writable } from 'stream';
 import type { WriteStream } from 'tty';
 import { convert } from './index.js';
+import type { Options } from './index.js';
 import { join, dirname, basename, extname } from 'path';
 import { stat, readdir, createReadStream, createWriteStream } from 'fs';
 
@@ -15,18 +16,20 @@ export default function run(args: Array<string>) {
   let options = parseArguments(args);
 
   if (options.paths.length) {
-    runWithPaths(options.paths);
+    runWithPaths(options.paths, options.baseOptions);
   } else {
-    runWithStream('stdin', process.stdin, process.stdout);
+    runWithStream('stdin', process.stdin, process.stdout, options.baseOptions);
   }
 }
 
-type Options = {
-  paths: Array<string>
+type CLIOptions = {
+  paths: Array<string>,
+  baseOptions: Options,
 };
 
-function parseArguments(args: Array<string>): Options {
+function parseArguments(args: Array<string>): CLIOptions {
   let paths = [];
+  let baseOptions = {};
 
   for (let i = 0; i < args.length; i++) {
     let arg = args[i];
@@ -37,19 +40,23 @@ function parseArguments(args: Array<string>): Options {
         process.exit(0);
         break;
 
+      case '--keep-commonjs':
+        baseOptions.keepCommonJS = true;
+        break;
+
       default:
         paths.push(arg);
         break;
     }
   }
 
-  return { paths };
+  return { paths, baseOptions };
 }
 
 /**
  * Run decaffeinate on the given paths, changing them in place.
  */
-function runWithPaths(paths: Array<string>, callback: ?((errors: Array<Error>) => void)=null) {
+function runWithPaths(paths: Array<string>, baseOptions: Options, callback: ?((errors: Array<Error>) => void)=null) {
   let errors = [];
   let pending = paths.slice();
 
@@ -85,6 +92,7 @@ function runWithPaths(paths: Array<string>, callback: ?((errors: Array<Error>) =
       path,
       createReadStream(path, { encoding: 'utf8' }),
       createWriteStream(outputPath, { encoding: 'utf8' }),
+      baseOptions,
       err => {
         if (err) { errors.push(err); }
         processNext();
@@ -106,7 +114,7 @@ function runWithPaths(paths: Array<string>, callback: ?((errors: Array<Error>) =
 /**
  * Run decaffeinate reading from input and writing to corresponding output.
  */
-function runWithStream(name: string, input: Readable, output: Writable | WriteStream, callback: ?((error?: ?Error) => void) = null) {
+function runWithStream(name: string, input: Readable, output: Writable | WriteStream,  baseOptions: Options, callback: ?((error?: ?Error) => void) = null) {
   let error = null;
   let data = '';
 
@@ -116,8 +124,9 @@ function runWithStream(name: string, input: Readable, output: Writable | WriteSt
 
   input.on('end', () => {
     let converted;
+    let options = Object.assign({filename: name}, baseOptions);
     try {
-      converted = convert(data);
+      converted = convert(data, options);
     } catch (err) {
       if (PatchError.detect(err)) {
         console.error(`${name}: ${PatchError.prettyPrint(err)}`);
@@ -151,7 +160,8 @@ function usage() {
   console.log();
   console.log('OPTIONS');
   console.log();
-  console.log('  -h, --help     Display this help message.');
+  console.log('  -h, --help       Display this help message.');
+  console.log('  --keep-commonjs  Do not convert require and module.exports to import and export.');
   console.log();
   console.log('EXAMPLES');
   console.log();

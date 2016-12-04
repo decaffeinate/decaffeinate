@@ -6,9 +6,11 @@ import type { Node, ParseContext, Editor } from '../patchers/types.js';
 import { basename } from 'path';
 import { childPropertyNames } from '../utils/traverse.js';
 import { logger } from '../utils/debug.js';
+import type { Options } from '../index.js';
 
 export default class TransformCoffeeScriptStage {
-  static run(content: string, filename: string): { code: string, map: Object } {
+  static run(content: string, options: Options): { code: string, map: Object } {
+    let { filename } = options;
     let log = logger(this.name);
     log(content);
 

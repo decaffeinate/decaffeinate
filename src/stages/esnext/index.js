@@ -1,12 +1,18 @@
-import { convert } from 'esnext';
+import { allPlugins, convert } from 'esnext';
 import { logger } from '../../utils/debug.js';
+import type { Options } from '../../index.js';
 
 export default class EsnextStage {
-  static run(content: string): { code: string } {
+  static run(content: string, options: Options): { code: string } {
     let log = logger(this.name);
     log(content);
+    let plugins = allPlugins;
+    if (options.keepCommonJS) {
+      plugins = plugins.filter(plugin => plugin.name !== 'modules.commonjs');
+    }
 
     let { code } = convert(content, {
+      plugins,
       'declarations.block-scope': {
         disableConst({ node, parent }): boolean {
           return (
