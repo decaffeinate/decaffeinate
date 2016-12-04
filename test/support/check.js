@@ -1,6 +1,6 @@
 import PatchError from '../../src/utils/PatchError';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
-import { convert } from '../../';
+import { convert } from '../../src/index';
 import { strictEqual } from 'assert';
 
 export default function check(source, expected, options={}) {

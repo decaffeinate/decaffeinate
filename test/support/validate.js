@@ -1,7 +1,7 @@
 import * as babel from 'babel-core';
 import * as vm from 'vm';
 import { compile } from 'decaffeinate-coffeescript';
-import { convert, PatchError } from '../..';
+import { convert, PatchError } from '../../src/index';
 import { deepEqual } from 'assert';
 
 /**
