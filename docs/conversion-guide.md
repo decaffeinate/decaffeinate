@@ -7,7 +7,7 @@ JavaScript using decaffeinate.
 
 This guide assumes a few things:
 
-1. You have Node v0.12 or higher installed.
+1. You have Node v4 or higher installed.
 1. You have a project or set of files that currently compile using the
    official CoffeeScript compiler.
 1. Your project is able to run ES2016 code. In particular, depending on what

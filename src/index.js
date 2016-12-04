@@ -21,12 +21,14 @@ export type Options = {
   filename: ?string,
   runToStage: ?string,
   keepCommonJS: ?boolean,
+  preferConst: ?boolean,
 };
 
 const DEFAULT_OPTIONS = {
   filename: 'input.coffee',
   runToStage: null,
   keepCommonJS: false,
+  preferConst: false,
 };
 
 type ConversionResult = {

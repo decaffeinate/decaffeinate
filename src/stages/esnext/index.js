@@ -15,6 +15,9 @@ export default class EsnextStage {
       plugins,
       'declarations.block-scope': {
         disableConst({ node, parent }): boolean {
+          if (options.preferConst) {
+            return false;
+          }
           return (
             // Only use `const` for top-level variables…
             parent && parent.type !== 'Program' ||

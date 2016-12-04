@@ -44,7 +44,15 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.keepCommonJS = true;
         break;
 
+      case '--prefer-const':
+        baseOptions.preferConst = true;
+        break;
+
       default:
+        if (arg.startsWith('-')) {
+          console.error(`Error: unrecognized option '${arg}'`);
+          process.exit(1);
+        }
         paths.push(arg);
         break;
     }
@@ -162,6 +170,7 @@ function usage() {
   console.log();
   console.log('  -h, --help       Display this help message.');
   console.log('  --keep-commonjs  Do not convert require and module.exports to import and export.');
+  console.log('  --prefer-const   Use the const keyword for variables when possible.');
   console.log();
   console.log('EXAMPLES');
   console.log();
