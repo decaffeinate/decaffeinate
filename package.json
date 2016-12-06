@@ -44,6 +44,9 @@
     "magic-string": "^0.17.0",
     "repeating": "^2.0.0"
   },
+  "engines": {
+    "node": ">=4"
+  },
   "files": [
     "bin",
     "dist"
