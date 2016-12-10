@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 import { COMMA } from 'coffee-lex';
 import { isSemanticToken } from '../../../utils/types.js';
 
@@ -7,8 +7,8 @@ export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
   args: Array<NodePatcher>;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, fn: NodePatcher, args: Array<NodePatcher>) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, fn: NodePatcher, args: Array<NodePatcher>) {
+    super(patcherContext);
     this.fn = fn;
     this.args = args;
   }

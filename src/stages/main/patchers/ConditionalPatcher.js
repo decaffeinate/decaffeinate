@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
-import type { Node, SourceTokenListIndex, ParseContext, Editor } from './../../../patchers/types.js';
+import type { PatcherContext, SourceTokenListIndex } from './../../../patchers/types.js';
 import { ELSE, IF, THEN } from 'coffee-lex';
 
 export default class ConditionalPatcher extends NodePatcher {
@@ -8,8 +8,8 @@ export default class ConditionalPatcher extends NodePatcher {
   consequent: BlockPatcher;
   alternate: ?BlockPatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, consequent: BlockPatcher, alternate: ?BlockPatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: BlockPatcher, alternate: ?BlockPatcher) {
+    super(patcherContext);
     this.condition = condition;
     this.consequent = consequent;
     this.alternate = alternate;

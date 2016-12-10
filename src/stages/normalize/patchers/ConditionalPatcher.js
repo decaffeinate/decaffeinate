@@ -1,5 +1,5 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
-import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 import type { SourceTokenListIndex } from 'coffee-lex';
 import { IF } from 'coffee-lex';
 
@@ -17,8 +17,8 @@ export default class ConditionalPatcher extends NodePatcher {
   consequent: ?NodePatcher;
   alternate: ?NodePatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, consequent: NodePatcher, alternate: ?NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: NodePatcher, alternate: ?NodePatcher) {
+    super(patcherContext);
     this.condition = condition;
     this.consequent = consequent;
     this.alternate = alternate;

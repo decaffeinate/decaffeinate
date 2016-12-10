@@ -1,15 +1,15 @@
 import FunctionPatcher from './FunctionPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import ReturnPatcher from './ReturnPatcher.js';
-import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
 import { NEWLINE, SEMICOLON } from 'coffee-lex';
 
 export default class BlockPatcher extends NodePatcher {
   statements: Array<NodePatcher>;
   shouldPatchInline: ?boolean;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, statements: Array<NodePatcher>) {
+    super(patcherContext);
     this.statements = statements;
     this.shouldPatchInline = null;
   }

@@ -1,13 +1,13 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 import { CALL_START, CALL_END, COMMA, EXISTENCE, NEWLINE, RBRACE, RBRACKET, RPAREN } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
   args: Array<NodePatcher>;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, fn: NodePatcher, args: Array<NodePatcher>) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, fn: NodePatcher, args: Array<NodePatcher>) {
+    super(patcherContext);
     this.fn = fn;
     this.args = args;
   }

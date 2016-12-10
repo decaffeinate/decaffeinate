@@ -8,8 +8,8 @@ export default class InterpolatedPatcher extends NodePatcher {
   quasis: Array<NodePatcher>;
   expressions: Array<NodePatcher>;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, quasis: Array<NodePatcher>, expressions: Array<NodePatcher>) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, quasis: Array<NodePatcher>, expressions: Array<NodePatcher>) {
+    super(patcherContext);
     this.quasis = quasis;
     this.expressions = expressions;
   }

@@ -1,5 +1,5 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
-import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 /**
  * Normalizes `while` loops by rewriting post-`while` into standard `while`, e.g.
@@ -15,8 +15,8 @@ export default class WhilePatcher extends NodePatcher {
   guard: ?NodePatcher;
   body: NodePatcher;
   
-  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, condition: NodePatcher, guard: ?NodePatcher, body: NodePatcher) {
+    super(patcherContext);
     this.condition = condition;
     this.guard = guard;
     this.body = body;

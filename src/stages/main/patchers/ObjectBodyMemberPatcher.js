@@ -6,7 +6,7 @@ import IdentifierPatcher from './IdentifierPatcher.js';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
 import StringPatcher from './StringPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 /**
  * Handles object properties.
@@ -15,8 +15,8 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   key: NodePatcher;
   expression: NodePatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, key: NodePatcher, expression: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, key: NodePatcher, expression: NodePatcher) {
+    super(patcherContext);
     this.key = key;
     this.expression = expression;
   }

@@ -4,8 +4,8 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
   param: NodePatcher;
   value: NodePatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, param: NodePatcher, value: NodePatcher) {
-    super(node, context, editor, param, value);
+  constructor(patcherContext: PatcherContext, param: NodePatcher, value: NodePatcher) {
+    super(patcherContext, param, value);
     this.param = param;
     this.value = value;
   }

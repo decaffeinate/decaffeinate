@@ -1,6 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 /**
  * Handles constructs of the form `a < b < c < … < z`.
@@ -11,8 +11,8 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
   /**
    * `node` should have type `ChainedComparisonOp`.
    */
-  constructor(node: Node, context: ParseContext, editor: Editor, expression: BinaryOpPatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, expression: BinaryOpPatcher) {
+    super(patcherContext);
     this.expression = expression;
     this.negated = false;
   }

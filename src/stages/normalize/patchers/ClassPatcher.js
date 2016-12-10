@@ -1,15 +1,15 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import AssignOpPatcher from './AssignOpPatcher.js';
 
-import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 export default class ClassPatcher extends NodePatcher {
   nameAssignee: ?NodePatcher;
   superclass: ?NodePatcher;
   body: ?BlockPatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?BlockPatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?BlockPatcher) {
+    super(patcherContext);
     this.nameAssignee = nameAssignee;
     this.superclass = parent;
     this.body = body;

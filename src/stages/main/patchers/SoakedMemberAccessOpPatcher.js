@@ -9,8 +9,8 @@ const GUARD_HELPER =
 export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
   _shouldSkipSoakPatch: boolean;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {
-    super(node, context, editor, expression);
+  constructor(patcherContext: PatcherContext, expression: NodePatcher) {
+    super(patcherContext, expression);
     this._shouldSkipSoakPatch = false;
   }
 

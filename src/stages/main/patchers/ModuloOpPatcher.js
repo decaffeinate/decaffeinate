@@ -1,6 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 const MOD_HELPER =
   `function __mod__(a, b) {
@@ -16,8 +16,8 @@ export default class ModuloOpPatcher extends BinaryOpPatcher {
   /**
    * `node` is of type `ModuloOp`.
    */
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor, left, right);
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext, left, right);
   }
 
   patchAsExpression() {

@@ -1,5 +1,5 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
-import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
+import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
 import { FOR } from 'coffee-lex';
 
 export default class ForPatcher extends NodePatcher {
@@ -9,8 +9,8 @@ export default class ForPatcher extends NodePatcher {
   filter: ?NodePatcher;
   body: NodePatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, filter: ?NodePatcher, body: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, filter: ?NodePatcher, body: NodePatcher) {
+    super(patcherContext);
     this.keyAssignee = keyAssignee;
     this.valAssignee = valAssignee;
     this.target = target;

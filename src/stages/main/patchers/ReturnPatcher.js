@@ -1,11 +1,11 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 export default class ReturnPatcher extends NodePatcher {
   expression: NodePatcher;
   
-  constructor(node: Node, context: ParseContext, editor: Editor, expression: ?NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, expression: ?NodePatcher) {
+    super(patcherContext);
     this.expression = expression;
   }
 

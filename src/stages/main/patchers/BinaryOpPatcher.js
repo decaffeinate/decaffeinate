@@ -1,13 +1,13 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
 import { EXISTENCE, OPERATOR } from 'coffee-lex';
 
 export default class BinaryOpPatcher extends NodePatcher {
   left: NodePatcher;
   right: NodePatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext);
     this.left = left;
     this.right = right;
   }

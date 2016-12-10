@@ -6,8 +6,8 @@ export default class LoopPatcher extends NodePatcher {
   body: BlockPatcher;
   yielding: boolean;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, body: BlockPatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, body: BlockPatcher) {
+    super(patcherContext);
     this.body = body;
   }
 
