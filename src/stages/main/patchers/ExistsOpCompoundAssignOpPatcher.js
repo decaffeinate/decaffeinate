@@ -5,11 +5,7 @@ import traverse from '../../../utils/traverse.js';
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression() {
     let assigneeAgain;
-    let needsTypeofCheck = (
-      this.assignee instanceof IdentifierPatcher &&
-      !this.node.scope.hasBinding(this.assignee.node.data)
-    );
-    if (needsTypeofCheck) {
+    if (this.needsTypeofCheck()) {
       // `a ?= b` → `typeof a ?= b`
       //             ^^^^^^^
       this.insert(this.assignee.outerStart, `typeof `);
@@ -46,7 +42,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     }
 
     let assigneeAgain;
-    if (this.assignee instanceof IdentifierPatcher) {
+    if (this.needsTypeofCheck()) {
       // `a ?= b` → `if (typeof a ?= b`
       //             ^^^^^^^^^^^
       this.insert(this.assignee.outerStart, `if (typeof `);
@@ -77,6 +73,16 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     // `if (a.b == null) { a.b = b` → `if (a.b == null) { a.b = b; }`
     //                                                           ^^^
     this.insert(this.expression.outerEnd, `; }`);
+  }
+
+  /**
+   * Determine if we need to do `typeof a !== undefined && a !== null` rather
+   * than just `a != null`. We need to emit the more defensive version if the
+   * variable might not be declared.
+   */
+  needsTypeofCheck() {
+    return this.assignee instanceof IdentifierPatcher &&
+      !this.node.scope.hasBinding(this.assignee.node.data);
   }
 
   /**

@@ -404,7 +404,17 @@ describe('compound assignment', () => {
         a ?= 2
       `, `
         let a = 1;
-        if (typeof a === 'undefined' || a === null) { a = 2; }
+        if (a == null) { a = 2; }
+      `);
+    });
+
+    it('handles simple existence assignment to an undeclared variable', () => {
+      check(`
+        a ?= 2
+        console.log a
+      `, `
+        if (typeof a === 'undefined' || a === null) { var a = 2; }
+        console.log(a);
       `);
     });
 
