@@ -38,6 +38,7 @@ input.coffee → input.js
 Options:
 * `--keep-commonjs`: Do not convert `require` and `module.exports` to `import`
   and `export`.
+* `--prefer-const`: Use `const` when possible in output code.
 
 For more usages examples, see the output of `decaffeinate --help`.
 

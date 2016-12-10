@@ -1,7 +1,8 @@
 import PatcherError from '../utils/PatchError.js';
 import adjustIndent from '../utils/adjustIndent.js';
 import repeat from 'repeating';
-import type { SourceType, SourceToken, SourceTokenListIndex, PatcherContext, SourceTokenList } from './types.js';
+import type { SourceType, SourceToken, SourceTokenListIndex, PatcherContext, ParseContext, Editor, SourceTokenList } from './types.js';
+import type { Options } from '../index.js';
 import { CALL_START, CALL_END, LPAREN, RPAREN } from 'coffee-lex';
 import { isSemanticToken } from '../utils/types.js';
 import { logger } from '../utils/debug.js';
@@ -10,6 +11,7 @@ export default class NodePatcher {
   node: Node;
   context: ParseContext;
   editor: Editor;
+  options: Options;
   log: (...args: Array<any>) => void;
   parent: ?NodePatcher;
 
@@ -28,12 +30,13 @@ export default class NodePatcher {
 
   adjustedIndentLevel: number = 0;
 
-  constructor({node, context, editor}: PatcherContext) {
+  constructor({node, context, editor, options}: PatcherContext) {
     this.log = logger(this.constructor.name);
 
     this.node = node;
     this.context = context;
     this.editor = editor;
+    this.options = options;
 
     this.withPrettyErrors(() => this.setupLocationInformation());
   }
