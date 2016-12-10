@@ -656,4 +656,101 @@ describe('classes', () => {
       A.initClass();
     `);
   });
+
+  it('handles a bound method and an implicit super in the constructor', () => {
+    check(`
+      class X
+        constructor: ->
+          super
+      
+        add: =>
+    `, `
+      class X {
+        constructor() {
+          super(...arguments);
+          this.add = this.add.bind(this);
+        }
+      
+        add() {}
+      }
+    `);
+  });
+
+  it('handles a bound method and an empty constructor', () => {
+    check(`
+      class X
+        constructor: ->
+      
+        add: =>
+    `, `
+      class X {
+        constructor() {
+          this.add = this.add.bind(this);
+        }
+      
+        add() {}
+      }
+    `);
+  });
+
+  it('handles a bound method and an empty constructor with a parameter', () => {
+    check(`
+      class X
+        constructor: (a, b) ->
+      
+        add: =>
+    `, `
+      class X {
+        constructor(a, b) {
+          this.add = this.add.bind(this);
+        }
+      
+        add() {}
+      }
+    `);
+  });
+
+  it('places method bindings after the super call', () => {
+    check(`
+      class X
+        constructor: ->
+          if a
+            b
+          super
+          if c
+            d
+      
+        add: =>
+    `, `
+      class X {
+        constructor() {
+          if (a) {
+            b;
+          }
+          super(...arguments);
+          this.add = this.add.bind(this);
+          if (c) {
+            d;
+          }
+        }
+      
+        add() {}
+      }
+    `);
+  });
+
+  it('places method bindings at the start of the constructor if there is no super', () => {
+    check(`
+      class X
+        constructor: ->a
+      
+        add: =>
+    `, `
+      class X {
+        constructor() {this.add = this.add.bind(this);   a; }
+      
+        add() {}
+      }
+    `);
+  });
 });
