@@ -1,5 +1,5 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext, SourceToken } from '../../../patchers/types.js';
+import type { PatcherContext, SourceToken } from '../../../patchers/types.js';
 import { BREAK, COMMA, THEN, WHEN } from 'coffee-lex';
 
 export default class SwitchCasePatcher extends NodePatcher {
@@ -8,8 +8,8 @@ export default class SwitchCasePatcher extends NodePatcher {
 
   negated: boolean;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, conditions: Array<NodePatcher>, consequent: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, conditions: Array<NodePatcher>, consequent: NodePatcher) {
+    super(patcherContext);
     this.conditions = conditions;
     this.consequent = consequent;
     this.negated = false;

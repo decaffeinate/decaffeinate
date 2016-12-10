@@ -1,6 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 /**
  * Handles logical AND and logical OR.
@@ -19,8 +19,8 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
   /**
    * `node` is expected to be either `LogicalAndOp` or `LogicalOrOp`.
    */
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext);
     this.left = left;
     this.right = right;
   }

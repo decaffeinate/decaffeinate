@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 import { COMMA } from 'coffee-lex';
 
 /**
@@ -8,8 +8,8 @@ import { COMMA } from 'coffee-lex';
 export default class ObjectInitialiserPatcher extends NodePatcher {
   members: Array<NodePatcher>;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, members: Array<NodePatcher>) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, members: Array<NodePatcher>) {
+    super(patcherContext);
     this.members = members;
   }
 

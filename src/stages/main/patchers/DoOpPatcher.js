@@ -1,14 +1,14 @@
 import DefaultParamPatcher from './DefaultParamPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
 import NodePatcher from '../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext, SourceTokenListIndex } from '../../../patchers/types.js';
+import type { PatcherContext, SourceTokenListIndex } from '../../../patchers/types.js';
 import { DO } from 'coffee-lex';
 
 export default class DoOpPatcher extends NodePatcher {
   expression: NodePatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, expression: NodePatcher) {
+    super(patcherContext);
     this.expression = expression;
   }
 

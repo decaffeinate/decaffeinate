@@ -25,6 +25,12 @@ export type Editor = {
   move: (start: number, end: number, index: number) => Editor;
 };
 
+export type PatcherContext = {
+  node: Node;
+  context: ParseContext;
+  editor: Editor;
+};
+
 export type SourceType = {
   name: string,
 };

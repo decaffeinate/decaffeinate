@@ -238,11 +238,11 @@ This time, however, we have children that will be passed to our constructor (see
 
 ```js
 import NodePatcher from './NodePatcher.js';
-import type { Node, ParseContext, Editor } from './types.js';
+import type { PatcherContext } from './types.js';
 
 export default class PlusOpPatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext);
     this.left = left;
     this.right = right;
   }
@@ -255,11 +255,11 @@ with `BoolPatcher` above.
 
 ```js
 import NodePatcher from './NodePatcher.js';
-import type { Node, ParseContext, Editor } from './types.js';
+import type { PatcherContext } from './types.js';
 
 export default class PlusOpPatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext);
     this.left = left;
     this.right = right;
   }
@@ -280,11 +280,11 @@ delegate to them.
 
 ```js
 import NodePatcher from './NodePatcher.js';
-import type { Node, ParseContext, Editor } from './types.js';
+import type { PatcherContext } from './types.js';
 
 export default class PlusOpPatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext);
     this.left = left;
     this.right = right;
   }
@@ -308,11 +308,11 @@ our children that they must be expressions, which we do in `initialize`.
 
 ```js
 import NodePatcher from './NodePatcher.js';
-import type { Node, ParseContext, Editor } from './types.js';
+import type { PatcherContext } from './types.js';
 
 export default class PlusOpPatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext);
     this.left = left;
     this.right = right;
   }
@@ -345,11 +345,11 @@ delegate to `patchAsExpression`, which is the default behavior.
 
 ```js
 import NodePatcher from './NodePatcher.js';
-import type { Node, ParseContext, Editor } from './types.js';
+import type { PatcherContext } from './types.js';
 
 export default class PlusOpPatcher extends NodePatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext);
     this.left = left;
     this.right = right;
   }

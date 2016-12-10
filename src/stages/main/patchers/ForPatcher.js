@@ -2,7 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
 import LoopPatcher from './LoopPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
-import type { Node, ParseContext, Editor, SourceToken } from './../../../patchers/types.js';
+import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
 import { RELATION, THEN } from 'coffee-lex';
 
 export default class ForPatcher extends LoopPatcher {
@@ -11,8 +11,8 @@ export default class ForPatcher extends LoopPatcher {
   target: NodePatcher;
   filter: ?NodePatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
-    super(node, context, editor, body);
+  constructor(patcherContext: PatcherContext, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
+    super(patcherContext, body);
     this.keyAssignee = keyAssignee;
     this.valAssignee = valAssignee;
     this.target = target;

@@ -1,13 +1,13 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import getStartOfLine from './../../../utils/getStartOfLine.js';
 
-import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 export default class BlockPatcher extends NodePatcher {
   statements: Array<NodePatcher>;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, statements: Array<NodePatcher>) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, statements: Array<NodePatcher>) {
+    super(patcherContext);
     this.statements = statements;
   }
 

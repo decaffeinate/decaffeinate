@@ -1,11 +1,11 @@
 import NodePatcher from './NodePatcher.js';
-import type { Editor, Node, ParseContext } from './types.js';
+import type { PatcherContext } from './types.js';
 
 export default class PassthroughPatcher extends NodePatcher {
   children: Array<?NodePatcher|Array<?NodePatcher>>;
   
-  constructor(node: Node, context: ParseContext, editor: Editor, ...children: Array<?NodePatcher|Array<?NodePatcher>>) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, ...children: Array<?NodePatcher|Array<?NodePatcher>>) {
+    super(patcherContext);
     this.children = children;
   }
 

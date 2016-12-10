@@ -1,7 +1,7 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import LoopPatcher from './LoopPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
-import type { Editor, Node, ParseContext, SourceTokenListIndex } from './../../../patchers/types.js';
+import type { PatcherContext, SourceTokenListIndex } from './../../../patchers/types.js';
 import { LOOP, THEN, WHILE } from 'coffee-lex';
 
 /**
@@ -14,8 +14,8 @@ export default class WhilePatcher extends LoopPatcher {
   condition: NodePatcher;
   guard: ?NodePatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, condition: NodePatcher, guard: ?NodePatcher, body: BlockPatcher) {
-    super(node, context, editor, body);
+  constructor(patcherContext: PatcherContext, condition: NodePatcher, guard: ?NodePatcher, body: BlockPatcher) {
+    super(patcherContext, body);
     this.condition = condition;
     this.guard = guard;
   }

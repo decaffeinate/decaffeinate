@@ -1,14 +1,14 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher.js';
 import ExpansionPatcher from './ExpansionPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;
   expression: NodePatcher;
   
-  constructor(node: Node, context: ParseContext, editor: Editor, assignee: NodePatcher, expression: NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: NodePatcher) {
+    super(patcherContext);
     this.assignee = assignee;
     this.expression = expression;
   }

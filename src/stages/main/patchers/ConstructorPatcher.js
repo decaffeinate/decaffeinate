@@ -2,11 +2,11 @@ import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
 import traverse from '../../../utils/traverse.js';
 import type FunctionPatcher from './FunctionPatcher.js';
 import type NodePatcher from '../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, assignee: NodePatcher, expression: FunctionPatcher) {
-    super(node, context, editor, assignee, expression);
+  constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: FunctionPatcher) {
+    super(patcherContext, assignee, expression);
 
     // Constructor methods do not have implicit returns.
     expression.disableImplicitReturns();

@@ -1,6 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 /**
  * Handles `instanceof` operator, e.g. `a instanceof b`.
@@ -8,9 +8,9 @@ import type { Editor, Node, ParseContext } from './../../../patchers/types.js';
 export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
   negated: boolean;
   
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor, left, right);
-    this.negated = node.isNot;
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext, left, right);
+    this.negated = patcherContext.node.isNot;
   }
 
   negate() {

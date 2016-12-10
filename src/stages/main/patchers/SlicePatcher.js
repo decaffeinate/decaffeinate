@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
 import { LBRACKET, RANGE, RBRACKET } from 'coffee-lex';
 
 /**
@@ -13,8 +13,8 @@ export default class SlicePatcher extends NodePatcher {
   /**
    * `node` is of type `Slice`.
    */
-  constructor(node: Node, context: ParseContext, editor: Editor, expression: NodePatcher, left: ?NodePatcher, right: ?NodePatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, expression: NodePatcher, left: ?NodePatcher, right: ?NodePatcher) {
+    super(patcherContext);
     this.expression = expression;
     this.left = left;
     this.right = right;

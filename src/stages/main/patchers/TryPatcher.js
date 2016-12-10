@@ -1,6 +1,6 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
-import type { Node, ParseContext, Editor, SourceToken, SourceTokenListIndex } from '../../../patchers/types.js';
+import type { PatcherContext, SourceToken, SourceTokenListIndex } from '../../../patchers/types.js';
 import { CATCH, FINALLY, THEN, TRY } from 'coffee-lex';
 
 /**
@@ -12,8 +12,8 @@ export default class TryPatcher extends NodePatcher {
   catchBody: ?BlockPatcher;
   finallyBody: ?BlockPatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, body: BlockPatcher, catchAssignee: ?NodePatcher, catchBody: ?BlockPatcher, finallyBody: ?BlockPatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, body: BlockPatcher, catchAssignee: ?NodePatcher, catchBody: ?BlockPatcher, finallyBody: ?BlockPatcher) {
+    super(patcherContext);
     this.body = body;
     this.catchAssignee = catchAssignee;
     this.catchBody = catchBody;

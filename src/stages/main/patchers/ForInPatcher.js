@@ -3,7 +3,7 @@ import RangePatcher from './RangePatcher.js';
 import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types.js';
 
 const UP = 'UP';
 const DOWN = 'DOWN';
@@ -11,8 +11,8 @@ const UNKNOWN = 'UNKNOWN';
 type IndexDirection = 'UP' | 'DOWN' | 'UNKNOWN';
 
 export default class ForInPatcher extends ForPatcher {
-  constructor(node: Node, context: ParseContext, editor: Editor, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, step: ?NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
-    super(node, context, editor, keyAssignee, valAssignee, target, filter, body);
+  constructor(patcherContext: PatcherContext, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, step: ?NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
+    super(patcherContext, keyAssignee, valAssignee, target, filter, body);
     this.step = step;
   }
 

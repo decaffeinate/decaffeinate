@@ -81,7 +81,8 @@ export default class TransformCoffeeScriptStage {
       }
     });
 
-    let patcher = new constructor(node, this.context, this.editor, ...children);
+    let patcherContext = {node, context: this.context, editor: this.editor};
+    let patcher = new constructor(patcherContext, ...children);
     this.patchers.push(patcher);
     this.associateParent(patcher, children);
 

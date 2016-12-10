@@ -6,7 +6,7 @@ import IdentifierPatcher from './IdentifierPatcher.js';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import StringPatcher from './StringPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, Editor, Node, ParseContext } from './../../../patchers/types.js';
+import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
 import { RELATION } from 'coffee-lex';
 
 /**
@@ -18,9 +18,9 @@ export default class InOpPatcher extends BinaryOpPatcher {
   /**
    * `node` is of type `InOp`.
    */
-  constructor(node: Node, context: ParseContext, editor: Editor, left: NodePatcher, right: NodePatcher) {
-    super(node, context, editor, left, right);
-    this.negated = node.isNot;
+  constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
+    super(patcherContext, left, right);
+    this.negated = patcherContext.node.isNot;
   }
 
   negate() {

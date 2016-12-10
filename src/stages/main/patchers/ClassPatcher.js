@@ -2,7 +2,7 @@ import ClassBlockPatcher from './ClassBlockPatcher.js';
 import IdentifierPatcher from './IdentifierPatcher.js';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, Node, ParseContext, Editor } from './../../../patchers/types.js';
+import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
 import { CLASS } from 'coffee-lex';
 
 export default class ClassPatcher extends NodePatcher {
@@ -10,8 +10,8 @@ export default class ClassPatcher extends NodePatcher {
   superclass: ?NodePatcher;
   body: ?ClassBlockPatcher;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?ClassBlockPatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?ClassBlockPatcher) {
+    super(patcherContext);
     this.nameAssignee = nameAssignee;
     this.superclass = parent;
     this.body = body;

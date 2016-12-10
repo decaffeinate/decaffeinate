@@ -4,7 +4,7 @@ import determineIndent from '../../../utils/determineIndent.js';
 import getIndent from '../../../utils/getIndent.js';
 import { COMMENT, CONTINUATION, HERECOMMENT} from 'coffee-lex';
 import type BlockPatcher from './BlockPatcher.js';
-import type { Editor, Node, ParseContext, SourceToken } from './../../../patchers/types.js';
+import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
 
 const BLOCK_COMMENT_DELIMITER = '###';
 
@@ -13,8 +13,8 @@ export default class ProgramPatcher extends NodePatcher {
   helpers: { [key: string]: string };
   _indentString: ?string;
 
-  constructor(node: Node, context: ParseContext, editor: Editor, body: ?BlockPatcher) {
-    super(node, context, editor);
+  constructor(patcherContext: PatcherContext, body: ?BlockPatcher) {
+    super(patcherContext);
     this.body = body;
 
     this.helpers = blank();
