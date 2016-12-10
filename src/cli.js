@@ -48,6 +48,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.preferConst = true;
         break;
 
+      case '--loose-default-params':
+        baseOptions.looseDefaultParams = true;
+        break;
+
       default:
         if (arg.startsWith('-')) {
           console.error(`Error: unrecognized option '${arg}'`);
@@ -168,9 +172,10 @@ function usage() {
   console.log();
   console.log('OPTIONS');
   console.log();
-  console.log('  -h, --help       Display this help message.');
-  console.log('  --keep-commonjs  Do not convert require and module.exports to import and export.');
-  console.log('  --prefer-const   Use the const keyword for variables when possible.');
+  console.log('  -h, --help              Display this help message.');
+  console.log('  --keep-commonjs         Do not convert require and module.exports to import and export.');
+  console.log('  --prefer-const          Use the const keyword for variables when possible.');
+  console.log('  --loose-default-params  Convert CS default params to JS default params.');
   console.log();
   console.log('EXAMPLES');
   console.log();

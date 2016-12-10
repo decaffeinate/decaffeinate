@@ -3,9 +3,11 @@ import BlockPatcher from './patchers/BlockPatcher.js';
 import ClassPatcher from './patchers/ClassPatcher.js';
 import AssignOpPatcher from './patchers/AssignOpPatcher.js';
 import ConditionalPatcher from './patchers/ConditionalPatcher.js';
+import DoOpPatcher from './patchers/DoOpPatcher.js';
 import ForInPatcher from './patchers/ForInPatcher.js';
 import ForOfPatcher from './patchers/ForOfPatcher.js';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher.js';
+import IdentifierPatcher from './patchers/IdentifierPatcher.js';
 import NodePatcher from '../../patchers/NodePatcher.js';
 import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher.js';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher.js';
@@ -41,6 +43,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'Conditional':
         return ConditionalPatcher;
 
+      case 'DoOp':
+        return DoOpPatcher;
+
       case 'ForIn':
         return ForInPatcher;
 
@@ -51,6 +56,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'NewOp':
       case 'SoakedFunctionApplication':
         return FunctionApplicationPatcher;
+
+      case 'Identifier':
+        return IdentifierPatcher;
 
       case 'While':
         return WhilePatcher;
