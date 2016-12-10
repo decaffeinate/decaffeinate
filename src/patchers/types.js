@@ -1,4 +1,5 @@
 import type Scope from '../utils/Scope.js';
+import type Options from '../index.js';
 
 export type Range = [number, number];
 
@@ -29,6 +30,7 @@ export type PatcherContext = {
   node: Node;
   context: ParseContext;
   editor: Editor;
+  options: Options;
 };
 
 export type SourceType = {

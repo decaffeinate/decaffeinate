@@ -16,7 +16,7 @@ export default class TransformCoffeeScriptStage {
 
     let ast = parse(content);
     let editor = new MagicString(content);
-    let stage = new this(ast, ast.context, editor);
+    let stage = new this(ast, ast.context, editor, options);
     let patcher = stage.build();
     patcher.patch();
     return {
@@ -37,10 +37,11 @@ export default class TransformCoffeeScriptStage {
     return '.js';
   }
 
-  constructor(ast: Node, context: ParseContext, editor: Editor) {
+  constructor(ast: Node, context: ParseContext, editor: Editor, options: Options) {
     this.ast = ast;
     this.context = context;
     this.editor = editor;
+    this.options = options;
     this.root = null;
     this.patchers = [];
   }
@@ -81,7 +82,12 @@ export default class TransformCoffeeScriptStage {
       }
     });
 
-    let patcherContext = {node, context: this.context, editor: this.editor};
+    let patcherContext = {
+      node,
+      context: this.context,
+      editor: this.editor,
+      options: this.options
+    };
     let patcher = new constructor(patcherContext, ...children);
     this.patchers.push(patcher);
     this.associateParent(patcher, children);
