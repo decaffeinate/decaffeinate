@@ -459,4 +459,26 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('properly transforms an `in` operator with a soak expression on the left', () => {
+    check(`
+      a?.b in c
+    `, `
+      c.includes(__guard__(a, x => x.b));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('properly transforms an `in` operator with a soak expression on the right', () => {
+    check(`
+      a in b?.c
+    `, `
+      __guard__(b, x => x.c).includes(a);
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
 });
