@@ -1,6 +1,7 @@
+import BlockPatcher from './BlockPatcher.js';
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type { PatcherContext, SourceToken } from '../../../patchers/types.js';
-import { BREAK, COMMA, THEN, WHEN } from 'coffee-lex';
+import { COMMA, THEN, WHEN } from 'coffee-lex';
 
 export default class SwitchCasePatcher extends NodePatcher {
   conditions: Array<NodePatcher>;
@@ -58,13 +59,12 @@ export default class SwitchCasePatcher extends NodePatcher {
       this.consequent.patch({ leftBrace: false, rightBrace: false });
     }
 
-    let hasBreak = this.getBreakToken() !== null;
     let implicitReturnWillBreak = (
       this.implicitlyReturns() &&
       this.implicitReturnPatcher().implicitReturnWillBreak() &&
       (!this.consequent || this.consequent.allCodePathsPresent())
     );
-    let shouldAddBreak = !hasBreak && !implicitReturnWillBreak;
+    let shouldAddBreak = !this.hasExistingBreak() && !implicitReturnWillBreak;
     if (shouldAddBreak) {
       if (thenToken) {
         // `case a: case b: case c: then d → `case a: case b: case c: d break`
@@ -139,13 +139,14 @@ export default class SwitchCasePatcher extends NodePatcher {
   /**
    * @private
    */
-  getBreakToken(): ?SourceToken {
-    let lastToken = this.sourceTokenAtIndex(this.contentEndTokenIndex);
-    if (lastToken && lastToken.type === BREAK) {
-      return lastToken;
-    } else {
-      return null;
+  hasExistingBreak(): boolean {
+    if (!(this.consequent instanceof BlockPatcher)) {
+      return false;
     }
+    let lastStatement = this.consequent.statements[this.consequent.statements.length - 1];
+    return lastStatement &&
+        lastStatement.node.type === 'Identifier' &&
+        lastStatement.node.data === 'break';
   }
 
   /**
