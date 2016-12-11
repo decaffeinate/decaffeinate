@@ -1,5 +1,6 @@
 import AssignOpPatcher from './AssignOpPatcher';
 import type { SourceToken } from './../../../patchers/types';
+import traverse from '../../../utils/traverse';
 import { SourceType } from 'coffee-lex';
 
 export default class CompoundAssignOpPatcher extends AssignOpPatcher {
@@ -25,4 +26,25 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
   statementNeedsParens(): boolean {
     return this.assignee.statementShouldAddParens();
   }
+
+  /**
+   * If the left-hand side of the assignment has a soak operation, then there
+   * may be a __guard__ call surrounding the whole thing, so we can't patch
+   * statement code, so instead run the expression code path.
+   */
+  lhsHasSoakOperation() {
+    let foundSoak = false;
+    traverse(this.assignee.node, node => {
+      if (foundSoak) {
+        return false;
+      }
+      if (node.type === 'SoakedDynamicMemberAccessOp' ||
+        node.type === 'SoakedFunctionApplication' ||
+        node.type === 'SoakedMemberAccessOp') {
+        foundSoak = true;
+      }
+    });
+    return foundSoak;
+  }
+
 }

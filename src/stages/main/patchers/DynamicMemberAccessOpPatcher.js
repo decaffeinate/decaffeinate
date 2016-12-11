@@ -28,11 +28,15 @@ export default class DynamicMemberAccessOpPatcher extends NodePatcher {
    * save the value of the member access because this could be used as the LHS
    * of an assignment.
    */
-  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {  // eslint-disable-line no-unused-vars
-    this.expression.setRequiresRepeatableExpression({ parens: true, ref: 'base' });
-    this.indexingExpr.setRequiresRepeatableExpression({ ref: 'name' });
-    this.patchAsExpression();
-    return `${this.expression.getRepeatCode()}[${this.indexingExpr.getRepeatCode()}]`;
+  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {
+    if (repeatableOptions.isForAssignment) {
+      this.expression.setRequiresRepeatableExpression({ isForAssignment: true, parens: true, ref: 'base' });
+      this.indexingExpr.setRequiresRepeatableExpression({ ref: 'name' });
+      this.patchAsExpression();
+      return `${this.expression.getRepeatCode()}[${this.indexingExpr.getRepeatCode()}]`;
+    } else {
+      return super.patchAsRepeatableExpression(repeatableOptions, patchOptions);
+    }
   }
 
   /**

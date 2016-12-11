@@ -46,10 +46,13 @@ export default class MemberAccessOpPatcher extends NodePatcher {
    * repeatable if it isn't already.
    */
   patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {  // eslint-disable-line no-unused-vars
-    this.expression.setRequiresRepeatableExpression({ parens: true, ref: 'base' });
-    this.patchAsExpression();
-    let expressionCode = this.expression.getRepeatCode();
-    return `${expressionCode}.${this.getFullMemberName()}`;
+    if (repeatableOptions.isForAssignment) {
+      this.expression.setRequiresRepeatableExpression({ isForAssignment: true, parens: true, ref: 'base' });
+      this.patchAsExpression();
+      return `${this.expression.getRepeatCode()}.${this.getFullMemberName()}`;
+    } else {
+      return super.patchAsRepeatableExpression(repeatableOptions, patchOptions);
+    }
   }
 
   hasImplicitOperator(): boolean {
