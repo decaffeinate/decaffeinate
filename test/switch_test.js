@@ -433,4 +433,26 @@ describe('switch', () => {
       })();
     `);
   });
+
+  it('handles a switch case with a while loop with a break', () => {
+    check(`
+      switch a
+        when 'b'
+          while false
+            break
+        when 'c'
+          console.log 'Got here'
+    `, `
+      switch (a) {
+        case 'b':
+          while (false) {
+            break;
+          }
+          break;
+        case 'c':
+          console.log('Got here');
+          break;
+      }
+    `);
+  });
 });
