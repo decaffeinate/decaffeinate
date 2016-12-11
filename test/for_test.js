@@ -82,7 +82,29 @@ describe('for loops', () => {
       for a in b
         a
     `, `
+      for (let a of Array.from(b)) {
+        a;
+      }
+    `);
+  });
+
+  it('skips Array.from when generating a JS for-of loop in loose mode', () => {
+    check(`
+      for a in b
+        a
+    `, `
       for (let a of b) {
+        a;
+      }
+    `, { looseForOf: true });
+  });
+
+  it('skips Array.from when iterating over an array literal', () => {
+    check(`
+      for a in [1, 2, 3]
+        a
+    `, `
+      for (let a of [1, 2, 3]) {
         a;
       }
     `);
@@ -151,7 +173,7 @@ describe('for loops', () => {
       for { a, b } in c
         a + b
     `, `
-      for (let { a, b } of c) {
+      for (let { a, b } of Array.from(c)) {
         a + b;
       }
     `);
@@ -326,7 +348,7 @@ describe('for loops', () => {
       for a in b when a.c
         a
     `, `
-      for (let a of b) {
+      for (let a of Array.from(b)) {
         if (a.c) {
           a;
         }
@@ -352,7 +374,7 @@ describe('for loops', () => {
     check(`
       for a in b when a.c then a
     `, `
-      for (let a of b) { if (a.c) { a; } }
+      for (let a of Array.from(b)) { if (a.c) { a; } }
     `);
   });
 
@@ -396,7 +418,7 @@ describe('for loops', () => {
       for e in list()
         break
     `, `
-      for (let e of list()) {
+      for (let e of Array.from(list())) {
         break;
       }
     `);
@@ -505,7 +527,7 @@ describe('for loops', () => {
     check(`
       e for e in l
     `, `
-      for (let e of l) { e; }
+      for (let e of Array.from(l)) { e; }
     `);
   });
 
@@ -543,7 +565,23 @@ describe('for loops', () => {
     check(`
       a(e for e in l)
     `, `
+      a(Array.from(l).map((e) => e));
+    `);
+  });
+
+  it('skips Array.from when using looseForExpressions', () => {
+    check(`
+      a(e for e in l)
+    `, `
       a(l.map((e) => e));
+    `, { looseForExpressions: true });
+  });
+
+  it('does not wrap in Array.from for for-in expressions over an array literal', () => {
+    check(`
+      a(b for b in [c, d])
+    `, `
+      a([c, d].map((b) => b));
     `);
   });
 
@@ -552,7 +590,7 @@ describe('for loops', () => {
       ->
         a for a in b
     `, `
-      () => b.map((a) => a);
+      () => Array.from(b).map((a) => a);
     `);
   });
 
@@ -560,7 +598,7 @@ describe('for loops', () => {
     check(`
       f(a for a in b when c)
     `, `
-      f(b.filter((a) => c).map((a) => a));
+      f(Array.from(b).filter((a) => c).map((a) => a));
     `);
   });
 
@@ -568,7 +606,7 @@ describe('for loops', () => {
     check(`
       f(a + i for a, i in b)
     `, `
-      f(b.map((a, i) => a + i));
+      f(Array.from(b).map((a, i) => a + i));
     `);
   });
 
@@ -576,7 +614,7 @@ describe('for loops', () => {
     check(`
       f({a: c, b: c} for c in d)
     `, `
-      f(d.map((c) => ({a: c, b: c})));
+      f(Array.from(d).map((c) => ({a: c, b: c})));
     `);
   });
 
@@ -644,7 +682,7 @@ describe('for loops', () => {
     `, `
       let x = (() => {
         let result = [];
-        for (let a of f()) {
+        for (let a of Array.from(f())) {
           let b = g(a);
           if (b > 3) {
             break;
@@ -729,7 +767,7 @@ describe('for loops', () => {
       () =>
         (() => {
           let result = [];
-          for (let a of b) {
+          for (let a of Array.from(b)) {
             let item;
             if (a) {
               item = b;
@@ -864,7 +902,7 @@ describe('for loops', () => {
           return a
     `, `
       (function() {
-        for (let a of b) {
+        for (let a of Array.from(b)) {
           return a;
         }
       });
@@ -878,7 +916,7 @@ describe('for loops', () => {
           -> return a
     `, `
       () =>
-        b.map((a) =>
+        Array.from(b).map((a) =>
           () => a)
       ;
     `);
@@ -888,7 +926,7 @@ describe('for loops', () => {
     check(`
       for a in b then a()
     `, `
-      for (let a of b) { a(); }
+      for (let a of Array.from(b)) { a(); }
     `);
   });
 
@@ -906,7 +944,7 @@ describe('for loops', () => {
         console.log('foo')
       )()
     `, `
-      for (let a of b) { (() => console.log('foo'))(); }
+      for (let a of Array.from(b)) { (() => console.log('foo'))(); }
     `);
   });
 
@@ -926,7 +964,7 @@ describe('for loops', () => {
         {x, y} = getPoint(entry)
         console.log x + ', ' + y;
     `, `
-      for (let entry of someArray) {
+      for (let entry of Array.from(someArray)) {
         let {x, y} = getPoint(entry);
         console.log(x + ', ' + y);
       }
@@ -938,7 +976,7 @@ describe('for loops', () => {
       for a in b when c
         d e
     `, `
-      for (let a of b) {
+      for (let a of Array.from(b)) {
         if (c) {
           d(e);
         }
@@ -950,7 +988,7 @@ describe('for loops', () => {
       for a in b c
         d()
     `, `
-      for (let a of b(c)) {
+      for (let a of Array.from(b(c))) {
         d();
       }
     `));
@@ -973,7 +1011,7 @@ describe('for loops', () => {
         c: d
         e: f
     `, `
-      let x = b.map((a) => ({
+      let x = Array.from(b).map((a) => ({
         c: d,
         e: f
       }));
@@ -986,7 +1024,7 @@ describe('for loops', () => {
     `, `
       let x = (() => {
         let result = [];
-        for (let a of b) {
+        for (let a of Array.from(b)) {
           break;
         }
         return result;
@@ -1003,7 +1041,7 @@ describe('for loops', () => {
     `, `
       let x = (() => {
         let result = [];
-        for (let a of b) {
+        for (let a of Array.from(b)) {
           let item;
           if (a) {
             item = a;
@@ -1036,7 +1074,7 @@ describe('for loops', () => {
     check(`
       a = (b for b in c when b not of e)
     `, `
-      let a = (c.filter((b) => !(b in e)).map((b) => b));
+      let a = (Array.from(c).filter((b) => !(b in e)).map((b) => b));
     `);
   });
 
@@ -1076,7 +1114,7 @@ describe('for loops', () => {
       for @a in b
         c
     `, `
-      for (this.a of b) {
+      for (this.a of Array.from(b)) {
         c;
       }
     `);

@@ -397,7 +397,7 @@ describe('switch', () => {
           else
             e
     `, `
-      let x = b.map((a) =>
+      let x = Array.from(b).map((a) =>
         (() => { switch (a) {
           case 'c':
             return d;
