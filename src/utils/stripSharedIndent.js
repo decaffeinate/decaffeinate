@@ -1,63 +1,48 @@
 /* @flow */
+import getIndent from './getIndent.js';
 
 /**
- * Removes indentation shared by all lines.
+ * Remove indentation shared by all lines and remove leading and trailing
+ * newlines.
  */
 export default function stripSharedIndent(source: string): string {
-  let indents = getIndentInfo(source);
-  let minimumIndent = sharedIndentSize(indents.ranges);
-  let lines = source.slice(indents.leadingMargin, source.length - indents.trailingMargin).split('\n');
-  return lines.map(line => line.slice(minimumIndent)).join('\n');
+  let lines = source.split('\n');
+  let commonIndent = getCommonIndent(lines);
+  lines = lines.map(line => {
+    if (line.startsWith(commonIndent)) {
+      return line.substr(commonIndent.length);
+    }
+    if (/^\s*$/.test(line)) {
+      return '';
+    }
+    return line;
+  });
+  while (lines.length > 0 && lines[0].length === 0) {
+    lines.shift();
+  }
+  while (lines.length > 0 && lines[lines.length - 1].length === 0) {
+    lines.pop();
+  }
+  return lines.join('\n');
 }
 
-export function getIndentInfo(source: string, start: number=0, end: number=source.length): { leadingMargin: number, trailingMargin: number, ranges: Array<[number, number]> } {
-  let ranges = [];
-
-  let leadingMargin = 0;
-  while (source[start + leadingMargin] === ' ') {
-    leadingMargin += ' '.length;
-  }
-  if (source[start + leadingMargin] === '\n') {
-    leadingMargin += '\n'.length;
-    start += leadingMargin;
-  }
-
-  let trailingMargin = 0;
-  while (source[end - trailingMargin - ' '.length] === ' ') {
-    trailingMargin += ' '.length;
-  }
-  if (source[end - trailingMargin - '\n'.length] === '\n') {
-    trailingMargin += '\n'.length;
-    end -= trailingMargin;
-  }
-
-  for (let index = start; index < end; index++) {
-    if (index === start || source[index - 1] === '\n') {
-      if (source[index] !== '\n') {
-        let start = index;
-        while (source[index] === ' ') {
-          index++;
+function getCommonIndent(lines: Array<string>): string {
+  let commonIndent = null;
+  for (let line of lines) {
+    let indent = getIndent(line, 0);
+    if (indent === line) {
+      continue;
+    }
+    if (commonIndent === null) {
+      commonIndent = indent;
+    } else {
+      for (let i = 0; i < commonIndent.length; i++) {
+        if (i >= indent.length || indent[i] !== commonIndent[i]) {
+          commonIndent = commonIndent.substr(0, i);
+          break;
         }
-        ranges.push([start, index]);
       }
     }
   }
-
-  return {
-    leadingMargin,
-    trailingMargin,
-    ranges
-  };
-}
-
-export function sharedIndentSize(ranges: Array<[number, number]>): number {
-  let size = null;
-
-  ranges.forEach(([start, end]) => {
-    if (size === null || (start !== end && end - start < size)) {
-      size = end - start;
-    }
-  });
-
-  return size === null ? 0 : size;
+  return commonIndent === null ? '' : commonIndent;
 }
