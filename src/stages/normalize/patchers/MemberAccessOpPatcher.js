@@ -9,19 +9,19 @@ export default class MemberAccessOpPatcher extends PassthroughPatcher {
 
   patch() {
     super.patch();
-    let callback = this.findAddStatementCallback();
+    let callback = this.findAddThisAssignmentCallback();
     if (callback) {
       let content = this.slice(this.contentStart, this.contentEnd);
       this.overwrite(this.contentStart, this.contentEnd, callback(this.node.memberName, content));
     }
   }
 
-  findAddStatementCallback() {
+  findAddThisAssignmentCallback() {
     let patcher = this;
 
     while (patcher) {
-      if (patcher.addStatementAtScopeHeader) {
-        return patcher.addStatementAtScopeHeader;
+      if (patcher.addThisAssignmentAtScopeHeader) {
+        return patcher.addThisAssignmentAtScopeHeader;
       }
       // Don't consider this node if we're on the right side of a default param
       // (e.g. `(foo = @bar) ->`) or if we're on the left side of an object

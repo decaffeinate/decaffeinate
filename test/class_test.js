@@ -193,7 +193,8 @@ describe('classes', () => {
       check(`
         (@a = 1) ->
       `, `
-        (function(a = 1) {
+        (function(a) {
+          if (a == null) { a = 1; }
           this.a = a;
         });
       `);
@@ -223,10 +224,21 @@ describe('classes', () => {
       check(`
         (@a, b = @c) ->
       `, `
-        (function(a, b = this.c) {
+        (function(a, b) {
+          if (b == null) { b = this.c; }
           this.a = a;
         });
       `);
+    });
+
+    it('uses correct value for default param with loose params when using another member', () => {
+      check(`
+        (@a, b = @c) ->
+      `, `
+        (function(a, b = this.c) {
+          this.a = a;
+        });
+      `, { looseDefaultParams: true });
     });
 
     it.skip('uses correct value for default param when reusing an already implicitly assigned param', () => {

@@ -22,6 +22,7 @@ export type Options = {
   runToStage: ?string,
   keepCommonJS: ?boolean,
   preferConst: ?boolean,
+  looseDefaultParams: ?boolean,
 };
 
 const DEFAULT_OPTIONS = {
@@ -29,6 +30,7 @@ const DEFAULT_OPTIONS = {
   runToStage: null,
   keepCommonJS: false,
   preferConst: false,
+  looseDefaultParams: false,
 };
 
 type ConversionResult = {

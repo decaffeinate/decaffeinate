@@ -303,8 +303,12 @@ describe('function calls', () => {
             return cb null, {person, authKey, user, org}
     `, `
       ({
-        _authenticate(authKey, cb) {
-          return this._getSession(authKey, (err, {person, user, authKey, org} = {}) => cb(null, {person, authKey, user, org}));
+          _authenticate(authKey, cb) {
+            return this._getSession(authKey, function(err, param) {
+                let org, person, user;
+                if (param == null) { param = {}; }
+                ({person, user, authKey, org} = param);
+                return cb(null, {person, authKey, user, org});});
         }
       });
     `);
