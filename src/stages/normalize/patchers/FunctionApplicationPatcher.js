@@ -116,10 +116,12 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    *
    * Note that we do not add parentheses for constructor invocations with no
    * arguments and no parentheses; that usage is correct in JavaScript, so we
-   * leave it as-is.
+   * leave it as-is. Also, bare `super` calls have a virtual argument which
+   * doesn't have a source location, but we know that any parens for that will
+   * be handled in later code.
    */
   isImplicitCall(): boolean {
-    if (this.args.length === 0) {
+    if (this.args.length === 0 || this.args[0].node.virtual) {
       return false;
     }
     let searchStart = this.fn.outerEnd;
