@@ -1,7 +1,7 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { PatcherContext, SourceTokenListIndex } from './../../../patchers/types.js';
-import { ELSE, IF, THEN } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class ConditionalPatcher extends NodePatcher {
   condition: NodePatcher;
@@ -220,7 +220,7 @@ export default class ConditionalPatcher extends NodePatcher {
     let elseTokenIndex = this.getElseSourceTokenIndex();
     if (this.alternate) {
       let ifToken = this.sourceTokenAtIndex(elseTokenIndex.next());
-      let isElseIf = ifToken ? ifToken.type === IF : false;
+      let isElseIf = ifToken ? ifToken.type === SourceType.IF : false;
       if (isElseIf) {
         // Let the nested ConditionalPatcher handle braces.
         this.alternate.patch({ leftBrace: false, rightBrace: false });
@@ -263,9 +263,9 @@ export default class ConditionalPatcher extends NodePatcher {
       throw this.error('expected IF token at start of conditional');
     }
     let ifToken = this.sourceTokenAtIndex(ifTokenIndex);
-    if (ifToken.type !== IF) {
+    if (ifToken.type !== SourceType.IF) {
       throw this.error(
-        `expected IF token at start of conditional, but got ${ifToken.type.name}`
+        `expected IF token at start of conditional, but got ${SourceType[ifToken.type]}`
       );
     }
     return ifTokenIndex;
@@ -280,7 +280,7 @@ export default class ConditionalPatcher extends NodePatcher {
     let elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.consequent !== null ? this.consequent.outerEnd : this.condition.outerEnd,
       this.alternate !== null ? this.alternate.outerStart : this.outerEnd,
-      token => token.type === ELSE
+      token => token.type === SourceType.ELSE
     );
     if (this.alternate !== null && !elseTokenIndex) {
       throw this.error(
@@ -305,7 +305,7 @@ export default class ConditionalPatcher extends NodePatcher {
     return this.indexOfSourceTokenBetweenPatchersMatching(
       this.condition,
       this.consequent,
-      token => token.type === THEN
+      token => token.type === SourceType.THEN
     );
   }
 

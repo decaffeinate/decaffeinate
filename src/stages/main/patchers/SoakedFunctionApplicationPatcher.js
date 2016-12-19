@@ -4,7 +4,7 @@ import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import SoakedDynamicMemberAccessOpPatcher from './SoakedDynamicMemberAccessOpPatcher.js';
 import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher.js';
 import findSoakContainer from '../../../utils/findSoakContainer.js';
-import { CALL_START } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 const GUARD_FUNC_HELPER =
   `function __guardFunc__(func, transform) {
@@ -111,7 +111,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
   getCallStartToken(): SourceToken {
     let tokens = this.context.sourceTokens;
     let index = tokens.indexOfTokenMatchingPredicate(
-      token => token.type === CALL_START,
+      token => token.type === SourceType.CALL_START,
       this.fn.outerEndTokenIndex
     );
     if (!index || index.isAfter(this.contentEndTokenIndex)) {

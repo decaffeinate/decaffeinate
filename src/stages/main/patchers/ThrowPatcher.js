@@ -1,10 +1,10 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { PatcherContext } from './../../../patchers/types.js';
-import { THROW } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class ThrowPatcher extends NodePatcher {
   expression: NodePatcher;
-  
+
   constructor(patcherContext: PatcherContext, expression: NodePatcher) {
     super(patcherContext);
     this.expression = expression;
@@ -55,7 +55,7 @@ export default class ThrowPatcher extends NodePatcher {
 
   patchAsStatement() {
     let throwToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
-    if (throwToken.type !== THROW) {
+    if (throwToken.type !== SourceType.THROW) {
       this.error('Expected to find throw token at the start of throw statement.');
     }
     let spacing = this.slice(throwToken.end, this.expression.outerStart);

@@ -2,7 +2,7 @@ import FunctionPatcher from './FunctionPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import ReturnPatcher from './ReturnPatcher.js';
 import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
-import { NEWLINE, SEMICOLON } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class BlockPatcher extends NodePatcher {
   statements: Array<NodePatcher>;
@@ -51,7 +51,7 @@ export default class BlockPatcher extends NodePatcher {
             let removeStart;
             if (statements.length > 1) {
               let startOfLineIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
-                token => token.type === NEWLINE || token.type === SEMICOLON,
+                token => token.type === SourceType.NEWLINE || token.type === SourceType.SEMICOLON,
                 statement.outerStartTokenIndex
               );
               removeStart = this.sourceTokenAtIndex(startOfLineIndex).start;
@@ -133,7 +133,7 @@ export default class BlockPatcher extends NodePatcher {
     if (index === this.statements.length) {
       let lastStatement = this.statements[this.statements.length - 1];
       let terminatorTokenIndex = this.context.sourceTokens.indexOfTokenMatchingPredicate(
-        token => token.type === NEWLINE || token.type === SEMICOLON,
+        token => token.type === SourceType.NEWLINE || token.type === SourceType.SEMICOLON,
         lastStatement.outerEndTokenIndex
       );
       let insertionPoint = terminatorTokenIndex ?
@@ -202,7 +202,7 @@ export default class BlockPatcher extends NodePatcher {
     return this.indexOfSourceTokenBetweenPatchersMatching(
       left,
       right,
-      token => token.type === SEMICOLON
+      token => token.type === SourceType.SEMICOLON
     );
   }
 

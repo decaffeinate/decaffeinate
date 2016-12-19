@@ -1,7 +1,7 @@
 /* @flow */
 
 import type { Node, SourceToken } from '../patchers/types.js';
-import { COMMENT, HERECOMMENT, NEWLINE } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 import { inspect } from 'util';
 
 /**
@@ -211,7 +211,7 @@ export function isStaticMethod(node: Node): boolean {
   );
 }
 
-const NON_SEMANTIC_SOURCE_TOKEN_TYPES = [COMMENT, HERECOMMENT, NEWLINE];
+const NON_SEMANTIC_SOURCE_TOKEN_TYPES = [SourceType.COMMENT, SourceType.HERECOMMENT, SourceType.NEWLINE];
 
 /**
  * This isn't a great name because newlines do have semantic meaning in

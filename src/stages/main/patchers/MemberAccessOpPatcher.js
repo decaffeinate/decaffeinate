@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
-import { AT, DOT, IDENTIFIER, PROTO } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -47,28 +47,28 @@ export default class MemberAccessOpPatcher extends NodePatcher {
 
   isShorthandPrototype(): boolean {
     let token = this.getMemberOperatorSourceToken();
-    return token ? token.type === PROTO : false;
+    return token ? token.type === SourceType.PROTO : false;
   }
 
   getMemberOperatorSourceToken(): ?SourceToken {
     let lastIndex = this.contentEndTokenIndex;
     let lastToken = this.sourceTokenAtIndex(lastIndex);
 
-    if (lastToken.type === PROTO) {
+    if (lastToken.type === SourceType.PROTO) {
       // e.g. `a::`
       return lastToken;
     }
 
     let dotIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
       this.expression.outerEndTokenIndex,
-      DOT
+      SourceType.DOT
     );
 
     if (!dotIndex) {
       let firstIndex = this.contentStartTokenIndex;
       let firstToken = this.sourceTokenAtIndex(firstIndex);
 
-      if (firstToken.type === AT) {
+      if (firstToken.type === SourceType.AT) {
         // e.g. `@a`, so it's okay that there's no dot
         return null;
       }
@@ -91,7 +91,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   getMemberNameSourceToken(): SourceToken {
     let tokens = this.context.sourceTokens;
     let index = tokens.lastIndexOfTokenMatchingPredicate(
-      token => token.type === IDENTIFIER,
+      token => token.type === SourceType.IDENTIFIER,
       this.contentEndTokenIndex
     );
     if (!index || index.isBefore(this.contentStartTokenIndex)) {

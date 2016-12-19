@@ -1,6 +1,6 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
-import { FOR } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class ForPatcher extends NodePatcher {
   keyAssignee: ?NodePatcher;
@@ -69,7 +69,7 @@ export default class ForPatcher extends NodePatcher {
       let afterForToken = this.getFirstHeaderPatcher();
       let index = this.indexOfSourceTokenBetweenPatchersMatching(
         this.body, afterForToken,
-        token => token.type === FOR
+        token => token.type === SourceType.FOR
       );
 
       if (!index) {
@@ -80,7 +80,7 @@ export default class ForPatcher extends NodePatcher {
     } else {
       let token = this.sourceTokenAtIndex(this.contentStartTokenIndex);
 
-      if (!token || token.type !== FOR) {
+      if (!token || token.type !== SourceType.FOR) {
         throw this.error(`expected 'for' at start of loop`);
       }
 

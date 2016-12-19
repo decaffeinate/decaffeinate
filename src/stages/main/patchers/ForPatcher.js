@@ -3,7 +3,7 @@ import IdentifierPatcher from './IdentifierPatcher.js';
 import LoopPatcher from './LoopPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
-import { RELATION, THEN } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class ForPatcher extends LoopPatcher {
   keyAssignee: ?NodePatcher;
@@ -68,7 +68,7 @@ export default class ForPatcher extends LoopPatcher {
   getRelationToken(): SourceToken {
     let tokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.keyAssignee || this.valAssignee, this.target,
-      token => token.type === RELATION
+      token => token.type === SourceType.RELATION
     );
     if (!tokenIndex) {
       throw this.error(`cannot find relation keyword in 'for' loop`);
@@ -116,7 +116,7 @@ export default class ForPatcher extends LoopPatcher {
   removeThenToken() {
     let index = this.indexOfSourceTokenBetweenPatchersMatching(
       this.target, this.body,
-      token => token.type === THEN
+      token => token.type === SourceType.THEN
     );
     if (index) {
       let thenToken = this.sourceTokenAtIndex(index);

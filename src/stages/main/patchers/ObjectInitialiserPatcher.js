@@ -1,7 +1,7 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher.js';
 import type { PatcherContext } from './../../../patchers/types.js';
-import { COMMA, LBRACE } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 import { isSemanticToken } from '../../../utils/types.js';
 
 /**
@@ -132,7 +132,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     this.members.forEach((member, i, members) => {
       member.patch();
       if (i !== members.length - 1) {
-        if (!member.hasSourceTokenAfter(COMMA)) {
+        if (!member.hasSourceTokenAfter(SourceType.COMMA)) {
           this.insert(member.outerEnd, ',');
         }
       }
@@ -148,7 +148,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   isImplicitObject(): boolean {
     let tokens = this.context.sourceTokens;
     let indexOfFirstToken = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
-    return tokens.tokenAtIndex(indexOfFirstToken).type !== LBRACE;
+    return tokens.tokenAtIndex(indexOfFirstToken).type !== SourceType.LBRACE;
   }
 
   /**

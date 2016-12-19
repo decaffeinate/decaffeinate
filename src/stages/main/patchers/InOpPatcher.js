@@ -7,7 +7,7 @@ import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import StringPatcher from './StringPatcher.js';
 import type NodePatcher from './../../../patchers/NodePatcher.js';
 import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
-import { RELATION } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 /**
  * Handles `in` operators, e.g. `a in b` and `a not in b`.
@@ -28,7 +28,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
   }
 
   operatorTokenPredicate(): (token: SourceToken) => boolean {
-    return (token: SourceToken) => token.type === RELATION;
+    return (token: SourceToken) => token.type === SourceType.RELATION;
   }
 
   /**

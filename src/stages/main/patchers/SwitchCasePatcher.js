@@ -1,7 +1,7 @@
 import BlockPatcher from './BlockPatcher.js';
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type { PatcherContext, SourceToken } from '../../../patchers/types.js';
-import { COMMA, THEN, WHEN } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class SwitchCasePatcher extends NodePatcher {
   conditions: Array<NodePatcher>;
@@ -107,8 +107,8 @@ export default class SwitchCasePatcher extends NodePatcher {
     if (!whenToken) {
       throw this.error(`bad token index for start of 'when'`);
     }
-    if (whenToken.type !== WHEN) {
-      throw this.error(`unexpected ${whenToken.type.name} at start of 'switch' case`);
+    if (whenToken.type !== SourceType.WHEN) {
+      throw this.error(`unexpected ${SourceType[whenToken.type]} at start of 'switch' case`);
     }
     return whenToken;
   }
@@ -122,7 +122,7 @@ export default class SwitchCasePatcher extends NodePatcher {
       let left = this.conditions[i - 1];
       let right = this.conditions[i];
       let commaIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-        left, right, token => token.type === COMMA
+        left, right, token => token.type === SourceType.COMMA
       );
       if (!commaIndex) {
         throw this.error(
@@ -158,7 +158,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     let thenTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.conditions[0].outerEnd,
       this.consequent !== null ? this.consequent.outerStart : this.contentEnd,
-      token => token.type === THEN
+      token => token.type === SourceType.THEN
     );
     return thenTokenIndex ? this.sourceTokenAtIndex(thenTokenIndex) : null;
   }

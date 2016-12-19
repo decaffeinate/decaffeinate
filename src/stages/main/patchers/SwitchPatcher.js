@@ -1,12 +1,12 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type { PatcherContext, SourceToken } from '../../../patchers/types.js';
-import { ELSE, SWITCH } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class SwitchPatcher extends NodePatcher {
   expression: NodePatcher;
   cases: Array<NodePatcher>;
   alternate: ?NodePatcher;
-  
+
   constructor(patcherContext: PatcherContext, expression: NodePatcher, cases: Array<NodePatcher>, alternate: ?NodePatcher) {
     super(patcherContext);
     this.expression = expression;
@@ -98,7 +98,7 @@ export default class SwitchPatcher extends NodePatcher {
 
     let tokens = this.context.sourceTokens;
     let elseTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
-      token => token.type === ELSE,
+      token => token.type === SourceType.ELSE,
       this.alternate.contentStartTokenIndex
     );
     if (!elseTokenIndex || elseTokenIndex.isBefore(this.contentStartTokenIndex)) {
@@ -115,8 +115,8 @@ export default class SwitchPatcher extends NodePatcher {
     if (!switchToken) {
       throw this.error(`bad token index for start of 'switch'`);
     }
-    if (switchToken.type !== SWITCH) {
-      throw this.error(`unexpected ${switchToken.type.name} token at start of 'switch'`);
+    if (switchToken.type !== SourceType.SWITCH) {
+      throw this.error(`unexpected ${SourceType[switchToken.type]} token at start of 'switch'`);
     }
     return switchToken;
   }
@@ -129,7 +129,7 @@ export default class SwitchPatcher extends NodePatcher {
     if (!this.alternate) {
       return false;
     }
-    
+
     return (
       this.cases.every(switchCase => switchCase.allCodePathsPresent()) &&
       this.alternate.allCodePathsPresent()
