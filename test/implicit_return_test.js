@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('implicit return', () => {
   it('is added for the last expression in a typical function', () => {

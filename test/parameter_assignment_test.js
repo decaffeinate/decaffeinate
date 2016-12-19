@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('parameter assignment', () => {
   it('allows assigning as a typical local binding', () => {

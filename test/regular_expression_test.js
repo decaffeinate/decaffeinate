@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('regular expressions', () => {
   it('passes regular expressions through as-is', () => {

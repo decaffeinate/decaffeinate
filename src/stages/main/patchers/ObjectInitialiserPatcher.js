@@ -1,8 +1,8 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
+import type { PatcherContext } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
-import { isSemanticToken } from '../../../utils/types.js';
+import { isSemanticToken } from '../../../utils/types';
 
 /**
  * Handles object literals.

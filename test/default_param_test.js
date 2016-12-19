@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('default params', () => {
   it('keeps default value with loose mode enabled', () => {

@@ -1,5 +1,5 @@
 import LinesAndColumns from 'lines-and-columns';
-import PatchError from './PatchError.js';
+import PatchError from './PatchError';
 
 /**
  * If the given exception is an error with code location information, extract

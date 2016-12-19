@@ -1,7 +1,7 @@
 /* @flow */
 
-import flatMap from './flatMap.js';
-import type Node from '../patchers/types.js';
+import flatMap from './flatMap';
+import type Node from '../patchers/types';
 
 /**
  * Gets the identifiers for the given LHS value.

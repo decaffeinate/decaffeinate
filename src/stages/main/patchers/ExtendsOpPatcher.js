@@ -1,4 +1,4 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
 
 const EXTENDS_HELPER = `
 function __extends__(child, parent) {

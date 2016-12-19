@@ -1,4 +1,4 @@
-import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
+import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 
 /**
  * Handles construction of objects with `new`.

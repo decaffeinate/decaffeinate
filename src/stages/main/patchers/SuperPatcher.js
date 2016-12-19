@@ -1,6 +1,6 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import ClassAssignOpPatcher from './ClassAssignOpPatcher.js';
-import ConstructorPatcher from './ConstructorPatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import ClassAssignOpPatcher from './ClassAssignOpPatcher';
+import ConstructorPatcher from './ConstructorPatcher';
 
 export default class SuperPatcher extends NodePatcher {
   patchAsExpression() {

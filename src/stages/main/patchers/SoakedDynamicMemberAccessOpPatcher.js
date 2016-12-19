@@ -1,5 +1,5 @@
-import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
-import findSoakContainer from '../../../utils/findSoakContainer.js';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
+import findSoakContainer from '../../../utils/findSoakContainer';
 
 const GUARD_HELPER =
   `function __guard__(value, transform) {

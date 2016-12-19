@@ -1,5 +1,5 @@
-import formatRange from './formatRange.js';
-import {childPropertyNames} from './traverse.js';
+import formatRange from './formatRange';
+import {childPropertyNames} from './traverse';
 
 export default function formatDecaffeinateParserAst(ast): string {
   let resultLines = formatAstNodeLines(ast, ast.context);

@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import getIndent from '../../src/utils/getIndent.js';
+import getIndent from '../../src/utils/getIndent';
 
 describe('getIndent', function() {
   context('with an empty source string', function() {

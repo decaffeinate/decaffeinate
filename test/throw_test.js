@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('throw', () => {
   it('is preserved when used in a statement context', () => {

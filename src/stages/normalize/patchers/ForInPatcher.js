@@ -1,6 +1,6 @@
-import ForPatcher from './ForPatcher.js';
-import type NodePatcher from '../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import ForPatcher from './ForPatcher';
+import type NodePatcher from '../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 export default class ForInPatcher extends ForPatcher {
   step: ?NodePatcher;

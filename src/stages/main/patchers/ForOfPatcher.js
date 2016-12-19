@@ -1,4 +1,4 @@
-import ForPatcher from './ForPatcher.js';
+import ForPatcher from './ForPatcher';
 import { SourceType } from 'coffee-lex';
 
 export default class ForOfPatcher extends ForPatcher {

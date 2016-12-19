@@ -1,5 +1,5 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 export default class DynamicMemberAccessOpPatcher extends NodePatcher {
   expression: NodePatcher;

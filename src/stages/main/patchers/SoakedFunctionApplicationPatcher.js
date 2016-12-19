@@ -1,9 +1,9 @@
-import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
-import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
-import SoakedDynamicMemberAccessOpPatcher from './SoakedDynamicMemberAccessOpPatcher.js';
-import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher.js';
-import findSoakContainer from '../../../utils/findSoakContainer.js';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
+import FunctionApplicationPatcher from './FunctionApplicationPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import SoakedDynamicMemberAccessOpPatcher from './SoakedDynamicMemberAccessOpPatcher';
+import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher';
+import findSoakContainer from '../../../utils/findSoakContainer';
 import { SourceType } from 'coffee-lex';
 
 const GUARD_FUNC_HELPER =

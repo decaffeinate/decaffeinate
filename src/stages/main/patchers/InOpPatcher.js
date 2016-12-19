@@ -1,12 +1,12 @@
-import ArrayInitialiserPatcher from './ArrayInitialiserPatcher.js';
-import BinaryOpPatcher from './BinaryOpPatcher.js';
-import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher.js';
-import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
-import StringPatcher from './StringPatcher.js';
-import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
+import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import BinaryOpPatcher from './BinaryOpPatcher';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
+import FunctionApplicationPatcher from './FunctionApplicationPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import StringPatcher from './StringPatcher';
+import type NodePatcher from './../../../patchers/NodePatcher';
+import type { SourceToken, PatcherContext } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 /**

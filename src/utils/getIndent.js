@@ -1,5 +1,5 @@
 /* @flow */
-import getStartOfLine from './getStartOfLine.js';
+import getStartOfLine from './getStartOfLine';
 
 /**
  * Gets the indent string for the line containing offset.

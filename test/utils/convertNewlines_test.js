@@ -1,4 +1,4 @@
-import convertNewlines from '../../src/utils/convertNewlines.js';
+import convertNewlines from '../../src/utils/convertNewlines';
 import { strictEqual } from 'assert';
 
 describe('convertNewlines', () => {

@@ -1,8 +1,8 @@
 import { strictEqual } from 'assert';
 import { tokens } from 'decaffeinate-coffeescript';
-import formatCoffeeScriptLexerTokens from '../../src/utils/formatCoffeeScriptLexerTokens.js';
-import parse from '../../src/utils/parse.js';
-import stripSharedIndent from '../../src/utils/stripSharedIndent.js';
+import formatCoffeeScriptLexerTokens from '../../src/utils/formatCoffeeScriptLexerTokens';
+import parse from '../../src/utils/parse';
+import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('formatCoffeeScriptLexerTokens', () => {
   it('formats tokens for normal CoffeeScript code', () => {

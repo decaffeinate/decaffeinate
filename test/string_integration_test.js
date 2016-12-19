@@ -1,4 +1,4 @@
-import validate from './support/validate.js';
+import validate from './support/validate';
 
 function generateTwoLineTests(strings) {
   let output = [];

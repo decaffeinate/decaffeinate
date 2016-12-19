@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('slice', () => {
   it('changes exclusive slices with any range values into a call to `.slice` directly', () => {

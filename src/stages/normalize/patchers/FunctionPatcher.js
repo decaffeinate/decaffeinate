@@ -1,7 +1,7 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import stripSharedIndent from '../../../utils/stripSharedIndent.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import stripSharedIndent from '../../../utils/stripSharedIndent';
 
-import type { PatcherContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types';
 
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;

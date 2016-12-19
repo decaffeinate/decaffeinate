@@ -1,5 +1,5 @@
-import NodePatcher from './NodePatcher.js';
-import type { PatcherContext } from './types.js';
+import NodePatcher from './NodePatcher';
+import type { PatcherContext } from './types';
 
 export default class PassthroughPatcher extends NodePatcher {
   children: Array<?NodePatcher|Array<?NodePatcher>>;

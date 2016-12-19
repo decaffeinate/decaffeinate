@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('equality', () => {
   it('converts equality operator to triple-equal operator', () => {

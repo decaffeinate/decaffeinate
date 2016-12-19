@@ -1,8 +1,8 @@
 /* @flow */
-import BlockPatcher from '../stages/main/patchers/BlockPatcher.js';
-import ObjectInitialiserPatcher from '../stages/main/patchers/ObjectInitialiserPatcher.js';
+import BlockPatcher from '../stages/main/patchers/BlockPatcher';
+import ObjectInitialiserPatcher from '../stages/main/patchers/ObjectInitialiserPatcher';
 
-import type NodePatcher from '../patchers/NodePatcher.js';
+import type NodePatcher from '../patchers/NodePatcher';
 
 /**
  * Determine if this is a block where the only contents are an object literal.

@@ -1,7 +1,7 @@
-import ArrayInitialiserPatcher from './ArrayInitialiserPatcher.js';
-import ExpansionPatcher from './ExpansionPatcher.js';
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import ExpansionPatcher from './ExpansionPatcher';
+import NodePatcher from './../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;

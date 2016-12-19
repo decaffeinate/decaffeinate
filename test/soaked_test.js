@@ -1,5 +1,5 @@
-import check from './support/check.js';
-import validate from './support/validate.js';
+import check from './support/check';
+import validate from './support/validate';
 
 describe('soaked expressions', () => {
   describe('function application', () => {

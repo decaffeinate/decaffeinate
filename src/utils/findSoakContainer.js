@@ -1,13 +1,13 @@
 /* @flow */
-import AssignOpPatcher from '../stages/main/patchers/AssignOpPatcher.js';
-import FunctionApplicationPatcher from '../stages/main/patchers/FunctionApplicationPatcher.js';
-import MemberAccessOpPatcher from '../stages/main/patchers/MemberAccessOpPatcher.js';
-import DynamicMemberAccessOpPatcher from '../stages/main/patchers/DynamicMemberAccessOpPatcher.js';
-import SoakedDynamicMemberAccessOpPatcher from '../stages/main/patchers/SoakedDynamicMemberAccessOpPatcher.js';
-import SoakedFunctionApplicationPatcher from '../stages/main/patchers/SoakedFunctionApplicationPatcher.js';
-import SoakedMemberAccessOpPatcher from '../stages/main/patchers/SoakedMemberAccessOpPatcher.js';
+import AssignOpPatcher from '../stages/main/patchers/AssignOpPatcher';
+import FunctionApplicationPatcher from '../stages/main/patchers/FunctionApplicationPatcher';
+import MemberAccessOpPatcher from '../stages/main/patchers/MemberAccessOpPatcher';
+import DynamicMemberAccessOpPatcher from '../stages/main/patchers/DynamicMemberAccessOpPatcher';
+import SoakedDynamicMemberAccessOpPatcher from '../stages/main/patchers/SoakedDynamicMemberAccessOpPatcher';
+import SoakedFunctionApplicationPatcher from '../stages/main/patchers/SoakedFunctionApplicationPatcher';
+import SoakedMemberAccessOpPatcher from '../stages/main/patchers/SoakedMemberAccessOpPatcher';
 
-import type NodePatcher from '../patchers/NodePatcher.js';
+import type NodePatcher from '../patchers/NodePatcher';
 
 /**
  * Find the enclosing node defining the "soak range" for a given soak operation.

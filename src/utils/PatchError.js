@@ -1,5 +1,5 @@
 import LinesAndColumns from 'lines-and-columns';
-import printTable from './printTable.js';
+import printTable from './printTable';
 import repeat from 'repeating';
 
 export default class PatchError extends Error {

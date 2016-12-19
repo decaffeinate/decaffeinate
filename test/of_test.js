@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('of operator', () => {
   it('turns into an `in` operator', () => {

@@ -1,4 +1,4 @@
-import detectNewlineStr from '../../src/utils/detectNewlineStr.js';
+import detectNewlineStr from '../../src/utils/detectNewlineStr';
 import { strictEqual } from 'assert';
 
 describe('detectNewlineStr', () => {

@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('booleans', () => {
   it('converts `off` to `false`', () => {

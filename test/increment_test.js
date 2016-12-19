@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('increment', () => {
   it('supports simple post-increment', () => {

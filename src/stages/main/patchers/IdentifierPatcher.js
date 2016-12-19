@@ -1,4 +1,4 @@
-import PassthroughPatcher from './../../../patchers/PassthroughPatcher.js';
+import PassthroughPatcher from './../../../patchers/PassthroughPatcher';
 
 export default class IdentifierPatcher extends PassthroughPatcher {
   negate() {

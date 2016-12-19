@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import formatRange from './formatRange.js';
+import formatRange from './formatRange';
 
 export default function formatCoffeeLexTokens(context): string {
   let tokens = context.sourceTokens;

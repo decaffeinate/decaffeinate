@@ -1,4 +1,4 @@
-import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData.js';
+import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData';
 
 export default function formatCoffeeScriptAst(context): string {
   let resultLines = formatAstNodeLines(context.ast, context);

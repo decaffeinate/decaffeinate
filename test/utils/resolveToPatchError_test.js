@@ -3,10 +3,10 @@ import { fail, strictEqual } from 'assert';
 import { convert } from 'esnext';
 import MagicString from 'magic-string';
 
-import parse from '../../src/utils/parse.js';
-import PatchError from '../../src/utils/PatchError.js';
-import resolveToPatchError from '../../src/utils/resolveToPatchError.js';
-import stripSharedIndent from '../../src/utils/stripSharedIndent.js';
+import parse from '../../src/utils/parse';
+import PatchError from '../../src/utils/PatchError';
+import resolveToPatchError from '../../src/utils/resolveToPatchError';
+import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('resolveToPatchError', () => {
   it('handles syntax errors in JavaScript code', () => {

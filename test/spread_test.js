@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('spread', () => {
   it('moves the ellipsis to before the expression in function calls', () => {

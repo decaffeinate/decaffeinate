@@ -1,8 +1,8 @@
 import addVariableDeclarations from 'add-variable-declarations';
 import MagicString from 'magic-string';
 import { basename } from 'path';
-import { logger } from '../../utils/debug.js';
-import type { Options } from '../../index.js';
+import { logger } from '../../utils/debug';
+import type { Options } from '../../index';
 
 export default class AddVariableDeclarationsStage {
   static run(content: string, options: Options): { code: string, map: Object } {

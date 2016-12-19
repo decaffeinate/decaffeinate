@@ -1,6 +1,6 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import traverse from '../../../utils/traverse.js';
-import { isFunction } from '../../../utils/types.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import traverse from '../../../utils/traverse';
+import { isFunction } from '../../../utils/types';
 
 export default class LoopPatcher extends NodePatcher {
   body: BlockPatcher;

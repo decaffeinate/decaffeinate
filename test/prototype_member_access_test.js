@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('changing prototype member access into normal member access', () => {
   it('replaces prototype member access', () => {

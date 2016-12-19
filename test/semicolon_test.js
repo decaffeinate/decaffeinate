@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('semicolons', () => {
   it.skip('are inserted after all the parentheses surrounding statements', () => {

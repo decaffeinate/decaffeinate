@@ -1,8 +1,8 @@
-import DoOpPatcher from './DoOpPatcher.js';
-import FunctionPatcher from './FunctionPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
-import PassthroughPatcher from '../../../patchers/PassthroughPatcher.js';
+import DoOpPatcher from './DoOpPatcher';
+import FunctionPatcher from './FunctionPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
 
 export default class DefaultParamPatcher extends PassthroughPatcher {
   param: NodePatcher;

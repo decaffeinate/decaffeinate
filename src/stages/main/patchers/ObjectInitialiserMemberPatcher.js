@@ -1,7 +1,7 @@
-import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
-import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
-import StringPatcher from './StringPatcher.js';
-import ThisPatcher from './ThisPatcher.js';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
+import StringPatcher from './StringPatcher';
+import ThisPatcher from './ThisPatcher';
 
 /**
  * Handles object properties.

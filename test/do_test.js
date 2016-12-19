@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('`do`', () => {
   it('becomes a normal call expression when not given a function expression', () => {

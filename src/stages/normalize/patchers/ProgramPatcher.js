@@ -1,5 +1,5 @@
-import PassthroughPatcher from '../../../patchers/PassthroughPatcher.js';
-import determineIndent from '../../../utils/determineIndent.js';
+import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
+import determineIndent from '../../../utils/determineIndent';
 
 export default class ProgramPatcher extends PassthroughPatcher {
   shouldTrimContentRange() {

@@ -1,5 +1,5 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
-import type { SourceToken } from './../../../patchers/types.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
+import type { SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 /**

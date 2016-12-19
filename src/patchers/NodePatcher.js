@@ -1,11 +1,11 @@
-import PatcherError from '../utils/PatchError.js';
-import adjustIndent from '../utils/adjustIndent.js';
+import PatcherError from '../utils/PatchError';
+import adjustIndent from '../utils/adjustIndent';
 import repeat from 'repeating';
-import type { SourceToken, SourceTokenListIndex, PatcherContext, ParseContext, Editor, SourceTokenList } from './types.js';
-import type { Options } from '../index.js';
+import type { SourceToken, SourceTokenListIndex, PatcherContext, ParseContext, Editor, SourceTokenList } from './types';
+import type { Options } from '../index';
 import { SourceType } from 'coffee-lex';
-import { isSemanticToken } from '../utils/types.js';
-import { logger } from '../utils/debug.js';
+import { isSemanticToken } from '../utils/types';
+import { logger } from '../utils/debug';
 
 export default class NodePatcher {
   node: Node;

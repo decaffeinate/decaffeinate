@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('member access', () => {
   it('allows dot-on-the-next-line style member access', () => {

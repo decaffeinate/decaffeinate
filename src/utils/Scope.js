@@ -1,9 +1,9 @@
 /* @flow */
 
-import find from './array/find.js';
-import flatMap from './flatMap.js';
-import leftHandIdentifiers from './leftHandIdentifiers.js';
-import type { Node } from '../patchers/types.js';
+import find from './array/find';
+import flatMap from './flatMap';
+import leftHandIdentifiers from './leftHandIdentifiers';
+import type { Node } from '../patchers/types';
 
 type Bindings = { [key: string]: Node };
 

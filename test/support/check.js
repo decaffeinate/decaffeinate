@@ -1,5 +1,5 @@
-import PatchError from '../../src/utils/PatchError.js';
-import stripSharedIndent from '../../src/utils/stripSharedIndent.js';
+import PatchError from '../../src/utils/PatchError';
+import stripSharedIndent from '../../src/utils/stripSharedIndent';
 import { convert } from '../../';
 import { strictEqual } from 'assert';
 

@@ -1,4 +1,4 @@
-import adjustIndent from '../../src/utils/adjustIndent.js';
+import adjustIndent from '../../src/utils/adjustIndent';
 import { strictEqual } from 'assert';
 
 describe('adjustIndent', () => {

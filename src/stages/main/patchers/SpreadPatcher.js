@@ -1,5 +1,5 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Handles spread operations, e.g. `a(b...)` or `[a...]`.

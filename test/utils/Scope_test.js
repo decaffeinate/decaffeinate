@@ -1,6 +1,6 @@
 import { ok, strictEqual } from 'assert';
 import { parse } from 'decaffeinate-parser';
-import Scope from '../../src/utils/Scope.js';
+import Scope from '../../src/utils/Scope';
 
 describe('Scope', function() {
   let A = {};

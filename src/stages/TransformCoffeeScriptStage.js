@@ -1,12 +1,12 @@
 import MagicString from 'magic-string';
-import NodePatcher from '../patchers/NodePatcher.js';
-import PatchError from '../utils/PatchError.js';
-import parse from '../utils/parse.js';
-import type { Node, ParseContext, Editor } from '../patchers/types.js';
+import NodePatcher from '../patchers/NodePatcher';
+import PatchError from '../utils/PatchError';
+import parse from '../utils/parse';
+import type { Node, ParseContext, Editor } from '../patchers/types';
 import { basename } from 'path';
-import { childPropertyNames } from '../utils/traverse.js';
-import { logger } from '../utils/debug.js';
-import type { Options } from '../index.js';
+import { childPropertyNames } from '../utils/traverse';
+import { logger } from '../utils/debug';
+import type { Options } from '../index';
 
 export default class TransformCoffeeScriptStage {
   static run(content: string, options: Options): { code: string, map: Object } {

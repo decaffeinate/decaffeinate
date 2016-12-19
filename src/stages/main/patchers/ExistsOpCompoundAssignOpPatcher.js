@@ -1,6 +1,6 @@
-import CompoundAssignOpPatcher from './CompoundAssignOpPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import traverse from '../../../utils/traverse.js';
+import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import traverse from '../../../utils/traverse';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression() {

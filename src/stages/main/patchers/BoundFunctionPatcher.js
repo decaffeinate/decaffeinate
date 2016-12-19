@@ -1,11 +1,11 @@
-import FunctionPatcher from './FunctionPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock.js';
-import traverse from '../../../utils/traverse.js';
-import type { Node } from './../../../patchers/types.js';
-import { isFunction } from '../../../utils/types.js';
+import FunctionPatcher from './FunctionPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
+import NodePatcher from './../../../patchers/NodePatcher';
+import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock';
+import traverse from '../../../utils/traverse';
+import type { Node } from './../../../patchers/types';
+import { isFunction } from '../../../utils/types';
 
 /**
  * Handles bound functions, i.e. "fat arrows".

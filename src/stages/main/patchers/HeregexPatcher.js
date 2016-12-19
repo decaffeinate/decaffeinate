@@ -1,4 +1,4 @@
-import InterpolatedPatcher from './InterpolatedPatcher.js';
+import InterpolatedPatcher from './InterpolatedPatcher';
 
 const CLOSE_TOKEN_BASE_LENGTH = 3;
 
