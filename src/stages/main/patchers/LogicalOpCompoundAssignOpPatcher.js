@@ -1,4 +1,4 @@
-import CompoundAssignOpPatcher from './CompoundAssignOpPatcher.js';
+import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression() {

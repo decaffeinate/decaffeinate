@@ -1,5 +1,5 @@
-import type Scope from '../utils/Scope.js';
-import type Options from '../index.js';
+import type Scope from '../utils/Scope';
+import type Options from '../index';
 
 export type Range = [number, number];
 

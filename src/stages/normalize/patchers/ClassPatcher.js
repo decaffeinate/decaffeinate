@@ -1,7 +1,7 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import AssignOpPatcher from './AssignOpPatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import AssignOpPatcher from './AssignOpPatcher';
 
-import type { PatcherContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types';
 
 export default class ClassPatcher extends NodePatcher {
   nameAssignee: ?NodePatcher;

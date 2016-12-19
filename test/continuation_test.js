@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('continuation', () => {
   it('is removed when continuing a binary operator', () => {

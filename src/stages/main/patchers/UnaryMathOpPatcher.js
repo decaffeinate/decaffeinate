@@ -1,4 +1,4 @@
-import UnaryOpPatcher from './UnaryOpPatcher.js';
+import UnaryOpPatcher from './UnaryOpPatcher';
 
 /**
  * Handles unary math operators, e.g. `+a`, `-a`, `~a`.

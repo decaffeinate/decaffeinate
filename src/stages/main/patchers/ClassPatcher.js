@@ -1,8 +1,8 @@
-import ClassBlockPatcher from './ClassBlockPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
+import ClassBlockPatcher from './ClassBlockPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import NodePatcher from './../../../patchers/NodePatcher';
+import type { SourceToken, PatcherContext } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 export default class ClassPatcher extends NodePatcher {

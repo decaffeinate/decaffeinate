@@ -1,7 +1,7 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import getStartOfLine from './../../../utils/getStartOfLine.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import getStartOfLine from './../../../utils/getStartOfLine';
 
-import type { PatcherContext } from './../../../patchers/types.js';
+import type { PatcherContext } from './../../../patchers/types';
 
 export default class BlockPatcher extends NodePatcher {
   statements: Array<NodePatcher>;

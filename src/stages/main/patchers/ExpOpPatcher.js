@@ -1,4 +1,4 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
 
 /**
  * Handles exponentiation, i.e. `a ** b`.

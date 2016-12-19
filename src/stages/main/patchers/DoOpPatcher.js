@@ -1,7 +1,7 @@
-import DefaultParamPatcher from './DefaultParamPatcher.js';
-import FunctionPatcher from './FunctionPatcher.js';
-import NodePatcher from '../../../patchers/NodePatcher.js';
-import type { PatcherContext, SourceTokenListIndex } from '../../../patchers/types.js';
+import DefaultParamPatcher from './DefaultParamPatcher';
+import FunctionPatcher from './FunctionPatcher';
+import NodePatcher from '../../../patchers/NodePatcher';
+import type { PatcherContext, SourceTokenListIndex } from '../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 export default class DoOpPatcher extends NodePatcher {

@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
-import PatchError from '../../src/utils/PatchError.js';
-import stripSharedIndent from '../../src/utils/stripSharedIndent.js';
+import PatchError from '../../src/utils/PatchError';
+import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('PatchError', function() {
   it('handles files not ending in newlines', () => {

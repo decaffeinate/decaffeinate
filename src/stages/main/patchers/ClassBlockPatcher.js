@@ -1,10 +1,10 @@
-import BlockPatcher from './BlockPatcher.js';
-import ClassAssignOpPatcher from './ClassAssignOpPatcher.js';
-import ConstructorPatcher from './ConstructorPatcher.js';
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import adjustIndent from '../../../utils/adjustIndent.js';
-import type ClassPatcher from './ClassPatcher.js';
-import type { Node } from './../../../patchers/types.js';
+import BlockPatcher from './BlockPatcher';
+import ClassAssignOpPatcher from './ClassAssignOpPatcher';
+import ConstructorPatcher from './ConstructorPatcher';
+import NodePatcher from './../../../patchers/NodePatcher';
+import adjustIndent from '../../../utils/adjustIndent';
+import type ClassPatcher from './ClassPatcher';
+import type { Node } from './../../../patchers/types';
 
 export default class ClassBlockPatcher extends BlockPatcher {
   static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {

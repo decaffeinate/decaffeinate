@@ -1,11 +1,11 @@
 /* @flow */
 /* eslint-disable no-process-exit */
 
-import PatchError from './utils/PatchError.js';
+import PatchError from './utils/PatchError';
 import type { Readable, Writable } from 'stream';
 import type { WriteStream } from 'tty';
-import { convert } from './index.js';
-import type { Options } from './index.js';
+import { convert } from './index';
+import type { Options } from './index';
 import { join, dirname, basename, extname } from 'path';
 import { stat, readdir, createReadStream, createWriteStream } from 'fs';
 

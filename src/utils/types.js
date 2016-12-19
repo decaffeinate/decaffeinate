@@ -1,6 +1,6 @@
 /* @flow */
 
-import type { Node, SourceToken } from '../patchers/types.js';
+import type { Node, SourceToken } from '../patchers/types';
 import { SourceType } from 'coffee-lex';
 import { inspect } from 'util';
 

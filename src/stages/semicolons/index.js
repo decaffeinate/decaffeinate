@@ -2,9 +2,9 @@ import MagicString from 'magic-string';
 import asi from 'automatic-semicolon-insertion';
 import buildConfig from 'ast-processor-babylon-config';
 import { basename } from 'path';
-import { logger } from '../../utils/debug.js';
+import { logger } from '../../utils/debug';
 import { parse } from 'babylon';
-import type { Options } from '../../index.js';
+import type { Options } from '../../index';
 
 const BABYLON_PLUGINS = [
   'flow',

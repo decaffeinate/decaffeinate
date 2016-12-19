@@ -1,5 +1,5 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 export default class ArrayInitialiserPatcher extends NodePatcher {

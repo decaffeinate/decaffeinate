@@ -1,4 +1,4 @@
-import formatRange from './formatRange.js';
+import formatRange from './formatRange';
 
 export default function formatCoffeeScriptLocationData(locationData, context) {
   let {first_line, first_column, last_line, last_column} = locationData;

@@ -1,6 +1,6 @@
 /* @flow */
 
-import type { Node } from '../patchers/types.js';
+import type { Node } from '../patchers/types';
 
 /**
  * Determines whether the given node spans multiple lines.

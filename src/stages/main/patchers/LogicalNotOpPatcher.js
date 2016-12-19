@@ -1,4 +1,4 @@
-import UnaryOpPatcher from './UnaryOpPatcher.js';
+import UnaryOpPatcher from './UnaryOpPatcher';
 
 export default class LogicalNotOpPatcher extends UnaryOpPatcher {
   /**

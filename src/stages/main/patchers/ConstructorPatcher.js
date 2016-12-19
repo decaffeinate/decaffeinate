@@ -1,8 +1,8 @@
-import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
-import traverse from '../../../utils/traverse.js';
-import type FunctionPatcher from './FunctionPatcher.js';
-import type NodePatcher from '../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
+import traverse from '../../../utils/traverse';
+import type FunctionPatcher from './FunctionPatcher';
+import type NodePatcher from '../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: FunctionPatcher) {

@@ -1,8 +1,8 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import LoopPatcher from './LoopPatcher.js';
-import type BlockPatcher from './BlockPatcher.js';
-import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import LoopPatcher from './LoopPatcher';
+import type BlockPatcher from './BlockPatcher';
+import type { PatcherContext, SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 export default class ForPatcher extends LoopPatcher {

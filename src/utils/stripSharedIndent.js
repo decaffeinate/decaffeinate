@@ -1,5 +1,5 @@
 /* @flow */
-import getIndent from './getIndent.js';
+import getIndent from './getIndent';
 
 /**
  * Remove indentation shared by all lines and remove leading and trailing

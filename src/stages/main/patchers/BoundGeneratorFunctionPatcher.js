@@ -1,4 +1,4 @@
-import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
+import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
 
 export default class BoundGeneratorFunctionPatcher extends ManuallyBoundFunctionPatcher {
   patchFunctionStart({ method=false }) {

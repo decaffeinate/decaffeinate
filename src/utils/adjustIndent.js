@@ -1,7 +1,7 @@
 /* @flow */
 
-import determineIndent from './determineIndent.js';
-import getIndent from './getIndent.js';
+import determineIndent from './determineIndent';
+import getIndent from './getIndent';
 
 /**
  * Adjust an indent in source at a specific offset by an amount.

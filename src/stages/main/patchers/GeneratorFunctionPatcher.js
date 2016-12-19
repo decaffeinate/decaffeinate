@@ -1,4 +1,4 @@
-import FunctionPatcher from './FunctionPatcher.js';
+import FunctionPatcher from './FunctionPatcher';
 
 /**
  * Handles generator functions, i.e. produced by embedding `yield` statements.

@@ -1,8 +1,8 @@
 import { SourceType } from 'coffee-lex';
 import repeat from 'repeating';
 
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import escape from '../../../utils/escape.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import escape from '../../../utils/escape';
 
 export default class InterpolatedPatcher extends NodePatcher {
   quasis: Array<NodePatcher>;

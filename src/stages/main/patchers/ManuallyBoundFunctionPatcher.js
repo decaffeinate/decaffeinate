@@ -1,4 +1,4 @@
-import FunctionPatcher from './FunctionPatcher.js';
+import FunctionPatcher from './FunctionPatcher';
 
 /**
  * Handles bound functions that cannot become arrow functions.

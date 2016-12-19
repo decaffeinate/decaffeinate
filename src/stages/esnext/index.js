@@ -1,6 +1,6 @@
 import { allPlugins, convert } from 'esnext';
-import { logger } from '../../utils/debug.js';
-import type { Options } from '../../index.js';
+import { logger } from '../../utils/debug';
+import type { Options } from '../../index';
 
 export default class EsnextStage {
   static run(content: string, options: Options): { code: string } {

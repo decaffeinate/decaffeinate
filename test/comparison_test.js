@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('comparisons', () => {
   it('leaves less-than operators alone', () => {

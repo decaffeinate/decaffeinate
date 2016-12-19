@@ -1,6 +1,6 @@
 import { SourceType } from 'coffee-lex';
 
-import InterpolatedPatcher from './InterpolatedPatcher.js';
+import InterpolatedPatcher from './InterpolatedPatcher';
 
 /**
  * Patcher to handle all types of strings, whether or not they have

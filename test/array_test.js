@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('arrays', () => {
   it('does not change empty arrays', () => {

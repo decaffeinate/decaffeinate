@@ -1,9 +1,9 @@
-import ForPatcher from './ForPatcher.js';
-import RangePatcher from './RangePatcher.js';
-import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock.js';
-import type BlockPatcher from './BlockPatcher.js';
-import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import ForPatcher from './ForPatcher';
+import RangePatcher from './RangePatcher';
+import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock';
+import type BlockPatcher from './BlockPatcher';
+import type NodePatcher from './../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 const UP = 'UP';
 const DOWN = 'DOWN';

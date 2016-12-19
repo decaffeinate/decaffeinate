@@ -1,11 +1,11 @@
-import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
-import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher.js';
-import ThisPatcher from './ThisPatcher.js';
-import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { Node } from './../../../patchers/types.js';
+import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
+import ThisPatcher from './ThisPatcher';
+import type NodePatcher from './../../../patchers/NodePatcher';
+import type { Node } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {

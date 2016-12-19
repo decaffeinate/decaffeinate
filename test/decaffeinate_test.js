@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('decaffeinate', () => {
   // https://github.com/decaffeinate/decaffeinate/issues/173

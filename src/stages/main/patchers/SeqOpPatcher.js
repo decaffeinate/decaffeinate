@@ -1,6 +1,6 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
 import { SourceType } from 'coffee-lex';
-import type { SourceToken } from './../../../patchers/types.js';
+import type { SourceToken } from './../../../patchers/types';
 
 /**
  * Handles sequence expressions, e.g `a; b`.

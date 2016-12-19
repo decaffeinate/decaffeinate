@@ -1,6 +1,6 @@
-import BlockPatcher from './BlockPatcher.js';
-import NodePatcher from '../../../patchers/NodePatcher.js';
-import type { PatcherContext, SourceToken } from '../../../patchers/types.js';
+import BlockPatcher from './BlockPatcher';
+import NodePatcher from '../../../patchers/NodePatcher';
+import type { PatcherContext, SourceToken } from '../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 export default class SwitchCasePatcher extends NodePatcher {

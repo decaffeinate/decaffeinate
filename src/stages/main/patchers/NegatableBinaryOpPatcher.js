@@ -1,6 +1,6 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
-import type NodePatcher from './../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
+import type NodePatcher from './../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Handles `instanceof` operator, e.g. `a instanceof b`.

@@ -1,4 +1,4 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
 
 const RANGE_HELPER =
 `function __range__(left, right, inclusive) {

@@ -1,7 +1,7 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
-import type BlockPatcher from './BlockPatcher.js';
-import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import FunctionApplicationPatcher from './FunctionApplicationPatcher';
+import type BlockPatcher from './BlockPatcher';
+import type { PatcherContext, SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 export default class FunctionPatcher extends NodePatcher {

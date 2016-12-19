@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('imports', () => {
   it('converts commonjs code to JS modules by default', () => {

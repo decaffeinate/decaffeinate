@@ -1,6 +1,6 @@
 /* @flow */
 
-import type { Node } from '../patchers/types.js';
+import type { Node } from '../patchers/types';
 
 /**
  * Traverses an AST node, calling a callback for each node in the hierarchy in

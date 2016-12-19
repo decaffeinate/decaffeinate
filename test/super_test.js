@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('super', () => {
   it('spreads `arguments` when no arguments are given', () => {

@@ -1,4 +1,4 @@
-import NegatableBinaryOpPatcher from './NegatableBinaryOpPatcher.js';
+import NegatableBinaryOpPatcher from './NegatableBinaryOpPatcher';
 
 /**
  * Handles `instanceof` operator, e.g. `a instanceof b`.

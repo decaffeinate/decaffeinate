@@ -1,4 +1,4 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
 
 export default class FloorDivideOpPatcher extends BinaryOpPatcher {
   /**

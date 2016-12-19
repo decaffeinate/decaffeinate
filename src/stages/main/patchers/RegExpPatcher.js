@@ -1,4 +1,4 @@
-import NodePatcher from '../../../patchers/NodePatcher.js';
+import NodePatcher from '../../../patchers/NodePatcher';
 
 /**
  * Handles regexes and heregexes (e.g. `/\.js$/` and `///a/b/c///`).

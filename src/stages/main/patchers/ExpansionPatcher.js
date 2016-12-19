@@ -1,4 +1,4 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
+import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class ExpansionPatcher extends NodePatcher {
   patchAsExpression() {

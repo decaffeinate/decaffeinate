@@ -1,6 +1,6 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
+import NodePatcher from './../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Handles constructs of the form `a < b < c < … < z`.

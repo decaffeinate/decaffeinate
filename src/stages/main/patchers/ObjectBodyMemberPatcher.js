@@ -1,12 +1,12 @@
-import BoundFunctionPatcher from './BoundFunctionPatcher.js';
-import BoundGeneratorFunctionPatcher from './BoundGeneratorFunctionPatcher.js';
-import FunctionPatcher from './FunctionPatcher.js';
-import GeneratorFunctionPatcher from './GeneratorFunctionPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
-import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher.js';
-import StringPatcher from './StringPatcher.js';
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { PatcherContext } from './../../../patchers/types.js';
+import BoundFunctionPatcher from './BoundFunctionPatcher';
+import BoundGeneratorFunctionPatcher from './BoundGeneratorFunctionPatcher';
+import FunctionPatcher from './FunctionPatcher';
+import GeneratorFunctionPatcher from './GeneratorFunctionPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
+import StringPatcher from './StringPatcher';
+import NodePatcher from './../../../patchers/NodePatcher';
+import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Handles object properties.

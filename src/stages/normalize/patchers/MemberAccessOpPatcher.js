@@ -1,6 +1,6 @@
-import PassthroughPatcher from '../../../patchers/PassthroughPatcher.js';
-import DefaultParamPatcher from './DefaultParamPatcher.js';
-import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher.js';
+import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
+import DefaultParamPatcher from './DefaultParamPatcher';
+import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 
 export default class MemberAccessOpPatcher extends PassthroughPatcher {
   shouldTrimContentRange() {

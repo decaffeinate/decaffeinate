@@ -1,8 +1,8 @@
 /* @flow */
 
-import Scope from './Scope.js';
-import traverse from './traverse.js';
-import type { Node } from '../patchers/types.js';
+import Scope from './Scope';
+import traverse from './traverse';
+import type { Node } from '../patchers/types';
 import { parse as decaffeinateParse } from 'decaffeinate-parser';
 
 /**

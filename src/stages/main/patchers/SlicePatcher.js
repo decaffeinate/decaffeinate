@@ -1,5 +1,5 @@
-import NodePatcher from './../../../patchers/NodePatcher.js';
-import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
+import NodePatcher from './../../../patchers/NodePatcher';
+import type { SourceToken, PatcherContext } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 /**

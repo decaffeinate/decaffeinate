@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('objects', () => {
   it('adds parentheses around implicit bare object literals', () => {

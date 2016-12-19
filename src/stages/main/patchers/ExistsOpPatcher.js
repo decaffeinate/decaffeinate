@@ -1,5 +1,5 @@
-import BinaryOpPatcher from './BinaryOpPatcher.js';
-import IdentifierPatcher from './IdentifierPatcher.js';
+import BinaryOpPatcher from './BinaryOpPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
 
 export default class ExistsOpPatcher extends BinaryOpPatcher {
   /**

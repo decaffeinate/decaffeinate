@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('chained comparison', () => {
   it('repeats the middle operand when it is safe', () => {

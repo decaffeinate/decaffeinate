@@ -1,4 +1,4 @@
-import check from './support/check.js';
+import check from './support/check';
 
 describe('range', () => {
   it('converts short literal array ranges to literal arrays', () => {

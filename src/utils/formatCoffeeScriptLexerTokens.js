@@ -1,4 +1,4 @@
-import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData.js';
+import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData';
 
 export default function formatCoffeeScriptLexerTokens(tokens, context): string {
   let resultLines = tokens.map(([tag, value, locationData]) =>

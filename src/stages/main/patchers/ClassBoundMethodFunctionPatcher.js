@@ -1,4 +1,4 @@
-import FunctionPatcher from './FunctionPatcher.js';
+import FunctionPatcher from './FunctionPatcher';
 
 export default class ClassBoundMethodFunctionPatcher extends FunctionPatcher {
   expectedArrowType(): string {
