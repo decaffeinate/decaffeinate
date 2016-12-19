@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { PatcherContext } from './../../../patchers/types.js';
-import { CALL_START, CALL_END, COMMA, EXISTENCE, NEWLINE, RBRACE, RBRACKET, RPAREN } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
@@ -42,7 +42,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       // when combined with other normalize stage transformations. So just
       // remove the redundant comma.
       let lastToken = arg.lastToken();
-      if (lastToken.type === COMMA) {
+      if (lastToken.type === SourceType.COMMA) {
         this.remove(lastToken.start, lastToken.end);
       }
       arg.patch();
@@ -68,7 +68,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       this.args[0].contentStart, this.args[this.args.length - 1].contentEnd);
     let isArgListMultiline = argListCode.indexOf('\n') !== -1;
     let lastTokenType = this.lastToken().type;
-    if (!isArgListMultiline || lastTokenType === RBRACE || lastTokenType === RBRACKET) {
+    if (!isArgListMultiline || lastTokenType === SourceType.RBRACE || lastTokenType === SourceType.RBRACKET) {
       this.insert(this.contentEnd, ')');
       return;
     }
@@ -101,9 +101,9 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       if (token === null) {
         return null;
       }
-    } while (token.type === NEWLINE);
+    } while (token.type === SourceType.NEWLINE);
 
-    if (token.type === CALL_END || token.type === RPAREN) {
+    if (token.type === SourceType.CALL_END || token.type === SourceType.RPAREN) {
       return token;
     }
     return null;
@@ -127,7 +127,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     let searchStart = this.fn.outerEnd;
     let searchEnd = this.args[0].outerStart;
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd, token => token.type === CALL_START) === null;
+      searchStart, searchEnd, token => token.type === SourceType.CALL_START) === null;
   }
 
   /**
@@ -137,7 +137,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
   getFuncEnd() {
     if (this.node.type === 'SoakedFunctionApplication') {
       let questionMarkTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
-        this.fn.outerEndTokenIndex, EXISTENCE);
+        this.fn.outerEndTokenIndex, SourceType.EXISTENCE);
       let questionMarkToken = this.sourceTokenAtIndex(questionMarkTokenIndex);
       return questionMarkToken.end;
     } else {

@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
-import { LBRACKET, RANGE, RBRACKET } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 /**
  * Handles array or string slicing, e.g. `names[i..]`.
@@ -9,7 +9,7 @@ export default class SlicePatcher extends NodePatcher {
   expression: NodePatcher;
   left: ?NodePatcher;
   right: ?NodePatcher;
-  
+
   /**
    * `node` is of type `Slice`.
    */
@@ -92,7 +92,7 @@ export default class SlicePatcher extends NodePatcher {
   getIndexStartSourceToken(): SourceToken {
     let tokens = this.context.sourceTokens;
     let index = tokens.indexOfTokenMatchingPredicate(
-      token => token.type === LBRACKET,
+      token => token.type === SourceType.LBRACKET,
       this.expression.outerEndTokenIndex
     );
     if (!index || index.isAfter(this.contentEndTokenIndex)) {
@@ -108,7 +108,7 @@ export default class SlicePatcher extends NodePatcher {
     let tokens = this.context.sourceTokens;
     let { source } = this.context;
     let index = tokens.indexOfTokenMatchingPredicate(token => {
-      if (token.type !== RANGE) {
+      if (token.type !== SourceType.RANGE) {
         return false;
       }
       let operator = source.slice(token.start, token.end);
@@ -126,7 +126,7 @@ export default class SlicePatcher extends NodePatcher {
   getIndexEndSourceToken(): SourceToken {
     let tokens = this.context.sourceTokens;
     let index = tokens.lastIndexOfTokenMatchingPredicate(
-      token => token.type === RBRACKET,
+      token => token.type === SourceType.RBRACKET,
       this.outerEndTokenIndex
     );
     if (!index || index.isBefore(this.contentStartTokenIndex)) {

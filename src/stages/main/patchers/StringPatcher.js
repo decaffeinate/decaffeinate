@@ -1,4 +1,4 @@
-import { TSSTRING_START, TDSTRING_START } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 import InterpolatedPatcher from './InterpolatedPatcher.js';
 
@@ -19,11 +19,11 @@ export default class StringPatcher extends InterpolatedPatcher {
       escapeStrings.push('${');
       this.overwrite(openQuoteToken.start, openQuoteToken.end, '`');
       this.overwrite(closeQuoteToken.start, closeQuoteToken.end, '`');
-    } else if (openQuoteToken.type === TSSTRING_START) {
+    } else if (openQuoteToken.type === SourceType.TSSTRING_START) {
       escapeStrings.push('\'');
       this.overwrite(openQuoteToken.start, openQuoteToken.end, '\'');
       this.overwrite(closeQuoteToken.start, closeQuoteToken.end, '\'');
-    } else if (openQuoteToken.type === TDSTRING_START) {
+    } else if (openQuoteToken.type === SourceType.TDSTRING_START) {
       escapeStrings.push('"');
       this.overwrite(openQuoteToken.start, openQuoteToken.end, '"');
       this.overwrite(closeQuoteToken.start, closeQuoteToken.end, '"');

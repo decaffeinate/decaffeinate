@@ -1,4 +1,3 @@
-/* @flow */
 import LinesAndColumns from 'lines-and-columns';
 import PatchError from './PatchError.js';
 

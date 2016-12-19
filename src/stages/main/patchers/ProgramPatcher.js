@@ -2,7 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import blank from '../../../utils/blank.js';
 import determineIndent from '../../../utils/determineIndent.js';
 import getIndent from '../../../utils/getIndent.js';
-import { COMMENT, CONTINUATION, HERECOMMENT} from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 import type BlockPatcher from './BlockPatcher.js';
 import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
 
@@ -48,7 +48,7 @@ export default class ProgramPatcher extends NodePatcher {
    */
   patchContinuations() {
     this.getProgramSourceTokens().forEach(token => {
-      if (token.type === CONTINUATION) {
+      if (token.type === SourceType.CONTINUATION) {
         this.remove(token.start, token.end);
       }
     });
@@ -62,13 +62,13 @@ export default class ProgramPatcher extends NodePatcher {
   patchComments() {
     let { source } = this.context;
     this.getProgramSourceTokens().forEach(token => {
-      if (token.type === COMMENT) {
+      if (token.type === SourceType.COMMENT) {
         if (token.start === 0 && source[1] === '!') {
           this.patchShebangComment(token);
         } else {
           this.patchLineComment(token);
         }
-      } else if (token.type === HERECOMMENT) {
+      } else if (token.type === SourceType.HERECOMMENT) {
         this.patchBlockComment(token);
       }
     });

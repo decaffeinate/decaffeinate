@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { PatcherContext } from './../../../patchers/types.js';
-import { COMMA } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 /**
  * Handles object literals.
@@ -20,7 +20,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
       // when combined with other normalize stage transformations. So just
       // remove the redundant comma.
       let lastToken = member.lastToken();
-      if (lastToken.type === COMMA) {
+      if (lastToken.type === SourceType.COMMA) {
         this.remove(lastToken.start, lastToken.end);
       }
       member.patch();

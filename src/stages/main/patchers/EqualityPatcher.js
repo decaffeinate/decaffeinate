@@ -1,13 +1,13 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
 import type { SourceToken } from './../../../patchers/types.js';
-import { OPERATOR } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 /**
  * Handles equality and inequality comparisons.
  */
 export default class EqualityPatcher extends BinaryOpPatcher {
   negated: boolean = false;
-  
+
   patchAsExpression() {
     this.left.patch();
     let compareToken = this.getCompareToken();
@@ -54,7 +54,7 @@ export default class EqualityPatcher extends BinaryOpPatcher {
     let compareTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       left,
       right,
-      token => token.type === OPERATOR
+      token => token.type === SourceType.OPERATOR
     );
 
     if (!compareTokenIndex) {

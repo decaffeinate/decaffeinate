@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { PatcherContext } from './../../../patchers/types.js';
-import { COMMA } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 import { isSemanticToken } from '../../../utils/types.js';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
@@ -32,7 +32,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       let isLast = i === args.length - 1;
       let commaTokenIndex = arg.node.virtual ? null : this.indexOfSourceTokenAfterSourceTokenIndex(
         arg.outerEndTokenIndex,
-        COMMA,
+        SourceType.COMMA,
         isSemanticToken
       );
       // Ignore commas after the end of the function call.

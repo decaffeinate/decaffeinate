@@ -1,5 +1,3 @@
-/* @flow */
-
 import LinesAndColumns from 'lines-and-columns';
 import printTable from './printTable.js';
 import repeat from 'repeating';

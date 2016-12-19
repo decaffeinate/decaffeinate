@@ -1,9 +1,9 @@
 import PatcherError from '../utils/PatchError.js';
 import adjustIndent from '../utils/adjustIndent.js';
 import repeat from 'repeating';
-import type { SourceType, SourceToken, SourceTokenListIndex, PatcherContext, ParseContext, Editor, SourceTokenList } from './types.js';
+import type { SourceToken, SourceTokenListIndex, PatcherContext, ParseContext, Editor, SourceTokenList } from './types.js';
 import type { Options } from '../index.js';
-import { CALL_START, CALL_END, LPAREN, RPAREN } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 import { isSemanticToken } from '../utils/types.js';
 import { logger } from '../utils/debug.js';
 
@@ -119,11 +119,11 @@ export default class NodePatcher {
       let previousSurroundingToken = tokens.tokenAtIndex(previousSurroundingTokenIndex);
       let nextSurroundingToken = tokens.tokenAtIndex(nextSurroundingTokenIndex);
 
-      if (!previousSurroundingToken || (previousSurroundingToken.type !== LPAREN && previousSurroundingToken.type !== CALL_START)) {
+      if (!previousSurroundingToken || (previousSurroundingToken.type !== SourceType.LPAREN && previousSurroundingToken.type !== SourceType.CALL_START)) {
         break;
       }
 
-      if (!nextSurroundingToken || (nextSurroundingToken.type !== RPAREN && nextSurroundingToken.type !== CALL_END)) {
+      if (!nextSurroundingToken || (nextSurroundingToken.type !== SourceType.RPAREN && nextSurroundingToken.type !== SourceType.CALL_END)) {
         break;
       }
 
@@ -773,14 +773,14 @@ export default class NodePatcher {
       return false;
     }
 
-    let leftTokenType = LPAREN;
-    let rightTokenType = RPAREN;
+    let leftTokenType = SourceType.LPAREN;
+    let rightTokenType = SourceType.RPAREN;
 
-    if (beforeToken.type === LPAREN && afterToken.type === RPAREN) {
+    if (beforeToken.type === SourceType.LPAREN && afterToken.type === SourceType.RPAREN) {
       // nothing
-    } else if (beforeToken.type === CALL_START && afterToken.type === CALL_END) {
-      leftTokenType = CALL_START;
-      rightTokenType = CALL_END;
+    } else if (beforeToken.type === SourceType.CALL_START && afterToken.type === SourceType.CALL_END) {
+      leftTokenType = SourceType.CALL_START;
+      rightTokenType = SourceType.CALL_END;
     } else {
       return false;
     }

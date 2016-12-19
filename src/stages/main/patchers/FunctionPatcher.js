@@ -2,12 +2,12 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { PatcherContext, SourceToken } from './../../../patchers/types.js';
-import { CALL_END, COMMA, FUNCTION, LPAREN, RPAREN } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
   body: ?BlockPatcher;
-  
+
   constructor(patcherContext: PatcherContext, parameters: Array<NodePatcher>, body: ?NodePatcher) {
     super(patcherContext);
     this.parameters = parameters;
@@ -31,7 +31,7 @@ export default class FunctionPatcher extends NodePatcher {
     this.patchFunctionStart({ method });
     this.parameters.forEach((parameter, i) => {
       let isLast = i === this.parameters.length - 1;
-      let needsComma = !isLast && !parameter.hasSourceTokenAfter(COMMA);
+      let needsComma = !isLast && !parameter.hasSourceTokenAfter(SourceType.COMMA);
       parameter.patch();
       if (needsComma) {
         this.insert(parameter.outerEnd, ',');
@@ -66,7 +66,7 @@ export default class FunctionPatcher extends NodePatcher {
         // parentheses were added in the normalize stage.
         this.body.patch({ leftBrace: false, rightBrace: false });
         let closeParenIndex = this.parent.indexOfSourceTokenBetweenSourceIndicesMatching(
-          this.contentEnd, this.parent.contentEnd, token => token.type === CALL_END
+          this.contentEnd, this.parent.contentEnd, token => token.type === SourceType.CALL_END
         );
         let closeParen = this.sourceTokenAtIndex(closeParenIndex);
         this.insert(closeParen.start, this.body.inline() ? ' }' : '}');
@@ -84,14 +84,14 @@ export default class FunctionPatcher extends NodePatcher {
     if (this.hasParamStart()) {
       let parenRange = this.getProgramSourceTokens()
         .rangeOfMatchingTokensContainingTokenIndex(
-          LPAREN,
-          RPAREN,
+          SourceType.LPAREN,
+          SourceType.RPAREN,
           this.contentStartTokenIndex
         );
       let rparenIndex = parenRange[1].previous();
       arrowIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         rparenIndex,
-        FUNCTION
+        SourceType.FUNCTION
       );
     }
     let arrow = this.sourceTokenAtIndex(arrowIndex);
@@ -111,7 +111,7 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   hasParamStart(): boolean {
-    return this.sourceTokenAtIndex(this.contentStartTokenIndex).type === LPAREN;
+    return this.sourceTokenAtIndex(this.contentStartTokenIndex).type === SourceType.LPAREN;
   }
 
   canHandleImplicitReturn(): boolean {

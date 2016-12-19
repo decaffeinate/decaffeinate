@@ -2,7 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher.js';
 import LoopPatcher from './LoopPatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { PatcherContext, SourceTokenListIndex } from './../../../patchers/types.js';
-import { LOOP, THEN, WHILE } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 /**
  * Handles `while` loops, e.g.
@@ -34,7 +34,7 @@ export default class WhilePatcher extends LoopPatcher {
     // `until a` → `while a`
     //  ^^^^^       ^^^^^
     let whileToken = this.sourceTokenAtIndex(this.getWhileTokenIndex());
-    let isLoop = whileToken.type === LOOP;
+    let isLoop = whileToken.type === SourceType.LOOP;
 
     if (isLoop) {
       this.overwrite(whileToken.start, whileToken.end, 'while (true) {');
@@ -115,13 +115,13 @@ export default class WhilePatcher extends LoopPatcher {
       throw this.error(`could not get first token of 'while' loop`);
     }
     switch (whileToken.type) {
-      case LOOP:
-      case WHILE:
+      case SourceType.LOOP:
+      case SourceType.WHILE:
         return whileTokenIndex;
 
       default:
         throw this.error(
-          `expected 'while' token to be type WHILE or LOOP, got ${whileToken.type.name}`
+          `expected 'while' token to be type WHILE or LOOP, got ${SourceType[whileToken.type]}`
         );
     }
   }
@@ -136,20 +136,20 @@ export default class WhilePatcher extends LoopPatcher {
     }
 
     let whileToken = this.sourceTokenAtIndex(whileTokenIndex);
-    if (whileToken.type === LOOP) {
+    if (whileToken.type === SourceType.LOOP) {
       // `loop then …`
       let nextTokenIndex = whileTokenIndex.next();
       let nextToken = this.sourceTokenAtIndex(nextTokenIndex);
       if (!nextToken) {
         throw this.error(`expected another token after 'loop' but none was found`);
       }
-      return nextToken.type === THEN ? nextTokenIndex : null;
+      return nextToken.type === SourceType.THEN ? nextTokenIndex : null;
     } else {
       // `while a then …`
       return this.indexOfSourceTokenBetweenPatchersMatching(
         this.guard || this.condition,
         this.body,
-        token => token.type === THEN
+        token => token.type === SourceType.THEN
       );
     }
   }

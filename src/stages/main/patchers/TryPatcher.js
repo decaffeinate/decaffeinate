@@ -1,7 +1,7 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type BlockPatcher from './BlockPatcher.js';
 import type { PatcherContext, SourceToken, SourceTokenListIndex } from '../../../patchers/types.js';
-import { CATCH, FINALLY, THEN, TRY } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 /**
  * Handles `try` statements, e.g. `try a catch e then console.log(e)`.
@@ -19,7 +19,7 @@ export default class TryPatcher extends NodePatcher {
     this.catchBody = catchBody;
     this.finallyBody = finallyBody;
   }
-  
+
   initialize() {
     if (this.catchAssignee) {
       this.catchAssignee.setRequiresExpression();
@@ -145,7 +145,7 @@ export default class TryPatcher extends NodePatcher {
       this.catchBody.setImplicitlyReturns();
     }
   }
-  
+
   statementNeedsSemicolon(): boolean {
     return false;
   }
@@ -156,7 +156,7 @@ export default class TryPatcher extends NodePatcher {
   getTryToken(): SourceToken {
     let tryTokenIndex = this.contentStartTokenIndex;
     let tryToken = this.sourceTokenAtIndex(tryTokenIndex);
-    if (!tryToken || tryToken.type !== TRY) {
+    if (!tryToken || tryToken.type !== SourceType.TRY) {
       throw this.error(`expected 'try' keyword at start of 'try' statement`);
     }
     return tryToken;
@@ -178,7 +178,7 @@ export default class TryPatcher extends NodePatcher {
     }
 
     let catchTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.body.outerEnd, searchEnd, token => token.type === CATCH
+      this.body.outerEnd, searchEnd, token => token.type === SourceType.CATCH
     );
     if (!catchTokenIndex) {
       return null;
@@ -195,7 +195,7 @@ export default class TryPatcher extends NodePatcher {
     }
     return this.indexOfSourceTokenBetweenPatchersMatching(
       this.catchAssignee || this.body, this.catchBody,
-      token => token.type === THEN
+      token => token.type === SourceType.THEN
     );
   }
 
@@ -220,7 +220,7 @@ export default class TryPatcher extends NodePatcher {
     }
 
     let finallyTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd, token => token.type === FINALLY
+      searchStart, searchEnd, token => token.type === SourceType.FINALLY
     );
     if (!finallyTokenIndex) {
       return null;

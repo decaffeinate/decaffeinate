@@ -1,4 +1,4 @@
-import { INTERPOLATION_START, STRING_LINE_SEPARATOR, STRING_PADDING } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 import repeat from 'repeating';
 
 import NodePatcher from './../../../patchers/NodePatcher.js';
@@ -30,7 +30,7 @@ export default class InterpolatedPatcher extends NodePatcher {
 
   getInterpolationStartTokenAtIndex(index: number): SourceToken {
     let interpolationStartIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.quasis[index], this.expressions[index], token => token.type === INTERPOLATION_START
+      this.quasis[index], this.expressions[index], token => token.type === SourceType.INTERPOLATION_START
     );
     if (!interpolationStartIndex) {
       this.error('Cannot find interpolation start for string interpolation.');
@@ -58,11 +58,11 @@ export default class InterpolatedPatcher extends NodePatcher {
       let tokens = this.getProgramSourceTokens().slice(
         quasi.contentStartTokenIndex, quasi.contentEndTokenIndex.next()).toArray();
       for (let token of tokens) {
-        if (token.type === STRING_PADDING) {
+        if (token.type === SourceType.STRING_PADDING) {
           let paddingCode = this.slice(token.start, token.end);
           let numNewlines = (paddingCode.match(/\n/g) || []).length;
           this.overwrite(token.start, token.end, repeat('\\\n', numNewlines));
-        } else if (token.type === STRING_LINE_SEPARATOR) {
+        } else if (token.type === SourceType.STRING_LINE_SEPARATOR) {
           this.insert(token.start, ' \\');
         }
       }

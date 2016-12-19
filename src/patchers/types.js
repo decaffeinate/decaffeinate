@@ -33,9 +33,7 @@ export type PatcherContext = {
   options: Options;
 };
 
-export type SourceType = {
-  name: string,
-};
+export type SourceType = number;
 
 export type SourceToken = {
   type: SourceType,

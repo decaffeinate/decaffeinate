@@ -1,7 +1,7 @@
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type { PatcherContext } from './../../../patchers/types.js';
 import type { SourceTokenListIndex } from 'coffee-lex';
-import { IF } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 /**
  * Normalizes conditionals by rewriting post-`if` into standard `if`, e.g.
@@ -67,7 +67,7 @@ export default class ConditionalPatcher extends NodePatcher {
 
     while (index !== start) {
       let token = this.sourceTokenAtIndex(index);
-      if (token && token.type === IF) {
+      if (token && token.type === SourceType.IF) {
         break;
       }
       index = index.previous();

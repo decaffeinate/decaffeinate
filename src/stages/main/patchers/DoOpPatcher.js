@@ -2,7 +2,7 @@ import DefaultParamPatcher from './DefaultParamPatcher.js';
 import FunctionPatcher from './FunctionPatcher.js';
 import NodePatcher from '../../../patchers/NodePatcher.js';
 import type { PatcherContext, SourceTokenListIndex } from '../../../patchers/types.js';
-import { DO } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class DoOpPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -15,7 +15,7 @@ export default class DoOpPatcher extends NodePatcher {
   initialize() {
     this.expression.setRequiresExpression();
   }
-  
+
   patchAsExpression() {
     let doTokenIndex = this.getDoTokenIndex();
     let doToken = this.sourceTokenAtIndex(doTokenIndex);
@@ -59,7 +59,7 @@ export default class DoOpPatcher extends NodePatcher {
   getDoTokenIndex(): SourceTokenListIndex {
     let index = this.contentStartTokenIndex;
     let token = this.sourceTokenAtIndex(index);
-    if (!token || token.type !== DO) {
+    if (!token || token.type !== SourceType.DO) {
       throw this.error(`expected 'do' at start of expression`);
     }
     return index;

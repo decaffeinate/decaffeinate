@@ -1,5 +1,5 @@
 import BinaryOpPatcher from './BinaryOpPatcher.js';
-import { NEWLINE, SEMICOLON } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 import type { SourceToken } from './../../../patchers/types.js';
 
 /**
@@ -13,12 +13,12 @@ export default class SeqOpPatcher extends BinaryOpPatcher {
     this.left.patch();
 
     let token = this.getOperatorToken();
-    
-    if (token.type === SEMICOLON) {
+
+    if (token.type === SourceType.SEMICOLON) {
       // `a; b` → `a, b`
       //   ^        ^
       this.overwrite(token.start, token.end, ',');
-    } else if (token.type === NEWLINE) {
+    } else if (token.type === SourceType.NEWLINE) {
       this.insert(this.left.outerEnd, ',');
     }
 
@@ -26,6 +26,6 @@ export default class SeqOpPatcher extends BinaryOpPatcher {
   }
 
   operatorTokenPredicate(): (token: SourceToken) => boolean {
-    return (token: SourceToken): boolean => token.type === SEMICOLON || token.type === NEWLINE;
+    return (token: SourceToken): boolean => token.type === SourceType.SEMICOLON || token.type === SourceType.NEWLINE;
   }
 }

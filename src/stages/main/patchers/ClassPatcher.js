@@ -3,7 +3,7 @@ import IdentifierPatcher from './IdentifierPatcher.js';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher.js';
 import NodePatcher from './../../../patchers/NodePatcher.js';
 import type { SourceToken, PatcherContext } from './../../../patchers/types.js';
-import { CLASS } from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class ClassPatcher extends NodePatcher {
   nameAssignee: ?NodePatcher;
@@ -103,9 +103,9 @@ export default class ClassPatcher extends NodePatcher {
   getClassToken(): SourceToken {
     let tokens = this.context.sourceTokens;
     let classSourceToken = tokens.tokenAtIndex(this.contentStartTokenIndex);
-    if (classSourceToken.type !== CLASS) {
+    if (classSourceToken.type !== SourceType.CLASS) {
       throw this.error(
-        `expected CLASS token but found ${classSourceToken.type.name}`,
+        `expected CLASS token but found ${SourceType[classSourceToken.type]}`,
         classSourceToken.start, classSourceToken.end
       );
     }

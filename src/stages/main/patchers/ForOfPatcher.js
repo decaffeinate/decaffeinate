@@ -1,5 +1,5 @@
 import ForPatcher from './ForPatcher.js';
-import {OWN} from 'coffee-lex';
+import { SourceType } from 'coffee-lex';
 
 export default class ForOfPatcher extends ForPatcher {
   patchAsStatement() {
@@ -82,7 +82,7 @@ export default class ForOfPatcher extends ForPatcher {
     if (this.node.isOwn) {
       let ownIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         this.contentStartTokenIndex,
-        OWN
+        SourceType.OWN
       );
       let ownToken = this.sourceTokenAtIndex(ownIndex);
       this.remove(ownToken.start, this.keyAssignee.outerStart);
