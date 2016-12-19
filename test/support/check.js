@@ -1,6 +1,6 @@
 import PatchError from '../../src/utils/PatchError.js';
 import stripSharedIndent from '../../src/utils/stripSharedIndent.js';
-import { convert } from '../../'; // eslint-disable-line decaffeinate/require-import-extension
+import { convert } from '../../';
 import { strictEqual } from 'assert';
 
 export default function check(source, expected, options={}) {
