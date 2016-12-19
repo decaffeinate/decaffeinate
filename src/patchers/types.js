@@ -54,10 +54,11 @@ type SourceTokenListIndexRange = [SourceTokenListIndex, SourceTokenListIndex];
 export type SourceTokenList = {
   slice: (start: SourceTokenListIndex, end: SourceTokenListIndex) => SourceTokenList,
   indexOfTokenContainingSourceIndex: (index: number) => ?SourceTokenListIndex,
+  indexOfTokenNearSourceIndex: (index: number) => SourceTokenListIndex,
   indexOfTokenEndingAtSourceIndex: (index: number) => ?SourceTokenListIndex,
-  indexOfTokenMatchingPredicate: (predicate: (token: SourceToken) => boolean, start?: SourceTokenListIndex) => ?SourceTokenListIndex,
+  indexOfTokenMatchingPredicate: (predicate: (token: SourceToken) => boolean, start?: SourceTokenListIndex, end?: SourceTokenListIndex) => ?SourceTokenListIndex,
   indexOfTokenStartingAtSourceIndex: (index: number) => ?SourceTokenListIndex,
-  lastIndexOfTokenMatchingPredicate: (predicate: (token: SourceToken) => boolean, start?: SourceTokenListIndex) => ?SourceTokenListIndex,
+  lastIndexOfTokenMatchingPredicate: (predicate: (token: SourceToken) => boolean, start?: SourceTokenListIndex, end?: SourceTokenListIndex) => ?SourceTokenListIndex,
   rangeOfMatchingTokensContainingTokenIndex: (startType: SourceType, endType: SourceType, index: SourceTokenListIndex) => ?SourceTokenListIndexRange,
   tokenAtIndex: (index: SourceTokenListIndex) => ?SourceToken,
 };
