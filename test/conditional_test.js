@@ -241,8 +241,7 @@ describe('conditionals', () => {
           a - d)
     `, `
       (function() {
-        let c;
-        let d;
+        let c, d;
         return z(a ?
           (c = a,
           a + c)

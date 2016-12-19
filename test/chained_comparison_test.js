@@ -70,8 +70,7 @@ describe('chained comparison', () => {
     check(`
       a() < b() < c() < d()
     `, `
-      let middle;
-      let middle1;
+      let middle, middle1;
       a() < (middle = b()) && middle < (middle1 = c()) && middle1 < d();
     `);
   });
