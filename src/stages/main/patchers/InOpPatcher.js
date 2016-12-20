@@ -38,43 +38,37 @@ export default class InOpPatcher extends BinaryOpPatcher {
     // In typical cases, when converting `a in b` to `b.includes(a)`, parens
     // won't be necessary around the `b`, but to be safe, only skip the parens
     // in a specific set of known-good cases.
-    let arrayNeedsParens = !this.right.isSurroundedByParentheses() &&
-        !(this.right instanceof IdentifierPatcher) &&
+    let arrayNeedsParens = !(this.right instanceof IdentifierPatcher) &&
         !(this.right instanceof MemberAccessOpPatcher) &&
         !(this.right instanceof DynamicMemberAccessOpPatcher) &&
         !(this.right instanceof FunctionApplicationPatcher) &&
         !(this.right instanceof ArrayInitialiserPatcher) &&
         !(this.right instanceof StringPatcher);
 
-    this.left.patch();
-    let leftCode = this.slice(this.left.contentStart, this.left.contentEnd);
+    let rightCode = this.right.patchAndGetCode();
+    if (arrayNeedsParens) {
+      rightCode = `(${rightCode})`;
+    }
 
-    // `a in b` → `b`
-    //  ^^^^^
-    this.remove(this.left.outerStart, this.right.outerStart);
+    // `a in b` → `a`
+    //   ^^^^^
+    this.remove(this.left.outerEnd, this.right.outerEnd);
 
     if (this.negated) {
-      // `b` → `!b`
+      // `a` → `!a`
       //        ^
-      this.insert(this.right.outerStart, '!');
-    }
-    if (arrayNeedsParens) {
-      // `!b` → `!(b`
-      //          ^
-      this.insert(this.right.outerStart, '(');
+      this.insert(this.left.outerStart, '!');
     }
 
-    this.right.patch();
+    // `!a` → `!b.includes(a`
+    //          ^^^^^^^^^^^
+    this.insert(this.left.outerStart, `${rightCode}.includes(`);
 
-    if (arrayNeedsParens) {
-      // `!(b` → `!(b)`
-      //             ^
-      this.insert(this.right.outerEnd, ')');
-    }
+    this.left.patch();
 
-    // `!(b` → `!(b).includes(a)`
-    //              ^^^^^^^^^^^^
-    this.insert(this.right.outerEnd, `.includes(${leftCode})`);
+    // `!b.includes(a` → `!b.includes(a)`
+    //                                 ^
+    this.insert(this.left.outerEnd, ')');
   }
 
   /**
