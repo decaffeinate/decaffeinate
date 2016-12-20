@@ -48,6 +48,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
     // `a ? b` → `if (a ? b`
     //            ^^^
     this.insert(this.contentStart, `if (`);
+    this.left.patch();
     if (needsTypeofCheck) {
       let leftAgain = this.left.makeRepeatable();
       // `if (a ? b` → `if (typeof a ? b`
@@ -69,6 +70,8 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
         ` == null) { `
       );
     }
+
+    this.right.patch();
     // `if (a.b == null) { b.c` → `if (a.b == null) { b.c }`
     //                                                   ^^
     this.insert(this.innerEnd, ` }`);

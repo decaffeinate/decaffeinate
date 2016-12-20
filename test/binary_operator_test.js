@@ -101,6 +101,22 @@ describe('binary operators', () => {
     `);
   });
 
+  it('handles binary existence operator with a `this` accesses', () => {
+    check(`
+      @a ? @b
+    `, `
+      if (this.a == null) { this.b; }
+    `);
+  });
+
+  it('handles binary existence operator with a `this` access on the right side', () => {
+    check(`
+      a ? @b
+    `, `
+      if (typeof a === 'undefined' || a === null) { this.b; }
+    `);
+  });
+
   it('handles binary existence operator with a safe-to-repeat member expression as an expression', () => {
     check(`
       (a.b ? a)
