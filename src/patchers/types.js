@@ -33,6 +33,11 @@ export type PatcherContext = {
   options: Options;
 };
 
+export type MakeRepeatableOptions = {
+  parens: ?boolean,
+  ref: ?string,
+};
+
 export type SourceType = number;
 
 export type SourceToken = {

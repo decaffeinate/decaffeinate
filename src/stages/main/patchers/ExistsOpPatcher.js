@@ -14,7 +14,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
       // `a ? b` → `typeof a ? b`
       //            ^^^^^^^
       this.insert(this.contentStart, `typeof `);
-      let leftAgain = this.left.makeRepeatable(true, 'left');
+      let leftAgain = this.left.makeRepeatable({ parens: true, ref: 'left' });
       this.left.patch();
       // `typeof a ? b` → `typeof a !== 'undefined' && a !== null ? a : b`
       //          ^^^              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -24,7 +24,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
         ` !== 'undefined' && ${leftAgain} !== null ? ${leftAgain} : `
       );
     } else {
-      let leftAgain = this.left.makeRepeatable(true, 'left');
+      let leftAgain = this.left.makeRepeatable({ parens: true, ref: 'left' });
       this.left.patch();
       // `a.b ? c` → `a.b != null ? a.b : c`
       //     ^^^         ^^^^^^^^^^^^^^^^^
