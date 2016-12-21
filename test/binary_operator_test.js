@@ -142,6 +142,42 @@ describe('binary operators', () => {
     `);
   });
 
+  it.skip('deals gracefully with extra parens in simple binary existential operators', () => {
+    check(`a ? (b)`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
+  });
+
+  it.skip('deals gracefully with extra parens in complex binary existential operators', () => {
+    check(
+      `@a ? (@b)`,
+      `
+         var ref;
+         if (((ref = this.a) != null)) { ref; } else { this.b; }
+        `
+    );
+  });
+
+  it('prevents using temporary variables that clash with existing bindings', () => {
+    check(`
+        left = 1
+        x = a() ? @b
+      `, `
+        let left1;
+        let left = 1;
+        let x = (left1 = a()) != null ? left1 : this.b;
+      `);
+  });
+
+  it('prevents using temporary variables that clash with existing temporary variables', () => {
+    check(`
+        x = a() ? @b
+        y = c() ? @d
+      `, `
+        let left, left1;
+        let x = (left = a()) != null ? left : this.b;
+        let y = (left1 = c()) != null ? left1 : this.d;
+      `);
+  });
+
   it('handles binary existence operator combined with plus', () => {
     check(`
       x = 1 + (y ? 0)

@@ -17,7 +17,7 @@ describe('indentation', () => {
     check(`if a\n\tif b\n\t\tc`, `if (a) {\n\tif (b) {\n\t\tc;\n\t}\n}`);
   });
 
-  it.skip('matches indentation when adding standalone lines', () => {
+  it('matches indentation when adding standalone lines', () => {
     check(`if a\n\tswitch b\n\t\twhen c\n\t\t\td`, `if (a) {\n\tswitch (b) {\n\t\tcase c:\n\t\t\td;\n\t\t\tbreak;\n\t}\n}`);
   });
 
