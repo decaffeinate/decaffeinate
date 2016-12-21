@@ -420,7 +420,7 @@ describe('switch', () => {
       let x = (() => {
         let result = [];
         for (let i = 0; i < b.length; i++) {
-          let a = b[i];
+          var a = b[i];
           let y = (() => { switch (a) {
             case 'c':
               return d;
