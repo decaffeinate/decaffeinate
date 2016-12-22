@@ -1,7 +1,7 @@
 import PatcherError from '../utils/PatchError';
 import adjustIndent from '../utils/adjustIndent';
 import repeat from 'repeating';
-import type { SourceToken, SourceTokenListIndex, PatcherContext, ParseContext, Editor, SourceTokenList } from './types';
+import type { SourceToken, SourceTokenListIndex, MakeRepeatableOptions, PatcherContext, ParseContext, Editor, SourceTokenList } from './types';
 import type { Options } from '../index';
 import { SourceType } from 'coffee-lex';
 import { isSemanticToken } from '../utils/types';
@@ -1010,19 +1010,19 @@ export default class NodePatcher {
    * a default implementation is provided, subclasses should override this to
    * provide a more appropriate version for their particular node type.
    */
-  makeRepeatable(parens: boolean, ref: ?string=null): string {
+  makeRepeatable(options: MakeRepeatableOptions = {}): string {
     if (this.isRepeatable()) {
       // If we can repeat it, just return the original source.
       return this.getOriginalSource();
     } else {
       // Can't repeat it, so we assign it to a free variable and return that,
       // i.e. `a + b` → `(ref = a + b)`.
-      if (parens) {
+      if (options.parens) {
         this.insert(this.innerStart, '(');
       }
-      ref = this.claimFreeBinding(ref);
+      let ref = this.claimFreeBinding(options.ref);
       this.insert(this.innerStart, `${ref} = `);
-      if (parens) {
+      if (options.parens) {
         this.insert(this.innerEnd, ')');
       }
       return ref;

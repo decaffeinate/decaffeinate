@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
+import type { MakeRepeatableOptions, PatcherContext } from './../../../patchers/types';
 
 export default class DynamicMemberAccessOpPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -37,9 +37,9 @@ export default class DynamicMemberAccessOpPatcher extends NodePatcher {
    * save the value of the member access because this could be used as the LHS
    * of an assignment.
    */
-  makeRepeatable(parens: boolean, ref: ?string=null): string { // eslint-disable-line no-unused-vars
-    let expression = this.expression.makeRepeatable(true, 'base');
-    let indexingExpr = this.indexingExpr.makeRepeatable(false, 'name');
+  makeRepeatable(options: MakeRepeatableOptions = {}): string { // eslint-disable-line no-unused-vars
+    let expression = this.expression.makeRepeatable({ parens: true, ref: 'base' });
+    let indexingExpr = this.indexingExpr.makeRepeatable({ ref: 'name' });
     return `${expression}[${indexingExpr}]`;
   }
 

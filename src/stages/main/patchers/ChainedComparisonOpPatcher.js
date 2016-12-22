@@ -24,7 +24,7 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
   patchAsExpression() {
     this.expression.patch();
     this.getMiddleOperands().forEach(middle => {
-      let middleAgain = middle.makeRepeatable(true, 'middle');
+      let middleAgain = middle.makeRepeatable({ parens: true, ref: 'middle' });
       // `a < b < c` → `a < b && b < c`
       //                     ^^^^^
       this.insert(
