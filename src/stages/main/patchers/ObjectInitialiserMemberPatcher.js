@@ -46,13 +46,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
         this.insert(key.outerStart, '[');
       }
 
-      let valueCode;
-      if (key.isRepeatable()) {
-        valueCode = key.patchAndGetCode();
-      } else {
-        key.patch();
-        valueCode = key.makeRepeatable();
-      }
+      let valueCode = key.patchRepeatable();
 
       if (isComputed) {
         this.insert(key.outerEnd, ']');

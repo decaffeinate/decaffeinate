@@ -1,5 +1,4 @@
 import NodePatcher from './../../../patchers/NodePatcher';
-import type { MakeRepeatableOptions } from '../../../patchers/types';
 
 export default class ThisPatcher extends NodePatcher {
   patchAsExpression() {
@@ -14,9 +13,5 @@ export default class ThisPatcher extends NodePatcher {
 
   isRepeatable(): boolean {
     return true;
-  }
-
-  makeRepeatable(options: MakeRepeatableOptions = {}): string { // eslint-disable-line no-unused-vars
-    return 'this';
   }
 }

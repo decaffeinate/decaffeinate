@@ -33,7 +33,7 @@ export type PatcherContext = {
   options: Options;
 };
 
-export type MakeRepeatableOptions = {
+export type RepeatableOptions = {
   parens: ?boolean,
   ref: ?string,
 };

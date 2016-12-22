@@ -9,8 +9,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       // `a ?= b` → `typeof a ?= b`
       //             ^^^^^^^
       this.insert(this.assignee.outerStart, `typeof `);
-      this.assignee.patch();
-      assigneeAgain = this.assignee.makeRepeatable();
+      assigneeAgain = this.assignee.patchRepeatable();
       // `typeof a ? b` → `typeof a !== 'undefined' && a !== null ? a ?= b`
       //                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.insert(
@@ -18,8 +17,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
         ` !== 'undefined' && ${assigneeAgain} !== null ? ${assigneeAgain}`
       );
     } else {
-      this.assignee.patch();
-      assigneeAgain = this.assignee.makeRepeatable();
+      assigneeAgain = this.assignee.patchRepeatable();
       // `a.b ?= b` → `a.b != null ? a.b ?= b`
       //                  ^^^^^^^^^^^^^^
       this.insert(this.assignee.outerEnd, ` != null ? ${assigneeAgain}`);
@@ -46,8 +44,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       // `a ?= b` → `if (typeof a ?= b`
       //             ^^^^^^^^^^^
       this.insert(this.assignee.outerStart, `if (typeof `);
-      this.assignee.patch();
-      assigneeAgain = this.assignee.makeRepeatable();
+      assigneeAgain = this.assignee.patchRepeatable();
       // `if (typeof a ?= b` → `if (typeof a === 'undefined' || a === null) { ?= b`
       //                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.insert(
@@ -58,8 +55,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       // `a.b ?= b` → `if (a.b ?= b`
       //               ^^^^
       this.insert(this.assignee.outerStart, `if (`);
-      this.assignee.patch();
-      assigneeAgain = this.assignee.makeRepeatable();
+      assigneeAgain = this.assignee.patchRepeatable();
       // `if (a.b ?= b` → `if (a.b == null) { ?= b`
       //                          ^^^^^^^^^^^
       this.insert(this.assignee.outerEnd, ` == null) {`);

@@ -22,16 +22,18 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    for (let operand of this.getMiddleOperands()) {
+      operand.setRequiresRepeatableExpression({ parens: true, ref: 'middle' });
+    }
     this.expression.patch();
-    this.getMiddleOperands().forEach(middle => {
-      let middleAgain = middle.makeRepeatable({ parens: true, ref: 'middle' });
+    for (let operand of this.getMiddleOperands()) {
       // `a < b < c` → `a < b && b < c`
       //                     ^^^^^
       this.insert(
-        middle.outerEnd,
-        ` ${this.negated ? '||' : '&&'} ${middleAgain}`
+        operand.outerEnd,
+        ` ${this.negated ? '||' : '&&'} ${operand.getRepeatCode()}`
       );
-    });
+    }
   }
 
   /**

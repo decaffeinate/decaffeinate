@@ -1,7 +1,7 @@
 import PatcherError from '../utils/PatchError';
 import adjustIndent from '../utils/adjustIndent';
 import repeat from 'repeating';
-import type { SourceToken, SourceTokenListIndex, MakeRepeatableOptions, PatcherContext, ParseContext, Editor, SourceTokenList } from './types';
+import type { SourceToken, SourceTokenListIndex, RepeatableOptions, PatcherContext, ParseContext, Editor, SourceTokenList } from './types';
 import type { Options } from '../index';
 import { SourceType } from 'coffee-lex';
 import { isSemanticToken } from '../utils/types';
@@ -225,7 +225,10 @@ export default class NodePatcher {
    */
   patch(options={}) {
     this.withPrettyErrors(() => {
-      if (this.forcedToPatchAsExpression()) {
+      if (this._repeatableOptions !== undefined) {
+        this._repeatCode = this.patchAsRepeatableExpression(
+          this._repeatableOptions, options);
+      } else if (this.forcedToPatchAsExpression()) {
         this.patchAsForcedExpression(options);
       } else if (this.willPatchAsExpression()) {
         this.patchAsExpression(options);
@@ -233,6 +236,24 @@ export default class NodePatcher {
         this.patchAsStatement(options);
       }
     });
+  }
+
+  /**
+   * Alternative to patch that patches the expression in a way that the result
+   * can be referenced later, then returns the code to reference it.
+   *
+   * This is a shorthand for the simplest use of the repeatable protocol. In
+   * more advanced cases (such as repeating code that is deep within the AST),
+   * setRequiresRepeatableExpression can be called before the node is patched
+   * and getRepeatCode can be called any time after.
+   *
+   * The actual implementation for making the node repeatable should be in
+   * patchAsRepeatableExpression.
+   */
+  patchRepeatable(repeatableOptions: RepeatableOptions={}): string {
+    this.setRequiresRepeatableExpression(repeatableOptions);
+    this.patch();
+    return this.getRepeatCode();
   }
 
   /**
@@ -244,9 +265,13 @@ export default class NodePatcher {
    * after patching and include anything new that was added.
    */
   patchAndGetCode(options={}) {
+    return this.captureCodeForPatchOperation(() => this.patch(options));
+  }
+
+  captureCodeForPatchOperation(patchFn: () => void): string {
     let sliceStart = this.contentStart > 0 ? this.contentStart - 1 : 0;
     let beforeCode = this.slice(sliceStart, this.contentStart);
-    this.patch(options);
+    patchFn();
     let code = this.slice(sliceStart, this.contentEnd);
     let startIndex = 0;
     while (startIndex < beforeCode.length &&
@@ -274,6 +299,38 @@ export default class NodePatcher {
       } else {
         throw err;
       }
+    }
+  }
+
+  /**
+   * Internal patching method that should patch the current node as an
+   * expression and also, if necessary, alter it in a way that it can
+   *
+   * The return value of this function should be a code snippet that references
+   * the result of this expression without any further side-effects.
+   *
+   * In simple cases, such as identifiers, subclasses can override isRepeatable
+   * to declare themselves as already repeatable. In more advanced cases,
+   * subclasses can override this method to provide custom behavior.
+   *
+   * @protected
+   */
+  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {
+    if (this.isRepeatable()) {
+      return this.captureCodeForPatchOperation(() => this.patchAsForcedExpression(patchOptions));
+    } else {
+      // Can't repeat it, so we assign it to a free variable and return that,
+      // i.e. `a + b` → `(ref = a + b)`.
+      if (repeatableOptions.parens) {
+        this.insert(this.innerStart, '(');
+      }
+      let ref = this.claimFreeBinding(repeatableOptions.ref);
+      this.insert(this.innerStart, `${ref} = `);
+      this.patchAsForcedExpression(patchOptions);
+      if (repeatableOptions.parens) {
+        this.insert(this.innerEnd, ')');
+      }
+      return ref;
     }
   }
 
@@ -469,6 +526,10 @@ export default class NodePatcher {
    * Get the current content between the start and end indexes.
    */
   slice(start: number, end: number): string {
+    // magic-string treats 0 as the end of the string, which we don't want to do.
+    if (end === 0) {
+      return '';
+    }
     return this.editor.slice(start, end);
   }
 
@@ -1006,27 +1067,24 @@ export default class NodePatcher {
   }
 
   /**
-   * Alter this node to enable it to be repeated without side-effects. Though
-   * a default implementation is provided, subclasses should override this to
-   * provide a more appropriate version for their particular node type.
+   * Indicate to this patcher that patching should be done in a way that makes
+   * it possible to reference the value afterward with no additional
+   * side-effects.
    */
-  makeRepeatable(options: MakeRepeatableOptions = {}): string {
-    if (this.isRepeatable()) {
-      // If we can repeat it, just return the original source.
-      return this.getOriginalSource();
-    } else {
-      // Can't repeat it, so we assign it to a free variable and return that,
-      // i.e. `a + b` → `(ref = a + b)`.
-      if (options.parens) {
-        this.insert(this.innerStart, '(');
-      }
-      let ref = this.claimFreeBinding(options.ref);
-      this.insert(this.innerStart, `${ref} = `);
-      if (options.parens) {
-        this.insert(this.innerEnd, ')');
-      }
-      return ref;
+  setRequiresRepeatableExpression(repeatableOptions={}) {
+    this._repeatableOptions = repeatableOptions;
+  }
+
+  /**
+   * Get the code snippet computed from patchAsRepeatableExpression that can be
+   * used to refer to the result of this expression without further
+   * side-effects.
+   */
+  getRepeatCode(): string {
+    if (this._repeatCode === undefined) {
+      throw new Error('Must patch as a repeatable expression to access repeat code.');
     }
+    return this._repeatCode;
   }
 
   /**
