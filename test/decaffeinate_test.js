@@ -191,55 +191,5 @@ describe('automatic conversions', () => {
         d(e);
       `);
     });
-
-    it.skip('handles simple binary existential operators', () => {
-      check(`a ? b`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
-    });
-
-    it.skip('deals gracefully with extra parens in simple binary existential operators', () => {
-      check(`a ? (b)`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
-    });
-
-    it.skip('handles complex binary existential operators', () => {
-      check(
-        `@a ? @b`,
-      `
-        var ref;
-        if (((ref = this.a) != null)) { ref; } else { this.b; }
-      `);
-    });
-
-    it.skip('deals gracefully with extra parens in complex binary existential operators', () => {
-      check(
-        `@a ? (@b)`,
-        `
-         var ref;
-         if (((ref = this.a) != null)) { ref; } else { this.b; }
-        `
-      );
-    });
-
-    it.skip('prevents using temporary variables that clash with existing bindings', () => {
-      check(`
-        ref = 1
-        @a ? @b
-      `, `
-        var ref1;
-        var ref = 1;
-        if (((ref1 = this.a) != null)) { ref1; } else { this.b; }
-      `);
-    });
-
-    it.skip('prevents using temporary variables that clash with existing temporary variables', () => {
-      check(`
-        @a ? @b
-        @c ? @d
-      `, `
-        var ref;
-        var ref1;
-        if (((ref = this.a) != null)) { ref; } else { this.b; }
-        if (((ref1 = this.c) != null)) { ref1; } else { this.d; }
-      `);
-    });
   });
 });

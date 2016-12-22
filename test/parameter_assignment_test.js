@@ -27,7 +27,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it.skip('adds assignments to `this` properties before any function body', () => {
+  it('adds assignments to `this` properties before any function body', () => {
     check(`
       (@a, @b) ->
         @a + @b
@@ -40,24 +40,24 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it.skip('does not clobber any variables declared in the function scope', () => {
+  it('does not clobber any variables declared in the function scope', () => {
     check(`
       a = 1
       (@a, @b) ->
         b = 2
         a + b
     `, `
-      var a = 1;
+      let a = 1;
       (function(a1, b1) {
         this.a = a1;
         this.b = b1;
-        var b = 2;
+        let b = 2;
         return a + b;
       });
     `);
   });
 
-  it.skip('inserts the assignments at the right indentation', () => {
+  it('inserts the assignments at the right indentation', () => {
     check(`
       if true
         (@a) ->
@@ -72,7 +72,7 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it.skip('inserts all assignments with the right indentation', () => {
+  it('inserts all assignments with the right indentation', () => {
     check(`
       z()
 
@@ -81,10 +81,11 @@ describe('parameter assignment', () => {
     `, `
       z();
 
-      ({a(b) {
-          this.b = b;
-          return this.b;
-      }
+      ({
+          a(b) {
+              this.b = b;
+              return this.b;
+          }
       });
     `);
   });
@@ -109,13 +110,14 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it.skip('ensures parameters with default values are not redeclared', () => {
+  it('ensures parameters with default values are not redeclared', () => {
     check(`
       (a=0) ->
         a ?= 1
     `, `
-      (function(a=0) {
-        if ((typeof a !== "undefined" && a !== null)) { return a; } else { return a = 1; }
+      (function(a) {
+        if (a == null) { a = 0; }
+        return a != null ? a : (a = 1);
       });
     `);
   });

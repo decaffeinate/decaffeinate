@@ -1,25 +1,25 @@
 import check from './support/check';
 
 describe('semicolons', () => {
-  it.skip('are inserted after all the parentheses surrounding statements', () => {
+  it('are inserted after all the parentheses surrounding statements', () => {
     check(`
       ((->
         result)())
+      a
     `, `
-      ((function() {
-        return result;
-      })());
+      ((() => result)());
+      a;
     `);
   });
 
-  it.skip('are inserted after the closing function braces for a function expression', () => {
+  it('are inserted after the closing function braces for a function expression', () => {
     check(`
       a = ->
-        b # c
+        arguments # c
       d
     `, `
       let a = function() {
-        return b; // c
+        return arguments; // c
       };
       d;
     `);
@@ -60,13 +60,12 @@ describe('semicolons', () => {
     `);
   });
 
-  it.skip('does not add them after `for` loops', () => {
+  it('does not add them after `for` loops', () => {
     check(`
       for a in b
         a
     `, `
-      for (let i = 0, a; i < b.length; i++) {
-        a = b[i];
+      for (let a of b) {
         a;
       }
     `);

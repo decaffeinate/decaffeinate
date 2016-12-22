@@ -402,7 +402,7 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('special-cases for-in inclusive range loops to avoid creating arrays', () => {
+  it('special-cases for-in inclusive range loops to avoid creating arrays', () => {
     check(`
       for i in [0..10]
         i
@@ -413,7 +413,7 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('special-cases for-in exclusive range loops to avoid creating arrays', () => {
+  it('special-cases for-in exclusive range loops to avoid creating arrays', () => {
     check(`
       for i in [0...10]
         i
@@ -424,7 +424,7 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('special-cases descending for-in inclusive range loops to avoid creating arrays', () => {
+  it('special-cases descending for-in inclusive range loops to avoid creating arrays', () => {
     check(`
       for i in [10..0]
         i
@@ -435,7 +435,7 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('special-cases descending for-in exclusive range loops to avoid creating arrays', () => {
+  it('special-cases descending for-in exclusive range loops to avoid creating arrays', () => {
     check(`
       for i in [10...0]
         i
@@ -446,7 +446,7 @@ describe('for loops', () => {
     `);
   });
 
-  it.skip('special-cases descending for-in range loops with step count to avoid creating arrays', () => {
+  it('special-cases descending for-in range loops with step count to avoid creating arrays', () => {
     check(`
       for i in [100..0] by -2
         i

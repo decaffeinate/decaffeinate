@@ -134,19 +134,13 @@ describe('function calls', () => {
     check(`(a)()`, `(a)();`);
   });
 
-  it.skip('works with a multi-line callee', () => {
-    // FIXME: This doesn't work because FunctionApplicationPatcher thinks it is
-    // an implicit call (i.e. no parens), since the token after the function is
-    // a newline and not a CALL_START (i.e. ')'). We should switch to coffee-lex
-    // tokens and skip past any NEWLINE, COMMENT, or HERECOMMENT tokens.
+  it('works with a multi-line callee', () => {
     check(`
-      (->
+      x = (->
         1
       )()
     `, `
-      (function() {
-        return 1;
-      )();
+      let x = (() => 1)();
     `);
   });
 

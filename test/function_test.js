@@ -61,7 +61,7 @@ describe('functions', () => {
     `);
   });
 
-  it.skip('puts the closing punctuation after trailing comments for multi-line bodies', () => {
+  it('puts the closing punctuation after trailing comments for multi-line bodies', () => {
     check(`
       validExpirationDate = (month, year) ->
         today = new Date()
