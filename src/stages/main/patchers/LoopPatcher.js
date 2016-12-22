@@ -101,7 +101,7 @@ export default class LoopPatcher extends NodePatcher {
 
     if (this.willPatchAsExpression() && !this.allBodyCodePathsPresent()) {
       let itemBinding = this.getResultArrayElementBinding();
-      this.body.insertStatementsAtIndex([`var ${itemBinding}`], 0);
+      this.body.insertStatementsAtIndex([`let ${itemBinding}`], 0);
       this.body.patch({ leftBrace: false, rightBrace: false });
       this.body.insertStatementsAtIndex(
         [`${this.getResultArrayBinding()}.push(${itemBinding})`],
