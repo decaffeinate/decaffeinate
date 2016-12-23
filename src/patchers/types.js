@@ -36,6 +36,7 @@ export type PatcherContext = {
 export type RepeatableOptions = {
   parens: ?boolean,
   ref: ?string,
+  isForAssignment: ?boolean,
 };
 
 export type SourceType = number;

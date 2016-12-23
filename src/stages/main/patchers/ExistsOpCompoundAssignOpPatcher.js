@@ -1,6 +1,5 @@
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
-import traverse from '../../../utils/traverse';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression() {
@@ -9,7 +8,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       // `a ?= b` → `typeof a ?= b`
       //             ^^^^^^^
       this.insert(this.assignee.outerStart, `typeof `);
-      assigneeAgain = this.assignee.patchRepeatable();
+      assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
       // `typeof a ? b` → `typeof a !== 'undefined' && a !== null ? a ?= b`
       //                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.insert(
@@ -17,7 +16,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
         ` !== 'undefined' && ${assigneeAgain} !== null ? ${assigneeAgain}`
       );
     } else {
-      assigneeAgain = this.assignee.patchRepeatable();
+      assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
       // `a.b ?= b` → `a.b != null ? a.b ?= b`
       //                  ^^^^^^^^^^^^^^
       this.insert(this.assignee.outerEnd, ` != null ? ${assigneeAgain}`);
@@ -44,7 +43,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       // `a ?= b` → `if (typeof a ?= b`
       //             ^^^^^^^^^^^
       this.insert(this.assignee.outerStart, `if (typeof `);
-      assigneeAgain = this.assignee.patchRepeatable();
+      assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
       // `if (typeof a ?= b` → `if (typeof a === 'undefined' || a === null) { ?= b`
       //                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.insert(
@@ -55,7 +54,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       // `a.b ?= b` → `if (a.b ?= b`
       //               ^^^^
       this.insert(this.assignee.outerStart, `if (`);
-      assigneeAgain = this.assignee.patchRepeatable();
+      assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
       // `if (a.b ?= b` → `if (a.b == null) { ?= b`
       //                          ^^^^^^^^^^^
       this.insert(this.assignee.outerEnd, ` == null) {`);
@@ -79,26 +78,6 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
   needsTypeofCheck() {
     return this.assignee instanceof IdentifierPatcher &&
       !this.node.scope.hasBinding(this.assignee.node.data);
-  }
-
-  /**
-   * If the left-hand side of the assignment has a soak operation, then there
-   * may be a __guard__ call surrounding the whole thing, so we can't patch
-   * statement code, so instead run the expression code path.
-   */
-  lhsHasSoakOperation() {
-    let foundSoak = false;
-    traverse(this.assignee.node, node => {
-      if (foundSoak) {
-        return false;
-      }
-      if (node.type === 'SoakedDynamicMemberAccessOp' ||
-          node.type === 'SoakedFunctionApplication' ||
-          node.type === 'SoakedMemberAccessOp') {
-        foundSoak = true;
-      }
-    });
-    return foundSoak;
   }
 
   /**

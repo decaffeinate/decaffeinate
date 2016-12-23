@@ -481,4 +481,78 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('handles a soaked access used with an existence operator', () => {
+    check(`
+      a = b()?.c ? d
+    `, `
+      let left;
+      let a = (left = __guard__(b(), x => x.c)) != null ? left : d;
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('handles a soaked dynamic access used with an existence operator', () => {
+    check(`
+      a = b()?[c()] ? d
+    `, `
+      let left;
+      let a = (left = __guard__(b(), x => x[c()])) != null ? left : d;
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('handles a soaked access used with an existence assignment operator', () => {
+    check(`
+      a()?.b ?= c
+    `, `
+      let base;
+      __guard__((base = a()), x => x.b != null ? base.b : (base.b = c));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('handles a soaked dynamic access used with an existence assignment operator', () => {
+    check(`
+      a()?[b()] ?= d
+    `, `
+      let base;
+      let name;
+      __guard__((base = a()), x => x[name = b()] != null ? base[name] : (base[name] = d));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('handles a soaked access used with a logical assignment operator', () => {
+    check(`
+      a()?.b and= c
+    `, `
+      let base;
+      __guard__((base = a()), x => x.b && (base.b = c));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('handles a soaked dynamic access used with a logical assignment operator', () => {
+    check(`
+      a()?[b()] and= d
+    `, `
+      let base;
+      let name;
+      __guard__((base = a()), x => x[name = b()] && (base[name] = d));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
 });

@@ -125,6 +125,15 @@ describe('binary operators', () => {
     `);
   });
 
+  it('handles binary existence operator with a this-access on the left side', () => {
+    check(`
+      (@a.b ? c)
+    `, `
+      (this.a.b != null ? this.a.b : c);
+    `);
+  });
+
+
   it('handles binary existence operator with an unsafe-to-repeat member expression as a statement', () => {
     check(`
       a() ? b
