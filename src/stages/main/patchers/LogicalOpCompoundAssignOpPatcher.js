@@ -12,8 +12,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
       this.isOrOp() ? `||` : `&&`
     );
 
-    let assigneeAgain = this.assignee.makeRepeatable();
-    this.assignee.patch();
+    let assigneeAgain = this.assignee.patchRepeatable();
 
     // `a && b` → `a && (a = b`
     //                  ^^^^^
@@ -35,8 +34,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
       this.assignee.negate();
     }
 
-    let assigneeAgain = this.assignee.makeRepeatable();
-    this.assignee.patch();
+    let assigneeAgain = this.assignee.patchRepeatable();
 
     // `if (a &&= b` → `if (a) { a = b`
     //       ^^^^^           ^^^^^^^^

@@ -397,15 +397,15 @@ actually edits `a().b ||= c` to become:
 
 [locaop]: https://github.com/decaffeinate/decaffeinate/blob/master/src/stages/main/patchers/LogicalOpCompoundAssignOpPatcher.js
 
-How does this work? This is accomplished by the `makeRepeatable` method on
+How does this work? This is accomplished by the `patchRepeatable` method on
 patchers. It is responsible for editing its node to store the side-effecty parts
-in a temporary variable and return the source code needed to reference the same
-value again. For simple values like integers and non-interpolated strings, they
-make no edits and simply return their original source. Each patcher is
+in a temporary variable and returning the source code needed to reference the
+same value again. For simple values like integers and non-interpolated strings,
+they make no edits and simply return their original source. Each patcher is
 responsible for implementing both `isRepeatable` to determine whether it is safe
-to repeat the source as-is, and if it could ever return `false`, a
-`makeRepeatable` override as well. See [`MemberAccessOpPatcher`][maop] for an
-example.
+to repeat the source as-is. The `patchAsRepeatableExpression` method can be
+overridden to provide a custom behavior for making the expression repeatable.
+See [`MemberAccessOpPatcher`][maop] for an example.
 
 [maop]: https://github.com/decaffeinate/decaffeinate/blob/master/src/stages/main/patchers/MemberAccessOpPatcher.js
 

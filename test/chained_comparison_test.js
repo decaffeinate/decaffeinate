@@ -47,6 +47,15 @@ describe('chained comparison', () => {
     `);
   });
 
+  it('handles an intermediate expression with nontrivial patching', () => {
+    check(`
+      a < (b ? c) < d
+    `, `
+      let middle;
+      a < ((middle = typeof b !== 'undefined' && b !== null ? b : c)) && middle < d;
+    `);
+  });
+
   it('is fine being used in an expression context', () => {
     check(`
       if a < b < c

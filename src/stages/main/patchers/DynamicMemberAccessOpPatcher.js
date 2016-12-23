@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher';
-import type { MakeRepeatableOptions, PatcherContext } from './../../../patchers/types';
+import type { RepeatableOptions, PatcherContext } from './../../../patchers/types';
 
 export default class DynamicMemberAccessOpPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -22,25 +22,26 @@ export default class DynamicMemberAccessOpPatcher extends NodePatcher {
   }
 
   /**
-   * CoffeeScript considers dynamic member access repeatable if both parts
-   * are themselves repeatable. So, for example, `a[0]` is repeatable because
-   * both `a` and `0` are repeatable, but `a()[0]` and `a[b()]` are not.
-   */
-  isRepeatable(): boolean {
-    return this.expression.isRepeatable() && this.indexingExpr.isRepeatable();
-  }
-
-  /**
    * We can make dynamic member access repeatable by making both parts
    * repeatable if they aren't already. We do that by giving them names and
    * referring to those names in a new dynamic member access. We cannot simply
    * save the value of the member access because this could be used as the LHS
    * of an assignment.
    */
-  makeRepeatable(options: MakeRepeatableOptions = {}): string { // eslint-disable-line no-unused-vars
-    let expression = this.expression.makeRepeatable({ parens: true, ref: 'base' });
-    let indexingExpr = this.indexingExpr.makeRepeatable({ ref: 'name' });
-    return `${expression}[${indexingExpr}]`;
+  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {  // eslint-disable-line no-unused-vars
+    this.expression.setRequiresRepeatableExpression({ parens: true, ref: 'base' });
+    this.indexingExpr.setRequiresRepeatableExpression({ ref: 'name' });
+    this.patchAsExpression();
+    return `${this.expression.getRepeatCode()}[${this.indexingExpr.getRepeatCode()}]`;
+  }
+
+  /**
+   * CoffeeScript considers dynamic member access repeatable if both parts
+   * are themselves repeatable. So, for example, `a[0]` is repeatable because
+   * both `a` and `0` are repeatable, but `a()[0]` and `a[b()]` are not.
+   */
+  isRepeatable(): boolean {
+    return this.expression.isRepeatable() && this.indexingExpr.isRepeatable();
   }
 
   /**

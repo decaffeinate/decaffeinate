@@ -14,8 +14,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
       // `a ? b` → `typeof a ? b`
       //            ^^^^^^^
       this.insert(this.contentStart, `typeof `);
-      let leftAgain = this.left.makeRepeatable({ parens: true, ref: 'left' });
-      this.left.patch();
+      let leftAgain = this.left.patchRepeatable({ parens: true, ref: 'left' });
       // `typeof a ? b` → `typeof a !== 'undefined' && a !== null ? a : b`
       //          ^^^              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.overwrite(
@@ -24,8 +23,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
         ` !== 'undefined' && ${leftAgain} !== null ? ${leftAgain} : `
       );
     } else {
-      let leftAgain = this.left.makeRepeatable({ parens: true, ref: 'left' });
-      this.left.patch();
+      let leftAgain = this.left.patchRepeatable({ parens: true, ref: 'left' });
       // `a.b ? c` → `a.b != null ? a.b : c`
       //     ^^^         ^^^^^^^^^^^^^^^^^
       this.overwrite(
@@ -48,9 +46,8 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
     // `a ? b` → `if (a ? b`
     //            ^^^
     this.insert(this.contentStart, `if (`);
-    this.left.patch();
     if (needsTypeofCheck) {
-      let leftAgain = this.left.makeRepeatable();
+      let leftAgain = this.left.patchRepeatable();
       // `if (a ? b` → `if (typeof a ? b`
       //                    ^^^^^^^
       this.insert(this.contentStart, `typeof `);
@@ -62,6 +59,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
         ` === 'undefined' || ${leftAgain} === null) { `
       );
     } else {
+      this.left.patch();
       // `if (a.b ? b.c` → `if (a.b == null) { b.c`
       //         ^^^               ^^^^^^^^^^^^
       this.overwrite(

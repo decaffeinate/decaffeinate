@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher';
-import type { MakeRepeatableOptions, PatcherContext, SourceToken } from './../../../patchers/types';
+import type { RepeatableOptions, PatcherContext, SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
@@ -39,6 +39,17 @@ export default class MemberAccessOpPatcher extends NodePatcher {
       //          ^
       this.insert(this.expression.outerEnd, '.');
     }
+  }
+
+  /**
+   * We can make member accesses repeatable by making the base expression
+   * repeatable if it isn't already.
+   */
+  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {  // eslint-disable-line no-unused-vars
+    this.expression.setRequiresRepeatableExpression({ parens: true, ref: 'base' });
+    this.patchAsExpression();
+    let expressionCode = this.expression.getRepeatCode();
+    return `${expressionCode}.${this.getFullMemberName()}`;
   }
 
   hasImplicitOperator(): boolean {
@@ -109,15 +120,6 @@ export default class MemberAccessOpPatcher extends NodePatcher {
    */
   isRepeatable(): boolean {
     return this.expression.isRepeatable();
-  }
-
-  /**
-   * We can make member accesses repeatable by making the base expression
-   * repeatable if it isn't already.
-   */
-  makeRepeatable(options: MakeRepeatableOptions = {}) { // eslint-disable-line no-unused-vars
-    let expression = this.expression.makeRepeatable({ parens: true, ref: 'base' });
-    return `${expression}.${this.getFullMemberName()}`;
   }
 
   /**

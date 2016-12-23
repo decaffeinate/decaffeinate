@@ -9,15 +9,13 @@ export default class PassthroughPatcher extends NodePatcher {
     this.children = children;
   }
 
-  patch() {
-    this.withPrettyErrors(() => {
-      this.children.forEach(child => {
-        if (Array.isArray(child)) {
-          child.forEach(child => child && child.patch());
-        } else if (child) {
-          child.patch();
-        }
-      });
+  patchAsExpression() {
+    this.children.forEach(child => {
+      if (Array.isArray(child)) {
+        child.forEach(child => child && child.patch());
+      } else if (child) {
+        child.patch();
+      }
     });
   }
 
