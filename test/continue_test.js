@@ -6,7 +6,7 @@ describe('continue', () => {
       for a in b
         continue
     `, `
-      for (let a of b) {
+      for (let a of Array.from(b)) {
         continue;
       }
     `);

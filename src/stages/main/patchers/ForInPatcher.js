@@ -1,3 +1,4 @@
+import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import ForPatcher from './ForPatcher';
 import RangePatcher from './RangePatcher';
 import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock';
@@ -40,7 +41,15 @@ export default class ForInPatcher extends ForPatcher {
     // for a in b when c d  ->  b when c d
     // ("then" was removed above).
     this.remove(this.contentStart, this.target.outerStart);
+
+    if (this.shouldWrapMapExpressionTargetInArrayFrom()) {
+      this.insert(this.target.contentStart, 'Array.from(');
+    }
     this.target.patch();
+    if (this.shouldWrapMapExpressionTargetInArrayFrom()) {
+      this.insert(this.target.contentEnd, ')');
+    }
+
     if (this.filter !== null) {
       // b when c d  ->  b.filter((a) => c d
       this.overwrite(
@@ -213,7 +222,13 @@ export default class ForInPatcher extends ForPatcher {
       this.insert(this.target.outerStart, `(let ${valueBinding} of `);
     }
 
+    if (this.shouldWrapForOfStatementTargetInArrayFrom()) {
+      this.insert(this.target.outerStart, 'Array.from(');
+    }
     this.target.patch();
+    if (this.shouldWrapForOfStatementTargetInArrayFrom()) {
+      this.insert(this.target.outerEnd, ')');
+    }
     this.insert(this.target.outerEnd, ') {');
     this.removeThenToken();
     this.patchBodyAndFilter();
@@ -314,6 +329,23 @@ export default class ForInPatcher extends ForPatcher {
    */
   shouldPatchAsInitTestUpdateLoop(): boolean {
     return this.hasFixedRange() || (this.hasDynamicRange() && this.hasExplicitStep());
+  }
+
+  shouldWrapMapExpressionTargetInArrayFrom() {
+    return !this.options.looseForExpressions && !this.isTargetAlreadyArray();
+  }
+
+  shouldWrapForOfStatementTargetInArrayFrom() {
+    return !this.options.looseForOf && !this.isTargetAlreadyArray();
+  }
+
+  /**
+   * Determine if the loop target is statically known to be an array. If so,
+   * then there's no need to use Array.from to convert from an array-like object
+   * to an array.
+   */
+  isTargetAlreadyArray() {
+    return this.target instanceof RangePatcher || this.target instanceof ArrayInitialiserPatcher;
   }
 
   /**

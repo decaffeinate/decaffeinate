@@ -40,6 +40,8 @@ Options:
   and `export`.
 * `--prefer-const`: Use `const` when possible in output code.
 * `--loose-default-params`: Convert CS default params to JS default params.
+* `--loose-for-expressions`: Do not wrap expression loop targets in `Array.from`.
+* `--loose-for-of`: Do not wrap JS `for...of` loop targets in `Array.from`.
 
 For more usages examples, see the output of `decaffeinate --help`.
 

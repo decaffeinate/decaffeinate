@@ -23,6 +23,8 @@ export type Options = {
   keepCommonJS: ?boolean,
   preferConst: ?boolean,
   looseDefaultParams: ?boolean,
+  looseForExpressions: ?boolean,
+  looseForOf: ?boolean,
 };
 
 const DEFAULT_OPTIONS = {
@@ -31,6 +33,8 @@ const DEFAULT_OPTIONS = {
   keepCommonJS: false,
   preferConst: false,
   looseDefaultParams: false,
+  looseForExpressions: false,
+  looseForOf: false,
 };
 
 type ConversionResult = {

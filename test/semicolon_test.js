@@ -65,7 +65,7 @@ describe('semicolons', () => {
       for a in b
         a
     `, `
-      for (let a of b) {
+      for (let a of Array.from(b)) {
         a;
       }
     `);
