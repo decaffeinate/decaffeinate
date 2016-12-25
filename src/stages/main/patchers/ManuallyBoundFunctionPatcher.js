@@ -5,9 +5,9 @@ import FunctionPatcher from './FunctionPatcher';
  */
 export default class ManuallyBoundFunctionPatcher extends FunctionPatcher {
   patchAsStatement(options={}) {
-    this.insert(this.contentStart, '(');
+    this.insert(this.innerStart, '(');
     super.patchAsExpression(options);
-    this.insert(this.contentEnd, '.bind(this))');
+    this.insert(this.innerEnd, '.bind(this))');
   }
 
   patchAsExpression(options={}) {
@@ -17,7 +17,7 @@ export default class ManuallyBoundFunctionPatcher extends FunctionPatcher {
     // some other way. In practice, this happens when patching class methods;
     // code will be added to the constructor to bind the method properly.
     if (!options.method) {
-      this.insert(this.contentEnd, '.bind(this)');
+      this.insert(this.innerEnd, '.bind(this)');
     }
   }
 
