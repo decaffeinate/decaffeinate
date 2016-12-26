@@ -42,6 +42,7 @@ Options:
 * `--loose-default-params`: Convert CS default params to JS default params.
 * `--loose-for-expressions`: Do not wrap expression loop targets in `Array.from`.
 * `--loose-for-of`: Do not wrap JS `for...of` loop targets in `Array.from`.
+* `--loose-includes`: Do not wrap in `Array.from` when converting `in` to `includes`.
 
 For more usages examples, see the output of `decaffeinate --help`.
 

@@ -464,7 +464,7 @@ describe('soaked expressions', () => {
     check(`
       a?.b in c
     `, `
-      c.includes(__guard__(a, x => x.b));
+      Array.from(c).includes(__guard__(a, x => x.b));
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
@@ -475,7 +475,7 @@ describe('soaked expressions', () => {
     check(`
       a in b?.c
     `, `
-      __guard__(b, x => x.c).includes(a);
+      Array.from(__guard__(b, x => x.c)).includes(a);
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }

@@ -60,6 +60,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.looseForOf = true;
         break;
 
+      case '--loose-includes':
+        baseOptions.looseIncludes = true;
+        break;
+
       default:
         if (arg.startsWith('-')) {
           console.error(`Error: unrecognized option '${arg}'`);
@@ -186,6 +190,7 @@ function usage() {
   console.log('  --loose-default-params   Convert CS default params to JS default params.');
   console.log('  --loose-for-expressions  Do not wrap expression loop targets in Array.from.');
   console.log('  --loose-for-of           Do not wrap JS for...of loop targets in Array.from.');
+  console.log('  --loose-includes         Do not wrap in Array.from when converting in to includes.');
   console.log();
   console.log('EXAMPLES');
   console.log();

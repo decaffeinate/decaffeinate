@@ -1,19 +1,27 @@
 import check from './support/check';
 
 describe('in operator', () => {
-  it('turns into an `indexOf` call', () => {
+  it('handles the simple identifier case', () => {
+    check(`
+      a in b
+    `, `
+      Array.from(b).includes(a);
+    `);
+  });
+
+  it('skips Array.from in loose mode', () => {
     check(`
       a in b
     `, `
       b.includes(a);
-    `);
+    `, { looseIncludes: true });
   });
 
-  it('puts the left part first if it is potentially side-effecty', () => {
+  it('handles a property access as the LHS', () => {
     check(`
       a.b in c
     `, `
-      c.includes(a.b);
+      Array.from(c).includes(a.b);
     `);
   });
 
@@ -21,7 +29,7 @@ describe('in operator', () => {
     check(`
       a(b, c.d in e)
     `, `
-      a(b, e.includes(c.d));
+      a(b, Array.from(e).includes(c.d));
     `);
   });
 
@@ -29,7 +37,7 @@ describe('in operator', () => {
     check(`
       a in b + c
     `, `
-      (b + c).includes(a);
+      Array.from(b + c).includes(a);
     `);
   });
 
@@ -38,7 +46,7 @@ describe('in operator', () => {
       if a + b in c + d
         e
     `, `
-      if ((c + d).includes(a + b)) {
+      if (Array.from(c + d).includes(a + b)) {
         e;
       }
     `);
@@ -48,7 +56,7 @@ describe('in operator', () => {
     check(`
       a not in b
     `, `
-      !b.includes(a);
+      !Array.from(b).includes(a);
     `);
   });
 
@@ -56,7 +64,7 @@ describe('in operator', () => {
     check(`
       a or a not in b
     `, `
-      a || !b.includes(a);
+      a || !Array.from(b).includes(a);
     `);
   });
 
@@ -64,7 +72,7 @@ describe('in operator', () => {
     check(`
       a and a not in b
     `, `
-      a && !b.includes(a);
+      a && !Array.from(b).includes(a);
     `);
   });
 
@@ -73,7 +81,7 @@ describe('in operator', () => {
       unless a in b
         c
     `, `
-      if (!b.includes(a)) {
+      if (!Array.from(b).includes(a)) {
         c;
       }
     `);
@@ -84,7 +92,7 @@ describe('in operator', () => {
       if not (a in b)
         c
     `, `
-      if (!(b.includes(a))) {
+      if (!(Array.from(b).includes(a))) {
         c;
       }
     `);
@@ -95,13 +103,13 @@ describe('in operator', () => {
       unless a not in b
         c
     `, `
-      if (b.includes(a)) {
+      if (Array.from(b).includes(a)) {
         c;
       }
     `);
   });
 
-  it('turns into comparisons joined by logical operators for literal arrays', () => {
+  it('uses includes without Array.from for literal arrays', () => {
     check(`
       if a in [yes, no]
         b
@@ -112,7 +120,7 @@ describe('in operator', () => {
     `);
   });
 
-  it('turns into comparisons joined by logical operators for literal arrays with negation', () => {
+  it('uses includes without Array.from for literal arrays with negation', () => {
     check(`
       if a not in [yes, no]
         b
@@ -123,7 +131,7 @@ describe('in operator', () => {
     `);
   });
 
-  it('turns into a single comparison literal arrays with a single element', () => {
+  it('uses includes for a single element', () => {
     check(`
       if a in [yes]
         b
@@ -134,7 +142,7 @@ describe('in operator', () => {
     `);
   });
 
-  it('turns into comparisons joined by logical operators for literal arrays with not-safe-to-repeat element', () => {
+  it('uses includes when the left side is not repeatable', () => {
     check(`
       if a() in [yes, no]
         b
@@ -145,7 +153,7 @@ describe('in operator', () => {
     `);
   });
 
-  it('adds parens around elements that would be ambiguous', () => {
+  it('uses includes with complicated expressions in the array', () => {
     check(`
       if a in [b and c, +d]
         e
@@ -156,7 +164,7 @@ describe('in operator', () => {
     `);
   });
 
-  it('uses the indexOf approach for empty arrays', () => {
+  it('uses includes for empty arrays', () => {
     check(`
       if a in []
         b
