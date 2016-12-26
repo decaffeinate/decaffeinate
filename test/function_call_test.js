@@ -363,7 +363,7 @@ describe('function calls', () => {
         )
     `, `
       a =>
-        !b.map(a, e => e).includes(a)
+        !Array.from(b.map(a, e => e)).includes(a)
       ;
     `);
   });

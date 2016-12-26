@@ -35,18 +35,10 @@ export default class InOpPatcher extends BinaryOpPatcher {
    * LEFT 'in' RIGHT
    */
   patchAsExpression() {
-    // In typical cases, when converting `a in b` to `b.includes(a)`, parens
-    // won't be necessary around the `b`, but to be safe, only skip the parens
-    // in a specific set of known-good cases.
-    let arrayNeedsParens = !(this.right instanceof IdentifierPatcher) &&
-        !(this.right instanceof MemberAccessOpPatcher) &&
-        !(this.right instanceof DynamicMemberAccessOpPatcher) &&
-        !(this.right instanceof FunctionApplicationPatcher) &&
-        !(this.right instanceof ArrayInitialiserPatcher) &&
-        !(this.right instanceof StringPatcher);
-
     let rightCode = this.right.patchAndGetCode();
-    if (arrayNeedsParens) {
+    if (this.shouldWrapInArrayFrom()) {
+      rightCode = `Array.from(${rightCode})`;
+    } else if (this.rhsNeedsParens()) {
       rightCode = `(${rightCode})`;
     }
 
@@ -69,6 +61,25 @@ export default class InOpPatcher extends BinaryOpPatcher {
     // `!b.includes(a` → `!b.includes(a)`
     //                                 ^
     this.insert(this.left.outerEnd, ')');
+  }
+
+  shouldWrapInArrayFrom() {
+    if (this.options.looseIncludes) {
+      return false;
+    }
+    return !(this.right instanceof ArrayInitialiserPatcher);
+  }
+
+  rhsNeedsParens() {
+    // In typical cases, when converting `a in b` to `b.includes(a)`, parens
+    // won't be necessary around the `b`, but to be safe, only skip the parens
+    // in a specific set of known-good cases.
+    return !(this.right instanceof IdentifierPatcher) &&
+      !(this.right instanceof MemberAccessOpPatcher) &&
+      !(this.right instanceof DynamicMemberAccessOpPatcher) &&
+      !(this.right instanceof FunctionApplicationPatcher) &&
+      !(this.right instanceof ArrayInitialiserPatcher) &&
+      !(this.right instanceof StringPatcher);
   }
 
   /**

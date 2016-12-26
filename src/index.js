@@ -25,6 +25,7 @@ export type Options = {
   looseDefaultParams: ?boolean,
   looseForExpressions: ?boolean,
   looseForOf: ?boolean,
+  looseIncludes: ?boolean,
 };
 
 const DEFAULT_OPTIONS = {
@@ -35,6 +36,7 @@ const DEFAULT_OPTIONS = {
   looseDefaultParams: false,
   looseForExpressions: false,
   looseForOf: false,
+  looseIncludes: false,
 };
 
 type ConversionResult = {
