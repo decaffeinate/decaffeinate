@@ -133,6 +133,20 @@ describe('functions', () => {
     `);
   });
 
+  it('handles a nested conditional in a fat arrow function referencing arguments', () => {
+    check(`
+      a =>
+        if b
+          c arguments
+    `, `
+      a(function() {
+        if (b) {
+          return c(arguments);
+        }
+      }.bind(this));
+    `);
+  });
+
   it('turns expression-style fat arrow functions referencing `arguments` into regular functions with a `bind` call', () => {
     check(`
       x = => arguments[0] + this
