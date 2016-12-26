@@ -17,13 +17,13 @@ export default function parse(source: string): Node {
 function attachScope(node: Node) {
   switch (node.type) {
     case 'Program':
-      node.scope = new Scope();
+      node.scope = new Scope(node);
       break;
 
     case 'Function':
     case 'BoundFunction':
     case 'GeneratorFunction':
-      node.scope = new Scope(node.parentNode.scope);
+      node.scope = new Scope(node, node.parentNode.scope);
       break;
 
     default:

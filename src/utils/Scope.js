@@ -13,10 +13,12 @@ type Bindings = { [key: string]: Node };
 export default class Scope {
   parent: ?Scope;
   bindings: Bindings;
+  containerNode: Node;
 
-  constructor(parent: ?Scope=null) {
+  constructor(containerNode: Node, parent: ?Scope=null) {
     this.parent = parent;
     this.bindings = Object.create(parent ? parent.bindings : null);
+    this.containerNode = containerNode;
   }
 
   getBinding(name: string): ?Node {
