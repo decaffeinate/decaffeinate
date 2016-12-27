@@ -1,6 +1,8 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
 import ForPatcher from './ForPatcher';
 import RangePatcher from './RangePatcher';
+import countVariableUsages from '../../../utils/countVariableUsages';
 import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock';
 import type BlockPatcher from './BlockPatcher';
 import type NodePatcher from './../../../patchers/NodePatcher';
@@ -89,6 +91,9 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   canPatchAsMapExpression(): boolean {
+    if (!this.canAssigneesBecomeParams()) {
+      return false;
+    }
     if (this.step !== null) {
       return false;
     }
@@ -100,6 +105,30 @@ export default class ForInPatcher extends ForPatcher {
     // case.
     if (this.filter !== null && this.keyAssignee !== null) {
       return false;
+    }
+    return true;
+  }
+
+  canAssigneesBecomeParams() {
+    let assignees = [this.valAssignee, this.keyAssignee].filter(assignee => assignee);
+    for (let assignee of assignees) {
+      if (!(assignee instanceof IdentifierPatcher)) {
+        return false;
+      }
+      let name = assignee.node.data;
+      // Find the enclosing function or program node for the binding so we can
+      // find all usages of this variable.
+      let assignmentNode = this.node.scope.getBinding(name);
+      if (!assignmentNode) {
+        throw this.error('Expected loop assignee to have a binding in its scope.');
+      }
+      let containerNode = assignmentNode.scope.containerNode;
+      // If the number of usages in the enclosing function is more than the
+      // number of usages in the loop, then there must be some external usages,
+      // so we can't safely change this to a parameter.
+      if (countVariableUsages(containerNode, name) !== countVariableUsages(this.node, name)) {
+        return false;
+      }
     }
     return true;
   }

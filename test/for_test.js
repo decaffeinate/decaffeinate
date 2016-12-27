@@ -585,6 +585,58 @@ describe('for loops', () => {
     `);
   });
 
+  it('does not use map when the value assignee is used externally', () => {
+    check(`
+      a(for e in l
+        e)
+      console.log e
+    `, `
+      let e;
+      a((() => {
+        let result = [];
+        for (e of Array.from(l)) {
+          result.push(e);
+        }
+        return result;
+      })());
+      console.log(e);
+    `);
+  });
+
+  it('does not use map when the key assignee is used externally', () => {
+    check(`
+      a(for e, i in l
+        e)
+      console.log i
+    `, `
+      let i;
+      a((() => {
+        let result = [];
+        for (i = 0; i < l.length; i++) {
+          let e = l[i];
+          result.push(e);
+        }
+        return result;
+      })());
+      console.log(i);
+    `);
+  });
+
+  it('does not use map when the loop assignee is not an identifier', () => {
+    check(`
+      a(for @e in l
+        @e)
+    `, `
+      a((() => {
+        let result = [];
+        for (this.e of Array.from(l)) {
+          result.push(this.e);
+        }
+        return result;
+      })());
+    `);
+  });
+
   it('handles for-in loops used as an implicit return', () => {
     check(`
       ->
