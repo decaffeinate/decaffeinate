@@ -278,49 +278,168 @@ export default class ForInPatcher extends ForPatcher {
   getInitCode(): string {
     let step = this.getStep();
     if (this.shouldPatchAsInitTestUpdateLoop()) {
-      return `${this.getIndexBinding()} = ${this.target.left.patchAndGetCode()}`;
-    } else if (step.negated) {
-      return `${this.getIndexBinding()} = ${this.getTargetReference()}.length - 1`;
-    } else {
-      let result = `${this.getIndexBinding()} = 0`;
-      if (!step.isLiteral) {
-        result += `, ${step.update} = ${step.init}`;
+      let assignments = [];
+      if (this.shouldExtractStart()) {
+        assignments.push(`${this.getStartReference()} = ${this.getStartCode()}`);
       }
-      return result;
+      assignments.push(`${this.getIndexBinding()} = ${this.getStartReference()}`);
+      if (!this.isEndFixed()) {
+        assignments.push(`${this.getEndReference()} = ${this.getEndCode()}`);
+      }
+      if (!step.isLiteral) {
+        assignments.push(`${step.update} = ${step.init}`);
+      }
+      if (this.getIndexDirection() === UNKNOWN) {
+        assignments.push(`${this.getAscReference()} = ${this.getAscCode()}`);
+      }
+      return assignments.join(', ');
+    } else {
+      let direction = this.getIndexDirection();
+      let descInit = `${this.getTargetReference()}.length - 1`;
+
+      let assignments = [];
+      if (!step.isLiteral) {
+        assignments.push(`${step.update} = ${step.init}`);
+      }
+      if (direction === DOWN) {
+        assignments.push(`${this.getIndexBinding()} = ${descInit}`);
+      } else if (direction === UP) {
+        assignments.push(`${this.getIndexBinding()} = 0`);
+      } else {
+        assignments.push(`${this.getAscReference()} = ${this.getAscCode()}`);
+        assignments.push(`${this.getIndexBinding()} = ${this.getAscReference()} ? 0 : ${descInit}`);
+      }
+      return assignments.join(', ');
     }
   }
 
   getTestCode(): string {
-    let step = this.getStep();
+    let direction = this.getIndexDirection();
     if (this.shouldPatchAsInitTestUpdateLoop()) {
-      let direction = this.getIndexDirection();
       let inclusive = this.target.isInclusive();
-      let operator;
+      let gt = inclusive ? '>=' : '>';
+      let lt = inclusive ? '<=' : '<';
+      let index = this.getIndexBinding();
+      let end = this.getEndReference();
 
       if (direction === DOWN) {
-        operator = inclusive ? '>=' : '>';
+        return `${index} ${gt} ${end}`;
+      } else if (direction === UP) {
+        return `${index} ${lt} ${end}`;
       } else {
-        operator = inclusive ? '<=' : '<';
+        return `${this.getAscReference()} ? ${index} ${lt} ${end} : ${index} ${gt} ${end}`;
       }
-
-      return `${this.getIndexBinding()} ${operator} ${this.target.right.patchAndGetCode()}`;
-    } else if (step.negated) {
-      return `${this.getIndexBinding()} >= 0`;
     } else {
-      return `${this.getIndexBinding()} < ${this.getTargetReference()}.length`;
+      let downComparison = `${this.getIndexBinding()} >= 0`;
+      let upComparison = `${this.getIndexBinding()} < ${this.getTargetReference()}.length`;
+      if (direction === DOWN) {
+        return downComparison;
+      } else if (direction === UP) {
+        return upComparison;
+      } else {
+        return `${this.getAscReference()} ? ${upComparison} : ${downComparison}`;
+      }
     }
   }
 
   getUpdateCode(): string {
-    let indexBinding = this.getIndexBinding();
+    let index = this.getIndexBinding();
     let step = this.getStep();
+
+    // If step is a variable, we always just add it, since its value determines
+    // whether we go forward or backward.
+    if (step.number === null) {
+      return `${index} += ${step.update}`;
+    }
+
     let direction = this.getIndexDirection();
-    if (step.number === 1) {
-      return `${indexBinding}${direction === DOWN ? '--' : '++'}`;
-    } else if (direction === DOWN) {
-      return `${indexBinding} -= ${step.update}`;
+    let incCode = step.number === 1 ? '++' : ` += ${step.update}`;
+    let decCode = step.number === 1 ? '--' : ` -= ${step.update}`;
+
+    if (direction === DOWN) {
+      return `${index}${decCode}`;
+    } else if (direction === UP) {
+      return `${index}${incCode}`;
     } else {
-      return `${indexBinding} += ${step.update}`;
+      return `${this.getAscReference()} ? ${index}${incCode} : ${index}${decCode}`;
+    }
+  }
+
+  getStartReference() {
+    if (!this.shouldExtractStart()) {
+      return this.getStartCode();
+    }
+    if (!this._startReference) {
+      this._startReference = this.claimFreeBinding('start');
+    }
+    return this._startReference;
+  }
+
+  isStartFixed() {
+    return this.target.left.node.type === 'Int' || this.target.left.node.type === 'Float';
+  }
+
+  /**
+   * In many cases, we can just initialize the index to the start without an
+   * intermediate variable. We only need to save a variable if it's not
+   * repeatable and we need to use it to compute the direction.
+   */
+  shouldExtractStart() {
+    return !this.target.left.isRepeatable() &&
+      this.getIndexDirection() === UNKNOWN &&
+      this.getStep().isVirtual;
+  }
+
+  getStartCode() {
+    if (!this._startCode) {
+      this._startCode = this.target.left.patchAndGetCode();
+    }
+    return this._startCode;
+  }
+
+  getEndReference() {
+    if (this.isEndFixed()) {
+      return this.getEndCode();
+    }
+    if (!this._endReference) {
+      this._endReference = this.claimFreeBinding('end');
+    }
+    return this._endReference;
+  }
+
+  isEndFixed() {
+    return this.target.right.node.type === 'Int' || this.target.right.node.type === 'Float';
+  }
+
+  getEndCode() {
+    if (!this._endCode) {
+      this._endCode = this.target.right.patchAndGetCode();
+    }
+    return this._endCode;
+  }
+
+  getAscReference() {
+    if (!this._ascReference) {
+      this._ascReference = this.claimFreeBinding('asc');
+    }
+    return this._ascReference;
+  }
+
+  /**
+   * Return the code snippet to determine whether the loop counts up or down, in
+   * the event that it needs to be computed at runtime.
+   */
+  getAscCode() {
+    let step = this.getStep();
+    if (step.isVirtual) {
+      if (!this.shouldPatchAsInitTestUpdateLoop()) {
+        throw new Error(
+          'Should not be getting asc code when the target is not a range and ' +
+          'the step is unspecified.');
+      }
+      return `${this.getStartReference()} <= ${this.getEndReference()}`;
+    } else {
+      return `${step.update} > 0`;
     }
   }
 
@@ -332,32 +451,17 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   /**
-   * Can we patch using `for (;;)` style?
+   * Determine if we should patch in a way where the loop variable is updated in
+   * a C-style for loop. This happens when looping over a range (e.g.
+   * `for i of [a...b]`, and in fact we must patch in the style when looping
+   * over ranges since CoffeeScript code might depend on the variable being one
+   * past the end after the loop runs to completion.
    *
-   * Currently, that requires either a fixed range:
-   *
-   *   a() for [0..1]
-   *
-   * Or a dynamic range with a fixed step:
-   *
-   *   a() for [n..m] by 1
-   *
-   * Eventually, we could also support any dynamic range:
-   *
-   *   a() for [from..to]
-   *   a() for [lower()..upper()]
-   *
-   * By capturing the bounds as needed and comparing:
-   *
-   *   for (let asc = from <= to, i = from; asc ? i <= to : i >= to; asc ? i++ : i--) {
-   *     a();
-   *   }
-   *   for (let start = lower(), end = upper(), asc = start <= end, i = start; asc ? i <= end : i >= end; asc ? i++ : i--) {
-   *     a();
-   *   }
+   * For more complicated cases, we need to dynamically compute what direction
+   * to iterate in.
    */
   shouldPatchAsInitTestUpdateLoop(): boolean {
-    return this.hasFixedRange() || (this.hasDynamicRange() && this.hasExplicitStep());
+    return this.target instanceof RangePatcher;
   }
 
   shouldWrapMapExpressionTargetInArrayFrom() {
@@ -390,27 +494,23 @@ export default class ForInPatcher extends ForPatcher {
    */
   getIndexDirection(): IndexDirection {
     let step = this.getStep();
-    if (step.isVirtual && this.hasFixedRange()) {
-      let left = this.target.left.node.data;
-      let right = this.target.right.node.data;
-      return left > right ? DOWN : UP;
-    } else if (this.hasDynamicRange()) {
-      return UNKNOWN;
+    if (this.shouldPatchAsInitTestUpdateLoop()) {
+      if (!step.isVirtual && step.isLiteral) {
+        return step.negated ? DOWN : UP;
+      } else if (this.hasFixedRange()) {
+        let left = this.target.left.node.data;
+        let right = this.target.right.node.data;
+        return left > right ? DOWN : UP;
+      } else {
+        return UNKNOWN;
+      }
     } else {
-      return step.negated ? DOWN : UP;
+      if (step.isLiteral) {
+        return step.negated ? DOWN : UP;
+      } else {
+        return UNKNOWN;
+      }
     }
-  }
-
-  /**
-   * Are we looping over a range with dynamic start/end?
-   *
-   * @example
-   *
-   *   for [a..b]
-   *   for [0..b]
-   */
-  hasDynamicRange(): boolean {
-    return (this.target instanceof RangePatcher) && !this.hasFixedRange();
   }
 
   /**
@@ -422,11 +522,7 @@ export default class ForInPatcher extends ForPatcher {
    *   for [7.0..10.0]
    */
   hasFixedRange(): boolean {
-    return (
-      this.target instanceof RangePatcher &&
-      (this.target.left.node.type === 'Int' || this.target.left.node.type === 'Float') &&
-      (this.target.right.node.type === 'Int' || this.target.right.node.type === 'Float')
-    );
+    return this.target instanceof RangePatcher && this.isStartFixed() && this.isEndFixed();
   }
 }
 
