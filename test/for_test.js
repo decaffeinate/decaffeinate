@@ -856,7 +856,7 @@ describe('for loops', () => {
       for own key of list
         console.log key
     `, `
-      for (let key of Object.keys(list)) {
+      for (let key of Object.keys(list || {})) {
         console.log(key);
       }
     `);
@@ -867,7 +867,7 @@ describe('for loops', () => {
       for own key of getObject()
         console.log key
     `, `
-      for (let key of Object.keys(getObject())) {
+      for (let key of Object.keys(getObject() || {})) {
         console.log(key);
       }
     `);
@@ -878,7 +878,7 @@ describe('for loops', () => {
       for own key, value of list
         console.log key, value
     `, `
-      for (let key of Object.keys(list)) {
+      for (let key of Object.keys(list || {})) {
         let value = list[key];
         console.log(key, value);
       }
@@ -891,7 +891,7 @@ describe('for loops', () => {
         console.log key, value
     `, `
       let object = getObject();
-      for (let key of Object.keys(object)) {
+      for (let key of Object.keys(object || {})) {
         let value = object[key];
         console.log(key, value);
       }
@@ -903,7 +903,7 @@ describe('for loops', () => {
       for own key of list when key[0] is '_'
         console.log key
     `, `
-      for (let key of Object.keys(list)) {
+      for (let key of Object.keys(list || {})) {
         if (key[0] === '_') {
           console.log(key);
         }
@@ -915,7 +915,7 @@ describe('for loops', () => {
     check(`
       for own a of b then a
     `, `
-      for (let a of Object.keys(b)) { a; }
+      for (let a of Object.keys(b || {})) { a; }
     `);
   });
 
@@ -930,7 +930,7 @@ describe('for loops', () => {
       a((() => {
         let result = [];
         let object = obj();
-        for (let k of Object.keys(object)) {
+        for (let k of Object.keys(object || {})) {
           let v = object[k];
           if (x) {
             let item;
