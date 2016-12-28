@@ -33,12 +33,60 @@ describe('expansion', () => {
     `);
   });
 
-  it.skip('allows getting the last elements of a parameter list', () => {
+  it('allows getting the last elements of a parameter list', () => {
     check(`
       (..., a, b) ->
     `, `
-      (function() {
-        let a = arguments[arguments.length - 2], b = arguments[arguments.length - 1];
+      (function(...args) {
+        let a = args[args.length - 2], b = args[args.length - 1];
+      });
+    `);
+  });
+
+  it('allows default params for expansion params', () => {
+    check(`
+      (..., a = 1) ->
+    `, `
+      (function(...args) {
+        let a = args[args.length - 1];
+        if (a == null) { a = 1; }
+      });
+    `);
+  });
+
+  it('allows this assignment for expansion params', () => {
+    check(`
+      (..., @a) ->
+    `, `
+      (function(...args) {
+        let a = args[args.length - 1];
+        this.a = a;
+      });
+    `);
+  });
+
+  it('deconflicts names in the expansion param case', () => {
+    check(`
+      a = 1
+      (..., @a) ->
+        console.log a
+        return
+    `, `
+      let a = 1;
+      (function(...args) {
+        let a1 = args[args.length - 1];
+        this.a = a1;
+        console.log(a);
+      });
+    `);
+  });
+
+  it('allows getting the initial array and last elements of a parameter list', () => {
+    check(`
+      (a..., b, c) ->
+    `, `
+      (function(...args) {
+        let a = args.slice(0, args.length - 2), b = args[args.length - 2], c = args[args.length - 1];
       });
     `);
   });
@@ -51,11 +99,19 @@ describe('expansion', () => {
     `);
   });
 
-  it.skip('is removed at the end of a parameter list', () => {
+  it('is removed at the end of a parameter list', () => {
     check(`
       (a, b, ...) ->
     `, `
       (function(a, b) {});
+    `);
+  });
+
+  it('converts rest params at the end to JS rest params', () => {
+    check(`
+      (a, b, c...) ->
+    `, `
+      (function(a, b, ...c) {});
     `);
   });
 
@@ -67,7 +123,7 @@ describe('expansion', () => {
     `);
   });
 
-  it.skip('allows getting the first and last elements of a parameter list', () => {
+  it('allows getting the first and last elements of a parameter list, using the "rest" name', () => {
     check(`
       (a, b, ..., c, d) ->
     `, `
@@ -77,13 +133,23 @@ describe('expansion', () => {
     `);
   });
 
-  it.skip('allows getting the first and last elements of a parameter list in a bound function', () => {
+  it('allows interior rest params, using the "rest" name', () => {
+    check(`
+      (a, b, c..., d, e) ->
+    `, `
+      (function(a, b, ...rest) {
+        let c = rest.slice(0, rest.length - 2), d = rest[rest.length - 2], e = rest[rest.length - 1];
+      });
+    `);
+  });
+
+  it('allows getting the first and last elements of a parameter list in a bound function', () => {
     check(`
       (a, b, ..., c, d) =>
     `, `
-      ((a, b, ...rest) => {
+      (a, b, ...rest) => {
         let c = rest[rest.length - 2], d = rest[rest.length - 1];
-      });
+      };
     `);
   });
 

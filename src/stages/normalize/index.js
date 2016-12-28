@@ -4,6 +4,7 @@ import ClassPatcher from './patchers/ClassPatcher';
 import AssignOpPatcher from './patchers/AssignOpPatcher';
 import ConditionalPatcher from './patchers/ConditionalPatcher';
 import DoOpPatcher from './patchers/DoOpPatcher';
+import ExpansionPatcher from './patchers/ExpansionPatcher';
 import ForInPatcher from './patchers/ForInPatcher';
 import ForOfPatcher from './patchers/ForOfPatcher';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher';
@@ -13,6 +14,7 @@ import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher';
 import PassthroughPatcher from '../../patchers/PassthroughPatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
+import SpreadPatcher from './patchers/SpreadPatcher';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';
 import WhilePatcher from './patchers/WhilePatcher';
 import MemberAccessOpPatcher from './patchers/MemberAccessOpPatcher';
@@ -46,6 +48,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'DoOp':
         return DoOpPatcher;
 
+      case 'Expansion':
+        return ExpansionPatcher;
+
       case 'ForIn':
         return ForInPatcher;
 
@@ -75,6 +80,10 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'DefaultParam':
         return DefaultParamPatcher;
+
+      case 'Rest':
+      case 'Spread':
+        return SpreadPatcher;
 
       case 'ObjectInitialiser':
         return ObjectInitialiserPatcher;
