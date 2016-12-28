@@ -9,6 +9,30 @@ describe('expansion', () => {
     `);
   });
 
+  it('allows getting the first part and last elements of an array', () => {
+    check(`
+      [a..., b, c] = arr
+    `, `
+      let a = arr.slice(0, arr.length - 2), b = arr[arr.length - 2], c = arr[arr.length - 1];
+    `);
+  });
+
+  it('allows a rest destructure in the middle of an array', () => {
+    check(`
+      [a, b..., c] = arr
+    `, `
+      let a = arr[0], b = arr.slice(1, arr.length - 1), c = arr[arr.length - 1];
+    `);
+  });
+
+  it('does not generate special assignment code when the rest is at the end', () => {
+    check(`
+      [a, b, c...] = arr
+    `, `
+      let [a, b, ...c] = arr;
+    `);
+  });
+
   it.skip('allows getting the last elements of a parameter list', () => {
     check(`
       (..., a, b) ->
@@ -68,6 +92,14 @@ describe('expansion', () => {
       [a, b, ..., c, d] = getArray()
     `, `
       let array = getArray(), a = array[0], b = array[1], c = array[array.length - 2], d = array[array.length - 1];
+    `);
+  });
+
+  it('allows getting elements and an intermediate rest from an unsafe-to-repeat list', () => {
+    check(`
+      [a, b, c..., d, e] = getArray()
+    `, `
+      let array = getArray(), a = array[0], b = array[1], c = array.slice(2, array.length - 2), d = array[array.length - 2], e = array[array.length - 1];
     `);
   });
 
