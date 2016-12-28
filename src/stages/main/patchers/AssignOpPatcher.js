@@ -1,6 +1,7 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
+import SpreadPatcher from './SpreadPatcher';
 import type { PatcherContext } from './../../../patchers/types';
 
 export default class AssignOpPatcher extends NodePatcher {
@@ -67,15 +68,20 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   /**
-   * If there is an expansion assignment, return the index of the expansion node.
-   * Otherwise, return -1.
+   * If there is an expansion assignment, return the index of the expansion
+   * node. Note that we also count a non-terminal rest destructure as an
+   * expansion node, since the behavior is nearly the same.
+   *
+   * If none is found, return -1.
    */
   getExpansionIndex(): number {
     if (!(this.assignee instanceof ArrayInitialiserPatcher)) {
       return -1;
     }
-    for (let i = 0; i < this.assignee.members.length; i++) {
-      if (this.assignee.members[i] instanceof ExpansionPatcher) {
+    let members = this.assignee.members;
+    for (let i = 0; i < members.length; i++) {
+      if (members[i] instanceof ExpansionPatcher ||
+          (i < members.length - 1 && members[i] instanceof SpreadPatcher)) {
         return i;
       }
     }
@@ -87,18 +93,14 @@ export default class AssignOpPatcher extends NodePatcher {
     let assignees = this.assignee.members;
     let expansionNode = assignees[expansionIndex];
 
-    assignees.forEach((assignee, i) => {
-      // Patch everything but the expansion node, since expansion nodes expect
-      // to not be patched.
-      if (i !== expansionIndex) {
-        assignee.patch();
-      }
-    });
-    this.expression.patch();
-    let expressionCode = this.slice(this.expression.contentStart, this.expression.contentEnd);
+    let expressionCode = this.expression.patchAndGetCode();
 
     // Easy case: [a, b, ...] = c  ->  [a, b] = c
-    if (expansionIndex === assignees.length - 1) {
+    if (expansionIndex === assignees.length - 1 &&
+        assignees[expansionIndex] instanceof ExpansionPatcher) {
+      for (let assignee of assignees.slice(0, -1)) {
+        assignee.patch();
+      }
       let assigneeBeforeExpansion = assignees[assignees.length - 2];
       this.remove(assigneeBeforeExpansion.outerEnd, expansionNode.outerEnd);
       return;
@@ -110,15 +112,11 @@ export default class AssignOpPatcher extends NodePatcher {
     // array = d(), a = array[0], b = array[array.length - 2], c = array[array.length - 1];
     //
     // takes these steps:
-    // * Remove the "...,".
     // * Insert "array = d(), " on the left.
     // * Remove "["
     // * Insert " = array[index]" after each assignment (the comma is already there).
+    // * Remove the "...," when we traverse that assignee.
     // * Remove "] = d()"
-
-    // Remove "...,". We know there's an assignee after the expansion because
-    // otherwise we would have returned above.
-    this.remove(expansionNode.outerStart, assignees[expansionIndex + 1].outerStart);
 
     let arrReference;
     if (this.expression.isRepeatable()) {
@@ -133,15 +131,34 @@ export default class AssignOpPatcher extends NodePatcher {
 
     assignees.forEach((assignee, i) => {
       if (i === expansionIndex) {
-        return;
-      }
-      let key;
-      if (i < expansionIndex) {
-        key = `${i}`;
+        if (assignee instanceof ExpansionPatcher) {
+          // Don't patch this node, since we'll just remove it. We know there's
+          // an assignee after the expansion because otherwise we would have
+          // returned above.
+          this.remove(assignee.outerStart, assignees[i + 1].outerStart);
+        } else if (assignee instanceof SpreadPatcher) {
+          // Don't patch the spread itself since the new leading "..." can be a
+          // hassle and won't be used anyway. Instead, just patch the underlying
+          // expression and get its code.
+          let assigneeCode = assignee.expression.patchAndGetCode();
+          let sliceEnd = `${arrReference}.length - ${assignees.length - i - 1}`;
+          this.overwrite(
+            assignee.outerStart, assignee.outerEnd,
+            `${assigneeCode} = ${arrReference}.slice(${i}, ${sliceEnd})`
+          );
+        } else {
+          throw this.error('Unexpected expansion node type.');
+        }
       } else {
-        key = `${arrReference}.length - ${assignees.length - i}`;
+        assignee.patch();
+        let key;
+        if (i < expansionIndex) {
+          key = `${i}`;
+        } else {
+          key = `${arrReference}.length - ${assignees.length - i}`;
+        }
+        this.insert(assignee.outerEnd, ` = ${arrReference}[${key}]`);
       }
-      this.insert(assignee.outerEnd, ` = ${arrReference}[${key}]`);
     });
 
     // Remove closing "]" and right-side expression.
