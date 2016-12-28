@@ -138,7 +138,7 @@ export default class AssignOpPatcher extends NodePatcher {
           this.remove(assignee.outerStart, assignees[i + 1].outerStart);
         } else if (assignee instanceof SpreadPatcher) {
           // Don't patch the spread itself since the new leading "..." can be a
-          // hassle and wont' be used anyway. Instead, just patch the underlying
+          // hassle and won't be used anyway. Instead, just patch the underlying
           // expression and get its code.
           let assigneeCode = assignee.expression.patchAndGetCode();
           let sliceEnd = `${arrReference}.length - ${assignees.length - i - 1}`;
@@ -147,7 +147,7 @@ export default class AssignOpPatcher extends NodePatcher {
             `${assigneeCode} = ${arrReference}.slice(${i}, ${sliceEnd})`
           );
         } else {
-          throw new Error('Unexpected expansion node type.');
+          throw this.error('Unexpected expansion node type.');
         }
       } else {
         assignee.patch();
