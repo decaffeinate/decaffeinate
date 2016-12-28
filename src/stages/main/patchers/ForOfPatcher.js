@@ -57,9 +57,9 @@ export default class ForOfPatcher extends ForPatcher {
       //                            ^^^^^^^^^^^^
       this.insert(this.target.outerStart, 'Object.keys(');
 
-      // `for (k of o` → `for (k of Object.keys(o)) {`
-      //                                         ^^^^
-      this.insert(this.target.outerEnd, ')) {');
+      // `for (k of Object.keys(o` → `for (k of Object.keys(o || {})) {`
+      //                                                     ^^^^^^^^^^
+      this.insert(this.target.outerEnd, ' || {})) {');
     } else {
       // `for (k of o` → `for (k in o`
       //         ^^              ^^
