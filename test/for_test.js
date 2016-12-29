@@ -1194,4 +1194,12 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles implicit function calls in the loop step', () => {
+    check(`
+      a for a in b by c d
+    `, `
+      for (let step = c(d), asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { let a = b[i]; a; }
+    `);
+  });
 });

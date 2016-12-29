@@ -11,9 +11,9 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   patchAsExpression() {
-    super.patchAsExpression();
     if (this.step) {
       this.step.patch();
     }
+    super.patchAsExpression();
   }
 }
