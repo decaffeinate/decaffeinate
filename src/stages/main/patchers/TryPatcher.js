@@ -116,27 +116,13 @@ export default class TryPatcher extends NodePatcher {
     // Make our children return since we're wrapping in a function.
     this.setImplicitlyReturns();
 
-    let needsParens = !this.isSurroundedByParentheses();
-    if (needsParens) {
-      // `a = try b()` → `a = (try b()`
-      //                      ^
-      this.insert(this.outerStart, '(');
-    }
-    // `a = (try b()` → `a = (() => { try b()`
-    //                        ^^^^^^^^
-    this.insert(this.outerStart, '() => { ');
+    // `a = try b()` → `a = (() => { try b()`
+    //                      ^^^^^^^^^
+    this.insert(this.contentStart, '(() => { ');
     this.patchAsStatement();
-    // `a = (() => { try { b(); } catch (error) {}` → `a = (() => { try { b(); } catch (error) {} }`
-    //                                                                                           ^^
-    this.insert(this.outerEnd, ' }');
-    if (needsParens) {
-      // `a = (() => { try { b(); } catch (error) {} }` → `a = (() => { try { b(); } catch (error) {} })`
-      //                                                                                               ^
-      this.insert(this.outerEnd, ')');
-    }
-    // `a = (() => { try { b(); } catch (error) {} })` → `a = (() => { try { b(); } catch (error) {} })()`
-    //                                                                                                 ^^
-    this.insert(this.outerEnd, '()');
+    // `a = (() => { try { b(); } catch (error) {}` → `a = (() => { try { b(); } catch (error) {} })()`
+    //                                                                                           ^^^^^
+    this.insert(this.contentEnd, ' })()');
   }
 
   setImplicitlyReturns() {

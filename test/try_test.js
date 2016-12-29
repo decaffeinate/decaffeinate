@@ -189,7 +189,6 @@ describe('try', () => {
     `);
   });
 
-
   it('handles try with an empty catch block with a catch variable and an empty finally block', () => {
     check(`
       try
@@ -201,6 +200,14 @@ describe('try', () => {
         something();
       } catch (err) {}
       finally {}
+    `);
+  });
+
+  it('handles a try expression wrapped in parens', () => {
+    check(`
+      x = (try a catch b then c)
+    `, `
+      let x = ((() => { try { return a; } catch (b) { return c; } })());
     `);
   });
 });
