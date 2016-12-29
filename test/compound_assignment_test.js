@@ -422,6 +422,14 @@ describe('compound assignment', () => {
       `);
     });
 
+    it('handles existence assignment within a conditional', () => {
+      check(`
+        if a then b ?= c
+      `, `
+        if (a) { if (typeof b === 'undefined' || b === null) { var b = c; } }
+      `);
+    });
+
     it('handles simple computed member expression existence assignment', () => {
       check(`
         a[b] ?= 1
