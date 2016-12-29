@@ -87,6 +87,7 @@ const ORDER = {
   LogicalAndOp: ['left', 'right'],
   LogicalNotOp: ['expression'],
   LogicalOrOp: ['left', 'right'],
+  Loop: ['body'],
   MemberAccessOp: ['expression'],
   ModuloOp: ['left', 'right'],
   MultiplyOp: ['left', 'right'],
