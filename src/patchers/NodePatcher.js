@@ -270,7 +270,23 @@ export default class NodePatcher {
 
   captureCodeForPatchOperation(patchFn: () => void): string {
     let sliceStart = this.contentStart > 0 ? this.contentStart - 1 : 0;
-    let beforeCode = this.slice(sliceStart, this.contentStart);
+    // Occasionally, sliceStart will be illegal because it will be in a range
+    // that has been removed or overwritten. If that's the case, subtract 1 from
+    // sliceStart until we find something that works.
+    let beforeCode = null;
+    while (beforeCode === null) {
+      try {
+        beforeCode = this.slice(sliceStart, this.contentStart);
+      } catch(e) {
+        // Assume that this is because the index is an invalid start. It looks
+        // like there isn't a robust way to detect this case exactly, so just
+        // try a lower start for any error.
+        sliceStart -= 1;
+        if (sliceStart < 0) {
+          throw this.error('Could not find a valid index to slice for patch operation.');
+        }
+      }
+    }
     patchFn();
     let code = this.slice(sliceStart, this.contentEnd);
     let startIndex = 0;
