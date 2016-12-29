@@ -77,9 +77,9 @@ describe('functions', () => {
         let today = new Date();
         let fullYear = 2000 + parseInt(year);
         return (/^\\d{1,2}$/.test(month)) && (/^\\d{1,2}$/.test(year)) &&
-          (month >= 1 && month <= 12) &&
-          fullYear >= today.getFullYear() &&
-          (fullYear !== today.getFullYear() || month > today.getMonth()); // Date.month is 0 indexed
+          ((month >= 1) && (month <= 12)) &&
+          (fullYear >= today.getFullYear()) &&
+          ((fullYear !== today.getFullYear()) || (month > today.getMonth())); // Date.month is 0 indexed
       };
 
       export { validExpirationDate };

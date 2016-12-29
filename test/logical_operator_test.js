@@ -21,7 +21,7 @@ describe('`and` operator', () => {
     check(`
       a is b and c is d
     `, `
-      a === b && c === d;
+      (a === b) && (c === d);
     `);
   });
 
@@ -58,7 +58,7 @@ describe('`or` operator', () => {
     check(`
       a is b or c is d
     `, `
-      a === b || c === d;
+      (a === b) || (c === d);
     `);
   });
 

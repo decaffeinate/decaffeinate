@@ -27,9 +27,18 @@ describe('comparisons', () => {
       unless a < b && b > c
         d
     `, `
-      if (a >= b || b <= c) {
+      if ((a >= b) || (b <= c)) {
         d;
       }
+    `);
+  });
+
+  it('puts parens around an assignment within a comparison operator', () => {
+    check(`
+      a is b = c
+    `, `
+      let b;
+      a === (b = c);
     `);
   });
 });
