@@ -16,12 +16,7 @@ describe('formatDecaffeinateParserAst', () => {
       Program [1:1(0)-3:8(22)] {
         body: Block [1:1(0)-3:8(22)] {
           statements: [
-            While [1:1(0)-3:8(22)] {
-              isUntil: false
-              condition: Bool (virtual) {
-                data: true
-              }
-              guard: null
+            Loop [1:1(0)-3:8(22)] {
               body: Block [2:3(7)-3:8(22)] {
                 inline: false
                 statements: [

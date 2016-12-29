@@ -9,6 +9,7 @@ import ForInPatcher from './patchers/ForInPatcher';
 import ForOfPatcher from './patchers/ForOfPatcher';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher';
 import IdentifierPatcher from './patchers/IdentifierPatcher';
+import LoopPatcher from './patchers/LoopPatcher';
 import NodePatcher from '../../patchers/NodePatcher';
 import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher';
@@ -68,6 +69,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'While':
         return WhilePatcher;
 
+      case 'Loop':
+        return LoopPatcher;
+
       case 'Class':
         return ClassPatcher;
 
@@ -90,7 +94,7 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'ObjectInitialiserMember':
         return ObjectInitialiserMemberPatcher;
-      
+
       default:
         return PassthroughPatcher;
     }
