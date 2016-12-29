@@ -224,6 +224,62 @@ describe('for loops', () => {
     `);
   });
 
+  it('iterates forwards on a forward range with a variable step', () => {
+    check(`
+      for a in [1..10] by b()
+        c
+    `, `
+      for (let a = 1, step = b(); a <= 10; a += step) {
+        c;
+      }
+    `);
+  });
+
+  it('iterates backwards on a backward range with a variable step', () => {
+    check(`
+      for a in [10..1] by b()
+        c
+    `, `
+      for (let a = 10, step = b(); a >= 1; a += step) {
+        c;
+      }
+    `);
+  });
+
+  it('iterates backwards on a forward range and a backward explicit step', () => {
+    check(`
+      for a in [1..10] by -1
+        b
+    `, `
+      for (let a = 1; a >= 10; a--) {
+        b;
+      }
+    `);
+  });
+
+  it('allows the `by` clause to force reverse iteration', () => {
+    check(`
+      for a in [b..c] by -1
+        d
+    `, `
+      for (let a = b, end = c; a >= end; a--) {
+        d;
+      }
+    `);
+  });
+
+  it('has an unknown iteration order when the `by` clause is a variable', () => {
+    check(`
+      for a in [b..c] by d
+        e
+    `, `
+      for (let a = b, end = c, step = d, asc = step > 0; asc ? a <= end : a >= end; a += step) {
+        e;
+      }
+    `);
+  });
+
+
   it('transforms an exclusive range by using non-equal tests', () => {
     check(`
       for i in [1...3]
@@ -251,49 +307,29 @@ describe('for loops', () => {
       for [a..b] by 1
         2
     `, `
-      for (let i = a; i <= b; i++) {
+      for (let i = a, end = b; i <= end; i++) {
         2;
       }
     `);
   });
 
-  it('transforms `for` loops with a range but without a step using `for…of`', () => {
+  it('transforms `for` loops with a range but without a step', () => {
     check(`
       for n in [a..b]
         n
     `, `
-      for (let n of __range__(a, b, true)) {
-        n;
-      }
-      function __range__(left, right, inclusive) {
-        let range = [];
-        let ascending = left < right;
-        let end = !inclusive ? right : ascending ? right + 1 : right - 1;
-        for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
-          range.push(i);
-        }
-        return range;
-      }
-    `);
-  });
-
-  it.skip('transforms `for` loops with a range but without a step using `for(;;)`', () => {
-    check(`
-      for n in [a..b]
-        n
-    `, `
-      for (let asc = a <= b, n = a; asc ? n <= b : n >= b; asc ? n++ : n--) {
+      for (let n = a, end = b, asc = a <= end; asc ? n <= end : n >= end; asc ? n++ : n--) {
         n;
       }
     `);
   });
 
-  it.skip('transforms `for` loops with a complex range but without a step using `for(;;)`', () => {
+  it('transforms `for` loops with a complex range but without a step using `for(;;)`, extracting the start', () => {
     check(`
       for n in [a()..b()]
         n
     `, `
-      for (let start = a(), end = b(), asc = start <= end, n = start; asc ? n <= end : n >= end; asc ? n++ : n--) {
+      for (let start = a(), n = start, end = b(), asc = start <= end; asc ? n <= end : n >= end; asc ? n++ : n--) {
         n;
       }
     `);
@@ -484,33 +520,9 @@ describe('for loops', () => {
       for a in b by (c d)
         a()
     `, `
-      for (let i = 0, step = c(d); i < b.length; i += step) {
+      for (let step = c(d), asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) {
         let a = b[i];
         a();
-      }
-    `);
-  });
-
-  it.skip('special-cases variable for-in range loops to avoid creating arrays', () => {
-    check(`
-      for i in [a..b]
-        i
-    `, `
-      for (let i = a; a < b ? i <= b : i >= b; a < b ? i++ : i--) {
-        i;
-      }
-    `);
-  });
-
-  it.skip('saves references to unsafe-to-repeat range bounds in variable for-in loops', () => {
-    check(`
-      for i in [a()..b()]
-        i
-    `, `
-      let start = a();
-      let end = b();
-      for (let i = start; start < end ? i <= end : i >= end; start < end ? i++ : i--) {
-        i;
       }
     `);
   });
@@ -752,7 +764,7 @@ describe('for loops', () => {
     `, `
       a((() => {
         let result = [];
-        for (let i = 0, step = e; i < d.length; i += step) {
+        for (let step = e, asc = step > 0, i = asc ? 0 : d.length - 1; asc ? i < d.length : i >= 0; i += step) {
           let c = d[i];
           result.push(b);
         }
@@ -789,7 +801,7 @@ describe('for loops', () => {
       a((() => {
         let result = [];
         let iterable = l();
-        for (let i = 0, step = s; i < iterable.length; i += step) {
+        for (let step = s, asc = step > 0, i = asc ? 0 : iterable.length - 1; asc ? i < iterable.length : i >= 0; i += step) {
           let x = iterable[i];
           if (x) {
             let item;
