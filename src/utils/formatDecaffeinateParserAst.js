@@ -10,7 +10,7 @@ function formatAstNodeLines(node, context) {
   let propLines = [];
   let childPropNames = childPropertyNames(node);
   let blacklistedProps = childPropNames.concat(
-    ['raw', 'line', 'column', 'type', 'range', 'virtual', 'scope', 'parentNode', 'context']
+    ['raw', 'line', 'column', 'type', 'range', 'virtual', 'scope', 'parentNode', 'context', 'start', 'end']
   );
   for (let key of Object.keys(node)) {
     if (blacklistedProps.indexOf(key) !== -1) {
