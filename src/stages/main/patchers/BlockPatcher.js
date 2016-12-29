@@ -139,6 +139,7 @@ export default class BlockPatcher extends NodePatcher {
       let insertionPoint = terminatorTokenIndex ?
         this.sourceTokenAtIndex(terminatorTokenIndex).start :
         lastStatement.outerEnd;
+      insertionPoint = Math.min(insertionPoint, this.getBoundingPatcher().innerEnd);
       let indent = lastStatement.getIndent();
       statements.forEach(line => this.insert(insertionPoint, `${separator}${indent}${line}`));
     } else {

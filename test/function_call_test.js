@@ -572,4 +572,56 @@ describe('function calls', () => {
         );
     `);
   });
+
+  it('maintains CALL_END location for a nested dynamic member access', () => {
+    check(`
+      a ->
+        for b in c
+          if d
+            e[f]
+      
+      g
+    `, `
+      a(() =>
+        (() => {
+          let result = [];
+          for (let b of Array.from(c)) {
+            let item;
+            if (d) {
+              item = e[f];
+            }
+            result.push(item);
+          }
+          return result;
+        })());
+      
+      g;
+    `);
+  });
+
+  it('maintains CALL_END location around a nested conditional', () => {
+    check(`
+      a(->
+        for b in c
+          if d
+            e)
+      
+      f
+    `, `
+      a(() =>
+        (() => {
+          let result = [];
+          for (let b of Array.from(c)) {
+            let item;
+            if (d) {
+              item = e;
+            }
+            result.push(item);
+          }
+          return result;
+        })());
+      
+      f;
+    `);
+  });
 });
