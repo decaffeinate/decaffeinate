@@ -89,7 +89,7 @@ describe('chained comparison', () => {
       unless a < b <= c
         d
     `, `
-      if (a >= b || b > c) {
+      if ((a >= b) || b > c) {
         d;
       }
     `);

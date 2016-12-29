@@ -8,15 +8,13 @@ import { SourceType } from 'coffee-lex';
 export default class EqualityPatcher extends BinaryOpPatcher {
   negated: boolean = false;
 
-  patchAsExpression() {
-    this.left.patch();
+  patchOperator() {
     let compareToken = this.getCompareToken();
     this.overwrite(
       compareToken.start,
       compareToken.end,
       this.getCompareOperator()
     );
-    this.right.patch();
   }
 
   getCompareOperator(): string {
