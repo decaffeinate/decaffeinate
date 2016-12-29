@@ -1,3 +1,5 @@
+import ExpansionPatcher from './ExpansionPatcher';
+import RestPatcher from './SpreadPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
 import stripSharedIndent from '../../../utils/stripSharedIndent';
 
@@ -6,7 +8,7 @@ import type { PatcherContext } from './../../../patchers/types';
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
   body: ?NodePatcher;
-  
+
   constructor(patcherContext: PatcherContext, parameters: Array<NodePatcher>, body: ?NodePatcher) {
     super(patcherContext);
     this.parameters = parameters;
@@ -47,7 +49,35 @@ export default class FunctionPatcher extends NodePatcher {
     delete this.addDefaultParamAssignmentAtScopeHeader;
     delete this.addThisAssignmentAtScopeHeader;
 
-    let assignments = [...defaultParamAssignments, ...thisAssignments];
+    let assignments = [];
+
+    let expansionIndex = this.getExpansionIndex();
+    if (expansionIndex !== -1) {
+      if (expansionIndex === this.parameters.length - 1) {
+        // Just get rid of the ... at the end (this case isn't exercised for
+        // rest params at the end since those just become regular JS).
+        if (expansionIndex === 0) {
+          this.remove(this.parameters[0].contentStart, this.parameters[0].contentEnd);
+        } else {
+          this.remove(
+            this.parameters[expansionIndex - 1].outerEnd,
+            this.parameters[this.parameters.length - 1].outerEnd
+          );
+        }
+      } else {
+        // Move expansion or intermediate rest params into an array destructure
+        // on the first line.
+        let candidateName = expansionIndex === 0 ? 'args' : 'rest';
+        let paramName = this.claimFreeBinding(candidateName);
+        let restParamsStart = this.parameters[expansionIndex].outerStart;
+        let restParamsEnd = this.parameters[this.parameters.length - 1].outerEnd;
+        let paramCode = this.slice(restParamsStart, restParamsEnd);
+        this.overwrite(restParamsStart, restParamsEnd, `${paramName}...`);
+        assignments.push(`[${paramCode}] = ${paramName}`);
+      }
+    }
+    assignments.push(...defaultParamAssignments);
+    assignments.push(...thisAssignments);
 
     // If there were assignments from parameters insert them
     if (this.body) {
@@ -95,5 +125,18 @@ export default class FunctionPatcher extends NodePatcher {
     otherLines = stripSharedIndent(otherLines);
     otherLines = otherLines.replace(/\n/g, `\n${indent}`);
     return `${firstLine}\n${indent}${otherLines}`;
+  }
+
+  /**
+   * Get the index of the expansion node or rest param, if any.
+   */
+  getExpansionIndex(): number {
+    for (let i = 0 ; i < this.parameters.length; i++) {
+      if (this.parameters[i] instanceof ExpansionPatcher ||
+          (i < this.parameters.length - 1 && this.parameters[i] instanceof RestPatcher)) {
+        return i;
+      }
+    }
+    return -1;
   }
 }
