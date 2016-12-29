@@ -55,4 +55,12 @@ describe('return', () => {
       (function() {  });
     `)
   );
+
+  it('allows a top-level return', () =>
+    check(`
+      return a
+    `, `
+      return a;
+    `)
+  );
 });
