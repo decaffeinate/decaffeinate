@@ -244,4 +244,33 @@ describe('binary operators', () => {
       }
     `);
   });
+
+  it('adds parens around an assignment combined with a logical operator', () => {
+    check(`
+      a and b = c
+    `, `
+      let b;
+      a && (b = c);
+    `);
+  });
+
+  it('adds parens around a compound existence assignment combined with a logical operator', () => {
+    check(`
+      b = 1
+      a and b ?= c
+    `, `
+      let b = 1;
+      a && (b != null ? b : (b = c));
+    `);
+  });
+
+  it('adds parens around a compound logical assignment combined with a logical operator', () => {
+    check(`
+      b = 1
+      a and b or= c
+    `, `
+      let b = 1;
+      a && (b || (b = c));
+    `);
+  });
 });

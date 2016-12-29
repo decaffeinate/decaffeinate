@@ -1,7 +1,12 @@
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression() {
+  patchAsExpression({ needsParens=false }={}) {
+    let shouldAddParens = needsParens && !this.isSurroundedByParentheses();
+    if (shouldAddParens) {
+      this.insert(this.outerStart, '(');
+    }
+
     let operator = this.getOperatorToken();
 
     // `a &&= b` → `a && b`
@@ -23,11 +28,15 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
     // `a && (a = b` → `a && (a = b)`
     //                             ^
     this.insert(this.expression.outerEnd, ')');
+
+    if (shouldAddParens) {
+      this.insert(this.outerEnd, ')');
+    }
   }
 
-  patchAsStatement() {
+  patchAsStatement(options={}) {
     if (this.lhsHasSoakOperation()) {
-      this.patchAsExpression();
+      this.patchAsExpression(options);
       return;
     }
 
