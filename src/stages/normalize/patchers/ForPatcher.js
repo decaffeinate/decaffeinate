@@ -51,6 +51,7 @@ export default class ForPatcher extends NodePatcher {
    * @private
    */
   normalize() {
+    this.surroundThenUsagesInParens();
     let forToken = this.getForToken();
     let forThroughEnd = this.slice(forToken.start, this.contentEnd);
     let startUntilFor = this.slice(this.contentStart, this.body.outerEnd);
@@ -59,6 +60,22 @@ export default class ForPatcher extends NodePatcher {
       this.contentEnd,
       `${forThroughEnd} then ${startUntilFor}`
     );
+  }
+
+  /**
+   * Defensively wrap expressions in parens if they might contain a `then`
+   * token, since that would mess up the parsing when we rearrange the for loop.
+   *
+   * This method can be subclassed to account for additional fields.
+   */
+  surroundThenUsagesInParens() {
+    if (this.slice(this.target.contentStart, this.target.contentEnd).includes('then')) {
+      this.target.surroundInParens();
+    }
+    if (this.filter &&
+      this.slice(this.filter.contentStart, this.filter.contentEnd).includes('then')) {
+      this.filter.surroundInParens();
+    }
   }
 
   /**

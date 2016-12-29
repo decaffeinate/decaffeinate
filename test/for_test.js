@@ -1202,4 +1202,28 @@ describe('for loops', () => {
       for (let step = c(d), asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { let a = b[i]; a; }
     `);
   });
+
+  it('handles a condition containing "then" within a post-for', () => {
+    check(`
+      a for a in b when if c then d
+    `, `
+      for (let a of Array.from(b)) { if (c ? d : undefined) { a; } }
+    `);
+  });
+
+  it('handles a target containing "then" within a post-for', () => {
+    check(`
+      a for a in if b then c
+    `, `
+      for (let a of Array.from((b ? c : undefined))) { a; }
+    `);
+  });
+
+  it('handles a step containing "then" within a post-for', () => {
+    check(`
+      a for a in b by if c then d
+    `, `
+      for (let step = c ? d : undefined, asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { let a = b[i]; a; }
+    `);
+  });
 });

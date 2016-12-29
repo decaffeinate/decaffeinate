@@ -20,6 +20,13 @@ export default class WhilePatcher extends LoopPatcher {
     this.guard = guard;
   }
 
+  initialize() {
+    this.condition.setRequiresExpression();
+    if (this.guard !== null) {
+      this.guard.setRequiresExpression();
+    }
+  }
+
   /**
    * ( 'while' | 'until' ) CONDITION ('when' GUARD)? 'then' BODY
    * ( 'while' | 'until' ) CONDITION ('when' GUARD)? NEWLINE INDENT BODY
@@ -45,7 +52,7 @@ export default class WhilePatcher extends LoopPatcher {
     if (this.node.isUntil) {
       this.condition.negate();
     }
-    this.condition.patch();
+    this.condition.patch({ needsParens: false });
 
     if (this.guard) {
       let guardNeedsParens = !this.guard.isSurroundedByParentheses();
@@ -67,7 +74,7 @@ export default class WhilePatcher extends LoopPatcher {
         );
 
       }
-      this.guard.patch();
+      this.guard.patch({ needsParens: false });
 
       // `while (a) {\n  if (b` → `while (a) {\n  if (b) {`
       //                                               ^^^

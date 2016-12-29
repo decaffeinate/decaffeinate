@@ -263,6 +263,13 @@ export default class ForInPatcher extends ForPatcher {
     this.patchBodyAndFilter();
   }
 
+  getLoopHeaderEnd() {
+    return Math.max(
+      this.step ? this.step.outerEnd : -1,
+      super.getLoopHeaderEnd()
+    );
+  }
+
   requiresExtractingTarget() {
     return (
       !this.shouldPatchAsInitTestUpdateLoop() &&
