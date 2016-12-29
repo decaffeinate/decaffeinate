@@ -203,6 +203,42 @@ describe('try', () => {
     `);
   });
 
+  it('handles try within a function with all blocks empty', () => {
+    check(`
+      ->
+        try
+        catch err
+        finally
+    `, `
+      (function() {
+        try {}
+        catch (err) {}
+        finally {}
+      });
+    `);
+  });
+
+  it('handles try by itself', () => {
+    check(`
+      try
+    `, `
+      try {} catch (error) {}
+    `);
+  });
+
+  it('handles try with a non-empty catch', () => {
+    check(`
+      try
+      catch
+        a
+    `, `
+      try {}
+      catch (error) {
+        a;
+      }
+    `);
+  });
+
   it('handles a try expression wrapped in parens', () => {
     check(`
       x = (try a catch b then c)

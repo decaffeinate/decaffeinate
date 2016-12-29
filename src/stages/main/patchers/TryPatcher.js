@@ -7,12 +7,12 @@ import { SourceType } from 'coffee-lex';
  * Handles `try` statements, e.g. `try a catch e then console.log(e)`.
  */
 export default class TryPatcher extends NodePatcher {
-  body: BlockPatcher;
+  body: ?BlockPatcher;
   catchAssignee: ?NodePatcher;
   catchBody: ?BlockPatcher;
   finallyBody: ?BlockPatcher;
 
-  constructor(patcherContext: PatcherContext, body: BlockPatcher, catchAssignee: ?NodePatcher, catchBody: ?BlockPatcher, finallyBody: ?BlockPatcher) {
+  constructor(patcherContext: PatcherContext, body: ?BlockPatcher, catchAssignee: ?NodePatcher, catchBody: ?BlockPatcher, finallyBody: ?BlockPatcher) {
     super(patcherContext);
     this.body = body;
     this.catchAssignee = catchAssignee;
@@ -38,18 +38,23 @@ export default class TryPatcher extends NodePatcher {
     // `try a` → `try { a`
     //               ^^
     this.insert(tryToken.end, ` {`);
-    if (this.body.inline()) {
-      this.body.patch({ leftBrace: false });
-    } else {
-      if (catchToken || finallyToken) {
-        this.body.patch({ leftBrace: false, rightBrace: false });
-        // `try { a; catch err` → `try { a; } catch err`
-        //                                  ^^
-        this.insert((catchToken || finallyToken).start, '} ');
-      } else {
+    if (this.body) {
+      if (this.body.inline()) {
         this.body.patch({ leftBrace: false });
+      } else {
+        if (catchToken || finallyToken) {
+          this.body.patch({ leftBrace: false, rightBrace: false });
+          // `try { a; catch err` → `try { a; } catch err`
+          //                                  ^^
+          this.insert((catchToken || finallyToken).start, '} ');
+        } else {
+          this.body.patch({ leftBrace: false });
+        }
       }
+    } else {
+      this.insert(tryToken.end, '}');
     }
+
 
     if (thenTokenIndex) {
       let thenToken = this.sourceTokenAtIndex(thenTokenIndex);
@@ -95,7 +100,8 @@ export default class TryPatcher extends NodePatcher {
     } else if (!finallyToken) {
       // `try { a; }` → `try { a; } catch (error) {}`
       //                           ^^^^^^^^^^^^^^^^^
-      this.insert(this.body.innerEnd, ` catch (${this.getErrorBinding()}) {}`);
+      let insertPos = this.body ? this.body.innerEnd : tryToken.end;
+      this.insert(insertPos, ` catch (${this.getErrorBinding()}) {}`);
     }
 
     if (finallyToken) {
@@ -126,7 +132,9 @@ export default class TryPatcher extends NodePatcher {
   }
 
   setImplicitlyReturns() {
-    this.body.setImplicitlyReturns();
+    if (this.body) {
+      this.body.setImplicitlyReturns();
+    }
     if (this.catchBody) {
       this.catchBody.setImplicitlyReturns();
     }
@@ -152,6 +160,13 @@ export default class TryPatcher extends NodePatcher {
    * @private
    */
   getCatchToken(): ?SourceToken {
+    let searchStart;
+    if (this.body) {
+      searchStart = this.body.outerEnd;
+    } else {
+      searchStart = this.getTryToken().end;
+    }
+
     let searchEnd;
     if (this.catchAssignee) {
       searchEnd = this.catchAssignee.outerStart;
@@ -164,7 +179,7 @@ export default class TryPatcher extends NodePatcher {
     }
 
     let catchTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.body.outerEnd, searchEnd, token => token.type === SourceType.CATCH
+      searchStart, searchEnd, token => token.type === SourceType.CATCH
     );
     if (!catchTokenIndex) {
       return null;
@@ -179,8 +194,17 @@ export default class TryPatcher extends NodePatcher {
     if (!this.catchBody) {
       return null;
     }
-    return this.indexOfSourceTokenBetweenPatchersMatching(
-      this.catchAssignee || this.body, this.catchBody,
+    let searchStart;
+    if (this.catchAssignee) {
+      searchStart = this.catchAssignee.outerEnd;
+    } else if (this.body) {
+      searchStart = this.body.outerEnd;
+    } else {
+      searchStart = this.getTryToken().end;
+    }
+
+    return this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      searchStart, this.catchBody.outerStart,
       token => token.type === SourceType.THEN
     );
   }
@@ -194,8 +218,10 @@ export default class TryPatcher extends NodePatcher {
       searchStart = this.catchBody.outerEnd;
     } else if (this.catchAssignee) {
       searchStart = this.catchAssignee.outerEnd;
-    } else {
+    } else if (this.body) {
       searchStart = this.body.outerEnd;
+    } else {
+      searchStart = this.getTryToken().end;
     }
 
     let searchEnd;
