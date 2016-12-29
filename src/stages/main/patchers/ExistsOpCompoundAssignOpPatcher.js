@@ -2,7 +2,12 @@ import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression() {
+  patchAsExpression({ needsParens=false }={}) {
+    let shouldAddParens = needsParens && !this.isSurroundedByParentheses();
+    if (shouldAddParens) {
+      this.insert(this.outerStart, '(');
+    }
+
     let assigneeAgain;
     if (this.needsTypeofCheck()) {
       // `a ?= b` → `typeof a ?= b`
@@ -30,10 +35,14 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     // `a.b != null ? a.b : (a.b = b` → `a.b != null ? a.b : (a.b = b)`
     //                                                               ^
     this.insert(this.expression.outerEnd, ')');
+
+    if (shouldAddParens) {
+      this.insert(this.outerEnd, ')');
+    }
   }
 
-  patchAsStatement() {
-    if (this.lhsHasSoakOperation()) {
+  patchAsStatement(options={}) {
+    if (this.lhsHasSoakOperation(options)) {
       this.patchAsExpression();
       return;
     }

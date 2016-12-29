@@ -28,12 +28,19 @@ export default class AssignOpPatcher extends NodePatcher {
     this.insert(this.innerEnd, ')');
   }
 
-  patchAsExpression() {
+  patchAsExpression({ needsParens=false }={}) {
+    let shouldAddParens = needsParens && !this.isSurroundedByParentheses();
+    if (shouldAddParens) {
+      this.insert(this.outerStart, '(');
+    }
     if (this.isExpansionAssignment()) {
       this.patchExpansionAssignment();
     } else {
       this.assignee.patch();
       this.expression.patch();
+    }
+    if (shouldAddParens) {
+      this.insert(this.outerEnd, ')');
     }
   }
 
