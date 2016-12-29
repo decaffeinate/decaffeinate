@@ -30,7 +30,11 @@ export default class SemicolonsStage {
     log(content);
 
     let editor = new MagicString(content);
-    let ast = parse(content, { sourceType: 'module', plugins: BABYLON_PLUGINS });
+    let ast = parse(content, {
+      sourceType: 'module',
+      plugins: BABYLON_PLUGINS,
+      allowReturnOutsideFunction: true
+    });
     let config = buildConfig(content, ast);
 
     asi(config);
