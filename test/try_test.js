@@ -246,4 +246,12 @@ describe('try', () => {
       let x = ((() => { try { return a; } catch (b) { return c; } })());
     `);
   });
+
+  it('handles a try expression as an unless condition', () => {
+    check(`
+      unless (try a catch b then c) then d
+    `, `
+      if (!(() => { try { return a; } catch (b) { return c; } })()) { d; }
+    `);
+  });
 });

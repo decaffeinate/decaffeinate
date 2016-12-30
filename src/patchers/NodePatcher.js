@@ -910,10 +910,14 @@ export default class NodePatcher {
   }
 
   /**
-   * Negates this patcher's node when patching.
+   * Negates this patcher's node when patching. Note that we add the `!` inside
+   * any parens, since it's generally unsafe to insert code outside our
+   * enclosing parens, and we need to handle the non-parenthesized case anyway.
+   * Subclasses that need to worry about precedence (e.g. binary operators)
+   * should override this method and do something more appropriate.
    */
   negate() {
-    this.insert(this.outerStart, '!');
+    this.insert(this.contentStart, '!');
   }
 
   /**

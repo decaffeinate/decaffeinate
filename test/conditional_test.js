@@ -278,6 +278,10 @@ describe('conditionals', () => {
     check(`a unless b`, `if (!b) { a; }`);
   });
 
+  it('allowed parenthesized member expressions in `unless`', () => {
+    check(`unless (a.b) then c`, `if (!a.b) { c; }`);
+  });
+
   it('pushes returns into `if` statements', () => {
     check(`
       ->
