@@ -23,12 +23,18 @@ export default class LoopPatcher extends NodePatcher {
 
   patchAsExpression() {
     let loop = this.firstToken();
+    let next = this.sourceTokenAtIndex(this.contentStartTokenIndex.next());
 
     if (loop.type !== SourceType.LOOP) {
       throw this.error(`expected first token of loop to be LOOP, but got: ${SourceType[loop.type]}`);
     }
 
-    this.overwrite(loop.start, loop.end, 'while true');
+    if (next.type === SourceType.THEN || !this.body.node.inline) {
+      this.overwrite(loop.start, loop.end, 'while true');
+    } else {
+      this.overwrite(loop.start, loop.end, 'while true then');
+    }
+
     this.body.patch();
   }
 }
