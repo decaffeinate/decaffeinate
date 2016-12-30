@@ -78,6 +78,14 @@ describe('while', () => {
     `);
   });
 
+  it('turns `loop` with an inline body into an inline `while` loop with an always-true condition', () => {
+    check(`
+      loop a
+    `, `
+      while (true) { a; }
+    `);
+  });
+
   it('handles `while` loops used as an expression', () => {
     check(`
       a(b while c)
