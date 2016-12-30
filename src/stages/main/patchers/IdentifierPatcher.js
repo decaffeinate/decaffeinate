@@ -1,10 +1,6 @@
 import PassthroughPatcher from './../../../patchers/PassthroughPatcher';
 
 export default class IdentifierPatcher extends PassthroughPatcher {
-  negate() {
-    this.insert(this.contentStart, '!');
-  }
-
   isRepeatable(): boolean {
     return true;
   }
