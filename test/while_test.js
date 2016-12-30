@@ -356,4 +356,28 @@ describe('while', () => {
       });
     `);
   });
+
+  it('handles a condition containing "then" within a post-while', () => {
+    check(`
+      2 while if 1 then 0
+    `, `
+      while (1 ? 0 : undefined) { 2; }
+    `);
+  });
+
+  it('does not add additional parens around a condition containing "then"', () => {
+    check(`
+      2 while (if 1 then 0)
+    `, `
+      while (1 ? 0 : undefined) { 2; }
+    `);
+  });
+
+  it('handles a guard containing "then" within a post-while', () => {
+    check(`
+      a while b when if c then d
+    `, `
+      while (b) { if (c ? d : undefined) { a; } }
+    `);
+  });
 });

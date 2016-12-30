@@ -16,4 +16,11 @@ export default class ForInPatcher extends ForPatcher {
     }
     super.patchAsExpression();
   }
+
+  surroundThenUsagesInParens() {
+    if (this.step && this.slice(this.step.contentStart, this.step.contentEnd).includes('then')) {
+      this.step.surroundInParens();
+    }
+    super.surroundThenUsagesInParens();
+  }
 }

@@ -51,6 +51,9 @@ export default class WhilePatcher extends NodePatcher {
       this.condition.outerStart,
       this.condition.outerEnd
     );
+    if (patchedCondition.includes('then') && !this.condition.isSurroundedByParentheses()) {
+      patchedCondition = `(${patchedCondition})`;
+    }
     let patchedBody = this.slice(
       this.body.outerStart,
       this.body.outerEnd
@@ -59,6 +62,9 @@ export default class WhilePatcher extends NodePatcher {
       this.guard.outerStart,
       this.guard.outerEnd
     ) : null;
+    if (patchedGuard !== null && patchedGuard.includes('then') && !this.guard.isSurroundedByParentheses()) {
+      patchedGuard = `(${patchedGuard})`;
+    }
     let whileToken = this.node.isUntil ? 'until' : 'while';
     this.overwrite(
       this.contentStart,

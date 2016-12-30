@@ -114,8 +114,8 @@ export default class ForPatcher extends LoopPatcher {
    * @protected
    */
   removeThenToken() {
-    let index = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.target, this.body,
+    let index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      this.getLoopHeaderEnd(), this.body.outerStart,
       token => token.type === SourceType.THEN
     );
     if (index) {
@@ -123,6 +123,18 @@ export default class ForPatcher extends LoopPatcher {
       let nextToken = this.sourceTokenAtIndex(index.next());
       this.remove(thenToken.start, nextToken.start);
     }
+  }
+
+  /**
+   * Get the last known index of the loop header, just before the `then` token
+   * or the body. This can be overridden to account for additional loop header
+   * elements.
+   */
+  getLoopHeaderEnd() {
+    return Math.max(
+      this.filter ? this.filter.outerEnd : -1,
+      this.target.outerEnd,
+    );
   }
 
   getTargetCode(): string {
