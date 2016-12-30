@@ -31,6 +31,9 @@ export default function resolveToPatchError(err: any, content: string , stageNam
     let lineMap = new LinesAndColumns(content);
     let firstIndex = lineMap.indexForLocation({line: first_line, column: first_column});
     let lastIndex = lineMap.indexForLocation({line: last_line, column: last_column}) + 1;
+    if (!lastIndex && lastIndex !== 0) {
+      lastIndex = firstIndex + 1;
+    }
     if (firstIndex !== null && firstIndex !== undefined && lastIndex !== null && lastIndex !== undefined) {
       return makePatchError(firstIndex, lastIndex, content);
     }
