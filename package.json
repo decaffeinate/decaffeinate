@@ -29,6 +29,9 @@
     "esnext"
   ],
   "author": "Brian Donovan",
+  "contributors": [
+    "Alan Pierce <alangpierce@gmail.com>"
+  ],
   "license": "MIT",
   "dependencies": {
     "add-variable-declarations": "^2.0.1",
