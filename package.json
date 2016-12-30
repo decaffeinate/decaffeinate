@@ -40,7 +40,7 @@
     "babylon": "^6.12.0",
     "coffee-lex": "^5.0.0",
     "decaffeinate-coffeescript": "^1.10.0-patch5",
-    "decaffeinate-parser": "^9.0.0",
+    "decaffeinate-parser": "9.0.0",
     "detect-indent": "^4.0.0",
     "esnext": "^3.0.9",
     "lines-and-columns": "^1.1.5",
