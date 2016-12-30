@@ -239,6 +239,14 @@ describe('try', () => {
     `);
   });
 
+  it('handles empty try, catch, and finally all on one line', () => {
+    check(`
+      try catch err then finally
+    `, `
+      try {} catch (err) {} finally {}
+    `);
+  });
+
   it('handles a try expression wrapped in parens', () => {
     check(`
       x = (try a catch b then c)
