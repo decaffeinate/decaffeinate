@@ -191,9 +191,6 @@ export default class TryPatcher extends NodePatcher {
    * @private
    */
   getThenTokenIndex(): ?SourceTokenListIndex {
-    if (!this.catchBody) {
-      return null;
-    }
     let searchStart;
     if (this.catchAssignee) {
       searchStart = this.catchAssignee.outerEnd;
@@ -203,8 +200,17 @@ export default class TryPatcher extends NodePatcher {
       searchStart = this.getTryToken().end;
     }
 
+    let searchEnd;
+    if (this.catchBody) {
+      searchEnd = this.catchBody.outerStart;
+    } else if (this.finallyBody) {
+      searchEnd = this.finallyBody.outerStart;
+    } else {
+      searchEnd = this.contentEnd;
+    }
+
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, this.catchBody.outerStart,
+      searchStart, searchEnd,
       token => token.type === SourceType.THEN
     );
   }
