@@ -64,4 +64,68 @@ describe('regular expressions', () => {
   it('allows escaping spaces in heregexes', () => {
     check(`///a\\ b\\\tc\\\nd///`, `new RegExp(\`a b\tc\nd\`);`);
   });
+
+  it('escapes \\u2028 within regexes', () => {
+    check(`
+      /\u2028/
+      `, `
+      /\\u2028/;
+    `);
+  });
+
+  it('escapes \\u2029 within regexes', () => {
+    check(`
+      /\u2029/
+      `, `
+      /\\u2029/;
+    `);
+  });
+
+  it('uses the existing escape character for escaped \\u2028 within regexes', () => {
+    check(`
+      /\\\u2028/
+      `, `
+      /\\u2028/;
+    `);
+  });
+
+  it('leaves an escaped backslash when an escaped backslash is followed by \\u2028 within regexes', () => {
+    check(`
+      /\\\\\u2028/
+      `, `
+      /\\\\\\u2028/;
+    `);
+  });
+
+  it('removes \\u2028 within heregexes', () => {
+    check(`
+      ///\u2028///
+      `, `
+      new RegExp(\`\`);
+    `);
+  });
+
+  it('removes \\u2029 within heregexes', () => {
+    check(`
+      ///\u2029///
+      `, `
+      new RegExp(\`\`);
+    `);
+  });
+
+  it('handles escaped \\u2028 within heregexes', () => {
+    check(`
+      ///\\\u2028///
+      `, `
+      new RegExp(\`\\u2028\`);
+    `);
+  });
+
+  it('handles escaped \\u2029 within heregexes', () => {
+    check(`
+      ///\\\u2029///
+      `, `
+      new RegExp(\`\\u2029\`);
+    `);
+  });
 });

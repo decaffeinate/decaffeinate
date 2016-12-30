@@ -43,6 +43,7 @@ import OfOpPatcher from './patchers/OfOpPatcher';
 import PassthroughPatcher from './../../patchers/PassthroughPatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
 import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher';
+import RegexPatcher from './patchers/RegexPatcher';
 import RangePatcher from './patchers/RangePatcher';
 import RestPatcher from './patchers/RestPatcher';
 import ReturnPatcher from './patchers/ReturnPatcher';
@@ -91,7 +92,6 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'PreIncrementOp':
       case 'PreDecrementOp':
       case 'Quasi':
-      case 'Regex':
         return PassthroughPatcher;
 
       case 'Break':
@@ -199,6 +199,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'ModuloOp':
         return ModuloOpPatcher;
+
+      case 'Regex':
+        return RegexPatcher;
 
       case 'Heregex':
         return HeregexPatcher;

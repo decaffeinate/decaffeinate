@@ -120,4 +120,36 @@ describe('strings', () => {
       b\`;
     `);
   });
+
+  it('escapes \\u2028 within strings', () => {
+    check(`
+      '\u2028'
+      `, `
+      '\\u2028';
+    `);
+  });
+
+  it('escapes \\u2029 within strings', () => {
+    check(`
+      '\u2029'
+      `, `
+      '\\u2029';
+    `);
+  });
+
+  it('uses the existing escape character for escaped \\u2028', () => {
+    check(`
+      '\\\u2028'
+      `, `
+      '\\u2028';
+    `);
+  });
+
+  it('leaves an escaped backslash when an escaped backslash is followed by \\u2028', () => {
+    check(`
+      '\\\\\u2028'
+      `, `
+      '\\\\\\u2028';
+    `);
+  });
 });
