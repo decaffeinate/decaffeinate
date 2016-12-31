@@ -346,6 +346,17 @@ describe('soaked expressions', () => {
       `);
     });
 
+    it('handles soaked prototype access', () => {
+      check(`
+        a?::b
+      `, `
+        __guard__(a, x => x.prototype.b);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
     it('correctly handles normal soaked access', () => {
       validate(`
         a = {b: 5}
