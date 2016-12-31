@@ -35,6 +35,7 @@ import LogicalOpCompoundAssignOpPatcher from './patchers/LogicalOpCompoundAssign
 import LogicalOpPatcher from './patchers/LogicalOpPatcher';
 import MemberAccessOpPatcher from './patchers/MemberAccessOpPatcher';
 import ModuloOpPatcher from './patchers/ModuloOpPatcher';
+import ModuloOpCompoundAssignOpPatcher from './patchers/ModuloOpCompoundAssignOpPatcher';
 import NewOpPatcher from './patchers/NewOpPatcher';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher';
 import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
@@ -164,6 +165,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
           case 'ExistsOp':
             return ExistsOpCompoundAssignOpPatcher;
+
+          case 'ModuloOp':
+            return ModuloOpCompoundAssignOpPatcher;
 
           default:
             return CompoundAssignOpPatcher;
