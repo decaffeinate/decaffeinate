@@ -2,6 +2,7 @@
 
 import find from './array/find';
 import flatMap from './flatMap';
+import isReservedWord from './isReservedWord';
 import leftHandIdentifiers from './leftHandIdentifiers';
 import type { Node } from '../patchers/types';
 
@@ -23,6 +24,10 @@ export default class Scope {
 
   getBinding(name: string): ?Node {
     return this.bindings[this.key(name)] || null;
+  }
+
+  isBindingAvailable(name: string): boolean {
+    return !this.getBinding(name) && !isReservedWord(name);
   }
 
   hasBinding(name: string): boolean {
@@ -48,13 +53,16 @@ export default class Scope {
   claimFreeBinding(node: Node, name: ?(string | Array<string>)=null): string {
     if (!name) { name = 'ref'; }
     let names = Array.isArray(name) ? name : [name];
-    let binding = find(names, name => !this.getBinding(name));
+    let binding = find(names, name => this.isBindingAvailable(name));
 
     if (!binding) {
       let counter = 0;
       while (!binding) {
+        if (counter > 1000) {
+          throw new Error(`Unable to find free binding for names ${names.toString()}`);
+        }
         counter += 1;
-        binding = find(names, name => !this.getBinding(`${name}${counter}`));
+        binding = find(names, name => this.isBindingAvailable(`${name}${counter}`));
       }
       binding = `${binding}${counter}`;
     }

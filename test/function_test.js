@@ -318,4 +318,14 @@ describe('functions', () => {
       bar) => baz;
     `)
   );
+
+  it('handles a this-assign parameter with a reserved word name', () =>
+    check(`
+      (@case) ->
+    `, `
+      (function(case1) {
+        this.case = case1;
+      });
+    `)
+  );
 });
