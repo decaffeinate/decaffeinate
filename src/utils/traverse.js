@@ -106,7 +106,7 @@ const ORDER = {
   ProtoMemberAccessOp: ['expression'],
   Quasi: [],
   Range: ['left', 'right'],
-  RegExp: [],
+  Regex: [],
   RemOp: ['left', 'right'],
   Rest: ['expression'],
   Return: ['expression'],

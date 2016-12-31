@@ -79,6 +79,7 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'String':
         return StringPatcher;
+
       case 'Int':
       case 'Float':
       case 'Null':
@@ -88,6 +89,7 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'PreIncrementOp':
       case 'PreDecrementOp':
       case 'Quasi':
+      case 'Regex':
         return PassthroughPatcher;
 
       case 'FunctionApplication':
@@ -118,16 +120,16 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'This':
         return ThisPatcher;
-  
+
       case 'Yield':
        return YieldPatcher;
-    
+
       case 'YieldFrom':
        return YieldFromPatcher;
-    
+
       case 'GeneratorFunction':
        return GeneratorFunctionPatcher;
-    
+
       case 'Function':
         return FunctionPatcher;
 
