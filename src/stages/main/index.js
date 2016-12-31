@@ -43,7 +43,6 @@ import PassthroughPatcher from './../../patchers/PassthroughPatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
 import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher';
 import RangePatcher from './patchers/RangePatcher';
-import RegExpPatcher from './patchers/RegExpPatcher';
 import RestPatcher from './patchers/RestPatcher';
 import ReturnPatcher from './patchers/ReturnPatcher';
 import SeqOpPatcher from './patchers/SeqOpPatcher';
@@ -188,9 +187,6 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'ModuloOp':
         return ModuloOpPatcher;
-
-      case 'RegExp':
-        return RegExpPatcher;
 
       case 'Heregex':
         return HeregexPatcher;
