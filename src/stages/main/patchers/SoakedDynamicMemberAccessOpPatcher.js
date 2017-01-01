@@ -19,7 +19,11 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
       this.registerHelper('__guard__', GUARD_HELPER);
       let soakContainer = findSoakContainer(this);
       let varName = soakContainer.claimFreeBinding('x');
-      this.overwrite(this.expression.outerEnd, this.indexingExpr.outerStart, `, ${varName} => ${varName}[`);
+      let prefix = this.slice(soakContainer.contentStart, this.contentStart);
+      if (prefix.length > 0) {
+        this.remove(soakContainer.contentStart, this.contentStart);
+      }
+      this.overwrite(this.expression.outerEnd, this.indexingExpr.outerStart, `, ${varName} => ${prefix}${varName}[`);
       soakContainer.insert(soakContainer.contentStart, '__guard__(');
       soakContainer.insert(soakContainer.contentEnd, ')');
     }
