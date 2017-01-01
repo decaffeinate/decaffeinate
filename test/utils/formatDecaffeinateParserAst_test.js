@@ -31,8 +31,7 @@ describe('formatDecaffeinateParserAst', () => {
                       arguments: []
                     }
                   }
-                  Identifier [3:3(17)-3:8(22)] {
-                    data: "break"
+                  Break [3:3(17)-3:8(22)] {
                   }
                 ]
               }

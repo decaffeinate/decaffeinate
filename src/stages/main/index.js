@@ -69,6 +69,8 @@ import YieldPatcher from './patchers/YieldPatcher';
 import YieldFromPatcher from './patchers/YieldFromPatcher';
 import type NodePatcher from './../../patchers/NodePatcher';
 import type { Node } from '../../patchers/types';
+import BreakPatcher from './patchers/BreakPatcher';
+import ContinuePatcher from './patchers/ContinuePatcher';
 
 export default class MainStage extends TransformCoffeeScriptStage {
   patcherConstructorForNode(node: Node): ?Class<NodePatcher> {
@@ -90,6 +92,12 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'Quasi':
       case 'Regex':
         return PassthroughPatcher;
+
+      case 'Break':
+        return BreakPatcher;
+
+      case 'Continue':
+        return ContinuePatcher;
 
       case 'FunctionApplication':
         return FunctionApplicationPatcher;
