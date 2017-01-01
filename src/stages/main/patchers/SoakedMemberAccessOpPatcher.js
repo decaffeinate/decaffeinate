@@ -17,10 +17,16 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
   patchAsExpression() {
     if (!this._shouldSkipSoakPatch) {
       this.registerHelper('__guard__', GUARD_HELPER);
-      let memberNameToken = this.getMemberNameSourceToken();
+
       let soakContainer = findSoakContainer(this);
       let varName = soakContainer.claimFreeBinding('x');
-      this.overwrite(this.expression.outerEnd, memberNameToken.start, `, ${varName} => ${varName}.`);
+      if (this.isShorthandPrototype()) {
+        this.overwrite(this.expression.outerEnd, this.contentEnd, `, ${varName} => ${varName}.prototype`);
+      } else {
+        let memberNameToken = this.getMemberNameSourceToken();
+        this.overwrite(this.expression.outerEnd, memberNameToken.start, `, ${varName} => ${varName}.`);
+      }
+
       soakContainer.insert(soakContainer.contentStart, '__guard__(');
       soakContainer.insert(soakContainer.contentEnd, ')');
     }

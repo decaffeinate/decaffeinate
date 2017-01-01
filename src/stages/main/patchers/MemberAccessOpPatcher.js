@@ -73,17 +73,23 @@ export default class MemberAccessOpPatcher extends NodePatcher {
       return lastToken;
     }
 
-    let dotIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
-      this.expression.outerEndTokenIndex,
-      SourceType.DOT
+    let dotIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      this.expression.outerEnd, this.outerEnd - 1, token => token.type === SourceType.DOT
     );
+
 
     if (!dotIndex) {
       let firstIndex = this.contentStartTokenIndex;
       let firstToken = this.sourceTokenAtIndex(firstIndex);
-
       if (firstToken.type === SourceType.AT) {
         // e.g. `@a`, so it's okay that there's no dot
+        return null;
+      }
+
+      let expressionLastIndex = this.expression.contentEndTokenIndex;
+      let expressionLastToken = this.sourceTokenAtIndex(expressionLastIndex);
+      if (expressionLastToken.type === SourceType.PROTO) {
+        // e.g. a?::b, parsed as (a?::)b, so the dot before the b is implicit.
         return null;
       }
 
