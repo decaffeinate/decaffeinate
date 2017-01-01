@@ -68,10 +68,14 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     let callStartToken = this.getCallStartToken();
     let soakContainer = findSoakContainer(this);
     let varName = soakContainer.claimFreeBinding('o');
+    let prefix = this.slice(soakContainer.contentStart, this.contentStart);
+    if (prefix.length > 0) {
+      this.remove(soakContainer.contentStart, this.contentStart);
+    }
     // Since memberName is always a valid identifier, we can put it in a string
     // literal without worrying about escaping.
     this.overwrite(fn.expression.outerEnd, callStartToken.end,
-      `, '${memberName}', ${varName} => ${varName}.${memberName}(`);
+      `, '${memberName}', ${varName} => ${prefix}${varName}.${memberName}(`);
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
     soakContainer.insert(soakContainer.contentEnd, ')');
   }
@@ -91,9 +95,13 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     let soakContainer = findSoakContainer(this);
     let objVarName = soakContainer.claimFreeBinding('o');
     let methodVarName = soakContainer.claimFreeBinding('m');
+    let prefix = this.slice(soakContainer.contentStart, this.contentStart);
+    if (prefix.length > 0) {
+      this.remove(soakContainer.contentStart, this.contentStart);
+    }
     this.overwrite(expression.outerEnd, indexingExpr.outerStart, `, `);
     this.overwrite(indexingExpr.outerEnd, callStartToken.end,
-      `, (${objVarName}, ${methodVarName}) => ${objVarName}[${methodVarName}](`);
+      `, (${objVarName}, ${methodVarName}) => ${prefix}${objVarName}[${methodVarName}](`);
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
     soakContainer.insert(soakContainer.contentEnd, ')');
   }
@@ -103,7 +111,11 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     let callStartToken = this.getCallStartToken();
     let soakContainer = findSoakContainer(this);
     let varName = soakContainer.claimFreeBinding('f');
-    this.overwrite(this.fn.outerEnd, callStartToken.end, `, ${varName} => ${varName}(`);
+    let prefix = this.slice(soakContainer.contentStart, this.contentStart);
+    if (prefix.length > 0) {
+      this.remove(soakContainer.contentStart, this.contentStart);
+    }
+    this.overwrite(this.fn.outerEnd, callStartToken.end, `, ${varName} => ${prefix}${varName}(`);
     soakContainer.insert(soakContainer.contentStart, '__guardFunc__(');
     soakContainer.insert(soakContainer.contentEnd, ')');
   }

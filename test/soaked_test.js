@@ -313,7 +313,7 @@ describe('soaked expressions', () => {
       `);
     });
 
-    it.skip('keeps prefix ++ within soak expressions', () => {
+    it('keeps prefix ++ within soak expressions', () => {
       check(`
         ++a?.b
       `, `
@@ -324,7 +324,70 @@ describe('soaked expressions', () => {
       `);
     });
 
-    it.skip('keeps prefix -- within soak expressions', () => {
+    it('keeps prefix ++ within soaked dynamic accesses', () => {
+      check(`
+        ++a?[b]
+      `, `
+        __guard__(a, x => ++x[b]);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it('keeps prefix ++ within soaked dynamic accesses where the LHS is surrounded by parens', () => {
+      check(`
+        ++(a)?[b]
+      `, `
+        __guard__((a), x => ++x[b]);
+        function __guard__(value, transform) {
+          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        }
+      `);
+    });
+
+    it('keeps prefix ++ within soaked function calls', () => {
+      check(`
+        ++a?(b).c
+      `, `
+        __guardFunc__(a, f => ++f(b).c);
+        function __guardFunc__(func, transform) {
+          return typeof func === 'function' ? transform(func) : undefined;
+        }
+      `);
+    });
+
+    it('keeps prefix ++ within soaked method calls', () => {
+      check(`
+        ++a.b?(c).d
+      `, `
+        __guardMethod__(a, 'b', o => ++o.b(c).d);
+        function __guardMethod__(obj, methodName, transform) {
+          if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+            return transform(obj, methodName);
+          } else {
+            return undefined;
+          }
+        }
+      `);
+    });
+
+    it('keeps prefix ++ within soaked dynamic method calls', () => {
+      check(`
+        ++a[b]?(c).d
+      `, `
+        __guardMethod__(a, b, (o, m) => ++o[m](c).d);
+        function __guardMethod__(obj, methodName, transform) {
+          if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+            return transform(obj, methodName);
+          } else {
+            return undefined;
+          }
+        }
+      `);
+    });
+
+    it('keeps prefix -- within soak expressions', () => {
       check(`
         --a?.b
       `, `
@@ -335,7 +398,7 @@ describe('soaked expressions', () => {
       `);
     });
 
-    it.skip('keeps delete within soak expressions', () => {
+    it('keeps delete within soak expressions', () => {
       check(`
         delete a?.b
       `, `

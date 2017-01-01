@@ -20,11 +20,15 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
 
       let soakContainer = findSoakContainer(this);
       let varName = soakContainer.claimFreeBinding('x');
+      let prefix = this.slice(soakContainer.contentStart, this.contentStart);
+      if (prefix.length > 0) {
+        this.remove(soakContainer.contentStart, this.contentStart);
+      }
       if (this.isShorthandPrototype()) {
-        this.overwrite(this.expression.outerEnd, this.contentEnd, `, ${varName} => ${varName}.prototype`);
+        this.overwrite(this.expression.outerEnd, this.contentEnd, `, ${varName} => ${prefix}${varName}.prototype`);
       } else {
         let memberNameToken = this.getMemberNameSourceToken();
-        this.overwrite(this.expression.outerEnd, memberNameToken.start, `, ${varName} => ${varName}.`);
+        this.overwrite(this.expression.outerEnd, memberNameToken.start, `, ${varName} => ${prefix}${varName}.`);
       }
 
       soakContainer.insert(soakContainer.contentStart, '__guard__(');

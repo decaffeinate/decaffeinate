@@ -71,10 +71,12 @@ function canParentHandleSoak(patcher: NodePatcher): boolean {
       && patcher.parent.assignee === patcher) {
     return true;
   }
-  if (['PostIncrementOp', 'PostDecrementOp'].indexOf(patcher.parent.node.type) >= 0) {
+  if ([
+        'PostIncrementOp', 'PostDecrementOp', 'PreIncrementOp', 'PreDecrementOp', 'DeleteOp'
+      ].indexOf(patcher.parent.node.type) >= 0) {
     return true;
   }
-  if (['PreIncrementOp', 'PreDecrementOp', 'DeleteOp'].indexOf(patcher.parent.node.type) >= 0) {
+  if ([].indexOf(patcher.parent.node.type) >= 0) {
     throw patcher.parent.error(
       'Expressions like `++a?.b`, `--a?.b`, and `delete a?.b` are not supported yet.'
     );
