@@ -1,17 +1,8 @@
 import BinaryOpPatcher from './BinaryOpPatcher';
+import registerModHelper from '../../../utils/registerModHelper';
 import type NodePatcher from './../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
 
-const MOD_HELPER =
-  `function __mod__(a, b) {
-  a = +a;
-  b = +b;
-  return (a % b + b) % b;
-}`;
-
-/**
- * Handles modulo operator, e.g. `a %% b`.
- */
 export default class ModuloOpPatcher extends BinaryOpPatcher {
   /**
    * `node` is of type `ModuloOp`.
@@ -21,7 +12,7 @@ export default class ModuloOpPatcher extends BinaryOpPatcher {
   }
 
   patchAsExpression() {
-    let helper = this.registerHelper('__mod__', MOD_HELPER);
+    let helper = registerModHelper(this);
 
     // `a %% b` → `__mod__(a %% b`
     //             ^^^^^^^^

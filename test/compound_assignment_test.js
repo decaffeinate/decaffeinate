@@ -29,6 +29,33 @@ describe('compound assignment', () => {
     check(`a ^= 1`, `a ^= 1;`);
   });
 
+  it('handles compound modulo assignment', () => {
+    check(`
+      a %%= b
+    `, `
+      let a = __mod__(a, b);
+      function __mod__(a, b) {
+        a = +a;
+        b = +b;
+        return (a % b + b) % b;
+      }
+    `);
+  });
+
+  it('handles compound modulo assignment with a non-repeatable LHS', () => {
+    check(`
+      a[b()] %%= c
+    `, `
+      let name;
+      a[name = b()] = __mod__(a[name], c);
+      function __mod__(a, b) {
+        a = +a;
+        b = +b;
+        return (a % b + b) % b;
+      }
+    `);
+  });
+
   describe('patching as expressions', () => {
     it('supports LHS identifiers in logical OR', () => {
       check(`
