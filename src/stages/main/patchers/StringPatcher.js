@@ -30,7 +30,7 @@ export default class StringPatcher extends InterpolatedPatcher {
     }
 
     this.patchInterpolations();
-    this.removePadding();
+    this.processContents();
     if (escapeStrings.length > 0) {
       this.escapeQuasis(/^\\/, escapeStrings);
     }

@@ -18,7 +18,7 @@ export default class HeregexPatcher extends InterpolatedPatcher {
     }
 
     this.patchInterpolations();
-    this.removePadding();
+    this.processContents();
     this.escapeQuasis(/^\\\s/, ['`', '${', '\\']);
   }
 }

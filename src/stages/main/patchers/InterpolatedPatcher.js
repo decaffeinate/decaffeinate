@@ -3,6 +3,7 @@ import repeat from 'repeating';
 
 import NodePatcher from './../../../patchers/NodePatcher';
 import escape from '../../../utils/escape';
+import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespaceInRange';
 
 export default class InterpolatedPatcher extends NodePatcher {
   quasis: Array<NodePatcher>;
@@ -52,8 +53,11 @@ export default class InterpolatedPatcher extends NodePatcher {
    *
    * To preserve the formatting of multiline strings a little better, newline
    * characters are escaped rather than removed.
+   *
+   * Also change any \u2028 and \u2029 characters we see into their unicode
+   * escape form.
    */
-  removePadding() {
+  processContents() {
     for (let quasi of this.quasis) {
       let tokens = this.getProgramSourceTokens().slice(
         quasi.contentStartTokenIndex, quasi.contentEndTokenIndex.next()).toArray();
@@ -64,6 +68,8 @@ export default class InterpolatedPatcher extends NodePatcher {
           this.overwrite(token.start, token.end, repeat('\\\n', numNewlines));
         } else if (token.type === SourceType.STRING_LINE_SEPARATOR) {
           this.insert(token.start, ' \\');
+        } else if (token.type === SourceType.STRING_CONTENT) {
+          escapeSpecialWhitespaceInRange(token.start, token.end, this);
         }
       }
     }
