@@ -2,6 +2,7 @@ import BlockPatcher from './BlockPatcher';
 import NodePatcher from '../../../patchers/NodePatcher';
 import type { PatcherContext, SourceToken } from '../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import BreakPatcher from './BreakPatcher';
 
 export default class SwitchCasePatcher extends NodePatcher {
   conditions: Array<NodePatcher>;
@@ -144,9 +145,7 @@ export default class SwitchCasePatcher extends NodePatcher {
       return false;
     }
     let lastStatement = this.consequent.statements[this.consequent.statements.length - 1];
-    return lastStatement &&
-        lastStatement.node.type === 'Identifier' &&
-        lastStatement.node.data === 'break';
+    return lastStatement && lastStatement instanceof BreakPatcher;
   }
 
   /**
