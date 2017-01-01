@@ -26,4 +26,8 @@ export default class ModuloOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       this.insert(this.outerEnd, ')');
     }
   }
+
+  patchAsStatement() {
+    this.patchAsExpression();
+  }
 }

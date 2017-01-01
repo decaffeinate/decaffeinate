@@ -87,7 +87,7 @@ describe('declarations', () => {
   });
 
   it('adds variable declarations for destructuring array assignment', () => {
-    check(`[a] = b`, `let [a] = b;`);
+    check(`[a] = b`, `let [a] = Array.from(b);`);
   });
 
   it('adds variable declarations for destructuring object assignment', () => {
@@ -100,7 +100,7 @@ describe('declarations', () => {
       [a] = b
     `, `
       let a = 1;
-      [a] = b;
+      [a] = Array.from(b);
     `);
   });
 
@@ -121,7 +121,7 @@ describe('declarations', () => {
     `, `
       let b;
       let a = 1;
-      [a, b] = c;
+      [a, b] = Array.from(c);
     `);
   });
 

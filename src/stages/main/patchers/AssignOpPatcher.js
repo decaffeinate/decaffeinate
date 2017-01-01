@@ -1,9 +1,19 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
+import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import SlicePatcher from './SlicePatcher';
+import StringPatcher from './StringPatcher';
+import ThisPatcher from './ThisPatcher';
 import SpreadPatcher from './SpreadPatcher';
+import NodePatcher from './../../../patchers/NodePatcher';
+import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+
 import type { PatcherContext } from './../../../patchers/types';
+
+const MULTI_ASSIGN_SINGLE_LINE_MAX_LENGTH = 100;
 
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;
@@ -34,162 +44,181 @@ export default class AssignOpPatcher extends NodePatcher {
     if (shouldAddParens) {
       this.insert(this.outerStart, '(');
     }
-    if (this.isSpliceAssignment()) {
-      this.patchSpliceAssignment();
-    } else if (this.isExpansionAssignment()) {
-      this.patchExpansionAssignment();
+
+    if (canPatchAssigneeToJavaScript(this.assignee.node)) {
+      this.patchSimpleAssignment();
     } else {
-      this.assignee.patch();
-      this.expression.patch();
+      let assignments = [];
+
+      // In an expression context, the result should always be the value of the
+      // RHS, so we need to make it repeatable if it's not.
+      let expressionCode;
+      if (this.expression.isRepeatable()) {
+        expressionCode = this.expression.patchAndGetCode();
+      } else {
+        let fullExpression = this.expression.patchAndGetCode();
+        expressionCode = this.claimFreeBinding();
+        assignments.push(`${expressionCode} = ${fullExpression}`);
+      }
+      assignments.push(
+        ...this.generateAssignments(this.assignee, expressionCode, true)
+      );
+      if (this.willPatchAsExpression()) {
+        assignments.push(`${expressionCode}`);
+      }
+
+      let assignmentCode = assignments.join(', ');
+      if (assignmentCode.startsWith('{')) {
+        assignmentCode = `(${assignmentCode})`;
+      }
+      this.overwrite(this.contentStart, this.contentEnd, assignmentCode);
     }
+
     if (shouldAddParens) {
       this.insert(this.outerEnd, ')');
     }
   }
 
-  statementNeedsParens(): boolean {
-    if (this.isExpansionAssignment()) {
-      return this.expansionAssignmentNeedsParens();
+  patchAsStatement() {
+    if (canPatchAssigneeToJavaScript(this.assignee.node)) {
+      let shouldAddParens = this.assignee.statementShouldAddParens();
+      if (shouldAddParens) {
+        this.insert(this.contentStart, '(');
+      }
+      this.patchSimpleAssignment();
+      if (shouldAddParens) {
+        this.insert(this.contentEnd, ')');
+      }
     } else {
-      // The assignment needs parentheses when the LHS needs parens.
-      return this.assignee.statementShouldAddParens();
+      let assignments = this.generateAssignments(
+        this.assignee, this.expression.patchAndGetCode(), this.expression.isRepeatable());
+      this.overwriteWithAssignments(assignments);
     }
   }
 
-  isSpliceAssignment(): boolean {
-    return this.assignee instanceof SlicePatcher;
-  }
-
-  patchSpliceAssignment() {
-    let slicePatcher: SlicePatcher = this.assignee;
-    // `a[b...c] = d` → `a.splice(b, c - b = d`
-    //   ^                ^^^^^^^^^^^^^^^^
-    slicePatcher.patchAsSpliceExpressionStart();
-    // `a.splice(b, c - b = d` → `a.splice(b, c - b, ...[].concat(d`
-    //                   ^^^                       ^^^^^^^^^^^^^^^
-    this.overwrite(slicePatcher.outerEnd, this.expression.outerStart, ', ...[].concat(');
-    let expressionRef = this.expression.patchRepeatable();
-    // `a.splice(b, c - b, ...[].concat(d` → `a.splice(b, c - b, ...[].concat(d)), d`
-    //                                                                         ^^^^^
-    this.insert(this.expression.outerEnd, `)), ${expressionRef}`);
-  }
-
-  expansionAssignmentNeedsParens(): boolean {
-    if (!this.expression.isRepeatable()) {
-      // The left side will be an "array" variable.
-      return false;
+  patchSimpleAssignment() {
+    let needsArrayFrom = this.assignee instanceof ArrayInitialiserPatcher;
+    this.assignee.patch();
+    if (needsArrayFrom) {
+      this.insert(this.expression.outerStart, 'Array.from(');
     }
-    let expansionIndex = this.getExpansionIndex();
-    if (expansionIndex === this.assignee.members.length - 1) {
-      // Simple case where we leave the array assignment mostly intact.
-      return this.assignee.statementShouldAddParens();
-    } else if (expansionIndex === 0) {
-      // The first non-expansion assignee will end up on the left side.
-      return this.assignee.members[1].statementShouldAddParens();
-    } else {
-      return this.assignee.members[0].statementShouldAddParens();
+    this.expression.patch();
+    if (needsArrayFrom) {
+      this.insert(this.expression.outerEnd, ')');
     }
   }
 
-  isExpansionAssignment(): boolean {
-    return this.getExpansionIndex() !== -1;
+  overwriteWithAssignments(assignments: Array<string>) {
+    let assignmentCode = assignments.join(', ');
+    if (assignmentCode.length > MULTI_ASSIGN_SINGLE_LINE_MAX_LENGTH) {
+      assignmentCode = assignments.join(`,\n${this.getIndent(1)}`);
+    }
+    if (assignmentCode.startsWith('{')) {
+      assignmentCode = `(${assignmentCode})`;
+    }
+    this.overwrite(this.contentStart, this.contentEnd, assignmentCode);
   }
 
   /**
-   * If there is an expansion assignment, return the index of the expansion
-   * node. Note that we also count a non-terminal rest destructure as an
-   * expansion node, since the behavior is nearly the same.
+   * Recursively walk a CoffeeScript assignee to generate a sequence of
+   * JavaScript assignments.
    *
-   * If none is found, return -1.
+   * patcher is a patcher for the assignee.
+   * ref is a code snippet, not necessarily repeatable, that can be used to
+   *   reference the value being assigned.
+   * refIsRepeatable says whether ref may be used more than once. If not, we
+   *   sometimes generate an extra assignment to make it repeatable.
    */
-  getExpansionIndex(): number {
-    if (!(this.assignee instanceof ArrayInitialiserPatcher)) {
-      return -1;
-    }
-    let members = this.assignee.members;
-    for (let i = 0; i < members.length; i++) {
-      if (members[i] instanceof ExpansionPatcher ||
-          (i < members.length - 1 && members[i] instanceof SpreadPatcher)) {
-        return i;
+  generateAssignments(patcher: NodePatcher, ref: string, refIsRepeatable: boolean): Array<string> {
+    if (canPatchAssigneeToJavaScript(patcher.node)) {
+      let assigneeCode = patcher.patchAndGetCode();
+      if (patcher instanceof ArrayInitialiserPatcher) {
+        return [`${assigneeCode} = Array.from(${ref})`];
+      } else {
+        return [`${assigneeCode} = ${ref}`];
       }
+    } else if (patcher instanceof ExpansionPatcher) {
+      // Expansions don't produce assignments.
+      return [];
+    } else if (patcher instanceof SpreadPatcher) {
+      // Calling code seeing a spread patcher should provide an expression for
+      // the resolved array.
+      return this.generateAssignments(patcher.expression, ref, refIsRepeatable);
+    } else if (patcher instanceof ArrayInitialiserPatcher) {
+      if (!refIsRepeatable) {
+        let arrReference = this.claimFreeBinding('array');
+        return [
+          `${arrReference} = ${ref}`,
+          ...this.generateAssignments(patcher, arrReference, true)
+        ];
+      }
+
+      let assignees = patcher.members;
+      let hasSeenExpansion;
+      let assignments = [];
+      for (let [i, assignee] of assignees.entries()) {
+        let valueCode;
+        if (assignee instanceof ExpansionPatcher || assignee instanceof SpreadPatcher) {
+          hasSeenExpansion = true;
+          valueCode = `${ref}.slice(${i}, ${ref}.length - ${assignees.length - i - 1})`;
+        } else if (hasSeenExpansion) {
+          valueCode = `${ref}[${ref}.length - ${assignees.length - i}]`;
+        } else {
+          valueCode = `${ref}[${i}]`;
+        }
+        assignments.push(...this.generateAssignments(assignee, valueCode, false));
+      }
+      return assignments;
+    } else if (patcher instanceof ObjectInitialiserPatcher) {
+      if (!refIsRepeatable) {
+        let objReference = this.claimFreeBinding('obj');
+        return [
+          `${objReference} = ${ref}`,
+          ...this.generateAssignments(patcher, objReference, true)
+        ];
+      }
+
+      let assignments = [];
+      for (let member of patcher.members) {
+        if (member instanceof ObjectInitialiserMemberPatcher) {
+          let valueCode = `${ref}${this.accessFieldForObjectDestructure(member.key)}`;
+          assignments.push(...this.generateAssignments(member.expression, valueCode, false));
+        } else if (member instanceof AssignOpPatcher) {
+          // Assignments like {a = b} = c end up as an assign op.
+          let valueCode = `${ref}${this.accessFieldForObjectDestructure(member.assignee)}`;
+          assignments.push(...this.generateAssignments(member, valueCode, false));
+        } else {
+          throw this.error(`Unexpected object initializer member: ${patcher.node.type}`);
+        }
+      }
+      return assignments;
+    } else if (patcher instanceof SlicePatcher) {
+      return [`${patcher.getInitialSpliceCode()}, ...[].concat(${ref}))`];
+    } else if (patcher instanceof AssignOpPatcher) {
+      if (!refIsRepeatable) {
+        let valReference = this.claimFreeBinding('val');
+        return [
+          `${valReference} = ${ref}`,
+          ...this.generateAssignments(patcher, valReference, true)
+        ];
+      }
+      let defaultCode = patcher.expression.patchAndGetCode();
+      return this.generateAssignments(
+        patcher.assignee, `${ref} != null ? ${ref} : ${defaultCode}`, false);
+    } else {
+      throw this.error(`Invalid assignee type: ${patcher.node.type}`);
     }
-    return -1;
   }
 
-  patchExpansionAssignment() {
-    let expansionIndex = this.getExpansionIndex();
-    let assignees = this.assignee.members;
-    let expansionNode = assignees[expansionIndex];
-
-    let expressionCode = this.expression.patchAndGetCode();
-
-    // Easy case: [a, b, ...] = c  ->  [a, b] = c
-    if (expansionIndex === assignees.length - 1 &&
-        assignees[expansionIndex] instanceof ExpansionPatcher) {
-      for (let assignee of assignees.slice(0, -1)) {
-        assignee.patch();
-      }
-      let assigneeBeforeExpansion = assignees[assignees.length - 2];
-      this.remove(assigneeBeforeExpansion.outerEnd, expansionNode.outerEnd);
-      return;
-    }
-
-    // Split into independent assignments. For example, the transformation from
-    // [a, ..., b, c] = d()
-    // to
-    // array = d(), a = array[0], b = array[array.length - 2], c = array[array.length - 1];
-    //
-    // takes these steps:
-    // * Insert "array = d(), " on the left.
-    // * Remove "["
-    // * Insert " = array[index]" after each assignment (the comma is already there).
-    // * Remove the "...," when we traverse that assignee.
-    // * Remove "] = d()"
-
-    let arrReference;
-    if (this.expression.isRepeatable()) {
-      arrReference = expressionCode;
+  accessFieldForObjectDestructure(patcher: NodePatcher): string {
+    if (patcher instanceof IdentifierPatcher) {
+      return `.${patcher.node.data}`;
+    } else if (patcher instanceof MemberAccessOpPatcher && patcher.expression instanceof ThisPatcher) {
+      return `.${patcher.node.member.data}`;
+    } else if (patcher instanceof StringPatcher) {
+      return `[${patcher.patchAndGetCode()}]`;
     } else {
-      arrReference = this.claimFreeBinding('array');
-      this.insert(this.outerStart, `${arrReference} = ${expressionCode}, `);
+      throw this.error(`Unexpected object destructure expression: ${patcher.node.type}`);
     }
-
-    // Remove opening "[".
-    this.remove(this.contentStart, assignees[0].outerStart);
-
-    assignees.forEach((assignee, i) => {
-      if (i === expansionIndex) {
-        if (assignee instanceof ExpansionPatcher) {
-          // Don't patch this node, since we'll just remove it. We know there's
-          // an assignee after the expansion because otherwise we would have
-          // returned above.
-          this.remove(assignee.outerStart, assignees[i + 1].outerStart);
-        } else if (assignee instanceof SpreadPatcher) {
-          // Don't patch the spread itself since the new leading "..." can be a
-          // hassle and won't be used anyway. Instead, just patch the underlying
-          // expression and get its code.
-          let assigneeCode = assignee.expression.patchAndGetCode();
-          let sliceEnd = `${arrReference}.length - ${assignees.length - i - 1}`;
-          this.overwrite(
-            assignee.outerStart, assignee.outerEnd,
-            `${assigneeCode} = ${arrReference}.slice(${i}, ${sliceEnd})`
-          );
-        } else {
-          throw this.error('Unexpected expansion node type.');
-        }
-      } else {
-        assignee.patch();
-        let key;
-        if (i < expansionIndex) {
-          key = `${i}`;
-        } else {
-          key = `${arrReference}.length - ${assignees.length - i}`;
-        }
-        this.insert(assignee.outerEnd, ` = ${arrReference}[${key}]`);
-      }
-    });
-
-    // Remove closing "]" and right-side expression.
-    this.remove(assignees[assignees.length - 1].outerEnd, this.contentEnd);
   }
 }
