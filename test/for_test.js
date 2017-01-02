@@ -1226,4 +1226,16 @@ describe('for loops', () => {
       for (let step = c ? d : undefined, asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { let a = b[i]; a; }
     `);
   });
+
+  it('handles a complicated step', () => {
+    check(`
+      for a in b by c * d / e
+        f
+    `, `
+      for (let step = (c * d) / e, asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) {
+        let a = b[i];
+        f;
+      }
+    `);
+  });
 });

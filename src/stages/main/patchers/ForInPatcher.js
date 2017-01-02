@@ -555,9 +555,8 @@ class Step {
     };
     if (patcher) {
       apply(patcher);
-      patcher.patch();
       this.isLiteral = root.node.type === 'Int' || root.node.type === 'Float';
-      this.init = patcher.slice(patcher.contentStart, patcher.contentEnd);
+      this.init = patcher.patchAndGetCode();
       if (this.isLiteral) {
         this.update = root.slice(root.contentStart, root.contentEnd);
         this.number = root.node.data;
