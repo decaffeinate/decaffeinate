@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('slice', () => {
   it('changes exclusive slices with any range values into a call to `.slice` directly', () => {
@@ -50,5 +51,92 @@ describe('slice', () => {
     `, `
       let a = (Array.from(d).filter((c) => e).map((c) => b)).slice(0, 2);
     `);
+  });
+
+  it('handles an exclusive splice with both bounds specified', () => {
+    check(`
+      a[b...c] = d
+    `, `
+      a.splice(b, c - b, ...Array.from(d)), d;
+    `);
+  });
+
+  it('handles an inclusive splice with both bounds specified', () => {
+    check(`
+      a[b..c] = d
+    `, `
+      a.splice(b, c - b + 1, ...Array.from(d)), d;
+    `);
+  });
+
+  it('handles an exclusive splice with the first bound specified', () => {
+    check(`
+      a[b...] = c
+    `, `
+      a.splice(b, 9e9, ...Array.from(c)), c;
+    `);
+  });
+
+  it('handles an inclusive splice with the first bound specified', () => {
+    check(`
+      a[b..] = c
+    `, `
+      a.splice(b, 9e9, ...Array.from(c)), c;
+    `);
+  });
+
+  it('handles an exclusive splice with the last bound specified', () => {
+    check(`
+      a[...b] = c
+    `, `
+      a.splice(0, b, ...Array.from(c)), c;
+    `);
+  });
+
+  it('handles an inclusive splice with the last bound specified', () => {
+    check(`
+      a[..b] = c
+    `, `
+      a.splice(0, b + 1, ...Array.from(c)), c;
+    `);
+  });
+
+  it('handles an exclusive splice over an unbounded range', () => {
+    check(`
+      a[...] = b
+    `, `
+      a.splice(0, 9e9, ...Array.from(b)), b;
+    `);
+  });
+
+  it('handles an inclusive splice over an unbounded range', () => {
+    check(`
+      a[..] = b
+    `, `
+      a.splice(0, 9e9, ...Array.from(b)), b;
+    `);
+  });
+
+  it('extracts the array into a variable if necessary', () => {
+    check(`
+      a[b...c] = d()
+    `, `
+      let ref;
+      a.splice(b, c - b, ...Array.from(ref = d())), ref;
+    `);
+  });
+
+  it('allows overwriting with an array', () => {
+    validate(`
+      o = ['a', 'b', 'c', 'd']
+      o[1...3] = ['e', 'f']
+    `, ['a', 'e', 'f', 'd']);
+  });
+
+  it('allows overwriting with an individual element', () => {
+    validate(`
+      o = ['a', 'b', 'c', 'd']
+      o[1...3] = 'e';
+    `, ['a', 'e', 'd']);
   });
 });

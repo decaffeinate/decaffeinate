@@ -2,7 +2,7 @@ import * as babel from 'babel-core';
 import * as vm from 'vm';
 import { compile } from 'decaffeinate-coffeescript';
 import { convert, PatchError } from '../..';
-import { strictEqual } from 'assert';
+import { deepEqual } from 'assert';
 
 /**
  * validate takes coffee-script as input with code that sets the variable
@@ -48,7 +48,7 @@ function runValidation(source: string, expectedOutput: ?any) {
   let coffeeOutput = runCodeAndExtract(coffeeES5);
   let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
   try {
-    strictEqual(decaffeinateOutput, coffeeOutput);
+    deepEqual(decaffeinateOutput, coffeeOutput);
   } catch (err) {
     // add some additional context for debugging
     err.message = `Additional Debug:
@@ -70,6 +70,6 @@ ${err.message}`;
   }
 
   if (expectedOutput !== undefined) {
-    strictEqual(decaffeinateOutput, expectedOutput);
+    deepEqual(decaffeinateOutput, expectedOutput);
   }
 }

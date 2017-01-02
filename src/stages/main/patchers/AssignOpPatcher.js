@@ -1,6 +1,7 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
+import SlicePatcher from './SlicePatcher';
 import SpreadPatcher from './SpreadPatcher';
 import type { PatcherContext } from './../../../patchers/types';
 
@@ -33,7 +34,9 @@ export default class AssignOpPatcher extends NodePatcher {
     if (shouldAddParens) {
       this.insert(this.outerStart, '(');
     }
-    if (this.isExpansionAssignment()) {
+    if (this.isSpliceAssignment()) {
+      this.patchSpliceAssignment();
+    } else if (this.isExpansionAssignment()) {
       this.patchExpansionAssignment();
     } else {
       this.assignee.patch();
@@ -51,6 +54,24 @@ export default class AssignOpPatcher extends NodePatcher {
       // The assignment needs parentheses when the LHS needs parens.
       return this.assignee.statementShouldAddParens();
     }
+  }
+
+  isSpliceAssignment(): boolean {
+    return this.assignee instanceof SlicePatcher;
+  }
+
+  patchSpliceAssignment() {
+    let slicePatcher: SlicePatcher = this.assignee;
+    // `a[b...c] = d` → `a.splice(b, c - b = d`
+    //   ^                ^^^^^^^^^^^^^^^^
+    slicePatcher.patchAsSpliceExpressionStart();
+    // `a.splice(b, c - b = d` → `a.splice(b, c - b, ...Array.from(d`
+    //                   ^^^                       ^^^^^^^^^^^^^^^^
+    this.overwrite(slicePatcher.outerEnd, this.expression.outerStart, ', ...Array.from(');
+    let expressionRef = this.expression.patchRepeatable();
+    // `a.splice(b, c - b, ...Array.from(d` → `a.splice(b, c - b, ...Array.from(d)), d`
+    //                                                                           ^^^^^
+    this.insert(this.expression.outerEnd, `)), ${expressionRef}`);
   }
 
   expansionAssignmentNeedsParens(): boolean {
