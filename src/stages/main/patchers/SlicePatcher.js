@@ -47,10 +47,9 @@ export default class SlicePatcher extends NodePatcher {
       this.insert(indexStart.end, '0');
     }
     let slice = this.getSliceSourceToken();
-    let inclusive = slice.end - slice.start === '..'.length;
     let right = this.right;
     if (right) {
-      if (inclusive) {
+      if (this.isInclusive()) {
         if (right.node.raw === '-1') {
           this.remove(
             slice.start,
@@ -84,6 +83,68 @@ export default class SlicePatcher extends NodePatcher {
     // `a.slice(0, 1]` → `a.slice(0, 1)`
     //              ^                 ^
     this.overwrite(indexEnd.start, indexEnd.end, ')');
+  }
+
+  /**
+   * Patch into the first part of a splice expression. For example,
+   *
+   * a[b...c]
+   *
+   * becomes
+   *
+   * a.splice(b, c - b
+   *
+   * The enclosing assignment operator patcher will do the rest.
+   */
+  patchAsSpliceExpressionStart() {
+    this.expression.patch();
+    let indexStart = this.getIndexStartSourceToken();
+    // `a[b..c]` → `a.splice(b..c]`
+    //   ^           ^^^^^^^^
+    this.overwrite(indexStart.start, indexStart.end, '.splice(');
+    let leftCode;
+    if (this.left) {
+      leftCode = this.left.patchRepeatable();
+    } else {
+      // `a.splice(..c]` → `a.splice(0..c]`
+      //                             ^
+      this.insert(indexStart.end, '0');
+      leftCode = '0';
+    }
+    let slice = this.getSliceSourceToken();
+    let right = this.right;
+    if (right) {
+      // `a.splice(b..c]` → `a.splice(b, c]`
+      //                               ^^
+      this.overwrite(slice.start, slice.end, ', ');
+      right.patch();
+      if (leftCode !== '0') {
+        // `a.splice(b, c]` → `a.splice(b, c - b]`
+        //                                  ^^^^
+        this.insert(right.outerEnd, ` - ${leftCode}`);
+      }
+      if (this.isInclusive()) {
+        // `a.splice(b, c - b]` → `a.splice(b, c - b + 1]`
+        //                                          ^^^^
+        this.insert(right.outerEnd, ' + 1');
+      }
+    } else {
+      // `a.splice(b..]` → `a.splice(b, 9e9]`
+      //            ^^                ^^^^^
+      this.overwrite(slice.start, slice.end, ', 9e9');
+    }
+    let indexEnd = this.getIndexEndSourceToken();
+    // `a.splice(b, c - b + 1]` → `a.splice(b, c - b + 1`
+    //                       ^
+    this.remove(indexEnd.start, indexEnd.end);
+  }
+
+  /**
+   * @private
+   */
+  isInclusive() {
+    let slice = this.getSliceSourceToken();
+    return slice.end - slice.start === '..'.length;
   }
 
   /**
