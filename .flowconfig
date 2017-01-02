@@ -2,6 +2,7 @@
 .*/config-chain/.*
 .*/npmconf/.*
 .*/semantic-release/.*
+.*/jsonlint/.*
 
 [include]
 
