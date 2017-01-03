@@ -73,7 +73,7 @@
     "flow-bin": "^0.37.0",
     "mocha": "^3.0.0",
     "mversion": "^1.10.1",
-    "rollup": "^0.39.0",
+    "rollup": "^0.40.0",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-json": "^2.0.1",
     "semantic-release": "^6.3.2",
