@@ -888,6 +888,8 @@ export default class NodePatcher {
       if (this.isNodeFunctionApplication(this.parent.node) &&
           this.parent.node.arguments.some(arg => arg === this.node)) {
         return this;
+      } else if (this.parent.node.type === 'ArrayInitialiser') {
+        return this;
       }
       return this.parent.getBoundingPatcher();
     } else {
