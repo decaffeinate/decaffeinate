@@ -120,4 +120,17 @@ describe('arrays', () => {
       }))];
     `);
   });
+
+  it('keeps array elements inserting within the array', () =>
+    check(`
+      [->
+        a
+        b]
+    `, `
+      [function() {
+        a;
+        return b;
+      }];
+    `)
+  );
 });
