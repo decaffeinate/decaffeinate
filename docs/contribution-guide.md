@@ -432,13 +432,29 @@ appropriate in a post-processing step.
 
 ## Submitting a pull request
 
-Once you've got the code and checked that the tests all pass as shown above,
-create a branch based on `master` with a descriptive name such as
-`fix-binary-operator-statements` or `add-support-for-soaked-member-access`.
+If you have found a bug or have a feature you'd like to add, it is probably
+worth creating an issue to document the bug or discuss the feature before doing
+significant work. Once you've decided on an approach, get the code and check
+that the tests all pass as shown above, create a branch based on `master` with
+a descriptive name such as `fix-binary-operator-statements` or `add-support-for-soaked-member-access`.
 Make changes to fix your bug or add your feature, ensuring that you write tests
 covering the changes. The tests you add or change *should fail* on `master`.
 
-Once you're satisfied with your changes create a pull request on your own fork.
+### Commit messages
+
+We use [semantic-release] to do releases, which means we follow the [Angular commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit). You might want to get a passing familiarity with those, but the gist is this:
+
+* use the appropriate prefix for each commit message:
+  * `fix:` prefix for bug fixes
+  * `feat:` prefix for features
+  * `chore:` prefix for maintenance tasks (e.g. updating dependencies)
+  * `refactor:` for refractors that don't change behavior
+  * `docs:` for documentation updates
+* use imperative style (e.g. `add literate CoffeeScript support`)
+* use lowercase on the first line of the commit message without a period
+* if backward-incompatible changes are in a commit, add `BREAKING CHANGE:` to the footer of the commit with a description
+
+Once you're satisfied with your changes, create a pull request on your own fork.
 Please provide a description of *why* you're issuing the pull request, and
 reference any relevant existing issues. Expect to go through a round or two of
 review before a pull request is accepted.
