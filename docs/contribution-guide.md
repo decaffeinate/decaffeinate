@@ -448,7 +448,7 @@ We use [semantic-release](https://github.com/semantic-release/semantic-release) 
   * `fix:` prefix for bug fixes
   * `feat:` prefix for features
   * `chore:` prefix for maintenance tasks (e.g. updating dependencies)
-  * `refactor:` for refractors that don't change behavior
+  * `refactor:` for refactors that don't change behavior
   * `docs:` for documentation updates
 * use imperative style (e.g. `add literate CoffeeScript support`)
 * use lowercase on the first line of the commit message without a period
