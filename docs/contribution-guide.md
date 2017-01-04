@@ -442,7 +442,7 @@ covering the changes. The tests you add or change *should fail* on `master`.
 
 ### Commit messages
 
-We use [semantic-release] to do releases, which means we follow the [Angular commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit). You might want to get a passing familiarity with those, but the gist is this:
+We use [semantic-release](https://github.com/semantic-release/semantic-release) to do releases, which means we follow the [Angular commit message guidelines](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit). You might want to get a passing familiarity with those, but the gist is this:
 
 * use the appropriate prefix for each commit message:
   * `fix:` prefix for bug fixes
@@ -453,6 +453,8 @@ We use [semantic-release] to do releases, which means we follow the [Angular com
 * use imperative style (e.g. `add literate CoffeeScript support`)
 * use lowercase on the first line of the commit message without a period
 * if backward-incompatible changes are in a commit, add `BREAKING CHANGE:` to the footer of the commit with a description
+
+Why do we use this commit message style? To automate releases. Whenever a build passes on `master`, semantic-release will look at the commits since the last release and adjust the version appropriately. Commits with `fix:` bump the patch version, `feat:` bumps the minor version, and `BREAKING CHANGE:` bumps the major version (only one of the three will be bumped per release).
 
 Once you're satisfied with your changes, create a pull request on your own fork.
 Please provide a description of *why* you're issuing the pull request, and
