@@ -82,7 +82,7 @@ async function updateWebsite() {
   let websitePackage = await pkg();
   let currentVersion = websitePackage['devDependencies']['decaffeinate'];
 
-  if (Math.random() < 1 || currentVersion === latestVersion) {
+  if (currentVersion === latestVersion) {
     console.log(`Already using decaffeinate v${latestVersion}, skipping install.`);
   } else {
     console.log(`${currentVersion} != ${latestVersion}, installing decaffeinate v${latestVersion}…`);
