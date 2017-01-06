@@ -20,6 +20,7 @@ for (let i = 2; i < process.argv.length; i++) {
     default:
       console.error('error: unexpected argument:', process.argv[i]);
       console.error('update-website [--no-commit|--force]');
+      process.exit(-1);
   }
 }
 
