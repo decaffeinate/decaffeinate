@@ -6,7 +6,7 @@ describe('changing shorthand this to longhand this', function() {
   });
 
   it('changes shorthand computed member expressions to longhand computed member expressions', () => {
-    check(`a = @[a]`, `let a = this[a];`);
+    check(`a = @[b]`, `let a = this[b];`);
   });
 
   it('changes shorthand standalone this to longhand standalone this', () => {
