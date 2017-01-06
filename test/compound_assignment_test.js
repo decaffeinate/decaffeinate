@@ -33,7 +33,7 @@ describe('compound assignment', () => {
     check(`
       a %%= b
     `, `
-      let a = __mod__(a, b);
+      var a = __mod__(a, b);
       function __mod__(a, b) {
         a = +a;
         b = +b;
