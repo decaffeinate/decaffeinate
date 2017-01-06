@@ -67,6 +67,22 @@ async function hasChanges(): Promise<boolean> {
   }
 }
 
+/**
+ * Travis jobs numbers have the build number, then a period, then the job number
+ * within that build. So if the build number is "4", the job number might be
+ * "4.1". If we have a job number then we're the primary instance if we are the
+ * first job of our build.
+ */
+function isPrimaryInstance(): boolean {
+  let jobNumber = process.env['TRAVIS_JOB_NUMBER'];
+
+  if (!jobNumber) {
+    return true;
+  }
+
+  return jobNumber.endsWith('.1');
+}
+
 async function updateWebsite() {
   await configureGithubRemote('website', 'decaffeinate/decaffeinate-project.org');
 
@@ -115,8 +131,12 @@ async function updateWebsite() {
   await run('git', ['reset', '--hard', currentRef]);
 }
 
-updateWebsite()
-  .catch(err => {
-    console.error(err.stack);
-    process.exit(1);
-  });
+if (isPrimaryInstance()) {
+  updateWebsite()
+    .catch(err => {
+      console.error(err.stack);
+      process.exit(1);
+    });
+} else {
+  console.log('Skipping website update since this is not the primary instance.');
+}
