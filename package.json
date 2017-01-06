@@ -14,7 +14,8 @@
     "prebuild": "rimraf dist && mkdirp dist && npm run flow && npm run lint",
     "build": "rollup -c",
     "prepublish": "npm run build",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "update-website": "ts-node ./script/update-website.ts"
   },
   "repository": {
     "type": "git",
@@ -55,6 +56,8 @@
     "dist"
   ],
   "devDependencies": {
+    "@types/mz": "0.0.30",
+    "@types/node": "^6.0.57",
     "babel": "^6.5.2",
     "babel-core": "^6.10.4",
     "babel-eslint": "^7.1.0",
@@ -74,12 +77,16 @@
     "mkdirp": "^0.5.1",
     "mocha": "^3.0.0",
     "mversion": "^1.10.1",
+    "mz": "^2.6.0",
     "rimraf": "^2.5.4",
     "rollup": "^0.40.0",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-json": "^2.0.1",
     "semantic-release": "^6.3.2",
-    "surge": "^0.18.0"
+    "surge": "^0.18.0",
+    "ts-node": "^2.0.0",
+    "tslint": "^4.2.0",
+    "typescript": "^2.1.4"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
