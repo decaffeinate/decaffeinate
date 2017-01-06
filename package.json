@@ -79,7 +79,7 @@
     "mversion": "^1.10.1",
     "mz": "^2.6.0",
     "rimraf": "^2.5.4",
-    "rollup": "^0.40.0",
+    "rollup": "^0.41.1",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-json": "^2.0.1",
     "semantic-release": "^6.3.2",
