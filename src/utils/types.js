@@ -70,7 +70,8 @@ export function isDynamicMemberAccessOp(node: Node): boolean {
  * Determines whether a node represents a function, i.e. `->` or `=>`.
  */
 export function isFunction(node: Node, allowBound: boolean=true): boolean {
-  return node.type === 'Function' || node.type === 'GeneratorFunction' || (allowBound && node.type === 'BoundFunction');
+  return node.type === 'Function' || node.type === 'GeneratorFunction' ||
+    (allowBound && (node.type === 'BoundFunction' || node.type === 'BoundGeneratorFunction'));
 }
 
 /**

@@ -1,3 +1,4 @@
+import assertError from './support/assertError';
 import check from './support/check';
 
 describe('classes', () => {
@@ -75,7 +76,7 @@ describe('classes', () => {
       (class extends Parent {
         constructor() {}
       });
-    `);
+    `, { allowInvalidConstructors: true });
   });
 
   it('preserves class constructors without arguments', () => {
@@ -163,6 +164,302 @@ describe('classes', () => {
           }
         }
       `);
+    });
+
+    it('errors by default when using this before super in a constructor', () => {
+      assertError(`
+        class A extends B
+          constructor: ->
+            @a = 2
+            super
+      `, 'Cannot automatically convert a subclass with a constructor that uses `this` before `super`.');
+    });
+
+    it('does not error when using `this` in a function before `super` in a constructor', () => {
+      check(`
+        class A extends B
+          constructor: ->
+            f = -> @a = 2
+            super
+            f()
+      `, `
+        class A extends B {
+          constructor() {
+            let f = function() { return this.a = 2; };
+            super(...arguments);
+            f();
+          }
+        }
+      `);
+    });
+
+    it('errors by default when a subclass constructor omits super', () => {
+      assertError(`
+        class A extends B
+          constructor: ->
+            @a = 2
+      `, 'Cannot automatically convert a subclass with a constructor that does not call super.');
+    });
+
+    it('errors by default when a subclass uses a bound method', () => {
+      assertError(`
+      class A extends B
+        a: =>
+          1
+    `, 'Cannot automatically convert a subclass that uses bound methods.');
+    });
+
+    it('errors by default with an existing constructor and bound methods in a subclass', () => {
+      assertError(`
+      class A extends B
+        a: =>
+          1
+
+        constructor: ->
+          super()
+          this.b = 2;
+    `, 'Cannot automatically convert a subclass that uses bound methods.');
+    });
+
+    it('does not error when specified when using this before super in a constructor', () => {
+      check(`
+        class A extends B
+          constructor: ->
+            @a = 2
+            super
+      `, `
+        class A extends B {
+          constructor() {
+            this.a = 2;
+            super(...arguments);
+          }
+        }
+      `, { allowInvalidConstructors: true });
+    });
+
+    it('does not error when specified when a subclass constructor omits super', () => {
+      check(`
+        class A extends B
+          constructor: ->
+            @a = 2
+      `, `
+        class A extends B {
+          constructor() {
+            this.a = 2;
+          }
+        }
+      `, { allowInvalidConstructors: true });
+    });
+
+    it('creates a constructor for bound methods with a `super` call in extended classes when requested', () => {
+      check(`
+      class A extends B
+        a: =>
+          1
+    `, `
+      class A extends B {
+        constructor(...args) {
+          this.a = this.a.bind(this);
+          super(...args);
+        }
+
+        a() {
+          return 1;
+        }
+      }
+    `, { allowInvalidConstructors: true });
+    });
+
+    it('adds to an existing constructor for bound methods before a `super` call when requested', () => {
+      check(`
+      class A extends B
+        a: =>
+          1
+
+        constructor: ->
+          super()
+          this.b = 2;
+    `, `
+      class A extends B {
+        a() {
+          return 1;
+        }
+
+        constructor() {
+          this.a = this.a.bind(this);
+          super();
+          this.b = 2;
+        }
+      }
+    `, { allowInvalidConstructors: true });
+    });
+
+    it('generates workaround code when specified when using this before super in a constructor', () => {
+      check(`
+        class A extends B
+          constructor: ->
+            @a = 2
+            super
+      `, `
+        class A extends B {
+          constructor() {
+            {
+              // Hack: trick babel into allowing this before super.
+              if (false) { super(); }
+              let thisFn = (() => { this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              eval(\`\${thisName} = this;\`);
+            }
+            this.a = 2;
+            super(...arguments);
+          }
+        }
+      `, { enableBabelConstructorWorkaround: true });
+    });
+
+    it('generates workaround code when specified when a subclass constructor omits super', () => {
+      check(`
+        class A extends B
+          constructor: ->
+            @a = 2
+      `, `
+        class A extends B {
+          constructor() {
+            {
+              // Hack: trick babel into allowing this before super.
+              if (false) { super(); }
+              let thisFn = (() => { this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              eval(\`\${thisName} = this;\`);
+            }
+            this.a = 2;
+          }
+        }
+      `, { enableBabelConstructorWorkaround: true });
+    });
+
+    it('generates workaround code when specified when a subclass has a bound method and no constructor', () => {
+      check(`
+        class A extends B
+          foo: =>
+            null
+      `, `
+        class A extends B {
+          constructor(...args) {
+            {
+              // Hack: trick babel into allowing this before super.
+              if (false) { super(); }
+              let thisFn = (() => { this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              eval(\`\${thisName} = this;\`);
+            }
+            this.foo = this.foo.bind(this);
+            super(...args);
+          }
+        
+          foo() {
+            return null;
+          }
+        }
+      `, { enableBabelConstructorWorkaround: true });
+    });
+
+    it('generates workaround code when specified when a subclass has a bound method and a normal constructor', () => {
+      check(`
+        class A extends B
+          constructor: ->
+            super
+            @x = 3
+        
+          foo: =>
+            null
+      `, `
+        class A extends B {
+          constructor() {
+            {
+              // Hack: trick babel into allowing this before super.
+              if (false) { super(); }
+              let thisFn = (() => { this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              eval(\`\${thisName} = this;\`);
+            }
+            this.foo = this.foo.bind(this);
+            super(...arguments);
+            this.x = 3;
+          }
+        
+          foo() {
+            return null;
+          }
+        }
+      `, { enableBabelConstructorWorkaround: true });
+    });
+
+    it('generates workaround code when specified when a subclass has a bound method and an empty constructor', () => {
+      check(`
+        class A extends B
+          constructor: ->
+        
+          foo: =>
+            null
+      `, `
+        class A extends B {
+          constructor() {
+            {
+              // Hack: trick babel into allowing this before super.
+              if (false) { super(); }
+              let thisFn = (() => { this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              eval(\`\${thisName} = this;\`);
+            }
+            this.foo = this.foo.bind(this);
+          }
+        
+          foo() {
+            return null;
+          }
+        }
+      `, { enableBabelConstructorWorkaround: true });
+    });
+
+    it('does not generate workaround code when the flag is set but the workaround is unnecessary', () => {
+      check(`
+        class A extends B
+          constructor: ->
+            super
+            @x = 3
+      `, `
+        class A extends B {
+          constructor() {
+            super(...arguments);
+            this.x = 3;
+          }
+        }
+      `, { enableBabelConstructorWorkaround: true });
+    });
+
+    it('properly generates workaround code when constructors have default parameters', () => {
+      check(`
+        class A extends B
+          constructor: (c={}) ->
+            @d = e
+            super
+      `, `
+        class A extends B {
+          constructor(c) {
+            {
+              // Hack: trick babel into allowing this before super.
+              if (false) { super(); }
+              let thisFn = (() => { this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              eval(\`\${thisName} = this;\`);
+            }
+            if (c == null) { c = {}; }
+            this.d = e;
+            super(...arguments);
+          }
+        }
+      `, { enableBabelConstructorWorkaround: true });
     });
 
     it('chooses variables that do not conflict', () => {
@@ -260,7 +557,7 @@ describe('classes', () => {
       class A extends B {
         constructor() {}
       }
-    `);
+    `, { allowInvalidConstructors: true });
   });
 
   it('preserves class constructors extending non-identifier superclasses', () => {
@@ -271,7 +568,7 @@ describe('classes', () => {
       class A extends (class B extends C {}) {
         constructor() {}
       }
-    `);
+    `, { allowInvalidConstructors: true });
   });
 
   it('turns non-method properties into prototype assignments', () => {
@@ -320,25 +617,6 @@ describe('classes', () => {
     `);
   });
 
-  it('creates a constructor for bound methods with a `super` call in extended classes', () => {
-    check(`
-      class A extends B
-        a: =>
-          1
-    `, `
-      class A extends B {
-        constructor(...args) {
-          super(...args);
-          this.a = this.a.bind(this);
-        }
-
-        a() {
-          return 1;
-        }
-      }
-    `);
-  });
-
   it('handles bound methods with parameters', () => {
     check(`
       class a
@@ -371,30 +649,6 @@ describe('classes', () => {
         constructor() {
           this.a = this.a.bind(this);
           2;
-        }
-      }
-    `);
-  });
-
-  it('adds to an existing constructor for bound methods after a `super` call', () => {
-    check(`
-      class A extends B
-        a: =>
-          1
-
-        constructor: ->
-          super()
-          this.b = 2;
-    `, `
-      class A extends B {
-        a() {
-          return 1;
-        }
-
-        constructor() {
-          super();
-          this.a = this.a.bind(this);
-          this.b = 2;
         }
       }
     `);
@@ -671,21 +925,21 @@ describe('classes', () => {
 
   it('handles a bound method and an implicit super in the constructor', () => {
     check(`
-      class X
+      class X extends Y
         constructor: ->
           super
       
         add: =>
     `, `
-      class X {
+      class X extends Y {
         constructor() {
-          super(...arguments);
           this.add = this.add.bind(this);
+          super(...arguments);
         }
       
         add() {}
       }
-    `);
+    `, { allowInvalidConstructors: true });
   });
 
   it('handles a bound method and an empty constructor', () => {
@@ -722,9 +976,9 @@ describe('classes', () => {
     `);
   });
 
-  it('places method bindings after the super call', () => {
+  it('places method bindings at the start of the constructor even if there is a super call', () => {
     check(`
-      class X
+      class X extends Y
         constructor: ->
           if a
             b
@@ -734,13 +988,13 @@ describe('classes', () => {
       
         add: =>
     `, `
-      class X {
+      class X extends Y {
         constructor() {
+          this.add = this.add.bind(this);
           if (a) {
             b;
           }
           super(...arguments);
-          this.add = this.add.bind(this);
           if (c) {
             d;
           }
@@ -748,7 +1002,7 @@ describe('classes', () => {
       
         add() {}
       }
-    `);
+    `, { allowInvalidConstructors: true });
   });
 
   it('places method bindings at the start of the constructor if there is no super', () => {
@@ -759,9 +1013,25 @@ describe('classes', () => {
         add: =>
     `, `
       class X {
-        constructor() {this.add = this.add.bind(this);   a; }
+        constructor() { this.add = this.add.bind(this);   a; }
       
         add() {}
+      }
+    `);
+  });
+
+  it('handles a default constructor parameter and a bound method', () => {
+    check(`
+      class Nukes
+        constructor: (y = 'foo') ->
+        launch: (x) => true
+    `, `
+      class Nukes {
+        constructor(y) {
+          this.launch = this.launch.bind(this);
+          if (y == null) { y = 'foo'; }
+        }
+        launch(x) { return true; }
       }
     `);
   });

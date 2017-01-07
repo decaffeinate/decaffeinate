@@ -64,6 +64,14 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.looseIncludes = true;
         break;
 
+      case '--allow-invalid-constructors':
+        baseOptions.allowInvalidConstructors = true;
+        break;
+
+      case '--enable-babel-constructor-workaround':
+        baseOptions.enableBabelConstructorWorkaround = true;
+        break;
+
       default:
         if (arg.startsWith('-')) {
           console.error(`Error: unrecognized option '${arg}'`);
@@ -191,6 +199,12 @@ function usage() {
   console.log('  --loose-for-expressions  Do not wrap expression loop targets in Array.from.');
   console.log('  --loose-for-of           Do not wrap JS for...of loop targets in Array.from.');
   console.log('  --loose-includes         Do not wrap in Array.from when converting in to includes.');
+  console.log('  --allow-invalid-constructors');
+  console.log('                           Don\'t error when constructors use this before super or omit');
+  console.log('                           the super call in a subclass.');
+  console.log('  --enable-babel-constructor-workaround');
+  console.log('                           Use a hacky babel-specific workaround to allow this before');
+  console.log('                           super in constructors.');
   console.log();
   console.log('EXAMPLES');
   console.log();
