@@ -1,5 +1,3 @@
-/* @flow */
-
 // Taken from various constants in the CoffeeScript lexer:
 // https://github.com/jashkenas/coffeescript/blob/master/src/lexer.coffee
 const RESERVED_WORDS = new Set([

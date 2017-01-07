@@ -1,4 +1,3 @@
-/* @flow */
 import getIndent from './getIndent';
 
 /**
@@ -27,7 +26,7 @@ export default function stripSharedIndent(source: string): string {
 }
 
 function getCommonIndent(lines: Array<string>): string {
-  let commonIndent = null;
+  let commonIndent: string | null = null;
   for (let line of lines) {
     let indent = getIndent(line, 0);
     if (indent === line) {
