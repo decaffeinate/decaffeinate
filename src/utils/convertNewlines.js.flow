@@ -1,0 +1,3 @@
+declare function convertNewlines(source: string, newlineStr: string): string;
+
+export default convertNewlines;

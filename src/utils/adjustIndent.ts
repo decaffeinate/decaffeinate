@@ -1,5 +1,3 @@
-/* @flow */
-
 import determineIndent from './determineIndent';
 import getIndent from './getIndent';
 

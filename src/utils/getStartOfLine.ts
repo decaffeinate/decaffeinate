@@ -1,5 +1,3 @@
-/* @flow */
-
 /**
  * Finds the start of the line for the character at offset.
  */

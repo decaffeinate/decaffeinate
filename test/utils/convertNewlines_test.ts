@@ -1,5 +1,5 @@
-import convertNewlines from '../../src/utils/convertNewlines';
 import { strictEqual } from 'assert';
+import convertNewlines from '../../src/utils/convertNewlines';
 
 describe('convertNewlines', () => {
   it('converts mixed newlines to LF', () => {

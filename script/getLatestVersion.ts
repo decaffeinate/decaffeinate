@@ -1,6 +1,7 @@
 import { get } from 'https';
 import { format, parse } from 'url';
 
+// tslint:disable:no-var-requires
 let registry: string = require('../package.json').publishConfig.registry;
 
 export default function getLatestVersion(packageName: string): Promise<string> {
