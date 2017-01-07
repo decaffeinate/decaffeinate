@@ -1,8 +1,6 @@
 /**
  * Determine the most common newline string in the given code, either '\n' or
  * '\r\n'. Prefer '\n' in the case of a tie.
- *
- * @flow
  */
 export default function detectNewlineStr(source: string): string {
   let numLFs = 0;

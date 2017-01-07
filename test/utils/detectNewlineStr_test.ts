@@ -1,5 +1,5 @@
-import detectNewlineStr from '../../src/utils/detectNewlineStr';
 import { strictEqual } from 'assert';
+import detectNewlineStr from '../../src/utils/detectNewlineStr';
 
 describe('detectNewlineStr', () => {
   it('detects LF on a string without newlines', () => {

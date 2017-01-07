@@ -1,0 +1,3 @@
+declare function detectNewlineStr(source: string): string;
+
+export default detectNewlineStr;
