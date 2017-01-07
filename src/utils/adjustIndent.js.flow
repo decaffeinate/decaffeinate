@@ -1,0 +1,5 @@
+/* @flow */
+
+declare function adjustIndent(source: string, offset: number, adjustment: number): string;
+
+export default adjustIndent;

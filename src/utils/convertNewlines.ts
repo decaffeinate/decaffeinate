@@ -1,8 +1,6 @@
 /**
  * Convert the given code to use the specified newline string, either '\n' or
  * '\r\n'.
- *
- * @flow
  */
 export default function convertNewlines(source: string, newlineStr: string): string {
   if (newlineStr === '\n') {
@@ -11,6 +9,6 @@ export default function convertNewlines(source: string, newlineStr: string): str
     source = source.replace(/\r\n/g, '\n');
     return source.replace(/\n/g, '\r\n');
   } else {
-    throw new Error(`Unexpected newling string to convert to: ${JSON.stringify(newlineStr)}`);
+    throw new Error(`Unexpected newline string to convert to: ${JSON.stringify(newlineStr)}`);
   }
 }

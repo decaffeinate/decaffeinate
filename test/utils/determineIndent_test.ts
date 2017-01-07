@@ -1,5 +1,5 @@
-import determineIndent from '../../src/utils/determineIndent';
 import { strictEqual } from 'assert';
+import determineIndent from '../../src/utils/determineIndent';
 
 describe('determineIndent', () => {
   it('returns two spaces for an empty string', () => {

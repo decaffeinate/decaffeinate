@@ -1,7 +1,7 @@
-import getLatestVersion from './getLatestVersion';
 import { execFile } from 'mz/child_process';
 import { readFile } from 'mz/fs';
 import { join } from 'path';
+import getLatestVersion from './getLatestVersion';
 
 let commit = true;
 let force = false;

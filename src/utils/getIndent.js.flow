@@ -1,0 +1,3 @@
+declare function getIndent(source: string, offset: number): string;
+
+export default getIndent;

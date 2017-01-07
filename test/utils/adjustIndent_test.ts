@@ -1,5 +1,5 @@
-import adjustIndent from '../../src/utils/adjustIndent';
 import { strictEqual } from 'assert';
+import adjustIndent from '../../src/utils/adjustIndent';
 
 describe('adjustIndent', () => {
   it('returns the existing indent when the adjustment is 0', () => {

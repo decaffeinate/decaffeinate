@@ -8,7 +8,8 @@
   },
   "scripts": {
     "flow": "flow check",
-    "lint": "eslint src test",
+    "lint": "tslint --config tslint.json --project tsconfig.json --type-check && eslint src test",
+    "lint-fix": "tslint --config tslint.json --project tsconfig.json --type-check --fix && eslint src test --fix",
     "pretest": "npm run build",
     "test": "mocha",
     "prebuild": "rimraf dist && mkdirp dist && npm run flow && npm run lint",
@@ -56,6 +57,7 @@
     "dist"
   ],
   "devDependencies": {
+    "@types/mocha": "^2.2.36",
     "@types/mz": "0.0.30",
     "@types/node": "^6.0.57",
     "babel": "^6.5.2",
@@ -82,6 +84,7 @@
     "rollup": "^0.40.0",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-json": "^2.0.1",
+    "rollup-plugin-typescript": "^0.8.1",
     "semantic-release": "^6.3.2",
     "surge": "^0.18.0",
     "ts-node": "^2.0.0",

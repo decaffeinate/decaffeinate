@@ -1,5 +1,5 @@
 import NodePatcher from './../../../patchers/NodePatcher';
-import getStartOfLine from './../../../utils/getStartOfLine';
+import getStartOfLine from '../../../utils/getStartOfLine';
 
 import type { PatcherContext } from './../../../patchers/types';
 
