@@ -1,4 +1,4 @@
-import detectIndent = require('detect-indent');
+const detectIndent = require('detect-indent');
 
 const DEFAULT_INDENT = '  ';
 

@@ -11,7 +11,6 @@
     "no-any": true,
     "no-namespace": true,
     "no-internal-module": true,
-    "no-var-requires": true,
     "no-var-keyword": true,
     "prefer-for-of": true,
     "typedef": [true, "parameter", "property-declaration"],
