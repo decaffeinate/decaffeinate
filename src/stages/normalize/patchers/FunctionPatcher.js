@@ -16,6 +16,13 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    // Make sure there is at least one character of whitespace between the ->
+    // and the body, since otherwise the main stage can run into subtle
+    // magic-string issues later.
+    if (this.body && !this.slice(this.body.contentStart - 1, this.body.contentStart).match(/\s/)) {
+      this.insert(this.body.contentStart, ' ');
+    }
+
     // To avoid knowledge of all the details how assignments can be nested in nodes,
     // we add a callback to the function node before patching the parameters and remove it afterwards.
     // This is detected and used by the MemberAccessOpPatcher to claim a free binding for this parameter

@@ -43,6 +43,10 @@ Options:
 * `--loose-for-expressions`: Do not wrap expression loop targets in `Array.from`.
 * `--loose-for-of`: Do not wrap JS `for...of` loop targets in `Array.from`.
 * `--loose-includes`: Do not wrap in `Array.from` when converting `in` to `includes`.
+* `--allow-invalid-constructors`: Don't error when constructors use `this`
+  before super or omit the `super` call in a subclass.
+* `--enable-babel-constructor-workaround`: Use a hacky babel-specific workaround
+  to allow `this` before `super` in constructors.
 
 For more usages examples, see the output of `decaffeinate --help`.
 

@@ -141,12 +141,18 @@ export default class BlockPatcher extends NodePatcher {
         lastStatement.outerEnd;
       insertionPoint = Math.min(insertionPoint, this.getBoundingPatcher().innerEnd);
       let indent = lastStatement.getIndent();
-      statements.forEach(line => this.insert(insertionPoint, `${separator}${indent}${line}`));
+      statements.forEach(line => {
+        let sep = line.trim().startsWith('//') ? '\n' : separator;
+        this.insert(insertionPoint, `${sep}${indent}${line}`);
+      });
     } else {
       let statementToInsertBefore = this.statements[index];
       let insertionPoint = statementToInsertBefore.outerStart;
       let indent = statementToInsertBefore.getIndent();
-      statements.forEach(line => this.insert(insertionPoint, `${line}${separator}${indent}`));
+      statements.forEach(line => {
+        let sep = line.trim().startsWith('//') ? '\n' : separator;
+        this.insert(insertionPoint, `${line}${sep}${indent}`);
+      });
     }
   }
 
