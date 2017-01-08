@@ -360,4 +360,19 @@ describe('objects', () => {
       ({x() { return x; }});
     `);
   });
+
+  it('handles an implicit object inside an array', () => {
+    check(`
+      [
+        a: b
+        c: d
+      ]
+    `, `
+      [{
+        a: b,
+        c: d
+      }
+      ];
+    `);
+  });
 });
