@@ -415,7 +415,8 @@ export default class NodePatcher {
     // comma/paren to the next comma/paren), so loosen the restriction to the
     // entire function.
     if (boundingPatcher.parent &&
-        this.isNodeFunctionApplication(boundingPatcher.parent.node)) {
+        (this.isNodeFunctionApplication(boundingPatcher.parent.node) ||
+        boundingPatcher.parent.node.type === 'ArrayInitialiser')) {
       boundingPatcher = boundingPatcher.parent;
     }
     if (this.allowPatchingOuterBounds()) {
