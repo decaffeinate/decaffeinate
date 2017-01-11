@@ -15,6 +15,7 @@ import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher';
 import PassthroughPatcher from '../../patchers/PassthroughPatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
+import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher';
 import SpreadPatcher from './patchers/SpreadPatcher';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';
 import WhilePatcher from './patchers/WhilePatcher';
@@ -94,6 +95,10 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'ObjectInitialiserMember':
         return ObjectInitialiserMemberPatcher;
+
+      case 'ProtoMemberAccessOp':
+      case 'SoakedProtoMemberAccessOp':
+        return ProtoMemberAccessOpPatcher;
 
       default:
         return PassthroughPatcher;

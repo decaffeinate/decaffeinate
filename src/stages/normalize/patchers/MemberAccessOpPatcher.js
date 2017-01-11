@@ -12,7 +12,7 @@ export default class MemberAccessOpPatcher extends PassthroughPatcher {
     let callback = this.findAddThisAssignmentCallback();
     if (callback) {
       let content = this.slice(this.contentStart, this.contentEnd);
-      this.overwrite(this.contentStart, this.contentEnd, callback(this.node.memberName, content));
+      this.overwrite(this.contentStart, this.contentEnd, callback(this.node.member.data, content));
     }
   }
 

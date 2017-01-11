@@ -4,11 +4,13 @@ import { SourceType } from 'coffee-lex';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
   expression: NodePatcher;
+  member: NodePatcher;
   _skipImplicitDotCreation: boolean;
 
-  constructor(patcherContext: PatcherContext, expression: NodePatcher) {
+  constructor(patcherContext: PatcherContext, expression: NodePatcher, member: NodePatcher) {
     super(patcherContext);
     this.expression = expression;
+    this.member = member;
     this._skipImplicitDotCreation = false;
   }
 
@@ -27,12 +29,6 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     this.expression.patch();
     if (this.lhsNeedsParens()) {
       this.insert(this.expression.outerEnd, ')');
-    }
-    if (this.isShorthandPrototype()) {
-      // `a::` → `a.prototype`
-      //   ^^      ^^^^^^^^^^
-      let operator = this.getMemberOperatorSourceToken();
-      this.overwrite(operator.start, operator.end, '.prototype');
     }
     if (this.hasImplicitOperator() && !this._skipImplicitDotCreation) {
       // `@a` → `@.a`
@@ -59,37 +55,16 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     return !this.getMemberOperatorSourceToken();
   }
 
-  isShorthandPrototype(): boolean {
-    let token = this.getMemberOperatorSourceToken();
-    return token ? token.type === SourceType.PROTO : false;
-  }
-
   getMemberOperatorSourceToken(): ?SourceToken {
-    let lastIndex = this.contentEndTokenIndex;
-    let lastToken = this.sourceTokenAtIndex(lastIndex);
-
-    if (lastToken.type === SourceType.PROTO) {
-      // e.g. `a::`
-      return lastToken;
-    }
-
     let dotIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.expression.outerEnd, this.outerEnd - 1, token => token.type === SourceType.DOT
     );
-
 
     if (!dotIndex) {
       let firstIndex = this.contentStartTokenIndex;
       let firstToken = this.sourceTokenAtIndex(firstIndex);
       if (firstToken.type === SourceType.AT) {
         // e.g. `@a`, so it's okay that there's no dot
-        return null;
-      }
-
-      let expressionLastIndex = this.expression.contentEndTokenIndex;
-      let expressionLastToken = this.sourceTokenAtIndex(expressionLastIndex);
-      if (expressionLastToken.type === SourceType.PROTO) {
-        // e.g. a?::b, parsed as (a?::)b, so the dot before the b is implicit.
         return null;
       }
 
@@ -101,7 +76,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   }
 
   getMemberName(): string {
-    return this.node.memberName;
+    return this.node.member.data;
   }
 
   getFullMemberName(): string {
