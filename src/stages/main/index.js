@@ -42,7 +42,6 @@ import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
 import OfOpPatcher from './patchers/OfOpPatcher';
 import PassthroughPatcher from './../../patchers/PassthroughPatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
-import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher';
 import RegexPatcher from './patchers/RegexPatcher';
 import RangePatcher from './patchers/RangePatcher';
 import RestPatcher from './patchers/RestPatcher';
@@ -292,9 +291,6 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'DoOp':
         return DoOpPatcher;
-
-      case 'ProtoMemberAccessOp':
-        return ProtoMemberAccessOpPatcher;
 
       case 'Program':
         return ProgramPatcher;

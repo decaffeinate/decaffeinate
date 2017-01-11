@@ -134,7 +134,7 @@ export default class ClassPatcher extends NodePatcher {
     if (nameAssignee instanceof IdentifierPatcher) {
       return nameAssignee.node.data;
     } else if (nameAssignee instanceof MemberAccessOpPatcher) {
-      return nameAssignee.node.memberName;
+      return nameAssignee.node.member.data;
     } else {
       return null;
     }

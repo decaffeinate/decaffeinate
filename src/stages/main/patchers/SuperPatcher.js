@@ -20,7 +20,7 @@ export default class SuperPatcher extends NodePatcher {
         return null;
       } else if (parent instanceof ClassAssignOpPatcher) {
         if (parent.isStaticMethod()) {
-          return parent.key.node.memberName;
+          return parent.key.node.member.data;
         } else {
           return parent.key.node.data;
         }
