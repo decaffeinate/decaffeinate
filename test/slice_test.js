@@ -57,7 +57,7 @@ describe('slice', () => {
     check(`
       a[b...c] = d
     `, `
-      a.splice(b, c - b, ...Array.from(d)), d;
+      a.splice(b, c - b, ...[].concat(d)), d;
     `);
   });
 
@@ -65,7 +65,7 @@ describe('slice', () => {
     check(`
       a[b..c] = d
     `, `
-      a.splice(b, c - b + 1, ...Array.from(d)), d;
+      a.splice(b, c - b + 1, ...[].concat(d)), d;
     `);
   });
 
@@ -73,7 +73,7 @@ describe('slice', () => {
     check(`
       a[b...] = c
     `, `
-      a.splice(b, 9e9, ...Array.from(c)), c;
+      a.splice(b, 9e9, ...[].concat(c)), c;
     `);
   });
 
@@ -81,7 +81,7 @@ describe('slice', () => {
     check(`
       a[b..] = c
     `, `
-      a.splice(b, 9e9, ...Array.from(c)), c;
+      a.splice(b, 9e9, ...[].concat(c)), c;
     `);
   });
 
@@ -89,7 +89,7 @@ describe('slice', () => {
     check(`
       a[...b] = c
     `, `
-      a.splice(0, b, ...Array.from(c)), c;
+      a.splice(0, b, ...[].concat(c)), c;
     `);
   });
 
@@ -97,7 +97,7 @@ describe('slice', () => {
     check(`
       a[..b] = c
     `, `
-      a.splice(0, b + 1, ...Array.from(c)), c;
+      a.splice(0, b + 1, ...[].concat(c)), c;
     `);
   });
 
@@ -105,7 +105,7 @@ describe('slice', () => {
     check(`
       a[...] = b
     `, `
-      a.splice(0, 9e9, ...Array.from(b)), b;
+      a.splice(0, 9e9, ...[].concat(b)), b;
     `);
   });
 
@@ -113,7 +113,7 @@ describe('slice', () => {
     check(`
       a[..] = b
     `, `
-      a.splice(0, 9e9, ...Array.from(b)), b;
+      a.splice(0, 9e9, ...[].concat(b)), b;
     `);
   });
 
@@ -122,21 +122,21 @@ describe('slice', () => {
       a[b...c] = d()
     `, `
       let ref;
-      a.splice(b, c - b, ...Array.from(ref = d())), ref;
+      a.splice(b, c - b, ...[].concat(ref = d())), ref;
     `);
   });
 
   it('allows overwriting with an array', () => {
     validate(`
       o = ['a', 'b', 'c', 'd']
-      o[1...3] = ['e', 'f']
-    `, ['a', 'e', 'f', 'd']);
+      o[1...3] = ['Hello', 'World']
+    `, ['a', 'Hello', 'World', 'd']);
   });
 
   it('allows overwriting with an individual element', () => {
     validate(`
       o = ['a', 'b', 'c', 'd']
-      o[1...3] = 'e';
-    `, ['a', 'e', 'd']);
+      o[1...3] = 'Hello';
+    `, ['a', 'Hello', 'd']);
   });
 });
