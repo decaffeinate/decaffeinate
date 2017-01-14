@@ -65,12 +65,12 @@ export default class AssignOpPatcher extends NodePatcher {
     // `a[b...c] = d` → `a.splice(b, c - b = d`
     //   ^                ^^^^^^^^^^^^^^^^
     slicePatcher.patchAsSpliceExpressionStart();
-    // `a.splice(b, c - b = d` → `a.splice(b, c - b, ...Array.from(d`
-    //                   ^^^                       ^^^^^^^^^^^^^^^^
-    this.overwrite(slicePatcher.outerEnd, this.expression.outerStart, ', ...Array.from(');
+    // `a.splice(b, c - b = d` → `a.splice(b, c - b, ...[].concat(d`
+    //                   ^^^                       ^^^^^^^^^^^^^^^
+    this.overwrite(slicePatcher.outerEnd, this.expression.outerStart, ', ...[].concat(');
     let expressionRef = this.expression.patchRepeatable();
-    // `a.splice(b, c - b, ...Array.from(d` → `a.splice(b, c - b, ...Array.from(d)), d`
-    //                                                                           ^^^^^
+    // `a.splice(b, c - b, ...[].concat(d` → `a.splice(b, c - b, ...[].concat(d)), d`
+    //                                                                         ^^^^^
     this.insert(this.expression.outerEnd, `)), ${expressionRef}`);
   }
 
