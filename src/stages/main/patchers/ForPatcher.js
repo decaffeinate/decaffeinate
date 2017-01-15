@@ -138,20 +138,23 @@ export default class ForPatcher extends LoopPatcher {
   }
 
   getTargetCode(): string {
-    // Trigger patching the reference.
-    this.getTargetReference();
-    return this.slice(this.target.contentStart, this.target.contentEnd);
+    this.computeTargetCodeIfNecessary();
+    return this._targetCode;
   }
 
   getTargetReference(): string {
-    if (!this._targetReference) {
+    this.computeTargetCodeIfNecessary();
+    return this._targetReference;
+  }
+
+  computeTargetCodeIfNecessary() {
+    if (!this._targetReference || !this._targetCode) {
+      this._targetCode = this.target.patchAndGetCode();
       if (this.requiresExtractingTarget()) {
-        this.target.patch();
         this._targetReference = this.claimFreeBinding(this.targetBindingCandidate());
       } else {
-        this._targetReference = this.target.patchAndGetCode();
+        this._targetReference = this._targetCode;
       }
     }
-    return this._targetReference;
   }
 }

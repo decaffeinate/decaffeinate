@@ -629,4 +629,16 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('allows a repeated soak operation as a loop target', () => {
+    check(`
+      i + j for j, i in foo?.bar ? [] 
+    `, `
+      let iterable = __guard__(foo, x => x.bar) != null ? __guard__(foo, x => x.bar) : [];
+      for (let i = 0; i < iterable.length; i++) { let j = iterable[i]; i + j; } 
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
 });
