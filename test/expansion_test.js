@@ -49,8 +49,7 @@ describe('expansion', () => {
       (..., a = 1) ->
     `, `
       (function(...args) {
-        let a = args[args.length - 1];
-        if (a == null) { a = 1; }
+        let val = args[args.length - 1], a = val != null ? val : 1;
       });
     `);
   });
@@ -60,13 +59,12 @@ describe('expansion', () => {
       (..., @a) ->
     `, `
       (function(...args) {
-        let a = args[args.length - 1];
-        this.a = a;
+        this.a = args[args.length - 1];
       });
     `);
   });
 
-  it('deconflicts names in the expansion param case', () => {
+  it('does not create name conflicts in the expansion param case', () => {
     check(`
       a = 1
       (..., @a) ->
@@ -75,8 +73,7 @@ describe('expansion', () => {
     `, `
       let a = 1;
       (function(...args) {
-        let a1 = args[args.length - 1];
-        this.a = a1;
+        this.a = args[args.length - 1];
         console.log(a);
       });
     `);
