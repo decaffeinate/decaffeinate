@@ -89,15 +89,8 @@ export default class FunctionPatcher extends NodePatcher {
     // If there were assignments from parameters insert them
     if (this.body) {
       // before the actual body
-      if (assignments.length) {
-        let text;
-        if (this.body.node.inline) {
-          text = `${assignments.join('; ')}; `;
-        } else {
-          let indent = this.body.getIndent(0);
-          text = `${assignments.join(`\n${indent}`)}\n${indent}`;
-        }
-        this.insert(this.body.contentStart, `${text}`);
+      for (let assignment of assignments) {
+        this.body.insertLineBefore(assignment);
       }
       this.body.patch();
     } else if (assignments.length) {

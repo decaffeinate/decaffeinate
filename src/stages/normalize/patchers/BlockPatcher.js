@@ -1,9 +1,9 @@
-import NodePatcher from './../../../patchers/NodePatcher';
+import SharedBlockPatcher from './../../../patchers/SharedBlockPatcher';
 import getStartOfLine from '../../../utils/getStartOfLine';
 
 import type { PatcherContext } from './../../../patchers/types';
 
-export default class BlockPatcher extends NodePatcher {
+export default class BlockPatcher extends SharedBlockPatcher {
   statements: Array<NodePatcher>;
 
   constructor(patcherContext: PatcherContext, statements: Array<NodePatcher>) {
