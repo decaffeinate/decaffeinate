@@ -1238,4 +1238,38 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles an assignee with an expansion node', () => {
+    check(`
+      for [..., a] in b
+        c
+    `, `
+      for (let value of Array.from(b)) {
+        let a = value[value.length - 1];
+        c;
+      }
+    `);
+  });
+
+  it('handles a complex assignee in a postfix loop', () => {
+    check(`
+      x = (a for [a = 1] in b)
+    `, `
+      let a, val;
+      let x = (Array.from(b).map((value) => (val = value[0], a = val != null ? val : 1, value, a)));
+    `);
+  });
+
+  it('handles a complex assignee in a for-of loop', () => {
+    check(`
+      for k, [..., v] of m
+        k + v
+    `, `
+      for (let k in m) {
+        let value = m[k];
+        let v = value[value.length - 1];
+        k + v;
+      }
+    `);
+  });
 });
