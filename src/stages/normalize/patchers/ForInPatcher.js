@@ -1,4 +1,6 @@
 import ForPatcher from './ForPatcher';
+import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
+
 import type NodePatcher from '../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
 
@@ -18,7 +20,7 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   surroundThenUsagesInParens() {
-    if (this.step && this.slice(this.step.contentStart, this.step.contentEnd).includes('then')) {
+    if (this.step && postfixExpressionRequiresParens(this.slice(this.step.contentStart, this.step.contentEnd))) {
       this.step.surroundInParens();
     }
     super.surroundThenUsagesInParens();

@@ -1,4 +1,6 @@
 import NodePatcher from '../../../patchers/NodePatcher';
+import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
+
 import type { PatcherContext } from './../../../patchers/types';
 
 /**
@@ -51,7 +53,7 @@ export default class WhilePatcher extends NodePatcher {
       this.condition.outerStart,
       this.condition.outerEnd
     );
-    if (patchedCondition.includes('then') && !this.condition.isSurroundedByParentheses()) {
+    if (postfixExpressionRequiresParens(patchedCondition) && !this.condition.isSurroundedByParentheses()) {
       patchedCondition = `(${patchedCondition})`;
     }
     let patchedBody = this.slice(
@@ -62,7 +64,7 @@ export default class WhilePatcher extends NodePatcher {
       this.guard.outerStart,
       this.guard.outerEnd
     ) : null;
-    if (patchedGuard !== null && patchedGuard.includes('then') && !this.guard.isSurroundedByParentheses()) {
+    if (patchedGuard !== null && postfixExpressionRequiresParens(patchedGuard) && !this.guard.isSurroundedByParentheses()) {
       patchedGuard = `(${patchedGuard})`;
     }
     let whileToken = this.node.isUntil ? 'until' : 'while';

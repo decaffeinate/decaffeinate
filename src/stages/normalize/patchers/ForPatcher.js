@@ -2,6 +2,7 @@ import { SourceType } from 'coffee-lex';
 
 import NodePatcher from '../../../patchers/NodePatcher';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
 import type { PatcherContext, SourceToken } from './../../../patchers/types';
 
 export default class ForPatcher extends NodePatcher {
@@ -83,11 +84,11 @@ export default class ForPatcher extends NodePatcher {
    * This method can be subclassed to account for additional fields.
    */
   surroundThenUsagesInParens() {
-    if (this.slice(this.target.contentStart, this.target.contentEnd).includes('then')) {
+    if (postfixExpressionRequiresParens(this.slice(this.target.contentStart, this.target.contentEnd))) {
       this.target.surroundInParens();
     }
     if (this.filter &&
-      this.slice(this.filter.contentStart, this.filter.contentEnd).includes('then')) {
+      postfixExpressionRequiresParens(this.slice(this.filter.contentStart, this.filter.contentEnd))) {
       this.filter.surroundInParens();
     }
   }

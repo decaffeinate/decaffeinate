@@ -581,4 +581,13 @@ describe('conditionals', () => {
       })();
     `)
   );
+
+  it('handles a multiline condition in a postfix conditional', () => {
+    check(`
+      a if do ->
+        b
+    `, `
+      if ((() => b)()) { a; }
+    `);
+  });
 });
