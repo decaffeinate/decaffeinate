@@ -85,6 +85,10 @@ export default class SlicePatcher extends NodePatcher {
     this.overwrite(indexEnd.start, indexEnd.end, ')');
   }
 
+  getInitialSpliceCode(): string {
+    return this.captureCodeForPatchOperation(() => this.patchAsSpliceExpressionStart());
+  }
+
   /**
    * Patch into the first part of a splice expression. For example,
    *

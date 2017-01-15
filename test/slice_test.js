@@ -57,7 +57,7 @@ describe('slice', () => {
     check(`
       a[b...c] = d
     `, `
-      a.splice(b, c - b, ...[].concat(d)), d;
+      a.splice(b, c - b, ...[].concat(d));
     `);
   });
 
@@ -65,7 +65,7 @@ describe('slice', () => {
     check(`
       a[b..c] = d
     `, `
-      a.splice(b, c - b + 1, ...[].concat(d)), d;
+      a.splice(b, c - b + 1, ...[].concat(d));
     `);
   });
 
@@ -73,7 +73,7 @@ describe('slice', () => {
     check(`
       a[b...] = c
     `, `
-      a.splice(b, 9e9, ...[].concat(c)), c;
+      a.splice(b, 9e9, ...[].concat(c));
     `);
   });
 
@@ -81,7 +81,7 @@ describe('slice', () => {
     check(`
       a[b..] = c
     `, `
-      a.splice(b, 9e9, ...[].concat(c)), c;
+      a.splice(b, 9e9, ...[].concat(c));
     `);
   });
 
@@ -89,7 +89,7 @@ describe('slice', () => {
     check(`
       a[...b] = c
     `, `
-      a.splice(0, b, ...[].concat(c)), c;
+      a.splice(0, b, ...[].concat(c));
     `);
   });
 
@@ -97,7 +97,7 @@ describe('slice', () => {
     check(`
       a[..b] = c
     `, `
-      a.splice(0, b + 1, ...[].concat(c)), c;
+      a.splice(0, b + 1, ...[].concat(c));
     `);
   });
 
@@ -105,7 +105,7 @@ describe('slice', () => {
     check(`
       a[...] = b
     `, `
-      a.splice(0, 9e9, ...[].concat(b)), b;
+      a.splice(0, 9e9, ...[].concat(b));
     `);
   });
 
@@ -113,16 +113,27 @@ describe('slice', () => {
     check(`
       a[..] = b
     `, `
-      a.splice(0, 9e9, ...[].concat(b)), b;
+      a.splice(0, 9e9, ...[].concat(b));
+    `);
+  });
+
+  it('does not extract the RHS if it is not necessary', () => {
+    check(`
+      a[b..c] = d()
+    `, `
+      a.splice(b, c - b + 1, ...[].concat(d()));
     `);
   });
 
   it('extracts the array into a variable if necessary', () => {
     check(`
-      a[b...c] = d()
+      =>
+        return a[b...c] = d()
     `, `
-      let ref;
-      a.splice(b, c - b, ...[].concat(ref = d())), ref;
+      () => {
+        let ref;
+        return ref = d(), a.splice(b, c - b, ...[].concat(ref)), ref;
+      };
     `);
   });
 

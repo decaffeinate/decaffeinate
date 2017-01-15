@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('expansion', () => {
   it('allows getting the last elements of an array', () => {
@@ -29,7 +30,7 @@ describe('expansion', () => {
     check(`
       [a, b, c...] = arr
     `, `
-      let [a, b, ...c] = arr;
+      let [a, b, ...c] = Array.from(arr);
     `);
   });
 
@@ -95,7 +96,7 @@ describe('expansion', () => {
     check(`
       [a, b, ...] = arr
     `, `
-      let [a, b] = arr;
+      let [a, b] = Array.from(arr);
     `);
   });
 
@@ -157,7 +158,11 @@ describe('expansion', () => {
     check(`
       [a, b, ..., c, d] = getArray()
     `, `
-      let array = getArray(), a = array[0], b = array[1], c = array[array.length - 2], d = array[array.length - 1];
+      let array = getArray(),
+        a = array[0],
+        b = array[1],
+        c = array[array.length - 2],
+        d = array[array.length - 1];
     `);
   });
 
@@ -165,15 +170,118 @@ describe('expansion', () => {
     check(`
       [a, b, c..., d, e] = getArray()
     `, `
-      let array = getArray(), a = array[0], b = array[1], c = array.slice(2, array.length - 2), d = array[array.length - 2], e = array[array.length - 1];
+      let array = getArray(),
+        a = array[0],
+        b = array[1],
+        c = array.slice(2, array.length - 2),
+        d = array[array.length - 2],
+        e = array[array.length - 1];
     `);
   });
 
-  it('handles expansions over destructures', () => {
+  it('handles expansions and object destructures', () => {
     check(`
       [..., {a, b}] = arr
     `, `
       let {a, b} = arr[arr.length - 1];
     `);
+  });
+
+  it('handles expansions and object destructures with renaming', () => {
+    check(`
+      [..., {a: b, c: d}] = arr
+    `, `
+      let {a: b, c: d} = arr[arr.length - 1];
+    `);
+  });
+
+  it('handles nested expansions', () => {
+    check(`
+      [..., [..., a]] = arr
+    `, `
+      let array = arr[arr.length - 1], a = array[array.length - 1];
+    `);
+  });
+
+  it('handles a deeply-nested non-repeatable expression', () => {
+    check(`
+      [..., [..., a[b()]]] = arr
+    `, `
+      let array;
+      array = arr[arr.length - 1], a[b()] = array[array.length - 1];
+    `);
+  });
+
+  it('handles an array destructure within a rest destructure', () => {
+    check(`
+      [a, [b]..., c] = arr
+    `, `
+      let a = arr[0], [b] = Array.from(arr.slice(1, arr.length - 1)), c = arr[arr.length - 1];
+    `);
+  });
+
+  it('handles an expansion and a default param', () => {
+    check(`
+      [..., a = 1] = arr
+    `, `
+      let val = arr[arr.length - 1], a = val != null ? val : 1;
+    `);
+  });
+
+  it('handles a this-assign with default in an object destructure', () => {
+    check(`
+      {@a = b} = c
+    `, `
+      let val;
+      val = c.a, this.a = val != null ? val : b;
+    `);
+  });
+
+  it('handles a default destructure assign', () => {
+    check(`
+      {a = 1} = {}
+    `, `
+      let obj = {}, val = obj.a, a = val != null ? val : 1;
+    `);
+  });
+
+  it('handles a string key with a default assignment', () => {
+    check(`
+      {"#{a b}": c = d} = e
+    `, `
+      let val = e[\`\${a(b)}\`], c = val != null ? val : d;
+    `);
+  });
+
+  it('has the right semantics for nested rest destructures', () => {
+    validate(`
+      arr = [1, 2, 3, 4, 5, 6]
+      [a, [b, c..., d]..., e] = arr
+      o = a + b + d + e + c.length
+    `, 16);
+  });
+
+  it('properly destructures array-like objects', () => {
+    validate(`
+      arr = {length: 1, 0: 'Hello'}
+      [value] = arr
+      o = value
+    `, 'Hello');
+  });
+
+  it('properly destructures nested array-like objects', () => {
+    validate(`
+      arr = {length: 1, 0: 'World'}
+      [[value]] = [arr]
+      o = value
+    `, 'World');
+  });
+
+  it('properly destructures array-like objects with an expansion destructure', () => {
+    validate(`
+      arr = {length: 2, 0: 'Hello', 1: 'World'}
+      [..., secondWord] = arr
+      o = secondWord
+    `, 'World');
   });
 });
