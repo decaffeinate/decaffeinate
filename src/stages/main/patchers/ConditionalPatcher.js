@@ -209,6 +209,8 @@ export default class ConditionalPatcher extends NodePatcher {
     } else {
       if (this.consequent !== null) {
         this.consequent.patch({ leftBrace: false });
+      } else {
+        this.insert(this.condition.outerEnd, '} ');
       }
     }
   }

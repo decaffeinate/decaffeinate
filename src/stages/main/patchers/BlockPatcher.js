@@ -20,7 +20,10 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   setImplicitlyReturns() {
-    this.statements[this.statements.length - 1].setImplicitlyReturns();
+    // A block can have no statements if it only had a block comment.
+    if (this.statements.length > 0) {
+      this.statements[this.statements.length - 1].setImplicitlyReturns();
+    }
   }
 
   /**
