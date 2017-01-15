@@ -522,8 +522,8 @@ describe('classes', () => {
         (@a, b = @c) ->
       `, `
         (function(a, b) {
-          if (b == null) { b = this.c; }
           this.a = a;
+          if (b == null) { b = this.c; }
         });
       `);
     });
@@ -538,12 +538,13 @@ describe('classes', () => {
       `, { looseDefaultParams: true });
     });
 
-    it.skip('uses correct value for default param when reusing an already implicitly assigned param', () => {
+    it('uses correct value for default param when reusing an already implicitly assigned param', () => {
       check(`
         (@a, b = @a) ->
       `, `
-        (function(a, b = a) {
+        (function(a, b) {
           this.a = a;
+          if (b == null) { b = this.a; }
         });
       `);
     });
