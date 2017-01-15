@@ -1168,4 +1168,12 @@ export default class NodePatcher {
       receiver = receiver.parent;
     }
   }
+
+  /**
+   * Gets the first "interesting token" in the indexed range (default range is `this` + parent)
+   */
+  getFirstSemanticToken(from: number=this.contentStart, to: number=this.parent.contentEnd): ?SourceToken {
+    let nextSemanticIdx = this.indexOfSourceTokenBetweenSourceIndicesMatching(from, to, isSemanticToken);
+    return nextSemanticIdx && this.sourceTokenAtIndex(nextSemanticIdx);
+  }
 }

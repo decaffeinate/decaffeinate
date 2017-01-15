@@ -92,4 +92,49 @@ describe('member access', () => {
       a[b ? c : d];
     `);
   });
+
+  it('handles access to object constructed with multiline args 1', () => {
+    check(`
+      P -> 
+        foo
+      .then
+    `, `
+      P(() => foo).then;
+    `);
+  });
+
+  it('handles access to object constructed with multiline args 2', () => {
+    check(`
+      Q -> P -> 
+        foo
+      .then
+    `, `
+      Q(() => P(() => foo).then
+       );
+    `);
+  });
+
+  it('handles access to object constructed with multiline args 3', () => {
+    check(`
+      Q -> P -> 
+        foo
+        
+      .then
+    `, `
+      Q(() => P(() => foo).then
+       );
+    `);
+  });
+
+  it('handles access to object constructed with multiline args 4', () => {
+    check(`
+      Q -> P ->
+          foo
+          
+         .then
+    `, `
+      Q(() => P(() => foo).then
+       );
+    `);
+  });
 });
