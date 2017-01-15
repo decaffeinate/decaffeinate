@@ -29,13 +29,37 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
       let memberNameToken = this.getMemberNameSourceToken();
       this.overwrite(this.expression.outerEnd, memberNameToken.start, `, ${varName} => ${prefix}${varName}.`);
 
-      soakContainer.insert(soakContainer.contentStart, '__guard__(');
+      if (soakContainer.prepend)
+        soakContainer.prepend(soakContainer.contentStart, '__guard__(');
+      else
+        soakContainer.insert(soakContainer.contentStart, '__guard__(');
       soakContainer.insert(soakContainer.contentEnd, ')');
     }
     this.expression.patch();
   }
 
-  setShouldSkipSoakPatch() {
+    /**
+     * Insert content at the specified index.
+     */
+    prepend(index: number, content: string) {
+        if (typeof index !== 'number') {
+            throw new Error(
+                `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
+            );
+        }
+        this.log(
+            'PREPEND LEFT',
+            index,
+            JSON.stringify(content),
+            'BEFORE',
+            JSON.stringify(this.context.source.slice(index, index + 8))
+        );
+
+        this.adjustBoundsToInclude(index);
+        this.editor.prependRight(index, content);
+    }
+
+    setShouldSkipSoakPatch() {
     this._shouldSkipSoakPatch = true;
   }
 
