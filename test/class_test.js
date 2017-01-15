@@ -114,10 +114,15 @@ describe('classes', () => {
           constructor: ([@a = 1], {test: @b = 2}, @c) ->
       `, `
         class A {
-          constructor([a = 1], {test: b = 2}, c) {
-            this.a = a;
-            this.b = b;
-            this.c = c;
+          constructor(...args) {
+            let array, obj, val, val1;
+            array = args[0],
+              val = array[0],
+              this.a = val != null ? val : 1,
+              obj = args[1],
+              val1 = obj.test,
+              this.b = val1 != null ? val1 : 2,
+              this.c = args[2];
           }
         }
       `);
