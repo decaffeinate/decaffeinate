@@ -23,42 +23,16 @@ export default class FunctionPatcher extends NodePatcher {
       this.insert(this.body.contentStart, ' ');
     }
 
-    // To avoid knowledge of all the details how assignments can be nested in nodes,
-    // we add a callback to the function node before patching the parameters and remove it afterwards.
-    // This is detected and used by the MemberAccessOpPatcher to claim a free binding for this parameter
-    // (from the functions scope, not the body's scope)
-
-    let defaultParamAssignments = [];
-    let thisAssignments = [];
-    this.addThisAssignmentAtScopeHeader = (memberName: string) => {
-      let varName = this.claimFreeBinding(memberName);
-      thisAssignments.push(`@${memberName} = ${varName}`);
-      this.log(`Replacing parameter @${memberName} with ${varName}`);
-      return varName;
-    };
-    this.addDefaultParamAssignmentAtScopeHeader = (assigneeCode: string, initCode: string, assigneeIsValidExpression: boolean) => {
-      if (assigneeIsValidExpression) {
-        defaultParamAssignments.push(`${assigneeCode} ?= ${initCode}`);
-        return assigneeCode;
-      } else {
-        // Handle cases like `({a}={}) ->`, where we need to check for default
-        // with the param as a normal variable, then include the destructure.
-        assigneeCode = this.fixGeneratedAssigneeWhitespace(assigneeCode);
-        let paramName = this.claimFreeBinding('param');
-        defaultParamAssignments.push(`${paramName} ?= ${initCode}`);
-        defaultParamAssignments.push(`${assigneeCode} = ${paramName}`);
-        return paramName;
-      }
-    };
-
-    this.parameters.forEach(parameter => parameter.patch());
-
-    delete this.addDefaultParamAssignmentAtScopeHeader;
-    delete this.addThisAssignmentAtScopeHeader;
-
-    let assignments = [];
-
     let expansionIndex = this.getExpansionIndex();
+    let assignments = [];
+    for (let [i, parameter] of this.parameters.entries()) {
+      if (expansionIndex === -1 || i < expansionIndex) {
+        assignments.push(...this.patchParameterAndGetAssignments(parameter));
+      } else {
+        parameter.patch();
+      }
+    }
+
     if (expansionIndex !== -1) {
       if (expansionIndex === this.parameters.length - 1) {
         // Just get rid of the ... at the end (this case isn't exercised for
@@ -83,8 +57,6 @@ export default class FunctionPatcher extends NodePatcher {
         assignments.push(`[${paramCode}] = ${paramName}`);
       }
     }
-    assignments.push(...defaultParamAssignments);
-    assignments.push(...thisAssignments);
 
     // If there were assignments from parameters insert them
     if (this.body) {
@@ -103,6 +75,43 @@ export default class FunctionPatcher extends NodePatcher {
       let text = assignments.join(`\n${indent}`);
       this.insert(this.contentEnd, `\n${indent}${text}`);
     }
+  }
+
+  patchParameterAndGetAssignments(parameter: NodePatcher) {
+    let thisAssignments = [];
+    let defaultParamAssignments = [];
+
+    // To avoid knowledge of all the details how assignments can be nested in nodes,
+    // we add a callback to the function node before patching the parameters and remove it afterwards.
+    // This is detected and used by the MemberAccessOpPatcher to claim a free binding for this parameter
+    // (from the functions scope, not the body's scope)
+    this.addThisAssignmentAtScopeHeader = (memberName: string) => {
+      let varName = this.claimFreeBinding(memberName);
+      thisAssignments.push(`@${memberName} = ${varName}`);
+      this.log(`Replacing parameter @${memberName} with ${varName}`);
+      return varName;
+    };
+    this.addDefaultParamAssignmentAtScopeHeader = (assigneeCode: string, initCode: string, assigneeIsValidExpression: boolean) => {
+      if (assigneeIsValidExpression) {
+        defaultParamAssignments.push(`${assigneeCode} ?= ${initCode}`);
+        return assigneeCode;
+      } else {
+        // Handle cases like `({a}={}) ->`, where we need to check for default
+        // with the param as a normal variable, then include the destructure.
+        assigneeCode = this.fixGeneratedAssigneeWhitespace(assigneeCode);
+        let paramName = this.claimFreeBinding('param');
+        defaultParamAssignments.push(`${paramName} ?= ${initCode}`);
+        defaultParamAssignments.push(`${assigneeCode} = ${paramName}`);
+        return paramName;
+      }
+    };
+
+    parameter.patch();
+
+    delete this.addDefaultParamAssignmentAtScopeHeader;
+    delete this.addThisAssignmentAtScopeHeader;
+
+    return [...defaultParamAssignments, ...thisAssignments];
   }
 
   /**

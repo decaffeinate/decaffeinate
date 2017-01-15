@@ -9,21 +9,24 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it.skip('allows assigning to a `this` property', () => {
-    // FIXME: This should not return the assignment value.
+  it('allows assigning to a `this` property', () => {
     check(`
       (@a) ->
     `, `
-      (function(a) { return this.a = a; });
+      (function(a) {
+        this.a = a;
+      });
     `);
   });
 
-  it.skip('allows assigning to multiple `this` properties', () => {
-    // FIXME: This should not return the assignment value.
+  it('allows assigning to multiple `this` properties', () => {
     check(`
       (@a, @b) ->
     `, `
-      (function(a, b) { return this.a = a, this.b = b; });
+      (function(a, b) {
+        this.a = a;
+        this.b = b;
+      });
     `);
   });
 
@@ -90,23 +93,28 @@ describe('parameter assignment', () => {
     `);
   });
 
-  it.skip('works as expected for struct-like class constructors', () => {
+  it('works as expected for struct-like class constructors', () => {
     check(`
       class Point
         constructor: (@x, @y) ->
     `, `
       class Point {
-        constructor(x, y) { this.x = x, this.y = y; }
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+        }
       }
     `);
   });
 
-  it.skip('works with default parameters', () => {
-    // FIXME: This should not return the assignment value.
+  it('works with default parameters', () => {
     check(`
       (@a=1) ->
     `, `
-      (function(a=1) { return this.a = a; });
+      (function(a) {
+        if (a == null) { a = 1; }
+        this.a = a;
+      });
     `);
   });
 
