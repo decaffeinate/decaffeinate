@@ -1041,4 +1041,27 @@ describe('classes', () => {
       }
     `);
   });
+
+  it('handles a single-line class', () => {
+    check(`
+      class A then b: -> c
+    `, `
+      class A {
+        b() { return c; }
+      }
+    `);
+  });
+
+  it('handles a single-line class that needs an initClass method', () => {
+    check(`
+      class A then b: c
+    `, `
+      class A {
+        static initClass() {
+          this.prototype.b = c;
+        }
+      }
+      A.initClass();
+    `);
+  });
 });

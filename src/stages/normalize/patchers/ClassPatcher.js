@@ -1,3 +1,5 @@
+import { SourceType } from 'coffee-lex';
+
 import NodePatcher from './../../../patchers/NodePatcher';
 import AssignOpPatcher from './AssignOpPatcher';
 
@@ -40,6 +42,8 @@ export default class ClassPatcher extends NodePatcher {
       this.body.patch();
     }
 
+    this.removeThenTokenIfNecessary();
+
     if (!this.body) {
       return;
     }
@@ -66,6 +70,31 @@ export default class ClassPatcher extends NodePatcher {
    */
   patchAsExpression() {
     this.body.patch();
+  }
+
+  removeThenTokenIfNecessary() {
+    let searchStart;
+    if (this.superclass) {
+      searchStart = this.superclass.outerEnd;
+    } else if (this.nameAssignee) {
+      searchStart = this.nameAssignee.outerEnd;
+    } else {
+      searchStart = this.contentStart;
+    }
+    let searchEnd;
+    if (this.body) {
+      searchEnd = this.body.outerStart;
+    } else {
+      searchEnd = this.contentEnd;
+    }
+    let index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      searchStart,
+      searchEnd,
+      token => token.type === SourceType.THEN
+    );
+    if (index) {
+      this.overwrite(searchStart, searchEnd, `\n${this.getIndent(1)}`);
+    }
   }
 
   getInitClassInsertPoint() {
@@ -148,6 +177,11 @@ export default class ClassPatcher extends NodePatcher {
    */
   generateInitClassMethod(nonMethodPatchers, insertPoint) {
     let bodyIndent = this.body.getIndent();
+    // If the body is inline, generate code at one indent level up instead of
+    // at the class indentation level.
+    if (bodyIndent === this.getIndent()) {
+      bodyIndent = this.getIndent(1);
+    }
     let indentString = this.getProgramIndentString();
     this.insert(insertPoint, `\n${bodyIndent}@initClass: ->`);
     let assignmentNames = [];
