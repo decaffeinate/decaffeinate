@@ -25,7 +25,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
       }
       this.overwrite(this.expression.outerEnd, this.indexingExpr.outerStart, `, ${varName} => ${prefix}${varName}[`);
       soakContainer.insert(soakContainer.contentStart, '__guard__(');
-      soakContainer.insert(soakContainer.contentEnd, ')');
+      soakContainer.appendDeferredSuffix(')');
     }
 
     this.expression.patch();

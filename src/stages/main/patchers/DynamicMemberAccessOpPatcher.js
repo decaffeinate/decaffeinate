@@ -33,6 +33,7 @@ export default class DynamicMemberAccessOpPatcher extends NodePatcher {
       this.expression.setRequiresRepeatableExpression({ isForAssignment: true, parens: true, ref: 'base' });
       this.indexingExpr.setRequiresRepeatableExpression({ ref: 'name' });
       this.patchAsExpression();
+      this.commitDeferredSuffix();
       return `${this.expression.getRepeatCode()}[${this.indexingExpr.getRepeatCode()}]`;
     } else {
       return super.patchAsRepeatableExpression(repeatableOptions, patchOptions);

@@ -30,7 +30,7 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
       this.overwrite(this.expression.outerEnd, memberNameToken.start, `, ${varName} => ${prefix}${varName}.`);
 
       soakContainer.insert(soakContainer.contentStart, '__guard__(');
-      soakContainer.insert(soakContainer.contentEnd, ')');
+      soakContainer.appendDeferredSuffix(')');
     }
     this.expression.patch();
   }
