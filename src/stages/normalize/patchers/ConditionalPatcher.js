@@ -1,7 +1,9 @@
-import NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
-import type { SourceTokenListIndex } from 'coffee-lex';
 import { SourceType } from 'coffee-lex';
+import type { SourceTokenListIndex } from 'coffee-lex';
+
+import NodePatcher from '../../../patchers/NodePatcher';
+import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
+import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Normalizes conditionals by rewriting post-`if` into standard `if`, e.g.
@@ -44,6 +46,10 @@ export default class ConditionalPatcher extends NodePatcher {
    */
   patchPostIf() {
     this.condition.patch();
+    if (postfixExpressionRequiresParens(this.slice(this.condition.contentStart, this.condition.contentEnd)) &&
+        !this.condition.isSurroundedByParentheses()) {
+      this.condition.surroundInParens();
+    }
     this.consequent.patch();
 
     let ifTokenIndex = this.getIfTokenIndex();

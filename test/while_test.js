@@ -380,4 +380,13 @@ describe('while', () => {
       while (b) { if (c ? d : undefined) { a; } }
     `);
   });
+
+  it('handles a multiline condition in a postfix while', () => {
+    check(`
+      a while do ->
+        b
+    `, `
+      while ((() => b)()) { a; }
+    `);
+  });
 });

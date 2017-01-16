@@ -1272,4 +1272,13 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles a multiline step in a postfix loop', () => {
+    check(`
+      a for b in c by do ->
+        d
+    `, `
+      for (let step = (() => d)(), asc = step > 0, i = asc ? 0 : c.length - 1; asc ? i < c.length : i >= 0; i += step) { let b = c[i]; a; }
+    `);
+  });
 });
