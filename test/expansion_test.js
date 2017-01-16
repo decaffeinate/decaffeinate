@@ -151,6 +151,46 @@ describe('expansion', () => {
     `);
   });
 
+  it('handles an expansion node in a parameter array destructure', () => {
+    check(`
+      (a, [..., b], c) ->
+        d
+    `, `
+      (function(a, ...rest) {
+        let array = rest[0], b = array[array.length - 1], c = rest[1];
+        return d;
+      });
+    `);
+  });
+
+  it('handles a complex single argument', () => {
+    check(`
+      fn = ([a,b]) -> {a:a,b:b}
+    `, `
+      let fn = function(...args) { let [a,b] = Array.from(args[0]); return {a,b}; };
+    `);
+  });
+
+  it('handles a complex parameter list with varying indentation', () => {
+    check(`
+      f = (a, b, ..., {
+        c,
+        d,
+        e,
+      }) ->
+        f
+    `, `
+      var f = function(a, b, ...rest) {
+        let {
+          c,
+          d,
+          e,
+        } = rest[rest.length - 1];
+        return f;
+      };
+    `);
+  });
+
   it('allows getting elements from an unsafe-to-repeat list', () => {
     check(`
       [a, b, ..., c, d] = getArray()
