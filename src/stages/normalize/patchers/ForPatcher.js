@@ -1,6 +1,8 @@
-import NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext, SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+
+import NodePatcher from '../../../patchers/NodePatcher';
+import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import type { PatcherContext, SourceToken } from './../../../patchers/types';
 
 export default class ForPatcher extends NodePatcher {
   keyAssignee: ?NodePatcher;
@@ -19,21 +21,32 @@ export default class ForPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    let bodyPrefixLine = null;
     if (this.keyAssignee) {
+      // The key assignee can't be a complex expression, so we don't need to
+      // worry about checking canPatchAssigneeToJavaScript.
       this.keyAssignee.patch();
     }
     if (this.valAssignee) {
-      this.valAssignee.patch();
+      bodyPrefixLine = this.patchValAssignee();
     }
     this.target.patch();
     if (this.filter) {
       this.filter.patch();
     }
-    this.body.patch();
 
     if (this.isPostFor()) {
-      this.normalize();
+      this.surroundThenUsagesInParens();
+      let forToken = this.getForToken();
+      let forThroughEnd = this.slice(forToken.start, this.contentEnd);
+      this.remove(this.body.outerEnd, this.contentEnd);
+      this.insert(this.body.outerStart, `${forThroughEnd} then `);
     }
+
+    if (bodyPrefixLine !== null) {
+      this.body.insertLineBefore(bodyPrefixLine);
+    }
+    this.body.patch();
   }
 
   patchAsStatement() {
@@ -41,25 +54,26 @@ export default class ForPatcher extends NodePatcher {
   }
 
   /**
-   * @private
+   * Patch the value assignee, and if we need to add a line to the start of the
+   * body, return that line. Otherwise, return null.
    */
-  isPostFor(): boolean {
-    return this.body.contentStart < this.target.contentStart;
+  patchValAssignee() {
+    if (canPatchAssigneeToJavaScript(this.valAssignee.node)) {
+      this.valAssignee.patch();
+      return null;
+    } else {
+      let assigneeName = this.claimFreeBinding('value');
+      let assigneeCode = this.valAssignee.patchAndGetCode();
+      this.overwrite(this.valAssignee.contentStart, this.valAssignee.contentEnd, assigneeName);
+      return `${assigneeCode} = ${assigneeName}`;
+    }
   }
 
   /**
    * @private
    */
-  normalize() {
-    this.surroundThenUsagesInParens();
-    let forToken = this.getForToken();
-    let forThroughEnd = this.slice(forToken.start, this.contentEnd);
-    let startUntilFor = this.slice(this.contentStart, this.body.outerEnd);
-    this.overwrite(
-      this.contentStart,
-      this.contentEnd,
-      `${forThroughEnd} then ${startUntilFor}`
-    );
+  isPostFor(): boolean {
+    return this.body.contentStart < this.target.contentStart;
   }
 
   /**
