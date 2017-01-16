@@ -1,5 +1,6 @@
 import assertError from './support/assertError';
 import check from './support/check';
+import validate from './support/validate';
 
 describe('classes', () => {
   it('converts named classes without bodies', () => {
@@ -1063,5 +1064,71 @@ describe('classes', () => {
       }
       A.initClass();
     `);
+  });
+
+  it('allows super calls within nested functions', () => {
+    check(`
+      class B extends A
+        foo : (cb) ->
+          dolater =>
+            dolater =>
+              super cb
+    `, `
+      class B extends A {
+        foo(cb) {
+          return dolater(() => {
+            return dolater(() => {
+              return B.prototype.__proto__.foo.call(this, cb);
+            }
+            );
+          }
+          );
+        }
+      }
+    `);
+  });
+
+  it('handles a super call on a method assigned directly to the prototype', () => {
+    check(`
+      class A
+        c: -> console.log 'Hello'
+      class B extends A
+      B::c = -> super
+      b = new B()
+      b.c()
+    `, `
+      class A {
+        c() { return console.log('Hello'); }
+      }
+      class B extends A {}
+      B.prototype.c = function() { return B.prototype.__proto__.c.call(this, ...arguments); };
+      let b = new B();
+      b.c();
+    `);
+  });
+
+  it('has correct behavior with a standalone prototype super call', () => {
+    validate(`
+      class A
+        c: -> 3
+      class B extends A
+      B::c = -> super + 1
+      b = new B()
+      o = b.c()
+    `, 4);
+  });
+
+  it('forwards function arguments on empty super, even if the arguments are for an inner function', () => {
+    validate(`
+      class A
+        c: (x) -> x + 5
+      class B extends A
+        c: (x) ->
+          f = (y) ->
+            super
+          f(x + 3)
+      b = new B()
+      o = b.c(1)
+    `, 9);
   });
 });
