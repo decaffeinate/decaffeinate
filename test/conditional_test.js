@@ -590,4 +590,38 @@ describe('conditionals', () => {
       if ((() => b)()) { a; }
     `);
   });
+
+  it('handles a conditional with no consequent or alternate', () => {
+    check(`
+      if a
+      else
+    `, `
+      if (a) {} 
+      else {}
+    `);
+  });
+
+  it('handles a conditional with only a comment for the consequent and alternate', () => {
+    check(`
+      ->
+        if false
+          # comment
+        else if true
+          ###
+          block comment
+          ###
+        else
+    `, `
+      (function() {
+        if (false) {
+          // comment
+        } else if (true) {
+        }
+          /*
+          block comment
+          */
+        else {}
+      });
+    `);
+  });
 });
