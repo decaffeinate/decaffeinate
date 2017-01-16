@@ -239,6 +239,28 @@ describe('functions', () => {
     `);
   });
 
+  it('correctly handles `yield return` with an expression', () => {
+    check(`
+      ->
+        yield return 3
+    `, `
+      (function*() {
+        return 3;
+      });
+    `);
+  });
+
+  it('correctly handles `yield return` without an expression', () => {
+    check(`
+      ->
+        yield return
+    `, `
+      (function*() {
+        
+      });
+    `);
+  });
+
   it('keeps function with a spread in braces', () => {
     check(`(args...) =>`, `(...args) => {};`);
   });
