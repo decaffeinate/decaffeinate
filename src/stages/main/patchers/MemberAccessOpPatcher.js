@@ -45,6 +45,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     if (repeatableOptions.isForAssignment) {
       this.expression.setRequiresRepeatableExpression({ isForAssignment: true, parens: true, ref: 'base' });
       this.patchAsExpression();
+      this.commitDeferredSuffix();
       return `${this.expression.getRepeatCode()}.${this.getFullMemberName()}`;
     } else {
       return super.patchAsRepeatableExpression(repeatableOptions, patchOptions);

@@ -641,4 +641,15 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('handles a soaked dynamic access used with a logical assignment operator with a function RHS', () => {
+    check(`
+      a.b?.c or= (it) -> it
+    `, `
+      __guard__(a.b, x => x.c || (a.b.c = it => it));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
 });

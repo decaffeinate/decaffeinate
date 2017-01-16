@@ -230,10 +230,13 @@ export default class NodePatcher {
           this._repeatableOptions, options);
       } else if (this.forcedToPatchAsExpression()) {
         this.patchAsForcedExpression(options);
+        this.commitDeferredSuffix();
       } else if (this.willPatchAsExpression()) {
         this.patchAsExpression(options);
+        this.commitDeferredSuffix();
       } else {
         this.patchAsStatement(options);
+        this.commitDeferredSuffix();
       }
     });
   }
@@ -329,11 +332,17 @@ export default class NodePatcher {
    * to declare themselves as already repeatable. In more advanced cases,
    * subclasses can override this method to provide custom behavior.
    *
+   * This function is also responsible for committing the deferred suffix if
+   * necessary.
+   *
    * @protected
    */
   patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {
     if (this.isRepeatable()) {
-      return this.captureCodeForPatchOperation(() => this.patchAsForcedExpression(patchOptions));
+      return this.captureCodeForPatchOperation(() => {
+        this.patchAsForcedExpression(patchOptions);
+        this.commitDeferredSuffix();
+      });
     } else {
       // Can't repeat it, so we assign it to a free variable and return that,
       // i.e. `a + b` → `(ref = a + b)`.
@@ -346,6 +355,7 @@ export default class NodePatcher {
       if (repeatableOptions.parens) {
         this.insert(this.innerEnd, ')');
       }
+      this.commitDeferredSuffix();
       return ref;
     }
   }
@@ -693,6 +703,31 @@ export default class NodePatcher {
     this._returns = true;
     if (this.parent) {
       this.parent.setExplicitlyReturns();
+    }
+  }
+
+  /**
+   * Mark that this node should have the given suffix appended at the end of
+   * patching. For example, this allows a child node to indicate that this node
+   * should end with a close-paren, and to do so in a way that respects patching
+   * order (doesn't add the close-paren too early).
+   */
+  appendDeferredSuffix(suffix: string) {
+    if (!this._deferredSuffix) {
+      this._deferredSuffix = '';
+    }
+    this._deferredSuffix += suffix;
+  }
+
+  /**
+   * Internal method that should be called at the end of patching to actually
+   * place the deferred suffix in the right place.
+   *
+   * @protected
+   */
+  commitDeferredSuffix() {
+    if (this._deferredSuffix) {
+      this.insert(this.innerEnd, this._deferredSuffix);
     }
   }
 

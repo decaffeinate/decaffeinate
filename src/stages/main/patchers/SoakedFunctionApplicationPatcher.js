@@ -77,7 +77,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     this.overwrite(fn.expression.outerEnd, callStartToken.end,
       `, '${memberName}', ${varName} => ${prefix}${varName}.${memberName}(`);
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
-    soakContainer.insert(soakContainer.contentEnd, ')');
+    soakContainer.appendDeferredSuffix(')');
   }
 
   /**
@@ -103,7 +103,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     this.overwrite(indexingExpr.outerEnd, callStartToken.end,
       `, (${objVarName}, ${methodVarName}) => ${prefix}${objVarName}[${methodVarName}](`);
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
-    soakContainer.insert(soakContainer.contentEnd, ')');
+    soakContainer.appendDeferredSuffix(')');
   }
 
   patchNonMethodCall() {
@@ -117,7 +117,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     }
     this.overwrite(this.fn.outerEnd, callStartToken.end, `, ${varName} => ${prefix}${varName}(`);
     soakContainer.insert(soakContainer.contentStart, '__guardFunc__(');
-    soakContainer.insert(soakContainer.contentEnd, ')');
+    soakContainer.appendDeferredSuffix(')');
   }
 
   getCallStartToken(): SourceToken {
