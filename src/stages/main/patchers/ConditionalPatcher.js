@@ -104,7 +104,7 @@ export default class ConditionalPatcher extends NodePatcher {
       consequent.patch();
       // `a ? b` → `a ? b : undefined`
       if (elseToken !== null) {
-        this.overwrite(this.consequent.outerEnd, elseToken.end, ' : undefined');
+        this.overwrite(elseToken.start, elseToken.end, ' : undefined');
       } else {
         this.insert(this.consequent.outerEnd, ' : undefined');
       }

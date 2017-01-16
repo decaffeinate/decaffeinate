@@ -98,23 +98,27 @@ export default class BlockPatcher extends SharedBlockPatcher {
     if (leftBrace) {
       this.insert(this.innerStart, '(');
     }
-    this.statements.forEach(
-      (statement, i, statements) => {
-        statement.patch();
-        if (i !== statements.length - 1) {
-          let semicolonTokenIndex = this.getSemicolonSourceTokenBetween(
-            statement,
-            statements[i + 1]
-          );
-          if (semicolonTokenIndex) {
-            let semicolonToken = this.sourceTokenAtIndex(semicolonTokenIndex);
-            this.overwrite(semicolonToken.start, semicolonToken.end, ',');
-          } else {
-            this.insert(statement.outerEnd, ',');
+    if (this.statements.length === 0) {
+      this.insert(this.contentStart, 'undefined');
+    } else {
+      this.statements.forEach(
+        (statement, i, statements) => {
+          statement.patch();
+          if (i !== statements.length - 1) {
+            let semicolonTokenIndex = this.getSemicolonSourceTokenBetween(
+              statement,
+              statements[i + 1]
+            );
+            if (semicolonTokenIndex) {
+              let semicolonToken = this.sourceTokenAtIndex(semicolonTokenIndex);
+              this.overwrite(semicolonToken.start, semicolonToken.end, ',');
+            } else {
+              this.insert(statement.outerEnd, ',');
+            }
           }
         }
-      }
-    );
+      );
+    }
     if (rightBrace) {
       this.insert(this.innerEnd, ')');
     }

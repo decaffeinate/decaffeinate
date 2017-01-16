@@ -537,7 +537,8 @@ describe('conditionals', () => {
     `, `
       let x =
         a ?
-          b : undefined;
+          b
+         : undefined;
           // Do nothing
     `)
   );
@@ -622,6 +623,20 @@ describe('conditionals', () => {
           */
         else {}
       });
+    `);
+  });
+
+  it('handles a parenthesized empty condition with only a block comment for its body', () => {
+    check(`
+      (if true
+        ### a ###
+      else
+      )
+    `, `
+      (true ?
+        undefined/* a */
+       : undefined
+      );
     `);
   });
 });
