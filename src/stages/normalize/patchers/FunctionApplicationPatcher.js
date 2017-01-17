@@ -1,6 +1,7 @@
+import { SourceType } from 'coffee-lex';
+
 import NodePatcher from './../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
-import { SourceType } from 'coffee-lex';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
@@ -82,10 +83,13 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     let { args } = this;
     let lastArg = args[args.length - 1];
     if (lastArg.isMultiline()) {
-      // The CoffeeScript compiler will sometimes reject `.` that is starting a new line following a `)` token
+      // The CoffeeScript compiler will sometimes reject `.` that is starting a
+      // new line following a `)` token. Also, in some cases, it will complain
+      // about an indentation error if the `)` is too far indented. So handle
+      // this case by moving the `.` to be right after the new `)`.
       let nextSemanticToken = this.getFirstSemanticToken(this.contentEnd);
       if (nextSemanticToken && nextSemanticToken.type === SourceType.DOT) {
-        this.insert(nextSemanticToken.start, ')');
+        this.overwrite(this.outerEnd, nextSemanticToken.start, ')');
       } else {
         this.insert(this.contentEnd, `\n${this.getIndent()})`);
       }

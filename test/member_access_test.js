@@ -137,4 +137,28 @@ describe('member access', () => {
        );
     `);
   });
+
+  it('handles an implicit call wrapping a multiline function call and followed by a dot', () => {
+    check(`
+      a b(
+        c)
+        .d
+    `, `
+      a(b(
+        c)).d;
+    `);
+  });
+
+  it('handles a complex implicit call wrapping a multiline function call and followed by a dot', () => {
+    check(`
+      a
+        .b c(d,
+          e)
+        .f
+    `, `
+      a
+        .b(c(d,
+          e)).f;
+    `);
+  });
 });
