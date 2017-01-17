@@ -198,6 +198,70 @@ describe('functions', () => {
     `);
   });
 
+  it('wraps parens around yield in a normal expression context', () => {
+    check(`
+      -> 1 + yield 2
+    `, `
+      (function*() { return 1 + (yield 2); });
+    `);
+  });
+
+  it('wraps parens around yield* in a normal expression context', () => {
+    check(`
+      -> 1 + yield from 2
+    `, `
+      (function*() { return 1 + (yield* 2); });
+    `);
+  });
+
+  it('does not wrap parens around yield in an assignment', () => {
+    check(`
+      ->
+        x = yield 2
+        return x
+    `, `
+      (function*() {
+        let x = yield 2;
+        return x;
+      });
+    `);
+  });
+
+  it('does not wrap parens around yield* in an assignment', () => {
+    check(`
+      ->
+        x = yield from 2
+        return x
+    `, `
+      (function*() {
+        let x = yield* 2;
+        return x;
+      });
+    `);
+  });
+
+  it('does not wrap parens around yield in an explicit return', () => {
+    check(`
+      ->
+        return yield 2
+    `, `
+      (function*() {
+        return yield 2;
+      });
+    `);
+  });
+
+  it('does not wrap parens around yield* in an explicit return', () => {
+    check(`
+      ->
+        return yield from 2
+    `, `
+      (function*() {
+        return yield* 2;
+      });
+    `);
+  });
+
   it('turns fat arrow function containing a `yield` statement into a generator function with bind', () => {
     check(`
       => yield fn()
