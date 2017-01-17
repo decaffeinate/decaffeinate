@@ -134,7 +134,8 @@ const ORDER = {
   UnsignedRightShiftOp: ['left', 'right'],
   While: ['condition', 'guard', 'body'],
   Yield: ['expression'],
-  YieldFrom: ['expression']
+  YieldFrom: ['expression'],
+  YieldReturn: ['expression'],
 };
 
 export function childPropertyNames(node: Node): Array<string> {

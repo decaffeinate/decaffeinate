@@ -68,6 +68,7 @@ import WhilePatcher from './patchers/WhilePatcher';
 import GeneratorFunctionPatcher from './patchers/GeneratorFunctionPatcher';
 import YieldPatcher from './patchers/YieldPatcher';
 import YieldFromPatcher from './patchers/YieldFromPatcher';
+import YieldReturnPatcher from './patchers/YieldReturnPatcher';
 import type NodePatcher from './../../patchers/NodePatcher';
 import type { Node } from '../../patchers/types';
 import BreakPatcher from './patchers/BreakPatcher';
@@ -129,13 +130,16 @@ export default class MainStage extends TransformCoffeeScriptStage {
         return ThisPatcher;
 
       case 'Yield':
-       return YieldPatcher;
+        return YieldPatcher;
 
       case 'YieldFrom':
-       return YieldFromPatcher;
+        return YieldFromPatcher;
+
+      case 'YieldReturn':
+        return YieldReturnPatcher;
 
       case 'GeneratorFunction':
-       return GeneratorFunctionPatcher;
+        return GeneratorFunctionPatcher;
 
       case 'Function':
         return FunctionPatcher;
