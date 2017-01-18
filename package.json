@@ -43,7 +43,7 @@
     "coffee-lex": "^6.0.0",
     "decaffeinate-coffeescript": "^1.10.0-patch12",
     "decaffeinate-parser": "^13.1.1",
-    "detect-indent": "^4.0.0",
+    "detect-indent": "^5.0.0",
     "esnext": "^3.0.10",
     "lines-and-columns": "^1.1.5",
     "magic-string": "^0.17.0",
