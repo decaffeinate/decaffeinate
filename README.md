@@ -26,13 +26,49 @@ information and advice on running decaffeinate on real-world code.
 
 **Mostly complete.** The project has been used to convert tens of thousands of
 lines of production code, and can be relied upon for production use, but no
-guarantees are made. For small projects like [hubot] and [autoprefixer],
-decaffeinate can convert all code to JavaScript with all tests passing. For
-larger projects, there may be some files that fail to convert or cases where the
-generated JS has correctness issues.
+guarantees are made.
 
-Check the [issues] page for outstanding bugs and incomplete features. And, of
-course, you're welcome to file issues for any problems you run into.
+Here are some popular open source CoffeeScript projects and their current status
+when run through decaffeinate. Each project has a decaffeinate-specific fork
+that is re-run daily.
+
+Project        | Lines of CoffeeScript | Conversion status                 | Test status
+-------------- |:---------------------:|:---------------------------------:|:---------------------------:
+[hubot]        | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
+[autoprefixer] | 4.8K                  | ![autoprefixer-conversion-status] | ![autoprefixer-test-status]
+[coffeelint]   | 8.8K                  | ![coffeelint-conversion-status]   | ![coffeelint-test-status]
+[coffeescript] | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
+[atom]         | 51K                   | ![atom-conversion-status]         | ![atom-test-status]
+[codecombat]   | 230K                  | ![codecombat-conversion-status]   | ![codecombat-test-status]
+
+To contribute to this list, send a pull request to the [decaffeinate-examples]
+project.
+
+Check the [issues] page for more specific details on outstanding bugs and
+incomplete features. And, of course, you're welcome to file issues for any
+problems you run into.
+
+[hubot]: https://github.com/decaffeinate-examples/hubot
+[autoprefixer]: https://github.com/decaffeinate-examples/autoprefixer
+[coffeelint]: https://github.com/decaffeinate-examples/coffeelint
+[coffeescript]: https://github.com/decaffeinate-examples/coffeescript
+[atom]: https://github.com/decaffeinate-examples/atom
+[codecombat]: https://github.com/decaffeinate-examples/codecombat
+
+[decaffeinate-examples]: https://github.com/decaffeinate/decaffeinate-examples
+
+[hubot-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/hubot/decaffeinate/conversion-status.svg
+[hubot-test-status]: https://cdn.rawgit.com/decaffeinate-examples/hubot/decaffeinate/test-status.svg
+[autoprefixer-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/autoprefixer/decaffeinate/conversion-status.svg
+[autoprefixer-test-status]: https://cdn.rawgit.com/decaffeinate-examples/autoprefixer/decaffeinate/test-status.svg
+[coffeelint-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/coffeelint/decaffeinate/conversion-status.svg
+[coffeelint-test-status]: https://cdn.rawgit.com/decaffeinate-examples/coffeelint/decaffeinate/test-status.svg
+[coffeescript-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/coffeescript/decaffeinate/conversion-status.svg
+[coffeescript-test-status]: https://cdn.rawgit.com/decaffeinate-examples/coffeescript/decaffeinate/test-status.svg
+[atom-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/atom/decaffeinate/conversion-status.svg
+[atom-test-status]: https://cdn.rawgit.com/decaffeinate-examples/atom/decaffeinate/test-status.svg
+[codecombat-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/codecombat/decaffeinate/conversion-status.svg
+[codecombat-test-status]: https://cdn.rawgit.com/decaffeinate-examples/codecombat/decaffeinate/test-status.svg
 
 ## Goals
 
@@ -64,5 +100,3 @@ For more usage details, see the output of `decaffeinate --help`.
 [bulk-decaffeinate]: https://github.com/decaffeinate/bulk-decaffeinate
 [issues]: https://github.com/decaffeinate/decaffeinate/issues
 [conversion-guide]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md
-[hubot]: https://github.com/github/hubot
-[autoprefixer]: https://github.com/postcss/autoprefixer
