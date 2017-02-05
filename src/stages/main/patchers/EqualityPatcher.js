@@ -1,4 +1,5 @@
 import BinaryOpPatcher from './BinaryOpPatcher';
+import getCompareOperator from '../../../utils/getCompareOperator';
 import type { SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
@@ -18,30 +19,9 @@ export default class EqualityPatcher extends BinaryOpPatcher {
   }
 
   getCompareOperator(): string {
-    switch (this.node.type) {
-      case 'EQOp':
-        return this.negated ? '!==' : '===';
+    let token = this.getCompareToken();
 
-      case 'NEQOp':
-        return this.negated ? '===' : '!==';
-
-      case 'LTOp':
-        return this.negated ? '>=' : '<';
-
-      case 'GTOp':
-        return this.negated ? '<=' : '>';
-
-      case 'LTEOp':
-        return this.negated ? '>' : '<=';
-
-      case 'GTEOp':
-        return this.negated ? '<' : '>=';
-
-      default:
-        throw this.error(
-          `unsupported equality/inequality type: ${this.node.type}`
-        );
-    }
+    return getCompareOperator(this.sourceOfToken(token), this.negated);
   }
 
   /**

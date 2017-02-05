@@ -49,7 +49,7 @@ const ORDER = {
   BoundFunction: ['parameters', 'body'],
   BoundGeneratorFunction: ['parameters', 'body'],
   Break: [],
-  ChainedComparisonOp: ['expression'],
+  ChainedComparisonOp: ['operands'],
   Class: ['nameAssignee', 'parent', 'body'],
   ClassProtoAssignOp: ['assignee', 'expression'],
   CompoundAssignOp: ['assignee', 'expression'],
