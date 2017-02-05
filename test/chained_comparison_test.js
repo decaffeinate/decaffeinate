@@ -89,7 +89,7 @@ describe('chained comparison', () => {
       unless a < b <= c
         d
     `, `
-      if ((a >= b) || b > c) {
+      if (a >= b || b > c) {
         d;
       }
     `);
@@ -106,6 +106,22 @@ describe('chained comparison', () => {
           return a < (middle = b()) && middle < c;
         }
       });
+    `);
+  });
+
+  it('expands deeply nested chained operators', () => {
+    check(`
+      a is b isnt c is d isnt e
+    `, `
+      a === b && b !== c && c === d && d !== e;
+    `);
+  });
+
+  it('does not count parenthesis-wrapped binary operators as part of the chain', () => {
+    check(`
+      (a == b) == c == d == e
+    `, `
+      (a === b) === c && c === d && d === e;
     `);
   });
 });
