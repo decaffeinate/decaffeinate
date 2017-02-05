@@ -98,7 +98,7 @@
     "ignore": [
       "repeating",
       "magic-string",
-      "detect-indent
+      "detect-indent"
     ]
   }
 }
