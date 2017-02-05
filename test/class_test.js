@@ -1142,10 +1142,10 @@ describe('classes', () => {
           this.prototype.b = c;
         }
       });
-      var __initClass__ = function(c) {
+      function __initClass__(c) {
         c.initClass();
         return c;
-      };
+      }
     `);
   });
 
@@ -1162,10 +1162,10 @@ describe('classes', () => {
           }
         })
       ;
-      var __initClass__ = function(c) {
+      function __initClass__(c) {
         c.initClass();
         return c;
-      };
+      }
     `);
   });
 
@@ -1186,10 +1186,10 @@ describe('classes', () => {
           }
         });
       });
-      var __initClass__ = function(c) {
+      function __initClass__(c) {
         c.initClass();
         return c;
-      };
+      }
     `);
   });
 });

@@ -8,9 +8,10 @@ import ProgramPatcher from './ProgramPatcher';
 import type { PatcherContext } from './../../../patchers/types';
 
 const INIT_CLASS_HELPER = `\
-__initClass__ = (c) ->
-  c.initClass()
-  return c
+\`function __initClass__(c) {
+  c.initClass();
+  return c;
+}\`
 `;
 
 export default class ClassPatcher extends NodePatcher {
