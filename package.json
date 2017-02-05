@@ -43,11 +43,11 @@
     "coffee-lex": "^6.0.0",
     "decaffeinate-coffeescript": "^1.10.0-patch12",
     "decaffeinate-parser": "^14.0.0",
-    "detect-indent": "^5.0.0",
+    "detect-indent": "^4.0.0",
     "esnext": "^3.0.10",
     "lines-and-columns": "^1.1.5",
-    "magic-string": "^0.19.0",
-    "repeating": "^3.0.0"
+    "magic-string": "^0.17.0",
+    "repeating": "^2.0.0"
   },
   "engines": {
     "node": ">=4"
@@ -93,5 +93,12 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+    "greenkeeper": {
+    "ignore": [
+      "repeating",
+      "magic-string",
+      "detect-indent
+    ]
   }
 }
