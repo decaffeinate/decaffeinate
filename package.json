@@ -59,7 +59,7 @@
   "devDependencies": {
     "@types/mocha": "^2.2.36",
     "@types/mz": "0.0.30",
-    "@types/node": "^6.0.57",
+    "@types/node": "^7.0.5",
     "babel": "^6.5.2",
     "babel-core": "^6.10.4",
     "babel-eslint": "^7.1.0",
@@ -93,5 +93,12 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+    "greenkeeper": {
+    "ignore": [
+      "repeating",
+      "magic-string",
+      "detect-indent"
+    ]
   }
 }
