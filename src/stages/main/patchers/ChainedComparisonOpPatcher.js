@@ -1,37 +1,57 @@
-import BinaryOpPatcher from './BinaryOpPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
+import getCompareOperator from '../../../utils/getCompareOperator';
 import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Handles constructs of the form `a < b < c < … < z`.
  */
 export default class ChainedComparisonOpPatcher extends NodePatcher {
-  expression: NodePatcher;
-  
+  operands: Array<NodePatcher>;
+
   /**
    * `node` should have type `ChainedComparisonOp`.
    */
-  constructor(patcherContext: PatcherContext, expression: BinaryOpPatcher) {
+  constructor(patcherContext: PatcherContext, operands: Array<NodePatcher>) {
     super(patcherContext);
-    this.expression = expression;
+    this.operands = operands;
     this.negated = false;
   }
 
   initialize() {
-    this.expression.setRequiresExpression();
+    for (let operand of this.operands) {
+      operand.setRequiresExpression();
+    }
   }
 
   patchAsExpression() {
-    for (let operand of this.getMiddleOperands()) {
+    let middle = this.getMiddleOperands();
+    let negated = this.negated;
+    let logicalOperator = negated ? '||' : '&&';
+
+    for (let operand of middle) {
       operand.setRequiresRepeatableExpression({ parens: true, ref: 'middle' });
     }
-    this.expression.patch();
-    for (let operand of this.getMiddleOperands()) {
+
+    for (let [i, operand] of this.operands.entries()) {
+      operand.patch();
+
+      let operator = this.node.operators[i];
+
+      if (operator) {
+        let replacement = getCompareOperator(operator.operator, negated);
+
+        if (operator.operator !== replacement) {
+          this.overwrite(operator.token.start, operator.token.end, replacement);
+        }
+      }
+    }
+
+    for (let operand of middle) {
       // `a < b < c` → `a < b && b < c`
       //                     ^^^^^
       this.insert(
         operand.outerEnd,
-        ` ${this.negated ? '||' : '&&'} ${operand.getRepeatCode()}`
+        ` ${logicalOperator} ${operand.getRepeatCode()}`
       );
     }
   }
@@ -40,28 +60,17 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
    * @private
    */
   getMiddleOperands(): Array<NodePatcher> {
-    let result = [];
-    let comparison = this.expression.left;
-    while (comparison instanceof BinaryOpPatcher) {
-      result.unshift(comparison.right);
-      comparison = comparison.left;
-    }
-    return result;
+    return this.operands.slice(1, -1);
   }
 
   negate() {
     this.negated = !this.negated;
-    let comparison = this.expression;
-    while (comparison instanceof BinaryOpPatcher) {
-      comparison.negate();
-      comparison = comparison.left;
-    }
   }
 
   /**
-   * Forward the request to the underlying comparison operator.
+   * Forward the request to the first operand.
    */
   statementNeedsParens(): boolean {
-    return this.expression.statementNeedsParens();
+    return this.operands[0].statementShouldAddParens();
   }
 }
