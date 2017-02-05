@@ -40,7 +40,7 @@
     "ast-processor-babylon-config": "^1.0.0",
     "automatic-semicolon-insertion": "^1.0.2",
     "babylon": "^6.12.0",
-    "coffee-lex": "^6.0.0",
+    "coffee-lex": "^7.0.0",
     "decaffeinate-coffeescript": "^1.10.0-patch12",
     "decaffeinate-parser": "^14.0.0",
     "detect-indent": "^4.0.0",
