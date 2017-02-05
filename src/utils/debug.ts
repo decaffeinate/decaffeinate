@@ -1,5 +1,4 @@
-/* @flow */
-
+// tslint:disable-next-line:no-any
 export function logger(name: string): (...args: Array<any>) => void {
   if (isLoggingEnabled(name)) {
     return (...args) => console.log(name, ...args);
