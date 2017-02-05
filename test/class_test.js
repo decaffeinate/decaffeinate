@@ -1131,4 +1131,65 @@ describe('classes', () => {
       o = b.c(1)
     `, 9);
   });
+
+  it('handles a complex anonymous class in an expression context', () => {
+    check(`
+      A = class
+        b: c
+    `, `
+      const A = __initClass__(class {
+        static initClass() {
+          this.prototype.b = c;
+        }
+      });
+      var __initClass__ = function(c) {
+        c.initClass();
+        return c;
+      };
+    `);
+  });
+
+  it('handles a class expression in an implicit return context', () => {
+    check(`
+      f = ->
+        class A
+          b: c
+    `, `
+      let f = () =>
+        __initClass__(class A {
+          static initClass() {
+            this.prototype.b = c;
+          }
+        })
+      ;
+      var __initClass__ = function(c) {
+        c.initClass();
+        return c;
+      };
+    `);
+  });
+
+  it('handles a define call ending in a class (#625)', () => {
+    check(`
+      define (require) ->
+        'use strict'
+        
+        class MainLayout extends BaseView
+          container: 'body'
+    `, `
+      define(function(require) {
+        'use strict';
+        
+        return __initClass__(class MainLayout extends BaseView {
+          static initClass() {
+            this.prototype.container = 'body';
+          }
+        });
+      });
+      var __initClass__ = function(c) {
+        c.initClass();
+        return c;
+      };
+    `);
+  });
 });
