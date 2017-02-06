@@ -348,10 +348,10 @@ export default class NodePatcher {
       let ref = this.claimFreeBinding(repeatableOptions.ref);
       this.insert(this.innerStart, `${ref} = `);
       this.patchAsForcedExpression(patchOptions);
+      this.commitDeferredSuffix();
       if (repeatableOptions.parens) {
         this.insert(this.innerEnd, ')');
       }
-      this.commitDeferredSuffix();
       return ref;
     }
   }

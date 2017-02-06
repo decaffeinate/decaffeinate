@@ -1,6 +1,6 @@
 import AssignOpPatcher from './AssignOpPatcher';
 import type { SourceToken } from './../../../patchers/types';
-import traverse from '../../../utils/traverse';
+import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
 import { SourceType } from 'coffee-lex';
 
 export default class CompoundAssignOpPatcher extends AssignOpPatcher {
@@ -33,18 +33,7 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
    * statement code, so instead run the expression code path.
    */
   lhsHasSoakOperation() {
-    let foundSoak = false;
-    traverse(this.assignee.node, node => {
-      if (foundSoak) {
-        return false;
-      }
-      if (node.type === 'SoakedDynamicMemberAccessOp' ||
-        node.type === 'SoakedFunctionApplication' ||
-        node.type === 'SoakedMemberAccessOp') {
-        foundSoak = true;
-      }
-    });
-    return foundSoak;
+    return nodeContainsSoakOperation(this.assignee.node);
   }
 
 }

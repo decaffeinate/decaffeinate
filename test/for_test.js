@@ -1163,12 +1163,9 @@ describe('for loops', () => {
       for a, b of c?.d
         console.log a
     `, `
-      for (let a in __guard__(c, x => x.d)) {
-        let b = __guard__(c, x => x.d)[a];
+      for (let a in (typeof c !== 'undefined' && c !== null ? c.d : undefined)) {
+        let b = (typeof c !== 'undefined' && c !== null ? c.d : undefined)[a];
         console.log(a);
-      }
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
     `);
   });
