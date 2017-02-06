@@ -2,8 +2,17 @@ import { SourceType } from 'coffee-lex';
 
 import NodePatcher from './../../../patchers/NodePatcher';
 import AssignOpPatcher from './AssignOpPatcher';
+import BlockPatcher from './BlockPatcher';
+import ProgramPatcher from './ProgramPatcher';
 
 import type { PatcherContext } from './../../../patchers/types';
+
+const INIT_CLASS_HELPER = `\
+\`function __initClass__(c) {
+  c.initClass();
+  return c;
+}\`
+`;
 
 export default class ClassPatcher extends NodePatcher {
   nameAssignee: ?NodePatcher;
@@ -22,8 +31,6 @@ export default class ClassPatcher extends NodePatcher {
    * method instead.
    *
    * Current limitations:
-   * - Doesn't handle anonymous classes.
-   * - Doesn't handle classes used in an expression context.
    * - Doesn't deconflict the "initClass" name of the static method.
    * - Doesn't deconflict the variable assignments that are moved outside the
    *   class body.
@@ -55,13 +62,28 @@ export default class ClassPatcher extends NodePatcher {
     let insertPoint = this.getInitClassInsertPoint();
     let nonMethodPatchers = this.getNonMethodPatchers(insertPoint);
 
-    if (nonMethodPatchers.length > 0) {
-      let assignmentNames = this.generateInitClassMethod(nonMethodPatchers, insertPoint);
-      let indent = this.getIndent();
+    if (nonMethodPatchers.length === 0) {
+      return;
+    }
+
+    // We have at least one non-method, so this needs to be a "complex" class
+    // with an initClass static method.
+    let needsInitClassWrapper = this.needsInitClassWrapper();
+
+    if (needsInitClassWrapper) {
+      let helper = this.registerHelper('__initClass__', INIT_CLASS_HELPER);
+      this.insert(this.outerStart, `${helper}(`);
+    }
+
+    let assignmentNames = this.generateInitClassMethod(nonMethodPatchers, insertPoint);
+    let indent = this.getIndent();
+    if (needsInitClassWrapper) {
+      this.insert(this.outerEnd, `)`);
+    } else {
       this.insert(this.outerEnd, `\n${indent}${this.nameAssignee.node.data}.initClass()`);
-      for (let assignmentName of assignmentNames) {
-        this.insert(this.outerStart, `${assignmentName} = undefined\n${indent}`);
-      }
+    }
+    for (let assignmentName of assignmentNames) {
+      this.insert(this.outerStart, `${assignmentName} = undefined\n${indent}`);
     }
   }
 
@@ -97,6 +119,26 @@ export default class ClassPatcher extends NodePatcher {
     }
   }
 
+  needsInitClassWrapper() {
+    // Anonymous classes can't be referenced by name, so we need to pass them
+    // to a function to call initClass on them.
+    if (!this.nameAssignee) {
+      return true;
+    }
+    // It's safe to use the more straightforward class init approach as long as
+    // we know that a statement can be added after us and we're not in an
+    // implicit return position.
+    if (this.parent instanceof BlockPatcher) {
+      let { statements } = this.parent;
+      if (!(this.parent.parent instanceof ProgramPatcher) &&
+          this === statements[statements.length - 1]) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
   getInitClassInsertPoint() {
     if (this.superclass) {
       return this.superclass.outerEnd;
@@ -104,10 +146,7 @@ export default class ClassPatcher extends NodePatcher {
     if (this.nameAssignee) {
       return this.nameAssignee.outerEnd;
     }
-    if (this.body) {
-      return this.body.outerStart;
-    }
-    return this.outerStart;
+    return this.firstToken().end;
   }
 
   /**

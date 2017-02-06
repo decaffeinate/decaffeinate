@@ -1,18 +1,10 @@
-import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
-import determineIndent from '../../../utils/determineIndent';
+import SharedProgramPatcher from '../../../patchers/SharedProgramPatcher';
 
-export default class ProgramPatcher extends PassthroughPatcher {
-  shouldTrimContentRange() {
-    return true;
-  }
-
-  /**
-   * Gets the indent string used for each indent in this program.
-   */
-  getProgramIndentString(): string {
-    if (!this._indentString) {
-      this._indentString = determineIndent(this.context.source);
+export default class ProgramPatcher extends SharedProgramPatcher {
+  patchAsStatement() {
+    if (this.body) {
+      this.body.patch();
     }
-    return this._indentString;
+    this.patchHelpers();
   }
 }

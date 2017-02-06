@@ -1,30 +1,11 @@
-import NodePatcher from './../../../patchers/NodePatcher';
-import blank from '../../../utils/blank';
-import determineIndent from '../../../utils/determineIndent';
+import SharedProgramPatcher from '../../../patchers/SharedProgramPatcher';
 import getIndent from '../../../utils/getIndent';
 import { SourceType } from 'coffee-lex';
-import type BlockPatcher from './BlockPatcher';
-import type { PatcherContext, SourceToken } from './../../../patchers/types';
+import type { SourceToken } from './../../../patchers/types';
 
 const BLOCK_COMMENT_DELIMITER = '###';
 
-export default class ProgramPatcher extends NodePatcher {
-  body: ?BlockPatcher;
-  helpers: { [key: string]: string };
-  _indentString: ?string;
-
-  constructor(patcherContext: PatcherContext, body: ?BlockPatcher) {
-    super(patcherContext);
-    this.body = body;
-
-    this.helpers = blank();
-    this._indentString = null;
-  }
-
-  shouldTrimContentRange() {
-    return true;
-  }
-
+export default class ProgramPatcher extends SharedProgramPatcher {
   canPatchAsExpression(): boolean {
     return false;
   }
@@ -35,10 +16,7 @@ export default class ProgramPatcher extends NodePatcher {
     }
     this.patchContinuations();
     this.patchComments();
-
-    for (let helper in this.helpers) {
-      this.editor.append(`\n${this.helpers[helper]}`);
-    }
+    this.patchHelpers();
   }
 
   /**
@@ -156,33 +134,6 @@ export default class ProgramPatcher extends NodePatcher {
         'node'
       );
     }
-  }
-
-  /**
-   * Register a helper to be reused in several places.
-   *
-   * FIXME: Pick a different name than what is in scope.
-   */
-  registerHelper(name: string, code: string): string {
-    code = code.trim();
-    if (name in this.helpers) {
-      if (this.helpers[name] !== code) {
-        throw new Error(`BUG: cannot override helper '${name}'`);
-      }
-    } else {
-      this.helpers[name] = code;
-    }
-    return name;
-  }
-
-  /**
-   * Gets the indent string used for each indent in this program.
-   */
-  getProgramIndentString(): string {
-    if (!this._indentString) {
-      this._indentString = determineIndent(this.context.source);
-    }
-    return this._indentString;
   }
 
   /**
