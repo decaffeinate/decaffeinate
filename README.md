@@ -57,18 +57,18 @@ problems you run into.
 
 [decaffeinate-examples]: https://github.com/decaffeinate/decaffeinate-examples
 
-[hubot-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/hubot/decaffeinate/conversion-status.svg
-[hubot-test-status]: https://cdn.rawgit.com/decaffeinate-examples/hubot/decaffeinate/test-status.svg
-[autoprefixer-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/autoprefixer/decaffeinate/conversion-status.svg
-[autoprefixer-test-status]: https://cdn.rawgit.com/decaffeinate-examples/autoprefixer/decaffeinate/test-status.svg
-[coffeelint-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/coffeelint/decaffeinate/conversion-status.svg
-[coffeelint-test-status]: https://cdn.rawgit.com/decaffeinate-examples/coffeelint/decaffeinate/test-status.svg
-[coffeescript-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/coffeescript/decaffeinate/conversion-status.svg
-[coffeescript-test-status]: https://cdn.rawgit.com/decaffeinate-examples/coffeescript/decaffeinate/test-status.svg
-[atom-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/atom/decaffeinate/conversion-status.svg
-[atom-test-status]: https://cdn.rawgit.com/decaffeinate-examples/atom/decaffeinate/test-status.svg
-[codecombat-conversion-status]: https://cdn.rawgit.com/decaffeinate-examples/codecombat/decaffeinate/conversion-status.svg
-[codecombat-test-status]: https://cdn.rawgit.com/decaffeinate-examples/codecombat/decaffeinate/test-status.svg
+[hubot-conversion-status]: https://decaffeinate-examples.github.io/hubot/conversion-status.svg
+[hubot-test-status]: https://decaffeinate-examples.github.io/hubot/test-status.svg
+[autoprefixer-conversion-status]: https://decaffeinate-examples.github.io/autoprefixer/conversion-status.svg
+[autoprefixer-test-status]: https://decaffeinate-examples.github.io/autoprefixer/test-status.svg
+[coffeelint-conversion-status]: https://decaffeinate-examples.github.io/coffeelint/conversion-status.svg
+[coffeelint-test-status]: https://decaffeinate-examples.github.io/coffeelint/test-status.svg
+[coffeescript-conversion-status]: https://decaffeinate-examples.github.io/coffeescript/conversion-status.svg
+[coffeescript-test-status]: https://decaffeinate-examples.github.io/coffeescript/test-status.svg
+[atom-conversion-status]: https://decaffeinate-examples.github.io/atom/conversion-status.svg
+[atom-test-status]: https://decaffeinate-examples.github.io/atom/test-status.svg
+[codecombat-conversion-status]: https://decaffeinate-examples.github.io/codecombat/conversion-status.svg
+[codecombat-test-status]: https://decaffeinate-examples.github.io/codecombat/test-status.svg
 
 ## Goals
 
