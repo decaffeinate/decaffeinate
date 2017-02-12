@@ -19,11 +19,6 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
     this.fn.patch();
 
-    if (this.isImplicitSuper()) {
-      this.insert(this.fn.contentEnd, '(arguments...)');
-      return;
-    }
-
     if (implicitCall) {
       let firstArg = args[0];
       let hasOneArg = args.length === 1;
@@ -126,12 +121,10 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    *
    * Note that we do not add parentheses for constructor invocations with no
    * arguments and no parentheses; that usage is correct in JavaScript, so we
-   * leave it as-is. Also, bare `super` calls have a virtual argument which
-   * doesn't have a source location, but we know that any parens for that will
-   * be handled in later code.
+   * leave it as-is.
    */
   isImplicitCall(): boolean {
-    if (this.args.length === 0 || this.args[0].node.virtual) {
+    if (this.args.length === 0) {
       return false;
     }
     let searchStart = this.fn.outerEnd;
@@ -153,24 +146,5 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     } else {
       return this.fn.outerEnd;
     }
-  }
-
-  isImplicitSuper(): boolean {
-    if (this.fn.node.type !== 'Super') {
-      return false;
-    }
-
-    if (this.args.length !== 1) {
-      return false;
-    }
-
-    let arg = this.args[0].node;
-
-    return (
-      arg.virtual &&
-      arg.type === 'Spread' &&
-      arg.expression.type === 'Identifier' &&
-      arg.expression.data === 'arguments'
-    );
   }
 }
