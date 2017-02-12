@@ -1,4 +1,5 @@
 import ArrayInitialiserPatcher from './patchers/ArrayInitialiserPatcher';
+import BareSuperFunctionApplicationPatcher from './patchers/BareSuperFunctionApplicationPatcher';
 import BlockPatcher from './patchers/BlockPatcher';
 import ClassPatcher from './patchers/ClassPatcher';
 import AssignOpPatcher from './patchers/AssignOpPatcher';
@@ -63,6 +64,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'NewOp':
       case 'SoakedFunctionApplication':
         return FunctionApplicationPatcher;
+
+      case 'BareSuperFunctionApplication':
+        return BareSuperFunctionApplicationPatcher;
 
       case 'Identifier':
         return IdentifierPatcher;

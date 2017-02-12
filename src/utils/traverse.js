@@ -40,6 +40,7 @@ export default function traverse(node: Node, callback: (node: Node, descend: (no
 const ORDER = {
   ArrayInitialiser: ['members'],
   AssignOp: ['assignee', 'expression'],
+  BareSuperFunctionApplication: [],
   BitAndOp: ['left', 'right'],
   BitNotOp: ['expression'],
   BitOrOp: ['left', 'right'],
