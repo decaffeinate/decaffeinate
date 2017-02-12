@@ -1,6 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher';
 
-export default class FunctionApplicationPatcher extends NodePatcher {
+export default class BareSuperFunctionApplicationPatcher extends NodePatcher {
   patchAsExpression() {
     this.insert(this.contentEnd, '(arguments...)');
   }
