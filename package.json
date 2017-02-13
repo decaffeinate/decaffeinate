@@ -41,7 +41,7 @@
     "automatic-semicolon-insertion": "^1.0.2",
     "babylon": "^6.12.0",
     "coffee-lex": "^7.0.0",
-    "decaffeinate-coffeescript": "^1.10.0-patch19",
+    "decaffeinate-coffeescript": "1.10.0-patch19",
     "decaffeinate-parser": "^16.0.3",
     "detect-indent": "^4.0.0",
     "esnext": "^3.0.12",
