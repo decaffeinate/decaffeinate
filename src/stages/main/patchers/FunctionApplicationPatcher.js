@@ -30,7 +30,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     args.forEach((arg, i) => {
       arg.patch();
       let isLast = i === args.length - 1;
-      let commaTokenIndex = arg.node.virtual ? null : this.indexOfSourceTokenAfterSourceTokenIndex(
+      let commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         arg.outerEndTokenIndex,
         SourceType.COMMA,
         isSemanticToken

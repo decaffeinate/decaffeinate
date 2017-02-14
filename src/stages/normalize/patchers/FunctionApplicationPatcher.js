@@ -21,11 +21,10 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
     if (implicitCall) {
       let firstArg = args[0];
-      let hasOneArg = args.length === 1;
       let firstArgIsOnNextLine = !firstArg ? false :
         /\n/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
       let funcEnd = this.getFuncEnd();
-      if ((hasOneArg && firstArg.node.virtual) || firstArgIsOnNextLine) {
+      if (firstArgIsOnNextLine) {
         this.insert(funcEnd, '(');
       } else {
         this.overwrite(funcEnd, firstArg.outerStart, '(');
