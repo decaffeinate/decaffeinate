@@ -56,6 +56,23 @@ describe('return', () => {
     `)
   );
 
+  it('does not pull code into comments when followed by a trailing empty return', () => {
+    check(`
+      a () ->
+        b  # comment
+        return
+      .c =>
+        d
+    `, `
+      a(function() {
+        b;  // comment
+        }).c(() => {
+        return d;
+      }
+      );
+    `);
+  });
+
   it('allows a top-level return', () =>
     check(`
       return a

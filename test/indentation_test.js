@@ -28,7 +28,6 @@ describe('indentation', () => {
        b
     `, `
       a(function() {
-        
       });
       b;
     `);
@@ -45,7 +44,6 @@ describe('indentation', () => {
       (function() {
         a
           .b(() => {
-            
           }
         );
         return 3;
