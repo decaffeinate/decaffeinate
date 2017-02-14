@@ -320,7 +320,6 @@ describe('functions', () => {
         yield return
     `, `
       (function*() {
-        
       });
     `);
   });

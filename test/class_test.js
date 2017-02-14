@@ -1140,6 +1140,7 @@ describe('classes', () => {
       const A = __initClass__(class {
         static initClass() {
           this.prototype.b = c;
+          
         }
       });
       function __initClass__(c) {
@@ -1159,6 +1160,7 @@ describe('classes', () => {
         __initClass__(class A {
           static initClass() {
             this.prototype.b = c;
+            
           }
         })
       ;
@@ -1183,6 +1185,7 @@ describe('classes', () => {
         return __initClass__(class MainLayout extends BaseView {
           static initClass() {
             this.prototype.container = 'body';
+            
           }
         });
       });

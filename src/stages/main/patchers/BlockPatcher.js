@@ -43,20 +43,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
       (statement, i, statements) => {
         if (i === statements.length - 1 && this.parent instanceof FunctionPatcher) {
           if (statement instanceof ReturnPatcher && !statement.expression) {
-            let removeStart;
-            if (statements.length > 1) {
-              let startOfLineIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
-                token => token.type === SourceType.NEWLINE || token.type === SourceType.SEMICOLON,
-                statement.outerStartTokenIndex
-              );
-              removeStart = this.sourceTokenAtIndex(startOfLineIndex).start;
-            } else {
-              removeStart = statement.outerStart;
-            }
-            this.remove(
-              removeStart,
-              statement.outerEnd
-            );
+            this.removeFinalEmptyReturn(statement);
             return;
           }
         }
@@ -88,6 +75,26 @@ export default class BlockPatcher extends SharedBlockPatcher {
       } else {
         this.appendLineAfter('}', -1);
       }
+    }
+  }
+
+  /**
+   * Remove an unnecessary empty return at the end of a function. Ideally, we
+   * want to remove the whole line, but that's only safe if the `return` is on a
+   * line by itself. Otherwise, there might be bugs like code being pulled into
+   * a comment on the previous line.
+   */
+  removeFinalEmptyReturn(statement) {
+    let previousToken = this.sourceTokenAtIndex(statement.contentStartTokenIndex.previous());
+    let nextToken = this.sourceTokenAtIndex(statement.contentEndTokenIndex.next());
+
+    if (previousToken && previousToken.type === SourceType.NEWLINE &&
+        (!nextToken || nextToken.type === SourceType.NEWLINE)) {
+      this.remove(previousToken.start, statement.outerEnd);
+    } else if (previousToken && previousToken.type === SourceType.SEMICOLON) {
+      this.remove(previousToken.start, statement.outerEnd);
+    } else {
+      this.remove(statement.outerStart, statement.outerEnd);
     }
   }
 
