@@ -61,10 +61,6 @@ export default class NodePatcher {
   setupLocationInformation() {
     let { node, context } = this;
 
-    if (node.virtual) {
-      return;
-    }
-
     /**
      * `contentStart` and `contentEnd` is the exclusive range within the original source that
      * composes this patcher's node. For example, here's the contentStart and contentEnd of
@@ -840,7 +836,7 @@ export default class NodePatcher {
    * Determines whether this patcher's node spanned multiple lines.
    */
   isMultiline(): boolean {
-    return !this.node.virtual && /\n/.test(this.getOriginalSource());
+    return /\n/.test(this.getOriginalSource());
   }
 
   /**

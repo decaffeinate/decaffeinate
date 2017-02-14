@@ -10,7 +10,7 @@ function formatAstNodeLines(node, context) {
   let propLines = [];
   let childPropNames = childPropertyNames(node);
   let blacklistedProps = childPropNames.concat(
-    ['raw', 'line', 'column', 'type', 'range', 'virtual', 'scope', 'parentNode', 'context', 'start', 'end']
+    ['raw', 'line', 'column', 'type', 'range', 'scope', 'parentNode', 'context', 'start', 'end']
   );
   for (let key of Object.keys(node)) {
     if (blacklistedProps.indexOf(key) !== -1) {
@@ -43,12 +43,7 @@ function formatAstNodeLines(node, context) {
       propLines.push(...childLines);
     }
   }
-  let rangeStr;
-  if (node.virtual) {
-    rangeStr = '(virtual)';
-  } else {
-    rangeStr = formatRange(node.range[0], node.range[1], context);
-  }
+  let rangeStr = formatRange(node.range[0], node.range[1], context);
   return [
     `${node.type} ${rangeStr} {`,
     ...propLines.map(s => '  ' + s),
