@@ -14,6 +14,12 @@ export default class SwitchPatcher extends NodePatcher {
     this.alternate = alternate;
   }
 
+  initialize() {
+    if (this.expression) {
+      this.expression.setRequiresExpression();
+    }
+  }
+
   patchAsStatement() {
     if (this.expression) {
       // `switch a` → `switch (a`

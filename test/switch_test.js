@@ -455,4 +455,20 @@ describe('switch', () => {
       }
     `);
   });
+
+  it('sets the switch condition to be an expression', () => {
+    check(`
+      a = 1
+      switch (a ?= b)
+        when c
+          d
+    `, `
+      let a = 1;
+      switch (a != null ? a : (a = b)) {
+        case c:
+          d;
+          break;
+      }
+    `);
+  });
 });
