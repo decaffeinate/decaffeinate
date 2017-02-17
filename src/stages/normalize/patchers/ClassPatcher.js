@@ -258,10 +258,10 @@ export default class ClassPatcher extends NodePatcher {
   getNonMethodStatementCode(statementPatcher, deleteStart) {
     if (statementPatcher instanceof AssignOpPatcher &&
         this.isClassAssignment(statementPatcher.node)) {
-      let {key, expression} = statementPatcher;
-      let prefixCode = this.slice(deleteStart, key.outerStart);
-      let keyCode = this.slice(key.outerStart, key.outerEnd);
-      let suffixCode = this.slice(key.outerEnd, expression.outerEnd);
+      let {assignee, expression} = statementPatcher;
+      let prefixCode = this.slice(deleteStart, assignee.outerStart);
+      let keyCode = this.slice(assignee.outerStart, assignee.outerEnd);
+      let suffixCode = this.slice(assignee.outerEnd, expression.outerEnd);
 
       let equalIndex = suffixCode.indexOf('=');
       let colonIndex = suffixCode.indexOf(':');

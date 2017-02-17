@@ -82,6 +82,7 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'AssignOp':
       case 'ClassProtoAssignOp':
+      case 'CompoundAssignOp':
         return AssignOpPatcher;
 
       case 'Program':

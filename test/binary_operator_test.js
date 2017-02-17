@@ -273,4 +273,28 @@ describe('binary operators', () => {
       a && (b || (b = c));
     `);
   });
+
+  it('removes the unnecessary `then` token after an assignment operator', () => {
+    check(`
+      a = then b
+    `, `
+      let a = b;
+    `);
+  });
+
+  it('removes the unnecessary `then` token after a compound assignment operator', () => {
+    check(`
+      a += then b
+    `, `
+      a += b;
+    `);
+  });
+
+  it('removes the unnecessary `then` token after an assignment with no space', () => {
+    check(`
+      a =then b
+    `, `
+      let a = b;
+    `);
+  });
 });
