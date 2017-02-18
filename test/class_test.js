@@ -1195,4 +1195,18 @@ describe('classes', () => {
       }
     `);
   });
+
+  it('handles an inner class with a this-assignment', () => {
+    check(`
+      class Outer
+        class @Inner
+    `, `
+      class Outer {
+        static initClass() {
+          this.Inner = class Inner {};
+        }
+      }
+      Outer.initClass();
+    `);
+  });
 });

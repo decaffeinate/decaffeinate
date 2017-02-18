@@ -3,6 +3,7 @@ import { SourceType } from 'coffee-lex';
 import NodePatcher from './../../../patchers/NodePatcher';
 import AssignOpPatcher from './AssignOpPatcher';
 import BlockPatcher from './BlockPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
 import ProgramPatcher from './ProgramPatcher';
 
 import type { PatcherContext } from './../../../patchers/types';
@@ -246,10 +247,11 @@ export default class ClassPatcher extends NodePatcher {
    */
   getAssignmentName(statementPatcher) {
     if (statementPatcher.node.type === 'AssignOp' &&
-      statementPatcher.node.assignee.type === 'Identifier') {
+        statementPatcher.assignee instanceof IdentifierPatcher) {
       return statementPatcher.node.assignee.data;
     }
-    if (statementPatcher instanceof ClassPatcher) {
+    if (statementPatcher instanceof ClassPatcher &&
+        statementPatcher.nameAssignee instanceof IdentifierPatcher) {
       return statementPatcher.nameAssignee.node.data;
     }
     return null;
@@ -277,7 +279,7 @@ export default class ClassPatcher extends NodePatcher {
         return `${prefixCode}${keyCode}${suffixCode}`;
       }
     } else if (statementPatcher instanceof ClassPatcher &&
-        statementPatcher.nameAssignee) {
+        statementPatcher.nameAssignee instanceof IdentifierPatcher) {
       // Nested classes need a special case: they need to be converted to an
       // assignment statement so that the name can be declared outside the outer
       // class body and the initialized within initClass.
