@@ -1,5 +1,4 @@
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
-import IdentifierPatcher from './IdentifierPatcher';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression({ needsParens=false }={}) {
@@ -85,8 +84,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
    * variable might not be declared.
    */
   needsTypeofCheck() {
-    return this.assignee instanceof IdentifierPatcher &&
-      !this.node.scope.hasBinding(this.assignee.node.data);
+    return this.assignee.mayBeInvalidReference();
   }
 
   /**

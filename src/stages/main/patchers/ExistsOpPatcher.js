@@ -1,15 +1,11 @@
 import BinaryOpPatcher from './BinaryOpPatcher';
-import IdentifierPatcher from './IdentifierPatcher';
 
 export default class ExistsOpPatcher extends BinaryOpPatcher {
   /**
    * LEFT '?' RIGHT → `LEFT != null ? LEFT : RIGHT`
    */
   patchAsExpression() {
-    let needsTypeofCheck = (
-      this.left instanceof IdentifierPatcher &&
-      !this.node.scope.hasBinding(this.left.node.data)
-    );
+    let needsTypeofCheck = this.left.mayBeInvalidReference();
     if (needsTypeofCheck) {
       // `a ? b` → `typeof a ? b`
       //            ^^^^^^^
@@ -39,10 +35,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
    * LEFT '?' RIGHT → `if (LEFT == null) { RIGHT }`
    */
   patchAsStatement() {
-    let needsTypeofCheck = (
-      this.left instanceof IdentifierPatcher &&
-      !this.node.scope.hasBinding(this.left.node.data)
-    );
+    let needsTypeofCheck = this.left.mayBeInvalidReference();
     // `a ? b` → `if (a ? b`
     //            ^^^
     this.insert(this.contentStart, `if (`);

@@ -1172,4 +1172,13 @@ export default class NodePatcher {
     let nextSemanticIdx = this.indexOfSourceTokenBetweenSourceIndicesMatching(from, to, isSemanticToken);
     return nextSemanticIdx && this.sourceTokenAtIndex(nextSemanticIdx);
   }
+
+  /**
+   * Determine if we need to do a `typeof` check in a conditional for this
+   * value, to guard against the case where this node is a variable that doesn't
+   * exist. IdentifierPatcher overrides this to check the current scope.
+   */
+  mayBeInvalidReference() {
+    return false;
+  }
 }

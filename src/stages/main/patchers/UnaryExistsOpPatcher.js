@@ -108,13 +108,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    * @private
    */
   needsTypeofCheck(): boolean {
-    let { node } = this;
-    let { expression } = node;
-    return (
-      expression &&
-      expression.type === 'Identifier' &&
-      !node.scope.hasBinding(expression.data)
-    );
+    return this.expression.mayBeInvalidReference();
   }
 
   /**
