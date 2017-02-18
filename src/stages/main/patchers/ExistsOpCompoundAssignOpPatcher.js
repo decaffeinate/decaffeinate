@@ -84,7 +84,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
    * variable might not be declared.
    */
   needsTypeofCheck() {
-    return this.assignee.mayBeInvalidReference();
+    return this.assignee.mayBeUnboundReference();
   }
 
   /**

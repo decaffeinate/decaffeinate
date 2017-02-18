@@ -10,7 +10,7 @@ export default class IdentifierPatcher extends PassthroughPatcher {
    * that case, some code paths need to emit a `typeof` check to ensure that
    * we don't crash if this variable hasn't been declared.
    */
-  mayBeInvalidReference() {
+  mayBeUnboundReference() {
     return !this.node.scope.hasBinding(this.node.data);
   }
 }

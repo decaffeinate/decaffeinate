@@ -5,7 +5,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
    * LEFT '?' RIGHT → `LEFT != null ? LEFT : RIGHT`
    */
   patchAsExpression() {
-    let needsTypeofCheck = this.left.mayBeInvalidReference();
+    let needsTypeofCheck = this.left.mayBeUnboundReference();
     if (needsTypeofCheck) {
       // `a ? b` → `typeof a ? b`
       //            ^^^^^^^
@@ -35,7 +35,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
    * LEFT '?' RIGHT → `if (LEFT == null) { RIGHT }`
    */
   patchAsStatement() {
-    let needsTypeofCheck = this.left.mayBeInvalidReference();
+    let needsTypeofCheck = this.left.mayBeUnboundReference();
     // `a ? b` → `if (a ? b`
     //            ^^^
     this.insert(this.contentStart, `if (`);

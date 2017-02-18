@@ -108,7 +108,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    * @private
    */
   needsTypeofCheck(): boolean {
-    return this.expression.mayBeInvalidReference();
+    return this.expression.mayBeUnboundReference();
   }
 
   /**

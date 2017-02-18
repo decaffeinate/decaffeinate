@@ -1178,7 +1178,7 @@ export default class NodePatcher {
    * value, to guard against the case where this node is a variable that doesn't
    * exist. IdentifierPatcher overrides this to check the current scope.
    */
-  mayBeInvalidReference() {
+  mayBeUnboundReference() {
     return false;
   }
 }
