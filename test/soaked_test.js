@@ -791,4 +791,26 @@ describe('soaked expressions', () => {
       let d = a[b != null ? b.c : undefined];
     `);
   });
+
+  it('properly handles a soaked condition in an `unless` statement', () => {
+    check(`
+      unless a?.b
+        c
+    `, `
+      if (!(typeof a !== 'undefined' && a !== null ? a.b : undefined)) {
+        c;
+      }
+    `);
+  });
+
+  it('properly handles a soaked condition in an `until` statement', () => {
+    check(`
+      until a?.b
+        c
+    `, `
+      while (!(typeof a !== 'undefined' && a !== null ? a.b : undefined)) {
+        c;
+      }
+    `);
+  });
 });
