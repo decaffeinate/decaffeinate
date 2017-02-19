@@ -813,4 +813,16 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('properly handles a soaked condition in an `unless` statement with an assignment', () => {
+    check(`
+      unless a = b?.c
+        d
+    `, `
+      let a;
+      if (!(a = typeof b !== 'undefined' && b !== null ? b.c : undefined)) {
+        d;
+      }
+    `);
+  });
 });

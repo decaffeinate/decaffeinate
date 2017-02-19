@@ -18,6 +18,7 @@ const MULTI_ASSIGN_SINGLE_LINE_MAX_LENGTH = 100;
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;
   expression: NodePatcher;
+  negated: boolean = false;
   
   constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: NodePatcher) {
     super(patcherContext);
@@ -30,19 +31,18 @@ export default class AssignOpPatcher extends NodePatcher {
     this.expression.setRequiresExpression();
   }
 
-  /**
-   * Assignment operators have lower precedence than negation, so we need to add
-   * parens.
-   */
   negate() {
-    this.insert(this.innerStart, '!(');
-    this.insert(this.innerEnd, ')');
+    this.negated = !this.negated;
   }
 
   patchAsExpression({ needsParens=false }={}) {
-    let shouldAddParens = needsParens && !this.isSurroundedByParentheses();
+    let shouldAddParens =
+      (needsParens && !this.isSurroundedByParentheses()) || this.negated;
+    if (this.negated) {
+      this.insert(this.innerStart, '!');
+    }
     if (shouldAddParens) {
-      this.insert(this.outerStart, '(');
+      this.insert(this.innerStart, '(');
     }
 
     if (canPatchAssigneeToJavaScript(this.assignee.node)) {
@@ -75,7 +75,7 @@ export default class AssignOpPatcher extends NodePatcher {
     }
 
     if (shouldAddParens) {
-      this.insert(this.outerEnd, ')');
+      this.insert(this.innerEnd, ')');
     }
   }
 
