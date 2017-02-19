@@ -4,6 +4,7 @@ import BlockPatcher from './patchers/BlockPatcher';
 import ClassPatcher from './patchers/ClassPatcher';
 import AssignOpPatcher from './patchers/AssignOpPatcher';
 import ConditionalPatcher from './patchers/ConditionalPatcher';
+import ConstructorPatcher from './patchers/ConstructorPatcher';
 import DoOpPatcher from './patchers/DoOpPatcher';
 import ExpansionPatcher from './patchers/ExpansionPatcher';
 import ForInPatcher from './patchers/ForInPatcher';
@@ -43,10 +44,15 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'BoundFunction':
       case 'Function':
+      case 'BoundGeneratorFunction':
+      case 'GeneratorFunction':
         return FunctionPatcher;
 
       case 'Conditional':
         return ConditionalPatcher;
+
+      case 'Constructor':
+        return ConstructorPatcher;
 
       case 'DoOp':
         return DoOpPatcher;

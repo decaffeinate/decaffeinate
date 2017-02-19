@@ -1209,4 +1209,47 @@ describe('classes', () => {
       Outer.initClass();
     `);
   });
+
+  it('allows an external constructor for a simple class', () => {
+    check(`
+      f = -> @x = 3
+      class A
+        constructor: f
+    `, `
+      let f = function() { return this.x = 3; };
+      let createA = undefined;
+      class A {
+        static initClass() {
+          createA = f;
+        }
+        constructor() {
+          return createA.apply(this, arguments);
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('allows external constructors with bound methods', () => {
+    check(`
+      fn = ->
+      class A
+        constructor: fn
+        method: =>
+    `, `
+      let fn = function() {};
+      let createA = undefined;
+      class A {
+        static initClass() {
+          createA = fn;
+        }
+        constructor() {
+          this.method = this.method.bind(this);
+          return createA.apply(this, arguments);
+        }
+        method() {}
+      }
+      A.initClass();
+    `);
+  });
 });

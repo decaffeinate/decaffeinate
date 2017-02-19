@@ -3,6 +3,8 @@ import { SourceType } from 'coffee-lex';
 import NodePatcher from './../../../patchers/NodePatcher';
 import AssignOpPatcher from './AssignOpPatcher';
 import BlockPatcher from './BlockPatcher';
+import ConstructorPatcher from './ConstructorPatcher';
+import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ProgramPatcher from './ProgramPatcher';
 
@@ -62,8 +64,9 @@ export default class ClassPatcher extends NodePatcher {
 
     let insertPoint = this.getInitClassInsertPoint();
     let nonMethodPatchers = this.getNonMethodPatchers(insertPoint);
+    let customConstructorInfo = this.extractCustomConstructorInfo();
 
-    if (nonMethodPatchers.length === 0) {
+    if (nonMethodPatchers.length === 0 && !customConstructorInfo) {
       return;
     }
 
@@ -76,7 +79,8 @@ export default class ClassPatcher extends NodePatcher {
       this.insert(this.outerStart, `${helper}(`);
     }
 
-    let assignmentNames = this.generateInitClassMethod(nonMethodPatchers, insertPoint);
+    let assignmentNames = this.generateInitClassMethod(
+      nonMethodPatchers, customConstructorInfo, insertPoint);
     let indent = this.getIndent();
     if (needsInitClassWrapper) {
       this.insert(this.outerEnd, `)`);
@@ -171,14 +175,11 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   isClassMethod(patcher) {
-    if (patcher.node.type === 'Constructor') {
+    if (patcher instanceof ConstructorPatcher) {
       return true;
     }
     if (this.isClassAssignment(patcher.node)) {
-      if (patcher.node.expression.type === 'Function' ||
-          patcher.node.expression.type === 'BoundFunction' ||
-          patcher.node.expression.type === 'GeneratorFunction' ||
-          patcher.node.expression.type === 'BoundGeneratorFunction') {
+      if (patcher.expression instanceof FunctionPatcher) {
         return true;
       }
     }
@@ -208,6 +209,44 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   /**
+   * Constructors in CoffeeScript can be arbitrary expressions, so if that's the
+   * case, we need to save that expression so we can compute it at class init
+   * time and call it from the real constructor. If this is such a case, pick a
+   * name for the constructor, get the code to evaluate the constructor
+   * function, and overwrite the constructor with a function that forwards to
+   * that constructor function.
+   */
+  extractCustomConstructorInfo() {
+    for (let patcher of this.body.statements) {
+      if (patcher instanceof ConstructorPatcher) {
+        if (!(patcher.expression instanceof FunctionPatcher)) {
+          let expressionCode = this.slice(
+            patcher.expression.contentStart, patcher.expression.contentEnd);
+          let ctorName;
+          if (this.nameAssignee instanceof IdentifierPatcher) {
+            let className = this.claimFreeBinding(this.nameAssignee.node.data);
+            ctorName = this.claimFreeBinding(`create${className}`);
+          } else {
+            ctorName = this.claimFreeBinding('createInstance');
+          }
+
+          this.overwrite(
+            patcher.expression.outerStart,
+            patcher.expression.outerEnd,
+            `->\n${this.body.getIndent(1)}return ${ctorName}.apply(this, arguments)`
+          );
+
+          return {
+            ctorName,
+            expressionCode,
+          };
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * Create the initClass static method by moving nodes from the class body into
    * the static method and indenting them one level.
    *
@@ -215,7 +254,7 @@ export default class ClassPatcher extends NodePatcher {
    * declare them outside the class body to make them accessible within the
    * class.
    */
-  generateInitClassMethod(nonMethodPatchers, insertPoint) {
+  generateInitClassMethod(nonMethodPatchers, customConstructorInfo, insertPoint) {
     let bodyIndent = this.body.getIndent();
     // If the body is inline, generate code at one indent level up instead of
     // at the class indentation level.
@@ -235,6 +274,15 @@ export default class ClassPatcher extends NodePatcher {
       this.insert(insertPoint, statementCode);
       this.remove(deleteStart, patcher.outerEnd);
     }
+    if (customConstructorInfo) {
+      let { ctorName, expressionCode } = customConstructorInfo;
+      this.insert(
+        insertPoint,
+        `\n${bodyIndent}${indentString}${ctorName} = ${expressionCode}`
+      );
+      assignmentNames.push(ctorName);
+    }
+
     this.insert(insertPoint, `\n${bodyIndent}${indentString}return`);
     return assignmentNames;
   }
