@@ -6,6 +6,7 @@ import ClassAssignOpPatcher from './ClassAssignOpPatcher';
 import ConstructorPatcher from './ConstructorPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
 
@@ -55,15 +56,19 @@ export default class SuperPatcher extends NodePatcher {
   getEnclosingMethodInfo(): MethodInfo {
     let methodAssignment = this.getEnclosingMethodAssignment();
     if (methodAssignment instanceof ClassAssignOpPatcher) {
-      let methodName;
+      let accessCode;
       if (methodAssignment.isStaticMethod()) {
-        methodName = methodAssignment.key.node.member.data;
+        accessCode = `.${methodAssignment.key.node.member.data}`;
       } else {
-        methodName = methodAssignment.key.node.data;
+        if (methodAssignment.key instanceof IdentifierPatcher) {
+          accessCode = `.${methodAssignment.key.node.data}`;
+        } else {
+          accessCode = `[${methodAssignment.key.getRepeatCode()}]`;
+        }
       }
       return {
         classCode: this.getEnclosingClassName(methodAssignment),
-        accessCode: `.${methodName}`,
+        accessCode,
       };
     } else if (methodAssignment instanceof ConstructorPatcher) {
       return {

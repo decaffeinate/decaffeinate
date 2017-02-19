@@ -1,4 +1,5 @@
 import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher';
+import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
@@ -24,12 +25,24 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   }
 
   patchAsExpression() {
+    this.markKeyRepeatableIfNecessary();
     super.patchAsExpression();
     if (this.isStaticMethod()) {
       // `this.a: ->` → `static a: ->`
       //  ^^^^^          ^^^^^^^
       let memberNameToken = this.key.getMemberNameSourceToken();
       this.overwrite(this.key.outerStart, memberNameToken.start, 'static ');
+    }
+  }
+
+  /**
+   * If the method name is computed, we'll need to repeat it for any super call
+   * that we do, so mark it as repeatable now.
+   */
+  markKeyRepeatableIfNecessary() {
+    if (this.expression instanceof FunctionPatcher &&
+        this.expression.containsSuperCall()) {
+      this.key.setRequiresRepeatableExpression();
     }
   }
 
