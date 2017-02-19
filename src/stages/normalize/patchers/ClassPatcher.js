@@ -224,7 +224,7 @@ export default class ClassPatcher extends NodePatcher {
             patcher.expression.contentStart, patcher.expression.contentEnd);
           let ctorName;
           if (this.nameAssignee instanceof IdentifierPatcher) {
-            let className = this.claimFreeBinding(this.nameAssignee.node.data);
+            let className = this.nameAssignee.node.data;
             ctorName = this.claimFreeBinding(`create${className}`);
           } else {
             ctorName = this.claimFreeBinding('createInstance');
