@@ -39,6 +39,10 @@ export default class SuperPatcher extends NodePatcher {
           'construct or file a bug to discuss ways that decaffeinate could ' +
           'handle this case.');
       }
+      if (!className) {
+        throw this.error(
+          'Complex super calls within anonymous classes are not yet supported.');
+      }
       let openParenToken = this.getFollowingOpenParenToken();
       this.overwrite(this.contentStart, openParenToken.end,
         `${className}.prototype.__proto__.${methodName}.call(this, `);
@@ -84,13 +88,10 @@ export default class SuperPatcher extends NodePatcher {
     let { parent } = patcher;
     while (parent) {
       if (parent instanceof ClassPatcher) {
-        let name = parent.getName();
-        if (!name) {
-          throw this.error(
-            'Expected super call to exist in a class with an identifiable name.'
-          );
-        }
-        return name;
+        // Note that this may be null if this is an anonymous class. In that
+        // case, it's still possible, but harder, to generate code that lets us
+        // reference the current class.
+        return parent.getName();
       }
       parent = parent.parent;
     }

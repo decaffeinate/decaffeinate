@@ -36,4 +36,18 @@ describe('super', () => {
       }
     `);
   });
+
+  it('allows super within a class assigned to a variable', () => {
+    check(`
+      A = class extends B
+        f: ->
+          super
+    `, `
+      const A = class extends B {
+        f() {
+          return super.f(...arguments);
+        }
+      };
+    `);
+  });
 });
