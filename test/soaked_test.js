@@ -161,9 +161,8 @@ describe('soaked expressions', () => {
       check(`
         canvasContext?.font = $('body').css('font')
       `, `
-        __guard__(canvasContext, x => x.font = $('body').css('font'));
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        if (typeof canvasContext !== 'undefined' && canvasContext !== null) {
+          canvasContext.font = $('body').css('font');
         }
       `);
     });
@@ -171,10 +170,10 @@ describe('soaked expressions', () => {
     it('handles soaked member access with conflicting variable names', () => {
       check(`
         x = 5
-        a?.b(x)
+        a()?.b(x)
       `, `
         let x = 5;
-        __guard__(a, x1 => x1.b(x));
+        __guard__(a(), x1 => x1.b(x));
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -185,10 +184,7 @@ describe('soaked expressions', () => {
       check(`
         a(b?.c = d)
       `, `
-        a(__guard__(b, x => x.c = d));
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a(typeof b !== 'undefined' && b !== null ? b.c = d : undefined);
       `);
     });
 
@@ -196,9 +192,8 @@ describe('soaked expressions', () => {
       check(`
         a?.b()
       `, `
-        __guard__(a, x => x.b());
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        if (typeof a !== 'undefined' && a !== null) {
+          a.b();
         }
       `);
     });
@@ -218,10 +213,7 @@ describe('soaked expressions', () => {
       check(`
         a(b?.c)
       `, `
-        a(__guard__(b, x => x.c));
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a(typeof b !== 'undefined' && b !== null ? b.c : undefined);
       `);
     });
 
@@ -262,18 +254,15 @@ describe('soaked expressions', () => {
       check(`
         if a?.b then c
       `, `
-        if (__guard__(a, x => x.b)) { c; }
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        if (typeof a !== 'undefined' && a !== null ? a.b : undefined) { c; }
       `);
     });
 
     it('handles nested soaked member access', () => {
       check(`
-        a?.b?.c = 0;
+        a()?.b()?.c = 0;
       `, `
-        __guard__(__guard__(a, x1 => x1.b), x => x.c = 0);
+        __guard__(__guard__(a(), x1 => x1.b()), x => x.c = 0);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -284,18 +273,15 @@ describe('soaked expressions', () => {
       check(`
         (a?.b).c
       `, `
-        (__guard__(a, x => x.b)).c;
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        (typeof a !== 'undefined' && a !== null ? a.b : undefined).c;
       `);
     });
 
     it('keeps postfix ++ within soak expressions', () => {
       check(`
-        a?.b++
+        a()?.b++
       `, `
-        __guard__(a, x => x.b++);
+        __guard__(a(), x => x.b++);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -304,9 +290,9 @@ describe('soaked expressions', () => {
 
     it('keeps postfix -- within soak expressions', () => {
       check(`
-        a?.b--
+        a()?.b--
       `, `
-        __guard__(a, x => x.b--);
+        __guard__(a(), x => x.b--);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -315,9 +301,9 @@ describe('soaked expressions', () => {
 
     it('keeps prefix ++ within soak expressions', () => {
       check(`
-        ++a?.b
+        ++a()?.b
       `, `
-        __guard__(a, x => ++x.b);
+        __guard__(a(), x => ++x.b);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -326,9 +312,9 @@ describe('soaked expressions', () => {
 
     it('keeps prefix ++ within soaked dynamic accesses', () => {
       check(`
-        ++a?[b]
+        ++a()?[b]
       `, `
-        __guard__(a, x => ++x[b]);
+        __guard__(a(), x => ++x[b]);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -337,9 +323,9 @@ describe('soaked expressions', () => {
 
     it('keeps prefix ++ within soaked dynamic accesses where the LHS is surrounded by parens', () => {
       check(`
-        ++(a)?[b]
+        ++(a())?[b]
       `, `
-        __guard__((a), x => ++x[b]);
+        __guard__((a()), x => ++x[b]);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -389,9 +375,9 @@ describe('soaked expressions', () => {
 
     it('keeps prefix -- within soak expressions', () => {
       check(`
-        --a?.b
+        --a()?.b
       `, `
-        __guard__(a, x => --x.b);
+        __guard__(a(), x => --x.b);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -400,9 +386,9 @@ describe('soaked expressions', () => {
 
     it('keeps delete within soak expressions', () => {
       check(`
-        delete a?.b
+        delete a()?.b
       `, `
-        __guard__(a, x => delete x.b);
+        __guard__(a(), x => delete x.b);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -411,9 +397,9 @@ describe('soaked expressions', () => {
 
     it('handles soaked prototype access', () => {
       check(`
-        a?::b
+        a()?::b
       `, `
-        __guard__(a, x => x.prototype.b);
+        __guard__(a(), x => x.prototype.b);
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
@@ -538,10 +524,7 @@ describe('soaked expressions', () => {
     check(`
       a?.b in c
     `, `
-      Array.from(c).includes(__guard__(a, x => x.b));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
+      Array.from(c).includes(typeof a !== 'undefined' && a !== null ? a.b : undefined);
     `);
   });
 
@@ -549,10 +532,7 @@ describe('soaked expressions', () => {
     check(`
       a in b?.c
     `, `
-      Array.from(__guard__(b, x => x.c)).includes(a);
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
+      Array.from(typeof b !== 'undefined' && b !== null ? b.c : undefined).includes(a);
     `);
   });
 
@@ -632,9 +612,10 @@ describe('soaked expressions', () => {
 
   it('allows a repeated soak operation as a loop target', () => {
     check(`
-      i + j for j, i in foo?.bar ? [] 
+      i + j for j, i in foo()?.bar ? [] 
     `, `
-      let iterable = __guard__(foo, x => x.bar) != null ? __guard__(foo, x => x.bar) : [];
+      let left;
+      let iterable = (left = __guard__(foo(), x => x.bar)) != null ? left : [];
       for (let i = 0; i < iterable.length; i++) { let j = iterable[i]; i + j; } 
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
@@ -644,12 +625,130 @@ describe('soaked expressions', () => {
 
   it('handles a soaked dynamic access used with a logical assignment operator with a function RHS', () => {
     check(`
-      a.b?.c or= (it) -> it
+      a.b()?.c or= (it) -> it
     `, `
-      __guard__(a.b, x => x.c || (a.b.c = it => it));
+      let base;
+      __guard__((base = a.b()), x => x.c || (base.c = it => it));
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
+    `);
+  });
+
+  it('handles a possibly undeclared variable in a statement context', () => {
+    check(`
+      ++a?.b[c()]
+    `, `
+      if (typeof a !== 'undefined' && a !== null) {
+        ++a.b[c()];
+      }
+    `);
+  });
+
+  it('handles a simple identifier that has been declared in a statement context', () => {
+    check(`
+      a = f()
+      ++a?.b[c()]
+    `, `
+      let a = f();
+      if (a != null) {
+        ++a.b[c()];
+      }
+    `);
+  });
+
+  it('handles a possibly undeclared variable in an expression context', () => {
+    check(`
+      x = ++a?.b[c()]
+    `, `
+      let x = typeof a !== 'undefined' && a !== null ? ++a.b[c()] : undefined;
+    `);
+  });
+
+  it('handles a simple identifier that has been declared in an expression context', () => {
+    check(`
+      a = f()
+      x = ++a?.b[c()]
+    `, `
+      let a = f();
+      let x = a != null ? ++a.b[c()] : undefined;
+    `);
+  });
+
+  it('properly follows precedence with soak expressions', () => {
+    check(`
+      a = f()
+      x = a?.b or []
+    `, `
+      let a = f();
+      let x = (a != null ? a.b : undefined) || [];
+    `);
+  });
+
+  it('properly handles chained simple soak operations', () => {
+    check(`
+      a = f()
+      if a?.b?.c?
+        d
+    `, `
+      let a = f();
+      if (__guard__(a != null ? a.b : undefined, x => x.c) != null) {
+        d;
+      }
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('properly handles a soaked method call followed by a binary exists op', () => {
+    check(`
+      a = b?.filter(-> c) ? null
+    `, `
+      let left;
+      let a = (left = (typeof b !== 'undefined' && b !== null ? b.filter(() => c) : undefined)) != null ? left : null;
+    `);
+  });
+
+  it('properly handles a soak operation inside a ternary', () => {
+    check(`
+      b = 0
+      a = if b?.c then d else e
+    `, `
+      let b = 0;
+      let a = (b != null ? b.c : undefined) ? d : e;
+    `);
+  });
+
+  it('has the correct runtime behavior with a soak operation inside a ternary', () => {
+    validate(`
+      a = {b: 'should not return'}
+      o = if a?.b then 'should return'
+    `, 'should return');
+  });
+
+  it('does not add parens around a soaked while condition', () => {
+    check(`
+      a = {}
+      while a?.b
+        break
+    `, `
+      let a = {};
+      while (a != null ? a.b : undefined) {
+        break;
+      }
+    `);
+  });
+
+  it('does not add parens around a soaked indexing expression', () => {
+    check(`
+      a = {}
+      b = {}
+      d = a[b?.c]
+    `, `
+      let a = {};
+      let b = {};
+      let d = a[b != null ? b.c : undefined];
     `);
   });
 });

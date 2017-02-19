@@ -496,9 +496,8 @@ describe('compound assignment', () => {
       check(`
         a.b?.c ?= d
       `, `
-        __guard__(a.b, x => x.c != null ? a.b.c : (a.b.c = d));
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+        if (a.b != null) {
+          a.b.c != null ? a.b.c : (a.b.c = d);
         }
       `);
     });

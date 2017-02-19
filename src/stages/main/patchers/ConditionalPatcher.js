@@ -42,9 +42,6 @@ export default class ConditionalPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
   willPatchAsTernary(): boolean {
     return (
       this.prefersToPatchAsExpression() || (
