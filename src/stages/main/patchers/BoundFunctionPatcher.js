@@ -37,7 +37,7 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
       }
     });
 
-    if (referencesArguments) {
+    if (referencesArguments || (node.parentNode && node.parentNode.type === 'NewOp')) {
       return ManuallyBoundFunctionPatcher;
     } else {
       return null;
