@@ -372,9 +372,8 @@ describe('function calls', () => {
     check(`
       a? b
     `, `
-      __guardFunc__(a, f => f(b));
-      function __guardFunc__(func, transform) {
-        return typeof func === 'function' ? transform(func) : undefined;
+      if (typeof a === 'function') {
+        a(b);
       }
     `);
   });

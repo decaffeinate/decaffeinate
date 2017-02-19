@@ -1,10 +1,12 @@
+import { SourceType } from 'coffee-lex';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import SoakedDynamicMemberAccessOpPatcher from './SoakedDynamicMemberAccessOpPatcher';
 import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher';
 import findSoakContainer from '../../../utils/findSoakContainer';
-import { SourceType } from 'coffee-lex';
+import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
+import ternaryNeedsParens from '../../../utils/ternaryNeedsParens';
 
 const GUARD_FUNC_HELPER =
   `function __guardFunc__(func, transform) {
@@ -41,14 +43,49 @@ const GUARD_METHOD_HELPER =
 
 export default class SoakedFunctionApplicationPatcher extends FunctionApplicationPatcher {
   patchAsExpression() {
-    if (this.fn instanceof MemberAccessOpPatcher) {
-      this.patchMethodCall(this.fn);
-    } else if (this.fn instanceof DynamicMemberAccessOpPatcher) {
-      this.patchDynamicMethodCall(this.fn);
+    if (this.shouldPatchAsConditional()) {
+      this.patchAsConditional();
     } else {
-      this.patchNonMethodCall();
+      if (this.fn instanceof MemberAccessOpPatcher) {
+        this.patchMethodCall(this.fn);
+      } else if (this.fn instanceof DynamicMemberAccessOpPatcher) {
+        this.patchDynamicMethodCall(this.fn);
+      } else {
+        this.patchNonMethodCall();
+      }
+      super.patchAsExpression();
     }
+  }
+
+  shouldPatchAsConditional() {
+    return this.fn.isRepeatable() && !nodeContainsSoakOperation(this.fn.node);
+  }
+
+  patchAsConditional() {
+    let soakContainer = findSoakContainer(this);
+    this.fn.setRequiresRepeatableExpression();
     super.patchAsExpression();
+    let fnCode = this.fn.getRepeatCode();
+
+    let conditionCode = `typeof ${fnCode} === 'function'`;
+
+    let callStartToken = this.getCallStartToken();
+    this.remove(this.fn.outerEnd, callStartToken.start);
+    if (soakContainer.willPatchAsExpression()) {
+      let containerNeedsParens = ternaryNeedsParens(soakContainer);
+      if (containerNeedsParens) {
+        soakContainer.insert(soakContainer.contentStart, '(');
+      }
+      soakContainer.insert(soakContainer.contentStart, `${conditionCode} ? `);
+      soakContainer.appendDeferredSuffix(' : undefined');
+      if (containerNeedsParens) {
+        soakContainer.appendDeferredSuffix(')');
+      }
+    } else {
+      soakContainer.insert(
+        soakContainer.contentStart, `if (${conditionCode}) {\n${soakContainer.getIndent(1)}`);
+      soakContainer.appendDeferredSuffix(`\n${soakContainer.getIndent()}}`);
+    }
   }
 
   /**
