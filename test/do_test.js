@@ -55,4 +55,26 @@ describe('`do`', () => {
       }()) + 1;
     `);
   });
+
+  it('allows an assignment within a do operation on a fat arrow function (#784)', () => {
+    check(`
+      do a = =>
+        b
+    `, `
+      let a;
+      (a = () => {
+        return b;
+      })();
+    `);
+  });
+
+  it('allows an assignment within a do operation with defaults (#637)', () => {
+    check(`
+      do a = (b = c, d) ->
+        e
+    `, `
+      let a;
+      (a = (b, d) => e)(c, d);
+    `);
+  });
 });
