@@ -5,6 +5,9 @@ import { SourceType } from 'coffee-lex';
 export default class BinaryOpPatcher extends NodePatcher {
   left: NodePatcher;
   right: NodePatcher;
+  // Avoid conflicting with the `negated` flag in some subclasses that have
+  // special behavior.
+  binaryOpNegated: boolean = false;
 
   constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
     super(patcherContext);
@@ -17,22 +20,21 @@ export default class BinaryOpPatcher extends NodePatcher {
     this.right.setRequiresExpression();
   }
 
-  /**
-   * Binary operators have lower precedence than negation, so we need to add
-   * parens.
-   */
   negate() {
-    this.insert(this.innerStart, '!(');
-    this.insert(this.innerEnd, ')');
+    this.binaryOpNegated = !this.binaryOpNegated;
   }
 
   /**
    * LEFT OP RIGHT
    */
   patchAsExpression({ needsParens=false }={}) {
-    let addParens = needsParens && !this.isSurroundedByParentheses();
+    let addParens =
+      (needsParens && !this.isSurroundedByParentheses()) || this.binaryOpNegated;
+    if (this.binaryOpNegated) {
+      this.insert(this.innerStart, '!');
+    }
     if (addParens) {
-      this.insert(this.outerStart, '(');
+      this.insert(this.innerStart, '(');
     }
     if (this.left instanceof BinaryOpPatcher) {
       this.left.patch({ needsParens: this.getOperator() !== this.left.getOperator() });
@@ -46,7 +48,7 @@ export default class BinaryOpPatcher extends NodePatcher {
       this.right.patch({ needsParens: true });
     }
     if (addParens) {
-      this.insert(this.outerEnd, ')');
+      this.insert(this.innerEnd, ')');
     }
   }
 
