@@ -617,10 +617,10 @@ describe('conditionals', () => {
         if (false) {
           // comment
         } else if (true) {
-        }
           /*
           block comment
           */
+        }
         else {}
       });
     `);

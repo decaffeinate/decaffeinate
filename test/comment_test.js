@@ -72,4 +72,30 @@ describe('comments', () => {
       console.log("Hello World!");
     `);
   });
+
+  it('preserves trailing comments in function bodies', () => {
+    check(`
+      a ->
+        if b
+          c
+        ### d ###
+    `, `
+      a(function() {
+        if (b) {
+          return c;
+        }
+        /* d */
+      });
+    `);
+  });
+
+  it.skip('preserves trailing comments in arrow function bodies', () => {
+    check(`
+      a ->
+        b
+        ### c ###
+    `, `
+      a(() => b /* c */);
+    `);
+  });
 });

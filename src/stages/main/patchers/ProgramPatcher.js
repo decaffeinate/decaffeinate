@@ -11,11 +11,11 @@ export default class ProgramPatcher extends SharedProgramPatcher {
   }
 
   patchAsStatement() {
+    this.patchComments();
     if (this.body) {
       this.body.patch({ leftBrace: false, rightBrace: false });
     }
     this.patchContinuations();
-    this.patchComments();
     this.patchHelpers();
   }
 
