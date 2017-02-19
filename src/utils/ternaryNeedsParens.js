@@ -25,9 +25,10 @@ export default function ternaryNeedsParens(patcher: NodePatcher): boolean {
     patcher.isSurroundedByParentheses() ||
     (parent instanceof FunctionApplicationPatcher && patcher !== parent.fn) ||
     (parent instanceof DynamicMemberAccessOpPatcher && patcher === parent.indexingExpr) ||
-    (parent instanceof ConditionalPatcher && patcher === parent.condition &&
-      !parent.willPatchAsTernary()) ||
-    (parent instanceof WhilePatcher && patcher === parent.condition) ||
+    (parent instanceof ConditionalPatcher && !parent.node.isUnless &&
+      patcher === parent.condition && !parent.willPatchAsTernary()) ||
+    (parent instanceof WhilePatcher && !parent.node.isUntil &&
+      patcher === parent.condition) ||
     parent instanceof InOpPatcher ||
     (parent instanceof AssignOpPatcher && patcher === parent.expression) ||
     // This function is called for soak operations, so outer soak operations
