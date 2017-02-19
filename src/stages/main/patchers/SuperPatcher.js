@@ -1,20 +1,20 @@
 import { SourceType } from 'coffee-lex';
 
 import NodePatcher from './../../../patchers/NodePatcher';
-import AssignOpPatcher from './AssignOpPatcher';
 import ClassPatcher from './ClassPatcher';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher';
 import ConstructorPatcher from './ConstructorPatcher';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
-import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
 
 import type { SourceToken } from './../../../patchers/types';
 
 type MethodInfo = {
-  className: string;
-  // If null, this is a constructor.
-  methodName: ?string;
+  classCode: string;
+  // Code to access the method from the prototype. If null, this is a constructor.
+  accessCode: ?string;
 }
 
 /**
@@ -26,26 +26,26 @@ type MethodInfo = {
  */
 export default class SuperPatcher extends NodePatcher {
   patchAsExpression() {
-    let { className, methodName } = this.getEnclosingMethodInfo();
+    let { classCode, accessCode } = this.getEnclosingMethodInfo();
     if (this.canConvertToJsSuper()) {
-      if (methodName) {
-        this.insert(this.contentEnd, `.${methodName}`);
+      if (accessCode) {
+        this.insert(this.contentEnd, accessCode);
       }
     } else {
-      if (!methodName) {
+      if (!accessCode) {
         throw this.error(
           'Cannot handle a super call in an inner function in a constructor. ' +
           'Please either rewrite your CoffeeScript code to not use this ' +
           'construct or file a bug to discuss ways that decaffeinate could ' +
           'handle this case.');
       }
-      if (!className) {
+      if (!classCode) {
         throw this.error(
           'Complex super calls within anonymous classes are not yet supported.');
       }
       let openParenToken = this.getFollowingOpenParenToken();
       this.overwrite(this.contentStart, openParenToken.end,
-        `${className}.prototype.__proto__.${methodName}.call(this, `);
+        `${classCode}.prototype.__proto__${accessCode}.call(this, `);
     }
   }
 
@@ -62,13 +62,13 @@ export default class SuperPatcher extends NodePatcher {
         methodName = methodAssignment.key.node.data;
       }
       return {
-        className: this.getEnclosingClassName(methodAssignment),
-        methodName,
+        classCode: this.getEnclosingClassName(methodAssignment),
+        accessCode: `.${methodName}`,
       };
     } else if (methodAssignment instanceof ConstructorPatcher) {
       return {
-        className: this.getEnclosingClassName(methodAssignment),
-        methodName: null,
+        classCode: this.getEnclosingClassName(methodAssignment),
+        accessCode: null,
       };
     } else {
       let methodInfo = this.getPrototypeAssignInfo(methodAssignment);
@@ -123,18 +123,26 @@ export default class SuperPatcher extends NodePatcher {
    * @private
    */
   getPrototypeAssignInfo(patcher: NodePatcher): ?MethodInfo {
-    if (!(patcher instanceof AssignOpPatcher) ||
-        !(patcher.expression instanceof FunctionPatcher) ||
-        !(patcher.assignee instanceof MemberAccessOpPatcher) ||
-        !(patcher.assignee.expression instanceof MemberAccessOpPatcher) ||
-        !(patcher.assignee.expression.expression instanceof IdentifierPatcher) ||
-        !(patcher.assignee.expression.member.node.date !== 'prototype')) {
+    let prototypeAssignPatchers = extractPrototypeAssignPatchers(patcher);
+    if (!prototypeAssignPatchers) {
       return null;
     }
-    return {
-      className: patcher.assignee.expression.expression.node.data,
-      methodName: patcher.assignee.member.node.data,
-    };
+    let { classRefPatcher, methodAccessPatcher } = prototypeAssignPatchers;
+    if (methodAccessPatcher instanceof MemberAccessOpPatcher) {
+      return {
+        classCode: classRefPatcher.getRepeatCode(),
+        accessCode: `.${methodAccessPatcher.member.node.data}`,
+      };
+    } else if (methodAccessPatcher instanceof DynamicMemberAccessOpPatcher) {
+      return {
+        classCode: classRefPatcher.getRepeatCode(),
+        accessCode: `[${methodAccessPatcher.indexingExpr.getRepeatCode()}]`,
+      };
+    } else {
+      throw this.error(
+        'Expected the method access patcher to be either ' +
+        'MemberAccessOpPatcher or DynamicMemberAccessOpPatcher.');
+    }
   }
 
   /**

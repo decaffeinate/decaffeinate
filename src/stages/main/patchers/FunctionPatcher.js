@@ -1,8 +1,9 @@
 import NodePatcher from './../../../patchers/NodePatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
+import { SourceType } from 'coffee-lex';
+import traverse from '../../../utils/traverse';
 import type BlockPatcher from './BlockPatcher';
 import type { PatcherContext, SourceToken } from './../../../patchers/types';
-import { SourceType } from 'coffee-lex';
 
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
@@ -142,5 +143,22 @@ export default class FunctionPatcher extends NodePatcher {
    */
   statementNeedsParens(): boolean {
     return true;
+  }
+
+  containsSuperCall(): boolean {
+    let foundSuper = false;
+    traverse(this.node, child => {
+      if (foundSuper) {
+        // Already found it, skip this one.
+        return false;
+      } else if (child.type === 'Super') {
+        // Found it.
+        foundSuper = true;
+      } else if (child.type === 'Class') {
+        // Don't go into other classes.
+        return false;
+      }
+    });
+    return foundSuper;
   }
 }

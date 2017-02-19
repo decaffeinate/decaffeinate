@@ -1,5 +1,7 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
+import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
@@ -10,6 +12,7 @@ import ThisPatcher from './ThisPatcher';
 import SpreadPatcher from './SpreadPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
 
 import type { PatcherContext } from './../../../patchers/types';
 
@@ -36,6 +39,7 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchAsExpression({ needsParens=false }={}) {
+    this.markProtoAssignmentRepeatableIfNecessary();
     let shouldAddParens =
       (needsParens && !this.isSurroundedByParentheses()) || this.negated;
     if (this.negated) {
@@ -80,6 +84,7 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchAsStatement() {
+    this.markProtoAssignmentRepeatableIfNecessary();
     if (canPatchAssigneeToJavaScript(this.assignee.node)) {
       let shouldAddParens = this.assignee.statementShouldAddParens();
       if (shouldAddParens) {
@@ -219,6 +224,31 @@ export default class AssignOpPatcher extends NodePatcher {
       return `[${patcher.patchAndGetCode()}]`;
     } else {
       throw this.error(`Unexpected object destructure expression: ${patcher.node.type}`);
+    }
+  }
+
+  /**
+   * If this is an assignment of the form `A.prototype.b = -> super`, we need to
+   * mark the `A` expression, and possibly the indexed value, as repeatable so
+   * that the super transform can make use of it.
+   */
+  markProtoAssignmentRepeatableIfNecessary() {
+    if (!(this.expression instanceof FunctionPatcher && this.expression.containsSuperCall())) {
+      return null;
+    }
+    let prototypeAssignPatchers = extractPrototypeAssignPatchers(this);
+    if (!prototypeAssignPatchers) {
+      return null;
+    }
+    let { classRefPatcher, methodAccessPatcher } = prototypeAssignPatchers;
+    classRefPatcher.setRequiresRepeatableExpression({
+      parens: true,
+      ref: 'cls',
+    });
+    if (methodAccessPatcher instanceof DynamicMemberAccessOpPatcher) {
+      methodAccessPatcher.indexingExpr.setRequiresRepeatableExpression({
+        ref: 'method',
+      });
     }
   }
 }
