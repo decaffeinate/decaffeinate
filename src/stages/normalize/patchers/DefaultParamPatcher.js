@@ -1,3 +1,4 @@
+import AssignOpPatcher from './AssignOpPatcher';
 import DoOpPatcher from './DoOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
@@ -66,7 +67,13 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
     if (this.options.looseDefaultParams) {
       return false;
     }
-    if (this.parent instanceof FunctionPatcher && this.parent.parent instanceof DoOpPatcher) {
+    if (this.parent instanceof FunctionPatcher &&
+        this.parent.parent instanceof DoOpPatcher) {
+      return false;
+    }
+    if (this.parent instanceof FunctionPatcher &&
+        this.parent.parent instanceof AssignOpPatcher &&
+        this.parent.parent.parent instanceof DoOpPatcher) {
       return false;
     }
     return true;

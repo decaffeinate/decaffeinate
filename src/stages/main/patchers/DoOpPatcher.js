@@ -1,3 +1,4 @@
+import AssignOpPatcher from './AssignOpPatcher';
 import DefaultParamPatcher from './DefaultParamPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import NodePatcher from '../../../patchers/NodePatcher';
@@ -22,10 +23,7 @@ export default class DoOpPatcher extends NodePatcher {
     let nextToken = this.sourceTokenAtIndex(doTokenIndex.next());
     this.remove(doToken.start, nextToken.start);
 
-    let addParens = (
-      this.expression instanceof FunctionPatcher &&
-      !this.isSurroundedByParentheses()
-    );
+    let addParens = this.hasDoFunction() && !this.isSurroundedByParentheses();
 
     if (addParens) {
       this.insert(this.outerStart, '(');
@@ -38,9 +36,9 @@ export default class DoOpPatcher extends NodePatcher {
     }
 
     let args = [];
-    if (this.expression instanceof FunctionPatcher) {
-      let expression = (this.expression: FunctionPatcher);
-      expression.parameters.forEach(param => {
+    if (this.hasDoFunction()) {
+      let func = this.getDoFunction();
+      func.parameters.forEach(param => {
         if (param instanceof DefaultParamPatcher) {
           let valueSource = param.value.getPatchedSource();
           this.remove(param.param.outerEnd, param.value.outerEnd);
@@ -51,6 +49,27 @@ export default class DoOpPatcher extends NodePatcher {
       });
     }
     this.insert(this.innerEnd, `(${args.join(', ')})`);
+  }
+
+  /**
+   * Determine whether there is a "do function"--that is, a function where we
+   * should change default params to arguments to the do call.
+   */
+  hasDoFunction(): boolean {
+    return this.expression instanceof FunctionPatcher ||
+      (this.expression instanceof AssignOpPatcher &&
+        this.expression.expression instanceof FunctionPatcher);
+  }
+
+  getDoFunction(): FunctionPatcher {
+    if (this.expression instanceof FunctionPatcher) {
+      return this.expression;
+    } else if (this.expression instanceof AssignOpPatcher &&
+        this.expression.expression instanceof FunctionPatcher) {
+      return this.expression.expression;
+    } else {
+      throw this.error('Should only call getDoFunction if hasDoFunction is true.');
+    }
   }
 
   /**
