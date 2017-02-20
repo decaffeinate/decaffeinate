@@ -114,14 +114,14 @@ describe('objects', () => {
     `);
   });
 
-  it('uses computed methods for string keys', () => {
+  it('does not use computed properties for method keys', () => {
     check(`
       ({
         'a': -> b
       })
     `, `
       ({
-        ['a']() { return b; }
+        'a'() { return b; }
       });
     `);
   });

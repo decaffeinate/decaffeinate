@@ -55,6 +55,7 @@ describe('classes', () => {
       ;
     `);
   });
+
   it('preserves class body generator functions as generator method definitions', () => {
     check(`
       class A
@@ -62,7 +63,7 @@ describe('classes', () => {
           yield 1
     `, `
       class A {
-        *['a a']() {
+        *'a a'() {
           return yield 1;
         }
       }
@@ -1250,6 +1251,28 @@ describe('classes', () => {
         method() {}
       }
       A.initClass();
+    `);
+  });
+
+  it('allows simple computed keys for class methods', () => {
+    check(`
+      class A
+        "#{f()}": -> 'Hello'
+    `, `
+      class A {
+        [f()]() { return 'Hello'; }
+      }
+    `);
+  });
+
+  it('allows string interpolation keys for class methods', () => {
+    check(`
+      class A
+        "#{f()}, World": -> 'Hello'
+    `, `
+      class A {
+        [\`\${f()}, World\`]() { return 'Hello'; }
+      }
     `);
   });
 });
