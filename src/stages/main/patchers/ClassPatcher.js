@@ -56,8 +56,8 @@ export default class ClassPatcher extends NodePatcher {
       // `class A.B` → `A.B`
       //  ^^^^^^
       this.remove(classToken.start, this.nameAssignee.outerStart);
-      // `A[0]` → `A[0] = class`
-      //               ^^^^^^^^
+      // `A.B` → `A.B = class`
+      //             ^^^^^^^^
       this.insert(this.nameAssignee.outerEnd, ` = class`);
     }
     if (this.nameAssignee) {
