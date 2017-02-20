@@ -44,7 +44,7 @@
     "decaffeinate-coffeescript": "1.10.0-patch19",
     "decaffeinate-parser": "^16.0.7",
     "detect-indent": "^4.0.0",
-    "esnext": "^3.0.12",
+    "esnext": "^3.0.13",
     "lines-and-columns": "^1.1.5",
     "magic-string": "^0.17.0",
     "repeating": "^2.0.0"
