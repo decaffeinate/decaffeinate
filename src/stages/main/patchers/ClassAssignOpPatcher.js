@@ -37,7 +37,11 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    * @protected
    */
   patchKey() {
-    // Don't bother, we handle it at this level.
+    if (this.key instanceof MemberAccessOpPatcher) {
+      // Do nothing; this case is handled elsewhere.
+    } else {
+      super.patchKey();
+    }
   }
 
   /**
@@ -57,18 +61,6 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     let colonToken = this.sourceTokenAtIndex(colonIndex);
     this.overwrite(colonToken.start, colonToken.end, ' =');
     this.patchExpression();
-  }
-
-  /**
-   * Determines whether this class assignment has a computed key.
-   *
-   * @protected
-   */
-  isMethodNameComputed(): boolean {
-    if (!super.isMethodNameComputed()) {
-      return false;
-    }
-    return !this.isStaticMethod();
   }
 
   /**
