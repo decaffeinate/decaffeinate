@@ -99,6 +99,7 @@ export default class Scope {
       case 'Function':
       case 'BoundFunction':
       case 'GeneratorFunction':
+      case 'BoundGeneratorFunction':
         getBindingsForNode(node).forEach(identifier => this.declares(identifier.data, identifier));
         break;
 
@@ -111,6 +112,12 @@ export default class Scope {
             );
           }
         });
+        break;
+
+      case 'Class':
+        if (node.nameAssignee && node.nameAssignee.type === 'Identifier') {
+          this.assigns(node.nameAssignee.data, node.nameAssignee);
+        }
         break;
     }
   }
@@ -136,6 +143,7 @@ function getBindingsForNode(node: Node): Array<Node> {
     case 'Function':
     case 'GeneratorFunction':
     case 'BoundFunction':
+    case 'BoundGeneratorFunction':
       return flatMap(node.parameters, getBindingsForNode);
 
     case 'Identifier':
