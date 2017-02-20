@@ -50,4 +50,42 @@ describe('super', () => {
       };
     `);
   });
+
+  it('allows super within a method assignment with a property access class', () => {
+    check(`
+      a.b.prototype.c = -> super
+    `, `
+      a.b.prototype.c = function() { return a.b.prototype.__proto__.c.call(this, ...arguments); };
+    `);
+  });
+
+  it('allows super within a method assignment with a computed class', () => {
+    check(`
+      a().prototype.b = -> super
+    `, `
+      let cls;
+      (cls = a()).prototype.b = function() { return cls.prototype.__proto__.b.call(this, ...arguments); };
+    `);
+  });
+
+  it('allows super within a dynamic prototype member access', () => {
+    check(`
+      A().prototype[b()] = ->
+        super
+    `, `
+      let cls, method;
+      (cls = A()).prototype[method = b()] = function() {
+        return cls.prototype.__proto__[method].call(this, ...arguments);
+      };
+    `);
+  });
+
+  it('does not mark a proto assign as repeatable if the method does not call super', () => {
+    check(`
+      A().prototype[b()] = ->
+        3
+    `, `
+      A().prototype[b()] = () => 3;
+    `);
+  });
 });
