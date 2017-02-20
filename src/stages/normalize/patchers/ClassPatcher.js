@@ -335,15 +335,6 @@ export default class ClassPatcher extends NodePatcher {
         // @a: b -> @a = b
         return `${prefixCode}${keyCode}${suffixCode}`;
       }
-    } else if (statementPatcher instanceof ClassPatcher &&
-        statementPatcher.nameAssignee instanceof IdentifierPatcher) {
-      // Nested classes need a special case: they need to be converted to an
-      // assignment statement so that the name can be declared outside the outer
-      // class body and the initialized within initClass.
-      let className = statementPatcher.nameAssignee.node.data;
-      let prefix = this.slice(deleteStart, statementPatcher.outerStart);
-      let suffix = this.slice(statementPatcher.outerStart, statementPatcher.outerEnd);
-      return `${prefix}${className} = ${suffix}`;
     } else {
       return this.slice(deleteStart, statementPatcher.outerEnd);
     }

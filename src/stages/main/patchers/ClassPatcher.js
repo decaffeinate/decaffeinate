@@ -51,13 +51,13 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
-    if (this.isNamespaced()) {
+    if (this.isNamespaced() || this.isNameAlreadyDeclared()) {
       let classToken = this.getClassToken();
       // `class A.B` → `A.B`
       //  ^^^^^^
       this.remove(classToken.start, this.nameAssignee.outerStart);
-      // `A[0]` → `A[0] = class`
-      //               ^^^^^^^^
+      // `A.B` → `A.B = class`
+      //             ^^^^^^^^
       this.insert(this.nameAssignee.outerEnd, ` = class`);
     }
     if (this.nameAssignee) {
@@ -116,6 +116,16 @@ export default class ClassPatcher extends NodePatcher {
    */
   isNamespaced(): boolean {
     return !this.isAnonymous() && !(this.nameAssignee instanceof IdentifierPatcher);
+  }
+
+  /**
+   * Determine if the name of this class already has a declaration earlier. If
+   * so, we want to emit an assignment-style class instead of a class
+   * declaration.
+   */
+  isNameAlreadyDeclared(): boolean {
+    let name = this.getName();
+    return name && this.node.scope.getBinding(name) !== this.nameAssignee.node;
   }
 
   /**

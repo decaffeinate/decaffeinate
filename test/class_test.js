@@ -881,7 +881,7 @@ describe('classes', () => {
       let C = undefined;
       class A {
         static initClass() {
-          B = class B {
+          B = class {
             static initClass() {
               this.prototype.classField = 2;
             }
@@ -891,7 +891,7 @@ describe('classes', () => {
           };
           B.initClass();
           let CONSTANT = undefined;
-          C = class C {
+          C = class {
             static initClass() {
               CONSTANT = 7;
             }
@@ -1303,6 +1303,16 @@ describe('classes', () => {
       class A {
         [\`\${f()}, World\`]() { return 'Hello'; }
       }
+    `);
+  });
+
+  it('allows two class declarations with the same name', () => {
+    check(`
+      class A
+      class A
+    `, `
+      class A {}
+      A = class {};
     `);
   });
 });
