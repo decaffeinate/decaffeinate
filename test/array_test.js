@@ -133,4 +133,12 @@ describe('arrays', () => {
       }];
     `)
   );
+
+  it('allows semicolon delimiters between array values', () =>
+    check(`
+      [a, b; c, d;]
+    `, `
+      [a, b, c, d,];
+    `)
+  );
 });

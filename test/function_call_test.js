@@ -623,4 +623,12 @@ describe('function calls', () => {
       f;
     `);
   });
+
+  it('allows semicolon delimiters between arguments', () => {
+    check(`
+      a(b, c; d, e;)
+    `, `
+      a(b, c, d, e);
+    `);
+  });
 });

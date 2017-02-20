@@ -1,3 +1,4 @@
+import { SourceType } from 'coffee-lex';
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import DefaultParamPatcher from './DefaultParamPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
@@ -5,6 +6,7 @@ import IdentifierPatcher from './IdentifierPatcher';
 import RestPatcher from './SpreadPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import normalizeListItem from '../../../utils/normalizeListItem';
 import stripSharedIndent from '../../../utils/stripSharedIndent';
 
 import type { PatcherContext } from './../../../patchers/types';
@@ -34,6 +36,15 @@ export default class FunctionPatcher extends NodePatcher {
         assignments.push(...this.patchParameterAndGetAssignments(parameter));
       } else {
         parameter.patch();
+      }
+      normalizeListItem(this, parameter);
+      if (i === this.parameters.length - 1) {
+        // Parameter lists allow trailing semicolons but not trailing commas, so
+        // just get rid of it as a special case if it's there.
+        let nextToken = parameter.nextToken();
+        if (nextToken && nextToken.type === SourceType.SEMICOLON) {
+          this.remove(nextToken.start, nextToken.end);
+        }
       }
     }
 
