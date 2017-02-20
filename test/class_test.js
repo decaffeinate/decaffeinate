@@ -1066,6 +1066,25 @@ describe('classes', () => {
     `);
   });
 
+  it('handles a single-line class with an external constructor', () => {
+    check(`
+      f = ->
+      class A then constructor: f
+    `, `
+      let f = function() {};
+      let createA = undefined;
+      class A {
+        static initClass() {
+          createA = f;
+        }
+        constructor() {
+          return createA.apply(this, arguments);
+        }
+      }
+      A.initClass();
+    `);
+  });
+
   it('allows super calls within nested functions', () => {
     check(`
       class B extends A
