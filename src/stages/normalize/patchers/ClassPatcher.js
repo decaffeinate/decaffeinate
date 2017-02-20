@@ -230,10 +230,13 @@ export default class ClassPatcher extends NodePatcher {
             ctorName = this.claimFreeBinding('createInstance');
           }
 
+          let bodyIndent = this.getBodyIndent();
+          let indentString = this.getProgramIndentString();
+
           this.overwrite(
             patcher.expression.outerStart,
             patcher.expression.outerEnd,
-            `->\n${this.body.getIndent(1)}return ${ctorName}.apply(this, arguments)`
+            `->\n${bodyIndent}${indentString}return ${ctorName}.apply(this, arguments)`
           );
 
           return {
@@ -255,12 +258,7 @@ export default class ClassPatcher extends NodePatcher {
    * class.
    */
   generateInitClassMethod(nonMethodPatchers, customConstructorInfo, insertPoint) {
-    let bodyIndent = this.body.getIndent();
-    // If the body is inline, generate code at one indent level up instead of
-    // at the class indentation level.
-    if (bodyIndent === this.getIndent()) {
-      bodyIndent = this.getIndent(1);
-    }
+    let bodyIndent = this.getBodyIndent();
     let indentString = this.getProgramIndentString();
     this.insert(insertPoint, `\n${bodyIndent}@initClass: ->`);
     let assignmentNames = [];
@@ -285,6 +283,17 @@ export default class ClassPatcher extends NodePatcher {
 
     this.insert(insertPoint, `\n${bodyIndent}${indentString}return`);
     return assignmentNames;
+  }
+
+  getBodyIndent() {
+    let bodyNodeIndent = this.body.getIndent();
+    // If the body is inline, generate code at one indent level up instead of
+    // at the class indentation level.
+    if (bodyNodeIndent === this.getIndent()) {
+      return this.getIndent(1);
+    } else {
+      return bodyNodeIndent;
+    }
   }
 
   /**
