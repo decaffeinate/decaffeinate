@@ -1,6 +1,5 @@
 import ClassBlockPatcher from './ClassBlockPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
 import type { SourceToken, PatcherContext } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
@@ -57,16 +56,9 @@ export default class ClassPatcher extends NodePatcher {
       // `class A.B` → `A.B`
       //  ^^^^^^
       this.remove(classToken.start, this.nameAssignee.outerStart);
-      let name = this.getName();
-      if (name) {
-        // `A.B` → `A.B = class B`
-        //             ^^^^^^^^^^
-        this.insert(this.nameAssignee.outerEnd, ` = class ${this.getName()}`);
-      } else {
-        // `A[0]` → `A[0] = class`
-        //               ^^^^^^^^
-        this.insert(this.nameAssignee.outerEnd, ` = class`);
-      }
+      // `A[0]` → `A[0] = class`
+      //               ^^^^^^^^
+      this.insert(this.nameAssignee.outerEnd, ` = class`);
     }
     if (this.nameAssignee) {
       this.nameAssignee.patch();
@@ -133,8 +125,6 @@ export default class ClassPatcher extends NodePatcher {
     let { nameAssignee } = this;
     if (nameAssignee instanceof IdentifierPatcher) {
       return nameAssignee.node.data;
-    } else if (nameAssignee instanceof MemberAccessOpPatcher) {
-      return nameAssignee.node.member.data;
     } else {
       return null;
     }

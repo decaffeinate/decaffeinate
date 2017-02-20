@@ -751,7 +751,7 @@ describe('classes', () => {
       class A.B
         a: -> 1
     `, `
-      A.B = class B {
+      A.B = class {
         a() { return 1; }
       };
     `);
@@ -1223,10 +1223,21 @@ describe('classes', () => {
     `, `
       class Outer {
         static initClass() {
-          this.Inner = class Inner {};
+          this.Inner = class {};
         }
       }
       Outer.initClass();
+    `);
+  });
+
+  it('handles a class this-assigned to a keyword name', () => {
+    check(`
+      ->
+        class @for
+    `, `
+      (function() {
+        return this.for = class {};
+      });
     `);
   });
 
