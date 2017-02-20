@@ -68,4 +68,20 @@ describe('`new` operator', () => {
       });
     `);
   });
+
+  it('allows `new` on regular functions', () => {
+    check(`
+      new -> a
+    `, `
+      (new function() { return a; });
+    `);
+  });
+
+  it('allows `new` on bound functions', () => {
+    check(`
+      new => a
+    `, `
+      (new (function() { return a; }.bind(this)));
+    `);
+  });
 });
