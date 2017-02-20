@@ -396,7 +396,7 @@ export default class NodePatcher {
       );
     }
     this.log(
-      'INSERT RIGHT',
+      'INSERT',
       index,
       JSON.stringify(content),
       'BEFORE',
@@ -405,6 +405,33 @@ export default class NodePatcher {
 
     this.adjustBoundsToInclude(index);
     this.editor.appendLeft(index, content);
+  }
+
+  /**
+   * Insert content at the specified index, before any content normally
+   * specified with `insert`. Note that this should be used sparingly. In almost
+   * every case, the correct behavior is to do all patching operations in order
+   * and always use `insert`. However, in some cases (like a constructor that
+   * needs the patched contents of the methods below it), we need to do patching
+   * out of order, so it's ok to use `prependLeft` to ensure that the code ends
+   * up before the later values.
+   */
+  prependLeft(index: number, content: string) {
+    if (typeof index !== 'number') {
+      throw new Error(
+        `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
+      );
+    }
+    this.log(
+      'PREPEND LEFT',
+      index,
+      JSON.stringify(content),
+      'BEFORE',
+      JSON.stringify(this.context.source.slice(index, index + 8))
+    );
+
+    this.adjustBoundsToInclude(index);
+    this.editor.prependLeft(index, content);
   }
 
   allowPatchingOuterBounds(): boolean {
@@ -1130,6 +1157,15 @@ export default class NodePatcher {
   }
 
   /**
+   * Check if this expression has been marked as repeatable. Generally this
+   * should only be used for advanced cases, like transferring the repeat code
+   * result from one patcher to another.
+   */
+  isSetAsRepeatableExpression(): boolean {
+    return Boolean(this._repeatableOptions);
+  }
+
+  /**
    * Get the code snippet computed from patchAsRepeatableExpression that can be
    * used to refer to the result of this expression without further
    * side-effects.
@@ -1139,6 +1175,15 @@ export default class NodePatcher {
       throw new Error('Must patch as a repeatable expression to access repeat code.');
     }
     return this._repeatCode;
+  }
+
+  /**
+   * Explicitly set the repeatable result. Generally this should only be used
+   * for advanced cases, like transferring the repeat code result from one
+   * patcher to another.
+   */
+  overrideRepeatCode(repeatCode) {
+    this._repeatCode = repeatCode;
   }
 
   /**

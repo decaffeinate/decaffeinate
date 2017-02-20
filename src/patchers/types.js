@@ -17,7 +17,9 @@ export type ParseContext = {
 };
 
 export type Editor = {
+  prependLeft: (index: number, content: string) => Editor;
   appendLeft: (index: number, content: string) => Editor;
+  prependRight: (index: number, content: string) => Editor;
   appendRight: (index: number, content: string) => Editor;
   overwrite: (start: number, end: number, content: string) => Editor;
   remove: (start: number, end: number) => Editor;

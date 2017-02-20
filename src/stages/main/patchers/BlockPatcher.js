@@ -39,6 +39,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
       this.insert(this.innerStart, '{');
     }
 
+    let constructor = null;
     this.statements.forEach(
       (statement, i, statements) => {
         if (i === statements.length - 1 && this.parent instanceof FunctionPatcher) {
@@ -47,27 +48,25 @@ export default class BlockPatcher extends SharedBlockPatcher {
             return;
           }
         }
-        if (statement.isSurroundedByParentheses()) {
-          statement.setRequiresExpression();
-        }
-        let hasImplicitReturn = (
-          statement.implicitlyReturns() &&
-          !statement.explicitlyReturns()
-        );
-        let implicitReturnPatcher = hasImplicitReturn ?
-          this.implicitReturnPatcher() : null;
-        if (implicitReturnPatcher) {
-          implicitReturnPatcher.patchImplicitReturnStart(statement);
-        }
-        statement.patch();
-        if (implicitReturnPatcher) {
-          implicitReturnPatcher.patchImplicitReturnEnd(statement);
-        }
-        if (statement.statementNeedsSemicolon()) {
-          this.insert(statement.outerEnd, ';');
+        // If we see a constructor (which only happens when this is a class
+        // block), defer it until the end. Its patching may need other class
+        // keys to already be patched so that it can generate method binding
+        // statements within the constructor.
+        // Check against the 'Constructor' node type instead of doing
+        // `instanceof` to avoid a circular import issue.
+        if (statement.node.type === 'Constructor') {
+          if (constructor) {
+            throw this.error('Unexpectedly found two constructors in the same block.');
+          }
+          constructor = statement;
+        } else {
+          this.patchInnerStatement(statement);
         }
       }
     );
+    if (constructor) {
+      this.patchInnerStatement(constructor);
+    }
 
     if (rightBrace) {
       if (this.inline()) {
@@ -75,6 +74,28 @@ export default class BlockPatcher extends SharedBlockPatcher {
       } else {
         this.appendLineAfter('}', -1);
       }
+    }
+  }
+
+  patchInnerStatement(statement) {
+    if (statement.isSurroundedByParentheses()) {
+      statement.setRequiresExpression();
+    }
+    let hasImplicitReturn = (
+      statement.implicitlyReturns() &&
+      !statement.explicitlyReturns()
+    );
+    let implicitReturnPatcher = hasImplicitReturn ?
+      this.implicitReturnPatcher() : null;
+    if (implicitReturnPatcher) {
+      implicitReturnPatcher.patchImplicitReturnStart(statement);
+    }
+    statement.patch();
+    if (implicitReturnPatcher) {
+      implicitReturnPatcher.patchImplicitReturnEnd(statement);
+    }
+    if (statement.statementNeedsSemicolon()) {
+      this.insert(statement.outerEnd, ';');
     }
   }
 
