@@ -751,7 +751,7 @@ describe('classes', () => {
       class A.B
         a: -> 1
     `, `
-      A.B = class {
+      A.B = class B {
         a() { return 1; }
       };
     `);
@@ -881,7 +881,7 @@ describe('classes', () => {
       let C = undefined;
       class A {
         static initClass() {
-          B = class {
+          B = class B {
             static initClass() {
               this.prototype.classField = 2;
             }
@@ -891,7 +891,7 @@ describe('classes', () => {
           };
           B.initClass();
           let CONSTANT = undefined;
-          C = class {
+          C = class C {
             static initClass() {
               CONSTANT = 7;
             }
@@ -1223,7 +1223,7 @@ describe('classes', () => {
     `, `
       class Outer {
         static initClass() {
-          this.Inner = class {};
+          this.Inner = class Inner {};
         }
       }
       Outer.initClass();
@@ -1236,7 +1236,7 @@ describe('classes', () => {
         class @for
     `, `
       (function() {
-        return this.for = class {};
+        return this.for = class _for {};
       });
     `);
   });
@@ -1312,7 +1312,38 @@ describe('classes', () => {
       class A
     `, `
       class A {}
-      A = class {};
+      A = class A {};
     `);
+  });
+
+  it('assigns the right name to a normal class constructor', () => {
+    validate(`
+      class A
+      o = A.name
+    `, 'A');
+  });
+
+  it('assigns the right name to a class constructor for a property access', () => {
+    validate(`
+      A = {}
+      class A.B
+      o = A.B.name
+    `, 'B');
+  });
+
+  it('assigns the right name to a class constructor for a keyword', () => {
+    validate(`
+      A = {}
+      class A.for
+      o = A.for.name
+    `, '_for');
+  });
+
+  it('does not modify the constructor name for a CoffeeScript keyword', () => {
+    validate(`
+      A = {}
+      class A.or
+      o = A.or.name
+    `, 'or');
   });
 });

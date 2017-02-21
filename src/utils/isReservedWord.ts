@@ -1,24 +1,46 @@
 // Taken from various constants in the CoffeeScript lexer:
 // https://github.com/jashkenas/coffeescript/blob/master/src/lexer.coffee
-const RESERVED_WORDS = new Set([
-  // JS_KEYWORDS
+
+const JS_KEYWORDS = [
   'true', 'false', 'null', 'this',
   'new', 'delete', 'typeof', 'in', 'instanceof',
   'return', 'throw', 'break', 'continue', 'debugger', 'yield',
   'if', 'else', 'switch', 'for', 'while', 'do', 'try', 'catch', 'finally',
   'class', 'extends', 'super',
   'import', 'export', 'default',
-  // COFFEE_KEYWORDS
+];
+
+const COFFEE_KEYWORDS = [
   'undefined', 'Infinity', 'NaN',
   'then', 'unless', 'until', 'loop', 'of', 'by', 'when',
-  // COFFEE_ALIASES
+];
+
+const COFFEE_ALIASES = [
   'and', 'or', 'is', 'isnt', 'not', 'yes', 'no', 'on', 'off',
-  // RESERVED
+];
+
+const RESERVED = [
   'case', 'default', 'function', 'var', 'void', 'with', 'const', 'let', 'enum',
   'export', 'import', 'native', 'implements', 'interface', 'package', 'private',
   'protected', 'public', 'static',
-  // STRICT_PROSCRIBED
+];
+
+const STRICT_PROSCRIBED = [
   'arguments', 'eval',
+];
+
+const JS_FORBIDDEN = new Set([
+  ...JS_KEYWORDS,
+  ...RESERVED,
+  ...STRICT_PROSCRIBED
+]);
+
+const RESERVED_WORDS = new Set([
+  ...JS_KEYWORDS,
+  ...COFFEE_KEYWORDS,
+  ...COFFEE_ALIASES,
+  ...RESERVED,
+  ...STRICT_PROSCRIBED,
   // Mentioned in https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Future_reserved_keywords
   'await',
 ]);
@@ -31,4 +53,12 @@ const RESERVED_WORDS = new Set([
  */
 export default function isReservedWord(name: string): boolean {
   return RESERVED_WORDS.has(name);
+}
+
+/**
+ * Determine if the given name should not be used as a JavaScript variable,
+ * conforming to CoffeeScript's equivalent implementation.
+ */
+export function isForbiddenJsName(name: string): boolean {
+  return JS_FORBIDDEN.has(name);
 }
