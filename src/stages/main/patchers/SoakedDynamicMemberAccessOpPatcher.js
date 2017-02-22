@@ -45,6 +45,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
     }
 
     this.overwrite(this.expression.outerEnd, this.indexingExpr.outerStart, '[');
+    this.indexingExpr.patch();
     if (soakContainer.willPatchAsExpression()) {
       let containerNeedsParens = ternaryNeedsParens(soakContainer);
       if (containerNeedsParens) {
