@@ -825,4 +825,14 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('properly patches the object key in a soaked dynamic member access', () => {
+    check(`
+      a?[@b]
+    `, `
+      if (typeof a !== 'undefined' && a !== null) {
+        a[this.b];
+      }
+    `);
+  });
 });
