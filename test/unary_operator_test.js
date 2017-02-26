@@ -102,4 +102,15 @@ describe('unary operators', () => {
       a => a == null;
     `);
   });
+
+  it('properly respects precedence with a unary operator in a conditional', () => {
+    check(`
+      unless typeof a.b?
+        c
+    `, `
+      if (!typeof (a.b != null)) {
+        c;
+      }
+    `);
+  });
 });
