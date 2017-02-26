@@ -42,12 +42,12 @@ describe('classes', () => {
     // `functions.arrow` plugin.
     check(`
       ->
-        class A
+        class
           a: ->
             1
     `, `
       () =>
-        class A {
+        class {
           a() {
             return 1;
           }
@@ -573,7 +573,8 @@ describe('classes', () => {
       class A extends (class B extends C)
         constructor: ->
     `, `
-      class A extends (class B extends C {}) {
+      let B;
+      class A extends (B = class B extends C {}) {
         constructor() {}
       }
     `, { allowInvalidConstructors: true });
@@ -1170,20 +1171,56 @@ describe('classes', () => {
     `);
   });
 
+  it('generates an assignment for a named class in an expression context', () => {
+    check(`
+      A = class B
+    `, `
+      let B;
+      const A = B = class B {};
+    `);
+  });
+
+  it('generates an assignment for a complex named class in an expression context', () => {
+    check(`
+      A = class B
+        c: d
+    `, `
+      let B;
+      const A = __initClass__(B = class B {
+        static initClass() {
+          this.prototype.c = d;
+          
+        }
+      });
+      function __initClass__(c) {
+        c.initClass();
+        return c;
+      }
+    `);
+  });
+
+  it('has the proper runtime behavior for a named class in an expression context', () => {
+    validate(`
+      A = class B
+      o = B.name
+    `, 'B');
+  });
+
   it('handles a class expression in an implicit return context', () => {
     check(`
       f = ->
         class A
           b: c
     `, `
-      let f = () =>
-        __initClass__(class A {
+      let f = function() {
+        let A;
+        return __initClass__(A = class A {
           static initClass() {
             this.prototype.b = c;
             
           }
-        })
-      ;
+        });
+      };
       function __initClass__(c) {
         c.initClass();
         return c;
@@ -1202,7 +1239,8 @@ describe('classes', () => {
       define(function(require) {
         'use strict';
         
-        return __initClass__(class MainLayout extends BaseView {
+        let MainLayout;
+        return __initClass__(MainLayout = class MainLayout extends BaseView {
           static initClass() {
             this.prototype.container = 'body';
             
