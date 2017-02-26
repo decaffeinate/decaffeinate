@@ -19,47 +19,25 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     this.members.forEach(member => member.setRequiresExpression());
   }
 
+  setExpression(force) {
+    if (this.isImplicitObject()) {
+      let { curlyBraceInsertionPosition } = this.getOpenCurlyInfo();
+      this.adjustBoundsToInclude(curlyBraceInsertionPosition);
+    }
+    super.setExpression(force);
+  }
+
   /**
    * Objects as expressions are very similar to their CoffeeScript equivalents.
    */
   patchAsExpression() {
     let implicitObject = this.isImplicitObject();
     if (implicitObject) {
-      let curlyBraceInsertionPosition = this.innerStart;
-      let textToInsert = '{';
-      let shouldIndent = false;
-      if (this.shouldExpandCurlyBraces()) {
-        if (this.implicitlyReturns() && !this.isSurroundedByParentheses()) {
-          textToInsert = `{\n${this.getIndent()}`;
-          shouldIndent = true;
-        } else {
-          let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex;
-          if (!this.isSurroundedByParentheses()) {
-            tokenIndexBeforeOuterStartTokenIndex = tokenIndexBeforeOuterStartTokenIndex.previous();
-          }
-
-          if (tokenIndexBeforeOuterStartTokenIndex) {
-            let precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
-              isSemanticToken,
-              tokenIndexBeforeOuterStartTokenIndex
-            );
-            if (precedingTokenIndex) {
-              let precedingToken = this.sourceTokenAtIndex(precedingTokenIndex);
-              curlyBraceInsertionPosition = precedingToken.end;
-              let precedingTokenText = this.sourceOfToken(precedingToken);
-              let lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
-              let needsSpace = (
-                lastCharOfToken === ':' ||
-                lastCharOfToken === '=' ||
-                lastCharOfToken === ','
-              );
-              if (needsSpace) {
-                textToInsert = ' {';
-              }
-            }
-          }
-        }
-      }
+      let {
+        curlyBraceInsertionPosition,
+        textToInsert,
+        shouldIndent
+      } = this.getOpenCurlyInfo();
       this.insert(curlyBraceInsertionPosition, textToInsert);
       if (shouldIndent) {
         this.indent();
@@ -73,6 +51,45 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
         this.insert(this.innerEnd, '}');
       }
     }
+  }
+
+  getOpenCurlyInfo() {
+    let curlyBraceInsertionPosition = this.innerStart;
+    let textToInsert = '{';
+    let shouldIndent = false;
+    if (this.shouldExpandCurlyBraces()) {
+      if (this.implicitlyReturns() && !this.isSurroundedByParentheses()) {
+        textToInsert = `{\n${this.getIndent()}`;
+        shouldIndent = true;
+      } else {
+        let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex;
+        if (!this.isSurroundedByParentheses()) {
+          tokenIndexBeforeOuterStartTokenIndex = tokenIndexBeforeOuterStartTokenIndex.previous();
+        }
+
+        if (tokenIndexBeforeOuterStartTokenIndex) {
+          let precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
+            isSemanticToken,
+            tokenIndexBeforeOuterStartTokenIndex
+          );
+          if (precedingTokenIndex) {
+            let precedingToken = this.sourceTokenAtIndex(precedingTokenIndex);
+            curlyBraceInsertionPosition = precedingToken.end;
+            let precedingTokenText = this.sourceOfToken(precedingToken);
+            let lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
+            let needsSpace = (
+              lastCharOfToken === ':' ||
+              lastCharOfToken === '=' ||
+              lastCharOfToken === ','
+            );
+            if (needsSpace) {
+              textToInsert = ' {';
+            }
+          }
+        }
+      }
+    }
+    return { curlyBraceInsertionPosition, textToInsert, shouldIndent };
   }
 
   /**
