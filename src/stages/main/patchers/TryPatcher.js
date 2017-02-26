@@ -122,13 +122,11 @@ export default class TryPatcher extends NodePatcher {
     // Make our children return since we're wrapping in a function.
     this.setImplicitlyReturns();
 
-    // `a = try b()` → `a = (() => { try b()`
-    //                      ^^^^^^^^^
-    this.insert(this.contentStart, '(() => { ');
-    this.patchAsStatement();
-    // `a = (() => { try { b(); } catch (error) {}` → `a = (() => { try { b(); } catch (error) {} })()`
-    //                                                                                           ^^^^^
-    this.insert(this.contentEnd, ' })()');
+    this.patchInIIFE(() => {
+      this.insert(this.innerStart, ' ');
+      this.patchAsStatement();
+      this.insert(this.innerEnd, ' ');
+    });
   }
 
   setImplicitlyReturns() {

@@ -262,4 +262,24 @@ describe('try', () => {
       if (!(() => { try { return a; } catch (b) { return c; } })()) { d; }
     `);
   });
+
+  it('handles an IIFE-style try statement with a yield', () => {
+    check(`
+      () ->
+        x = try
+          yield 1
+        catch
+          yield 2
+    `, `
+      (function*() {
+        let x;
+        return x = yield* (function*() { try {
+          return yield 1;
+        } catch (error) {
+          return yield 2;
+        } }).call(this);
+      });
+    `);
+  });
+
 });

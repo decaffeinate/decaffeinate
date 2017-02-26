@@ -1,10 +1,7 @@
 import NodePatcher from './../../../patchers/NodePatcher';
-import traverse from '../../../utils/traverse';
-import { isFunction } from '../../../utils/types';
 
 export default class LoopPatcher extends NodePatcher {
   body: BlockPatcher;
-  yielding: boolean;
 
   constructor(patcherContext: PatcherContext, body: BlockPatcher) {
     super(patcherContext);
@@ -20,11 +17,11 @@ export default class LoopPatcher extends NodePatcher {
     this.body.setImplicitlyReturns();
     this.body.setIndent(this.getLoopBodyIndent());
     let resultBinding = this.getResultArrayBinding();
-    let prefix = !this.yielding ? '(() =>' : 'yield* (function*()';
-    this.insert(this.innerStart, `${prefix} {\n${iifeBodyIndent}${resultBinding} = [];\n${iifeBodyIndent}`);
-    this.patchAsStatement();
-    let suffix = !this.yielding ? '()' : this.referencesArguments() ? '.apply(this, arguments)' : '.call(this)';
-    this.insert(this.innerEnd, `\n${iifeBodyIndent}return ${resultBinding};\n${baseIndent}})${suffix}`);
+    this.patchInIIFE(() => {
+      this.insert(this.innerStart, `\n${iifeBodyIndent}${resultBinding} = [];\n${iifeBodyIndent}`);
+      this.patchAsStatement();
+      this.insert(this.innerEnd, `\n${iifeBodyIndent}return ${resultBinding};\n${baseIndent}`);
+    });
   }
 
   /**
@@ -74,11 +71,6 @@ export default class LoopPatcher extends NodePatcher {
    */
   getLoopBodyIndent() {
     throw this.error(`'getLoopBodyIndent' must be overridden in subclasses`);
-  }
-
-  yieldController() {
-    this.yielding = true;
-    this.yields();
   }
 
   /**
@@ -203,24 +195,5 @@ export default class LoopPatcher extends NodePatcher {
 
   statementNeedsSemicolon() {
     return false;
-  }
-
-  /**
-   * @private
-   */
-  referencesArguments() {
-    let result = false;
-
-    traverse(this.node, node => {
-      if (result || isFunction(node)) {
-        return false;
-      }
-
-      if (node.type === 'Identifier' && node.data === 'arguments') {
-        result = true;
-      }
-    });
-
-    return result;
   }
 }

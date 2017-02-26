@@ -471,4 +471,21 @@ describe('switch', () => {
       }
     `);
   });
+
+  it('allows an IIFE-style switch inside a generator', () => {
+    check(`
+      ->
+        x = switch yield 1
+          when 2
+            3
+    `, `
+      (function*() {
+        let x;
+        return x = yield* (function*() { switch ((yield 1)) {
+          case 2:
+            return 3;
+        } }).call(this);
+      });
+    `);
+  });
 });

@@ -639,4 +639,26 @@ describe('conditionals', () => {
       );
     `);
   });
+
+  it('handles an IIFE-style conditional containing a yield', () => {
+    check(`
+      ->
+        x = if a
+          if b
+            c
+          yield d
+    `, `
+      (function*() {
+        let x;
+        return x = yield* (function*() {
+          if (a) {
+          if (b) {
+            c;
+          }
+          return yield d;
+        }
+        }).call(this);
+      });
+    `);
+  });
 });
