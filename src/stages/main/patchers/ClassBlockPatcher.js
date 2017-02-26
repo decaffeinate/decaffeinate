@@ -4,6 +4,7 @@ import ConstructorPatcher from './ConstructorPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
 import adjustIndent from '../../../utils/adjustIndent';
 import babelConstructorWorkaroundLines from '../../../utils/babelConstructorWorkaroundLines';
+import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
 import getInvalidConstructorErrorMessage from '../../../utils/getInvalidConstructorErrorMessage';
 import type ClassPatcher from './ClassPatcher';
 import type { Node } from './../../../patchers/types';
@@ -16,6 +17,12 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   patch(options={}) {
+    for (let boundMethod of this.boundInstanceMethods()) {
+      boundMethod.key.setRequiresRepeatableExpression();
+    }
+
+    super.patch(options);
+
     if (!this.hasConstructor()) {
       let boundMethods = this.boundInstanceMethods();
       if (boundMethods.length > 0) {
@@ -42,17 +49,15 @@ export default class ClassBlockPatcher extends BlockPatcher {
           constructor += `constructor() {\n`;
         }
         boundMethods.forEach(method => {
-          let key = source.slice(method.key.contentStart, method.key.contentEnd);
-          constructor += `${methodBodyIndent}this.${key} = this.${key}.bind(this);\n`;
+          constructor += `${methodBodyIndent}${getBindingCodeForMethod(method)};\n`;
         });
         if (isSubclass) {
           constructor += `${methodBodyIndent}super(...args)\n`;
         }
         constructor += `${methodIndent}}\n\n${methodIndent}`;
-        this.insert(insertionPoint, constructor);
+        this.prependLeft(insertionPoint, constructor);
       }
     }
-    super.patch(options);
   }
 
   shouldAllowInvalidConstructors() {

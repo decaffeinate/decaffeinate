@@ -1,6 +1,7 @@
 import ClassPatcher from './ClassPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
 import babelConstructorWorkaroundLines from '../../../utils/babelConstructorWorkaroundLines';
+import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
 import getInvalidConstructorErrorMessage from '../../../utils/getInvalidConstructorErrorMessage';
 import traverse from '../../../utils/traverse';
 import { isFunction } from '../../../utils/types';
@@ -102,10 +103,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   getBindings(): Array<string> {
     if (!this._bindings) {
       let boundMethods = this.parent.boundInstanceMethods();
-      let bindings = boundMethods.map(method => {
-        let key = this.context.source.slice(method.key.contentStart, method.key.contentEnd);
-        return `this.${key} = this.${key}.bind(this)`;
-      });
+      let bindings = boundMethods.map(getBindingCodeForMethod);
       this._bindings = bindings;
     }
     return this._bindings;

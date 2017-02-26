@@ -1346,4 +1346,72 @@ describe('classes', () => {
       o = A.or.name
     `, 'or');
   });
+
+  it('allows bound methods with non-identifier names that can be simplified', () => {
+    check(`
+      class A
+        "#{b}": => c
+    `, `
+      class A {
+        constructor() {
+          this[b] = this[b].bind(this);
+        }
+      
+        [b]() { return c; }
+      }
+    `);
+  });
+
+  it('allows bound methods with complex non-identifier names', () => {
+    check(`
+      class A
+        "#{b}foo": => c
+    `, `
+      class A {
+        constructor() {
+          this[\`\${b}foo\`] = this[\`\${b}foo\`].bind(this);
+        }
+      
+        [\`\${b}foo\`]() { return c; }
+      }
+    `);
+  });
+
+  it('allows bound methods with non-identifier names that can be simplified with an existing constructor', () => {
+    check(`
+      class A
+        constructor: ->
+          console.log 'got here'
+      
+        "#{b}": => c
+    `, `
+      class A {
+        constructor() {
+          this[b] = this[b].bind(this);
+          console.log('got here');
+        }
+      
+        [b]() { return c; }
+      }
+    `);
+  });
+
+  it('allows bound methods with complex non-identifier names with an existing constructor', () => {
+    check(`
+      class A
+        constructor: ->
+          console.log 'got here'
+      
+        "#{b}foo": => c
+    `, `
+      class A {
+        constructor() {
+          this[\`\${b}foo\`] = this[\`\${b}foo\`].bind(this);
+          console.log('got here');
+        }
+      
+        [\`\${b}foo\`]() { return c; }
+      }
+    `);
+  });
 });

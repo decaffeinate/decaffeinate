@@ -60,9 +60,19 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   patchKey() {
     let computedKeyPatcher = this.getComputedKeyPatcher();
     if (computedKeyPatcher !== null) {
+      // Since we're replacing an expression like `"#{foo}"` with just `foo`,
+      // the outer string expresson might be marked as repeatable, in which case
+      // we should delegate that to the inner expression.
+      let shouldPropagateRepeatable = this.key.isSetAsRepeatableExpression();
+      if (shouldPropagateRepeatable) {
+        computedKeyPatcher.setRequiresRepeatableExpression();
+      }
       this.overwrite(this.key.outerStart, computedKeyPatcher.outerStart, '[');
       computedKeyPatcher.patch();
       this.overwrite(computedKeyPatcher.outerEnd, this.key.outerEnd, ']');
+      if (shouldPropagateRepeatable) {
+        this.key.overrideRepeatCode(computedKeyPatcher.getRepeatCode());
+      }
     } else {
       let needsBrackets =
         !(this.key instanceof StringPatcher && !this.key.shouldBecomeTemplateLiteral()) &&
