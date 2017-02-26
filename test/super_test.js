@@ -88,4 +88,27 @@ describe('super', () => {
       A().prototype[b()] = () => 3;
     `);
   });
+
+  it('allows super on a method with a non-identifier name', () => {
+    check(`
+      class A
+        0: -> super
+    `, `
+      class A {
+        [0]() { return super[0](...arguments); }
+      }
+    `);
+  });
+
+  it('allows super on a method with a non-repeatable computed name', () => {
+    check(`
+      class A
+        "#{b()}": -> super
+    `, `
+      let ref;
+      class A {
+        [ref = b()]() { return super[ref](...arguments); }
+      }
+    `);
+  });
 });
