@@ -53,7 +53,8 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
-    if (this.isNamespaced() || this.isNameAlreadyDeclared()) {
+    if (this.nameAssignee &&
+        (this.isNamespaced() || this.isNameAlreadyDeclared() || this.willPatchAsExpression())) {
       let classToken = this.getClassToken();
       // `class A.B` → `A.B`
       //  ^^^^^^
