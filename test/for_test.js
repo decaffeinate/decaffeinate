@@ -1278,4 +1278,32 @@ describe('for loops', () => {
       for (let step = (() => d)(), asc = step > 0, i = asc ? 0 : c.length - 1; asc ? i < c.length : i >= 0; i += step) { let b = c[i]; a; }
     `);
   });
+
+  it('handles a deeply nested yield in an IIFE loop', () => {
+    check(`
+      ->
+        for a in b by 1
+            ->
+              c
+              ->
+                yield d
+
+    `, `
+      () =>
+        (() => {
+          let result = [];
+          for (let i = 0; i < b.length; i++) {
+            let a = b[i];
+            result.push(function() {
+              c;
+              return function*() {
+                return yield d;
+              };
+            });
+          }
+          return result;
+        })()
+      ;
+    `);
+  });
 });

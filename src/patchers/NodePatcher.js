@@ -4,8 +4,9 @@ import repeat from 'repeating';
 import type { SourceToken, SourceTokenListIndex, RepeatableOptions, PatcherContext, ParseContext, Editor, SourceTokenList } from './types';
 import type { Options } from '../index';
 import { SourceType } from 'coffee-lex';
-import { isSemanticToken } from '../utils/types';
+import { isFunction, isSemanticToken } from '../utils/types';
 import { logger } from '../utils/debug';
+import traverse from '../utils/traverse';
 
 export default class NodePatcher {
   node: Node;
@@ -29,6 +30,7 @@ export default class NodePatcher {
   outerEndTokenIndex: SourceTokenListIndex;
 
   adjustedIndentLevel: number = 0;
+  yielding: boolean = false;
 
   constructor({node, context, editor, options}: PatcherContext) {
     this.log = logger(this.constructor.name);
@@ -1211,16 +1213,6 @@ export default class NodePatcher {
     return true;
   }
 
-  yields() {
-    let receiver = this.parent;
-    while (receiver) {
-      if (receiver.yieldController) {
-        return receiver.yieldController();
-      }
-      receiver = receiver.parent;
-    }
-  }
-
   /**
    * Gets the first "interesting token" in the indexed range (default range is `this` + parent)
    */
@@ -1236,5 +1228,49 @@ export default class NodePatcher {
    */
   mayBeUnboundReference() {
     return false;
+  }
+
+  patchInIIFE(innerPatchFn: () => void) {
+    if (this.yielding) {
+      this.insert(this.innerStart, 'yield* (function*() {');
+    } else {
+      this.insert(this.innerStart, '(() => {');
+    }
+    innerPatchFn();
+    if (this.yielding) {
+      if (this.referencesArguments()) {
+        this.insert(this.innerEnd, '}).apply(this, arguments)');
+      } else {
+        this.insert(this.innerEnd, '}).call(this)');
+      }
+    } else {
+      this.insert(this.innerEnd, '})()');
+    }
+  }
+
+  yields() {
+    this.yielding = true;
+    if (this.parent && !isFunction(this.parent.node)) {
+      this.parent.yields();
+    }
+  }
+
+  /**
+   * @private
+   */
+  referencesArguments() {
+    let result = false;
+
+    traverse(this.node, node => {
+      if (result || isFunction(node)) {
+        return false;
+      }
+
+      if (node.type === 'Identifier' && node.data === 'arguments') {
+        result = true;
+      }
+    });
+
+    return result;
   }
 }

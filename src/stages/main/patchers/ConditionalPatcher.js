@@ -140,9 +140,11 @@ export default class ConditionalPatcher extends NodePatcher {
       this.alternate.setShouldPatchInline(false);
       this.alternate.setImplicitlyReturns();
     }
-    this.insert(this.innerStart, `(() => {\n${conditionIndent}`);
-    this.patchAsStatement();
-    this.insert(this.innerEnd, `\n${baseIndent}})()`);
+    this.patchInIIFE(() => {
+      this.insert(this.innerStart, `\n${conditionIndent}`);
+      this.patchAsStatement();
+      this.insert(this.innerEnd, `\n${baseIndent}`);
+    });
   }
 
   canHandleImplicitReturn(): boolean {
