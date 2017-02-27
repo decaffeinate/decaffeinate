@@ -375,4 +375,12 @@ describe('objects', () => {
       ];
     `);
   });
+
+  it('allows semicolon delimiters between object values', () => {
+    check(`
+      {a: b, c: d; e: f, g: h;}
+    `, `
+      ({a: b, c: d, e: f, g: h,});
+    `);
+  });
 });

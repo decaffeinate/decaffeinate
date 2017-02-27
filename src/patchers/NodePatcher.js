@@ -853,6 +853,17 @@ export default class NodePatcher {
   }
 
   /**
+   * Gets the token after the end of this node, or null if there is none.
+   */
+  nextToken(): ?SourceToken {
+    let nextTokenIndex = this.contentEndTokenIndex.next();
+    if (!nextTokenIndex) {
+      return null;
+    }
+    return this.sourceTokenAtIndex(nextTokenIndex);
+  }
+
+  /**
    * Gets the original source of this patcher's node.
    */
   getOriginalSource(): string {
