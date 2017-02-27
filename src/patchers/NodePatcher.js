@@ -487,8 +487,6 @@ export default class NodePatcher {
    * When editing outside a node's bounds we expand the bounds to fit, if
    * possible. Note that if a node or a node's parent is wrapped in parentheses
    * we cannot adjust the bounds beyond the inside of the parentheses.
-   *
-   * @private
    */
   adjustBoundsToInclude(index: number) {
     this.assertEditableIndex(index);

@@ -17,7 +17,16 @@ export default class BinaryOpPatcher extends NodePatcher {
 
   initialize() {
     this.left.setRequiresExpression();
-    this.right.setRequiresExpression();
+    if (!this.rhsMayBeStatement()) {
+      this.right.setRequiresExpression();
+    }
+  }
+
+  /**
+   * Subclasses can override to avoid setting the RHS as an expression by default.
+   */
+  rhsMayBeStatement() {
+    return false;
   }
 
   negate() {

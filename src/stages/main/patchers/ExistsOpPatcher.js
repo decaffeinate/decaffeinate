@@ -2,6 +2,18 @@ import BinaryOpPatcher from './BinaryOpPatcher';
 
 export default class ExistsOpPatcher extends BinaryOpPatcher {
   /**
+   * If we are a statement, the RHS should be patched as a statement.
+   */
+  rhsMayBeStatement() {
+    return true;
+  }
+
+  setExpression(force) {
+    this.right.setRequiresExpression();
+    super.setExpression(force);
+  }
+
+  /**
    * LEFT '?' RIGHT → `LEFT != null ? LEFT : RIGHT`
    */
   patchAsExpression() {

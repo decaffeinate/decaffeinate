@@ -383,4 +383,30 @@ describe('objects', () => {
       ({a: b, c: d, e: f, g: h,});
     `);
   });
+
+  it('handles implicit objects after an existence operator in an expression context', () => {
+    check(`
+      a = b ?
+        c: d
+        e: f
+    `, `
+      let a = typeof b !== 'undefined' && b !== null ? b : {
+        c: d,
+        e: f
+      };
+    `);
+  });
+
+  it('handles implicit objects after an existence operator in a statement context', () => {
+    check(`
+      a ?
+        b: c
+        d: e
+    `, `
+      if (typeof a === 'undefined' || a === null) { ({
+          b: c,
+          d: e
+        }); }
+    `);
+  });
 });
