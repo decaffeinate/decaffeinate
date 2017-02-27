@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('unary operators', () => {
   it('passes unary minus through', () => {
@@ -112,5 +113,13 @@ describe('unary operators', () => {
         c;
       }
     `);
+  });
+
+  it('treats the increment operator as non-repeatable', () => {
+    validate(`
+      n = 1
+      (n++)?.toString()
+      o = n
+    `, 2);
   });
 });

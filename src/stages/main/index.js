@@ -27,6 +27,7 @@ import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher';
 import FunctionPatcher from './patchers/FunctionPatcher';
 import HeregexPatcher from './patchers/HeregexPatcher';
 import IdentifierPatcher from './patchers/IdentifierPatcher';
+import IncrementDecrementPatcher from './patchers/IncrementDecrementPatcher';
 import InOpPatcher from './patchers/InOpPatcher';
 import InstanceofOpPatcher from './patchers/InstanceofOpPatcher';
 import JavaScriptPatcher from './patchers/JavaScriptPatcher';
@@ -87,10 +88,6 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'Float':
       case 'Null':
       case 'Undefined':
-      case 'PostIncrementOp':
-      case 'PostDecrementOp':
-      case 'PreIncrementOp':
-      case 'PreDecrementOp':
       case 'Quasi':
         return PassthroughPatcher;
 
@@ -119,6 +116,12 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'LTEOp':
       case 'GTEOp':
         return EqualityPatcher;
+
+      case 'PostIncrementOp':
+      case 'PostDecrementOp':
+      case 'PreIncrementOp':
+      case 'PreDecrementOp':
+        return IncrementDecrementPatcher;
 
       case 'ObjectInitialiserMember':
         return ObjectInitialiserMemberPatcher;
