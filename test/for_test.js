@@ -1306,4 +1306,32 @@ describe('for loops', () => {
       ;
     `);
   });
+
+  it('handles an existence op for-of loop target with a non-repeatable LHS', () => {
+    check(`
+      for k, v of a() ? b
+        c
+    `, `
+      let left;
+      let object = (left = a()) != null ? left : b;
+      for (let k in object) {
+        let v = object[k];
+        c;
+      }
+    `);
+  });
+
+  it('handles an existence op for-own loop target with a non-repeatable LHS', () => {
+    check(`
+      for own k, v of a() ? b
+        c
+    `, `
+      let left;
+      let object = (left = a()) != null ? left : b;
+      for (let k of Object.keys(object || {})) {
+        let v = object[k];
+        c;
+      }
+    `);
+  });
 });

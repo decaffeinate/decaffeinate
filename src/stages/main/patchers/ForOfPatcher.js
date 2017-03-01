@@ -30,9 +30,6 @@ export default class ForOfPatcher extends ForPatcher {
 
     // Patch the target. Also get a reference in case we need it.
     let targetReference = this.getTargetReference();
-    if (shouldExtractTarget) {
-      this.overwrite(this.target.outerStart, this.target.outerEnd, targetReference);
-    }
 
     let { valAssignee } = this;
 
@@ -53,21 +50,31 @@ export default class ForOfPatcher extends ForPatcher {
 
     let relationToken = this.getRelationToken();
     if (this.node.isOwn) {
-      // `for (k of o` → `for (k of Object.keys(o`
-      //                            ^^^^^^^^^^^^
-      this.insert(this.target.outerStart, 'Object.keys(');
+      if (shouldExtractTarget) {
+        this.overwrite(relationToken.end, this.target.outerEnd,
+          ` Object.keys(${targetReference} || {})) {`);
+      } else {
+        // `for (k of o` → `for (k of Object.keys(o`
+        //                            ^^^^^^^^^^^^
+        this.insert(this.target.outerStart, 'Object.keys(');
 
-      // `for (k of Object.keys(o` → `for (k of Object.keys(o || {})) {`
-      //                                                     ^^^^^^^^^^
-      this.insert(this.target.outerEnd, ' || {})) {');
+        // `for (k of Object.keys(o` → `for (k of Object.keys(o || {})) {`
+        //                                                     ^^^^^^^^^^
+        this.insert(this.target.outerEnd, ' || {})) {');
+      }
     } else {
-      // `for (k of o` → `for (k in o`
-      //         ^^              ^^
-      this.overwrite(relationToken.start, relationToken.end, 'in');
+      if (shouldExtractTarget) {
+        this.overwrite(relationToken.start, this.target.outerEnd,
+          `in ${targetReference}) {`);
+      } else {
+        // `for (k of o` → `for (k in o`
+        //         ^^              ^^
+        this.overwrite(relationToken.start, relationToken.end, 'in');
 
-      // `for (k in o` → `for (k in o) {`
-      //                             ^^^
-      this.insert(this.target.outerEnd, ') {');
+        // `for (k in o` → `for (k in o) {`
+        //                             ^^^
+        this.insert(this.target.outerEnd, ') {');
+      }
     }
 
     this.removeThenToken();
