@@ -682,6 +682,22 @@ describe('for loops', () => {
     `);
   });
 
+  it('handles for-in loop expressions with a complex body starting with an object literal', () => {
+    check(`
+      f({a: c, b: c}['a'] for c in d)
+    `, `
+      f(Array.from(d).map((c) => ({a: c, b: c}['a'])));
+    `);
+  });
+
+  it('handles for-in loop expressions with implicit object literal bodies', () => {
+    check(`
+      f(a: b for c in d)
+    `, `
+      f(Array.from(d).map((c) => ({a: b})));
+    `);
+  });
+
   it('correctly uses map with an index in for-in loop expressions', () => {
     validate(`
       sum = (arr) ->

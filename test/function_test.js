@@ -421,4 +421,20 @@ describe('functions', () => {
       (function(a, b, c, d) {});
     `)
   );
+
+  it('handles a complex fat arrow function body starting with an open-brace', () =>
+    check(`
+      x => {a: 'b'}['a']
+    `, `
+      x(() => ({a: 'b'}['a']));
+    `)
+  );
+
+  it('handles a fat arrow function with an implicit object body', () =>
+    check(`
+      x => a: b
+    `, `
+      x(() => ({a: b}));
+    `)
+  );
 });
