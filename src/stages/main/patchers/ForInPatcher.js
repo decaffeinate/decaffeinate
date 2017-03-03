@@ -3,7 +3,7 @@ import IdentifierPatcher from './IdentifierPatcher';
 import ForPatcher from './ForPatcher';
 import RangePatcher from './RangePatcher';
 import countVariableUsages from '../../../utils/countVariableUsages';
-import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock';
+import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
 import type BlockPatcher from './BlockPatcher';
 import type NodePatcher from './../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
@@ -72,7 +72,7 @@ export default class ForInPatcher extends ForPatcher {
 
   patchBodyForExpressionLoop() {
     this.body.setRequiresExpression();
-    let bodyNeedsParens = isObjectInitialiserBlock(this.body)
+    let bodyNeedsParens = blockStartsWithObjectInitialiser(this.body)
       && !this.body.isSurroundedByParentheses();
     if (bodyNeedsParens) {
       let insertPoint = this.filter ? this.filter.outerEnd : this.target.outerEnd;

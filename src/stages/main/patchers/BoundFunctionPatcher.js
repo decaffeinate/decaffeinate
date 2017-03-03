@@ -2,7 +2,7 @@ import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
-import isObjectInitialiserBlock from '../../../utils/isObjectInitialiserBlock';
+import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
 import traverse from '../../../utils/traverse';
 import type { Node } from './../../../patchers/types';
 import { isFunction } from '../../../utils/types';
@@ -83,10 +83,15 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
       if (!this.willPatchBodyInline()) {
         this.body.patch({ leftBrace: false });
       } else {
-        if (isObjectInitialiserBlock(this.body)) {
-          this.body.surroundInParens();
+        let needsParens = blockStartsWithObjectInitialiser(this.body) &&
+          !this.body.isSurroundedByParentheses();
+        if (needsParens) {
+          this.insert(this.body.innerStart, '(');
         }
         this.body.patch();
+        if (needsParens) {
+          this.insert(this.body.innerEnd, ')');
+        }
       }
     } else {
       // No body, so BlockPatcher can't insert it for us.
