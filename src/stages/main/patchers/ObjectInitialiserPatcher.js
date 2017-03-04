@@ -138,7 +138,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   shouldExpandCurlyBraces(): boolean {
     return (
       this.isMultiline() ||
-      this.parent instanceof ObjectInitialiserMemberPatcher
+      (this.parent instanceof ObjectInitialiserMemberPatcher && this.parent.parent.isMultiline())
     );
   }
 
