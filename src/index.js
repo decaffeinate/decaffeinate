@@ -12,6 +12,7 @@ import formatCoffeeScriptLexerTokens from './utils/formatCoffeeScriptLexerTokens
 import formatDecaffeinateParserAst from './utils/formatDecaffeinateParserAst';
 import parse from './utils/parse';
 import PatchError from './utils/PatchError';
+import removeUnicodeBOMIfNecessary from './utils/removeUnicodeBOMIfNecessary';
 import resolveToPatchError from './utils/resolveToPatchError';
 
 export { default as run } from './cli';
@@ -58,6 +59,7 @@ type Stage = {
  * and formatting.
  */
 export function convert(source: string, options: ?Options={}): ConversionResult {
+  source = removeUnicodeBOMIfNecessary(source);
   options = Object.assign({}, DEFAULT_OPTIONS, options);
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');

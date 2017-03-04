@@ -12,6 +12,10 @@ describe('decaffeinate', () => {
   it('handles empty programs', () => {
     check(``, ``);
   });
+
+  it('handles code starting with a unicode BOM', () => {
+    check(`\uFEFFa`, `a;`);
+  });
 });
 
 describe('automatic conversions', () => {
