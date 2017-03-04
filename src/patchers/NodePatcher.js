@@ -1084,11 +1084,16 @@ export default class NodePatcher {
             } else if (source.slice(i - indentToChange.length, i) === indentToChange) {
               this.remove(i - indentToChange.length, i);
             } else {
-              throw this.error(
-                `cannot unindent line by ${offset} without enough indent`,
-                i - indentToChange.length,
-                i
-              );
+              // Ignore this case: we're trying to unindent a line that doesn't
+              // start with enough indentation, or doesn't start with the right
+              // type of indentation, e.g. it starts with spaces when the
+              // program indent string is a tab. This can happen when a file
+              // uses inconsistent indentation in different parts. We only
+              // expect this to come up in the main stage, so getting
+              // indentation wrong means ugly JS code that's still correct.
+              this.log(
+                'Warning: Ignoring an unindent operation because the line ' +
+                'did not start with the proper indentation.');
             }
             hasIndentedThisLine = true;
           }
