@@ -50,4 +50,25 @@ describe('indentation', () => {
       });
     `);
   });
+
+  it('handles a file with mixed tabs and spaces', () => {
+    check(`
+      while a
+        b
+      
+      while c
+      \tif d
+      \t\te
+    `, `
+      while (a) {
+        b;
+      }
+      
+      while (c) {
+      \tif (d) {
+      \t\te;
+      \t}
+      }
+    `);
+  });
 });
