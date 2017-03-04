@@ -389,4 +389,46 @@ describe('while', () => {
       while ((() => b)()) { a; }
     `);
   });
+
+  it('handles a post-while as a function argument', () => {
+    check(`
+      a(b while c, d)
+    `, `
+      a(((() => {
+        let result = [];
+        while (c) {
+          result.push(b);
+        }
+        return result;
+      })()), d);
+    `);
+  });
+
+  it('handles a post-while as an array element', () => {
+    check(`
+      [a while b, c]
+    `, `
+      [((() => {
+        let result = [];
+        while (b) {
+          result.push(a);
+        }
+        return result;
+      })()), c];
+    `);
+  });
+
+  it('handles a post-while as an object element', () => {
+    check(`
+      {a: b while c, d}
+    `, `
+      ({a: ((() => {
+        let result = [];
+        while (c) {
+          result.push(b);
+        }
+        return result;
+      })()), d});
+    `);
+  });
 });

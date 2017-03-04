@@ -1350,4 +1350,28 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles a post-for as a function argument', () => {
+    check(`
+      a(b for b in c, d)
+    `, `
+      a((Array.from(c).map((b) => b)), d);
+    `);
+  });
+
+  it('handles a post-for as an array element', () => {
+    check(`
+      [a for a in b, c]
+    `, `
+      [(Array.from(b).map((a) => a)), c];
+    `);
+  });
+
+  it('handles a post-for as an object element', () => {
+    check(`
+      {a: b for b in c, d}
+    `, `
+      ({a: (Array.from(c).map((b) => b)), d});
+    `);
+  });
 });

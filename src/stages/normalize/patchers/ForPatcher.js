@@ -3,6 +3,7 @@ import { SourceType } from 'coffee-lex';
 import NodePatcher from '../../../patchers/NodePatcher';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
 import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
+import postfixNodeNeedsOuterParens from '../../../utils/postfixNodeNeedsOuterParens';
 import type { PatcherContext, SourceToken } from './../../../patchers/types';
 
 export default class ForPatcher extends NodePatcher {
@@ -40,8 +41,16 @@ export default class ForPatcher extends NodePatcher {
       this.surroundThenUsagesInParens();
       let forToken = this.getForToken();
       let forThroughEnd = this.slice(forToken.start, this.contentEnd);
+
+      let needsParens = postfixNodeNeedsOuterParens(this);
       this.remove(this.body.outerEnd, this.contentEnd);
+      if (needsParens) {
+        this.insert(this.body.outerStart, '(');
+      }
       this.insert(this.body.outerStart, `${forThroughEnd} then `);
+      if (needsParens) {
+        this.insert(this.contentEnd, ')');
+      }
     }
 
     if (bodyPrefixLine !== null) {
