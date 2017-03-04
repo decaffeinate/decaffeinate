@@ -1,5 +1,6 @@
 import NodePatcher from '../../../patchers/NodePatcher';
 import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
+import postfixNodeNeedsOuterParens from '../../../utils/postfixNodeNeedsOuterParens';
 
 import type { PatcherContext } from './../../../patchers/types';
 
@@ -68,10 +69,14 @@ export default class WhilePatcher extends NodePatcher {
       patchedGuard = `(${patchedGuard})`;
     }
     let whileToken = this.node.isUntil ? 'until' : 'while';
+    let newContent = `${whileToken} ${patchedCondition} ${patchedGuard ? `when ${patchedGuard} ` : ''}then ${patchedBody}`;
+    if (postfixNodeNeedsOuterParens(this)) {
+      newContent = `(${newContent})`;
+    }
     this.overwrite(
       this.contentStart,
       this.contentEnd,
-      `${whileToken} ${patchedCondition} ${patchedGuard ? `when ${patchedGuard} ` : ''}then ${patchedBody}`
+      newContent
     );
   }
 

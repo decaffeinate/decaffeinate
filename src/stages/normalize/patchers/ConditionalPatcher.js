@@ -3,6 +3,7 @@ import type { SourceTokenListIndex } from 'coffee-lex';
 
 import NodePatcher from '../../../patchers/NodePatcher';
 import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
+import postfixNodeNeedsOuterParens from '../../../utils/postfixNodeNeedsOuterParens';
 import type { PatcherContext } from './../../../patchers/types';
 
 /**
@@ -58,7 +59,15 @@ export default class ConditionalPatcher extends NodePatcher {
     if (ifToken) {
       let consequentCode = this.slice(this.consequent.outerStart, this.consequent.outerEnd);
       this.remove(this.consequent.outerStart, ifToken.start);
+
+      let needsParens = postfixNodeNeedsOuterParens(this);
+      if (needsParens) {
+        this.insert(ifToken.start, '(');
+      }
       this.insert(this.condition.outerEnd, ` then ${consequentCode}`);
+      if (needsParens) {
+        this.insert(this.condition.outerEnd, ')');
+      }
     }
   }
 

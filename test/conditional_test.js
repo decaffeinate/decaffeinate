@@ -661,4 +661,28 @@ describe('conditionals', () => {
       });
     `);
   });
+
+  it('handles a post-while as a function argument', () => {
+    check(`
+      a(b if c, d)
+    `, `
+      a((c ? b : undefined), d);
+    `);
+  });
+
+  it('handles a post-while as an array element', () => {
+    check(`
+      [a if b, c]
+    `, `
+      [(b ? a : undefined), c];
+    `);
+  });
+
+  it('handles a post-while as an object element', () => {
+    check(`
+      {a: b if c, d}
+    `, `
+      ({a: (c ? b : undefined), d});
+    `);
+  });
 });
