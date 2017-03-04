@@ -960,6 +960,8 @@ export default class NodePatcher {
         return this;
       } else if (this.parent.node.type === 'ArrayInitialiser') {
         return this;
+      } else if (this.parent.node.type === 'ObjectInitialiser') {
+        return this;
       }
       return this.parent.getBoundingPatcher();
     } else {

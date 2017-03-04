@@ -409,4 +409,20 @@ describe('objects', () => {
         }); }
     `);
   });
+
+  it('handles nested implicit objects in a conditional expression', () => {
+    check(`
+      x = if count then {a: b: c} else {d: e: f}
+    `, `
+      let x = count ? {a: {b: c}} : {d: {e: f}};
+    `);
+  });
+
+  it('handles nested implicit objects in a conditional statement', () => {
+    check(`
+      if count then {a: b: c} else {d: e: f}
+    `, `
+      if (count) { ({a: {b: c}}); } else { ({d: {e: f}}); }
+    `);
+  });
 });
