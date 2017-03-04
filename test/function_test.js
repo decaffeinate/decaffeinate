@@ -437,4 +437,19 @@ describe('functions', () => {
       x(() => ({a: b}));
     `)
   );
+
+  it('handles nested functions surrounded in parens', () =>
+    check(`
+      (->
+        a ->
+          b ->
+            c
+      )
+    `, `
+      () =>
+        a(() =>
+          b(() => c)
+      );
+    `)
+  );
 });

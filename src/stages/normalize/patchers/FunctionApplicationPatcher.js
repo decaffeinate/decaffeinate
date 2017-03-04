@@ -64,7 +64,10 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
     let followingCloseParen = this.getFollowingCloseParenIfExists();
     if (followingCloseParen) {
-      this.insert(followingCloseParen.start, ')');
+      // In some cases, (e.g. within function args) our bounds are extended to
+      // allow us to patch the close-paren all the way up to the start of the
+      // following close-paren, but don't patch past the end of those bounds.
+      this.insert(Math.min(followingCloseParen.start, this.getEditingBounds()[1]), ')');
       return;
     }
 
