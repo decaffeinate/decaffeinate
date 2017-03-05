@@ -37,7 +37,7 @@ export default class FunctionPatcher extends NodePatcher {
       } else {
         parameter.patch();
       }
-      normalizeListItem(this, parameter);
+      normalizeListItem(this, parameter, this.parameters[i + 1]);
       if (i === this.parameters.length - 1) {
         // Parameter lists allow trailing semicolons but not trailing commas, so
         // just get rid of it as a special case if it's there.

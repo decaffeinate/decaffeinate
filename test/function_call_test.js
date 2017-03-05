@@ -631,4 +631,16 @@ describe('function calls', () => {
       a(b, c, d, e);
     `);
   });
+
+  it('allows a trailing comma for an object in a function arg', () => {
+    check(`
+      a
+        b: c,
+      , d
+    `, `
+      a(
+        {b: c},
+       d);
+    `);
+  });
 });
