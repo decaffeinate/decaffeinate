@@ -141,4 +141,34 @@ describe('arrays', () => {
       [a, b, c, d,];
     `)
   );
+
+  it('allows a function call over an object followed by an object array element', () =>
+    check(`
+      [
+        a {}
+          b: {}
+      ]
+    `, `
+      [
+        a({}),
+          {b: {}}
+      ];
+    `)
+  );
+
+  it('allows a block ending in an implicit call followed by an implicit object', () =>
+    check(`
+      [
+        if a
+          b c
+         d: {}
+      ]
+    `, `
+      [
+        a ?
+          b(c) : undefined,
+         {d: {}}
+      ];
+    `)
+  );
 });

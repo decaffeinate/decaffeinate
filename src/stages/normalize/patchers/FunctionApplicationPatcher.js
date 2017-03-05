@@ -32,9 +32,9 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       }
     }
 
-    for (let arg of args) {
+    for (let [i, arg] of args.entries()) {
       arg.patch();
-      normalizeListItem(this, arg);
+      normalizeListItem(this, arg, args[i + 1]);
     }
 
     if (implicitCall) {
