@@ -89,6 +89,7 @@ problems you run into.
 * `--loose-for-expressions`: Do not wrap expression loop targets in `Array.from`.
 * `--loose-for-of`: Do not wrap JS `for...of` loop targets in `Array.from`.
 * `--loose-includes`: Do not wrap in `Array.from` when converting `in` to `includes`.
+* `--loose-comparison-negation`: Allow unsafe simplifications like `!(a > b)` to `a <= b`.
 * `--allow-invalid-constructors`: Don't error when constructors use `this`
   before super or omit the `super` call in a subclass.
 * `--enable-babel-constructor-workaround`: Use a hacky babel-specific workaround

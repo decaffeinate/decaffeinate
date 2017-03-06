@@ -1,5 +1,6 @@
 import NodePatcher from './../../../patchers/NodePatcher';
 import getCompareOperator from '../../../utils/getCompareOperator';
+import isCompareOpNegationUnsafe from '../../../utils/isCompareOpNegationUnsafe';
 import type { PatcherContext } from './../../../patchers/types';
 
 /**
@@ -24,8 +25,13 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    let negateEntireExpression = this.shouldNegateEntireExpression();
+    if (negateEntireExpression) {
+      this.insert(this.contentStart, '!(');
+    }
+
     let middle = this.getMiddleOperands();
-    let negated = this.negated;
+    let negated = !negateEntireExpression && this.negated;
     let logicalOperator = negated ? '||' : '&&';
 
     for (let operand of middle) {
@@ -54,6 +60,21 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
         ` ${logicalOperator} ${operand.getRepeatCode()}`
       );
     }
+
+    if (negateEntireExpression) {
+      this.insert(this.contentEnd, ')');
+    }
+  }
+
+  /**
+   * If any negation is unsafe, just wrap the whole thing in parens with a !
+   * operator. That's easier and arguably nicer-looking than trying to
+   * intelligently negate the subexpressions accounting for unsafe negations.
+   */
+  shouldNegateEntireExpression() {
+    return this.negated &&
+      this.node.operators.some(operator => isCompareOpNegationUnsafe(operator.operator)) &&
+      !this.options.looseComparisonNegation;
   }
 
   /**

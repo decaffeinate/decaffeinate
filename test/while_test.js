@@ -61,7 +61,7 @@ describe('while', () => {
       until a < b
         a--
     `, `
-      while (a >= b) {
+      while (!(a < b)) {
         a--;
       }
     `);

@@ -64,6 +64,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.looseIncludes = true;
         break;
 
+      case '--loose-comparison-negation':
+        baseOptions.looseComparisonNegation = true;
+        break;
+
       case '--allow-invalid-constructors':
         baseOptions.allowInvalidConstructors = true;
         break;
@@ -199,6 +203,8 @@ function usage() {
   console.log('  --loose-for-expressions  Do not wrap expression loop targets in Array.from.');
   console.log('  --loose-for-of           Do not wrap JS for...of loop targets in Array.from.');
   console.log('  --loose-includes         Do not wrap in Array.from when converting in to includes.');
+  console.log('  --loose-comparison-negation');
+  console.log('                           Allow unsafe simplifications like `!(a > b)` to `a <= b`.');
   console.log('  --allow-invalid-constructors');
   console.log('                           Don\'t error when constructors use this before super or omit');
   console.log('                           the super call in a subclass.');

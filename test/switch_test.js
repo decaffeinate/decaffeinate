@@ -231,7 +231,7 @@ describe('switch', () => {
         case score >= 90: 'B'; break;
         default: 'A';
       }
-    `);
+    `, { looseComparisonNegation: true });
   });
 
   it('converts a switch without an expression with function call cases', () => {

@@ -27,6 +27,7 @@ export type Options = {
   looseForExpressions: ?boolean,
   looseForOf: ?boolean,
   looseIncludes: ?boolean,
+  looseComparisonNegation: ?boolean,
   allowInvalidConstructors: ?boolean,
   enableBabelConstructorWorkaround: ?boolean,
 };
@@ -40,6 +41,7 @@ const DEFAULT_OPTIONS = {
   looseForExpressions: false,
   looseForOf: false,
   looseIncludes: false,
+  looseComparisonNegation: false,
   allowInvalidConstructors: false,
   enableBabelConstructorWorkaround: false,
 };
