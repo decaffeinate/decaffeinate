@@ -11,7 +11,7 @@ describe('comparisons', () => {
     check(`a >= b`, `a >= b;`);
   });
 
-  it('flips comparisons when used with an `unless`', () => {
+  it('flips comparisons when used with an `unless` when the loose option is specified', () => {
     check(`
       unless a < b
         c
@@ -19,15 +19,37 @@ describe('comparisons', () => {
       if (a >= b) {
         c;
       }
+    `, { looseComparisonNegation: true });
+  });
+
+  it('does not flip comparisons when used with an `unless` by default', () => {
+    check(`
+      unless a < b
+        c
+    `, `
+      if (!(a < b)) {
+        c;
+      }
     `);
   });
 
-  it('flips nested comparisons when used with an `unless`', () => {
+  it('flips nested comparisons when used with an `unless` when loose is specified', () => {
     check(`
       unless a < b && b > c
         d
     `, `
       if ((a >= b) || (b <= c)) {
+        d;
+      }
+    `, { looseComparisonNegation: true });
+  });
+
+  it('does not flip nested comparisons when used with an `unless` by default', () => {
+    check(`
+      unless a < b && b > c
+        d
+    `, `
+      if (!(a < b) || !(b > c)) {
         d;
       }
     `);

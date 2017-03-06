@@ -1,5 +1,6 @@
 import BinaryOpPatcher from './BinaryOpPatcher';
 import getCompareOperator from '../../../utils/getCompareOperator';
+import isCompareOpNegationUnsafe from '../../../utils/isCompareOpNegationUnsafe';
 import type { SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
@@ -48,9 +49,14 @@ export default class EqualityPatcher extends BinaryOpPatcher {
 
   /**
    * Flips negated flag but doesn't edit anything immediately so that we can
-   * use the correct operator in `patch`.
+   * use the correct operator in `patch`. If the negation is unsafe, fall back
+   * to the superclass default behavior of just adding ! to the front.
    */
   negate() {
+    if (isCompareOpNegationUnsafe(this.sourceOfToken(this.getCompareToken())) &&
+        !this.options.looseComparisonNegation) {
+      return super.negate();
+    }
     this.negated = !this.negated;
   }
 }

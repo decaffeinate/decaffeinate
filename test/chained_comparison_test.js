@@ -84,12 +84,23 @@ describe('chained comparison', () => {
     `);
   });
 
-  it('flips the inequalities when used in an `unless`', () => {
+  it('flips the inequalities when used in an `unless` with loose mode specified', () => {
     check(`
       unless a < b <= c
         d
     `, `
       if (a >= b || b > c) {
+        d;
+      }
+    `, { looseComparisonNegation: true });
+  });
+
+  it('does not flip the inequalities when used in an `unless` by default', () => {
+    check(`
+      unless a < b <= c
+        d
+    `, `
+      if (!(a < b && b <= c)) {
         d;
       }
     `);
