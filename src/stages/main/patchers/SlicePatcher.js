@@ -62,9 +62,15 @@ export default class SlicePatcher extends NodePatcher {
             `, ${right.node.data + 1}`
           );
         } else {
-          // `a.slice(0..1]` → `a.slice(0, 1]`
-          //           ^^                ^^
-          this.overwrite(slice.start, slice.end, ', ');
+          // `a.slice(0..1]` → `a.slice(0, +1]`
+          //           ^^                ^^^
+          this.overwrite(slice.start, slice.end, ', +');
+          // Don't put two `+` operations immediately next to each other, since
+          // otherwise it will become a `++`. Checking if the CoffeeScript code
+          // starts with `+` should be easy and correct in this case.
+          if (this.slice(right.contentStart, right.contentStart + 1) === '+') {
+            this.insert(slice.end, ' ');
+          }
           right.patch();
           this.insert(right.outerEnd, ' + 1 || undefined');
         }
