@@ -62,6 +62,14 @@ describe('slice', () => {
     `, [2, 3, 4]);
   });
 
+  it('does not generate a preincrement operator when adding `+` to an inclusive end', () => {
+    check(`
+      a[start..+end]
+    `, `
+      a.slice(start, + +end + 1 || undefined);
+    `);
+  });
+
   it('handles an exclusive splice with both bounds specified', () => {
     check(`
       a[b...c] = d
