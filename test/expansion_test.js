@@ -321,4 +321,24 @@ describe('expansion', () => {
       o = secondWord
     `, 'World');
   });
+
+  it('allows an empty destructure', () => {
+    validate(`
+      o = ([] = 3)
+    `, 3);
+  });
+
+  it('does not call Array.from for an empty destructure', () => {
+    check(`
+      [] = undefined
+    `, '');
+  });
+
+  it('does not call Array.from for an empty destructure of a non-repeatable value', () => {
+    check(`
+      [] = a()
+    `, `
+      let array = a();
+    `);
+  });
 });

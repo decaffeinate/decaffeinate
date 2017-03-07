@@ -22,6 +22,11 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
     if (!isTopLevel) {
       return false;
     }
+    // Empty destructure operations need to result in zero assignments, and thus
+    // not call Array.from at all.
+    if (node.members.length === 0) {
+      return false;
+    }
     return node.members.every((member, i) => {
       let isFinalExpansion = (i === node.members.length - 1) &&
           ['Spread', 'Rest', 'Expansion'].indexOf(member.type) > -1;
