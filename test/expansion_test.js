@@ -341,4 +341,19 @@ describe('expansion', () => {
       let array = a();
     `);
   });
+
+  it('returns the RHS for a simple expression-style array destructure', () => {
+    validate(`
+      b = [1, 2, 3]
+      c = [a] = b
+      o = b == c
+    `, true);
+  });
+
+  it('properly returns the RHS for a complex assignment', () => {
+    validate(`
+      a = [1]
+      o = [[]] = a
+    `, [1]);
+  });
 });

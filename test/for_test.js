@@ -1269,7 +1269,7 @@ describe('for loops', () => {
       x = (a for [a = 1] in b)
     `, `
       let a, val;
-      let x = (Array.from(b).map((value) => (val = value[0], a = val != null ? val : 1, value, a)));
+      let x = (Array.from(b).map((value) => ((val = value[0], a = val != null ? val : 1, value), a)));
     `);
   });
 

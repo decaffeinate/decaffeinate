@@ -41,7 +41,9 @@ export default class AssignOpPatcher extends NodePatcher {
   patchAsExpression({ needsParens=false }={}) {
     this.markProtoAssignmentRepeatableIfNecessary();
     let shouldAddParens =
-      (needsParens && !this.isSurroundedByParentheses()) || this.negated;
+      (needsParens && !this.isSurroundedByParentheses()) ||
+      this.negated ||
+      this.needsArrayFrom();
     if (this.negated) {
       this.insert(this.innerStart, '!');
     }
@@ -67,12 +69,10 @@ export default class AssignOpPatcher extends NodePatcher {
       assignments.push(
         ...this.generateAssignments(this.assignee, expressionCode, true)
       );
-      if (this.willPatchAsExpression()) {
-        assignments.push(`${expressionCode}`);
-      }
+      assignments.push(`${expressionCode}`);
 
       let assignmentCode = assignments.join(', ');
-      if (assignmentCode.startsWith('{')) {
+      if (!shouldAddParens) {
         assignmentCode = `(${assignmentCode})`;
       }
       this.overwrite(this.contentStart, this.contentEnd, assignmentCode);
@@ -102,15 +102,27 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchSimpleAssignment() {
-    let needsArrayFrom = this.assignee instanceof ArrayInitialiserPatcher;
+    let needsArrayFrom = this.needsArrayFrom();
     this.assignee.patch();
     if (needsArrayFrom) {
       this.insert(this.expression.outerStart, 'Array.from(');
     }
-    this.expression.patch();
+
     if (needsArrayFrom) {
-      this.insert(this.expression.outerEnd, ')');
+      if (this.willPatchAsExpression()) {
+        let expressionRepeatCode = this.expression.patchRepeatable();
+        this.insert(this.expression.outerEnd, `), ${expressionRepeatCode}`);
+      } else {
+        this.expression.patch();
+        this.insert(this.expression.outerEnd, `)`);
+      }
+    } else {
+      this.expression.patch();
     }
+  }
+
+  needsArrayFrom() {
+    return this.assignee instanceof ArrayInitialiserPatcher;
   }
 
   overwriteWithAssignments(assignments: Array<string>) {
