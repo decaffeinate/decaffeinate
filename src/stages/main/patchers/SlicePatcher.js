@@ -62,9 +62,9 @@ export default class SlicePatcher extends NodePatcher {
             `, ${right.node.data + 1}`
           );
         } else {
-          // `a.slice(0..1]` → `a.slice(0, 1]`
-          //           ^^                ^^
-          this.overwrite(slice.start, slice.end, ', ');
+          // `a.slice(0..1]` → `a.slice(0, +1]`
+          //           ^^                ^^^
+          this.overwrite(slice.start, slice.end, ', +');
           right.patch();
           this.insert(right.outerEnd, ' + 1 || undefined');
         }

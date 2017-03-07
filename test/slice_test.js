@@ -25,11 +25,11 @@ describe('slice', () => {
   });
 
   it('changes inclusive slices with a literal float end of range to exclusive by inserting `+ 1`', () => {
-    check(`a[0..2.0]`, `a.slice(0, 2.0 + 1 || undefined);`);
+    check(`a[0..2.0]`, `a.slice(0, +2.0 + 1 || undefined);`);
   });
 
   it('changes inclusive slices with a variable end of range to exclusive by inserting `+ 1`', () => {
-    check(`a[0..b]`, `a.slice(0, b + 1 || undefined);`);
+    check(`a[0..b]`, `a.slice(0, +b + 1 || undefined);`);
   });
 
   it('changes slices with no begin or end of the range to a bare call to `.slice`', () => {
@@ -51,6 +51,15 @@ describe('slice', () => {
     `, `
       let a = (Array.from(d).filter((c) => e).map((c) => b)).slice(0, 2);
     `);
+  });
+
+  it('properly handles string bounds in an inclusive range', () => {
+    validate(`
+      a = [1, 2, 3, 4, 5]
+      start = '1'
+      end = '3'
+      o = a[start..end]
+    `, [2, 3, 4]);
   });
 
   it('handles an exclusive splice with both bounds specified', () => {
