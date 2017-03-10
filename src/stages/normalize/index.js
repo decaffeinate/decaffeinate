@@ -19,6 +19,7 @@ import PassthroughPatcher from '../../patchers/PassthroughPatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
 import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher';
 import SpreadPatcher from './patchers/SpreadPatcher';
+import TryPatcher from './patchers/TryPatcher';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';
 import WhilePatcher from './patchers/WhilePatcher';
 import MemberAccessOpPatcher from './patchers/MemberAccessOpPatcher';
@@ -110,6 +111,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'ProtoMemberAccessOp':
       case 'SoakedProtoMemberAccessOp':
         return ProtoMemberAccessOpPatcher;
+
+      case 'Try':
+        return TryPatcher;
 
       default:
         return PassthroughPatcher;
