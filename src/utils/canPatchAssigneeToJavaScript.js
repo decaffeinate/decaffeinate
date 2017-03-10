@@ -34,6 +34,11 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
     });
   }
   if (node.type === 'ObjectInitialiser') {
+    // JS empty destructure crashes if the RHS is undefined or null, so more
+    // precisely copy the behavior for empty destructures.
+    if (node.members.length === 0) {
+      return false;
+    }
     return node.members.every(node => canPatchAssigneeToJavaScript(node, false));
   }
   if (node.type === 'ObjectInitialiserMember') {

@@ -356,4 +356,11 @@ describe('expansion', () => {
       o = [[]] = a
     `, [1]);
   });
+
+  it('does not generate crashing code when doing a destructure on undefined', () => {
+    validate(`
+      {} = undefined
+      o = true
+    `, true);
+  });
 });
