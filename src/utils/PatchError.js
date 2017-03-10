@@ -40,6 +40,8 @@ export default class PatchError extends Error {
 
   static prettyPrint(error: PatchError): string {
     let { source, start, end, message } = error;
+    start = Math.min(Math.max(start, 0), source.length);
+    end = Math.min(Math.max(end, start), source.length);
     let lineMap = new LinesAndColumns(source);
     let startLoc = lineMap.locationForIndex(start);
     let endLoc = lineMap.locationForIndex(end);

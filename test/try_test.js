@@ -282,4 +282,69 @@ describe('try', () => {
     `);
   });
 
+  it('treats the exception assignee as a normal variable in its outer scope if necessary', () => {
+    check(`
+      try
+        a
+      catch e
+        b
+      console.log e
+    `, `
+      let e;
+      try {
+        a;
+      } catch (error) {
+        e = error;
+        b;
+      }
+      console.log(e);
+    `);
+  });
+
+  it('handles complex destructuring within a catch', () => {
+    check(`
+      try
+        a
+      catch {b: [c, ..., d]}
+        e
+    `, `
+      try {
+        a;
+      } catch (error) {
+        let array = error.b, c = array[0], d = array[array.length - 1];
+        e;
+      }
+    `);
+  });
+
+  it('properly picks a distinct variable name when choosing a catch assignee', () => {
+    check(`
+      try
+        a
+      catch {error}
+        b
+    `, `
+      try {
+        a;
+      } catch (error1) {
+        let {error} = error1;
+        b;
+      }
+    `);
+  });
+
+  it('handles a complex catch assignee with no catch body', () => {
+    check(`
+      try
+        a
+      catch error
+      console.log error
+    `, `
+      let error;
+      try {
+        a;
+      } catch (error1) { error = error1; }
+      console.log(error);
+    `);
+  });
 });

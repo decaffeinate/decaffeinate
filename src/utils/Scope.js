@@ -114,6 +114,14 @@ export default class Scope {
         });
         break;
 
+      case 'Try':
+        if (node.catchAssignee) {
+          leftHandIdentifiers(node.catchAssignee).forEach(identifier =>
+            this.assigns(identifier.data, identifier)
+          );
+        }
+        break;
+
       case 'Class':
         if (node.nameAssignee && node.nameAssignee.type === 'Identifier') {
           this.assigns(node.nameAssignee.data, node.nameAssignee);
