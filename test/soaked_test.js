@@ -835,4 +835,12 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('properly places parens for expression-style soaked assignment', () => {
+    check(`
+      a = b?.c = 1
+    `, `
+      let a = (typeof b !== 'undefined' && b !== null ? b.c = 1 : undefined);
+    `);
+  });
 });

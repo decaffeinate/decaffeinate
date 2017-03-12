@@ -83,7 +83,7 @@ export default class AssignOpPatcher extends NodePatcher {
     }
 
     if (shouldAddParens) {
-      this.insert(this.innerEnd, ')');
+      this.appendDeferredSuffix(')');
     }
   }
 
