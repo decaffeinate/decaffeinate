@@ -149,7 +149,7 @@ describe('slice', () => {
     `, `
       () => {
         let ref;
-        return (ref = d(), a.splice(b, c - b, ...[].concat(ref)), ref);
+        return ref = d(), a.splice(b, c - b, ...[].concat(ref)), ref;
       };
     `);
   });

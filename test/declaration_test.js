@@ -138,7 +138,14 @@ describe('declarations', () => {
   });
 
   it('adds pre-declarations and regular declarations together properly', () => {
-    check('a = 1\nb = c = 2', 'let c;\nlet a = 1;\nlet b = c = 2;');
+    check(`
+      a = 1
+      b = c = 2
+    `, `
+      let c;
+      let a = 1;
+      let b = (c = 2);
+    `);
   });
 
   it('uses const rather than let if specified', () => {
