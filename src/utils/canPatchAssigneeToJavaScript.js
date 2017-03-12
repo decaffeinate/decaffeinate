@@ -30,7 +30,10 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
     return node.members.every((member, i) => {
       let isFinalExpansion = (i === node.members.length - 1) &&
           ['Spread', 'Rest', 'Expansion'].indexOf(member.type) > -1;
-      return isFinalExpansion || canPatchAssigneeToJavaScript(member, false);
+      let isValidFinalExpansion = isFinalExpansion && (
+        member.type === 'Expansion' || canPatchAssigneeToJavaScript(member.expression)
+      );
+      return isValidFinalExpansion || canPatchAssigneeToJavaScript(member, false);
     });
   }
   if (node.type === 'ObjectInitialiser') {
