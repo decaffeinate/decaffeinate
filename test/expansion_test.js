@@ -363,4 +363,12 @@ describe('expansion', () => {
       o = true
     `, true);
   });
+
+  it('handles an object default within an array rest', () => {
+    check(`
+      [{a = 1}...] = b
+    `, `
+      let obj = b.slice(0, b.length - 0), val = obj.a, a = val != null ? val : 1;
+    `);
+  });
 });
