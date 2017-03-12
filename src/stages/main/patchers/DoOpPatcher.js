@@ -1,6 +1,7 @@
 import AssignOpPatcher from './AssignOpPatcher';
 import DefaultParamPatcher from './DefaultParamPatcher';
 import FunctionPatcher from './FunctionPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
 import NodePatcher from '../../../patchers/NodePatcher';
 import type { PatcherContext, SourceTokenListIndex } from '../../../patchers/types';
 import { SourceType } from 'coffee-lex';
@@ -23,7 +24,9 @@ export default class DoOpPatcher extends NodePatcher {
     let nextToken = this.sourceTokenAtIndex(doTokenIndex.next());
     this.remove(doToken.start, nextToken.start);
 
-    let addParens = this.hasDoFunction() && !this.isSurroundedByParentheses();
+    let addParens = !this.isSurroundedByParentheses() && !(
+        this.expression instanceof IdentifierPatcher
+      );
 
     if (addParens) {
       this.insert(this.outerStart, '(');

@@ -1,4 +1,6 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import ConditionalPatcher from './ConditionalPatcher';
+import DoOpPatcher from './DoOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
 import FunctionPatcher from './FunctionPatcher';
@@ -6,6 +8,7 @@ import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
+import ReturnPatcher from './ReturnPatcher';
 import SlicePatcher from './SlicePatcher';
 import StringPatcher from './StringPatcher';
 import ThisPatcher from './ThisPatcher';
@@ -38,12 +41,17 @@ export default class AssignOpPatcher extends NodePatcher {
     this.negated = !this.negated;
   }
 
-  patchAsExpression({ needsParens=false }={}) {
+  patchAsExpression() {
     this.markProtoAssignmentRepeatableIfNecessary();
-    let shouldAddParens =
-      (needsParens && !this.isSurroundedByParentheses()) ||
-      this.negated ||
-      this.needsArrayFrom();
+    let shouldAddParens = this.negated ||
+      (!this.isSurroundedByParentheses() &&
+        !(this.parent instanceof ReturnPatcher ||
+          this.parent instanceof DoOpPatcher ||
+          (this.parent instanceof ConditionalPatcher &&
+            this.parent.condition === this &&
+            !this.parent.willPatchAsTernary())) &&
+        !this.implicitlyReturns()
+      );
     if (this.negated) {
       this.insert(this.innerStart, '!');
     }
@@ -71,11 +79,7 @@ export default class AssignOpPatcher extends NodePatcher {
       );
       assignments.push(`${expressionCode}`);
 
-      let assignmentCode = assignments.join(', ');
-      if (!shouldAddParens) {
-        assignmentCode = `(${assignmentCode})`;
-      }
-      this.overwrite(this.contentStart, this.contentEnd, assignmentCode);
+      this.overwrite(this.contentStart, this.contentEnd, assignments.join(', '));
     }
 
     if (shouldAddParens) {
@@ -102,7 +106,7 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchSimpleAssignment() {
-    let needsArrayFrom = this.needsArrayFrom();
+    let needsArrayFrom = this.assignee instanceof ArrayInitialiserPatcher;
     this.assignee.patch();
     if (needsArrayFrom) {
       this.insert(this.expression.outerStart, 'Array.from(');
@@ -119,10 +123,6 @@ export default class AssignOpPatcher extends NodePatcher {
     } else {
       this.expression.patch();
     }
-  }
-
-  needsArrayFrom() {
-    return this.assignee instanceof ArrayInitialiserPatcher;
   }
 
   overwriteWithAssignments(assignments: Array<string>) {

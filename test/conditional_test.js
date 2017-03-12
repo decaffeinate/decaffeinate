@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('conditionals', () => {
   it('surrounds `if` conditions in parentheses and bodies in curly braces', () => {
@@ -243,10 +244,10 @@ describe('conditionals', () => {
       (function() {
         let c, d;
         return z(a ?
-          (c = a,
+          ((c = a),
           a + c)
         :
-          (d = a,
+          ((d = a),
           a - d));
       });
     `);
@@ -684,5 +685,16 @@ describe('conditionals', () => {
     `, `
       ({a: (c ? b : undefined), d});
     `);
+  });
+
+  it('handles an assignment within an expression-style conditional', () => {
+    validate(`
+      a =
+        if b = 1
+          2
+        else
+          3
+      o = b
+    `, 1);
   });
 });

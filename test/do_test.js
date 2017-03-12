@@ -77,4 +77,21 @@ describe('`do`', () => {
       (a = (b, d) => e)(c, d);
     `);
   });
+
+  it('properly converts do expressions on a normal assignment', () => {
+    check(`
+      do a = b
+    `, `
+      let a;
+      (a = b)();
+    `);
+  });
+
+  it('properly converts negated do expressions', () => {
+    check(`
+      do !a
+    `, `
+      (!a)();
+    `);
+  });
 });
