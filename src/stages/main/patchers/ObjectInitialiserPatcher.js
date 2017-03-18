@@ -19,6 +19,11 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     this.members.forEach(member => member.setRequiresExpression());
   }
 
+  setAssignee() {
+    this.members.forEach(member => member.expression.setAssignee());
+    super.setAssignee();
+  }
+
   setExpression(force) {
     if (this.isImplicitObject()) {
       let { curlyBraceInsertionPosition } = this.getOpenCurlyInfo();
