@@ -821,16 +821,19 @@ describe('classes', () => {
         a: ->
           x + 1
     `, `
-      let x = undefined;
-      class A {
-        static initClass() {
-          x = 3;
-        }
-        a() {
-          return x + 1;
-        }
-      }
-      A.initClass();
+      var A = (function() {
+        let x = undefined;
+        A = class A {
+          static initClass() {
+            x = 3;
+          }
+          a() {
+            return x + 1;
+          }
+        };
+        A.initClass();
+        return A;
+      })();
     `);
   });
 
@@ -878,38 +881,44 @@ describe('classes', () => {
         makeC: ->
           new C()
     `, `
-      let B = undefined;
-      let C = undefined;
-      class A {
-        static initClass() {
-          B = class B {
-            static initClass() {
-              this.prototype.classField = 2;
-            }
-            x() {
-              return 3;
-            }
-          };
-          B.initClass();
-          let CONSTANT = undefined;
-          C = class C {
-            static initClass() {
-              CONSTANT = 7;
-            }
-            y() {
-              return 4;
-            }
-          };
-          C.initClass();
-        }
-        makeB() {
-          return new B();
-        }
-        makeC() {
-          return new C();
-        }
-      }
-      A.initClass();
+      var A = (function() {
+        let B = undefined;
+        let C = undefined;
+        A = class A {
+          static initClass() {
+            B = class B {
+              static initClass() {
+                this.prototype.classField = 2;
+              }
+              x() {
+                return 3;
+              }
+            };
+            B.initClass();
+            C = (function() {
+              let CONSTANT = undefined;
+              C = class C {
+                static initClass() {
+                  CONSTANT = 7;
+                }
+                y() {
+                  return 4;
+                }
+              };
+              C.initClass();
+              return C;
+            })();
+          }
+          makeB() {
+            return new B();
+          }
+          makeC() {
+            return new C();
+          }
+        };
+        A.initClass();
+        return A;
+      })();
     `);
   });
 
@@ -1158,16 +1167,35 @@ describe('classes', () => {
       A = class
         b: c
     `, `
-      const A = __initClass__(class {
-        static initClass() {
-          this.prototype.b = c;
-          
-        }
-      });
-      function __initClass__(c) {
-        c.initClass();
-        return c;
-      }
+      const A = (function() {
+        let Cls = class {
+          static initClass() {
+            this.prototype.b = c;
+          }
+        };
+        Cls.initClass();
+        return Cls;
+      })();
+    `);
+  });
+
+  it('handles a complex anonymous class with a variable in an expression context', () => {
+    check(`
+      A = class
+        b: c
+        d = e
+    `, `
+      const A = (function() {
+        let d = undefined;
+        let Cls = class {
+          static initClass() {
+            this.prototype.b = c;
+            d = e;
+          }
+        };
+        Cls.initClass();
+        return Cls;
+      })();
     `);
   });
 
@@ -1186,16 +1214,15 @@ describe('classes', () => {
         c: d
     `, `
       let B;
-      const A = __initClass__(B = class B {
-        static initClass() {
-          this.prototype.c = d;
-          
-        }
-      });
-      function __initClass__(c) {
-        c.initClass();
-        return c;
-      }
+      const A = (B = (function() {
+        B = class B {
+          static initClass() {
+            this.prototype.c = d;
+          }
+        };
+        B.initClass();
+        return B;
+      })());
     `);
   });
 
@@ -1214,17 +1241,16 @@ describe('classes', () => {
     `, `
       let f = function() {
         let A;
-        return __initClass__(A = class A {
-          static initClass() {
-            this.prototype.b = c;
-            
-          }
-        });
+        return A = (function() {
+          A = class A {
+            static initClass() {
+              this.prototype.b = c;
+            }
+          };
+          A.initClass();
+          return A;
+        })();
       };
-      function __initClass__(c) {
-        c.initClass();
-        return c;
-      }
     `);
   });
 
@@ -1240,17 +1266,16 @@ describe('classes', () => {
         'use strict';
         
         let MainLayout;
-        return __initClass__(MainLayout = class MainLayout extends BaseView {
-          static initClass() {
-            this.prototype.container = 'body';
-            
-          }
-        });
+        return MainLayout = (function() {
+          MainLayout = class MainLayout extends BaseView {
+            static initClass() {
+              this.prototype.container = 'body';
+            }
+          };
+          MainLayout.initClass();
+          return MainLayout;
+        })();
       });
-      function __initClass__(c) {
-        c.initClass();
-        return c;
-      }
     `);
   });
 
@@ -1450,6 +1475,40 @@ describe('classes', () => {
       
         [\`\${b}foo\`]() { return c; }
       }
+    `);
+  });
+
+  it('allows patching within an external constructor expression', () => {
+    check(`
+      makeCtor = ->
+      class B
+        constructor: makeCtor 1
+    `, `
+      let makeCtor = function() {};
+      let createB = undefined;
+      class B {
+        static initClass() {
+          createB = makeCtor(1);
+        }
+        constructor() {
+          return createB.apply(this, arguments);
+        }
+      }
+      B.initClass();
+    `);
+  });
+
+  it('handles a complex anonymous class in a statement context', () => {
+    check(`
+      class
+        x: 1
+    `, `
+      let Cls = class {
+        static initClass() {
+          this.prototype.x = 1;
+        }
+      };
+      Cls.initClass();
     `);
   });
 });

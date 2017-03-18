@@ -1060,7 +1060,7 @@ export default class NodePatcher {
    * that strings inserted before child nodes appear after the indent, not
    * before.
    */
-  indent(offset: number=1) {
+  indent(offset: number=1, {skipFirstLine=false}: {skipFirstLine: boolean}={}) {
     if (offset === 0) {
       return;
     }
@@ -1075,12 +1075,9 @@ export default class NodePatcher {
     // See if there are already non-whitespace characters before the start. If
     // so, skip the start to the next line, since we don't want to put
     // indentation in the middle of a line.
-    for (let i = start - 1; i >= 0 && source[i] !== '\n'; i--) {
-      if (source[i] !== '\t' && source[i] !== ' ') {
-        while (start < end && source[start] !== '\n') {
-          start++;
-        }
-        break;
+    if (skipFirstLine || !this.isFirstNodeInLine()) {
+      while (start < end && source[start] !== '\n') {
+        start++;
       }
     }
 
@@ -1118,6 +1115,16 @@ export default class NodePatcher {
           break;
       }
     }
+  }
+
+  isFirstNodeInLine() {
+    let { source } = this.context;
+    for (let i = this.outerStart - 1; i >= 0 && source[i] !== '\n'; i--) {
+      if (source[i] !== '\t' && source[i] !== ' ') {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
