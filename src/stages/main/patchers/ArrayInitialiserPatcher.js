@@ -15,6 +15,11 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
     this.members.forEach(member => member.setRequiresExpression());
   }
 
+  setAssignee() {
+    this.members.forEach(member => member.setAssignee());
+    super.setAssignee();
+  }
+
   patchAsExpression() {
     this.members.forEach((member, i, members) => {
       let isLast = i === members.length - 1;

@@ -19,7 +19,10 @@ export default class FunctionPatcher extends NodePatcher {
     if (this.body && !this.implicitReturnsDisabled()) {
       this.body.setImplicitlyReturns();
     }
-    this.parameters.forEach(param => param.setRequiresExpression());
+    this.parameters.forEach(param => {
+      param.setAssignee();
+      param.setRequiresExpression();
+    });
   }
 
   patchAsStatement(options={}) {

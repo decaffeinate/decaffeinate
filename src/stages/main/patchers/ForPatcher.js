@@ -21,9 +21,11 @@ export default class ForPatcher extends LoopPatcher {
 
   initialize() {
     if (this.keyAssignee) {
+      this.keyAssignee.setAssignee();
       this.keyAssignee.setRequiresExpression();
     }
     if (this.valAssignee) {
+      this.valAssignee.setAssignee();
       this.valAssignee.setRequiresExpression();
     }
     this.target.setRequiresExpression();

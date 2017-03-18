@@ -22,6 +22,7 @@ export default class TryPatcher extends NodePatcher {
 
   initialize() {
     if (this.catchAssignee) {
+      this.catchAssignee.setAssignee();
       this.catchAssignee.setRequiresExpression();
     }
   }

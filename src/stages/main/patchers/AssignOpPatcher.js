@@ -33,6 +33,7 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   initialize() {
+    this.assignee.setAssignee();
     this.assignee.setRequiresExpression();
     this.expression.setRequiresExpression();
   }

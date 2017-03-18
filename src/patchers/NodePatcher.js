@@ -649,6 +649,22 @@ export default class NodePatcher {
   }
 
   /**
+   * Marks this node as an assignee. Nested assignees, like destructure
+   * operations, should override this method and propagate it to the children.
+   */
+  setAssignee() {
+    this._assignee = true;
+  }
+
+  /**
+   * Checks if this node has been marked as an assignee. This is particularly
+   * useful for distinguishing rest from spread operations.
+   */
+  isAssignee() {
+    return this._assignee;
+  }
+
+  /**
    * Gets whether this patcher's node implicitly returns.
    */
   implicitlyReturns(): boolean {
