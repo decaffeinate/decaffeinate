@@ -10,13 +10,6 @@ import ProgramPatcher from './ProgramPatcher';
 
 import type { PatcherContext } from './../../../patchers/types';
 
-const INIT_CLASS_HELPER = `\
-\`function __initClass__(c) {
-  c.initClass();
-  return c;
-}\`
-`;
-
 export default class ClassPatcher extends NodePatcher {
   nameAssignee: ?NodePatcher;
   superclass: ?NodePatcher;
@@ -35,13 +28,18 @@ export default class ClassPatcher extends NodePatcher {
    *
    * Current limitations:
    * - Doesn't deconflict the "initClass" name of the static method.
-   * - Doesn't deconflict the variable assignments that are moved outside the
-   *   class body.
    * - Technically this changes the execution order of the class body, although
    *   it does so in a way that is unlikely to cause problems in reasonable
    *   code.
    */
   patchAsStatement() {
+    // Indentation needs to happen before child patching in case we have child
+    // classes or other nested indentation situations.
+    if (this.needsIndent()) {
+      this.indent(1, {skipFirstLine: true});
+    }
+    let indent = this.getIndent();
+
     if (this.nameAssignee) {
       this.nameAssignee.patch();
     }
@@ -54,41 +52,46 @@ export default class ClassPatcher extends NodePatcher {
 
     this.removeThenTokenIfNecessary();
 
-    if (!this.body) {
-      return;
-    }
-
-    if (this.body.statements.length === 0) {
+    if (!this.needsInitClass()) {
       return;
     }
 
     let insertPoint = this.getInitClassInsertPoint();
-    let nonMethodPatchers = this.getNonMethodPatchers(insertPoint);
+    let nonMethodPatchers = this.getNonMethodPatchers();
     let customConstructorInfo = this.extractCustomConstructorInfo();
 
-    if (nonMethodPatchers.length === 0 && !customConstructorInfo) {
-      return;
+    let shouldUseIIFE = this.shouldUseIIFE();
+
+    if (shouldUseIIFE) {
+      // If the class declaration might introduce a variable, we need to make
+      // sure that assignment happens outside the IIFE so that it can be used
+      // by the outside world.
+      if (this.nameAssignee instanceof IdentifierPatcher) {
+        this.insert(this.outerStart, `${this.nameAssignee.node.data} = `);
+      }
+      this.insert(this.outerStart, `do ->\n${indent}`);
     }
 
-    // We have at least one non-method, so this needs to be a "complex" class
-    // with an initClass static method.
-    let needsInitClassWrapper = this.needsInitClassWrapper();
-
-    if (needsInitClassWrapper) {
-      let helper = this.registerHelper('__initClass__', INIT_CLASS_HELPER);
-      this.insert(this.outerStart, `${helper}(`);
+    let needsTmpName = !(this.nameAssignee instanceof IdentifierPatcher);
+    let classRef;
+    if (needsTmpName) {
+      classRef = this.claimFreeBinding('Cls');
+    } else {
+      classRef = this.nameAssignee.node.data;
     }
 
     let assignmentNames = this.generateInitClassMethod(
       nonMethodPatchers, customConstructorInfo, insertPoint);
-    let indent = this.getIndent();
-    if (needsInitClassWrapper) {
-      this.insert(this.outerEnd, `)`);
-    } else {
-      this.insert(this.outerEnd, `\n${indent}${this.nameAssignee.node.data}.initClass()`);
+    this.insert(this.outerEnd, `\n${indent}${classRef}.initClass()`);
+    if (shouldUseIIFE) {
+      this.insert(this.outerEnd, `\n${indent}return ${classRef}`);
     }
+
     for (let assignmentName of assignmentNames) {
       this.insert(this.outerStart, `${assignmentName} = undefined\n${indent}`);
+    }
+    if (needsTmpName) {
+      this.insert(this.outerStart, `${classRef} = `);
     }
   }
 
@@ -97,6 +100,26 @@ export default class ClassPatcher extends NodePatcher {
    */
   patchAsExpression() {
     this.body.patch();
+  }
+
+  needsIndent() {
+    return this.needsInitClass() && this.shouldUseIIFE();
+  }
+
+  needsInitClass() {
+    if (!this.body) {
+      return false;
+    }
+    if (this.body.statements.length === 0) {
+      return false;
+    }
+
+    let nonMethodPatchers = this.getNonMethodPatchers();
+
+    if (nonMethodPatchers.length === 0 && !this.needsCustomConstructor()) {
+      return false;
+    }
+    return true;
   }
 
   removeThenTokenIfNecessary() {
@@ -124,10 +147,9 @@ export default class ClassPatcher extends NodePatcher {
     }
   }
 
-  needsInitClassWrapper() {
-    // Anonymous classes can't be referenced by name, so we need to pass them
-    // to a function to call initClass on them.
-    if (!this.nameAssignee) {
+  shouldUseIIFE() {
+    let nonMethodPatchers = this.getNonMethodPatchers();
+    if (this.hasAnyAssignments(nonMethodPatchers)) {
       return true;
     }
     // It's safe to use the more straightforward class init approach as long as
@@ -159,9 +181,9 @@ export default class ClassPatcher extends NodePatcher {
    * methods. These will later be moved to the top of the class in a static
    * method.
    */
-  getNonMethodPatchers(initialDeleteStart) {
+  getNonMethodPatchers() {
     let nonMethodPatchers = [];
-    let deleteStart = initialDeleteStart;
+    let deleteStart = this.getInitClassInsertPoint();
     for (let patcher of this.body.statements) {
       if (!this.isClassMethod(patcher)) {
         nonMethodPatchers.push({
@@ -203,6 +225,16 @@ export default class ClassPatcher extends NodePatcher {
             return true;
           }
         }
+      }
+    }
+    return false;
+  }
+
+  needsCustomConstructor() {
+    for (let patcher of this.body.statements) {
+      if (patcher instanceof ConstructorPatcher &&
+          !(patcher.expression instanceof FunctionPatcher)) {
+        return true;
       }
     }
     return false;
@@ -283,6 +315,15 @@ export default class ClassPatcher extends NodePatcher {
 
     this.insert(insertPoint, `\n${bodyIndent}${indentString}return`);
     return assignmentNames;
+  }
+
+  hasAnyAssignments(nonMethodPatchers) {
+    for (let {patcher} of nonMethodPatchers) {
+      if (this.getAssignmentName(patcher)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   getBodyIndent() {
