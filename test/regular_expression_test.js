@@ -128,4 +128,12 @@ describe('regular expressions', () => {
       new RegExp(\`\\u2029\`);
     `);
   });
+
+  it('handles a double backslash followed by a space', () => {
+    check(`
+      ///\\\\[\\\\ ]///
+      `, `
+      new RegExp(\`\\\\\\\\[\\\\\\\\]\`);
+    `);
+  });
 });
