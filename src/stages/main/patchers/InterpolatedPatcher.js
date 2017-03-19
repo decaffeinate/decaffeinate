@@ -77,16 +77,13 @@ export default class InterpolatedPatcher extends NodePatcher {
 
   escapeQuasis(skipPattern, escapeStrings) {
     for (let quasi of this.quasis) {
-      escape(
-        this.editor,
-        skipPattern,
-        escapeStrings,
-        // For now, clamp the quasi bounds to be strictly between the quotes.
-        // Ideally, decaffeinate-parser would provide better location data
-        // that would make this unnecessary.
-        Math.max(quasi.contentStart, this.firstToken().end),
-        Math.min(quasi.contentEnd, this.lastToken().start),
-      );
+      let tokens = this.getProgramSourceTokens().slice(
+        quasi.contentStartTokenIndex, quasi.contentEndTokenIndex.next()).toArray();
+      for (let token of tokens) {
+        if (token.type === SourceType.STRING_CONTENT) {
+          escape(this.editor, skipPattern, escapeStrings, token.start, token.end);
+        }
+      }
     }
   }
 

@@ -14,7 +14,7 @@ import type MagicString from 'magic-string';
 export default function escape(patcher: MagicString, skipPattern: RegExp, escapeStrings: Array<string>, start: number, end: number) {
   let source = patcher.original;
   for (let i = start; i < end; i++) {
-    if (skipPattern.test(source.slice(i))) {
+    if (skipPattern.test(source.slice(i, end))) {
       i++;
     } else if (escapeStrings.some(str => source.slice(i, i + str.length) === str)) {
       patcher.appendRight(i, '\\');
