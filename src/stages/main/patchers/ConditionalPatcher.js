@@ -237,7 +237,17 @@ export default class ConditionalPatcher extends NodePatcher {
     }
   }
 
+  /**
+   * If we ended up as a statement, then we know our children are set as
+   * implicit return nodes, so no need to turn the conditional into an
+   * expression for implicit return purposes.
+   */
+  implicitlyReturns() {
+    return super.implicitlyReturns() && this.willPatchAsExpression();
+  }
+
   setImplicitlyReturns() {
+    super.setImplicitlyReturns();
     if (this.consequent) {
       this.consequent.setImplicitlyReturns();
     }

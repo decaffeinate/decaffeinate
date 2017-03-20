@@ -697,4 +697,13 @@ describe('conditionals', () => {
       o = b
     `, 1);
   });
+
+  it('properly handles an expression-style conditional in an implicit return context', () => {
+    check(`
+      ->
+        (if a then b else c)
+    `, `
+      () => a ? b : c;
+    `);
+  });
 });

@@ -58,7 +58,16 @@ export default class SwitchPatcher extends NodePatcher {
     this.appendLineAfter('}');
   }
 
+  /**
+   * If we're a statement, our children can handle implicit return, so no need
+   * to convert to an expression.
+   */
+  implicitlyReturns() {
+    return super.implicitlyReturns() && this.willPatchAsExpression();
+  }
+
   setImplicitlyReturns() {
+    super.setImplicitlyReturns();
     this.cases.forEach(casePatcher => casePatcher.setImplicitlyReturns());
     if (this.alternate) {
       this.alternate.setImplicitlyReturns();
