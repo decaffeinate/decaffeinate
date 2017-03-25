@@ -17,9 +17,9 @@ export default function getInvalidConstructorErrorMessage(firstSentence: string)
     CoffeeScript code to avoid the above cases, so that decaffeinate can run without
     this error message.
     
-    If you are using babel, you can run decaffeinate with
-    --enable-babel-constructor-workaround to generate babel-specific code to allow
+    If you are using Babel or TypeScript, you can run decaffeinate with
+    --enable-babel-constructor-workaround to generate Babel-specific code to allow
     constructors that don't call \`super\`. Note that this approach is fragile and
-    may break in future versions of babel.
+    may break in future versions of Babel/TypeScript.
   `);
 }
