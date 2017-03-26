@@ -44,6 +44,11 @@ Project        | Lines of CoffeeScript | Conversion status                 | Tes
 To contribute to this list, send a pull request to the [decaffeinate-examples]
 project.
 
+In addition, decaffeinate has been used on private codebases within various
+companies, such as Square, Benchling, and Bugsnag. See this
+[blog post from Bugsnag][bugsnag-blog-post] to read about their experiences
+using decaffeinate.
+
 Check the [issues] page for more specific details on outstanding bugs and
 incomplete features. And, of course, you're welcome to file issues for any
 problems you run into.
@@ -70,6 +75,8 @@ problems you run into.
 [codecombat-conversion-status]: https://decaffeinate-examples.github.io/codecombat/conversion-status.svg
 [codecombat-test-status]: https://decaffeinate-examples.github.io/codecombat/test-status.svg
 
+[bugsnag-blog-post]: https://blog.bugsnag.com/converting-a-large-react-codebase-from-coffeescript-to-es6/
+
 ## Goals
 
 * Fully automated conversion of the CoffeeScript language to modern JavaScript.
@@ -92,8 +99,9 @@ problems you run into.
 * `--loose-comparison-negation`: Allow unsafe simplifications like `!(a > b)` to `a <= b`.
 * `--allow-invalid-constructors`: Don't error when constructors use `this`
   before super or omit the `super` call in a subclass.
-* `--enable-babel-constructor-workaround`: Use a hacky babel-specific workaround
-  to allow `this` before `super` in constructors.
+* `--enable-babel-constructor-workaround`: Use a hacky Babel-specific workaround
+  to allow `this` before `super` in constructors. Also works when using
+  TypeScript.
 
 For more usage details, see the output of `decaffeinate --help`.
 

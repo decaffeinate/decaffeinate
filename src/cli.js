@@ -209,8 +209,8 @@ function usage() {
   console.log('                           Don\'t error when constructors use this before super or omit');
   console.log('                           the super call in a subclass.');
   console.log('  --enable-babel-constructor-workaround');
-  console.log('                           Use a hacky babel-specific workaround to allow this before');
-  console.log('                           super in constructors.');
+  console.log('                           Use a hacky Babel-specific workaround to allow this before');
+  console.log('                           super in constructors. Also works when using TypeScript.');
   console.log();
   console.log('EXAMPLES');
   console.log();
