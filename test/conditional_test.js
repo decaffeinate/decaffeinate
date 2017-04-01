@@ -714,4 +714,30 @@ describe('conditionals', () => {
       if (b) { for (let a of Array.from(b)) { a; } }
     `);
   });
+
+  it('handles negated parenthesized conditionals', () => {
+    check(`
+      a unless (b if c)
+    `, `
+      if (!(c ? b : undefined)) { a; }
+    `);
+  });
+
+  it('handles negated IIFE-style conditionals', () => {
+    check(`
+      a unless (
+        if b
+          if c
+            d)
+    `, `
+      if (!(() => {
+        
+        if (b) {
+          if (c) {
+            return d;
+          }
+        }
+      })()) { a; }
+    `);
+  });
 });

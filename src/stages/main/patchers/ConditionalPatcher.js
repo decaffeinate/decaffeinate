@@ -8,6 +8,8 @@ export default class ConditionalPatcher extends NodePatcher {
   consequent: BlockPatcher;
   alternate: ?BlockPatcher;
 
+  negated: boolean = false;
+
   constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: BlockPatcher, alternate: ?BlockPatcher) {
     super(patcherContext);
     this.condition = condition;
@@ -42,6 +44,10 @@ export default class ConditionalPatcher extends NodePatcher {
     }
   }
 
+  negate() {
+    this.negated = !this.negated;
+  }
+
   willPatchAsTernary(): boolean {
     return (
       this.prefersToPatchAsExpression() || (
@@ -60,14 +66,15 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   patchAsExpression({ needsParens }={}) {
-    let addParens = needsParens && !this.isSurroundedByParentheses();
+    let addParens = this.negated ||
+      (needsParens && !this.isSurroundedByParentheses());
 
     // `if a then b` → `a then b`
     //  ^^^
     this.overwrite(
       this.contentStart,
       this.condition.outerStart,
-      addParens ? '(' : ''
+      `${this.negated ? '!' : ''}${addParens ? '(' : ''}`
     );
 
     if (this.node.isUnless) {
@@ -128,6 +135,10 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   patchAsIIFE() {
+    if (this.negated) {
+      this.insert(this.innerStart, '!');
+    }
+
     // We're only patched as an expression due to a parent instructing us to,
     // and the indent level is more logically the indent level of our parent.
     let baseIndent = this.parent.getIndent(0);
