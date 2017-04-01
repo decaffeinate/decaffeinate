@@ -51,24 +51,24 @@ export default class ConditionalPatcher extends NodePatcher {
         !this.condition.isSurroundedByParentheses()) {
       this.condition.surroundInParens();
     }
-    this.consequent.patch();
 
     let ifTokenIndex = this.getIfTokenIndex();
     let ifToken = this.sourceTokenAtIndex(ifTokenIndex);
-
-    if (ifToken) {
-      let consequentCode = this.slice(this.consequent.outerStart, this.consequent.outerEnd);
-      this.remove(this.consequent.outerStart, ifToken.start);
-
-      let needsParens = postfixNodeNeedsOuterParens(this);
-      if (needsParens) {
-        this.insert(ifToken.start, '(');
-      }
-      this.insert(this.condition.outerEnd, ` then ${consequentCode}`);
-      if (needsParens) {
-        this.insert(this.condition.outerEnd, ')');
-      }
+    if (!ifToken) {
+      throw this.error('Unable to find `if` token.');
     }
+
+    let needsParens = postfixNodeNeedsOuterParens(this);
+    let ifAndConditionCode = this.slice(ifToken.start, this.condition.outerEnd);
+    if (needsParens) {
+      this.insert(this.consequent.outerStart, '(');
+    }
+    this.insert(this.consequent.outerStart, `${ifAndConditionCode} then `);
+    this.consequent.patch();
+    if (needsParens) {
+      this.insert(this.consequent.outerEnd, ')');
+    }
+    this.remove(this.consequent.outerEnd, this.contentEnd);
   }
 
   isPostIf(): boolean {

@@ -706,4 +706,12 @@ describe('conditionals', () => {
       () => a ? b : c;
     `);
   });
+
+  it('handles a postfix loop within a postfix conditional', () => {
+    check(`
+      a for a in b if b
+    `, `
+      if (b) { for (let a of Array.from(b)) { a; } }
+    `);
+  });
 });
