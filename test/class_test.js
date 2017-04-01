@@ -1539,4 +1539,21 @@ describe('classes', () => {
       })());
     `);
   });
+
+  it('handles an inline class with comma-separated fields (#544)', () => {
+    check(`
+      rethinkdb.monday = new (class extends RDBConstant then tt: protoTermType.MONDAY, st: 'monday')()
+    `, `
+      rethinkdb.monday = new (function() {
+        let Cls = (class extends RDBConstant {
+          static initClass() {
+            this.prototype.tt = protoTermType.MONDAY; this.prototype.st = 'monday';
+            
+          }
+        });
+        Cls.initClass();
+        return Cls();
+      })();
+    `);
+  });
 });
