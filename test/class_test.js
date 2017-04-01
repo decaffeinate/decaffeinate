@@ -1511,4 +1511,32 @@ describe('classes', () => {
       Cls.initClass();
     `);
   });
+
+  it('handles inconsistent indentation in an expression-style complex class', () => {
+    check(`
+      x = class A
+        constructor: ->
+          b
+         c: ->
+           d
+        e: f
+    `, `
+      let A;
+      let x = (A = (function() {
+        A = class A {
+          static initClass() {
+            this.prototype.e = f;
+          }
+          constructor() {
+            b;
+          }
+          c() {
+             return d;
+           }
+        };
+        A.initClass();
+        return A;
+      })());
+    `);
+  });
 });

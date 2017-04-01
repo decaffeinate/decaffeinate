@@ -42,11 +42,31 @@ export default class BlockPatcher extends SharedBlockPatcher {
               'earlier statement in the block.');
           }
           if (charsToRemove > 0) {
-            this.remove(statement.outerStart - charsToRemove, statement.outerStart);
+            this.removePrecedingSpaceChars(statement.outerStart, charsToRemove);
           }
         }
       }
       statement.patch();
+    }
+  }
+
+  /**
+   * Get rid of some number of spaces of indentation before this point in the
+   * code. We need to be careful to only remove ranges that have not had any
+   * inserts yet, since otherwise we might remove other code in addition to the
+   * whitespace, or we might remove too much whitespace.
+   */
+  removePrecedingSpaceChars(index, numToRemove) {
+    let numRemaining = numToRemove;
+    for (let i = index; numRemaining > 0 && i > 0; i--) {
+      let contents = this.slice(i - 1, i);
+      if (contents.includes('\n')) {
+        throw this.error('Found start of line before removing enough indentation.');
+      }
+      if (contents === ' ' || contents === '\t') {
+        this.remove(i - 1, i);
+        numRemaining -= 1;
+      }
     }
   }
 
