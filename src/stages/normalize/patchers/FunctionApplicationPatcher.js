@@ -67,7 +67,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       // In some cases, (e.g. within function args) our bounds are extended to
       // allow us to patch the close-paren all the way up to the start of the
       // following close-paren, but don't patch past the end of those bounds.
-      this.insert(Math.min(followingCloseParen.start, this.getEditingBounds()[1]), ')');
+      this.insert(Math.min(followingCloseParen.start, this.getMaxCloseParenInsertPoint()), ')');
       return;
     }
 
@@ -108,6 +108,19 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       return token;
     }
     return null;
+  }
+
+  /**
+   * Normally we can edit up to the end of our editing bounds (but no further),
+   * but be especially careful here to not place a close-paren before the
+   * indentation level of our statement.
+   */
+  getMaxCloseParenInsertPoint(): number {
+    let enclosingStatementPatcher = this;
+    while (enclosingStatementPatcher.parent && enclosingStatementPatcher.parent.node.type !== 'Block') {
+      enclosingStatementPatcher = enclosingStatementPatcher.parent;
+    }
+    return Math.min(this.getEditingBounds()[1], enclosingStatementPatcher.innerEnd);
   }
 
   /**

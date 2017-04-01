@@ -643,4 +643,32 @@ describe('function calls', () => {
        d);
     `);
   });
+
+  it('properly inserts implicit parens within a block (#727)', () => {
+    check(`
+      launchMissile(->
+        setTimeout (->
+          launch()
+        ), 5000
+      )
+    `, `
+      launchMissile(() =>
+        setTimeout((() => launch()), 5000)
+      );
+    `);
+  });
+
+  it('properly inserts implicit parens in a nested call within a block', () => {
+    check(`
+      launchMissile(->
+        1 + setTimeout (->
+          launch()
+        ), 5000
+      )
+    `, `
+      launchMissile(() =>
+        1 + setTimeout((() => launch()), 5000)
+      );
+    `);
+  });
 });
