@@ -351,9 +351,12 @@ describe('try', () => {
   it('properly handles an expression-style try/catch in an implicit return context', () => {
     check(`
       ->
-        (try a)
+        x = (try a)
     `, `
-      () => (() => { try { return a; } catch (error) {} })();
+      (function() {
+        let x;
+        return x = ((() => { try { return a; } catch (error) {} })());
+      });
     `);
   });
 });

@@ -65,7 +65,7 @@ describe('throw', () => {
       (throw
         a)
     `, `
-      (() => { throw a; })();
+      throw a;
     `);
   });
 });
