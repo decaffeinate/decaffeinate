@@ -1382,4 +1382,12 @@ describe('for loops', () => {
       let foo = function() { for (let i of []) { null; } return t; };
     `);
   });
+
+  it('handles break in a postfix for', () => {
+    check(`
+      (a; break) for b in c
+    `, `
+      for (let b of Array.from(c)) { a; break; }
+    `);
+  });
 });

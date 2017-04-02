@@ -25,7 +25,7 @@ describe('sequences', () => {
       )
     `, `
       if (a) { 
-        b,
+        b;
         c
       ; }
     `);
@@ -41,9 +41,20 @@ describe('sequences', () => {
     `, `
       a;
       
-        b, c,
+        b; c;
         d
       ;
+    `);
+  });
+
+  it('handles a negated sequence operation', () => {
+    check(`
+      unless (a; b)
+        c
+    `, `
+      if (!(a, b)) {
+        c;
+      }
     `);
   });
 });
