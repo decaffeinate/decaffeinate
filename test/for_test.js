@@ -1379,7 +1379,7 @@ describe('for loops', () => {
     check(`
       foo = () -> null for i in []; t
     `, `
-      let foo = function() { ([].map((i) => null)); return t; };
+      let foo = function() { for (let i of []) { null; } return t; };
     `);
   });
 });
