@@ -1374,4 +1374,12 @@ describe('for loops', () => {
       ({a: (Array.from(c).map((b) => b)), d});
     `);
   });
+
+  it('properly converts a postfix for followed by a semicolon', () => {
+    check(`
+      foo = () -> null for i in []; t
+    `, `
+      let foo = function() { ([].map((i) => null)); return t; };
+    `);
+  });
 });

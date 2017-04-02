@@ -740,4 +740,12 @@ describe('conditionals', () => {
       })()) { a; }
     `);
   });
+
+  it('handles a postfix conditional followed by a semicolon', () => {
+    check(`
+      a if b; c
+    `, `
+      (b ? a : undefined); c;
+    `);
+  });
 });

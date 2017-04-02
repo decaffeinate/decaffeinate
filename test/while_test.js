@@ -431,4 +431,18 @@ describe('while', () => {
       })()), d});
     `);
   });
+
+  it('handles a postfix while followed by a semicolon', () => {
+    check(`
+      a while b; c
+    `, `
+      ((() => {
+        let result = [];
+        while (b) {
+          result.push(a);
+        }
+        return result;
+      })()); c;
+    `);
+  });
 });
