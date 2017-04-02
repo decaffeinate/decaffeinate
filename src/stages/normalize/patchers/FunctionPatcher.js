@@ -109,14 +109,16 @@ export default class FunctionPatcher extends NodePatcher {
     };
     this.addDefaultParamAssignmentAtScopeHeader = (assigneeCode: string, initCode: string, assigneeIsValidExpression: boolean) => {
       if (assigneeIsValidExpression) {
-        defaultParamAssignments.push(`${assigneeCode} ?= ${initCode}`);
+        // Wrap in parens to avoid precedence issues for inline statements. The
+        // parens will be removed later in normal situations.
+        defaultParamAssignments.push(`(${assigneeCode} ?= ${initCode})`);
         return assigneeCode;
       } else {
         // Handle cases like `({a}={}) ->`, where we need to check for default
         // with the param as a normal variable, then include the destructure.
         assigneeCode = this.fixGeneratedAssigneeWhitespace(assigneeCode);
         let paramName = this.claimFreeBinding('param');
-        defaultParamAssignments.push(`${paramName} ?= ${initCode}`);
+        defaultParamAssignments.push(`(${paramName} ?= ${initCode})`);
         defaultParamAssignments.push(`${assigneeCode} = ${paramName}`);
         return paramName;
       }

@@ -103,4 +103,12 @@ describe('default params', () => {
       };
     `);
   });
+
+  it('handles a function as a default value (#729)', () => {
+    check(`
+      filter = (items, predicate = (-> true)) -> items.filter(predicate)
+    `, `
+      let filter = function(items, predicate) { if (predicate == null) { predicate = () => true; } return items.filter(predicate); };
+    `);
+  });
 });
