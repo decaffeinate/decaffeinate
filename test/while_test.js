@@ -436,13 +436,7 @@ describe('while', () => {
     check(`
       a while b; c
     `, `
-      ((() => {
-        let result = [];
-        while (b) {
-          result.push(a);
-        }
-        return result;
-      })()); c;
+      while (b) { a; } c;
     `);
   });
 });

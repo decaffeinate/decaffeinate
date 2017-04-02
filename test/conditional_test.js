@@ -748,7 +748,7 @@ describe('conditionals', () => {
     check(`
       a if b; c
     `, `
-      (b ? a : undefined); c;
+      if (b) { a; } c;
     `);
   });
 });
