@@ -470,7 +470,7 @@ describe('function calls', () => {
         null
         )
     `, `
-      (a(() => null));
+      a(() => null);
     `);
   });
 

@@ -80,4 +80,30 @@ describe('return', () => {
       return a;
     `)
   );
+
+  it('allows return surrounded by parens', () =>
+    check(`
+      ->
+        (return)
+        a
+    `, `
+      (function() {
+        return;
+        return a;
+      });
+    `)
+  );
+
+  it('allows return surrounded by two sets of parens', () =>
+    check(`
+      ->
+        ((return))
+        a
+    `, `
+      (function() {
+        return;
+        return a;
+      });
+    `)
+  );
 });

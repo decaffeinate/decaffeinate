@@ -25,12 +25,6 @@ export default class FunctionPatcher extends NodePatcher {
     });
   }
 
-  patchAsStatement(options={}) {
-    this.insert(this.innerStart, '(');
-    this.patchAsExpression(options);
-    this.insert(this.innerEnd, ')');
-  }
-
   patchAsExpression({ method=false }={}) {
     this.patchFunctionStart({ method });
     this.parameters.forEach((parameter, i) => {

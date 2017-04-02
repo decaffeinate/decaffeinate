@@ -492,16 +492,17 @@ describe('switch', () => {
   it('properly handles an expression-style switch in an implicit return context', () => {
     check(`
       ->
-        (switch a
+        x = (switch a
            when b
              c)
     `, `
-      () =>
-        (() => { switch (a) {
+      (function() {
+        let x;
+        return x = ((() => { switch (a) {
            case b:
              return c;
-        } })()
-      ;
+        } })());
+      });
     `);
   });
 });

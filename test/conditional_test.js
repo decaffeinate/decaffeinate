@@ -548,7 +548,7 @@ describe('conditionals', () => {
     check(`
       if a then (b)else c
     `, `
-      if (a) { (b);} else { c; }
+      if (a) { b;} else { c; }
     `)
   );
 
@@ -629,12 +629,12 @@ describe('conditionals', () => {
 
   it('handles a parenthesized empty condition with only a block comment for its body', () => {
     check(`
-      (if true
+      x = (if true
         ### a ###
       else
       )
     `, `
-      (true ?
+      let x = (true ?
         undefined/* a */
        : undefined
       );
@@ -701,9 +701,12 @@ describe('conditionals', () => {
   it('properly handles an expression-style conditional in an implicit return context', () => {
     check(`
       ->
-        (if a then b else c)
+        x = (if a then b else c)
     `, `
-      () => a ? b : c;
+      (function() {
+        let x;
+        return x = (a ? b : c);
+      });
     `);
   });
 

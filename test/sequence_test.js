@@ -24,24 +24,26 @@ describe('sequences', () => {
         c
       )
     `, `
-      if (a) { (
+      if (a) { 
         b,
         c
-      ); }
+      ; }
     `);
   });
 
   it('handles mixed semicolon and newline-separated sequence expressions', () => {
     check(`
+      a
       (
-        a; b
-        c
+        b; c
+        d
       )
     `, `
-      (
-        a, b,
-        c
-      );
+      a;
+      
+        b, c,
+        d
+      ;
     `);
   });
 });

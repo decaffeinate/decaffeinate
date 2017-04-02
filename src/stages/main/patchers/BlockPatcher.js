@@ -78,9 +78,11 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   patchInnerStatement(statement) {
-    if (statement.isSurroundedByParentheses()) {
-      statement.setRequiresExpression();
+    if (statement.isSurroundedByParentheses() && !statement.statementNeedsParens()) {
+      this.remove(statement.outerStart, statement.innerStart);
+      this.remove(statement.innerEnd, statement.outerEnd);
     }
+
     let hasImplicitReturn = (
       statement.implicitlyReturns() &&
       !statement.explicitlyReturns()

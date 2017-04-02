@@ -16,7 +16,7 @@ describe('instanceof', () => {
   // Ideally we wouldn't have redundant parens here, but it makes the
   // implementation simpler.
   it('handles negated `instanceof` when there are already parens', () => {
-    check(`(a not instanceof b)`, `(!(a instanceof b));`);
+    check(`(a not instanceof b)`, `!(a instanceof b);`);
   });
 
   it('works with double-negated `instanceof`', () => {

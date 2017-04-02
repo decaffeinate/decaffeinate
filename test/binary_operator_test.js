@@ -87,9 +87,9 @@ describe('binary operators', () => {
 
   it('handles binary existence operator with a global LHS as an expression', () => {
     check(`
-      (a ? b)
+      x = (a ? b)
     `, `
-      (typeof a !== 'undefined' && a !== null ? a : b);
+      let x = (typeof a !== 'undefined' && a !== null ? a : b);
     `);
   });
 
@@ -119,17 +119,17 @@ describe('binary operators', () => {
 
   it('handles binary existence operator with a safe-to-repeat member expression as an expression', () => {
     check(`
-      (a.b ? a)
+      x = (a.b ? a)
     `, `
-      (a.b != null ? a.b : a);
+      let x = (a.b != null ? a.b : a);
     `);
   });
 
   it('handles binary existence operator with a this-access on the left side', () => {
     check(`
-      (@a.b ? c)
+      x = (@a.b ? c)
     `, `
-      (this.a.b != null ? this.a.b : c);
+      let x = (this.a.b != null ? this.a.b : c);
     `);
   });
 
@@ -144,10 +144,10 @@ describe('binary operators', () => {
 
   it('handles binary existence operator with an unsafe-to-repeat member expression as an expression', () => {
     check(`
-      (a() ? b)
+      x = (a() ? b)
     `, `
       let left;
-      ((left = a()) != null ? left : b);
+      let x = ((left = a()) != null ? left : b);
     `);
   });
 

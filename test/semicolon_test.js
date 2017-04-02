@@ -7,7 +7,7 @@ describe('semicolons', () => {
         result)())
       a
     `, `
-      ((() => result)());
+      (() => result)();
       a;
     `);
   });
