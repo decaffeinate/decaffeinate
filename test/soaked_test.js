@@ -843,4 +843,25 @@ describe('soaked expressions', () => {
       let a = (typeof b !== 'undefined' && b !== null ? b.c = 1 : undefined);
     `);
   });
+
+  it('handles simple soaked new operations', () => {
+    check(`
+      new A?(b)
+    `, `
+      if (typeof A === 'function') {
+        new A(b);
+      }
+    `);
+  });
+
+  it('handles complex soaked new operations', () => {
+    check(`
+      new A[b()]?(c)
+    `, `
+      __guardFunc__(A[b()], f => new f(c));
+      function __guardFunc__(func, transform) {
+        return typeof func === 'function' ? transform(func) : undefined;
+      }
+    `);
+  });
 });

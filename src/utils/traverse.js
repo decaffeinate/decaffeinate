@@ -117,6 +117,7 @@ const ORDER = {
   SoakedDynamicMemberAccessOp: ['expression', 'indexingExpr'],
   SoakedFunctionApplication: ['function', 'arguments'],
   SoakedMemberAccessOp: ['expression', 'member'],
+  SoakedNewOp: ['ctor', 'arguments'],
   SoakedProtoMemberAccessOp: ['expression'],
   Spread: ['expression'],
   String: ['quasis', 'expressions'],
