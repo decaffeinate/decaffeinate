@@ -53,6 +53,7 @@ import SoakedDynamicMemberAccessOpPatcher from './patchers/SoakedDynamicMemberAc
 import SoakedFunctionApplicationPatcher from './patchers/SoakedFunctionApplicationPatcher';
 import SoakedMemberAccessOpPatcher from './patchers/SoakedMemberAccessOpPatcher';
 import SoakedNewOpPatcher from './patchers/SoakedNewOpPatcher';
+import SoakedSlicePatcher from './patchers/SoakedSlicePatcher';
 import SpreadPatcher from './patchers/SpreadPatcher';
 import StringPatcher from './patchers/StringPatcher';
 import SuperPatcher from './patchers/SuperPatcher';
@@ -249,6 +250,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'Slice':
         return SlicePatcher;
+
+      case 'SoakedSlice':
+        return SoakedSlicePatcher;
 
       case 'Expansion':
         return ExpansionPatcher;

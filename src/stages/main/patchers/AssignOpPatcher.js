@@ -211,7 +211,7 @@ export default class AssignOpPatcher extends NodePatcher {
       }
       return assignments;
     } else if (patcher instanceof SlicePatcher) {
-      return [`${patcher.getInitialSpliceCode()}, ...[].concat(${ref}))`];
+      return [patcher.getSpliceCode(ref)];
     } else if (patcher instanceof AssignOpPatcher) {
       if (!refIsRepeatable) {
         let valReference = this.claimFreeBinding('val');

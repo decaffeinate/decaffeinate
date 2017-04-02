@@ -38,7 +38,7 @@ export default class SlicePatcher extends NodePatcher {
     let indexStart = this.getIndexStartSourceToken();
     // `a[0..1]` → `a.slice(0..1]`
     //   ^           ^^^^^^^
-    this.overwrite(indexStart.start, indexStart.end, '.slice(');
+    this.overwrite(this.expression.outerEnd, indexStart.end, '.slice(');
     if (this.left) {
       this.left.patch();
     } else if (this.right) {
@@ -91,8 +91,14 @@ export default class SlicePatcher extends NodePatcher {
     this.overwrite(indexEnd.start, indexEnd.end, ')');
   }
 
-  getInitialSpliceCode(): string {
-    return this.captureCodeForPatchOperation(() => this.patchAsSpliceExpressionStart());
+  /**
+   * Given the RHS of a splice expression, return the code for it. This only
+   * happens in a context where our expression will go away, so children can be
+   * patched as necessary.
+   */
+  getSpliceCode(expressionCode: string): string {
+    let spliceStart = this.captureCodeForPatchOperation(() => this.patchAsSpliceExpressionStart());
+    return `${spliceStart}, ...[].concat(${expressionCode}))`;
   }
 
   /**
@@ -111,7 +117,7 @@ export default class SlicePatcher extends NodePatcher {
     let indexStart = this.getIndexStartSourceToken();
     // `a[b..c]` → `a.splice(b..c]`
     //   ^           ^^^^^^^^
-    this.overwrite(indexStart.start, indexStart.end, '.splice(');
+    this.overwrite(this.expression.outerEnd, indexStart.end, '.splice(');
     let leftCode;
     if (this.left) {
       leftCode = this.left.patchRepeatable();
