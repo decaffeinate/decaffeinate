@@ -1,3 +1,5 @@
+import { SourceType } from 'coffee-lex';
+
 import SharedBlockPatcher from './../../../patchers/SharedBlockPatcher';
 import getStartOfLine from '../../../utils/getStartOfLine';
 
@@ -29,7 +31,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
     // we need to correct any inconsistent indentation in the normalize step so
     // that the result CoffeeScript will always be valid.
     let blockIndentLength = null;
-    for (let statement of this.statements) {
+    for (let [i, statement] of this.statements.entries()) {
       let indentLength = this.getIndentLength(statement);
       if (indentLength !== null) {
         if (blockIndentLength === null) {
@@ -47,6 +49,9 @@ export default class BlockPatcher extends SharedBlockPatcher {
         }
       }
       statement.patch();
+      if (i < this.statements.length - 1) {
+        this.normalizeBetweenStatements(statement, this.statements[i + 1]);
+      }
     }
   }
 
@@ -82,5 +87,22 @@ export default class BlockPatcher extends SharedBlockPatcher {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Statements can be comma-separated within classes, which is equivalent to
+   * semicolons, so just change them to semicolons.
+   */
+  normalizeBetweenStatements(leftStatement, rightStatement) {
+    let commaTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+      leftStatement, rightStatement, t => t.type === SourceType.COMMA);
+    if (!commaTokenIndex) {
+      return;
+    }
+    let commaToken = this.sourceTokenAtIndex(commaTokenIndex);
+    if (!commaToken) {
+      return;
+    }
+    this.overwrite(commaToken.start, commaToken.end, ';');
   }
 }
