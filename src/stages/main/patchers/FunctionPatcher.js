@@ -57,23 +57,42 @@ export default class FunctionPatcher extends NodePatcher {
       if (this.isSurroundedByParentheses()) {
         this.body.patch({ leftBrace: false, rightBrace: false });
         this.insert(this.innerEnd, this.body.inline() ? ' }' : '}');
-      } else if (this.parent instanceof FunctionApplicationPatcher &&
-          this.parent.args[this.parent.args.length - 1] === this) {
-        // If we're the last argument to a function, place the } just before the
-        // close-paren. There will always be a close-paren because all implicit
-        // parentheses were added in the normalize stage.
+      } else if (this.isEndOfFunctionCall()) {
         this.body.patch({ leftBrace: false, rightBrace: false });
-        let closeParenIndex = this.parent.indexOfSourceTokenBetweenSourceIndicesMatching(
-          this.contentEnd, this.parent.contentEnd, token => token.type === SourceType.CALL_END
-        );
-        let closeParen = this.sourceTokenAtIndex(closeParenIndex);
-        this.insert(closeParen.start, this.body.inline() ? ' }' : '}');
+        this.placeCloseBraceBeforeFunctionCallEnd();
       } else {
         this.body.patch({ leftBrace: false });
       }
     } else {
       // No body, so BlockPatcher can't insert it for us.
       this.insert(this.innerEnd, '}');
+    }
+  }
+
+  isEndOfFunctionCall() {
+    return this.parent instanceof FunctionApplicationPatcher &&
+      this.parent.args[this.parent.args.length - 1] === this;
+  }
+
+  /**
+   * If we're the last argument to a function, place the } just before the
+   * close-paren. There will always be a close-paren because all implicit
+   * parentheses were added in the normalize stage.
+   *
+   * However, if the close-paren is at the end of our line, it usually looks
+   * better to put the }) on the next line instead.
+   */
+  placeCloseBraceBeforeFunctionCallEnd() {
+    let closeParenIndex = this.parent.indexOfSourceTokenBetweenSourceIndicesMatching(
+      this.contentEnd, this.parent.contentEnd, token => token.type === SourceType.CALL_END
+    );
+    let closeParen = this.sourceTokenAtIndex(closeParenIndex);
+    let shouldMoveCloseParen = !this.body.inline() &&
+      !this.slice(this.contentEnd, closeParen.start).includes('\n');
+    if (shouldMoveCloseParen) {
+      this.appendLineAfter('}', -1);
+    } else {
+      this.insert(closeParen.start, this.body.inline() ? ' }' : '}');
     }
   }
 
