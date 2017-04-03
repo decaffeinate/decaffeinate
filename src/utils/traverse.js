@@ -119,6 +119,7 @@ const ORDER = {
   SoakedMemberAccessOp: ['expression', 'member'],
   SoakedNewOp: ['ctor', 'arguments'],
   SoakedProtoMemberAccessOp: ['expression'],
+  SoakedSlice: ['expression', 'left', 'right'],
   Spread: ['expression'],
   String: ['quasis', 'expressions'],
   SubtractOp: ['left', 'right'],

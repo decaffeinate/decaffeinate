@@ -864,4 +864,49 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('handles soaked slice operations', () => {
+    check(`
+      a = b?[c..d]
+    `, `
+      let a = __guard__(b, x => x.slice(c, +d + 1 || undefined));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('properly computes the soak container for soaked slice operations', () => {
+    check(`
+      a = b?[c..d].e
+    `, `
+      let a = __guard__(b, x => x.slice(c, +d + 1 || undefined).e);
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('handles soaked splice operations', () => {
+    check(`
+      a?[b..c] = d
+    `, `
+      __guard__(a, x => x.splice(b, c - b + 1, ...[].concat(d)));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
+
+  it('handles complex splice operations', () => {
+    check(`
+      [a, b()?[c..]] = d
+    `, `
+      let a;
+      a = d[0], __guard__(b(), x => x.splice(c, 9e9, ...[].concat(d[1])));
+      function __guard__(value, transform) {
+        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+      }
+    `);
+  });
 });
