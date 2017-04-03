@@ -35,7 +35,15 @@ function formatAstNodeLines(node, context) {
     } else if (Array.isArray(value)) {
       propLines.push(`${key}: [`);
       for (let child of value) {
-        propLines.push(...formatAstNodeLines(child, context).map(s => '  ' + s));
+        if (Array.isArray(child)) {
+          propLines.push(`  [`);
+          for (let grandchild of child) {
+            propLines.push(...formatAstNodeLines(grandchild, context).map(s => '    ' + s));
+          }
+          propLines.push(`  ]`);
+        } else {
+          propLines.push(...formatAstNodeLines(child, context).map(s => '  ' + s));
+        }
       }
       propLines.push(`]`);
     } else {
@@ -53,7 +61,7 @@ function formatAstNodeLines(node, context) {
 
 function shouldTraverse(value) {
   if (Array.isArray(value)) {
-    return value.length === 0 || isNode(value[0]);
+    return value.length === 0 || shouldTraverse(value[0]);
   }
   return isNode(value);
 }
