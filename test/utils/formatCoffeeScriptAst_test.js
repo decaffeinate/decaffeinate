@@ -41,4 +41,44 @@ describe('formatCoffeeScriptAst', () => {
       }
     `) + '\n');
   });
+
+  it('properly formats switch statements', () => {
+    let source = stripSharedIndent(`
+      switch
+        when 1
+          2
+    `);
+    let context = parse(source).context;
+    let formattedTokens = formatCoffeeScriptAst(context);
+    strictEqual(formattedTokens, stripSharedIndent(`
+      Block [1:1(0)-3:6(21)] {
+        expressions: [
+          Switch [1:1(0)-3:6(21)] {
+            subject: null
+            otherwise: undefined
+            cases: [
+              [
+                Value [2:8(14)-2:9(15)] {
+                  base: Literal [2:8(14)-2:9(15)] {
+                    value: "1"
+                  }
+                  properties: []
+                }
+                Block [3:5(20)-3:6(21)] {
+                  expressions: [
+                    Value [3:5(20)-3:6(21)] {
+                      base: Literal [3:5(20)-3:6(21)] {
+                        value: "2"
+                      }
+                      properties: []
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    `) + '\n');
+  });
 });
