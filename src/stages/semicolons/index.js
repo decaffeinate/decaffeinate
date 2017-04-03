@@ -1,10 +1,8 @@
 import MagicString from 'magic-string';
 import asi from 'automatic-semicolon-insertion';
 import buildConfig from 'ast-processor-babylon-config';
-import { basename } from 'path';
 import { logger } from '../../utils/debug';
 import { parse } from 'babylon';
-import type { Options } from '../../index';
 
 const BABYLON_PLUGINS = [
   'flow',
@@ -24,8 +22,7 @@ const BABYLON_PLUGINS = [
 ];
 
 export default class SemicolonsStage {
-  static run(content: string, options: Options): { code: string, map: Object } {
-    let { filename } = options;
+  static run(content: string): { code: string } {
     let log = logger(this.name);
     log(content);
 
@@ -44,11 +41,6 @@ export default class SemicolonsStage {
 
     return {
       code: editor.toString(),
-      map: editor.generateMap({
-        source: filename,
-        file: `${basename(filename, '.js')}-${this.name}.js`,
-        includeContent: true
-      })
     };
   }
 }

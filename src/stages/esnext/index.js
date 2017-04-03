@@ -31,6 +31,6 @@ export default class EsnextStage {
         }
       }
     });
-    return { code, map: {} };
+    return { code };
   }
 }
