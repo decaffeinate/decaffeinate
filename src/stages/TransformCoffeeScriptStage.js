@@ -3,14 +3,12 @@ import NodePatcher from '../patchers/NodePatcher';
 import PatchError from '../utils/PatchError';
 import parse from '../utils/parse';
 import type { Node, ParseContext, Editor } from '../patchers/types';
-import { basename } from 'path';
 import { childPropertyNames } from '../utils/traverse';
 import { logger } from '../utils/debug';
 import type { Options } from '../index';
 
 export default class TransformCoffeeScriptStage {
-  static run(content: string, options: Options): { code: string, map: Object } {
-    let { filename } = options;
+  static run(content: string, options: Options): { code: string } {
     let log = logger(this.name);
     log(content);
 
@@ -21,11 +19,6 @@ export default class TransformCoffeeScriptStage {
     patcher.patch();
     return {
       code: editor.toString(),
-      map: editor.generateMap({
-        source: filename,
-        file: `${basename(filename, this.inputExtension)}-${this.name}${this.outputExtension}`,
-        includeContent: true
-      })
     };
   }
 

@@ -48,12 +48,11 @@ const DEFAULT_OPTIONS = {
 
 type ConversionResult = {
   code: string,
-  maps: Array<Object>
 };
 
 type Stage = {
   name: string;
-  run: (content: string, options: Options) => { code: string, map: Object }
+  run: (content: string, options: Options) => { code: string }
 };
 
 /**
@@ -87,19 +86,15 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
 }
 
 function runStages(initialContent: string, options: Options, stages: Array<Stage>): ConversionResult {
-  let maps = [];
   let content = initialContent;
   stages.forEach(stage => {
-    let { code, map } = runStage(stage, content, options);
-    if (code !== content) {
-      maps.push(map);
-      content = code;
-    }
+    let { code } = runStage(stage, content, options);
+    content = code;
   });
-  return { code: content, maps };
+  return { code: content };
 }
 
-function runStage(stage: Stage, content: string, options: Options): { code: string, map: Object } {
+function runStage(stage: Stage, content: string, options: Options): { code: string } {
   try {
     return stage.run(content, options);
   } catch (err) {
@@ -116,22 +111,18 @@ function convertCustomStage(source: string, stageName: string): ConversionResult
   if (stageName === 'coffeescript-lexer') {
     return {
       code: formatCoffeeScriptLexerTokens(tokens(source), ast.context),
-      maps: [],
     };
   } else if (stageName === 'coffeescript-parser') {
     return {
       code: formatCoffeeScriptAst(ast.context),
-      maps: [],
     };
   } else if (stageName === 'coffee-lex') {
     return {
       code: formatCoffeeLexAst(ast.context),
-      maps: [],
     };
   } else if (stageName === 'decaffeinate-parser') {
     return {
       code: formatDecaffeinateParserAst(ast),
-      maps: [],
     };
   } else {
     throw new Error(`Unrecognized stage name: ${stageName}`);
