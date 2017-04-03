@@ -452,4 +452,17 @@ describe('functions', () => {
       ;
     `)
   );
+
+  it('generates nice-looking code for a function call around an arrow function', () =>
+    check(`
+      f () =>
+        a = 1
+        a
+    `, `
+      f(() => {
+        let a = 1;
+        return a;
+      });
+    `)
+  );
 });

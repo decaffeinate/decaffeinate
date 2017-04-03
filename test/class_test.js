@@ -1109,10 +1109,8 @@ describe('classes', () => {
           return dolater(() => {
             return dolater(() => {
               return B.prototype.__proto__.foo.call(this, cb);
-            }
-            );
-          }
-          );
+            });
+          });
         }
       }
     `);

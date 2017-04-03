@@ -44,8 +44,7 @@ describe('indentation', () => {
       (function() {
         a
           .b(() => {
-          }
-        );
+        });
         return 3;
       });
     `);

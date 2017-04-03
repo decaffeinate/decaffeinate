@@ -302,7 +302,8 @@ describe('function calls', () => {
                 let org, person, user;
                 if (param == null) { param = {}; }
                 ({person, user, authKey, org} = param);
-                return cb(null, {person, authKey, user, org});});
+                return cb(null, {person, authKey, user, org});
+        });
         }
       });
     `);
@@ -351,7 +352,8 @@ describe('function calls', () => {
       
         somefunc('something', ['something', function(ContactService) {}
       
-        ]));
+        ])
+      );
     `);
   });
 
@@ -396,8 +398,7 @@ describe('function calls', () => {
     `, `
       baz(() => {
         if (bar) { return foo; }
-      }
-      );
+      });
     `);
   });
 

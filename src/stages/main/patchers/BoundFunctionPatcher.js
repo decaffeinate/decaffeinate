@@ -81,7 +81,12 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
   patchFunctionBody() {
     if (this.body) {
       if (!this.willPatchBodyInline()) {
-        this.body.patch({ leftBrace: false });
+        if (this.isEndOfFunctionCall()) {
+          this.body.patch({ leftBrace: false, rightBrace: false });
+          this.placeCloseBraceBeforeFunctionCallEnd();
+        } else {
+          this.body.patch({ leftBrace: false });
+        }
       } else {
         let needsParens = blockStartsWithObjectInitialiser(this.body) &&
           !this.body.isSurroundedByParentheses();

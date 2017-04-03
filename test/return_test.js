@@ -68,8 +68,7 @@ describe('return', () => {
         b;  // comment
         }).c(() => {
         return d;
-      }
-      );
+      });
     `);
   });
 
