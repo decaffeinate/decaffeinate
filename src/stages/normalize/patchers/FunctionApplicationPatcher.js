@@ -147,7 +147,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * This is the start of the region to insert an open-paren if necessary
    */
   getFuncEnd() {
-    if (this.node.type === 'SoakedFunctionApplication') {
+    if (this.node.type === 'SoakedFunctionApplication' || this.node.type === 'SoakedNewOp') {
       let questionMarkTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         this.fn.outerEndTokenIndex, SourceType.EXISTENCE);
       let questionMarkToken = this.sourceTokenAtIndex(questionMarkTokenIndex);

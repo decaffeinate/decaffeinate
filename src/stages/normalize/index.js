@@ -70,6 +70,7 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'FunctionApplication':
       case 'NewOp':
       case 'SoakedFunctionApplication':
+      case 'SoakedNewOp':
         return FunctionApplicationPatcher;
 
       case 'BareSuperFunctionApplication':

@@ -854,6 +854,16 @@ describe('soaked expressions', () => {
     `);
   });
 
+  it('handles implicit soaked new operations', () => {
+    check(`
+      new A? b
+    `, `
+      if (typeof A === 'function') {
+        new A(b);
+      }
+    `);
+  });
+
   it('handles complex soaked new operations', () => {
     check(`
       new A[b()]?(c)
