@@ -332,11 +332,9 @@ describe('switch', () => {
         # Do nothing
     `, `
       switch (a) {
-        case b: then;
-          break;
+        case b:  break;
           // Do nothing
-        case c: then;
-          break;
+        case c:  break;
       }
           // Do nothing
     `);
