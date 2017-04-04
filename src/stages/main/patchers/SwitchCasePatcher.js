@@ -159,6 +159,15 @@ export default class SwitchCasePatcher extends NodePatcher {
       this.consequent !== null ? this.consequent.outerStart : this.contentEnd,
       token => token.type === SourceType.THEN
     );
-    return thenTokenIndex ? this.sourceTokenAtIndex(thenTokenIndex) : null;
+    if (thenTokenIndex) {
+      return this.sourceTokenAtIndex(thenTokenIndex);
+    }
+    // In some cases, the node bounds are wrong and the `then` is after our
+    // current node, so just use that.
+    let nextToken = this.nextToken();
+    if (nextToken && nextToken.type === SourceType.THEN) {
+      return nextToken;
+    }
+    return null;
   }
 }
