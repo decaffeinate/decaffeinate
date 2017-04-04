@@ -84,7 +84,8 @@ export default class FunctionPatcher extends NodePatcher {
    */
   placeCloseBraceBeforeFunctionCallEnd() {
     let closeParenIndex = this.parent.indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.contentEnd, this.parent.contentEnd, token => token.type === SourceType.CALL_END
+      this.contentEnd, this.parent.contentEnd,
+      token => token.type === SourceType.CALL_END || token.type === SourceType.RPAREN
     );
     let closeParen = this.sourceTokenAtIndex(closeParenIndex);
     let shouldMoveCloseParen = !this.body.inline() &&

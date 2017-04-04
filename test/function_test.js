@@ -465,4 +465,16 @@ describe('functions', () => {
       });
     `)
   );
+
+  it('handles an arrow function argument that is wrapped in parens', () =>
+    check(`
+      a((=>
+        b
+      ))
+    `, `
+      a((() => {
+        return b;
+      }));
+    `)
+  );
 });
