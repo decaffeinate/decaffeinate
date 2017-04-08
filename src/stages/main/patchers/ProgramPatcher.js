@@ -27,7 +27,14 @@ export default class ProgramPatcher extends SharedProgramPatcher {
   patchContinuations() {
     this.getProgramSourceTokens().forEach(token => {
       if (token.type === SourceType.CONTINUATION) {
-        this.remove(token.start, token.end);
+        try {
+          this.remove(token.start, token.end);
+        } catch (e) {
+          this.log(
+            'Warning: Ignoring a continuation token because it could not be ' +
+            'removed. Most likely, this is because its range has already ' +
+            'been overwritten.');
+        }
       }
     });
   }
