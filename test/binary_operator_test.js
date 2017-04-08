@@ -195,6 +195,15 @@ describe('binary operators', () => {
     `);
   });
 
+  it('handles multiline binary existence operator with escaped newline', () => {
+    check(`
+      a ? \\
+        b
+    `, `
+      if (typeof a === 'undefined' || a === null) { b; }
+    `);
+  });
+
   it('handles left shift as a nested operator', () => {
     check(`
       value = object.id << 8 | object.type
