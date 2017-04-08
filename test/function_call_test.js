@@ -672,4 +672,20 @@ describe('function calls', () => {
       );
     `);
   });
+
+  it('handles a function call on a multiline string surrounded by parens', () => {
+    check(`
+      a
+      (
+        a '
+        '
+      )
+    `, `
+      a;
+      
+        a(\`\\
+      \`)
+      ;
+    `);
+  });
 });

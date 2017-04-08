@@ -2,6 +2,7 @@ import { SourceType } from 'coffee-lex';
 
 import NodePatcher from './../../../patchers/NodePatcher';
 import normalizeListItem from '../../../utils/normalizeListItem';
+import traverse from '../../../utils/traverse';
 import type { PatcherContext } from './../../../patchers/types';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
@@ -116,11 +117,41 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * indentation level of our statement.
    */
   getMaxCloseParenInsertPoint(): number {
+    let maxInsertionPoint = this.getEditingBounds()[1];
     let enclosingStatementPatcher = this;
     while (enclosingStatementPatcher.parent && enclosingStatementPatcher.parent.node.type !== 'Block') {
       enclosingStatementPatcher = enclosingStatementPatcher.parent;
     }
-    return Math.min(this.getEditingBounds()[1], enclosingStatementPatcher.innerEnd);
+    if (!this.lastArgContainsBlock()) {
+      maxInsertionPoint = Math.min(maxInsertionPoint, enclosingStatementPatcher.contentEnd);
+    }
+    return maxInsertionPoint;
+  }
+
+  /**
+   * The close-paren placement rules differ based on whether we end with
+   * anything containing a block. In some cases, ending with an `if` or a
+   * function body means that we must put the close-paren on the next line. In
+   * cases where the last arg is a normal expression, we sometimes must place
+   * the close-paren at the end of that line. This is caused by the subtle
+   * behavior of the CoffeeScript compiler when dealing with indentation in
+   * various situations.
+   */
+  lastArgContainsBlock() {
+    if (this.args.length === 0) {
+      return false;
+    }
+    let seen = false;
+    traverse(this.args[this.args.length - 1].node, child => {
+      if (seen) {
+        return false;
+      }
+      if (child.type === 'Block') {
+        seen = true;
+        return false;
+      }
+    });
+    return seen;
   }
 
   /**
