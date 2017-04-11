@@ -53,8 +53,15 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
-    if (this.nameAssignee &&
-        (this.isNamespaced() || this.isNameAlreadyDeclared() || this.willPatchAsExpression())) {
+    let needsAssignment = this.nameAssignee &&
+      (this.isNamespaced() || this.isNameAlreadyDeclared() || this.willPatchAsExpression());
+    let needsParens = needsAssignment &&
+      this.willPatchAsExpression() &&
+      !this.isSurroundedByParentheses();
+    if (needsParens) {
+      this.insert(this.contentStart, '(');
+    }
+    if (needsAssignment) {
       let classToken = this.getClassToken();
       // `class A.B` → `A.B`
       //  ^^^^^^
@@ -85,6 +92,9 @@ export default class ClassPatcher extends NodePatcher {
       //                     ^^
       this.insert(this.getBraceInsertionOffset(), ' {');
       this.body.patch({ leftBrace: false });
+    }
+    if (needsParens) {
+      this.insert(this.contentEnd, ')');
     }
   }
 

@@ -1202,7 +1202,7 @@ describe('classes', () => {
       A = class B
     `, `
       let B;
-      const A = B = class B {};
+      const A = (B = class B {});
     `);
   });
 
@@ -1297,7 +1297,7 @@ describe('classes', () => {
         class @for
     `, `
       (function() {
-        return this.for = class _for {};
+        return (this.for = class _for {});
       });
     `);
   });
@@ -1552,6 +1552,15 @@ describe('classes', () => {
         Cls.initClass();
         return Cls();
       })();
+    `);
+  });
+
+  it('handles new directly called on a class', () => {
+    check(`
+      new class A
+    `, `
+      let A;
+      new (A = class A {});
     `);
   });
 });
