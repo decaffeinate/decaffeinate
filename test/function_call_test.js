@@ -688,4 +688,35 @@ describe('function calls', () => {
       ;
     `);
   });
+
+  it('handles a multiline implicit call followed by CALL_END', () => {
+    check(`
+      a(
+        b c,
+        d
+      )
+    `, `
+      a(
+        b(c,
+        d)
+      );
+    `);
+  });
+
+  it('handles a multiline implicit call with an object literal', () => {
+    check(`
+      a(
+        b -> c {
+        },
+          d
+      )
+    `, `
+      a(
+        b(() => c({
+        },
+          d) )
+      );
+    `);
+  });
+
 });
