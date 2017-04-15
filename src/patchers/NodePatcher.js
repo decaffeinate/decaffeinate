@@ -1117,9 +1117,9 @@ export default class NodePatcher {
     }
   }
 
-  isFirstNodeInLine() {
+  isFirstNodeInLine(startingPoint = this.outerStart) {
     let { source } = this.context;
-    for (let i = this.outerStart - 1; i >= 0 && source[i] !== '\n'; i--) {
+    for (let i = startingPoint - 1; i >= 0 && source[i] !== '\n'; i--) {
       if (source[i] !== '\t' && source[i] !== ' ') {
         return false;
       }
