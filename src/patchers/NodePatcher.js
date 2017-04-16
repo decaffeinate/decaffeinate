@@ -871,12 +871,8 @@ export default class NodePatcher {
   /**
    * Gets the token after the end of this node, or null if there is none.
    */
-  nextToken(): ?SourceToken {
-    let nextTokenIndex = this.contentEndTokenIndex.next();
-    if (!nextTokenIndex) {
-      return null;
-    }
-    return this.sourceTokenAtIndex(nextTokenIndex);
+  nextSemanticToken(): ?SourceToken {
+    return this.getFirstSemanticToken(this.contentEnd, this.editor.original.length);
   }
 
   /**

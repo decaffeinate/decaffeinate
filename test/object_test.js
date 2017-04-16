@@ -425,4 +425,68 @@ describe('objects', () => {
       if (count) { ({a: {b: c}}); } else { ({d: {e: f}}); }
     `);
   });
+
+  it('handles an object with function values ending in semicolons', () => {
+    check(`
+      {
+        a: ->
+          b;
+        c: ->
+          d;
+      }
+    `, `
+      ({
+        a() {
+          return b;
+        },
+        c() {
+          return d;
+        }
+      });
+    `);
+  });
+
+  it('handles an object with parenthesized function values ending in semicolons', () => {
+    check(`
+      {
+        a: ->
+          (b);
+        c: ->
+          (d);
+      }
+    `, `
+      ({
+        a() {
+          return b;
+        },
+        c() {
+          return d;
+        }
+      });
+    `);
+  });
+
+  it('handles an object with semicolons on the next line', () => {
+    check(`
+      {
+        a: ->
+          b
+          ;
+        c: ->
+          d
+          ;
+      }
+    `, `
+      ({
+        a() {
+          return b;
+        },
+          
+        c() {
+          return d;
+        }
+          
+      });
+    `);
+  });
 });
