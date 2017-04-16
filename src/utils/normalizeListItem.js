@@ -1,12 +1,13 @@
-import { SourceType } from 'coffee-lex';
-
-import type NodePatcher from '../patchers/NodePatcher';
-
 /**
  * Given a list item (i.e. one element of an array literal, object literal,
  * function invocation, etc), run some normalize steps to simplify this type of
  * syntax in the normalize stage.
  */
+import { SourceType } from 'coffee-lex';
+import traverse from './traverse';
+
+import type NodePatcher from '../patchers/NodePatcher';
+
 export default function normalizeListItem(patcher: NodePatcher, listItemPatcher: NodePatcher, nextListItemPatcher: ?NodePatcher) {
   // If the last token of the arg is a comma, then the actual delimiter must
   // be a newline and the comma is unnecessary and can cause a syntax error
@@ -18,9 +19,14 @@ export default function normalizeListItem(patcher: NodePatcher, listItemPatcher:
   }
   // CoffeeScript allows semicolon-separated lists, so just change them to
   // commas if we see them.
-  let nextToken = listItemPatcher.nextToken();
-  if (nextToken && nextToken.type === SourceType.SEMICOLON && nextToken.end <= patcher.contentEnd) {
-    patcher.overwrite(nextToken.start, nextToken.end, ',');
+  let nextToken = listItemPatcher.nextSemanticToken();
+  if (nextToken && nextToken.type === SourceType.SEMICOLON &&
+      nextToken.end <= patcher.contentEnd) {
+    if (patcherEndsInStatement(listItemPatcher)) {
+      patcher.remove(nextToken.start, nextToken.end);
+    } else {
+      patcher.overwrite(nextToken.start, nextToken.end, ',');
+    }
   }
 
   if (nextListItemPatcher) {
@@ -54,7 +60,7 @@ export default function normalizeListItem(patcher: NodePatcher, listItemPatcher:
  * cases, it's not allowed to put a comma at the end of this node, since doing
  * so could cause a parser crash.
  */
-function isNestedListItem(patcher: NodePatcher) {
+function isNestedListItem(patcher: NodePatcher): boolean {
   return [
     'BoundFunction',
     'BoundGeneratorFunction',
@@ -67,4 +73,23 @@ function isNestedListItem(patcher: NodePatcher) {
     'Try',
     'While',
   ].indexOf(patcher.node.type) > -1;
+}
+
+/**
+ * Determine if the given list item ends with a statement. If so, and it's
+ * followed by a semicolon, then the semicolon should be seen as part of the
+ * statement. The CoffeeScript lexer ignores semicolon tokens early on, so
+ * they're not included in the normal statement bounds.
+ */
+function patcherEndsInStatement(patcher: NodePatcher): boolean {
+  let found = false;
+  traverse(patcher.node, child => {
+    if (found) {
+      return false;
+    }
+    if (child.type === 'Block' && child.range[1] === patcher.contentEnd) {
+      found = true;
+    }
+  });
+  return found;
 }

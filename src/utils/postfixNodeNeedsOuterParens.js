@@ -12,7 +12,7 @@ import type NodePatcher from '../patchers/NodePatcher';
  * the block.
  */
 export default function postfixNodeNeedsOuterParens(patcher: NodePatcher): boolean {
-  let nextToken = patcher.nextToken();
+  let nextToken = patcher.nextSemanticToken();
   if (nextToken) {
     return nextToken.type === SourceType.COMMA || nextToken.type === SourceType.SEMICOLON;
   }

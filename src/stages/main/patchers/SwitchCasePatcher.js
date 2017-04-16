@@ -164,7 +164,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     }
     // In some cases, the node bounds are wrong and the `then` is after our
     // current node, so just use that.
-    let nextToken = this.nextToken();
+    let nextToken = this.nextSemanticToken();
     if (nextToken && nextToken.type === SourceType.THEN) {
       return nextToken;
     }

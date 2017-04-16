@@ -41,7 +41,7 @@ export default class FunctionPatcher extends NodePatcher {
       if (i === this.parameters.length - 1) {
         // Parameter lists allow trailing semicolons but not trailing commas, so
         // just get rid of it as a special case if it's there.
-        let nextToken = parameter.nextToken();
+        let nextToken = parameter.nextSemanticToken();
         if (nextToken && nextToken.type === SourceType.SEMICOLON) {
           this.remove(nextToken.start, nextToken.end);
         }
