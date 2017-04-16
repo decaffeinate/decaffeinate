@@ -138,6 +138,14 @@ describe('objects', () => {
     `);
   });
 
+  it('does not use computed properties for number keys', () => {
+    check(`
+      { 0: 1, 3.14: 0 }
+    `, `
+      ({ 0: 1, 3.14: 0 });
+    `);
+  });
+
   it('handles quoted strings as keys', () => {
     check(`
       write 301, '', 'Location': pathname+'/'

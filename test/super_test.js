@@ -95,7 +95,7 @@ describe('super', () => {
         0: -> super
     `, `
       class A {
-        [0]() { return super[0](...arguments); }
+        0() { return super[0](...arguments); }
       }
     `);
   });

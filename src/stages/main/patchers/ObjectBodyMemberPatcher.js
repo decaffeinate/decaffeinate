@@ -61,7 +61,7 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     let computedKeyPatcher = this.getComputedKeyPatcher();
     if (computedKeyPatcher !== null) {
       // Since we're replacing an expression like `"#{foo}"` with just `foo`,
-      // the outer string expresson might be marked as repeatable, in which case
+      // the outer string expression might be marked as repeatable, in which case
       // we should delegate that to the inner expression.
       let shouldPropagateRepeatable = this.key.isSetAsRepeatableExpression();
       if (shouldPropagateRepeatable) {
@@ -76,7 +76,8 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     } else {
       let needsBrackets =
         !(this.key instanceof StringPatcher && !this.key.shouldBecomeTemplateLiteral()) &&
-        !(this.key instanceof IdentifierPatcher);
+        !(this.key instanceof IdentifierPatcher) &&
+        (this.key.node.type !== 'Int' && this.key.node.type !== 'Float');
       if (needsBrackets) {
         this.insert(this.key.outerStart, '[');
       }
