@@ -34,9 +34,11 @@ that is re-run daily.
 
 Project        | Lines of CoffeeScript | Conversion status                 | Test status
 -------------- |:---------------------:|:---------------------------------:|:---------------------------:
+[chroma.js]    | 3.3K                  | ![chromajs-conversion-status]     | ![chromajs-test-status]
 [hubot]        | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
 [autoprefixer] | 4.8K                  | ![autoprefixer-conversion-status] | ![autoprefixer-test-status]
 [coffeelint]   | 8.8K                  | ![coffeelint-conversion-status]   | ![coffeelint-test-status]
+[vimium]       | 11K                   | ![vimium-conversion-status]       | ![vimium-test-status]
 [coffeescript] | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
 [atom]         | 51K                   | ![atom-conversion-status]         | ![atom-test-status]
 [codecombat]   | 230K                  | ![codecombat-conversion-status]   | ![codecombat-test-status]
@@ -53,21 +55,27 @@ Check the [issues] page for more specific details on outstanding bugs and
 incomplete features. And, of course, you're welcome to file issues for any
 problems you run into.
 
+[chroma.js]: https://github.com/decaffeinate-examples/chroma.js
 [hubot]: https://github.com/decaffeinate-examples/hubot
 [autoprefixer]: https://github.com/decaffeinate-examples/autoprefixer
 [coffeelint]: https://github.com/decaffeinate-examples/coffeelint
+[vimium]: https://github.com/decaffeinate-examples/vimium
 [coffeescript]: https://github.com/decaffeinate-examples/coffeescript
 [atom]: https://github.com/decaffeinate-examples/atom
 [codecombat]: https://github.com/decaffeinate-examples/codecombat
 
 [decaffeinate-examples]: https://github.com/decaffeinate/decaffeinate-examples
 
+[chromajs-conversion-status]: https://decaffeinate-examples.github.io/chroma.js/conversion-status.svg
+[chromajs-test-status]: https://decaffeinate-examples.github.io/chroma.js/test-status.svg
 [hubot-conversion-status]: https://decaffeinate-examples.github.io/hubot/conversion-status.svg
 [hubot-test-status]: https://decaffeinate-examples.github.io/hubot/test-status.svg
 [autoprefixer-conversion-status]: https://decaffeinate-examples.github.io/autoprefixer/conversion-status.svg
 [autoprefixer-test-status]: https://decaffeinate-examples.github.io/autoprefixer/test-status.svg
 [coffeelint-conversion-status]: https://decaffeinate-examples.github.io/coffeelint/conversion-status.svg
 [coffeelint-test-status]: https://decaffeinate-examples.github.io/coffeelint/test-status.svg
+[vimium-conversion-status]: https://decaffeinate-examples.github.io/vimium/conversion-status.svg
+[vimium-test-status]: https://decaffeinate-examples.github.io/vimium/test-status.svg
 [coffeescript-conversion-status]: https://decaffeinate-examples.github.io/coffeescript/conversion-status.svg
 [coffeescript-test-status]: https://decaffeinate-examples.github.io/coffeescript/test-status.svg
 [atom-conversion-status]: https://decaffeinate-examples.github.io/atom/conversion-status.svg
