@@ -714,7 +714,10 @@ export default class NodePatcher {
   }
 
   /**
-   * Patch the beginning of an implicitly-returned descendant.
+   * Patch the beginning of an implicitly-returned descendant. Unlike most
+   * statements, implicitly-returned statements will not have their surrounding
+   * parens removed, so the implicit return patching may need to remove
+   * surrounding parens.
    */
   patchImplicitReturnStart(patcher: NodePatcher) {
     patcher.setRequiresExpression();

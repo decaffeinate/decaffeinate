@@ -503,4 +503,17 @@ describe('switch', () => {
       });
     `);
   });
+
+  it('handles parenthesized break in a switch statement', () => {
+    check(`
+      x = switch a
+        when b
+          (break)
+    `, `
+      let x = (() => { switch (a) {
+        case b:
+          break;
+      } })();
+    `);
+  });
 });

@@ -139,6 +139,8 @@ export default class LoopPatcher extends NodePatcher {
    */
   patchImplicitReturnStart(patcher: NodePatcher) {
     // Control flow statements like break and continue should be skipped.
+    // Unlike some other control flow statements, CoffeeScript does not allow
+    // them to be wrapped in parens, so we don't need to remove any parens here.
     if (!patcher.canPatchAsExpression()) {
       return;
     }
