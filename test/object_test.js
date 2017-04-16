@@ -465,10 +465,10 @@ describe('objects', () => {
     `, `
       ({
         a() {
-          return b;
+          return (b);
         },
         c() {
-          return d;
+          return (d);
         }
       });
     `);

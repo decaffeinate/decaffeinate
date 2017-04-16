@@ -78,15 +78,18 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   patchInnerStatement(statement) {
-    if (statement.isSurroundedByParentheses() && !statement.statementNeedsParens()) {
-      this.remove(statement.outerStart, statement.innerStart);
-      this.remove(statement.innerEnd, statement.outerEnd);
-    }
-
     let hasImplicitReturn = (
       statement.implicitlyReturns() &&
       !statement.explicitlyReturns()
     );
+
+    if (statement.isSurroundedByParentheses() &&
+        !statement.statementNeedsParens() &&
+        !hasImplicitReturn) {
+      this.remove(statement.outerStart, statement.innerStart);
+      this.remove(statement.innerEnd, statement.outerEnd);
+    }
+
     let implicitReturnPatcher = hasImplicitReturn ?
       this.implicitReturnPatcher() : null;
     if (implicitReturnPatcher) {

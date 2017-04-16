@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('functions', () => {
   it('handles functions without a body', () => {
@@ -476,5 +477,24 @@ describe('functions', () => {
         return b;
       }));
     `)
+  );
+
+  it('handles an implicit return wrapped in multiline parens', () =>
+    check(`
+      -> (
+        true
+      )
+    `, `
+      () => true;
+    `)
+  );
+
+  it('has the correct result for an implicit return wrapped in multiline parens', () =>
+    validate(`
+      f = -> (
+        true
+      )
+      o = f()
+    `, true)
   );
 });
