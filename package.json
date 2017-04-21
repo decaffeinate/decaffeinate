@@ -46,7 +46,7 @@
     "detect-indent": "^4.0.0",
     "esnext": "^3.0.13",
     "lines-and-columns": "^1.1.5",
-    "magic-string": "^0.17.0",
+    "magic-string": "^0.17.1",
     "repeating": "^2.0.0"
   },
   "engines": {
