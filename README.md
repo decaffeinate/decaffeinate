@@ -41,7 +41,10 @@ Project        | Lines of CoffeeScript | Conversion status                 | Tes
 [vimium]       | 11K                   | ![vimium-conversion-status]       | ![vimium-test-status]
 [coffeescript] | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
 [atom]         | 51K                   | ![atom-conversion-status]         | ![atom-test-status]
+[atom-org]     | 170K                  | ![atom-org-conversion-status]     | ![atom-org-test-status]
 [codecombat]   | 230K                  | ![codecombat-conversion-status]   | ![codecombat-test-status]
+
+**Project builder status:** [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate-example-builder.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate-example-builder)
 
 To contribute to this list, send a pull request to the [decaffeinate-examples]
 project.
@@ -62,6 +65,7 @@ problems you run into.
 [vimium]: https://github.com/decaffeinate-examples/vimium
 [coffeescript]: https://github.com/decaffeinate-examples/coffeescript
 [atom]: https://github.com/decaffeinate-examples/atom
+[atom-org]: https://github.com/decaffeinate-examples/atom-org
 [codecombat]: https://github.com/decaffeinate-examples/codecombat
 
 [decaffeinate-examples]: https://github.com/decaffeinate/decaffeinate-examples
@@ -80,6 +84,8 @@ problems you run into.
 [coffeescript-test-status]: https://decaffeinate-examples.github.io/coffeescript/test-status.svg
 [atom-conversion-status]: https://decaffeinate-examples.github.io/atom/conversion-status.svg
 [atom-test-status]: https://decaffeinate-examples.github.io/atom/test-status.svg
+[atom-org-conversion-status]: https://decaffeinate-examples.github.io/atom-org/conversion-status.svg
+[atom-org-test-status]: https://decaffeinate-examples.github.io/atom-org/test-status.svg
 [codecombat-conversion-status]: https://decaffeinate-examples.github.io/codecombat/conversion-status.svg
 [codecombat-test-status]: https://decaffeinate-examples.github.io/codecombat/test-status.svg
 
