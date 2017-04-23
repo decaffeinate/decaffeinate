@@ -44,6 +44,15 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.keepCommonJS = true;
         break;
 
+      case '--force-default-export':
+        baseOptions.forceDefaultExport = true;
+        break;
+
+      case '--safe-import-function-identifiers':
+        i++;
+        baseOptions.safeImportFunctionIdentifiers = args[i].split(',');
+        break;
+
       case '--prefer-const':
         baseOptions.preferConst = true;
         break;
@@ -198,6 +207,12 @@ function usage() {
   console.log();
   console.log('  -h, --help               Display this help message.');
   console.log('  --keep-commonjs          Do not convert require and module.exports to import and export.');
+  console.log('  --force-default-export   When converting to export, use a single "export default" rather ');
+  console.log('                           than trying to generate named imports where possible.');
+  console.log('  --safe-import-function-identifiers');
+  console.log('                           Comma-separated list of function names that may safely be in the ');
+  console.log('                           import/require section of the file. All other function calls ');
+  console.log('                           will disqualify later requires from being converted to imports.');
   console.log('  --prefer-const           Use the const keyword for variables when possible.');
   console.log('  --loose-default-params   Convert CS default params to JS default params.');
   console.log('  --loose-for-expressions  Do not wrap expression loop targets in Array.from.');

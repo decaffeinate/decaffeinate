@@ -22,4 +22,36 @@ describe('imports', () => {
       keepCommonJS: true
     });
   });
+
+  it('properly passes down function identifiers', () => {
+    check(`
+      x = require('x');
+      foo()
+      y = require('y');
+      bar()
+      z = require('z');
+    `, `
+      import x from 'x';
+      foo();
+      import y from 'y';
+      bar();
+      let z = require('z');
+    `, {
+      safeImportFunctionIdentifiers: ['foo']
+    });
+  });
+
+  it('allows forcing a default export', () => {
+    check(`
+      exports.a = b;
+      exports.c = d;
+    `, `
+      let defaultExport = {};
+      defaultExport.a = b;
+      defaultExport.c = d;
+      export default defaultExport;
+    `, {
+      forceDefaultExport: true
+    });
+  });
 });
