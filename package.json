@@ -44,7 +44,7 @@
     "decaffeinate-coffeescript": "1.10.0-patch22",
     "decaffeinate-parser": "^17.0.0",
     "detect-indent": "^4.0.0",
-    "esnext": "^3.0.13",
+    "esnext": "^3.1.0",
     "lines-and-columns": "^1.1.5",
     "magic-string": "^0.17.0",
     "repeating": "^2.0.0"
@@ -94,7 +94,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-    "greenkeeper": {
+  "greenkeeper": {
     "ignore": [
       "repeating",
       "magic-string",

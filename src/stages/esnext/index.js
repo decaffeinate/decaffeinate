@@ -28,8 +28,12 @@ export default class EsnextStage {
             // … starting with a capital letter.
             !/^[$_]?[A-Z]+$/.test(node.declarations[0].id.name)
           );
-        }
-      }
+        },
+      },
+      'modules.commonjs': {
+        forceDefaultExport: options.forceDefaultExport,
+        safeFunctionIdentifiers: options.safeImportFunctionIdentifiers,
+      },
     });
     return { code };
   }

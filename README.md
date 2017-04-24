@@ -105,6 +105,12 @@ problems you run into.
 
 * `--keep-commonjs`: Do not convert `require` and `module.exports` to `import`
   and `export`.
+* `--force-default-export`: When converting to `export`, use a single
+  `export default` rather than trying to generate named imports where possible.
+* `--safe-import-function-identifiers`: Comma-separated list of function names
+  that may safely be in the `import`/`require` section of the file. All other
+  function calls will disqualify later `require`s from being converted to
+  `import`s.
 * `--prefer-const`: Use `const` when possible in output code.
 * `--loose-default-params`: Convert CS default params to JS default params.
 * `--loose-for-expressions`: Do not wrap expression loop targets in `Array.from`.
