@@ -27,6 +27,19 @@ export default class TryPatcher extends NodePatcher {
     }
   }
 
+  canPatchAsExpression() {
+    if (this.body && !this.body.canPatchAsExpression()) {
+      return false;
+    }
+    if (this.catchBody && !this.catchBody.canPatchAsExpression()) {
+      return false;
+    }
+    if (this.finallyBody && !this.finallyBody.canPatchAsExpression()) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * 'try' BODY ( 'catch' ASSIGNEE? CATCH-BODY? )? ( 'finally' FINALLY-BODY )?
    */

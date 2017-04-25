@@ -359,4 +359,26 @@ describe('try', () => {
       });
     `);
   });
+
+  it('properly handles continue within try within a loop expression', () => {
+    check(`
+      x = for a in b
+        try
+          continue
+        catch error
+          continue
+    `, `
+      let x = (() => {
+        let result = [];
+        for (let a of Array.from(b)) {
+          try {
+            continue;
+          } catch (error) {
+            continue;
+          }
+        }
+        return result;
+      })();
+    `);
+  });
 });
