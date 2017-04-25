@@ -720,6 +720,13 @@ export default class NodePatcher {
    * surrounding parens.
    */
   patchImplicitReturnStart(patcher: NodePatcher) {
+    if (patcher.node.type === 'Break' || patcher.node.type === 'Continue') {
+      if (patcher.isSurroundedByParentheses()) {
+        this.remove(patcher.outerStart, patcher.innerStart);
+        this.remove(patcher.innerEnd, patcher.outerEnd);
+      }
+      return;
+    }
     patcher.setRequiresExpression();
     this.insert(patcher.outerStart, 'return ');
   }

@@ -1,5 +1,4 @@
 import NodePatcher from '../../../patchers/NodePatcher';
-import BreakPatcher from './BreakPatcher';
 import type { PatcherContext, SourceToken } from '../../../patchers/types';
 import { SourceType } from 'coffee-lex';
 
@@ -87,17 +86,6 @@ export default class SwitchPatcher extends NodePatcher {
 
   canHandleImplicitReturn(): boolean {
     return this.willPatchAsExpression();
-  }
-
-  patchImplicitReturnStart(patcher: NodePatcher) {
-    if (patcher instanceof BreakPatcher) {
-      if (patcher.isSurroundedByParentheses()) {
-        this.remove(patcher.outerStart, patcher.innerStart);
-        this.remove(patcher.innerEnd, patcher.outerEnd);
-      }
-      return;
-    }
-    super.patchImplicitReturnStart(patcher);
   }
 
   /**
