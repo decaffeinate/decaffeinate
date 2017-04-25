@@ -516,4 +516,20 @@ describe('switch', () => {
       } })();
     `);
   });
+
+  it('handles break within switch in an implicit return context', () => {
+    check(`
+      ->
+        switch a
+          when b
+            break
+    `, `
+      (function() {
+        switch (a) {
+          case b:
+            break;
+        }
+      });
+    `);
+  });
 });
