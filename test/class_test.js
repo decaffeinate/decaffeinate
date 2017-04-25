@@ -1563,4 +1563,19 @@ describe('classes', () => {
       new (A = class A {});
     `);
   });
+
+  it('handles an expression-style class ending in a comment', () => {
+    check(`
+      x = class A
+        b: ->
+          c # d
+    `, `
+      let A;
+      let x = (A = class A {
+        b() {
+          return c; // d
+        }
+      });
+    `);
+  });
 });
