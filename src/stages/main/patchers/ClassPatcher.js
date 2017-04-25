@@ -94,7 +94,7 @@ export default class ClassPatcher extends NodePatcher {
       this.body.patch({ leftBrace: false });
     }
     if (needsParens) {
-      this.insert(this.contentEnd, ')');
+      this.insert(this.innerEnd, ')');
     }
   }
 
