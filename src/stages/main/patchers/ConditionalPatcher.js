@@ -5,7 +5,7 @@ import { SourceType } from 'coffee-lex';
 
 export default class ConditionalPatcher extends NodePatcher {
   condition: NodePatcher;
-  consequent: BlockPatcher;
+  consequent: ?BlockPatcher;
   alternate: ?BlockPatcher;
 
   negated: boolean = false;
@@ -19,6 +19,20 @@ export default class ConditionalPatcher extends NodePatcher {
 
   initialize() {
     this.condition.setRequiresExpression();
+  }
+
+  /**
+   * Anything like `break`, `continue`, or `return` inside a conditional means
+   * we can't even safely make it an IIFE.
+   */
+  canPatchAsExpression(): boolean {
+    if (this.consequent && !this.consequent.canPatchAsExpression()) {
+      return false;
+    }
+    if (this.alternate && !this.alternate.canPatchAsExpression()) {
+      return false;
+    }
+    return true;
   }
 
   prefersToPatchAsExpression(): boolean {

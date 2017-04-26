@@ -381,4 +381,12 @@ describe('try', () => {
       })();
     `);
   });
+
+  it('properly handles try used as an expression', () => {
+    check(`
+      x = try throw a catch then b
+    `, `
+      let x = (() => { try { throw a; } catch (error) { return b; } })();
+    `);
+  });
 });
