@@ -8,6 +8,12 @@ import { SourceType } from 'coffee-lex';
 export default class BlockPatcher extends SharedBlockPatcher {
   canPatchAsExpression(): boolean {
     return this.statements.every(
+      statement => statement.canPatchAsExpression()
+    );
+  }
+
+  prefersToPatchAsExpression(): boolean {
+    return this.statements.every(
       statement => statement.prefersToPatchAsExpression()
     );
   }
@@ -136,6 +142,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
     } else {
       this.statements.forEach(
         (statement, i, statements) => {
+          statement.setRequiresExpression();
           statement.patch();
           if (i !== statements.length - 1) {
             let semicolonTokenIndex = this.getSemicolonSourceTokenBetween(
