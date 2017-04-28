@@ -75,7 +75,7 @@
     "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-decaffeinate": "file:eslint-rules",
     "eslint-plugin-flow-vars": "^0.5.0",
-    "flow-bin": "^0.44.0",
+    "flow-bin": "^0.45.0",
     "mkdirp": "^0.5.1",
     "mocha": "^3.0.0",
     "mversion": "^1.10.1",
