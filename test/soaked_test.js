@@ -919,4 +919,72 @@ describe('soaked expressions', () => {
       }
     `);
   });
+
+  it('handles a parenthesized soak operation within `unless`', () => {
+    check(`
+      a = {b: 1}
+      unless (a?.b)
+        c
+    `, `
+      let a = {b: 1};
+      if (!(a != null ? a.b : undefined)) {
+        c;
+      }
+    `);
+  });
+
+  it('handles a nested parenthesized soak operation within `unless`', () => {
+    check(`
+      a = {b: 1}
+      unless (a?.b.c)
+        d
+    `, `
+      let a = {b: 1};
+      if (!(a != null ? a.b.c : undefined)) {
+        d;
+      }
+    `);
+  });
+
+  it('handles a parenthesized soak operation within `until`', () => {
+    check(`
+      a = {b: 1}
+      until (a?.b)
+        c
+    `, `
+      let a = {b: 1};
+      while (!(a != null ? a.b : undefined)) {
+        c;
+      }
+    `);
+  });
+
+  it('handles a parenthesized soak operation within a negated logical operator', () => {
+    check(`
+      a = {b: 1}
+      unless c and (a?.b)
+        d
+    `, `
+      let a = {b: 1};
+      if (!c || (!(a != null ? a.b : undefined))) {
+        d;
+      }
+    `);
+  });
+
+  it('handles a parenthesized soak operation within a negated switch case', () => {
+    check(`
+      a = {b: 1}
+      switch
+        when (a?.b)
+          c
+    `, `
+      let a = {b: 1};
+      switch (false) {
+        case (!(a != null ? a.b : undefined)):
+          c;
+          break;
+      }
+    `);
+  });
 });
