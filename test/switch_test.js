@@ -532,4 +532,18 @@ describe('switch', () => {
       });
     `);
   });
+
+  it('handles a parenthesized switch case', () => {
+    check(`
+      switch a
+        when (b)
+          c
+    `, `
+      switch (a) {
+        case (b):
+          c;
+          break;
+      }
+    `);
+  });
 });

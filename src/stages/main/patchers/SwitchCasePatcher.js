@@ -25,7 +25,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     // `when a, b, c then d` → `a, b, c then d`
     //  ^^^^^
     let whenToken = this.getWhenToken();
-    this.remove(whenToken.start, this.conditions[0].contentStart);
+    this.remove(whenToken.start, this.conditions[0].outerStart);
 
     // `a, b, c then d` → `a b c then d`
     //   ^  ^
@@ -50,7 +50,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     let thenToken = this.getThenToken();
     if (thenToken) {
       if (this.consequent !== null) {
-        this.remove(thenToken.start, this.consequent.contentStart);
+        this.remove(thenToken.start, this.consequent.outerStart);
       } else {
         this.remove(thenToken.start, thenToken.end);
       }
