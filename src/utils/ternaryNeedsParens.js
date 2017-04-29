@@ -20,6 +20,9 @@ import type NodePatcher from '../patchers/NodePatcher';
  * slightly ugly code rather than incorrect code.
  */
 export default function ternaryNeedsParens(patcher: NodePatcher): boolean {
+  if (patcher.hadUnparenthesizedNegation()) {
+    return true;
+  }
   let { parent } = patcher;
   return !(
     patcher.isSurroundedByParentheses() ||

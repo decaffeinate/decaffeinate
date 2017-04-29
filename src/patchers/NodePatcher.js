@@ -1014,6 +1014,21 @@ export default class NodePatcher {
    */
   negate() {
     this.insert(this.contentStart, '!');
+    this._hadUnparenthesizedNegation = true;
+  }
+
+  /**
+   * Check if this node has been negated by simply adding a `!` to the front.
+   * In some cases, this node may be later changed into an expression that would
+   * require additional parens, e.g. a soak container being transformed into a
+   * ternary expression, so track the negation so we know to add parens if
+   * necessary.
+   *
+   * Note that most custom negate() implementations already add parens, so they
+   * don't need to return true here.
+   */
+  hadUnparenthesizedNegation() {
+    return this._hadUnparenthesizedNegation || false;
   }
 
   /**
