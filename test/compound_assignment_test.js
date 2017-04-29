@@ -264,6 +264,50 @@ describe('compound assignment', () => {
         [this.a || (this.a = 0)];
       `);
     });
+
+    it('handles negated logical compound assignments', () => {
+      check(`
+        a = 1
+        unless a ||= b
+          c
+      `, `
+        let a = 1;
+        if (!(a || (a = b))) {
+          c;
+        }
+      `);
+    });
+
+    it('handles negated exists compound assignments', () => {
+      check(`
+        a = 1
+        unless a ?= b
+          c
+      `, `
+        let a = 1;
+        if (!(a != null ? a : (a = b))) {
+          c;
+        }
+      `);
+    });
+
+    it('handles negated modulo compound assignments', () => {
+      check(`
+        a = 1
+        unless a %%= b
+          c
+      `, `
+        let a = 1;
+        if (!(a = __mod__(a, b))) {
+          c;
+        }
+        function __mod__(a, b) {
+          a = +a;
+          b = +b;
+          return (a % b + b) % b;
+        }
+      `);
+    });
   });
 
   describe('patching as statements', () => {
