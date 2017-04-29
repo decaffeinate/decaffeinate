@@ -751,4 +751,18 @@ describe('conditionals', () => {
       if (b) { a; } c;
     `);
   });
+
+  it('handles a return within a returned conditional', () => {
+    check(`
+      ->
+        return if a
+          return b
+    `, `
+      (function() {
+        if (a) {
+          return b;
+        }
+      });
+    `);
+  });
 });
