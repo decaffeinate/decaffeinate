@@ -35,5 +35,4 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
   lhsHasSoakOperation() {
     return nodeContainsSoakOperation(this.assignee.node);
   }
-
 }

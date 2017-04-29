@@ -5,9 +5,13 @@ export default class ModuloOpCompoundAssignOpPatcher extends CompoundAssignOpPat
   patchAsExpression({ needsParens=false }={}) {
     let helper = registerModHelper(this);
 
-    let shouldAddParens = needsParens && !this.isSurroundedByParentheses();
+    let shouldAddParens = this.negated ||
+      (needsParens && !this.isSurroundedByParentheses());
+    if (this.negated) {
+      this.insert(this.contentStart, '!');
+    }
     if (shouldAddParens) {
-      this.insert(this.outerStart, '(');
+      this.insert(this.contentStart, '(');
     }
 
     let assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
@@ -23,7 +27,7 @@ export default class ModuloOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     this.insert(this.expression.outerEnd, ')');
 
     if (shouldAddParens) {
-      this.insert(this.outerEnd, ')');
+      this.insert(this.contentEnd, ')');
     }
   }
 
