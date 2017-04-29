@@ -3,6 +3,7 @@ import type { PatcherContext } from './../../../patchers/types';
 
 export default class ReturnPatcher extends NodePatcher {
   expression: NodePatcher;
+  _willConvertToImplicitReturn: boolean = false;
   
   constructor(patcherContext: PatcherContext, expression: ?NodePatcher) {
     super(patcherContext);
@@ -12,7 +13,12 @@ export default class ReturnPatcher extends NodePatcher {
   initialize() {
     this.setExplicitlyReturns();
     if (this.expression !== null) {
-      this.expression.setRequiresExpression();
+      if (this.expression.canPatchAsExpression()) {
+        this.expression.setRequiresExpression();
+      } else {
+        this.expression.setImplicitlyReturns();
+        this._willConvertToImplicitReturn = true;
+      }
     }
   }
 
@@ -25,6 +31,9 @@ export default class ReturnPatcher extends NodePatcher {
 
   patchAsStatement() {
     if (this.expression) {
+      if (this._willConvertToImplicitReturn) {
+        this.remove(this.contentStart, this.expression.outerStart);
+      }
       this.expression.patch();
     }
   }
