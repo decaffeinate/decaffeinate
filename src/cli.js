@@ -6,7 +6,7 @@ import type { Readable, Writable } from 'stream';
 import type { WriteStream } from 'tty';
 import { convert } from './index';
 import type { Options } from './index';
-import { join, dirname, basename, extname } from 'path';
+import { join, dirname, basename } from 'path';
 import { stat, readdir, createReadStream, createWriteStream } from 'fs';
 
 /**
@@ -126,7 +126,10 @@ function runWithPaths(paths: Array<string>, baseOptions: Options, callback: ?((e
       else {
         pending.unshift(
           ...children
-            .filter(child => extname(child) === '.coffee')
+            .filter(child =>
+              child.endsWith('.coffee') ||
+              child.endsWith('.litcoffee') ||
+              child.endsWith('.coffee.md'))
             .map(child => join(path, child))
         );
       }
@@ -135,7 +138,11 @@ function runWithPaths(paths: Array<string>, baseOptions: Options, callback: ?((e
   }
 
   function processFile(path: string) {
-    let outputPath = join(dirname(path), basename(path, extname(path))) + '.js';
+    let filename = basename(path)
+      .replace(/\.coffee$/, '.js')
+      .replace(/\.litcoffee$/, '.js')
+      .replace(/\.coffee\.md$/, '.js');
+    let outputPath = join(dirname(path), filename);
     console.log(`${path} → ${outputPath}`);
     runWithStream(
       path,
