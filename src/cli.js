@@ -40,6 +40,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         process.exit(0);
         break;
 
+      case '--literate':
+        baseOptions.literate = true;
+        break;
+
       case '--keep-commonjs':
         baseOptions.keepCommonJS = true;
         break;
@@ -206,6 +210,7 @@ function usage() {
   console.log('OPTIONS');
   console.log();
   console.log('  -h, --help               Display this help message.');
+  console.log('  --literate               Treat the input file as Literate CoffeeScript.');
   console.log('  --keep-commonjs          Do not convert require and module.exports to import and export.');
   console.log('  --force-default-export   When converting to export, use a single "export default" rather ');
   console.log('                           than trying to generate named imports where possible.');

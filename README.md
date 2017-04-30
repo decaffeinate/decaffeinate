@@ -103,6 +103,7 @@ problems you run into.
 
 ## Options
 
+* `--literate`: Treat the input file as Literate CoffeeScript.
 * `--keep-commonjs`: Do not convert `require` and `module.exports` to `import`
   and `export`.
 * `--force-default-export`: When converting to `export`, use a single

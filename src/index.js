@@ -2,6 +2,7 @@ import { tokens } from 'decaffeinate-coffeescript';
 import AddVariableDeclarationsStage from './stages/add-variable-declarations/index';
 import SemicolonsStage from './stages/semicolons/index';
 import EsnextStage from './stages/esnext/index';
+import LiterateStage from './stages/literate/index';
 import MainStage from './stages/main/index';
 import NormalizeStage from './stages/normalize/index';
 import convertNewlines from './utils/convertNewlines';
@@ -21,6 +22,7 @@ export { PatchError };
 export type Options = {
   filename: ?string,
   runToStage: ?string,
+  literate: ?boolean,
   keepCommonJS: ?boolean,
   forceDefaultExport: ?boolean,
   safeImportFunctionIdentifiers: ?Array<string>,
@@ -37,6 +39,7 @@ export type Options = {
 const DEFAULT_OPTIONS = {
   filename: 'input.coffee',
   runToStage: null,
+  literate: false,
   keepCommonJS: false,
   forceDefaultExport: false,
   safeImportFunctionIdentifiers: [],
@@ -68,7 +71,12 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
   options = Object.assign({}, DEFAULT_OPTIONS, options);
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
+
+  let literate = options.literate ||
+    options.filename.endsWith('.litcoffee') ||
+    options.filename.endsWith('.coffee.md');
   let stages = [
+    ...(literate ? [LiterateStage] : []),
     NormalizeStage,
     MainStage,
     AddVariableDeclarationsStage,
