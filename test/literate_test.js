@@ -14,10 +14,8 @@ describe('literate mode', () => {
             if foo % 2 == 0
               foo + 1
     `, `
-      /*
-       * This is a *thing*.
-       * It doesn't do much.
-       */
+      // This is a *thing*.
+      // It doesn't do much.
       let thing = 1;
       
       // This is another thing. It's a little more interesting.
@@ -58,46 +56,44 @@ describe('literate mode', () => {
       
           exceptNow = true
     `, `
-      /*
-       * I can
-       *   indent
-       *     all that I want
-       *       and it still will be in a comment.
-       */
+      // I can
+      //   indent
+      //     all that I want
+      //       and it still will be in a comment.
       let exceptNow = true;
     `, { literate: true });
   });
 
-  it('handles a file with `###` and `*/`', () => {
+  it('handles increasing indentation across distinct code sections', () => {
     check(`
-      This won't be a multiline comment
-      because it has a ###.
+      This is a
+      multiline comment.
       
-          a = 1
+          if a
       
-      This will be a multiline comment
-      because /* is ok.
+      This is another
+      multiline comment.      
+
+            if b
       
-          b = 2
+      This is yet another
+      multiline comment.      
       
-      But this line also can't be multiline
-      because it has a */.
-      
-          c = 3
+              c
     `, `
-      // This won't be a multiline comment
-      // because it has a ###.
-      let a = 1;
+      // This is a
+      // multiline comment.
+      if (a) {
       
-      /*
-       * This will be a multiline comment
-       * because /* is ok.
-       */
-      let b = 2;
+      // This is another
+      // multiline comment.      
+        if (b) {
       
-      // But this line also can't be multiline
-      // because it has a */.
-      let c = 3;
+      // This is yet another
+      // multiline comment.      
+          c;
+        }
+      }
     `, { literate: true });
   });
 
