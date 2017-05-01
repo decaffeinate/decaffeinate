@@ -53,9 +53,9 @@ function convertCodeFromLiterate(code: string): string {
 
 /**
  * Format a comment from an array of lines, including all trailing whitespace
- * lines. Multiline comments without a star-slash or a ### are turned into block
- * comments which become JS multiline comments. Other comments become normal //
- * comments in JS.
+ * lines. All comments become normal // comments in JS, since block comments are
+ * treated specially by the CoffeeScript parser and can cause trouble if they
+ * are introduced at the wrong indentation level.
  *
  * All blank lines between the comment lines and the following code are removed,
  * which generally matches JS comment style.
@@ -68,13 +68,7 @@ function convertCommentLines(commentLines: ?Array<string>): Array<string> {
   while (commentLines.length > 0 && lineIsEmpty(commentLines[commentLines.length - 1])) {
     commentLines.pop();
   }
-
-  let fullComment = commentLines.join('\n');
-  if (commentLines.length === 1 || fullComment.includes('###') || fullComment.includes('*/')) {
-    return [...commentLines.map(line => `# ${line}`)];
-  } else {
-    return ['###', ...commentLines.map(line => `# ${line}`), '###'];
-  }
+  return commentLines.map(line => `# ${line}`);
 }
 
 function lineIsEmpty(line: string): boolean {
