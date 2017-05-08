@@ -1,2 +1,3 @@
 --compilers ts:ts-node/register,js:./test/support/babel-register.js
 --recursive
+--timeout 10000
