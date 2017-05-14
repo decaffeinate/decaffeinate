@@ -1,6 +1,7 @@
 import assert, { equal } from 'assert';
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
+import { copySync } from 'fs-extra';
 
 import stripSharedIndent from '../src/utils/stripSharedIndent';
 
@@ -195,5 +196,33 @@ describe('decaffeinate CLI', () => {
       ./test/fixtures/E → test/fixtures/E.js
     `);
     assert(existsSync('test/fixtures/E.js'));
+  });
+
+  it('properly modernizes a JS file', () => {
+    copySync('./test/fixtures/F.js', './test/fixtures/F.tmp.js');
+    runCli('test/fixtures/F.tmp.js --modernize-js', '', `
+      test/fixtures/F.tmp.js → test/fixtures/F.tmp.js
+    `);
+    let contents = readFileSync('./test/fixtures/F.tmp.js').toString();
+    assert.equal(stripSharedIndent(contents), stripSharedIndent(`
+      import path from 'path';
+      let b = 1;
+    `));
+  });
+
+  it('allows --modernize-js on stdin', () => {
+    runCli('--modernize-js', 'var a;', 'let a;');
+  });
+
+  it('discovers JS files with --modernize-js specified', () => {
+    copySync('./test/fixtures/F.js', './test/fixtures/searchDir/F.js');
+    runCli('test/fixtures/searchDir --modernize-js', '', `
+      test/fixtures/searchDir/F.js → test/fixtures/searchDir/F.js
+    `);
+    let contents = readFileSync('./test/fixtures/searchDir/F.js').toString();
+    assert.equal(stripSharedIndent(contents), stripSharedIndent(`
+      import path from 'path';
+      let b = 1;
+    `));
   });
 });

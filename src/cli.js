@@ -2,12 +2,10 @@
 /* eslint-disable no-process-exit */
 
 import PatchError from './utils/PatchError';
-import type { Readable, Writable } from 'stream';
-import type { WriteStream } from 'tty';
-import { convert } from './index';
+import { convert, modernizeJS } from './index';
 import type { Options } from './index';
 import { join, dirname, basename, extname } from 'path';
-import { stat, readdir, createReadStream, createWriteStream } from 'fs';
+import { stat, readdir, readFile, writeFile } from 'fs';
 
 /**
  * Run the script with the user-supplied arguments.
@@ -16,20 +14,22 @@ export default function run(args: Array<string>) {
   let options = parseArguments(args);
 
   if (options.paths.length) {
-    runWithPaths(options.paths, options.baseOptions);
+    runWithPaths(options.paths, options);
   } else {
-    runWithStream('stdin', process.stdin, process.stdout, options.baseOptions);
+    runWithStdio(options);
   }
 }
 
 type CLIOptions = {
   paths: Array<string>,
   baseOptions: Options,
+  modernizeJS: boolean,
 };
 
 function parseArguments(args: Array<string>): CLIOptions {
   let paths = [];
   let baseOptions = {};
+  let modernizeJS = false;
 
   for (let i = 0; i < args.length; i++) {
     let arg = args[i];
@@ -38,6 +38,10 @@ function parseArguments(args: Array<string>): CLIOptions {
       case '--help':
         usage();
         process.exit(0);
+        break;
+
+      case '--modernize-js':
+        modernizeJS = true;
         break;
 
       case '--literate':
@@ -99,13 +103,13 @@ function parseArguments(args: Array<string>): CLIOptions {
     }
   }
 
-  return { paths, baseOptions };
+  return { paths, baseOptions, modernizeJS };
 }
 
 /**
  * Run decaffeinate on the given paths, changing them in place.
  */
-function runWithPaths(paths: Array<string>, baseOptions: Options, callback: ?((errors: Array<Error>) => void)=null) {
+function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ?((errors: Array<Error>) => void)=null) {
   let errors = [];
   let pending = paths.slice();
 
@@ -126,10 +130,15 @@ function runWithPaths(paths: Array<string>, baseOptions: Options, callback: ?((e
       else {
         pending.unshift(
           ...children
-            .filter(child =>
-              child.endsWith('.coffee') ||
-              child.endsWith('.litcoffee') ||
-              child.endsWith('.coffee.md'))
+            .filter(child => {
+              if (options.modernizeJS) {
+                return child.endsWith('.js');
+              } else {
+                return child.endsWith('.coffee') ||
+                  child.endsWith('.litcoffee') ||
+                  child.endsWith('.coffee.md');
+              }
+            })
             .map(child => join(path, child))
         );
       }
@@ -141,16 +150,18 @@ function runWithPaths(paths: Array<string>, baseOptions: Options, callback: ?((e
     let extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
     let outputPath = join(dirname(path), basename(path, extension)) + '.js';
     console.log(`${path} → ${outputPath}`);
-    runWithStream(
-      path,
-      createReadStream(path, { encoding: 'utf8' }),
-      createWriteStream(outputPath, { encoding: 'utf8' }),
-      baseOptions,
-      err => {
+    readFile(path, 'utf8', (err, data) => {
+      if (err) {
+        errors.push(err);
+        processNext();
+        return;
+      }
+      let resultCode = runWithCode(path, data, options);
+      writeFile(outputPath, resultCode, err => {
         if (err) { errors.push(err); }
         processNext();
-      }
-    );
+      });
+    });
   }
 
   function processNext() {
@@ -164,41 +175,35 @@ function runWithPaths(paths: Array<string>, baseOptions: Options, callback: ?((e
   processNext();
 }
 
-/**
- * Run decaffeinate reading from input and writing to corresponding output.
- */
-function runWithStream(name: string, input: Readable, output: Writable | WriteStream,  baseOptions: Options, callback: ?((error?: ?Error) => void) = null) {
-  let error = null;
+function runWithStdio(options: CLIOptions) {
   let data = '';
-
-  input.setEncoding('utf8');
-
-  input.on('data', chunk => data += chunk);
-
-  input.on('end', () => {
-    let converted;
-    let options = Object.assign({filename: name}, baseOptions);
-    try {
-      converted = convert(data, options);
-    } catch (err) {
-      if (PatchError.detect(err)) {
-        console.error(`${name}: ${PatchError.prettyPrint(err)}`);
-        process.exit(1);
-      } else {
-        throw err;
-      }
-    }
-    if (converted) {
-      let { code } = converted;
-      output.end(code, () => {
-        if (callback) {
-          callback(error);
-        }
-      });
-    }
+  process.stdin.on('data', chunk => data += chunk);
+  process.stdin.on('end', () => {
+    let resultCode = runWithCode('stdin', data, options);
+    process.stdout.write(resultCode);
   });
+}
 
-  output.on('error', err => error = err);
+/**
+ * Run decaffeinate on the given code string and return the resulting code.
+ */
+function runWithCode(name: string, code: string, options: CLIOptions): string {
+  let baseOptions = Object.assign({filename: name}, options.baseOptions);
+  try {
+    if (options.modernizeJS) {
+      return modernizeJS(code, baseOptions).code;
+    } else {
+      return convert(code, baseOptions).code;
+    }
+  } catch (err) {
+    if (PatchError.detect(err)) {
+      console.error(`${name}: ${PatchError.prettyPrint(err)}`);
+      process.exit(1);
+      throw new Error();
+    } else {
+      throw err;
+    }
+  }
 }
 
 /**
@@ -214,6 +219,9 @@ function usage() {
   console.log('OPTIONS');
   console.log();
   console.log('  -h, --help               Display this help message.');
+  console.log('  --modernize-js           Treat the input as JavaScript and only run the');
+  console.log('                           JavaScript-to-JavaScript transforms, modifying the file(s)');
+  console.log('                           in-place.');
   console.log('  --literate               Treat the input file as Literate CoffeeScript.');
   console.log('  --keep-commonjs          Do not convert require and module.exports to import and export.');
   console.log('  --force-default-export   When converting to export, use a single "export default" rather ');
