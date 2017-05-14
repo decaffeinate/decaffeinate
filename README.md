@@ -103,6 +103,8 @@ problems you run into.
 
 ## Options
 
+* `--modernize-js`: Treat the input as JavaScript and only run the
+  JavaScript-to-JavaScript transforms, modifying the file(s) in-place.
 * `--literate`: Treat the input file as Literate CoffeeScript.
 * `--keep-commonjs`: Do not convert `require` and `module.exports` to `import`
   and `export`.

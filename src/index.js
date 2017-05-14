@@ -97,6 +97,19 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
   return result;
 }
 
+export function modernizeJS(source: string, options: ?Options={}): ConversionResult {
+  source = removeUnicodeBOMIfNecessary(source);
+  options = Object.assign({}, DEFAULT_OPTIONS, options);
+  let originalNewlineStr = detectNewlineStr(source);
+  source = convertNewlines(source, '\n');
+  let stages = [
+    EsnextStage
+  ];
+  let result = runStages(source, options, stages);
+  result.code = convertNewlines(result.code, originalNewlineStr);
+  return result;
+}
+
 function runStages(initialContent: string, options: Options, stages: Array<Stage>): ConversionResult {
   let content = initialContent;
   stages.forEach(stage => {
