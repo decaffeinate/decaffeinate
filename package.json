@@ -1,6 +1,7 @@
 {
   "name": "decaffeinate",
   "description": "Move your CoffeeScript source to modern JavaScript.",
+  "version": "0.0.0-development",
   "main": "dist/decaffeinate.js",
   "jsnext:main": "dist/decaffeinate.mjs",
   "bin": {
@@ -86,7 +87,7 @@
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-json": "^2.0.1",
     "rollup-plugin-typescript": "^0.8.1",
-    "semantic-release": "^6.3.2",
+    "semantic-release": "^6.3.6",
     "surge": "^0.19.0",
     "ts-node": "^3.0.0",
     "tslint": "^5.0.0",
