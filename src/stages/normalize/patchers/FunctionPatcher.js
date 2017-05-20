@@ -6,6 +6,7 @@ import IdentifierPatcher from './IdentifierPatcher';
 import RestPatcher from './SpreadPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import getAssigneeBindings from '../../../utils/getAssigneeBindings';
 import normalizeListItem from '../../../utils/normalizeListItem';
 import stripSharedIndent from '../../../utils/stripSharedIndent';
 
@@ -29,11 +30,15 @@ export default class FunctionPatcher extends NodePatcher {
       this.insert(this.body.contentStart, ' ');
     }
 
+    let neededExplicitBindings = [];
+
     let firstRestParamIndex = this.getFirstRestParamIndex();
     let assignments = [];
     for (let [i, parameter] of this.parameters.entries()) {
       if (firstRestParamIndex === -1 || i < firstRestParamIndex) {
-        assignments.push(...this.patchParameterAndGetAssignments(parameter));
+        let {newAssignments, newBindings} = this.patchParameterAndGetAssignments(parameter);
+        assignments.push(...newAssignments);
+        neededExplicitBindings.push(...newBindings);
       } else {
         parameter.patch();
       }
@@ -70,8 +75,20 @@ export default class FunctionPatcher extends NodePatcher {
         let paramCode = this.slice(restParamsStart, restParamsEnd);
         paramCode = this.fixGeneratedAssigneeWhitespace(paramCode);
         this.overwrite(restParamsStart, restParamsEnd, `${paramName}...`);
+        
         assignments.push(`[${paramCode}] = ${paramName}`);
+        for (let i = firstRestParamIndex; i < this.parameters.length; i++) {
+          neededExplicitBindings.push(...getAssigneeBindings(this.parameters[i].node));
+        }
       }
+    }
+
+    let uniqueExplicitBindings = [...new Set(neededExplicitBindings)];
+    // To avoid ugly code, limit the explicit `var` to cases where we're
+    // actually shadowing an outer variable.
+    uniqueExplicitBindings = uniqueExplicitBindings.filter(name => this.parent.node.scope.hasBinding(name));
+    if (uniqueExplicitBindings.length > 0) {
+      assignments.unshift(`\`var ${uniqueExplicitBindings.join(', ')};\``);
     }
 
     // If there were assignments from parameters insert them
@@ -93,9 +110,16 @@ export default class FunctionPatcher extends NodePatcher {
     }
   }
 
+  /**
+   * Produce assignments to put at the top of the function for this parameter.
+   * Also declare any variables that are assigned and need to be
+   * function-scoped, so the outer code can insert `var` declarations.
+   */
   patchParameterAndGetAssignments(parameter: NodePatcher) {
     let thisAssignments = [];
     let defaultParamAssignments = [];
+
+    let newBindings = [];
 
     // To avoid knowledge of all the details how assignments can be nested in nodes,
     // we add a callback to the function node before patching the parameters and remove it afterwards.
@@ -107,8 +131,8 @@ export default class FunctionPatcher extends NodePatcher {
       this.log(`Replacing parameter @${memberName} with ${varName}`);
       return varName;
     };
-    this.addDefaultParamAssignmentAtScopeHeader = (assigneeCode: string, initCode: string, assigneeIsValidExpression: boolean) => {
-      if (assigneeIsValidExpression) {
+    this.addDefaultParamAssignmentAtScopeHeader = (assigneeCode: string, initCode: string, assigneeNode: Node) => {
+      if (assigneeNode.type === 'Identifier' || assigneeNode.type === 'MemberAccessOp') {
         // Wrap in parens to avoid precedence issues for inline statements. The
         // parens will be removed later in normal situations.
         defaultParamAssignments.push(`(${assigneeCode} ?= ${initCode})`);
@@ -120,6 +144,7 @@ export default class FunctionPatcher extends NodePatcher {
         let paramName = this.claimFreeBinding('param');
         defaultParamAssignments.push(`(${paramName} ?= ${initCode})`);
         defaultParamAssignments.push(`${assigneeCode} = ${paramName}`);
+        newBindings.push(...getAssigneeBindings(assigneeNode));
         return paramName;
       }
     };
@@ -129,7 +154,10 @@ export default class FunctionPatcher extends NodePatcher {
     delete this.addDefaultParamAssignmentAtScopeHeader;
     delete this.addThisAssignmentAtScopeHeader;
 
-    return [...defaultParamAssignments, ...thisAssignments];
+    return {
+      newAssignments: [...defaultParamAssignments, ...thisAssignments],
+      newBindings,
+    };
   }
 
   /**
