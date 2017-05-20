@@ -231,7 +231,7 @@ describe('conditionals', () => {
     check(`a(if b then c: d)`, `a(b ? {c: d} : undefined);`);
   });
 
-  it('turns multi-line `if` into a ternary with sequence expressions', () => {
+  it('turns multi-line `if` into an IIFE with statements', () => {
     check(`
       ->
         z(if a
@@ -241,15 +241,17 @@ describe('conditionals', () => {
           d = a
           a - d)
     `, `
-      (function() {
-        let c, d;
-        return z(a ?
-          ((c = a),
-          a + c)
-        :
-          ((d = a),
-          a - d));
-      });
+      () =>
+        z((() => {
+          if (a) {
+          let c = a;
+          return a + c;
+        } else {
+          let d = a;
+          return a - d;
+        }
+        })())
+      ;
     `);
   });
 

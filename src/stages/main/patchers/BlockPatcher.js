@@ -13,9 +13,8 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   prefersToPatchAsExpression(): boolean {
-    return this.statements.every(
-      statement => statement.prefersToPatchAsExpression()
-    );
+    return this.statements.length === 0 ||
+      (this.statements.length === 1 &&  this.statements[0].prefersToPatchAsExpression());
   }
 
   setExpression(force=false): boolean {

@@ -1268,8 +1268,12 @@ describe('for loops', () => {
     check(`
       x = (a for [a = 1] in b)
     `, `
-      let a, val;
-      let x = (Array.from(b).map((value) => ((val = value[0], a = val != null ? val : 1, value), a)));
+      let x = ((() => {
+        let result = [];
+        for (let value of Array.from(b)) {     let val = value[0], a = val != null ? val : 1; result.push(a);
+        }
+        return result;
+      })());
     `);
   });
 
@@ -1388,6 +1392,34 @@ describe('for loops', () => {
       (a; break) for b in c
     `, `
       for (let b of Array.from(c)) { a; break; }
+    `);
+  });
+
+  it('generates an IIFE rather than a comma expression for a multi-statement expression loop', () => {
+    check(`
+      loadScripts = ->
+        for path in Options.scripts
+          if path[0] == '/'
+            scriptsPath = path
+          else
+            scriptsPath = Path.resolve ".", path
+          robot.load scriptsPath
+    `, `
+      let loadScripts = () =>
+        (() => {
+          let result = [];
+          for (let path of Array.from(Options.scripts)) {
+            var scriptsPath;
+            if (path[0] === '/') {
+              scriptsPath = path;
+            } else {
+              scriptsPath = Path.resolve(".", path);
+            }
+            result.push(robot.load(scriptsPath));
+          }
+          return result;
+        })()
+      ;
     `);
   });
 });
