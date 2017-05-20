@@ -300,6 +300,7 @@ describe('function calls', () => {
           _authenticate(authKey, cb) {
             return this._getSession(authKey, function(err, param) {
                 let org, person, user;
+                let authKey;
                 if (param == null) { param = {}; }
                 ({person, user, authKey, org} = param);
                 return cb(null, {person, authKey, user, org});

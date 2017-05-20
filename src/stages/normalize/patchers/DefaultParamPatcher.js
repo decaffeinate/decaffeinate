@@ -1,8 +1,6 @@
 import AssignOpPatcher from './AssignOpPatcher';
 import DoOpPatcher from './DoOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
-import IdentifierPatcher from './IdentifierPatcher';
-import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
 
 export default class DefaultParamPatcher extends PassthroughPatcher {
@@ -28,10 +26,7 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
       if (callback) {
         let paramCode = this.slice(this.param.contentStart, this.param.contentEnd);
         let valueCode = this.slice(this.value.contentStart, this.value.contentEnd);
-        let assigneeIsValidExpression = this.param instanceof IdentifierPatcher ||
-          this.param instanceof MemberAccessOpPatcher;
-
-        let newParamCode = callback(paramCode, valueCode, assigneeIsValidExpression);
+        let newParamCode = callback(paramCode, valueCode, this.param.node);
         this.overwrite(this.param.contentStart, this.param.contentEnd, newParamCode);
         this.remove(this.param.outerEnd, this.value.outerEnd);
       }

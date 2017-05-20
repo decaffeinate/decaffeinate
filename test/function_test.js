@@ -497,4 +497,23 @@ describe('functions', () => {
       o = f()
     `, true)
   );
+
+  it('does not overwrite outer variables when doing parameter array destructuring', () =>
+    validate(`
+      x = 'original'
+      f = ([x]) -> x
+      f(['new'])
+      o = x
+    `, 'original')
+  );
+
+  it('does not overwrite outer variables when doing parameter object destructuring', () =>
+    validate(`
+      a = 1
+      f = ({a} = {a: 2}) ->
+        return
+      f({a: 3})
+      o = a
+    `, 1)
+  );
 });
