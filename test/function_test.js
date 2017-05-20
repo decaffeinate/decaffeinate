@@ -118,8 +118,8 @@ describe('functions', () => {
     `);
   });
 
-  it('wraps the body of fat arrow functions if the body is a sequence', () => {
-    check(`=> a; b`, `() => (a, b);`);
+  it('uses curly braces for fat arrow functions if the body is a sequence', () => {
+    check(`=> a; b`, `() => { a; return b; };`);
   });
 
   it('unwraps single-parameter fat arrow functions', () => {
