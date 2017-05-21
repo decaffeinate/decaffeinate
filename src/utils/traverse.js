@@ -16,8 +16,10 @@ export default function traverse(node: Node, callback: (node: Node, descend: (no
       let value = parent[property];
       if (Array.isArray(value)) {
         value.forEach(child => {
-          child.parentNode = parent;
-          traverse(child, callback);
+          if (child) {
+            child.parentNode = parent;
+            traverse(child, callback);
+          }
         });
       } else if (value) {
         value.parentNode = parent;

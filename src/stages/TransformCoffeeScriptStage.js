@@ -68,7 +68,7 @@ export default class TransformCoffeeScriptStage {
         return null;
       } else if (Array.isArray(child)) {
         return child.map(item =>
-          this.patcherForNode(item, constructor, name)
+          item ? this.patcherForNode(item, constructor, name) : null
         );
       } else {
         return this.patcherForNode(child, constructor, name);

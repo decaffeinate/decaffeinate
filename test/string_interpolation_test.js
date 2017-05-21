@@ -147,4 +147,28 @@ describe('string interpolation', () => {
       \`;
     `);
   });
+
+  it('handles empty string interpolations', () => {
+    check(`
+      "a#{}b"
+    `, `
+      \`ab\`;
+    `);
+  });
+
+  it('handles empty heregex interpolations', () => {
+    check(`
+      ///a#{}b///
+    `, `
+      new RegExp(\`ab\`);
+    `);
+  });
+
+  it('handles lone empty string interpolations', () => {
+    check(`
+      "#{}"
+    `, `
+      \`\`;
+    `);
+  });
 });
