@@ -7,7 +7,7 @@ import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespa
 
 export default class InterpolatedPatcher extends NodePatcher {
   quasis: Array<NodePatcher>;
-  expressions: Array<NodePatcher>;
+  expressions: Array<?NodePatcher>;
 
   constructor(patcherContext: PatcherContext, quasis: Array<NodePatcher>, expressions: Array<NodePatcher>) {
     super(patcherContext);
@@ -17,21 +17,28 @@ export default class InterpolatedPatcher extends NodePatcher {
 
   initialize() {
     for (let expression of this.expressions) {
-      expression.setRequiresExpression();
+      if (expression) {
+        expression.setRequiresExpression();
+      }
     }
   }
 
   patchInterpolations() {
     for (let i = 0; i < this.expressions.length; i++) {
       let interpolationStart = this.getInterpolationStartTokenAtIndex(i);
-      this.overwrite(interpolationStart.start, interpolationStart.start + 1, '$');
-      this.expressions[i].patch();
+      if (this.expressions[i]) {
+        this.overwrite(interpolationStart.start, interpolationStart.start + 1, '$');
+        this.expressions[i].patch();
+      } else {
+        let interpolationEndIndex = this.quasis[i + 1].contentStart;
+        this.remove(interpolationStart.start, interpolationEndIndex);
+      }
     }
   }
 
   getInterpolationStartTokenAtIndex(index: number): SourceToken {
-    let interpolationStartIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.quasis[index], this.expressions[index], token => token.type === SourceType.INTERPOLATION_START
+    let interpolationStartIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      this.quasis[index].contentEnd, this.contentEnd, token => token.type === SourceType.INTERPOLATION_START
     );
     if (!interpolationStartIndex) {
       this.error('Cannot find interpolation start for string interpolation.');
