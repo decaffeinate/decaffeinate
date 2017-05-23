@@ -71,7 +71,7 @@ export default class SlicePatcher extends NodePatcher {
           if (this.slice(right.contentStart, right.contentStart + 1) === '+') {
             this.insert(slice.end, ' ');
           }
-          right.patch();
+          right.patch({ needsParens: true });
           this.insert(right.outerEnd, ' + 1 || undefined');
         }
       } else {
@@ -133,7 +133,7 @@ export default class SlicePatcher extends NodePatcher {
       // `a.splice(b..c]` → `a.splice(b, c]`
       //                               ^^
       this.overwrite(slice.start, slice.end, ', ');
-      right.patch();
+      right.patch({ needsParens: true });
       if (leftCode !== '0') {
         // `a.splice(b, c]` → `a.splice(b, c - b]`
         //                                  ^^^^
