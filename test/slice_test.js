@@ -167,4 +167,27 @@ describe('slice', () => {
       o[1...3] = 'Hello';
     `, ['a', 'Hello', 'd']);
   });
+
+  it('respects precedence on slice ranges', () => {
+    check(`
+      a[b..c or d]
+    `, `
+      a.slice(b, +(c || d) + 1 || undefined);
+    `);
+  });
+
+  it('respects precedence on splice ranges', () => {
+    check(`
+      a[b..c or d] = e
+    `, `
+      a.splice(b, (c || d) - b + 1, ...[].concat(e));
+    `);
+  });
+
+  it('behaves properly when there is a logical operator in a slice range', () => {
+    validate(`
+      a = [1..4]
+      o = a[..2 or 3]
+    `, [1, 2, 3]);
+  });
 });
