@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('regular expressions', () => {
   it('passes regular expressions through as-is', () => {
@@ -127,6 +128,20 @@ describe('regular expressions', () => {
       `, `
       new RegExp(\`\\u2029\`);
     `);
+  });
+
+  it('handles \\0 within heregexes', () => {
+    check(`
+      ///\\0///
+      `, `
+      new RegExp(\`\\\\x00\`);
+    `);
+  });
+
+  it('behaves correctly with \\0 within heregexes', () => {
+    validate(`
+      o = ///\\0 1///.test '\x001'
+      `, true);
   });
 
   it('handles a double backslash followed by a space', () => {

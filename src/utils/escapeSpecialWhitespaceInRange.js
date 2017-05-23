@@ -11,7 +11,7 @@ function isAlreadyEscaped(i: number, start: number, patcher: NodePatcher): boole
   return numLeadingBackslashes % 2 === 1;
 }
 
-export default function exportSpecialWhitespaceInRange(start: number, end: number, patcher: NodePatcher) {
+export default function escapeSpecialWhitespaceInRange(start: number, end: number, patcher: NodePatcher) {
   for (let i = start; i < end; i++) {
     let unicodeSequence = null;
     if (patcher.context.source[i] === '\u2028') {

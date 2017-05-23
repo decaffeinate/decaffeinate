@@ -4,6 +4,7 @@ import repeat from 'repeating';
 import NodePatcher from './../../../patchers/NodePatcher';
 import escape from '../../../utils/escape';
 import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespaceInRange';
+import escapeZeroCharsInRange from '../../../utils/escapeZeroCharsInRange';
 
 export default class InterpolatedPatcher extends NodePatcher {
   quasis: Array<NodePatcher>;
@@ -77,9 +78,16 @@ export default class InterpolatedPatcher extends NodePatcher {
           this.insert(token.start, ' \\');
         } else if (token.type === SourceType.STRING_CONTENT) {
           escapeSpecialWhitespaceInRange(token.start, token.end, this);
+          if (this.shouldExcapeZeroChars()) {
+            escapeZeroCharsInRange(token.start, token.end, this);
+          }
         }
       }
     }
+  }
+
+  shouldExcapeZeroChars() {
+    return false;
   }
 
   escapeQuasis(skipPattern, escapeStrings) {
