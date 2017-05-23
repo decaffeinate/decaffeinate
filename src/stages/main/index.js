@@ -20,6 +20,7 @@ import ExistsOpCompoundAssignOpPatcher from './patchers/ExistsOpCompoundAssignOp
 import ExistsOpPatcher from './patchers/ExistsOpPatcher';
 import ExpansionPatcher from './patchers/ExpansionPatcher';
 import ExtendsOpPatcher from './patchers/ExtendsOpPatcher';
+import FloorDivideOpCompoundAssignOpPatcher from './patchers/FloorDivideOpCompoundAssignOpPatcher';
 import FloorDivideOpPatcher from './patchers/FloorDivideOpPatcher';
 import ForInPatcher from './patchers/ForInPatcher';
 import ForOfPatcher from './patchers/ForOfPatcher';
@@ -184,6 +185,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
           case 'ModuloOp':
             return ModuloOpCompoundAssignOpPatcher;
+
+          case 'FloorDivideOp':
+            return FloorDivideOpCompoundAssignOpPatcher;
 
           default:
             return CompoundAssignOpPatcher;

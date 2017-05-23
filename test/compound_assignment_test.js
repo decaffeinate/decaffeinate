@@ -42,6 +42,31 @@ describe('compound assignment', () => {
     `);
   });
 
+  it('handles compound floor division assignment', () => {
+    check(`
+      a //= b
+    `, `
+      var a = Math.floor(a / b);
+    `);
+  });
+
+  it('handles precedence for floor division assignment', () => {
+    check(`
+      a //= b + c
+    `, `
+      var a = Math.floor(a / (b + c));
+    `);
+  });
+
+  it('handles a repeated LHS in floor division assignment', () => {
+    check(`
+      a[b()] //= c
+    `, `
+      let name;
+      a[name = b()] = Math.floor(a[name] / c);
+    `);
+  });
+
   it('handles compound modulo assignment with a non-repeatable LHS', () => {
     check(`
       a[b()] %%= c
