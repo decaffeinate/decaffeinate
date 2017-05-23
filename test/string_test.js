@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('strings', () => {
   it('changes single-line triple-double-quotes to double-quotes', () => {
@@ -151,5 +152,14 @@ describe('strings', () => {
       `, `
       '\\\\\\u2028';
     `);
+  });
+
+  it('handles \\0 followed by a number', () => {
+    validate(`
+      o = '
+        \\0\\
+        1
+      '
+      `, '\x001');
   });
 });
