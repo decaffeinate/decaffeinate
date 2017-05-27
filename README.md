@@ -32,19 +32,30 @@ Here are some popular open source CoffeeScript projects and their current status
 when run through decaffeinate. Each project has a decaffeinate-specific fork
 that is re-run daily.
 
-Project        | Lines of CoffeeScript | Conversion status                 | Test status
--------------- |:---------------------:|:---------------------------------:|:---------------------------:
-[chroma.js]    | 3.3K                  | ![chromajs-conversion-status]     | ![chromajs-test-status]
-[hubot]        | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
-[autoprefixer] | 4.8K                  | ![autoprefixer-conversion-status] | ![autoprefixer-test-status]
-[coffeelint]   | 8.8K                  | ![coffeelint-conversion-status]   | ![coffeelint-test-status]
-[vimium]       | 11K                   | ![vimium-conversion-status]       | ![vimium-test-status]
-[coffeescript] | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
-[atom]         | 51K                   | ![atom-conversion-status]         | ![atom-test-status]
-[atom-org]     | 170K                  | ![atom-org-conversion-status]     | ![atom-org-test-status]
-[codecombat]   | 230K                  | ![codecombat-conversion-status]   | ![codecombat-test-status]
+Project                                                  | Lines of CoffeeScript | Conversion status                 | Test status                 
+-------------------------------------------------------- |:---------------------:|:---------------------------------:|:---------------------------:
+[chroma.js]                                              | 3.3K                  | ![chromajs-conversion-status]     | ![chromajs-test-status]
+[hubot]                                                  | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
+[autoprefixer][autoprefixer] [\[1\]](#autoprefixer-note) | 4.8K                  | ![autoprefixer-conversion-status] | ![autoprefixer-test-status]
+[coffeelint]                                             | 8.8K                  | ![coffeelint-conversion-status]   | ![coffeelint-test-status]
+[vimium]                                                 | 11K                   | ![vimium-conversion-status]       | ![vimium-test-status]
+[coffeescript][coffeescript] [\[2\]](#coffeescript-note) | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
+[atom]                                                   | 51K                   | ![atom-conversion-status]         | ![atom-test-status]
+[atom-org]                                               | 170K                  | ![atom-org-conversion-status]     | ![atom-org-test-status]
+[codecombat]                                             | 230K                  | ![codecombat-conversion-status]   | ![codecombat-test-status]
 
 **Project builder status:** [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate-example-builder.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate-example-builder)
+
+**Notes:**
+1. <span id='autoprefixer-note' />
+
+   autoprefixer has fully moved to JavaScript via decaffeinate.
+   This build runs on the last commit before the switch to JS.
+2. <span id='coffeescript-note' />
+
+   Some CoffeeScript tests are disabled because they are difficult to fix and
+   test cases that do not seem to come up in real-world code. See
+   [How decaffeinate approaches correctness][correctness-issues] for full details.
 
 To contribute to this list, send a pull request to the [decaffeinate-examples]
 project.
@@ -132,3 +143,4 @@ For more usage details, see the output of `decaffeinate --help`.
 [bulk-decaffeinate]: https://github.com/decaffeinate/bulk-decaffeinate
 [issues]: https://github.com/decaffeinate/decaffeinate/issues
 [conversion-guide]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md
+[correctness-issues]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/correctness-issues.md
