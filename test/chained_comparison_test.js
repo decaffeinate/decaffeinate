@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('chained comparison', () => {
   it('repeats the middle operand when it is safe', () => {
@@ -134,5 +135,11 @@ describe('chained comparison', () => {
     `, `
       (a === b) === c && c === d && d === e;
     `);
+  });
+
+  it('obeys operator precedence with chained comparison ops', () => {
+    validate(`
+      o = 1 | 2 < 3 < 4
+    `, 1);
   });
 });

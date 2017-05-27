@@ -24,10 +24,15 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
     }
   }
 
-  patchAsExpression() {
+  patchAsExpression({ needsParens=false }={}) {
     let negateEntireExpression = this.shouldNegateEntireExpression();
+    let addParens = negateEntireExpression ||
+      (needsParens && !this.isSurroundedByParentheses());
     if (negateEntireExpression) {
-      this.insert(this.contentStart, '!(');
+      this.insert(this.contentStart, '!');
+    }
+    if (addParens) {
+      this.insert(this.contentStart, '(');
     }
 
     let middle = this.getMiddleOperands();
@@ -61,7 +66,7 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
       );
     }
 
-    if (negateEntireExpression) {
+    if (addParens) {
       this.insert(this.contentEnd, ')');
     }
   }
