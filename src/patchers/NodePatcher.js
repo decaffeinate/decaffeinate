@@ -30,7 +30,7 @@ export default class NodePatcher {
   outerEndTokenIndex: SourceTokenListIndex;
 
   adjustedIndentLevel: number = 0;
-  yielding: boolean = false;
+  _containsYield: boolean = false;
 
   constructor({node, context, editor, options}: PatcherContext) {
     this.log = logger(this.constructor.name);
@@ -1280,13 +1280,13 @@ export default class NodePatcher {
   }
 
   patchInIIFE(innerPatchFn: () => void) {
-    if (this.yielding) {
+    if (this.containsYield()) {
       this.insert(this.innerStart, 'yield* (function*() {');
     } else {
       this.insert(this.innerStart, '(() => {');
     }
     innerPatchFn();
-    if (this.yielding) {
+    if (this.containsYield()) {
       if (this.referencesArguments()) {
         this.insert(this.innerEnd, '}).apply(this, arguments)');
       } else {
@@ -1297,11 +1297,22 @@ export default class NodePatcher {
     }
   }
 
+  /**
+   * Call to indicate that this node yields.
+   */
   yields() {
-    this.yielding = true;
+    this._containsYield = true;
     if (this.parent && !isFunction(this.parent.node)) {
       this.parent.yields();
     }
+  }
+
+  /**
+   * Determine if this node or one of its children within the function is a
+   * yield statement.
+   */
+  containsYield() {
+    return this._containsYield;
   }
 
   /**
