@@ -1422,4 +1422,21 @@ describe('for loops', () => {
       ;
     `);
   });
+
+  it('does not use map when the body contains a yield statement', () => {
+    check(`
+      ->
+        yield i for i in [3..4]
+    `, `
+      (function*() {
+        return yield* (function*() {
+          let result = [];
+          for (let i = 3; i <= 4; i++) {
+            result.push(yield i);
+          }
+          return result;
+        }).call(this);
+      });
+    `);
+  });
 });

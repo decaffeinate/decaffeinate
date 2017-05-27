@@ -106,6 +106,9 @@ export default class ForInPatcher extends ForPatcher {
     if (this.filter !== null && this.keyAssignee !== null) {
       return false;
     }
+    if (this.body.containsYield() || (this.filter && this.filter.containsYield())) {
+      return false;
+    }
     return true;
   }
 
