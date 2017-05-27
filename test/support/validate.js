@@ -2,7 +2,7 @@ import * as babel from 'babel-core';
 import * as vm from 'vm';
 import { compile } from 'decaffeinate-coffeescript';
 import { convert, PatchError } from '../../src/index';
-import { deepEqual } from 'assert';
+import { deepStrictEqual } from 'assert';
 
 /**
  * validate takes coffee-script as input with code that sets the variable
@@ -37,7 +37,9 @@ function runCodeAndExtract(source: string) {
   if (sandbox.o === o) {
     throw new Error(`expected running code to change 'o', but it is unchanged`);
   }
-  return sandbox.o;
+  // Reconstruct the object so that array and object prototypes pass the
+  // identity equality check from deepStrictEqual.
+  return JSON.parse(JSON.stringify(sandbox.o));
 }
 
 function runValidation(source: string, expectedOutput: ?any) {
@@ -48,7 +50,7 @@ function runValidation(source: string, expectedOutput: ?any) {
   let coffeeOutput = runCodeAndExtract(coffeeES5);
   let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
   try {
-    deepEqual(decaffeinateOutput, coffeeOutput);
+    deepStrictEqual(decaffeinateOutput, coffeeOutput);
   } catch (err) {
     // add some additional context for debugging
     err.message = `Additional Debug:
@@ -70,6 +72,6 @@ ${err.message}`;
   }
 
   if (expectedOutput !== undefined) {
-    deepEqual(decaffeinateOutput, expectedOutput);
+    deepStrictEqual(decaffeinateOutput, expectedOutput);
   }
 }

@@ -140,8 +140,8 @@ describe('soaked expressions', () => {
     it('skips soaked function invocations on non-functions', () => {
       validate(`
         f = 3
-        o = f?()
-      `, undefined);
+        o = '' + f?()
+      `, 'undefined');
     });
 
     it('properly sets this in soaked method calls', () => {
@@ -459,8 +459,8 @@ describe('soaked expressions', () => {
     it('correctly handles missing soaked access', () => {
       validate(`
         a = {b: null}
-        o = a.b?.c
-      `, undefined);
+        o = '' + a.b?.c
+      `, 'undefined');
     });
 
     it('correctly handles dynamic soaked access', () => {
@@ -473,15 +473,15 @@ describe('soaked expressions', () => {
     it('correctly handles missing dynamic soaked access', () => {
       validate(`
         a = {b: null}
-        o = a.b?['c']
-      `, undefined);
+        o = '' + a.b?['c']
+      `, 'undefined');
     });
 
     it('stops evaluating the expression when hitting a soak failure', () => {
         validate(`
         a = {b: 5}
-        o = a.d?.e.f()
-      `, undefined);
+        o = '' + a.d?.e.f()
+      `, 'undefined');
     });
 
     it('skips assignment when a soak fails', () => {
