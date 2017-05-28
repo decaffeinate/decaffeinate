@@ -702,7 +702,7 @@ describe('for loops', () => {
     validate(`
       sum = (arr) ->
         arr.reduce (a, b) -> a + b
-      o = sum(3*x + i + 1 for x, i in [2, 5, 8])
+      setResult(sum(3*x + i + 1 for x, i in [2, 5, 8]))
     `, 51);
   });
 

@@ -133,14 +133,14 @@ describe('soaked expressions', () => {
     it('evaluates soaked function calls', () => {
       validate(`
         f = -> 3
-        o = f?()
+        setResult(f?())
       `, 3);
     });
 
     it('skips soaked function invocations on non-functions', () => {
       validate(`
         f = 3
-        o = '' + f?()
+        setResult('' + f?())
       `, 'undefined');
     });
 
@@ -153,6 +153,7 @@ describe('soaked expressions', () => {
               o = true
         }
         a.b?()
+        setResult(o)
       `, true);
     });
 
@@ -167,6 +168,7 @@ describe('soaked expressions', () => {
               o = true
         }
         a.b()
+        setResult(o)
       `, true);
     });
 
@@ -179,6 +181,7 @@ describe('soaked expressions', () => {
               o = true
         }
         a['b']?()
+        setResult(o)
       `, true);
     });
   });
@@ -452,35 +455,35 @@ describe('soaked expressions', () => {
     it('correctly handles normal soaked access', () => {
       validate(`
         a = {b: 5}
-        o = a?.b
+        setResult(a?.b)
       `, 5);
     });
 
     it('correctly handles missing soaked access', () => {
       validate(`
         a = {b: null}
-        o = '' + a.b?.c
+        setResult('' + a.b?.c)
       `, 'undefined');
     });
 
     it('correctly handles dynamic soaked access', () => {
       validate(`
         a = {b: 5}
-        o = a?['b']
+        setResult(a?['b'])
       `, 5);
     });
 
     it('correctly handles missing dynamic soaked access', () => {
       validate(`
         a = {b: null}
-        o = '' + a.b?['c']
+        setResult('' + a.b?['c'])
       `, 'undefined');
     });
 
     it('stops evaluating the expression when hitting a soak failure', () => {
         validate(`
         a = {b: 5}
-        o = '' + a.d?.e.f()
+        setResult('' + a.d?.e.f())
       `, 'undefined');
     });
 
@@ -491,7 +494,7 @@ describe('soaked expressions', () => {
         z = {}
         y?.a = x++
         z?.a = x++
-        o = x
+        setResult(x)
       `, 2);
     });
   });
@@ -763,7 +766,7 @@ describe('soaked expressions', () => {
   it('has the correct runtime behavior with a soak operation inside a ternary', () => {
     validate(`
       a = {b: 'should not return'}
-      o = if a?.b then 'should return'
+      setResult(if a?.b then 'should return')
     `, 'should return');
   });
 

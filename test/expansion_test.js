@@ -294,7 +294,7 @@ describe('expansion', () => {
     validate(`
       arr = [1, 2, 3, 4, 5, 6]
       [a, [b, c..., d]..., e] = arr
-      o = a + b + d + e + c.length
+      setResult(a + b + d + e + c.length)
     `, 16);
   });
 
@@ -302,7 +302,7 @@ describe('expansion', () => {
     validate(`
       arr = {length: 1, 0: 'Hello'}
       [value] = arr
-      o = value
+      setResult(value)
     `, 'Hello');
   });
 
@@ -310,7 +310,7 @@ describe('expansion', () => {
     validate(`
       arr = {length: 1, 0: 'World'}
       [[value]] = [arr]
-      o = value
+      setResult(value)
     `, 'World');
   });
 
@@ -318,13 +318,13 @@ describe('expansion', () => {
     validate(`
       arr = {length: 2, 0: 'Hello', 1: 'World'}
       [..., secondWord] = arr
-      o = secondWord
+      setResult(secondWord)
     `, 'World');
   });
 
   it('allows an empty destructure', () => {
     validate(`
-      o = ([] = 3)
+      setResult([] = 3)
     `, 3);
   });
 
@@ -346,7 +346,7 @@ describe('expansion', () => {
     validate(`
       b = [1, 2, 3]
       c = [a] = b
-      o = b == c
+      setResult(b == c)
     `, true);
   });
 
@@ -354,13 +354,14 @@ describe('expansion', () => {
     validate(`
       a = [1]
       o = [[]] = a
+      setResult(o)
     `, [1]);
   });
 
   it('does not generate crashing code when doing a destructure on undefined', () => {
     validate(`
       {} = undefined
-      o = true
+      setResult(true)
     `, true);
   });
 

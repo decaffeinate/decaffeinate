@@ -25,7 +25,7 @@ function generateThreeLineTests(strings) {
 function runAssignmentTest(quote, string) {
   validate(
 `testVariable = "test variable"
-o=${quote}${string}${quote}`);
+setResult(${quote}${string}${quote})`);
 }
 
 function runFunctionTest(quote, string) {
@@ -33,7 +33,7 @@ function runFunctionTest(quote, string) {
 `runTest = () ->
   testVariable = "test variable"
   return ${quote}${string}${quote}
-o = runTest()`);
+setResult(runTest())`);
 }
 
 describe('string integration', function() {

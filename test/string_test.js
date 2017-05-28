@@ -156,10 +156,10 @@ describe('strings', () => {
 
   it('handles \\0 followed by a number', () => {
     validate(`
-      o = '
+      setResult('
         \\0\\
         1
-      '
+      ')
       `, '\x001');
   });
 });

@@ -139,7 +139,7 @@ describe('chained comparison', () => {
 
   it('obeys operator precedence with chained comparison ops', () => {
     validate(`
-      o = 1 | 2 < 3 < 4
+      setResult(1 | 2 < 3 < 4)
     `, 1);
   });
 });
