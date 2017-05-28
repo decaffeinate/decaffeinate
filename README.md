@@ -47,12 +47,10 @@ Project                                                  | Lines of CoffeeScript
 **Project builder status:** [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate-example-builder.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate-example-builder)
 
 **Notes:**
-1. <span id='autoprefixer-note' />
-
+1. <span id='autoprefixer-note'></span>
    autoprefixer has fully moved to JavaScript via decaffeinate.
    This build runs on the last commit before the switch to JS.
-2. <span id='coffeescript-note' />
-
+2. <span id='coffeescript-note'></span>
    Some CoffeeScript tests are disabled because they are difficult to fix and
    test cases that do not seem to come up in real-world code. See
    [How decaffeinate approaches correctness][correctness-issues] for full details.
