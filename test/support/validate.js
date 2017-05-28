@@ -2,18 +2,21 @@ import * as babel from 'babel-core';
 import * as vm from 'vm';
 import { compile } from 'decaffeinate-coffeescript';
 import { convert, PatchError } from '../../src/index';
-import { deepStrictEqual } from 'assert';
+import assertDeepEqual from './assertDeepEqual';
 
 /**
- * validate takes coffee-script as input with code that sets the variable
- * 'o'. The coffee-script is run through two different transform paths:
+ * validate takes coffee-script as input with code that calls the setResult
+ * function. The coffee-script is run through two different transform paths:
  *
  * 1) source input -> coffee-script -> ES5
  * 2) source input -> decaffeinate -> ES6 -> babel -> ES5
  *
- * The ES5 from both paths is run in a sandbox and then the 'o' variable
- * from the scope of each sandbox is compared. If the output is the same
- * then the test has passed.
+ * The ES5 from both paths is run in a sandbox and then the setResult argument
+ * from each case is compared. If the output is the same then the test has
+ * passed.
+ *
+ * In addition, on node >= 6, we run the ES6 code directly to make sure it gives
+ * the same result, to avoid behavior differences with babel.
  *
  * Optionally, expectedOutput can be specified. If it is, the the result of the
  * 'o' variable must be equal to that value.
@@ -30,16 +33,20 @@ export default function validate(source: string, expectedOutput: ?any) {
 }
 
 function runCodeAndExtract(source: string) {
-  let o = {};
-  let sandbox = { o };
+  let result = null;
+  let numCalls = 0;
+  let sandbox = {
+    setResult(r) {
+      result = r;
+      numCalls++;
+    }
+  };
   vm.createContext(sandbox);
   vm.runInContext(source, sandbox);
-  if (sandbox.o === o) {
-    throw new Error(`expected running code to change 'o', but it is unchanged`);
+  if (numCalls !== 1) {
+    throw new Error(`expected setResult to be called exactly once`);
   }
-  // Reconstruct the object so that array and object prototypes pass the
-  // identity equality check from deepStrictEqual.
-  return JSON.parse(JSON.stringify(sandbox.o));
+  return result;
 }
 
 function runValidation(source: string, expectedOutput: ?any) {
@@ -50,7 +57,7 @@ function runValidation(source: string, expectedOutput: ?any) {
   let coffeeOutput = runCodeAndExtract(coffeeES5);
   let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
   try {
-    deepStrictEqual(decaffeinateOutput, coffeeOutput);
+    assertDeepEqual(decaffeinateOutput, coffeeOutput);
   } catch (err) {
     // add some additional context for debugging
     err.message = `Additional Debug:
@@ -71,7 +78,13 @@ ${err.message}`;
     throw err;
   }
 
+  // Make sure babel and V8 behave the same if we're on node >= 6.
+  if (Number(process.version.slice(1).split('.')[0]) >= 6) {
+    let nodeOutput = runCodeAndExtract(decaffeinateES6);
+    assertDeepEqual(decaffeinateOutput, nodeOutput);
+  }
+
   if (expectedOutput !== undefined) {
-    deepStrictEqual(decaffeinateOutput, expectedOutput);
+    assertDeepEqual(decaffeinateOutput, expectedOutput);
   }
 }

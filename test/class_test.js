@@ -1142,7 +1142,7 @@ describe('classes', () => {
       class B extends A
       B::c = -> super + 1
       b = new B()
-      o = b.c()
+      setResult(b.c())
     `, 4);
   });
 
@@ -1156,7 +1156,7 @@ describe('classes', () => {
             super
           f(x + 3)
       b = new B()
-      o = b.c(1)
+      setResult(b.c(1))
     `, 9);
   });
 
@@ -1227,7 +1227,7 @@ describe('classes', () => {
   it('has the proper runtime behavior for a named class in an expression context', () => {
     validate(`
       A = class B
-      o = B.name
+      setResult(B.name)
     `, 'B');
   });
 
@@ -1380,7 +1380,7 @@ describe('classes', () => {
   it('assigns the right name to a normal class constructor', () => {
     validate(`
       class A
-      o = A.name
+      setResult(A.name)
     `, 'A');
   });
 
@@ -1388,7 +1388,7 @@ describe('classes', () => {
     validate(`
       A = {}
       class A.B
-      o = A.B.name
+      setResult(A.B.name)
     `, 'B');
   });
 
@@ -1396,7 +1396,7 @@ describe('classes', () => {
     validate(`
       A = {}
       class A.for
-      o = A.for.name
+      setResult(A.for.name)
     `, '_for');
   });
 
@@ -1404,7 +1404,7 @@ describe('classes', () => {
     validate(`
       A = {}
       class A.or
-      o = A.or.name
+      setResult(A.or.name)
     `, 'or');
   });
 

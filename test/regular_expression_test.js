@@ -140,7 +140,7 @@ describe('regular expressions', () => {
 
   it('behaves correctly with \\0 within heregexes', () => {
     validate(`
-      o = ///\\0 1///.test '\x001'
+      setResult(///\\0 1///.test '\x001')
       `, true);
   });
 

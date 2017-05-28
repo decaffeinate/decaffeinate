@@ -21,7 +21,7 @@ describe('spread', () => {
   it('has the correct runtime behavior when spreading null in a function call', () => {
     validate(`
       f = -> arguments.length
-      o = f(null...)
+      setResult(f(null...))
     `, 0);
   });
 
@@ -29,7 +29,7 @@ describe('spread', () => {
     validate(`
       f = -> arguments.length
       obj = {length: 2, 0: 'a', 1: 'b'}
-      o = f(1, 2, obj...)
+      setResult(f(1, 2, obj...))
     `, 4);
   });
 
@@ -52,7 +52,7 @@ describe('spread', () => {
   it('has the correct runtime behavior when spreading a fake array in an array literal', () => {
     validate(`
       obj = {length: 2, 0: 'a', 1: 'b'}
-      o = [1, 2, obj...]
+      setResult([1, 2, obj...])
     `, [1, 2, 'a', 'b']);
   });
 });

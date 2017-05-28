@@ -58,7 +58,7 @@ describe('slice', () => {
       a = [1, 2, 3, 4, 5]
       start = '1'
       end = '3'
-      o = a[start..end]
+      setResult(a[start..end])
     `, [2, 3, 4]);
   });
 
@@ -156,15 +156,17 @@ describe('slice', () => {
 
   it('allows overwriting with an array', () => {
     validate(`
-      o = ['a', 'b', 'c', 'd']
-      o[1...3] = ['Hello', 'World']
+      arr = ['a', 'b', 'c', 'd']
+      arr[1...3] = ['Hello', 'World']
+      setResult(arr)
     `, ['a', 'Hello', 'World', 'd']);
   });
 
   it('allows overwriting with an individual element', () => {
     validate(`
-      o = ['a', 'b', 'c', 'd']
-      o[1...3] = 'Hello';
+      arr = ['a', 'b', 'c', 'd']
+      arr[1...3] = 'Hello';
+      setResult(arr)
     `, ['a', 'Hello', 'd']);
   });
 
@@ -187,7 +189,7 @@ describe('slice', () => {
   it('behaves properly when there is a logical operator in a slice range', () => {
     validate(`
       a = [1..4]
-      o = a[..2 or 3]
+      setResult(a[..2 or 3])
     `, [1, 2, 3]);
   });
 });

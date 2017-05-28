@@ -119,7 +119,7 @@ describe('unary operators', () => {
     validate(`
       n = 1
       (n++)?.toString()
-      o = n
+      setResult(n)
     `, 2);
   });
 });

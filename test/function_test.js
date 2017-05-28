@@ -494,7 +494,7 @@ describe('functions', () => {
       f = -> (
         true
       )
-      o = f()
+      setResult(f())
     `, true)
   );
 
@@ -503,7 +503,7 @@ describe('functions', () => {
       x = 'original'
       f = ([x]) -> x
       f(['new'])
-      o = x
+      setResult(x)
     `, 'original')
   );
 
@@ -513,7 +513,7 @@ describe('functions', () => {
       f = ({a} = {a: 2}) ->
         return
       f({a: 3})
-      o = a
+      setResult(a)
     `, 1)
   );
 });

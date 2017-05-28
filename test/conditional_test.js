@@ -696,7 +696,7 @@ describe('conditionals', () => {
           2
         else
           3
-      o = b
+      setResult(b)
     `, 1);
   });
 
