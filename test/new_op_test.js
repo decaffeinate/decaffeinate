@@ -73,7 +73,7 @@ describe('`new` operator', () => {
     check(`
       new -> a
     `, `
-      (new function() { return a; });
+      (new (function() { return a; }));
     `);
   });
 
@@ -82,6 +82,22 @@ describe('`new` operator', () => {
       new => a
     `, `
       (new (function() { return a; }.bind(this)));
+    `);
+  });
+
+  it('wraps parens around an IIFE `try` used with `new`', () => {
+    check(`
+      new try Array
+    `, `
+      new ((() => { try { return Array; } catch (error) {} })());
+    `);
+  });
+
+  it('wraps parens around a `do` used with `new`', () => {
+    check(`
+      new do -> ->
+    `, `
+      new ((() => function() {})());
     `);
   });
 });
