@@ -52,10 +52,10 @@ export default class ClassPatcher extends NodePatcher {
     }
   }
 
-  patchAsExpression() {
+  patchAsExpression({ skipParens = false } = {}) {
     let needsAssignment = this.nameAssignee &&
       (this.isNamespaced() || this.isNameAlreadyDeclared() || this.willPatchAsExpression());
-    let needsParens = needsAssignment &&
+    let needsParens = !skipParens && needsAssignment &&
       this.willPatchAsExpression() &&
       !this.isSurroundedByParentheses();
     if (needsParens) {

@@ -22,10 +22,16 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * Note that we don't need to worry about implicit function applications,
    * since the normalize stage would have already added parens.
    */
-  patchAsExpression() {
+  patchAsExpression({ fnNeedsParens = false } = {}) {
     let { args, outerEndTokenIndex } = this;
 
-    this.fn.patch();
+    if (fnNeedsParens) {
+      this.insert(this.fn.outerStart, '(');
+    }
+    this.fn.patch({ skipParens: fnNeedsParens });
+    if (fnNeedsParens) {
+      this.insert(this.fn.outerEnd, ')');
+    }
 
     args.forEach((arg, i) => {
       arg.patch();
