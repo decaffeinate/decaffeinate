@@ -172,15 +172,22 @@ export default class AssignOpPatcher extends NodePatcher {
       }
 
       let assignees = patcher.members;
-      let hasSeenExpansion;
+      let hasSeenExpansion = false;
+      let lengthCode = null;
       let assignments = [];
       for (let [i, assignee] of assignees.entries()) {
         let valueCode;
         if (assignee instanceof ExpansionPatcher || assignee instanceof SpreadPatcher) {
           hasSeenExpansion = true;
-          valueCode = `${ref}.slice(${i}, ${ref}.length - ${assignees.length - i - 1})`;
+          if (assignee instanceof SpreadPatcher && i < assignees.length - 1) {
+            lengthCode = this.claimFreeBinding('adjustedLength');
+            assignments.push(`${lengthCode} = Math.max(${ref}.length, ${assignees.length - 1})`);
+          } else {
+            lengthCode = `${ref}.length`;
+          }
+          valueCode = `${ref}.slice(${i}, ${lengthCode} - ${assignees.length - i - 1})`;
         } else if (hasSeenExpansion) {
-          valueCode = `${ref}[${ref}.length - ${assignees.length - i}]`;
+          valueCode = `${ref}[${lengthCode} - ${assignees.length - i}]`;
         } else {
           valueCode = `${ref}[${i}]`;
         }
