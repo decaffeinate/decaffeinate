@@ -14,7 +14,10 @@ describe('expansion', () => {
     check(`
       [a..., b, c] = arr
     `, `
-      let a = arr.slice(0, arr.length - 2), b = arr[arr.length - 2], c = arr[arr.length - 1];
+      let adjustedLength = Math.max(arr.length, 2),
+        a = arr.slice(0, adjustedLength - 2),
+        b = arr[adjustedLength - 2],
+        c = arr[adjustedLength - 1];
     `);
   });
 
@@ -22,7 +25,10 @@ describe('expansion', () => {
     check(`
       [a, b..., c] = arr
     `, `
-      let a = arr[0], b = arr.slice(1, arr.length - 1), c = arr[arr.length - 1];
+      let a = arr[0],
+        adjustedLength = Math.max(arr.length, 2),
+        b = arr.slice(1, adjustedLength - 1),
+        c = arr[adjustedLength - 1];
     `);
   });
 
@@ -84,7 +90,10 @@ describe('expansion', () => {
       (a..., b, c) ->
     `, `
       (function(...args) {
-        let a = args.slice(0, args.length - 2), b = args[args.length - 2], c = args[args.length - 1];
+        let adjustedLength = Math.max(args.length, 2),
+          a = args.slice(0, adjustedLength - 2),
+          b = args[adjustedLength - 2],
+          c = args[adjustedLength - 1];
       });
     `);
   });
@@ -136,7 +145,10 @@ describe('expansion', () => {
       (a, b, c..., d, e) ->
     `, `
       (function(a, b, ...rest) {
-        let c = rest.slice(0, rest.length - 2), d = rest[rest.length - 2], e = rest[rest.length - 1];
+        let adjustedLength = Math.max(rest.length, 2),
+          c = rest.slice(0, adjustedLength - 2),
+          d = rest[adjustedLength - 2],
+          e = rest[adjustedLength - 1];
       });
     `);
   });
@@ -210,9 +222,10 @@ describe('expansion', () => {
       let array = getArray(),
         a = array[0],
         b = array[1],
-        c = array.slice(2, array.length - 2),
-        d = array[array.length - 2],
-        e = array[array.length - 1];
+        adjustedLength = Math.max(array.length, 4),
+        c = array.slice(2, adjustedLength - 2),
+        d = array[adjustedLength - 2],
+        e = array[adjustedLength - 1];
     `);
   });
 
@@ -253,7 +266,10 @@ describe('expansion', () => {
     check(`
       [a, [b]..., c] = arr
     `, `
-      let a = arr[0], [b] = Array.from(arr.slice(1, arr.length - 1)), c = arr[arr.length - 1];
+      let a = arr[0],
+        adjustedLength = Math.max(arr.length, 2),
+        [b] = Array.from(arr.slice(1, adjustedLength - 1)),
+        c = arr[adjustedLength - 1];
     `);
   });
 
@@ -386,5 +402,20 @@ describe('expansion', () => {
       [a, ..., b, c, d] = [1, 2]
       setResult([a, b, c, d])
     `, [1, undefined, 1, 2]);
+  });
+
+  it('handles rest params with not enough values specified', () => {
+    validate(`
+      f = (a, b..., c, d) ->
+        return [a, b, c, d]
+      setResult(f(1, 2))
+    `, [1, [], 2, undefined]);
+  });
+
+  it('handles a rest destructure with not enough values specified', () => {
+    validate(`
+      [a, b..., c, d] = [1, 2]
+      setResult([a, b, c, d])
+    `, [1, [], 2, undefined]);
   });
 });
