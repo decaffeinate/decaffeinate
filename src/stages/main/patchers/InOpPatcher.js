@@ -35,6 +35,13 @@ export default class InOpPatcher extends BinaryOpPatcher {
    * LEFT 'in' RIGHT
    */
   patchAsExpression() {
+    let leftRef = null;
+    if (!this.left.isPure() || !this.right.isPure()) {
+      leftRef = this.claimFreeBinding('needle');
+      let leftCode = this.left.patchAndGetCode();
+      this.insert(this.contentStart, `(${leftRef} = ${leftCode}, `);
+    }
+
     let rightCode = this.right.patchAndGetCode();
     if (this.shouldWrapInArrayFrom()) {
       rightCode = `Array.from(${rightCode})`;
@@ -56,11 +63,19 @@ export default class InOpPatcher extends BinaryOpPatcher {
     //          ^^^^^^^^^^^
     this.insert(this.left.outerStart, `${rightCode}.includes(`);
 
-    this.left.patch();
+    if (leftRef) {
+      this.overwrite(this.left.outerStart, this.left.outerEnd, leftRef);
+    } else {
+      this.left.patch();
+    }
 
     // `!b.includes(a` → `!b.includes(a)`
     //                                 ^
     this.insert(this.left.outerEnd, ')');
+
+    if (leftRef) {
+      this.insert(this.contentEnd, ')');
+    }
   }
 
   shouldWrapInArrayFrom() {

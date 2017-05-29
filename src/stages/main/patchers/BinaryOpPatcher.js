@@ -33,6 +33,10 @@ export default class BinaryOpPatcher extends NodePatcher {
     this.binaryOpNegated = !this.binaryOpNegated;
   }
 
+  isPure() {
+    return this.left.isPure() && this.right.isPure();
+  }
+
   /**
    * LEFT OP RIGHT
    */

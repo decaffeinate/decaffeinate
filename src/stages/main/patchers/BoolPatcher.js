@@ -14,4 +14,8 @@ export default class BoolPatcher extends NodePatcher {
         break;
     }
   }
+
+  isRepeatable() {
+    return true;
+  }
 }

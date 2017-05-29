@@ -21,7 +21,10 @@ import assertDeepEqual from './assertDeepEqual';
  * Optionally, expectedOutput can be specified. If it is, the the result of the
  * 'o' variable must be equal to that value.
  */
-export default function validate(source: string, expectedOutput: ?any) {
+export default function validate(source: string, expectedOutput: ?any, { requireNode6 = false } = {}) {
+  if (requireNode6 && !isAtLeastNode6()) {
+    return;
+  }
   try {
     runValidation(source, expectedOutput);
   } catch (err) {
@@ -79,7 +82,7 @@ ${err.message}`;
   }
 
   // Make sure babel and V8 behave the same if we're on node >= 6.
-  if (Number(process.version.slice(1).split('.')[0]) >= 6) {
+  if (isAtLeastNode6()) {
     let nodeOutput = runCodeAndExtract(decaffeinateES6);
     assertDeepEqual(decaffeinateOutput, nodeOutput);
   }
@@ -87,4 +90,8 @@ ${err.message}`;
   if (expectedOutput !== undefined) {
     assertDeepEqual(decaffeinateOutput, expectedOutput);
   }
+}
+
+function isAtLeastNode6() {
+  return Number(process.version.slice(1).split('.')[0]) >= 6;
 }

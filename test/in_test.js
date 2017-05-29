@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('in operator', () => {
   it('handles the simple identifier case', () => {
@@ -142,14 +143,24 @@ describe('in operator', () => {
     `);
   });
 
-  it('uses includes when the left side is not repeatable', () => {
+  it('extracts a variable when the left side is not repeatable', () => {
     check(`
       if a() in [yes, no]
         b
     `, `
-      if ([true, false].includes(a())) {
+      let needle;
+      if ((needle = a(), [true, false].includes(needle))) {
         b;
       }
+    `);
+  });
+
+  it('extracts a variable when the right side is not repeatable', () => {
+    check(`
+      a in b()
+    `, `
+      let needle;
+      (needle = a, Array.from(b()).includes(needle));
     `);
   });
 
@@ -173,5 +184,13 @@ describe('in operator', () => {
         b;
       }
     `);
+  });
+
+  it('evaluates the expressions in order', () => {
+    validate(`
+      arr = []
+      arr.push('first') in [arr.push('second')]
+      setResult(arr)
+    `, ['first', 'second'], { requireNode6: true });
   });
 });

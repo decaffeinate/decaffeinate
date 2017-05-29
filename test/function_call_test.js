@@ -365,9 +365,11 @@ describe('function calls', () => {
           e)
         )
     `, `
-      a =>
-        !Array.from(b.map(a, e => e)).includes(a)
-      ;
+      (function(a) {
+        let needle;
+        return ((needle = a, !Array.from(b.map(a, e => e)).includes(needle))
+        );
+      });
     `);
   });
 
