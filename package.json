@@ -58,9 +58,9 @@
     "dist"
   ],
   "devDependencies": {
-    "@types/mocha": "^2.2.36",
+    "@types/mocha": "^2.2.41",
     "@types/mz": "0.0.31",
-    "@types/node": "^7.0.5",
+    "@types/node": "^7.0.22",
     "babel": "^6.5.2",
     "babel-core": "^6.10.4",
     "babel-eslint": "^7.1.0",
@@ -90,8 +90,8 @@
     "semantic-release": "^6.3.6",
     "surge": "^0.19.0",
     "ts-node": "^3.0.0",
-    "tslint": "^5.0.0",
-    "typescript": "^2.1.4"
+    "tslint": "^5.3.2",
+    "typescript": "^2.3.3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
