@@ -336,7 +336,7 @@ export default class NodePatcher {
    * @protected
    */
   patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {
-    if (this.isRepeatable()) {
+    if (this.isRepeatable() && !repeatableOptions.forceRepeat) {
       return this.captureCodeForPatchOperation(() => {
         this.patchAsForcedExpression(patchOptions);
         this.commitDeferredSuffix();
