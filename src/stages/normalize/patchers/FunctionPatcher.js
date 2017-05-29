@@ -196,6 +196,15 @@ export default class FunctionPatcher extends NodePatcher {
    * properly wrap it in Array.from.
    */
   getFirstRestParamIndex(): number {
+    // If there is any expansion param, all params need to be pulled into the
+    // array destructure, so set index 0. For example, in the param list
+    // `(a, ..., b, c)`, `b` is set to the second-to-last arg, which might be the
+    // same as `a`, so all args need to be included in the destructure.
+    if (this.parameters.some((param, i) =>
+        i < this.parameters.length - 1 && param instanceof ExpansionPatcher)) {
+      return 0;
+    }
+
     for (let i = 0; i < this.parameters.length; i++) {
       let parameter = this.parameters[i];
 
