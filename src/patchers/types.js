@@ -39,6 +39,7 @@ export type RepeatableOptions = {
   parens: ?boolean,
   ref: ?string,
   isForAssignment: ?boolean,
+  forceRepeat: ?boolean,
 };
 
 export type SourceType = number;

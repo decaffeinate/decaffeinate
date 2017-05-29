@@ -35,11 +35,9 @@ export default class InOpPatcher extends BinaryOpPatcher {
    * LEFT 'in' RIGHT
    */
   patchAsExpression() {
-    let leftRef = null;
     if (!this.left.isPure() || !this.right.isPure()) {
-      leftRef = this.claimFreeBinding('needle');
-      let leftCode = this.left.patchAndGetCode();
-      this.insert(this.contentStart, `(${leftRef} = ${leftCode}, `);
+      this.patchWithLHSExtracted();
+      return;
     }
 
     let rightCode = this.right.patchAndGetCode();
@@ -63,19 +61,42 @@ export default class InOpPatcher extends BinaryOpPatcher {
     //          ^^^^^^^^^^^
     this.insert(this.left.outerStart, `${rightCode}.includes(`);
 
-    if (leftRef) {
-      this.overwrite(this.left.outerStart, this.left.outerEnd, leftRef);
-    } else {
-      this.left.patch();
-    }
+    this.left.patch();
 
     // `!b.includes(a` → `!b.includes(a)`
     //                                 ^
     this.insert(this.left.outerEnd, ')');
+  }
 
-    if (leftRef) {
-      this.insert(this.contentEnd, ')');
+  patchWithLHSExtracted() {
+    // `a() in b` → `(needle = a(), in b`
+    //               ^^^^^^^^^^^^^^^
+    this.insert(this.contentStart, '(');
+    let leftRef = this.left.patchRepeatable({ ref: 'needle', forceRepeat: true });
+    this.insert(this.left.outerEnd, `, `);
+
+    // `(needle = a(), in b` → `(needle = a(), b`
+    //                 ^^^
+    this.remove(this.left.outerEnd, this.right.outerStart);
+
+    // `(needle = a(), b` → `(needle = a(), !Array.from(b).includes(needle))`
+    //                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    if (this.negated) {
+      this.insert(this.right.outerStart, '!');
     }
+    let wrapInArrayFrom = this.shouldWrapInArrayFrom();
+    let rhsNeedsParens = wrapInArrayFrom || this.rhsNeedsParens();
+    if (wrapInArrayFrom) {
+      this.insert(this.right.outerStart, 'Array.from');
+    }
+    if (rhsNeedsParens) {
+      this.insert(this.right.outerStart, '(');
+    }
+    this.right.patch();
+    if (rhsNeedsParens) {
+      this.insert(this.right.outerEnd, ')');
+    }
+    this.insert(this.right.outerEnd, `.includes(${leftRef}))`);
   }
 
   shouldWrapInArrayFrom() {

@@ -164,6 +164,15 @@ describe('in operator', () => {
     `);
   });
 
+  it('extracts a variable correctly for `not in` operations', () => {
+    check(`
+      a() not in b
+    `, `
+      let needle;
+      (needle = a(), !Array.from(b).includes(needle));
+    `);
+  });
+
   it('uses includes with complicated expressions in the array', () => {
     check(`
       if a in [b and c, +d]
@@ -192,5 +201,17 @@ describe('in operator', () => {
       arr.push('first') in [arr.push('second')]
       setResult(arr)
     `, ['first', 'second'], { requireNode6: true });
+  });
+
+  it('handles an impure soak LHS', () => {
+    check(`
+      if a?.b() in c
+        d
+    `, `
+      let needle;
+      if ((needle = typeof a !== 'undefined' && a !== null ? a.b() : undefined, Array.from(c).includes(needle))) {
+        d;
+      }
+    `);
   });
 });
