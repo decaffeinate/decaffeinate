@@ -37,4 +37,8 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
       }
     });
   }
+
+  isPure() {
+    return this.members.every(member => member.isPure());
+  }
 }

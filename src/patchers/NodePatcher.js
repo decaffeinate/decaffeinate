@@ -1201,6 +1201,17 @@ export default class NodePatcher {
   }
 
   /**
+   * Determines whether this code might have side-effects when run. Most of the
+   * time this is the same as isRepeatable, but sometimes the node is
+   * long/complicated enough that it's better to extract it as a variable rather
+   * than repeat the expression. In that case, a node may declare itself as pure
+   * but not repeatable.
+   */
+  isPure(): boolean {
+    return this.isRepeatable();
+  }
+
+  /**
    * Determines whether this node can be repeated without side-effects. Most
    * nodes are not repeatable, so that is the default. Subclasses should
    * override this to indicate whether they are repeatable without any changes.
