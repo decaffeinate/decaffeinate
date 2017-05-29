@@ -121,12 +121,12 @@ describe('expansion', () => {
     `);
   });
 
-  it('allows getting the first and last elements of a parameter list, using the "rest" name', () => {
+  it('allows getting the first and last elements of a parameter list', () => {
     check(`
       (a, b, ..., c, d) ->
     `, `
-      (function(a, b, ...rest) {
-        let c = rest[rest.length - 2], d = rest[rest.length - 1];
+      (function(...args) {
+        let a = args[0], b = args[1], c = args[args.length - 2], d = args[args.length - 1];
       });
     `);
   });
@@ -145,8 +145,8 @@ describe('expansion', () => {
     check(`
       (a, b, ..., c, d) =>
     `, `
-      (a, b, ...rest) => {
-        let c = rest[rest.length - 2], d = rest[rest.length - 1];
+      (...args) => {
+        let a = args[0], b = args[1], c = args[args.length - 2], d = args[args.length - 1];
       };
     `);
   });
@@ -180,12 +180,12 @@ describe('expansion', () => {
       }) ->
         f
     `, `
-      var f = function(a, b, ...rest) {
-        let {
+      var f = function(...args) {
+        let a = args[0], b = args[1], {
           c,
           d,
           e,
-        } = rest[rest.length - 1];
+        } = args[args.length - 1];
         return f;
       };
     `);
@@ -371,5 +371,20 @@ describe('expansion', () => {
     `, `
       let obj = b.slice(0, b.length - 0), val = obj.a, a = val != null ? val : 1;
     `);
+  });
+
+  it('handles expansion params with not enough values specified', () => {
+    validate(`
+      f = (a, ..., b, c, d) ->
+        return [a, b, c, d]
+      setResult(f(1, 2))
+    `, [1, undefined, 1, 2]);
+  });
+
+  it('handles an expansion destructure with not enough values specified', () => {
+    validate(`
+      [a, ..., b, c, d] = [1, 2]
+      setResult([a, b, c, d])
+    `, [1, undefined, 1, 2]);
   });
 });
