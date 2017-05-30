@@ -37,7 +37,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "add-variable-declarations": "^2.0.5",
+    "add-variable-declarations": "^3.0.1",
     "ast-processor-babylon-config": "^1.0.0",
     "automatic-semicolon-insertion": "^1.0.2",
     "babylon": "^6.12.0",
