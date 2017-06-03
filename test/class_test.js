@@ -1578,4 +1578,33 @@ describe('classes', () => {
       });
     `);
   });
+
+  it('properly handles bound static methods', () => {
+    check(`
+      class A
+        @b = =>
+          @c
+    `, `
+      class A {
+        static initClass() {
+          this.b = () => {
+            return this.c;
+          };
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('has the right behavior with bound static methods', () => {
+    validate(`
+      class A
+        @b = =>
+          @c
+        @c = 5
+      
+      b = A.b
+      setResult(b())
+    `, 5);
+  });
 });
