@@ -201,6 +201,12 @@ export default class ClassPatcher extends NodePatcher {
       return true;
     }
     if (this.isClassAssignment(patcher.node)) {
+      // Bound static methods must be moved to initClass so they are properly
+      // bound.
+      if (patcher.node.type === 'AssignOp' &&
+          ['BoundFunction', 'BoundGeneratorFunction'].indexOf(patcher.expression.node.type) >= 0) {
+        return false;
+      }
       if (patcher.expression instanceof FunctionPatcher) {
         return true;
       }
