@@ -15,6 +15,7 @@ describe('formatDecaffeinateParserAst', () => {
     strictEqual(formattedTokens, stripSharedIndent(`
       Program [1:1(0)-3:8(22)] {
         body: Block [1:1(0)-3:8(22)] {
+          inline: false
           statements: [
             Loop [1:1(0)-3:8(22)] {
               body: Block [2:3(7)-3:8(22)] {
