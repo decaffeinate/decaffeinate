@@ -35,8 +35,8 @@ that is re-run daily.
 Project                                                  | Lines of CoffeeScript | Conversion status                 | Test status                 
 -------------------------------------------------------- |:---------------------:|:---------------------------------:|:---------------------------:
 [chroma.js]                                              | 3.3K                  | ![chromajs-conversion-status]     | ![chromajs-test-status]
-[hubot]                                                  | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
-[autoprefixer][autoprefixer] [\[1\]](#autoprefixer-note) | 4.8K                  | ![autoprefixer-conversion-status] | ![autoprefixer-test-status]
+[hubot][hubot] [\[1\]](#converted-note)                  | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
+[autoprefixer][autoprefixer] [\[1\]](#converted-note)    | 4.8K                  | ![autoprefixer-conversion-status] | ![autoprefixer-test-status]
 [coffeelint]                                             | 8.8K                  | ![coffeelint-conversion-status]   | ![coffeelint-test-status]
 [vimium]                                                 | 11K                   | ![vimium-conversion-status]       | ![vimium-test-status]
 [coffeescript][coffeescript] [\[2\]](#coffeescript-note) | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
@@ -47,8 +47,9 @@ Project                                                  | Lines of CoffeeScript
 **Project builder status:** [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate-example-builder.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate-example-builder)
 
 **Notes:**
-1. <a id='autoprefixer-note'></a>autoprefixer has fully moved to JavaScript via
-   decaffeinate. This build runs on the last commit before the switch to JS.
+1. <a id='converted-note'></a>Hubot and Autoprefixer have fully moved to
+   JavaScript using decaffeinate. This build runs on the last commit before the
+   switch to JS.
 2. <a id='coffeescript-note'></a>Some CoffeeScript tests are disabled because
    they are difficult to fix and test cases that do not seem to come up in
    real-world code. See
