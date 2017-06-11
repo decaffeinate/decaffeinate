@@ -78,10 +78,12 @@ describe('`new` operator', () => {
   });
 
   it('allows `new` on bound functions', () => {
+    // Note that the resulting code crashes when run, which is a documented
+    // correctness issue in decaffeinate.
     check(`
       new => a
     `, `
-      (new (function() { return a; }.bind(this)));
+      new (() => a);
     `);
   });
 
