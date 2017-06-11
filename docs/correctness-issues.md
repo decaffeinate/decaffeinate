@@ -75,7 +75,7 @@ These mechanisms usually behave the same, but operations involving own
 properties of the class may behave differently.
 
 Here's one example of where the behavior differs. The code prints "true" in
-CoffeeScript, and prints "false" after decaffeinate.
+CoffeeScript, and prints "false" after decaffeinate:
 
 ```coffee
 class A
@@ -86,6 +86,30 @@ console.log B.hasOwnProperty 'x'
 
 This affects the "Overriding the static property new doesn't clobber
 Function::new" test in the CoffeeScript test suite.
+
+### Subclassing built-ins is allowed in different situations
+
+Subclassing built-ins like `Array` is difficult to do reliably in ES5. In
+CoffeeScript, it usually works if the class has a constructor, but not if it
+does not specify one. Babel disallows this case by default to avoid more subtle
+correctness issues, and in modern JavaScript, it is always allowed using `class`
+syntax.
+
+The [babel-plugin-transform-builtin-extend](https://github.com/loganfsmyth/babel-plugin-transform-builtin-extend)
+Babel plugin may help if you're trying to enable this behavior in Babel.
+
+Here's one example of where the behavior differs. The code prints "true" in
+CoffeeScript, "false" when running through decaffeinate and Babel, and "true"
+when run through decaffeinate and executed in a modern JS implementation:
+
+```coffee
+class A extends Array
+  constructor: -> super
+console.log new A() instanceof A
+```
+
+This affects the "extending native objects that use other typed constructors
+requires defining a constructor" test in the CoffeeScript test suite.
 
 ### Executable class bodies can have their statements reordered
 
@@ -125,6 +149,35 @@ quite rare, so it seems not worth changing the common case to account for this.
 
 This affects the "`in` should check `hasOwnProperty`" test in the CoffeeScript
 test suite.
+
+### Side-effects in `valueOf` and getters may be called multiple times
+
+In the past, CoffeeScript has generally assumed that property accesses like
+`a.b` and value coercions like `+a` can be run multiple times without worry of
+side-effects, even though technically getters and `valueOf` can make these
+operations unsafe to repeat. However, newer versions of CoffeeScript are safe in
+these cases. See these discussions for more info:
+
+https://github.com/jashkenas/coffeescript/commit/c056c93e19f4b8d55f06371b38efe9926744d484#commitcomment-384593
+https://github.com/jashkenas/coffeescript/issues/3598
+
+To avoid ugly intermediate variables, decaffeinate assumes that these operations
+may be safely repeated. For example, this code prints one of each statement in
+CoffeeScript and two of each statement after decaffeinate.
+
+```
+a = {valueOf: -> console.log 'Called valueOf'}
+Object.defineProperty(a, 'b', {
+  get: ->
+    console.log 'Called get'
+    1
+})
+x = a.b ? 2
+y = +a ? 3
+```
+
+This affects the "Unary + and - coerce the operand once when it is an
+identifier" test in the CoffeeScript test suite.
 
 ### Globals like `Object` and `Array` may be accessed by name from generated code
 
