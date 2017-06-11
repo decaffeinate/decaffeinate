@@ -19,8 +19,11 @@ export default class BlockPatcher extends SharedBlockPatcher {
 
   patchAsStatement() {
     if (this.node.inline) {
-      for (let statement of this.statements) {
+      for (let [i, statement] of this.statements.entries()) {
         statement.patch();
+        if (i < this.statements.length - 1) {
+          this.normalizeBetweenStatements(statement, this.statements[i + 1]);
+        }
       }
       return;
     }
