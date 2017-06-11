@@ -50,6 +50,43 @@ console.log A()
 This affects "ensure that constructors invoked with splats return a new object"
 test in the CoffeeScript test suite.
 
+### Fat arrow functions cannot be called with `new`
+
+decaffeinate usually turns fat-arrow CoffeeScript functions into JavaScript
+arrow functions. Arrow functions in JavaScript throw an exception when called
+with `new` (although not with Babel), since it doesn't make sense for them to be
+used as a constructor, whereas CoffeeScript allows it. For example, this code
+does not crash in CoffeeScript or after decaffeinate and Babel, but crashes
+after decaffeinate when run in a modern JS implementation:
+
+```coffee
+new =>
+```
+
+This affects "`new` works against bare function" test in the CoffeeScript test
+suite.
+
+### Static property inheritance is implemented differently
+
+CoffeeScript implements inheritance for static properties by copying all
+properties from the superclass to the subclass when the subclass is created.
+The JavaScript `class` syntax instead uses prototypes to accomplish this.
+These mechanisms usually behave the same, but operations involving own
+properties of the class may behave differently.
+
+Here's one example of where the behavior differs. The code prints "true" in
+CoffeeScript, and prints "false" after decaffeinate.
+
+```coffee
+class A
+  @x: -> 1
+class B extends A
+console.log B.hasOwnProperty 'x'
+```
+
+This affects the "Overriding the static property new doesn't clobber
+Function::new" test in the CoffeeScript test suite.
+
 ### Executable class bodies can have their statements reordered
 
 When class bodies have non-method statements, all of them are grouped (in order)
@@ -64,7 +101,7 @@ after decaffeinate:
 
 ```coffee
 class A
-  console.log("Exists? #{@prototype.b?}")
+  console.log "Exists? #{@prototype.b?}"
   b: ->
     c
 ```
