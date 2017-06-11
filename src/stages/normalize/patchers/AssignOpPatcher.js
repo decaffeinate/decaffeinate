@@ -1,4 +1,6 @@
 import { SourceType } from 'coffee-lex';
+import ClassPatcher from './ClassPatcher';
+import FunctionPatcher from './FunctionPatcher';
 import NodePatcher from '../../../patchers/NodePatcher';
 
 export default class AssignOpPatcher extends NodePatcher {
@@ -12,9 +14,54 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
+    let classParent = this.getClassParent();
+    let isClassAssignment = classParent &&
+      classParent.isClassAssignment(this.node) &&
+      !(classParent.isClassMethod(this) && classParent.body.statements.indexOf(this) > -1);
+
+    if (isClassAssignment) {
+      this.patchClassAssignmentPrefix();
+    }
     this.assignee.patch();
+    if (isClassAssignment) {
+      this.patchClassAssignmentOperator();
+    }
     this.removeUnnecessaryThenToken();
     this.expression.patch();
+  }
+
+  patchClassAssignmentPrefix() {
+    if (this.node.type === 'ClassProtoAssignOp') {
+      this.insert(this.assignee.outerStart, '@prototype.');
+    }
+  }
+
+  patchClassAssignmentOperator() {
+    let colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+      this.assignee,
+      this.expression,
+      token => token.type === SourceType.COLON
+    );
+    if (colonIndex) {
+      let colonToken = this.sourceTokenAtIndex(colonIndex);
+      this.overwrite(colonToken.start, colonToken.end, ' =');
+    }
+  }
+
+  /**
+   * If we are within a class body (not a method), return that class.
+   */
+  getClassParent() {
+    let parent = this;
+    while (parent) {
+      if (parent instanceof FunctionPatcher) {
+        return null;
+      } else if (parent instanceof ClassPatcher) {
+        return parent;
+      }
+      parent = parent.parent;
+    }
+    return null;
   }
 
   /**

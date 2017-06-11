@@ -1,7 +1,6 @@
 import { SourceType } from 'coffee-lex';
 
 import NodePatcher from './../../../patchers/NodePatcher';
-import AssignOpPatcher from './AssignOpPatcher';
 import BlockPatcher from './BlockPatcher';
 import ConstructorPatcher from './ConstructorPatcher';
 import FunctionPatcher from './FunctionPatcher';
@@ -38,6 +37,10 @@ export default class ClassPatcher extends NodePatcher {
     if (this.needsIndent()) {
       this.indent(1, {skipFirstLine: true});
     }
+    // We also need to remove `then` early so it doesn't remove other inserted
+    // code.
+    this.removeThenTokenIfNecessary();
+
     let indent = this.getIndent();
 
     if (this.nameAssignee) {
@@ -49,8 +52,6 @@ export default class ClassPatcher extends NodePatcher {
     if (this.body) {
       this.body.patch();
     }
-
-    this.removeThenTokenIfNecessary();
 
     if (!this.needsInitClass()) {
       return;
@@ -305,7 +306,7 @@ export default class ClassPatcher extends NodePatcher {
       if (assignmentName) {
         assignmentNames.push(assignmentName);
       }
-      let statementCode = this.getNonMethodStatementCode(patcher, deleteStart);
+      let statementCode = this.slice(deleteStart, patcher.outerEnd);
       statementCode = statementCode.replace(/\n/g, `\n${indentString}`);
       this.insert(insertPoint, statementCode);
       this.remove(deleteStart, patcher.outerEnd);
@@ -359,31 +360,5 @@ export default class ClassPatcher extends NodePatcher {
       return statementPatcher.nameAssignee.node.data;
     }
     return null;
-  }
-
-  getNonMethodStatementCode(statementPatcher, deleteStart) {
-    if (statementPatcher instanceof AssignOpPatcher &&
-        this.isClassAssignment(statementPatcher.node)) {
-      let {assignee, expression} = statementPatcher;
-      let prefixCode = this.slice(deleteStart, assignee.outerStart);
-      let keyCode = this.slice(assignee.outerStart, assignee.outerEnd);
-      let suffixCode = this.slice(assignee.outerEnd, expression.outerEnd);
-
-      let equalIndex = suffixCode.indexOf('=');
-      let colonIndex = suffixCode.indexOf(':');
-      if (equalIndex === -1 || colonIndex < equalIndex) {
-        suffixCode = suffixCode.replace(/:/, ' =');
-      }
-
-      if (statementPatcher.node.type === 'ClassProtoAssignOp') {
-        // a: b -> @prototype.a = b
-        return `${prefixCode}@prototype.${keyCode}${suffixCode}`;
-      } else {
-        // @a: b -> @a = b
-        return `${prefixCode}${keyCode}${suffixCode}`;
-      }
-    } else {
-      return this.slice(deleteStart, statementPatcher.outerEnd);
-    }
   }
 }

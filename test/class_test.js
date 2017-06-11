@@ -1607,4 +1607,46 @@ describe('classes', () => {
       setResult(b())
     `, 5);
   });
+
+  it('handles conditional prototype assignments', () => {
+    check(`
+      class A
+        if b
+          c: d
+        else
+          e: f
+    `, `
+      class A {
+        static initClass() {
+          if (b) {
+            this.prototype.c = d;
+          } else {
+            this.prototype.e = f;
+          }
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('handles conditional methods', () => {
+    check(`
+      class A
+        if b
+          c: -> d
+        else
+          e: -> f
+    `, `
+      class A {
+        static initClass() {
+          if (b) {
+            this.prototype.c = () => d;
+          } else {
+            this.prototype.e = () => f;
+          }
+        }
+      }
+      A.initClass();
+    `);
+  });
 });
