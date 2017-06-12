@@ -263,9 +263,9 @@ export default class ConditionalPatcher extends NodePatcher {
       let emptyImplicitReturnCode =
         this.implicitReturnPatcher().getEmptyImplicitReturnCode();
       if (emptyImplicitReturnCode) {
-        this.insert(this.contentEnd, ' else {\n');
-        this.insert(this.contentEnd, `${this.getIndent(1)}${emptyImplicitReturnCode}\n`);
-        this.insert(this.contentEnd, `${this.getIndent()}}`);
+        this.insert(this.innerEnd, ' else {\n');
+        this.insert(this.innerEnd, `${this.getIndent(1)}${emptyImplicitReturnCode}\n`);
+        this.insert(this.innerEnd, `${this.getIndent()}}`);
       }
     }
   }
