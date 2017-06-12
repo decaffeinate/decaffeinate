@@ -268,6 +268,7 @@ export default class AssignOpPatcher extends NodePatcher {
     if (methodAccessPatcher instanceof DynamicMemberAccessOpPatcher) {
       methodAccessPatcher.indexingExpr.setRequiresRepeatableExpression({
         ref: 'method',
+        forceRepeat: true,
       });
     }
   }
