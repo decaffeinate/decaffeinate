@@ -1671,4 +1671,19 @@ describe('classes', () => {
       setResult((new A).f())
     `, 1);
   });
+
+  it('generates proper class accesses in super used in initClass', () => {
+    check(`
+      class A extends B
+        @::f = -> super
+    `, `
+      class A extends B {
+        static initClass() {
+          let cls;
+          (cls = this).prototype.f = function() { return cls.prototype.__proto__.f.call(this, ...arguments); };
+        }
+      }
+      A.initClass();
+    `);
+  });
 });
