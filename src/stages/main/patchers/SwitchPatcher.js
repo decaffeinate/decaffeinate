@@ -116,17 +116,22 @@ export default class SwitchPatcher extends NodePatcher {
    * @private
    */
   getElseToken(): ?SourceToken {
-    let searchEndToken;
-    if (this.alternate) {
-      searchEndToken = this.alternate.contentStartTokenIndex;
+    let searchStart;
+    if (this.cases.length > 0) {
+      searchStart = this.cases[this.cases.length - 1].outerEnd;
     } else {
-      searchEndToken = this.contentEndTokenIndex;
+      searchStart = this.expression.outerEnd;
     }
 
-    let tokens = this.context.sourceTokens;
-    let elseTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
-      token => token.type === SourceType.ELSE,
-      searchEndToken
+    let searchEnd;
+    if (this.alternate) {
+      searchEnd = this.alternate.outerStart;
+    } else {
+      searchEnd = this.contentEnd;
+    }
+
+    let elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      searchStart, searchEnd, token => token.type === SourceType.ELSE
     );
     if (!elseTokenIndex || elseTokenIndex.isBefore(this.contentStartTokenIndex)) {
       if (this.alternate) {

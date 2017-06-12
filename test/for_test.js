@@ -1568,4 +1568,29 @@ describe('for loops', () => {
       })();
     `);
   });
+
+  it('properly handles an implicit-return switch with an if/else as a case', () => {
+    check(`
+      x = for a in b
+        switch c
+          when d
+            if e then f
+            else g
+    `, `
+      let x = (() => {
+        let result = [];
+        for (let a of Array.from(b)) {
+          switch (c) {
+            case d:
+              if (e) { result.push(f);
+              } else { result.push(g); }
+              break;
+            default:
+              result.push(undefined);
+          }
+        }
+        return result;
+      })();
+    `);
+  });
 });
