@@ -16,6 +16,7 @@ import ThisPatcher from './ThisPatcher';
 import SpreadPatcher from './SpreadPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import containsSuperCall from '../../../utils/containsSuperCall';
 import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
 
 import type { PatcherContext } from './../../../patchers/types';
@@ -262,7 +263,7 @@ export default class AssignOpPatcher extends NodePatcher {
    * that the super transform can make use of it.
    */
   markProtoAssignmentRepeatableIfNecessary() {
-    if (!(this.expression instanceof FunctionPatcher && this.expression.containsSuperCall())) {
+    if (!(this.expression instanceof FunctionPatcher && containsSuperCall(this.expression.node))) {
       return null;
     }
     let prototypeAssignPatchers = extractPrototypeAssignPatchers(this);

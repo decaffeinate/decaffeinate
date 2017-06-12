@@ -45,6 +45,9 @@ export default class SuperPatcher extends NodePatcher {
           'Complex super calls within anonymous classes are not yet supported.');
       }
       let openParenToken = this.getFollowingOpenParenToken();
+      // Note that this code snippet works for instance methods but not static
+      // methods. Static methods that require the expanded call form like this
+      // have already been converted in the normalize step.
       this.overwrite(this.contentStart, openParenToken.end,
         `${classCode}.prototype.__proto__${accessCode}.call(this, `);
     }

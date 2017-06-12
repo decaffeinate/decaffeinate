@@ -9,6 +9,7 @@ import StringPatcher from './StringPatcher';
 import ThisPatcher from './ThisPatcher';
 import type NodePatcher from './../../../patchers/NodePatcher';
 import type { Node } from './../../../patchers/types';
+import containsSuperCall from '../../../utils/containsSuperCall';
 import { SourceType } from 'coffee-lex';
 
 export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
@@ -50,7 +51,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    */
   markKeyRepeatableIfNecessary() {
     if (this.expression instanceof FunctionPatcher &&
-        this.expression.containsSuperCall()) {
+        containsSuperCall(this.expression.node)) {
       if (this.isStaticMethod()) {
         if (this.key instanceof DynamicMemberAccessOpPatcher) {
           this.key.indexingExpr.setRequiresRepeatableExpression({

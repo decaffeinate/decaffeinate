@@ -1737,4 +1737,81 @@ describe('classes', () => {
       }
     `);
   });
+
+  it('properly handles static methods calling super from within initClass', () => {
+    check(`
+      class A extends B
+        if a
+          @b = -> super
+    `, `
+      class A extends B {
+        static initClass() {
+          if (a) {
+            let cls;
+            (cls = this).b = function() { return cls.__proto__.b.call(this, ...arguments); };
+          }
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('properly handles non-shorthand super in dynamically generated static methods', () => {
+    check(`
+      class A extends B
+        if a
+          @b = -> super(foo)
+    `, `
+      class A extends B {
+        static initClass() {
+          if (a) {
+            let cls;
+            (cls = this).b = function() { return cls.__proto__.b.call(this, foo); };
+          }
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('properly handles static methods with dynamic names calling super from within initClass', () => {
+    check(`
+      class A extends B
+        if a
+          @[b] = -> super
+    `, `
+      class A extends B {
+        static initClass() {
+          if (a) {
+            let cls, method;
+            (cls = this)[(method = b)] = function() { return cls.__proto__[method].call(this, ...arguments); };
+          }
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('behaves properly with conditionally assigned static methods with super', () => {
+    validate(`
+      class A
+        @a = -> 3
+      class B extends A
+        if true
+          @a = -> super
+      setResult(B.a())
+    `, 3);
+  });
+
+  it('behaves properly with conditionally assigned static methods with a dynamic name with super', () => {
+    validate(`
+      class A
+        @a = -> 3
+      m = 'a'
+      class B extends A
+        if true
+          @[m] = -> super
+      setResult(B.a())
+    `, 3);
+  });
 });

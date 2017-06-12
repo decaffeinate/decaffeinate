@@ -1232,7 +1232,7 @@ export default class NodePatcher {
    * it possible to reference the value afterward with no additional
    * side-effects.
    */
-  setRequiresRepeatableExpression(repeatableOptions={}) {
+  setRequiresRepeatableExpression(repeatableOptions: RepeatableOptions = {}) {
     this._repeatableOptions = repeatableOptions;
   }
 
