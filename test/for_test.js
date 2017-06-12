@@ -142,13 +142,13 @@ describe('for loops', () => {
         for (let k in object) {
           let v = object[k];
           if (x) {
-            let item;
             if (k) {
-              item = k;
+              result.push(k);
             } else if (v) {
-              item = v;
+              result.push(v);
+            } else {
+              result.push(undefined);
             }
-            result.push(item);
           }
         }
         return result;
@@ -820,13 +820,13 @@ describe('for loops', () => {
         for (let step = s, asc = step > 0, i = asc ? 0 : iterable.length - 1; asc ? i < iterable.length : i >= 0; i += step) {
           let x = iterable[i];
           if (x) {
-            let item;
             if (i) {
-              item = x;
+              result.push(x);
             } else if (x) {
-              item = i;
+              result.push(i);
+            } else {
+              result.push(undefined);
             }
-            result.push(item);
           }
         }
         return result;
@@ -848,11 +848,11 @@ describe('for loops', () => {
         (() => {
           let result = [];
           for (let a of Array.from(b)) {
-            let item;
             if (a) {
-              item = b;
+              result.push(b);
+            } else {
+              result.push(undefined);
             }
-            result.push(item);
           }
           return result;
         })()
@@ -961,13 +961,13 @@ describe('for loops', () => {
         for (let k of Object.keys(object || {})) {
           let v = object[k];
           if (x) {
-            let item;
             if (k) {
-              item = k;
+              result.push(k);
             } else if (v) {
-              item = v;
+              result.push(v);
+            } else {
+              result.push(undefined);
             }
-            result.push(item);
           }
         }
         return result;
@@ -1122,13 +1122,13 @@ describe('for loops', () => {
       let x = (() => {
         let result = [];
         for (let a of Array.from(b)) {
-          let item;
           if (a) {
-            item = a;
+            result.push(a);
           } else if (b) {
             continue;
+          } else {
+            result.push(undefined);
           }
-          result.push(item);
         }
         return result;
       })();
@@ -1496,6 +1496,76 @@ describe('for loops', () => {
         val = arr[i];
         console.log(i);
       }
+    `);
+  });
+
+  it('does not add elements for implicit return switch within a loop expression', () => {
+    check(`
+      arr = for a in b
+        switch a
+          when 0
+            a
+          when 1
+            break
+          when 2 then
+    `, `
+      let arr = (() => {
+        let result = [];
+        for (let a of Array.from(b)) {
+          switch (a) {
+            case 0:
+              result.push(a);
+              break;
+            case 1:
+              break;
+            case 2:
+              break;
+            default:
+              result.push(undefined);
+          }
+        }
+        return result;
+      })();
+    `);
+  });
+
+  it('does not add to the array with an explicit empty else case in a loop expression', () => {
+    check(`
+      arr = for a in b
+        switch c
+          when d then e
+          else
+    `, `
+      let arr = (() => {
+        let result = [];
+        for (let a of Array.from(b)) {
+          switch (c) {
+            case d: result.push(e); break;
+            default:
+          }
+        }
+        return result;
+      })();
+    `);
+  });
+
+  it('does not add to the array with an explicit empty else in a loop expression', () => {
+    check(`
+      arr = for i in [1, 2, 3]
+        if a
+          b
+        else
+    `, `
+      let arr = (() => {
+        let result = [];
+        for (let i of [1, 2, 3]) {
+          if (a) {
+            result.push(b);
+          }
+          else {}
+        }
+        return result;
+      })();
     `);
   });
 });

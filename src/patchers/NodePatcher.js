@@ -732,6 +732,13 @@ export default class NodePatcher {
   }
 
   /**
+   * Return null to indicate that no empty case code should be generated.
+   */
+  getEmptyImplicitReturnCode() {
+    return null;
+  }
+
+  /**
    * Patch the end of an implicitly-returned descendant.
    */
   patchImplicitReturnEnd(patcher: NodePatcher) { // eslint-disable-line no-unused-vars

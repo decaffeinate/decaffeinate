@@ -589,11 +589,11 @@ describe('function calls', () => {
         (() => {
           let result = [];
           for (let b of Array.from(c)) {
-            let item;
             if (d) {
-              item = e[f];
+              result.push(e[f]);
+            } else {
+              result.push(undefined);
             }
-            result.push(item);
           }
           return result;
         })());
@@ -615,11 +615,11 @@ describe('function calls', () => {
         (() => {
           let result = [];
           for (let b of Array.from(c)) {
-            let item;
             if (d) {
-              item = e;
+              result.push(e);
+            } else {
+              result.push(undefined);
             }
-            result.push(item);
           }
           return result;
         })());

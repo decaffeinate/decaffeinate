@@ -20,6 +20,10 @@ export default class SwitchPatcher extends NodePatcher {
     }
   }
 
+  prefersToPatchAsExpression() {
+    return false;
+  }
+
   patchAsStatement() {
     if (this.expression) {
       // `switch a` → `switch (a`
@@ -53,6 +57,14 @@ export default class SwitchPatcher extends NodePatcher {
     this.overwriteElse();
     if (this.alternate) {
       this.alternate.patch({ leftBrace: false, rightBrace: false });
+    } else if (this.getElseToken() === null && super.implicitlyReturns()) {
+      let emptyImplicitReturnCode =
+        this.implicitReturnPatcher().getEmptyImplicitReturnCode();
+      if (emptyImplicitReturnCode) {
+        this.insert(this.contentEnd, `\n`);
+        this.insert(this.contentEnd, `${this.getIndent(1)}default:\n`);
+        this.insert(this.contentEnd, `${this.getIndent(2)}${emptyImplicitReturnCode}`);
+      }
     }
 
     this.appendLineAfter('}');
@@ -104,17 +116,24 @@ export default class SwitchPatcher extends NodePatcher {
    * @private
    */
   getElseToken(): ?SourceToken {
-    if (!this.alternate) {
-      return null;
+    let searchEndToken;
+    if (this.alternate) {
+      searchEndToken = this.alternate.contentStartTokenIndex;
+    } else {
+      searchEndToken = this.contentEndTokenIndex;
     }
 
     let tokens = this.context.sourceTokens;
     let elseTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
       token => token.type === SourceType.ELSE,
-      this.alternate.contentStartTokenIndex
+      searchEndToken
     );
     if (!elseTokenIndex || elseTokenIndex.isBefore(this.contentStartTokenIndex)) {
-      throw this.alternate.error(`no ELSE token found before 'switch' alternate`);
+      if (this.alternate) {
+        throw this.alternate.error(`no ELSE token found before 'switch' alternate`);
+      } else {
+        return null;
+      }
     }
     return this.sourceTokenAtIndex(elseTokenIndex);
   }

@@ -22,6 +22,8 @@ export default class SwitchCasePatcher extends NodePatcher {
   }
 
   patchAsStatement() {
+    let lastCondition = this.conditions[this.conditions.length - 1];
+
     // `when a, b, c then d` → `a, b, c then d`
     //  ^^^^^
     let whenToken = this.getWhenToken();
@@ -52,7 +54,7 @@ export default class SwitchCasePatcher extends NodePatcher {
       if (this.consequent !== null) {
         this.remove(thenToken.start, this.consequent.outerStart);
       } else {
-        this.remove(thenToken.start, thenToken.end);
+        this.remove(lastCondition.outerEnd, thenToken.end);
       }
     }
 
@@ -73,7 +75,7 @@ export default class SwitchCasePatcher extends NodePatcher {
         if (this.consequent !== null) {
           this.insert(this.consequent.contentEnd, ' break');
         } else {
-          this.insert(thenToken.end, ' break');
+          this.insert(lastCondition.outerEnd, `\n${this.getIndent(1)}break`);
         }
       } else {
         this.appendLineAfter('break', 1);
