@@ -1649,4 +1649,26 @@ describe('classes', () => {
       A.initClass();
     `);
   });
+
+  it('saves the method name for dynamic prototype method assignments', () => {
+    check(`
+      A::[m] = -> super
+    `, `
+      let method;
+      A.prototype[method = m] = function() { return A.prototype.__proto__[method].call(this, ...arguments); };
+    `);
+  });
+
+  it('behaves correctly for dynamic prototype method assignments', () => {
+    validate(`
+      class Base
+        f: -> 1
+        g: -> 2
+      class A extends Base
+      m = 'f'
+      A::[m] = -> super
+      m = 'g'
+      setResult((new A).f())
+    `, 1);
+  });
 });
