@@ -58,11 +58,11 @@ export default class ForPatcher extends LoopPatcher {
 
     if (filter) {
       this.body.insertLineBefore(`if (${this.getFilterCode()}) {`, this.getOuterLoopBodyIndent());
-      this.patchBodyWithPossibleItemVariable();
+      this.patchBody();
       body.insertLineAfter('}', this.getOuterLoopBodyIndent());
       body.insertLineAfter('}', this.getLoopIndent());
     } else {
-      this.patchBodyWithPossibleItemVariable();
+      this.patchBody();
       body.insertLineAfter('}', this.getLoopIndent());
     }
   }

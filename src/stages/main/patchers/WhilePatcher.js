@@ -94,7 +94,7 @@ export default class WhilePatcher extends LoopPatcher {
 
     this.patchPossibleNewlineAfterLoopHeader(
       this.guard ? this.guard.outerEnd : this.condition.outerEnd);
-    this.patchBodyWithPossibleItemVariable();
+    this.patchBody();
 
     if (this.guard) {
       // Close the guard's `if` consequent block.

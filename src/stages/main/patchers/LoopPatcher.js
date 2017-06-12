@@ -86,22 +86,11 @@ export default class LoopPatcher extends NodePatcher {
     }
   }
 
-  patchBodyWithPossibleItemVariable() {
+  patchBody() {
     if (this.shouldConvertInlineBodyToNonInline()) {
       this.body.insert(this.body.outerStart, this.getLoopBodyIndent());
     }
-
-    if (this.willPatchAsExpression() && !this.allBodyCodePathsPresent()) {
-      let itemBinding = this.getResultArrayElementBinding();
-      this.body.insertStatementsAtIndex([`let ${itemBinding}`], 0);
-      this.body.patch({ leftBrace: false, rightBrace: false });
-      this.body.insertStatementsAtIndex(
-        [`${this.getResultArrayBinding()}.push(${itemBinding})`],
-        this.body.statements.length
-      );
-    } else {
-      this.body.patch({ leftBrace: false, rightBrace: false });
-    }
+    this.body.patch({ leftBrace: false, rightBrace: false });
   }
 
   shouldConvertInlineBodyToNonInline() {
@@ -145,15 +134,9 @@ export default class LoopPatcher extends NodePatcher {
       return;
     }
     patcher.setRequiresExpression();
-    if (this.allBodyCodePathsPresent()) {
-      // `a + b` → `result.push(a + b`
-      //            ^^^^^^^^^^^^
-      this.insert(patcher.outerStart, `${this.getResultArrayBinding()}.push(`);
-    } else {
-      // `a + b` → `item = a + b`
-      //            ^^^^^^^
-      this.insert(patcher.outerStart, `${this.getResultArrayElementBinding()} = `);
-    }
+    // `a + b` → `result.push(a + b`
+    //            ^^^^^^^^^^^^
+    this.insert(patcher.outerStart, `${this.getResultArrayBinding()}.push(`);
   }
 
   /**
@@ -163,16 +146,11 @@ export default class LoopPatcher extends NodePatcher {
     if (!patcher.canPatchAsExpression()) {
       return;
     }
-    if (this.allBodyCodePathsPresent()) {
-      this.insert(patcher.outerEnd, `)`);
-    }
+    this.insert(patcher.outerEnd, `)`);
   }
 
-  allBodyCodePathsPresent(): boolean {
-    if (this._allBodyCodePathsPresent === undefined) {
-      this._allBodyCodePathsPresent = this.body.allCodePathsPresent();
-    }
-    return this._allBodyCodePathsPresent;
+  getEmptyImplicitReturnCode() {
+    return `${this.getResultArrayBinding()}.push(undefined)`;
   }
 
   /**

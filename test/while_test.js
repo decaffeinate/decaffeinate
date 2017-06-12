@@ -130,13 +130,13 @@ describe('while', () => {
         let result = [];
         
         while (b) {
-          let item;
           if (c) {
-            item = d;
+            result.push(d);
           } else if (e) {
-            item = f;
+            result.push(f);
+          } else {
+            result.push(undefined);
           }
-          result.push(item);
         }
 
         return result;
@@ -261,13 +261,13 @@ describe('while', () => {
         let result = [];
         while (a) {
           if (b) {
-            let item;
             if (c) {
-              item = d;
+              result.push(d);
             } else if (e) {
-              item = f;
+              result.push(f);
+            } else {
+              result.push(undefined);
             }
-            result.push(item);
           }
         }
         return result;

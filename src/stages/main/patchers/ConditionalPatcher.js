@@ -259,6 +259,14 @@ export default class ConditionalPatcher extends NodePatcher {
     } else if (elseTokenIndex !== null) {
       let elseToken = this.sourceTokenAtIndex(elseTokenIndex);
       this.insert(elseToken.end, ' {}');
+    } else if (super.implicitlyReturns()) {
+      let emptyImplicitReturnCode =
+        this.implicitReturnPatcher().getEmptyImplicitReturnCode();
+      if (emptyImplicitReturnCode) {
+        this.insert(this.contentEnd, ' else {\n');
+        this.insert(this.contentEnd, `${this.getIndent(1)}${emptyImplicitReturnCode}\n`);
+        this.insert(this.contentEnd, `${this.getIndent()}}`);
+      }
     }
   }
 

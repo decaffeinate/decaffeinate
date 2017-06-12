@@ -332,9 +332,11 @@ describe('switch', () => {
         # Do nothing
     `, `
       switch (a) {
-        case b:  break;
+        case b:
+          break;
           // Do nothing
-        case c:  break;
+        case c:
+          break;
       }
           // Do nothing
     `);
@@ -395,13 +397,19 @@ describe('switch', () => {
           else
             e
     `, `
-      let x = Array.from(b).map((a) =>
-        (() => { switch (a) {
-          case 'c':
-            return d;
-          default:
-            return e;
-        } })());
+      let x = (() => {
+        let result = [];
+        for (let a of Array.from(b)) {
+          switch (a) {
+            case 'c':
+              result.push(d);
+              break;
+            default:
+              result.push(e);
+          }
+        }
+        return result;
+      })();
     `);
   });
 

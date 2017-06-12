@@ -22,11 +22,11 @@ describe('literate mode', () => {
       let otherThing = (() => {
         let result = [];
         for (let foo of Array.from(stuff)) {
-          let item;
           if ((foo % 2) === 0) {
-            item = foo + 1;
+            result.push(foo + 1);
+          } else {
+            result.push(undefined);
           }
-          result.push(item);
         }
         return result;
       })();
