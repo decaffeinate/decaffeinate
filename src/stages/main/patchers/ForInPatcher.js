@@ -4,6 +4,8 @@ import ForPatcher from './ForPatcher';
 import RangePatcher from './RangePatcher';
 import countVariableUsages from '../../../utils/countVariableUsages';
 import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
+import Scope from '../../../utils/Scope';
+import traverse from '../../../utils/traverse';
 import type BlockPatcher from './BlockPatcher';
 import type NodePatcher from './../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
@@ -150,6 +152,7 @@ export default class ForInPatcher extends ForPatcher {
       this.patchForOfLoop();
     } else {
       // Run for the side-effect of patching and slicing the value.
+      this.getIndexBinding();
       this.getValueBinding();
       this.getFilterCode();
 
@@ -220,6 +223,10 @@ export default class ForInPatcher extends ForPatcher {
     this.patchPossibleNewlineAfterLoopHeader(this.getLastHeaderPatcher().outerEnd);
 
     if (!this.shouldPatchAsInitTestUpdateLoop() && this.valAssignee) {
+      if (this.keyAssignee && this.needsUniqueIndexName()) {
+        let indexAssignment = `${this.getUserSpecifiedIndex()} = ${this.getIndexBinding()}`;
+        this.body.insertLineBefore(indexAssignment, this.getOuterLoopBodyIndent());
+      }
       let valueAssignment = `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`;
       if (this.valAssignee.statementNeedsParens()) {
         valueAssignment = `(${valueAssignment})`;
@@ -283,6 +290,24 @@ export default class ForInPatcher extends ForPatcher {
 
   targetBindingCandidate() {
     return 'iterable';
+  }
+
+  needsUniqueIndexName() {
+    let userIndex = this.getUserSpecifiedIndex();
+
+    // We need to extract this to a variable if there's an assignment within the
+    // loop, but assignments outside the loop are fine, so we make a fake scope
+    // that only looks at assignments within the loop body. But assignments
+    // within closures could also happen temporally in the loop, so bail out if
+    // we see one of those.
+    if (this.node.scope.hasInnerClosureAssignment(userIndex)) {
+      return true;
+    }
+    let fakeScope = new Scope(this.body.node, null);
+    traverse(this.body.node, child => {
+      fakeScope.processNode(child);
+    });
+    return fakeScope.hasBinding(userIndex);
   }
 
   getInitCode(): string {

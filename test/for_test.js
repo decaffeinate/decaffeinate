@@ -1439,4 +1439,63 @@ describe('for loops', () => {
       });
     `);
   });
+
+  it('does not allow modifying the loop index of a for-in loop', () => {
+    check(`
+      arr = [1, 2, 3]
+      for val, i in arr
+        console.log i
+        i = 10
+    `, `
+      let arr = [1, 2, 3];
+      for (let j = 0; j < arr.length; j++) {
+        let i = j;
+        let val = arr[j];
+        console.log(i);
+        i = 10;
+      }
+    `);
+  });
+
+  it('defensively sets the loop index when it might be set within a closure', () => {
+    check(`
+      arr = [1, 2, 3]
+      i = 0
+      f = -> i = 10
+      for val, i in arr
+        console.log i
+        f()
+    `, `
+      let arr = [1, 2, 3];
+      let i = 0;
+      let f = () => i = 10;
+      for (let j = 0; j < arr.length; j++) {
+        i = j;
+        let val = arr[j];
+        console.log(i);
+        f();
+      }
+    `);
+  });
+
+  it('does not defensively sets the loop index when running a loop twice', () => {
+    check(`
+      arr = [1, 2, 3]
+      for val, i in arr
+        console.log i
+      for val, i in arr
+        console.log i
+    `, `
+      let i, val;
+      let arr = [1, 2, 3];
+      for (i = 0; i < arr.length; i++) {
+        val = arr[i];
+        console.log(i);
+      }
+      for (i = 0; i < arr.length; i++) {
+        val = arr[i];
+        console.log(i);
+      }
+    `);
+  });
 });

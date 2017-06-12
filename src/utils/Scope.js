@@ -14,11 +14,13 @@ type Bindings = { [key: string]: Node };
 export default class Scope {
   parent: ?Scope;
   bindings: Bindings;
+  innerClosureAssignments: { [key: string]: boolean };
   containerNode: Node;
 
   constructor(containerNode: Node, parent: ?Scope=null) {
     this.parent = parent;
-    this.bindings = Object.create(parent ? parent.bindings : null);
+    this.bindings = Object.create(parent ? parent.bindings : {});
+    this.innerClosureAssignments = {};
     this.containerNode = containerNode;
   }
 
@@ -34,8 +36,16 @@ export default class Scope {
     return this.getBinding(name) !== null;
   }
 
+  hasInnerClosureAssignment(name: string): boolean {
+    return this.innerClosureAssignments[this.key(name)] || false;
+  }
+
   getOwnNames(): Array<string> {
     return Object.getOwnPropertyNames(this.bindings).map(key => this.unkey(key));
+  }
+
+  hasOwnBinding(name: string): boolean {
+    return this.bindings.hasOwnProperty(this.key(name));
   }
 
   declares(name: string, node: Node) {
@@ -47,6 +57,15 @@ export default class Scope {
     if (!this.bindings[this.key(name)]) {
       // Not defined in this or any parent scope.
       this.declares(name, node);
+    } else if (!this.hasOwnBinding(name)) {
+      let parent = this.parent;
+      while (parent) {
+        if (parent.hasOwnBinding(name)) {
+          parent.innerClosureAssignments[this.key(name)] = true;
+          break;
+        }
+        parent = parent.parent;
+      }
     }
   }
 
