@@ -1593,4 +1593,24 @@ describe('for loops', () => {
       })();
     `);
   });
+
+  it('handles an incomplete conditional ending in a comment in a loop expression', () => {
+    check(`
+      arr = for a in b
+        if c
+          d  # e
+    `, `
+      let arr = (() => {
+        let result = [];
+        for (let a of Array.from(b)) {
+          if (c) {
+            result.push(d);  // e
+          } else {
+            result.push(undefined);
+          }
+        }
+        return result;
+      })();
+    `);
+  });
 });
