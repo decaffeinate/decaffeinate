@@ -1448,9 +1448,8 @@ describe('for loops', () => {
         i = 10
     `, `
       let arr = [1, 2, 3];
-      for (let j = 0; j < arr.length; j++) {
-        let i = j;
-        let val = arr[j];
+      for (let j = 0, i = j; j < arr.length; j++, i = j) {
+        let val = arr[i];
         console.log(i);
         i = 10;
       }
@@ -1466,12 +1465,12 @@ describe('for loops', () => {
         console.log i
         f()
     `, `
+      let j;
       let arr = [1, 2, 3];
       let i = 0;
       let f = () => i = 10;
-      for (let j = 0; j < arr.length; j++) {
-        i = j;
-        let val = arr[j];
+      for (j = 0, i = j; j < arr.length; j++, i = j) {
+        let val = arr[i];
         console.log(i);
         f();
       }
@@ -1495,6 +1494,32 @@ describe('for loops', () => {
       for (i = 0; i < arr.length; i++) {
         val = arr[i];
         console.log(i);
+      }
+    `);
+  });
+
+  it('properly sets the loop variable before and after', () => {
+    validate(`
+      values = []
+      i = 50
+      arr = [10, 20, 30]
+      for val, i in arr
+        values.push(i)
+        i = 100
+      values.push(i)
+      setResult(values)
+    `, [0, 1, 2, 3]);
+  });
+
+  it('properly saves the loop assignee for range loops', () => {
+    check(`
+      for i in [a..b]
+        console.log i
+        i = 100
+    `, `
+      for (let j = a, i = j, end = b, asc = a <= end; asc ? j <= end : j >= end; asc ? j++ : j--, i = j) {
+        console.log(i);
+        i = 100;
       }
     `);
   });
