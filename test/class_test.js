@@ -1125,11 +1125,12 @@ describe('classes', () => {
       b = new B()
       b.c()
     `, `
+      let cls;
       class A {
         c() { return console.log('Hello'); }
       }
       class B extends A {}
-      B.prototype.c = function() { return B.prototype.__proto__.c.call(this, ...arguments); };
+      (cls = B).prototype.c = function() { return cls.prototype.__proto__.c.call(this, ...arguments); };
       let b = new B();
       b.c();
     `);
@@ -1654,8 +1655,8 @@ describe('classes', () => {
     check(`
       A::[m] = -> super
     `, `
-      let method;
-      A.prototype[method = m] = function() { return A.prototype.__proto__[method].call(this, ...arguments); };
+      let cls, method;
+      (cls = A).prototype[method = m] = function() { return cls.prototype.__proto__[method].call(this, ...arguments); };
     `);
   });
 
@@ -1681,6 +1682,33 @@ describe('classes', () => {
         static initClass() {
           let cls;
           (cls = this).prototype.f = function() { return cls.prototype.__proto__.f.call(this, ...arguments); };
+        }
+      }
+      A.initClass();
+    `);
+  });
+
+  it('properly saves the method name for computed methods using super', () => {
+    check(`
+      class A extends B
+        "#{m}": -> super
+    `, `
+      let method;
+      class A extends B {
+        [method = m]() { return super[method](...arguments); }
+      }
+    `);
+  });
+
+  it('handles dynamically-added methods using super on other classes added within class bodies', () => {
+    check(`
+      class A
+        @b::m = -> super
+    `, `
+      class A {
+        static initClass() {
+          let cls;
+          (cls = this.b).prototype.m = function() { return cls.prototype.__proto__.m.call(this, ...arguments); };
         }
       }
       A.initClass();

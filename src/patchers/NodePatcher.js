@@ -1237,12 +1237,12 @@ export default class NodePatcher {
   }
 
   /**
-   * Check if this expression has been marked as repeatable. Generally this
-   * should only be used for advanced cases, like transferring the repeat code
-   * result from one patcher to another.
+   * Check if this expression has been marked as repeatable, and if so, the
+   * repeat options used. Generally this should only be used for advanced cases,
+   * like transferring the repeat code result from one patcher to another.
    */
-  isSetAsRepeatableExpression(): boolean {
-    return Boolean(this._repeatableOptions);
+  getRepeatableOptions(): ?RepeatableOptions {
+    return this._repeatableOptions;
   }
 
   /**

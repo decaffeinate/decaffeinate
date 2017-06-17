@@ -55,7 +55,8 @@ describe('super', () => {
     check(`
       a.b.prototype.c = -> super
     `, `
-      a.b.prototype.c = function() { return a.b.prototype.__proto__.c.call(this, ...arguments); };
+      let cls;
+      (cls = a.b).prototype.c = function() { return cls.prototype.__proto__.c.call(this, ...arguments); };
     `);
   });
 
@@ -105,9 +106,9 @@ describe('super', () => {
       class A
         "#{b()}": -> super
     `, `
-      let ref;
+      let method;
       class A {
-        [ref = b()]() { return super[ref](...arguments); }
+        [method = b()]() { return super[method](...arguments); }
       }
     `);
   });

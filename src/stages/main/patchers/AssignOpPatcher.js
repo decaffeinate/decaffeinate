@@ -264,8 +264,7 @@ export default class AssignOpPatcher extends NodePatcher {
     classRefPatcher.setRequiresRepeatableExpression({
       parens: true,
       ref: 'cls',
-      // Inside an initClass method, we might use `this` for the class.
-      forceRepeat: classRefPatcher instanceof ThisPatcher,
+      forceRepeat: true,
     });
     if (methodAccessPatcher instanceof DynamicMemberAccessOpPatcher) {
       methodAccessPatcher.indexingExpr.setRequiresRepeatableExpression({
