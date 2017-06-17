@@ -19,6 +19,7 @@ export default class ForInPatcher extends ForPatcher {
   constructor(patcherContext: PatcherContext, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, step: ?NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
     super(patcherContext, keyAssignee, valAssignee, target, filter, body);
     this.step = step;
+    this._internalIndexBinding = null;
   }
 
   initialize() {
@@ -223,10 +224,6 @@ export default class ForInPatcher extends ForPatcher {
     this.patchPossibleNewlineAfterLoopHeader(this.getLastHeaderPatcher().outerEnd);
 
     if (!this.shouldPatchAsInitTestUpdateLoop() && this.valAssignee) {
-      if (this.keyAssignee && this.needsUniqueIndexName()) {
-        let indexAssignment = `${this.getUserSpecifiedIndex()} = ${this.getIndexBinding()}`;
-        this.body.insertLineBefore(indexAssignment, this.getOuterLoopBodyIndent());
-      }
       let valueAssignment = `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`;
       if (this.valAssignee.statementNeedsParens()) {
         valueAssignment = `(${valueAssignment})`;
@@ -292,8 +289,25 @@ export default class ForInPatcher extends ForPatcher {
     return 'iterable';
   }
 
+  /**
+   * Determine the name that will be used as the source of truth for the index
+   * during loop iteration. If the code modifies the user-specified index during
+   * the loop body, we need to choose a different variable name and make the
+   * loop code a little more complex.
+   */
+  getInternalIndexBinding() {
+    if (!this._internalIndexBinding) {
+      if (this.needsUniqueIndexName()) {
+        this._internalIndexBinding = this.claimFreeBinding(this.indexBindingCandidates());
+      } else {
+        this._internalIndexBinding = this.getIndexBinding();
+      }
+    }
+    return this._internalIndexBinding;
+  }
+
   needsUniqueIndexName() {
-    let userIndex = this.getUserSpecifiedIndex();
+    let userIndex = this.getIndexBinding();
 
     // We need to extract this to a variable if there's an assignment within the
     // loop, but assignments outside the loop are fine, so we make a fake scope
@@ -317,7 +331,10 @@ export default class ForInPatcher extends ForPatcher {
       if (this.shouldExtractStart()) {
         assignments.push(`${this.getStartReference()} = ${this.getStartCode()}`);
       }
-      assignments.push(`${this.getIndexBinding()} = ${this.getStartReference()}`);
+      assignments.push(`${this.getInternalIndexBinding()} = ${this.getStartReference()}`);
+      if (this.getInternalIndexBinding() !== this.getIndexBinding()) {
+        assignments.push(`${this.getIndexBinding()} = ${this.getInternalIndexBinding()}`);
+      }
       if (!this.isEndFixed()) {
         assignments.push(`${this.getEndReference()} = ${this.getEndCode()}`);
       }
@@ -337,12 +354,15 @@ export default class ForInPatcher extends ForPatcher {
         assignments.push(`${step.update} = ${step.init}`);
       }
       if (direction === DOWN) {
-        assignments.push(`${this.getIndexBinding()} = ${descInit}`);
+        assignments.push(`${this.getInternalIndexBinding()} = ${descInit}`);
       } else if (direction === UP) {
-        assignments.push(`${this.getIndexBinding()} = 0`);
+        assignments.push(`${this.getInternalIndexBinding()} = 0`);
       } else {
         assignments.push(`${this.getAscReference()} = ${this.getAscCode()}`);
-        assignments.push(`${this.getIndexBinding()} = ${this.getAscReference()} ? 0 : ${descInit}`);
+        assignments.push(`${this.getInternalIndexBinding()} = ${this.getAscReference()} ? 0 : ${descInit}`);
+      }
+      if (this.getInternalIndexBinding() !== this.getIndexBinding()) {
+        assignments.push(`${this.getIndexBinding()} = ${this.getInternalIndexBinding()}`);
       }
       return assignments.join(', ');
     }
@@ -354,7 +374,7 @@ export default class ForInPatcher extends ForPatcher {
       let inclusive = this.target.isInclusive();
       let gt = inclusive ? '>=' : '>';
       let lt = inclusive ? '<=' : '<';
-      let index = this.getIndexBinding();
+      let index = this.getInternalIndexBinding();
       let end = this.getEndReference();
 
       if (direction === DOWN) {
@@ -365,8 +385,8 @@ export default class ForInPatcher extends ForPatcher {
         return `${this.getAscReference()} ? ${index} ${lt} ${end} : ${index} ${gt} ${end}`;
       }
     } else {
-      let downComparison = `${this.getIndexBinding()} >= 0`;
-      let upComparison = `${this.getIndexBinding()} < ${this.getTargetReference()}.length`;
+      let downComparison = `${this.getInternalIndexBinding()} >= 0`;
+      let upComparison = `${this.getInternalIndexBinding()} < ${this.getTargetReference()}.length`;
       if (direction === DOWN) {
         return downComparison;
       } else if (direction === UP) {
@@ -378,7 +398,15 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   getUpdateCode(): string {
-    let index = this.getIndexBinding();
+    let assignments = [this.getUpdateAssignment()];
+    if (this.getInternalIndexBinding() !== this.getIndexBinding()) {
+      assignments.push(`${this.getIndexBinding()} = ${this.getInternalIndexBinding()}`);
+    }
+    return assignments.join(', ');
+  }
+
+  getUpdateAssignment(): string {
+    let index = this.getInternalIndexBinding();
     let step = this.getStep();
 
     // If step is a variable, we always just add it, since its value determines

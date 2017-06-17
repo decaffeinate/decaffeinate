@@ -99,25 +99,10 @@ export default class ForPatcher extends LoopPatcher {
         // matching expression, so this should never happen.
         throw keyAssignee.error(`expected loop index to be an identifier`);
       }
-      if (this.needsUniqueIndexName()) {
-        return this.claimFreeBinding(this.indexBindingCandidates());
-      } else {
-        return this.getUserSpecifiedIndex();
-      }
+      return this.slice(keyAssignee.contentStart, keyAssignee.contentEnd);
     } else {
       return this.claimFreeBinding(this.indexBindingCandidates());
     }
-  }
-
-  getUserSpecifiedIndex() {
-    if (!this._userSpecifiedIndex) {
-      this._userSpecifiedIndex = this.slice(this.keyAssignee.contentStart, this.keyAssignee.contentEnd);
-    }
-    return this._userSpecifiedIndex;
-  }
-
-  needsUniqueIndexName() {
-    return false;
   }
 
   /**
