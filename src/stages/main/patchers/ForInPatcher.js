@@ -314,14 +314,14 @@ export default class ForInPatcher extends ForPatcher {
     // that only looks at assignments within the loop body. But assignments
     // within closures could also happen temporally in the loop, so bail out if
     // we see one of those.
-    if (this.node.scope.hasInnerClosureAssignment(userIndex)) {
+    if (this.node.scope.hasInnerClosureModification(userIndex)) {
       return true;
     }
-    let fakeScope = new Scope(this.body.node, null);
-    traverse(this.body.node, child => {
+    let fakeScope = new Scope(this.node, null);
+    traverse(this.node, child => {
       fakeScope.processNode(child);
     });
-    return fakeScope.hasBinding(userIndex);
+    return fakeScope.hasModificationAfterDeclaration(userIndex);
   }
 
   getInitCode(): string {
