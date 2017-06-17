@@ -4,6 +4,7 @@ import IdentifierPatcher from './IdentifierPatcher';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
+import StringPatcher from './StringPatcher';
 import ThisPatcher from './ThisPatcher';
 import type NodePatcher from './../../../patchers/NodePatcher';
 import type { Node } from './../../../patchers/types';
@@ -42,7 +43,14 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   markKeyRepeatableIfNecessary() {
     if (this.expression instanceof FunctionPatcher &&
         this.expression.containsSuperCall()) {
-      this.key.setRequiresRepeatableExpression();
+      this.key.setRequiresRepeatableExpression({
+        ref: 'method',
+        // String interpolations are the only way to have computed keys, so we
+        // need to be defensive in that case. For other cases, like number
+        // literals, we still mark as repeatable so later code can safely get
+        // the repeat code.
+        forceRepeat: this.key instanceof StringPatcher && this.key.expressions.length > 0,
+      });
     }
   }
 

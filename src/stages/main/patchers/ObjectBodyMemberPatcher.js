@@ -63,14 +63,14 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
       // Since we're replacing an expression like `"#{foo}"` with just `foo`,
       // the outer string expression might be marked as repeatable, in which case
       // we should delegate that to the inner expression.
-      let shouldPropagateRepeatable = this.key.isSetAsRepeatableExpression();
-      if (shouldPropagateRepeatable) {
-        computedKeyPatcher.setRequiresRepeatableExpression();
+      let repeatOptions = this.key.getRepeatableOptions();
+      if (repeatOptions) {
+        computedKeyPatcher.setRequiresRepeatableExpression(repeatOptions);
       }
       this.overwrite(this.key.outerStart, computedKeyPatcher.outerStart, '[');
       computedKeyPatcher.patch();
       this.overwrite(computedKeyPatcher.outerEnd, this.key.outerEnd, ']');
-      if (shouldPropagateRepeatable) {
+      if (repeatOptions) {
         this.key.overrideRepeatCode(computedKeyPatcher.getRepeatCode());
       }
     } else {
