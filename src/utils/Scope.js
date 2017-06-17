@@ -14,13 +14,15 @@ type Bindings = { [key: string]: Node };
 export default class Scope {
   parent: ?Scope;
   bindings: Bindings;
-  innerClosureAssignments: { [key: string]: boolean };
+  modificationsAfterDeclaration: { [key: string]: boolean };
+  innerClosureModifications: { [key: string]: boolean };
   containerNode: Node;
 
   constructor(containerNode: Node, parent: ?Scope=null) {
     this.parent = parent;
     this.bindings = Object.create(parent ? parent.bindings : {});
-    this.innerClosureAssignments = {};
+    this.modificationsAfterDeclaration = {};
+    this.innerClosureModifications = {};
     this.containerNode = containerNode;
   }
 
@@ -36,8 +38,12 @@ export default class Scope {
     return this.getBinding(name) !== null;
   }
 
-  hasInnerClosureAssignment(name: string): boolean {
-    return this.innerClosureAssignments[this.key(name)] || false;
+  hasModificationAfterDeclaration(name: string): boolean {
+    return this.modificationsAfterDeclaration[this.key(name)] || false;
+  }
+
+  hasInnerClosureModification(name: string): boolean {
+    return this.innerClosureModifications[this.key(name)] || false;
   }
 
   getOwnNames(): Array<string> {
@@ -48,24 +54,41 @@ export default class Scope {
     return this.bindings.hasOwnProperty(this.key(name));
   }
 
+  /**
+   * Mark that the given name is explicitly declared, e.g. in a parameter.
+   */
   declares(name: string, node: Node) {
     let key = this.key(name);
     this.bindings[key] = node;
   }
 
+  /**
+   * Mark that the given name is part of an assignment. This might introduce a
+   * new variable or might set an existing variable, depending on context.
+   */
   assigns(name: string, node: Node) {
     if (!this.bindings[this.key(name)]) {
       // Not defined in this or any parent scope.
       this.declares(name, node);
-    } else if (!this.hasOwnBinding(name)) {
-      let parent = this.parent;
-      while (parent) {
-        if (parent.hasOwnBinding(name)) {
-          parent.innerClosureAssignments[this.key(name)] = true;
-          break;
+    } else {
+      this.modifies(name);
+    }
+  }
+
+  /**
+   * Mark that the given name is part of a modification, e.g. `+=` or `++`.
+   */
+  modifies(name: string) {
+    let scope = this;
+    while (scope) {
+      if (scope.hasOwnBinding(name)) {
+        scope.modificationsAfterDeclaration[this.key(name)] = true;
+        if (scope !== this) {
+          scope.innerClosureModifications[this.key(name)] = true;
         }
-        parent = parent.parent;
+        break;
       }
+      scope = scope.parent;
     }
   }
 
@@ -113,6 +136,21 @@ export default class Scope {
         leftHandIdentifiers(node.assignee).forEach(identifier =>
           this.assigns(identifier.data, identifier)
         );
+        break;
+
+      case 'CompoundAssignOp':
+        if (node.assignee.type === 'Identifier') {
+          this.modifies(node.assignee.data);
+        }
+        break;
+
+      case 'PostDecrementOp':
+      case 'PostIncrementOp':
+      case 'PreDecrementOp':
+      case 'PreIncrementOp':
+        if (node.expression.type === 'Identifier') {
+          this.modifies(node.expression.data);
+        }
         break;
 
       case 'Function':

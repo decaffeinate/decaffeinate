@@ -1638,4 +1638,46 @@ describe('for loops', () => {
       })();
     `);
   });
+
+  it('saves the loop index when it is modified but not assigned in the body', () => {
+    check(`
+      for a, i in arr
+        i += 5
+    `, `
+      for (let j = 0, i = j; j < arr.length; j++, i = j) {
+        let a = arr[i];
+        i += 5;
+      }
+    `);
+  });
+
+  it('saves the loop index when it is modified in an increment but not assigned in the body', () => {
+    check(`
+      for a, i in arr
+        i++
+    `, `
+      for (let j = 0, i = j; j < arr.length; j++, i = j) {
+        let a = arr[i];
+        i++;
+      }
+    `);
+  });
+
+  it('saves the loop index when it is modified in an inner closure but not assigned in the body', () => {
+    check(`
+      i = 0
+      f = ->
+        i++
+      for a, i in arr
+        f()
+    `, `
+      let j;
+      let i = 0;
+      let f = () => i++;
+      for (j = 0, i = j; j < arr.length; j++, i = j) {
+        let a = arr[i];
+        f();
+      }
+    `);
+  });
 });
