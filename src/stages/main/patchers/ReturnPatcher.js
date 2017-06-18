@@ -1,9 +1,10 @@
 import NodePatcher from './../../../patchers/NodePatcher';
+import ConditionalPatcher from './ConditionalPatcher';
+import SwitchPatcher from './SwitchPatcher';
 import type { PatcherContext } from './../../../patchers/types';
 
 export default class ReturnPatcher extends NodePatcher {
   expression: NodePatcher;
-  _willConvertToImplicitReturn: boolean = false;
   
   constructor(patcherContext: PatcherContext, expression: ?NodePatcher) {
     super(patcherContext);
@@ -13,11 +14,10 @@ export default class ReturnPatcher extends NodePatcher {
   initialize() {
     this.setExplicitlyReturns();
     if (this.expression !== null) {
-      if (this.expression.canPatchAsExpression()) {
-        this.expression.setRequiresExpression();
-      } else {
+      if (this.willConvertToImplicitReturn()) {
         this.expression.setImplicitlyReturns();
-        this._willConvertToImplicitReturn = true;
+      } else {
+        this.expression.setRequiresExpression();
       }
     }
   }
@@ -31,10 +31,17 @@ export default class ReturnPatcher extends NodePatcher {
 
   patchAsStatement() {
     if (this.expression) {
-      if (this._willConvertToImplicitReturn) {
+      if (this.willConvertToImplicitReturn()) {
         this.remove(this.contentStart, this.expression.outerStart);
       }
       this.expression.patch();
     }
+  }
+
+  willConvertToImplicitReturn() {
+    return !this.expression.isSurroundedByParentheses() && (
+      this.expression instanceof ConditionalPatcher ||
+      this.expression instanceof SwitchPatcher
+    );
   }
 }
