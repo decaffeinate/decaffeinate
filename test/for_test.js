@@ -1704,4 +1704,28 @@ describe('for loops', () => {
       for (let a of Object.keys(b || {})) {} 
     `);
   });
+
+  it('declares bindings for IIFE-style loops in an outer scope if necessary', () => {
+    check(`
+      a
+      x = (a for a in [])
+    `, `
+      let a;
+      a;
+      let x = ((() => {
+        let result = [];
+        for (a of []) {     result.push(a);
+        }
+        return result;
+      })());
+    `);
+  });
+
+  it('does not crash with a variable access followed by an IIFE-style loop declaring the variable', () => {
+    validate(`
+      a
+      x = (a for a in [])
+      setResult('did not crash')
+    `, 'did not crash');
+  });
 });

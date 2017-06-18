@@ -1,9 +1,10 @@
 import NodePatcher from './../../../patchers/NodePatcher';
+import BlockPatcher from './BlockPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import LoopPatcher from './LoopPatcher';
-import type BlockPatcher from './BlockPatcher';
 import type { PatcherContext, SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import getAssigneeBindings from '../../../utils/getAssigneeBindings';
 
 export default class ForPatcher extends LoopPatcher {
   keyAssignee: ?NodePatcher;
@@ -31,6 +32,38 @@ export default class ForPatcher extends LoopPatcher {
     this.target.setRequiresExpression();
     if (this.filter) {
       this.filter.setRequiresExpression();
+    }
+    this.getEnclosingScopeBlock().markForPatcherDescendant(this);
+  }
+
+  getEnclosingScopeBlock(): BlockPatcher {
+    let patcher = this;
+    while (patcher) {
+      if (patcher instanceof BlockPatcher &&
+        patcher.parent.node === this.node.scope.containerNode) {
+        return patcher;
+      }
+      patcher = patcher.parent;
+    }
+    throw this.error('Expected to find enclosing scope block.');
+  }
+
+  /**
+   * Called by the BlockPatcher for the enclosing scope to know which
+   * assignments may need declarations at the start of the block.
+   */
+  getIIFEAssignments(): Array<string> {
+    if (this.willPatchAsIIFE()) {
+      let iifeAssignments = [];
+      if (this.keyAssignee) {
+        iifeAssignments.push(...getAssigneeBindings(this.keyAssignee.node));
+      }
+      if (this.valAssignee) {
+        iifeAssignments.push(...getAssigneeBindings(this.valAssignee.node));
+      }
+      return iifeAssignments;
+    } else {
+      return [];
     }
   }
 
