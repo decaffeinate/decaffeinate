@@ -144,7 +144,7 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   patchAsStatement() {
-    if (!this.body.inline()) {
+    if (this.body && !this.body.inline()) {
       this.body.setIndent(this.getLoopBodyIndent());
     }
 

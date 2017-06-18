@@ -54,16 +54,22 @@ export default class ForPatcher extends LoopPatcher {
   }
 
   patchBodyAndFilter() {
-    let {body, filter} = this;
-
-    if (filter) {
-      this.body.insertLineBefore(`if (${this.getFilterCode()}) {`, this.getOuterLoopBodyIndent());
-      this.patchBody();
-      body.insertLineAfter('}', this.getOuterLoopBodyIndent());
-      body.insertLineAfter('}', this.getLoopIndent());
+    if (this.body) {
+      if (this.filter) {
+        this.body.insertLineBefore(`if (${this.getFilterCode()}) {`, this.getOuterLoopBodyIndent());
+        this.patchBody();
+        this.body.insertLineAfter('}', this.getOuterLoopBodyIndent());
+        this.body.insertLineAfter('}', this.getLoopIndent());
+      } else {
+        this.patchBody();
+        this.body.insertLineAfter('}', this.getLoopIndent());
+      }
     } else {
-      this.patchBody();
-      body.insertLineAfter('}', this.getLoopIndent());
+      if (this.filter) {
+        this.insert(this.contentEnd, `if (${this.getFilterCode()}) {} }`);
+      } else {
+        this.insert(this.contentEnd, `}`);
+      }
     }
   }
 
@@ -116,14 +122,29 @@ export default class ForPatcher extends LoopPatcher {
    * @protected
    */
   removeThenToken() {
+    let searchStart = this.getLoopHeaderEnd();
+    let searchEnd;
+    if (this.body) {
+      searchEnd = this.body.outerStart;
+    } else {
+      let nextToken = this.nextSemanticToken();
+      if (nextToken) {
+        searchEnd = nextToken.end;
+      } else {
+        searchEnd = this.contentEnd;
+      }
+    }
     let index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.getLoopHeaderEnd(), this.body.outerStart,
-      token => token.type === SourceType.THEN
+      searchStart, searchEnd, token => token.type === SourceType.THEN
     );
     if (index) {
       let thenToken = this.sourceTokenAtIndex(index);
       let nextToken = this.sourceTokenAtIndex(index.next());
-      this.remove(thenToken.start, nextToken.start);
+      if (nextToken) {
+        this.remove(thenToken.start, nextToken.start);
+      } else {
+        this.remove(thenToken.start, thenToken.end);
+      }
     }
   }
 

@@ -32,7 +32,7 @@ export default class WhilePatcher extends LoopPatcher {
    * ( 'while' | 'until' ) CONDITION ('when' GUARD)? NEWLINE INDENT BODY
    */
   patchAsStatement() {
-    if (!this.body.inline()) {
+    if (this.body && !this.body.inline()) {
       this.body.setIndent(this.getLoopBodyIndent());
     }
 
@@ -89,7 +89,11 @@ export default class WhilePatcher extends LoopPatcher {
     if (thenIndex) {
       let thenToken = this.sourceTokenAtIndex(thenIndex);
       let nextToken = this.sourceTokenAtIndex(thenIndex.next());
-      this.remove(thenToken.start, nextToken.start);
+      if (nextToken) {
+        this.remove(thenToken.start, nextToken.start);
+      } else {
+        this.remove(thenToken.start, thenToken.end);
+      }
     }
 
     this.patchPossibleNewlineAfterLoopHeader(
@@ -98,11 +102,19 @@ export default class WhilePatcher extends LoopPatcher {
 
     if (this.guard) {
       // Close the guard's `if` consequent block.
-      this.body.insertLineAfter('}', this.getOuterLoopBodyIndent());
+      if (this.body) {
+        this.body.insertLineAfter('}', this.getOuterLoopBodyIndent());
+      } else {
+        this.insert(this.contentEnd, '}');
+      }
     }
 
     // Close the `while` body block.
-    this.body.insertLineAfter('}', this.getLoopIndent());
+    if (this.body) {
+      this.body.insertLineAfter('}', this.getLoopIndent());
+    } else {
+      this.insert(this.contentEnd, '}');
+    }
   }
 
   /**
@@ -126,11 +138,28 @@ export default class WhilePatcher extends LoopPatcher {
       throw this.error(`could not get first token of 'while' loop`);
     }
 
+    let searchStart;
+    if (this.guard) {
+      searchStart = this.guard.outerEnd;
+    } else {
+      searchStart = this.condition.outerEnd;
+    }
+    let searchEnd;
+    if (this.body) {
+      searchEnd = this.body.outerStart;
+    } else {
+      // Look one more token since sometimes the `then` isn't included in the range.
+      let nextToken = this.nextSemanticToken();
+      if (nextToken) {
+        searchEnd = nextToken.end;
+      } else {
+        searchEnd = this.contentEnd;
+      }
+    }
+
     // `while a then …`
-    return this.indexOfSourceTokenBetweenPatchersMatching(
-      this.guard || this.condition,
-      this.body,
-      token => token.type === SourceType.THEN
+    return this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      searchStart, searchEnd, token => token.type === SourceType.THEN
     );
   }
 

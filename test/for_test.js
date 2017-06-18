@@ -1680,4 +1680,28 @@ describe('for loops', () => {
       }
     `);
   });
+
+  it('handles a for-in loop with an empty body', () => {
+    check(`
+      for a in b then
+    `, `
+      for (let a of Array.from(b)) {} 
+    `);
+  });
+
+  it('handles a for-of loop with an empty body', () => {
+    check(`
+      for a of b then
+    `, `
+      for (let a in b) {} 
+    `);
+  });
+
+  it('handles a for-own loop with an empty body', () => {
+    check(`
+      for own a of b then
+    `, `
+      for (let a of Object.keys(b || {})) {} 
+    `);
+  });
 });

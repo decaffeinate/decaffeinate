@@ -16,7 +16,7 @@ import type { PatcherContext } from './../../../patchers/types';
 export default class WhilePatcher extends NodePatcher {
   condition: NodePatcher;
   guard: ?NodePatcher;
-  body: NodePatcher;
+  body: ?NodePatcher;
   
   constructor(patcherContext: PatcherContext, condition: NodePatcher, guard: ?NodePatcher, body: NodePatcher) {
     super(patcherContext);
@@ -84,6 +84,6 @@ export default class WhilePatcher extends NodePatcher {
    * @private
    */
   isPostWhile(): boolean {
-    return this.condition.contentStart > this.body.contentStart;
+    return this.body && this.condition.contentStart > this.body.contentStart;
   }
 }

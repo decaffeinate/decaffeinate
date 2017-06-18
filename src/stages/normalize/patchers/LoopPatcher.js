@@ -35,6 +35,8 @@ export default class LoopPatcher extends NodePatcher {
       this.overwrite(loop.start, loop.end, 'while true then');
     }
 
-    this.body.patch();
+    if (this.body) {
+      this.body.patch();
+    }
   }
 }

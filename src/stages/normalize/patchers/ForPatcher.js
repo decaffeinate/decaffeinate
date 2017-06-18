@@ -54,9 +54,16 @@ export default class ForPatcher extends NodePatcher {
     }
 
     if (bodyPrefixLine !== null) {
-      this.body.insertLineBefore(bodyPrefixLine);
+      if (this.body) {
+        this.body.insertLineBefore(bodyPrefixLine);
+      } else {
+        this.insert(this.contentEnd, ` ${bodyPrefixLine}`);
+      }
     }
-    this.body.patch();
+
+    if (this.body) {
+      this.body.patch();
+    }
   }
 
   patchAsStatement() {
@@ -83,7 +90,7 @@ export default class ForPatcher extends NodePatcher {
    * @private
    */
   isPostFor(): boolean {
-    return this.body.contentStart < this.target.contentStart;
+    return this.body && this.body.contentStart < this.target.contentStart;
   }
 
   /**

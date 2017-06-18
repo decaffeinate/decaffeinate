@@ -1,7 +1,7 @@
 import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class LoopPatcher extends NodePatcher {
-  body: BlockPatcher;
+  body: ?BlockPatcher;
 
   constructor(patcherContext: PatcherContext, body: BlockPatcher) {
     super(patcherContext);
@@ -87,10 +87,12 @@ export default class LoopPatcher extends NodePatcher {
   }
 
   patchBody() {
-    if (this.shouldConvertInlineBodyToNonInline()) {
-      this.body.insert(this.body.outerStart, this.getLoopBodyIndent());
+    if (this.body) {
+      if (this.shouldConvertInlineBodyToNonInline()) {
+        this.body.insert(this.body.outerStart, this.getLoopBodyIndent());
+      }
+      this.body.patch({ leftBrace: false, rightBrace: false });
     }
-    this.body.patch({ leftBrace: false, rightBrace: false });
   }
 
   shouldConvertInlineBodyToNonInline() {
