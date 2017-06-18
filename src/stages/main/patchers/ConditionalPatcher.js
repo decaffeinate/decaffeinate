@@ -212,7 +212,11 @@ export default class ConditionalPatcher extends NodePatcher {
       let thenToken = this.sourceTokenAtIndex(thenTokenIndex);
       // `if (a) then b` → `if (a) b`
       //         ^^^^^
-      this.remove(thenToken.start, this.consequent.outerStart);
+      if (this.consequent) {
+        this.remove(thenToken.start, this.consequent.outerStart);
+      } else {
+        this.remove(thenToken.start, thenToken.end);
+      }
     }
   }
 
@@ -343,13 +347,22 @@ export default class ConditionalPatcher extends NodePatcher {
    * @private
    */
   getThenTokenIndex(): ?SourceTokenListIndex {
-    if (this.consequent === null) {
-      return null;
+    let searchEnd;
+    if (this.consequent) {
+      searchEnd = this.consequent.outerStart;
+    } else if (this.alternate) {
+      searchEnd = this.alternate.outerStart;
+    } else {
+      let nextToken = this.nextSemanticToken();
+      if (nextToken) {
+        searchEnd = nextToken.end;
+      } else {
+        searchEnd = this.contentEnd;
+      }
     }
-    return this.indexOfSourceTokenBetweenPatchersMatching(
-      this.condition,
-      this.consequent,
-      token => token.type === SourceType.THEN
+
+    return this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      this.condition.outerEnd, searchEnd, token => token.type === SourceType.THEN
     );
   }
 

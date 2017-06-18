@@ -767,4 +767,12 @@ describe('conditionals', () => {
       });
     `);
   });
+
+  it('handles a conditional with an inline empty body', () => {
+    check(`
+      if a then
+    `, `
+      if (a) {}  
+    `);
+  });
 });

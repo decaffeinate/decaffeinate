@@ -3,7 +3,7 @@ import { SourceType } from 'coffee-lex';
 
 export default class ForOfPatcher extends ForPatcher {
   patchAsStatement() {
-    if (!this.body.inline()) {
+    if (this.body && !this.body.inline()) {
       this.body.setIndent(this.getLoopBodyIndent());
     }
 

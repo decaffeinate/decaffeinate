@@ -439,4 +439,20 @@ describe('while', () => {
       while (b) { a; } c;
     `);
   });
+
+  it('handles a while loop with an empty body', () => {
+    check(`
+      while a then
+    `, `
+      while (a) {} 
+    `);
+  });
+
+  it('handles a loop with an empty body', () => {
+    check(`
+      loop then
+    `, `
+      while (true) {} 
+    `);
+  });
 });
