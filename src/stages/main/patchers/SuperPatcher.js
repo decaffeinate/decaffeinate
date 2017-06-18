@@ -58,7 +58,13 @@ export default class SuperPatcher extends NodePatcher {
     if (methodAssignment instanceof ClassAssignOpPatcher) {
       let accessCode;
       if (methodAssignment.isStaticMethod()) {
-        accessCode = `.${methodAssignment.key.node.member.data}`;
+        if (methodAssignment.key instanceof MemberAccessOpPatcher) {
+          accessCode = `.${methodAssignment.key.node.member.data}`;
+        } else if (methodAssignment.key instanceof DynamicMemberAccessOpPatcher) {
+          accessCode = `[${methodAssignment.key.indexingExpr.getRepeatCode()}]`;
+        } else {
+          throw this.error('Unexpected key type for static method.');
+        }
       } else {
         if (methodAssignment.key instanceof IdentifierPatcher) {
           accessCode = `.${methodAssignment.key.node.data}`;
