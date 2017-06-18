@@ -1,7 +1,10 @@
 import { SourceType } from 'coffee-lex';
 import ClassPatcher from './ClassPatcher';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import NodePatcher from '../../../patchers/NodePatcher';
+import containsSuperCall from '../../../utils/containsSuperCall';
 
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;
@@ -14,20 +17,24 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchAsExpression() {
-    let classParent = this.getClassParent();
-    let isClassAssignment = classParent &&
-      classParent.isClassAssignment(this.node) &&
-      !(classParent.isClassMethod(this) && classParent.body.statements.indexOf(this) > -1);
-
-    if (isClassAssignment) {
+    this.prepareEarlySuperTransform();
+    let isDynamicallyCreatedClassAssignment = this.isDynamicallyCreatedClassAssignment();
+    if (isDynamicallyCreatedClassAssignment) {
       this.patchClassAssignmentPrefix();
     }
     this.assignee.patch();
-    if (isClassAssignment) {
+    if (isDynamicallyCreatedClassAssignment) {
       this.patchClassAssignmentOperator();
     }
     this.removeUnnecessaryThenToken();
     this.expression.patch();
+  }
+
+  isDynamicallyCreatedClassAssignment() {
+    let classParent = this.getClassParent();
+    return classParent &&
+      classParent.isClassAssignment(this.node) &&
+      !(classParent.isClassMethod(this) && classParent.body.statements.indexOf(this) > -1);
   }
 
   patchClassAssignmentPrefix() {
@@ -60,6 +67,63 @@ export default class AssignOpPatcher extends NodePatcher {
         return parent;
       }
       parent = parent.parent;
+    }
+    return null;
+  }
+
+  /**
+   * Dynamically-created static methods using super need to be transformed in
+   * the normalize stage instead of the main stage. Otherwise, the `super` will
+   * resolve to `initClass` instead of the proper static method.
+   */
+  needsEarlySuperTransform() {
+    if (!this.isDynamicallyCreatedClassAssignment()) {
+      return false;
+    }
+    return this.node.type !== 'ClassProtoAssignOp' &&
+      this.expression instanceof FunctionPatcher &&
+      containsSuperCall(this.expression.node);
+  }
+
+  prepareEarlySuperTransform() {
+    if (this.needsEarlySuperTransform()) {
+      if (this.assignee instanceof MemberAccessOpPatcher) {
+        this.assignee.expression.setRequiresRepeatableExpression({
+          parens: true,
+          ref: 'cls',
+          forceRepeat: true,
+        });
+      } else if (this.assignee instanceof DynamicMemberAccessOpPatcher) {
+        this.assignee.expression.setRequiresRepeatableExpression({
+          parens: true,
+          ref: 'cls',
+          forceRepeat: true,
+        });
+        this.assignee.indexingExpr.setRequiresRepeatableExpression({
+          ref: 'method',
+          forceRepeat: true,
+        });
+      } else {
+        throw this.error('Unexpected assignee type for early super transform.');
+      }
+    }
+  }
+
+  getEarlySuperTransformInfo() {
+    if (this.needsEarlySuperTransform()) {
+      if (this.assignee instanceof MemberAccessOpPatcher) {
+        return {
+          classCode: this.assignee.expression.getRepeatCode(),
+          accessCode: `.${this.assignee.member.node.data}`,
+        };
+      } else if (this.assignee instanceof DynamicMemberAccessOpPatcher) {
+        return {
+          classCode: this.assignee.expression.getRepeatCode(),
+          accessCode: `[${this.assignee.indexingExpr.getRepeatCode()}]`,
+        };
+      } else {
+        throw this.error('Unexpected assignee type for early super transform.');
+      }
     }
     return null;
   }

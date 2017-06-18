@@ -1,8 +1,19 @@
 import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
 import DefaultParamPatcher from './DefaultParamPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
+import type NodePatcher from '../../../patchers/NodePatcher';
+import type { PatcherContext } from '../../../patchers/types';
 
 export default class MemberAccessOpPatcher extends PassthroughPatcher {
+  expression: NodePatcher;
+  member: NodePatcher;
+
+  constructor(patcherContext: PatcherContext, expression: NodePatcher, member: NodePatcher) {
+    super(patcherContext, expression, member);
+    this.expression = expression;
+    this.member = member;
+  }
+
   shouldTrimContentRange() {
     return true;
   }

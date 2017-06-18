@@ -1,11 +1,11 @@
 import ArrayInitialiserPatcher from './patchers/ArrayInitialiserPatcher';
-import BareSuperFunctionApplicationPatcher from './patchers/BareSuperFunctionApplicationPatcher';
 import BlockPatcher from './patchers/BlockPatcher';
 import ClassPatcher from './patchers/ClassPatcher';
 import AssignOpPatcher from './patchers/AssignOpPatcher';
 import ConditionalPatcher from './patchers/ConditionalPatcher';
 import ConstructorPatcher from './patchers/ConstructorPatcher';
 import DoOpPatcher from './patchers/DoOpPatcher';
+import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher';
 import ExpansionPatcher from './patchers/ExpansionPatcher';
 import ForInPatcher from './patchers/ForInPatcher';
 import ForOfPatcher from './patchers/ForOfPatcher';
@@ -19,6 +19,8 @@ import PassthroughPatcher from '../../patchers/PassthroughPatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
 import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher';
 import SpreadPatcher from './patchers/SpreadPatcher';
+import SuperPatcher from './patchers/SuperPatcher';
+import ThisPatcher from './patchers/ThisPatcher';
 import TryPatcher from './patchers/TryPatcher';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';
 import WhilePatcher from './patchers/WhilePatcher';
@@ -39,6 +41,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'MemberAccessOp':
         return MemberAccessOpPatcher;
+
+      case 'DynamicMemberAccessOp':
+        return DynamicMemberAccessOpPatcher;
 
       case 'Block':
         return BlockPatcher;
@@ -73,8 +78,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
       case 'SoakedNewOp':
         return FunctionApplicationPatcher;
 
+      case 'Super':
       case 'BareSuperFunctionApplication':
-        return BareSuperFunctionApplicationPatcher;
+        return SuperPatcher;
 
       case 'Identifier':
         return IdentifierPatcher;
@@ -115,6 +121,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'Try':
         return TryPatcher;
+
+      case 'This':
+        return ThisPatcher;
 
       default:
         return PassthroughPatcher;
