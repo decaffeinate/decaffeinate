@@ -3,6 +3,7 @@ import ConditionalPatcher from './ConditionalPatcher';
 import DoOpPatcher from './DoOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
+import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
@@ -45,6 +46,8 @@ export default class AssignOpPatcher extends NodePatcher {
   patchAsExpression() {
     this.markProtoAssignmentRepeatableIfNecessary();
     let shouldAddParens = this.negated ||
+      (this.willResultInSeqExpression() &&
+        this.parent instanceof FunctionApplicationPatcher) ||
       (!this.isSurroundedByParentheses() &&
         !(this.parent instanceof ReturnPatcher ||
           this.parent instanceof DoOpPatcher ||
@@ -104,6 +107,12 @@ export default class AssignOpPatcher extends NodePatcher {
         this.assignee, this.expression.patchAndGetCode(), this.expression.isRepeatable());
       this.overwriteWithAssignments(assignments);
     }
+  }
+
+  willResultInSeqExpression() {
+    return this.willPatchAsExpression() &&
+      (!canPatchAssigneeToJavaScript(this.assignee.node) ||
+        this.assignee instanceof ArrayInitialiserPatcher);
   }
 
   patchSimpleAssignment() {

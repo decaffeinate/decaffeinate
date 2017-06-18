@@ -722,4 +722,21 @@ describe('function calls', () => {
     `);
   });
 
+  it('wraps parens around comma-separated simple in an argument position', () => {
+    check(`
+      a([b] = c)
+    `, `
+      let b;
+      a(([b] = Array.from(c), c));
+    `);
+  });
+
+  it('wraps parens around comma-separated complex assignments in an argument position', () => {
+    check(`
+      a([b, ..., c] = d)
+    `, `
+      let b, c;
+      a((b = d[0], c = d[d.length - 1], d));
+    `);
+  });
 });
