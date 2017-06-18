@@ -1714,4 +1714,27 @@ describe('classes', () => {
       A.initClass();
     `);
   });
+
+  it('converts dynamically-named static methods properly', () => {
+    check(`
+      class A
+        @[b] = -> 'hello'
+    `, `
+      class A {
+        static [b]() { return 'hello'; }
+      }
+    `);
+  });
+
+  it('properly handles dynamic keys with static methods using super', () => {
+    check(`
+      class A extends B
+        @[c] = -> super
+    `, `
+      let method;
+      class A extends B {
+        static [method = c]() { return super[method](...arguments); }
+      }
+    `);
+  });
 });

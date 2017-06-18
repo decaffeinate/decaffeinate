@@ -221,7 +221,7 @@ export default class ClassPatcher extends NodePatcher {
     }
     if (node.type === 'AssignOp') {
       let {assignee} = node;
-      if (assignee.type === 'MemberAccessOp') {
+      if (assignee.type === 'MemberAccessOp' || assignee.type === 'DynamicMemberAccessOp') {
         if (assignee.expression.type === 'This') {
           return true;
         }

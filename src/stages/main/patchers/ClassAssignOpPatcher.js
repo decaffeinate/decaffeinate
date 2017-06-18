@@ -1,4 +1,5 @@
 import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
@@ -31,8 +32,15 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     if (this.isStaticMethod()) {
       // `this.a: ->` → `static a: ->`
       //  ^^^^^          ^^^^^^^
-      let memberNameToken = this.key.getMemberNameSourceToken();
-      this.overwrite(this.key.outerStart, memberNameToken.start, 'static ');
+      let replaceEnd;
+      if (this.key instanceof MemberAccessOpPatcher) {
+        replaceEnd = this.key.getMemberNameSourceToken().start;
+      } else if (this.key instanceof DynamicMemberAccessOpPatcher) {
+        replaceEnd = this.key.expression.outerEnd;
+      } else {
+        throw this.error('Unexpected static method key type.');
+      }
+      this.overwrite(this.key.outerStart, replaceEnd, 'static ');
     }
   }
 
@@ -43,14 +51,23 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   markKeyRepeatableIfNecessary() {
     if (this.expression instanceof FunctionPatcher &&
         this.expression.containsSuperCall()) {
-      this.key.setRequiresRepeatableExpression({
-        ref: 'method',
-        // String interpolations are the only way to have computed keys, so we
-        // need to be defensive in that case. For other cases, like number
-        // literals, we still mark as repeatable so later code can safely get
-        // the repeat code.
-        forceRepeat: this.key instanceof StringPatcher && this.key.expressions.length > 0,
-      });
+      if (this.isStaticMethod()) {
+        if (this.key instanceof DynamicMemberAccessOpPatcher) {
+          this.key.indexingExpr.setRequiresRepeatableExpression({
+            ref: 'method',
+            forceRepeat: true,
+          });
+        }
+      } else {
+        this.key.setRequiresRepeatableExpression({
+          ref: 'method',
+          // String interpolations are the only way to have computed keys, so we
+          // need to be defensive in that case. For other cases, like number
+          // literals, we still mark as repeatable so later code can safely get
+          // the repeat code.
+          forceRepeat: this.key instanceof StringPatcher && this.key.expressions.length > 0,
+        });
+      }
     }
   }
 
@@ -58,8 +75,9 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    * @protected
    */
   patchKey() {
-    if (this.key instanceof MemberAccessOpPatcher) {
-      // Do nothing; this case is handled elsewhere.
+    if (this.isStaticMethod()) {
+      // Don't do anything special; the details around this are handled elsewhere.
+      this.key.patch();
     } else {
       super.patchKey();
     }
@@ -93,10 +111,13 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    *     @b: ->
    *     A.c: ->
    *
+   * Similarly, `this[a]`, `@[b]`, and `A[c]` can all become static methods.
+   *
    * @protected
    */
   isStaticMethod(): boolean {
-    if (!(this.key instanceof MemberAccessOpPatcher)) {
+    if (!(this.key instanceof MemberAccessOpPatcher) &&
+      !(this.key instanceof DynamicMemberAccessOpPatcher)) {
       return false;
     }
 
