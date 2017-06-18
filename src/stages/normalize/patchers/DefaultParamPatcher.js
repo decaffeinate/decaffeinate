@@ -57,9 +57,15 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
    * skip that step if the user opted out of it in favor of cleaner code, and
    * also in a case like `do (a=1) -> a`, which is handled later as a special
    * case and doesn't use JS default params.
+   *
+   * Also skip the conversion when the default is to `null`, since the behavior
+   * between CoffeeScript and JavaScript happens to be the same in that case.
    */
   shouldExtractToConditionalAssign() {
     if (this.options.looseDefaultParams) {
+      return false;
+    }
+    if (this.value.node.type === 'Null') {
       return false;
     }
     if (this.parent instanceof FunctionPatcher &&
