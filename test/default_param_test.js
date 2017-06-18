@@ -111,4 +111,13 @@ describe('default params', () => {
       let filter = function(items, predicate) { if (predicate == null) { predicate = () => true; } return items.filter(predicate); };
     `);
   });
+
+  it('does not defensively convert default params that default to null', () => {
+    check(`
+      (a = null) ->
+        console.log a
+    `, `
+      (a = null) => console.log(a);
+    `);
+  });
 });
