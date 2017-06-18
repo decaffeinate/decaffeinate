@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('switch', () => {
   it('works with a single case', () => {
@@ -553,5 +554,45 @@ describe('switch', () => {
           break;
       }
     `);
+  });
+
+  it('allows falling through in a returned switch', () => {
+    check(`
+      ->
+        return switch a
+          when b
+            c
+        d
+    `, `
+      (function() {
+        switch (a) {
+          case b:
+            return c;
+        }
+        return d;
+      });
+    `);
+  });
+
+  it('gives the correct result when returning an incomplete switch', () => {
+    validate(`
+      f = ->
+        return switch 1
+          when 2
+            3
+        4
+      setResult(f())
+    `, 4);
+  });
+
+  it('gives the correct result when returning a parenthesized incomplete switch', () => {
+    validate(`
+      f = ->
+        return (switch 1
+          when 2
+            3)
+        4
+      setResult('' + f())
+    `, 'undefined');
   });
 });

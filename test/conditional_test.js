@@ -775,4 +775,40 @@ describe('conditionals', () => {
       if (a) {}  
     `);
   });
+
+  it('allows falling through an empty conditional in a return statement', () => {
+    check(`
+      ->
+        return if a
+          b
+        c
+    `, `
+      (function() {
+        if (a) {
+          return b;
+        }
+        return c;
+      });
+    `);
+  });
+
+  it('gives the correct result when returning an incomplete conditional', () => {
+    validate(`
+      f = ->
+        return if 0
+          1
+        2
+      setResult(f())
+    `, 2);
+  });
+
+  it('gives the correct result when returning a parenthesized incomplete conditional', () => {
+    validate(`
+      f = ->
+        return (if 0
+          1)
+        2
+      setResult('' + f())
+    `, 'undefined');
+  });
 });
