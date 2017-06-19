@@ -24,13 +24,14 @@ information and advice on running decaffeinate on real-world code.
 
 ## Status
 
-**Mostly complete.** The project has been used to convert tens of thousands of
-lines of production code, and can be relied upon for production use, but no
-guarantees are made.
+**Complete.** The project is stable enough for production use, and has been used
+to convert tens of thousands of lines of production code. The conversion process
+has been extensively tested and there are few or no known correctness bugs,
+although no guarantees are made.
 
 Here are some popular open source CoffeeScript projects and their current status
 when run through decaffeinate. Each project has a decaffeinate-specific fork
-that is re-run daily.
+that is re-created from the original repo once per day.
 
 Project                                                  | Lines of CoffeeScript | Conversion status                 | Test status                 
 -------------------------------------------------------- |:---------------------:|:---------------------------------:|:---------------------------:
@@ -63,9 +64,8 @@ companies, such as Square, Benchling, and Bugsnag. See this
 [blog post from Bugsnag][bugsnag-blog-post] to read about their experiences
 using decaffeinate.
 
-Check the [issues] page for more specific details on outstanding bugs and
-incomplete features. And, of course, you're welcome to file issues for any
-problems you run into.
+If you run into crashes or correctness issues, or you have suggestions on how
+decaffeinate could be improved, feel free to file an issue on the [issues] page.
 
 [chroma.js]: https://github.com/decaffeinate-examples/chroma.js
 [hubot]: https://github.com/decaffeinate-examples/hubot
