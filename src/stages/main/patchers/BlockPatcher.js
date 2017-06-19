@@ -4,12 +4,40 @@ import SharedBlockPatcher from '../../../patchers/SharedBlockPatcher';
 import ReturnPatcher from './ReturnPatcher';
 import type { SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import countVariableUsages from '../../../utils/countVariableUsages';
 
 export default class BlockPatcher extends SharedBlockPatcher {
+  _forPatcherDescendants = [];
+  _explicitDeclarationsToAdd = [];
+
+  /**
+   * Called by initialize within child ForPatchers, so this array will be
+   * available in our initialize method.
+   */
+  markForPatcherDescendant(forPatcher: ForPatcher) {
+    this._forPatcherDescendants.push(forPatcher);
+  }
+
+  /**
+   * In some cases, loops assign to variables, but will be turned into IIFEs,
+   * moving the variable scope into the IIFE. This can cause incorrect behavior
+   * if the variable is used outside the loop body, so we want to explicitly
+   * declare the variable at the top of the block in that case.
+   */
+  initialize() {
+    for (let forPatcher of this._forPatcherDescendants) {
+      for (let name of forPatcher.getIIFEAssignments()) {
+        if (countVariableUsages(this.node, name) > countVariableUsages(forPatcher.node, name) &&
+            this._explicitDeclarationsToAdd.indexOf(name) === -1) {
+          this._explicitDeclarationsToAdd.push(name);
+        }
+      }
+    }
+  }
+
   canPatchAsExpression(): boolean {
-    return this.statements.every(
-      statement => statement.canPatchAsExpression()
-    );
+    return this._explicitDeclarationsToAdd.length === 0 &&
+      this.statements.every(statement => statement.canPatchAsExpression());
   }
 
   prefersToPatchAsExpression(): boolean {
@@ -42,6 +70,10 @@ export default class BlockPatcher extends SharedBlockPatcher {
   patchAsStatement({ leftBrace=true, rightBrace=true }={}) {
     if (leftBrace) {
       this.insert(this.innerStart, '{');
+    }
+
+    if (this._explicitDeclarationsToAdd.length > 0) {
+      this.insertStatementsAtIndex([`var ${this._explicitDeclarationsToAdd.join(', ')};`], 0);
     }
 
     let constructor = null;

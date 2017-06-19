@@ -48,6 +48,7 @@ export default class TransformCoffeeScriptStage {
 
   build(): NodePatcher {
     this.root = this.patcherForNode(this.ast);
+    // Note that initialize is called in bottom-up order.
     this.patchers.forEach(patcher => patcher.initialize());
     return this.root;
   }
