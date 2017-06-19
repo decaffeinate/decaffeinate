@@ -68,4 +68,12 @@ describe('throw', () => {
       throw a;
     `);
   });
+
+  it('treats the throw target as an expression', () => {
+    check(`
+      throw(res.data?.error)
+    `, `
+      throw(res.data != null ? res.data.error : undefined);
+    `);
+  });
 });
