@@ -60,7 +60,7 @@
   "devDependencies": {
     "@types/mocha": "^2.2.41",
     "@types/mz": "0.0.31",
-    "@types/node": "^7.0.22",
+    "@types/node": "^8.0.0",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-plugin-external-helpers": "^6.22.0",
