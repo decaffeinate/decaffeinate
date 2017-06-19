@@ -10,6 +10,10 @@ export default class ThrowPatcher extends NodePatcher {
     this.expression = expression;
   }
 
+  initialize() {
+    this.expression.setRequiresExpression();
+  }
+
   /**
    * Throw in JavaScript is a statement only, so we'd prefer it stay that way.
    */
