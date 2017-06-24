@@ -42,7 +42,7 @@ describe('string integration', function() {
                  '    leading and trailing indent    '];
   let quotes = [
     ['\'', 'single quote (\')'],
-    ['"', 'double quote (\")']];
+    ['"', 'double quote (")']];
 
   let twoLineTests = generateTwoLineTests(strings);
   let threeLineTests = generateThreeLineTests(strings);

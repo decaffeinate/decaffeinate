@@ -39,7 +39,7 @@ describe('strings', () => {
   });
 
   it('escapes backticks when changing the quote type', () => {
-    check("'''a\n`'''", '`a\n\\\``;');
+    check("'''a\n`'''", '`a\n\\``;');
   });
 
   it('strips shared leading spaces for each line of multi-line triple-quoted strings', () => {
