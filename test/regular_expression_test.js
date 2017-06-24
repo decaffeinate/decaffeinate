@@ -3,11 +3,11 @@ import validate from './support/validate';
 
 describe('regular expressions', () => {
   it('passes regular expressions through as-is', () => {
-    check(`a = /foo\s/`, `let a = /foo\s/;`);
+    check(`a = /foo\\s/`, `let a = /foo\\s/;`);
   });
 
   it('passes regular expressions with hash through as-is in an assignment context', () => {
-    check(`a = /foo#\s/`, `let a = /foo#\s/;`);
+    check(`a = /foo#\\s/`, `let a = /foo#\\s/;`);
   });
 
   it('passes regular expressions with hash through as-is in a function call context', () => {
