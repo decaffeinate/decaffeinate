@@ -739,4 +739,27 @@ describe('function calls', () => {
       a((b = d[0], c = d[d.length - 1], d));
     `);
   });
+
+  it('properly handles a semicolon-terminated function followed by a comma', () => {
+    check(`
+      fn1((done) ->
+        fn2('string', (object) ->
+          ;
+        , (err, data) ->
+          p = data
+          done(err)
+        )
+      )
+    `, `
+      fn1(done =>
+        fn2('string', function(object) {
+          
+        }
+        , function(err, data) {
+          let p = data;
+          return done(err);
+        })
+      );
+    `);
+  });
 });

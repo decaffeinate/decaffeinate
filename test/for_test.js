@@ -1728,4 +1728,24 @@ describe('for loops', () => {
       setResult('did not crash')
     `, 'did not crash');
   });
+
+  it('does not crash on a semicolon-only body for a loop expression', () => {
+    check(`
+      x = for a in b
+        ;
+    `, `
+      let x = Array.from(b).map((a) =>
+        undefined);
+    `);
+  });
+
+  it('does not crash on a body ending in a semicolon', () => {
+    check(`
+      x = for a in b
+        c;
+    `, `
+      let x = Array.from(b).map((a) =>
+        c);
+    `);
+  });
 });
