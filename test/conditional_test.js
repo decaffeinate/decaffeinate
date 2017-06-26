@@ -811,4 +811,28 @@ describe('conditionals', () => {
       setResult('' + f())
     `, 'undefined');
   });
+
+  it('handles an expression-style conditional ending in a semicolon', () => {
+    check(`
+      x = if a
+        ;
+    `, `
+      let x = a ?
+        undefined : undefined;
+    `);
+  });
+
+  it('handles an expression-style conditional with semicolon consequent', () => {
+    check(`
+      x = if a
+        ;
+      else
+        b
+    `, `
+      let x = a ?
+        undefined
+      :
+        b;
+    `);
+  });
 });

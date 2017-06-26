@@ -190,6 +190,10 @@ export default class BlockPatcher extends SharedBlockPatcher {
         }
       );
     }
+    let lastToken = this.lastToken();
+    if (lastToken.type === SourceType.SEMICOLON) {
+      this.remove(lastToken.start, lastToken.end);
+    }
     if (rightBrace) {
       this.insert(this.innerEnd, ')');
     }
