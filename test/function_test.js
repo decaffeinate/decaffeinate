@@ -330,7 +330,11 @@ describe('functions', () => {
   });
 
   it('keeps function with a single assignment as a parameter in braces in loose param mode', () => {
-    check(`(args=false) =>`, `(args=false) => {};`, { looseDefaultParams: true });
+    check(`(args=false) =>`, `(args=false) => {};`, {
+      options: {
+        looseDefaultParams: true,
+      }
+    });
   });
 
   it('places the function end in the right place when ending in an implicit function call', () =>

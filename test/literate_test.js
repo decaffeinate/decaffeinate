@@ -30,7 +30,11 @@ describe('literate mode', () => {
         }
         return result;
       })();
-    `, { literate: true });
+    `, {
+      options: {
+        literate: true,
+      }
+    });
   });
 
   it('handles a file starting with code and ending with a comment', () => {
@@ -44,7 +48,11 @@ describe('literate mode', () => {
       let b = 2;
       let c = 3;
       // Those are the first three letters of the alphabet.
-    `, { literate: true });
+    `, {
+      options: {
+        literate: true,
+      }
+    });
   });
 
   it('requires a blank line before moving to a code section', () => {
@@ -61,7 +69,11 @@ describe('literate mode', () => {
       //     all that I want
       //       and it still will be in a comment.
       let exceptNow = true;
-    `, { literate: true });
+    `, {
+      options: {
+        literate: true,
+      }
+    });
   });
 
   it('handles increasing indentation across distinct code sections', () => {
@@ -94,7 +106,11 @@ describe('literate mode', () => {
           c;
         }
       }
-    `, { literate: true });
+    `, {
+      options: {
+        literate: true,
+      }
+    });
   });
 
   it('treats normal coffee files as non-literate', () => {
@@ -102,7 +118,11 @@ describe('literate mode', () => {
       a = 1
     `, `
       let a = 1;
-    `, { filename: 'foo.coffee' });
+    `, {
+      options: {
+        filename: 'foo.coffee',
+      }
+    });
   });
 
   it('treats .coffee.md files as literate', () => {
@@ -110,7 +130,11 @@ describe('literate mode', () => {
       a = 1
     `, `
       // a = 1
-    `, { filename: 'foo.coffee.md' });
+    `, {
+      options: {
+        filename: 'foo.coffee.md',
+      }
+    });
   });
 
   it('treats .litcoffee files as literate', () => {
@@ -118,6 +142,10 @@ describe('literate mode', () => {
       a = 1
     `, `
       // a = 1
-    `, { filename: 'foo.litcoffee' });
+    `, {
+      options: {
+        filename: 'foo.litcoffee',
+      }
+    });
   });
 });

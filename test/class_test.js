@@ -78,7 +78,11 @@ describe('classes', () => {
       (class extends Parent {
         constructor() {}
       });
-    `, { allowInvalidConstructors: true });
+    `, {
+      options: {
+        allowInvalidConstructors: true
+      }
+    });
   });
 
   it('preserves class constructors without arguments', () => {
@@ -241,7 +245,11 @@ describe('classes', () => {
             super(...arguments);
           }
         }
-      `, { allowInvalidConstructors: true });
+      `, {
+        options: {
+          allowInvalidConstructors: true
+        }
+      });
     });
 
     it('does not error when specified when a subclass constructor omits super', () => {
@@ -255,7 +263,11 @@ describe('classes', () => {
             this.a = 2;
           }
         }
-      `, { allowInvalidConstructors: true });
+      `, {
+        options: {
+          allowInvalidConstructors: true
+        }
+      });
     });
 
     it('creates a constructor for bound methods with a `super` call in extended classes when requested', () => {
@@ -274,7 +286,11 @@ describe('classes', () => {
           return 1;
         }
       }
-    `, { allowInvalidConstructors: true });
+    `, {
+        options: {
+          allowInvalidConstructors: true
+        }
+      });
     });
 
     it('adds to an existing constructor for bound methods before a `super` call when requested', () => {
@@ -298,7 +314,11 @@ describe('classes', () => {
           this.b = 2;
         }
       }
-    `, { allowInvalidConstructors: true });
+    `, {
+        options: {
+          allowInvalidConstructors: true
+        }
+      });
     });
 
     it('generates workaround code when specified when using this before super in a constructor', () => {
@@ -321,7 +341,11 @@ describe('classes', () => {
             super(...arguments);
           }
         }
-      `, { enableBabelConstructorWorkaround: true });
+      `, {
+        options: {
+          enableBabelConstructorWorkaround: true
+        }
+      });
     });
 
     it('generates workaround code when specified when a subclass constructor omits super', () => {
@@ -342,7 +366,11 @@ describe('classes', () => {
             this.a = 2;
           }
         }
-      `, { enableBabelConstructorWorkaround: true });
+      `, {
+        options: {
+          enableBabelConstructorWorkaround: true
+        }
+      });
     });
 
     it('generates workaround code when specified when a subclass has a bound method and no constructor', () => {
@@ -368,7 +396,11 @@ describe('classes', () => {
             return null;
           }
         }
-      `, { enableBabelConstructorWorkaround: true });
+      `, {
+        options: {
+          enableBabelConstructorWorkaround: true
+        }
+      });
     });
 
     it('generates workaround code when specified when a subclass has a bound method and a normal constructor', () => {
@@ -399,7 +431,11 @@ describe('classes', () => {
             return null;
           }
         }
-      `, { enableBabelConstructorWorkaround: true });
+      `, {
+        options: {
+          enableBabelConstructorWorkaround: true
+        }
+      });
     });
 
     it('generates workaround code when specified when a subclass has a bound method and an empty constructor', () => {
@@ -426,7 +462,11 @@ describe('classes', () => {
             return null;
           }
         }
-      `, { enableBabelConstructorWorkaround: true });
+      `, {
+        options: {
+          enableBabelConstructorWorkaround: true
+        }
+      });
     });
 
     it('does not generate workaround code when the flag is set but the workaround is unnecessary', () => {
@@ -442,7 +482,11 @@ describe('classes', () => {
             this.x = 3;
           }
         }
-      `, { enableBabelConstructorWorkaround: true });
+      `, {
+        options: {
+          enableBabelConstructorWorkaround: true
+        }
+      });
     });
 
     it('properly generates workaround code when constructors have default parameters', () => {
@@ -466,7 +510,11 @@ describe('classes', () => {
             super(...arguments);
           }
         }
-      `, { enableBabelConstructorWorkaround: true });
+      `, {
+        options: {
+          enableBabelConstructorWorkaround: true
+        }
+      });
     });
 
     it('chooses variables that do not conflict', () => {
@@ -542,7 +590,11 @@ describe('classes', () => {
         (function(a, b = this.c) {
           this.a = a;
         });
-      `, { looseDefaultParams: true });
+      `, {
+        options: {
+          looseDefaultParams: true
+        }
+      });
     });
 
     it('uses correct value for default param when reusing an already implicitly assigned param', () => {
@@ -565,7 +617,11 @@ describe('classes', () => {
       class A extends B {
         constructor() {}
       }
-    `, { allowInvalidConstructors: true });
+    `, {
+      options: {
+        allowInvalidConstructors: true
+      }
+    });
   });
 
   it('preserves class constructors extending non-identifier superclasses', () => {
@@ -577,7 +633,11 @@ describe('classes', () => {
       class A extends (B = class B extends C {}) {
         constructor() {}
       }
-    `, { allowInvalidConstructors: true });
+    `, {
+      options: {
+        allowInvalidConstructors: true
+      }
+    });
   });
 
   it('turns non-method properties into prototype assignments', () => {
@@ -957,7 +1017,11 @@ describe('classes', () => {
       
         add() {}
       }
-    `, { allowInvalidConstructors: true });
+    `, {
+      options: {
+        allowInvalidConstructors: true
+      }
+    });
   });
 
   it('handles a bound method and an empty constructor', () => {
@@ -1020,7 +1084,11 @@ describe('classes', () => {
       
         add() {}
       }
-    `, { allowInvalidConstructors: true });
+    `, {
+      options: {
+        allowInvalidConstructors: true
+      }
+    });
   });
 
   it('places method bindings at the start of the constructor if there is no super', () => {

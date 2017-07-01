@@ -8,6 +8,7 @@ import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
 import getInvalidConstructorErrorMessage from '../../../utils/getInvalidConstructorErrorMessage';
 import type ClassPatcher from './ClassPatcher';
 import type { Node } from './../../../patchers/types';
+import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
 
 export default class ClassBlockPatcher extends BlockPatcher {
   static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
@@ -65,7 +66,11 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   shouldEnableBabelWorkaround() {
-    return this.options.enableBabelConstructorWorkaround;
+    let shouldEnable = this.options.enableBabelConstructorWorkaround;
+    if (shouldEnable) {
+      this.addSuggestion(REMOVE_BABEL_WORKAROUND);
+    }
+    return shouldEnable;
   }
   
   getClassPatcher(): ClassPatcher {

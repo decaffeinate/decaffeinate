@@ -32,13 +32,14 @@ export default class NodePatcher {
   adjustedIndentLevel: number = 0;
   _containsYield: boolean = false;
 
-  constructor({node, context, editor, options}: PatcherContext) {
+  constructor({node, context, editor, options, addSuggestion}: PatcherContext) {
     this.log = logger(this.constructor.name);
 
     this.node = node;
     this.context = context;
     this.editor = editor;
     this.options = options;
+    this.addSuggestion = addSuggestion;
 
     this.withPrettyErrors(() => this.setupLocationInformation());
   }

@@ -15,7 +15,11 @@ describe('in operator', () => {
       a in b
     `, `
       b.includes(a);
-    `, { looseIncludes: true });
+    `, {
+      options: {
+        looseIncludes: true,
+      }
+    });
   });
 
   it('handles a property access as the LHS', () => {

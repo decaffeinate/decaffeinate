@@ -1,12 +1,15 @@
+import type { StageResult } from '../../index';
+
 const VALID_INDENTATIONS = ['    ', '   \t', '  \t', ' \t', '\t'];
 
 /**
  * Convert Literate CoffeeScript into regular CoffeeScript.
  */
 export default class LiterateStage {
-  static run(content: string): { code: string } {
+  static run(content: string): StageResult {
     return {
       code: convertCodeFromLiterate(content),
+      suggestions: [],
     };
   }
 }

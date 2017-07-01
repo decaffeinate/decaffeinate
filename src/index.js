@@ -4,6 +4,7 @@ import SemicolonsStage from './stages/semicolons/index';
 import EsnextStage from './stages/esnext/index';
 import LiterateStage from './stages/literate/index';
 import MainStage from './stages/main/index';
+import { mergeSuggestions } from './suggestions';
 import NormalizeStage from './stages/normalize/index';
 import convertNewlines from './utils/convertNewlines';
 import detectNewlineStr from './utils/detectNewlineStr';
@@ -17,7 +18,9 @@ import removeUnicodeBOMIfNecessary from './utils/removeUnicodeBOMIfNecessary';
 import resolveToPatchError from './utils/resolveToPatchError';
 
 export { default as run } from './cli';
+import type { Suggestion } from './suggestions';
 export { PatchError };
+
 
 export type Options = {
   filename: ?string,
@@ -55,11 +58,17 @@ const DEFAULT_OPTIONS = {
 
 type ConversionResult = {
   code: string,
+  suggestions: Array<Suggestion>,
 };
 
+export type StageResult = {
+  code: string,
+  suggestions: Array<Suggestion>,
+}
+
 type Stage = {
-  name: string;
-  run: (content: string, options: Options) => { code: string }
+  name: string,
+  run: (content: string, options: Options) => StageResult,
 };
 
 /**
@@ -112,14 +121,16 @@ export function modernizeJS(source: string, options: ?Options={}): ConversionRes
 
 function runStages(initialContent: string, options: Options, stages: Array<Stage>): ConversionResult {
   let content = initialContent;
+  let suggestions = [];
   stages.forEach(stage => {
-    let { code } = runStage(stage, content, options);
+    let { code, suggestions: stageSuggestions } = runStage(stage, content, options);
     content = code;
+    suggestions.push(...stageSuggestions);
   });
-  return { code: content };
+  return { code: content, suggestions: mergeSuggestions(suggestions) };
 }
 
-function runStage(stage: Stage, content: string, options: Options): { code: string } {
+function runStage(stage: Stage, content: string, options: Options): StageResult {
   try {
     return stage.run(content, options);
   } catch (err) {

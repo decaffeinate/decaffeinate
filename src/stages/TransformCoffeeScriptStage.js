@@ -5,10 +5,10 @@ import parse from '../utils/parse';
 import type { Node, ParseContext, Editor } from '../patchers/types';
 import { childPropertyNames } from '../utils/traverse';
 import { logger } from '../utils/debug';
-import type { Options } from '../index';
+import type { Options, StageResult } from '../index';
 
 export default class TransformCoffeeScriptStage {
-  static run(content: string, options: Options): { code: string } {
+  static run(content: string, options: Options): StageResult {
     let log = logger(this.name);
     log(content);
 
@@ -19,6 +19,7 @@ export default class TransformCoffeeScriptStage {
     patcher.patch();
     return {
       code: editor.toString(),
+      suggestions: stage.suggestions,
     };
   }
 
@@ -37,6 +38,7 @@ export default class TransformCoffeeScriptStage {
     this.options = options;
     this.root = null;
     this.patchers = [];
+    this.suggestions = [];
   }
 
   /**
@@ -80,7 +82,8 @@ export default class TransformCoffeeScriptStage {
       node,
       context: this.context,
       editor: this.editor,
-      options: this.options
+      options: this.options,
+      addSuggestion: suggestion => { this.suggestions.push(suggestion); },
     };
     let patcher = new constructor(patcherContext, ...children);
     this.patchers.push(patcher);

@@ -149,6 +149,10 @@ describe('declarations', () => {
   });
 
   it('uses const rather than let if specified', () => {
-    check('a = 1', 'const a = 1;', { preferConst: true });
+    check('a = 1', 'const a = 1;', {
+      options: {
+        preferConst: true
+      }
+    });
   });
 });
