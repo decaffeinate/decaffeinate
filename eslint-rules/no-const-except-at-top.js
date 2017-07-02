@@ -3,7 +3,7 @@ module.exports = function(context) {
     'VariableDeclaration': function(node) {
       if (node.kind === 'const') {
         var parent = node.parent;
-        if (parent.type !== 'Program') {
+        if (parent.type !== 'Program' && parent.type !== 'ExportNamedDeclaration') {
           context.report({
             message: '`const` declarations are only allowed at the top of the program',
             node: node,

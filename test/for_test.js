@@ -96,7 +96,11 @@ describe('for loops', () => {
       for (let a of b) {
         a;
       }
-    `, { looseForOf: true });
+    `, {
+      options: {
+        looseForOf: true
+      }
+    });
   });
 
   it('skips Array.from when iterating over an array literal', () => {
@@ -586,7 +590,11 @@ describe('for loops', () => {
       a(e for e in l)
     `, `
       a(l.map((e) => e));
-    `, { looseForExpressions: true });
+    `, {
+      options: {
+        looseForExpressions: true
+      }
+    });
   });
 
   it('does not wrap in Array.from for for-in expressions over an array literal', () => {

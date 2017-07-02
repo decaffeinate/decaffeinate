@@ -8,6 +8,7 @@ import { isFunction } from '../../../utils/types';
 import type FunctionPatcher from './FunctionPatcher';
 import type NodePatcher from '../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
+import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: FunctionPatcher) {
@@ -69,8 +70,12 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   }
 
   shouldAddBabelWorkaround(): boolean {
-    return this.options.enableBabelConstructorWorkaround &&
+    let shouldEnable = this.options.enableBabelConstructorWorkaround &&
       this.getInvalidConstructorMessage() !== null;
+    if (shouldEnable) {
+      this.addSuggestion(REMOVE_BABEL_WORKAROUND);
+    }
+    return shouldEnable;
   }
 
   /**

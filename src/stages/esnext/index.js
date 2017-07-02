@@ -1,9 +1,9 @@
 import { allPlugins, convert } from 'esnext';
 import { logger } from '../../utils/debug';
-import type { Options } from '../../index';
+import type { Options, StageResult } from '../../index';
 
 export default class EsnextStage {
-  static run(content: string, options: Options): { code: string } {
+  static run(content: string, options: Options): StageResult {
     let log = logger(this.name);
     log(content);
     let plugins = allPlugins;
@@ -35,6 +35,9 @@ export default class EsnextStage {
         safeFunctionIdentifiers: options.safeImportFunctionIdentifiers,
       },
     });
-    return { code };
+    return {
+      code,
+      suggestions: [],
+    };
   }
 }

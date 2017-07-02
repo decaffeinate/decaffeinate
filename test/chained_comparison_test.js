@@ -93,7 +93,11 @@ describe('chained comparison', () => {
       if (a >= b || b > c) {
         d;
       }
-    `, { looseComparisonNegation: true });
+    `, {
+      options: {
+        looseComparisonNegation: true,
+      }
+    });
   });
 
   it('does not flip the inequalities when used in an `unless` by default', () => {

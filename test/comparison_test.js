@@ -19,7 +19,11 @@ describe('comparisons', () => {
       if (a >= b) {
         c;
       }
-    `, { looseComparisonNegation: true });
+    `, {
+      options: {
+        looseComparisonNegation: true
+      }
+    });
   });
 
   it('does not flip comparisons when used with an `unless` by default', () => {
@@ -41,7 +45,11 @@ describe('comparisons', () => {
       if ((a >= b) || (b <= c)) {
         d;
       }
-    `, { looseComparisonNegation: true });
+    `, {
+      options: {
+        looseComparisonNegation: true
+      }
+    });
   });
 
   it('does not flip nested comparisons when used with an `unless` by default', () => {

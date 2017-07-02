@@ -4,6 +4,8 @@ import buildConfig from 'ast-processor-babylon-config';
 import { logger } from '../../utils/debug';
 import { parse } from 'babylon';
 
+import type { StageResult } from '../../index';
+
 const BABYLON_PLUGINS = [
   'flow',
   'jsx',
@@ -22,7 +24,7 @@ const BABYLON_PLUGINS = [
 ];
 
 export default class SemicolonsStage {
-  static run(content: string): { code: string } {
+  static run(content: string): StageResult {
     let log = logger(this.name);
     log(content);
 
@@ -41,6 +43,7 @@ export default class SemicolonsStage {
 
     return {
       code: editor.toString(),
+      suggestions: [],
     };
   }
 }

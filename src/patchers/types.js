@@ -1,5 +1,6 @@
 import type Scope from '../utils/Scope';
 import type Options from '../index';
+import type { Suggestion } from '../suggestions';
 
 export type Range = [number, number];
 
@@ -33,6 +34,7 @@ export type PatcherContext = {
   context: ParseContext;
   editor: Editor;
   options: Options;
+  addSuggestion: (Suggestion) => void;
 };
 
 export type RepeatableOptions = {

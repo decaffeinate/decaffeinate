@@ -19,7 +19,9 @@ describe('imports', () => {
       let x = require('x');
       module.exports.y = 3;
     `, {
-      keepCommonJS: true
+      options: {
+        keepCommonJS: true,
+      },
     });
   });
 
@@ -37,7 +39,9 @@ describe('imports', () => {
       bar();
       let z = require('z');
     `, {
-      safeImportFunctionIdentifiers: ['foo']
+      options: {
+        safeImportFunctionIdentifiers: ['foo'],
+      },
     });
   });
 
@@ -51,7 +55,9 @@ describe('imports', () => {
       defaultExport.c = d;
       export default defaultExport;
     `, {
-      forceDefaultExport: true
+      options: {
+        forceDefaultExport: true,
+      },
     });
   });
 });
