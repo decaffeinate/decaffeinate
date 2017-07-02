@@ -1,3 +1,5 @@
+import { SourceType } from 'coffee-lex';
+
 import BinaryOpPatcher from './BinaryOpPatcher';
 
 const EXTENDS_HELPER = `
@@ -32,5 +34,13 @@ export default class ExtendsOpPatcher extends BinaryOpPatcher {
    */
   statementNeedsParens(): boolean {
     return false;
+  }
+
+  operatorTokenPredicate(): (token: SourceToken) => boolean {
+    // Right now the "extends" token is an identifier rather than a binary
+    // operator, so treat it as a special case for this node type.
+    return (token: SourceToken) =>
+      token.type === SourceType.IDENTIFIER &&
+        this.sourceOfToken(token) === 'extends';
   }
 }

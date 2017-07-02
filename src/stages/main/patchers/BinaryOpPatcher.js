@@ -85,6 +85,9 @@ export default class BinaryOpPatcher extends NodePatcher {
     return this.sourceTokenAtIndex(operatorTokenIndex);
   }
 
+  /**
+   * Subclasses may override this to provide a custom token predicate.
+   */
   operatorTokenPredicate(): (token: SourceToken) => boolean {
     return (token: SourceToken) => token.type === SourceType.OPERATOR || token.type === SourceType.EXISTENCE;
   }
