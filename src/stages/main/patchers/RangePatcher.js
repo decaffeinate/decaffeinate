@@ -1,3 +1,5 @@
+import { SourceType } from 'coffee-lex';
+
 import BinaryOpPatcher from './BinaryOpPatcher';
 
 const RANGE_HELPER =
@@ -113,5 +115,9 @@ export default class RangePatcher extends BinaryOpPatcher {
    */
   isInclusive(): boolean {
     return this.node.isInclusive;
+  }
+
+  operatorTokenPredicate(): (token: SourceToken) => boolean {
+    return (token: SourceToken) => token.type === SourceType.RANGE;
   }
 }

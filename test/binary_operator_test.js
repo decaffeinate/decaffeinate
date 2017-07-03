@@ -306,4 +306,37 @@ describe('binary operators', () => {
       let a = b;
     `);
   });
+
+  it('handles a range literal on the RHS of a binary operator', () => {
+    check(`
+      a or [b...c]
+    `, `
+      a || __range__(b, c, false);
+      function __range__(left, right, inclusive) {
+        let range = [];
+        let ascending = left < right;
+        let end = !inclusive ? right : ascending ? right + 1 : right - 1;
+        for (let i = left; ascending ? i < end : i > end; ascending ? i++ : i--) {
+          range.push(i);
+        }
+        return range;
+      }
+    `);
+  });
+
+  it('handles an "extends" usage on the RHS of a binary operator', () => {
+    check(`
+      a or (b extends c)
+    `, `
+      a || (__extends__(b, c));
+      function __extends__(child, parent) {
+        Object.getOwnPropertyNames(parent).forEach(
+          name => child[name] = parent[name]
+        );
+        child.prototype = Object.create(parent.prototype);
+        child.__super__ = parent.prototype;
+        return child;
+      }
+    `);
+  });
 });
