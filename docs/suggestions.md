@@ -17,11 +17,40 @@ There are two ways to use this list:
 If you find that additional code cleanup advice would be useful, feel free to
 file an issue or send a pull request.
 
-## DS0XX: Highest priority
+# Contents
 
-### DS001: Remove Babel/TypeScript constructor workaround
+<!---
+Generated using https://tableofcontents.herokuapp.com/
+-->
 
-#### Overview
+- [DS0XX: Highest priority](#ds0xx-highest-priority)
+  - [DS001: Remove Babel/TypeScript constructor workaround](#ds001-remove-babeltypescript-constructor-workaround)
+- [DS1XX: Common cleanup tasks](#ds1xx-common-cleanup-tasks)
+  - [DS101: Remove unnecessary use of `Array.from`](#ds101-remove-unnecessary-use-of-arrayfrom)
+  - [DS102: Remove unnecessary code created because of implicit returns](#ds102-remove-unnecessary-code-created-because-of-implicit-returns)
+  - [DS103: Rewrite code to no longer use `__guard__`](#ds103-rewrite-code-to-no-longer-use-__guard__)
+  - [DS104: Avoid inline assignments](#ds104-avoid-inline-assignments)
+  - [DS105: Use default params and defaults within assignments when possible](#ds105-use-default-params-and-defaults-within-assignments-when-possible)
+- [DS2XX: Other cleanup tasks](#ds2xx-other-cleanup-tasks)
+  - [DS201: Simplify complex destructure assignments](#ds201-simplify-complex-destructure-assignments)
+  - [DS202: Simplify dynamic range loops](#ds202-simplify-dynamic-range-loops)
+  - [DS203: Remove `|| {}` from converted for-own loops](#ds203-remove---from-converted-for-own-loops)
+  - [DS204: Change `includes` calls to have a more natural evaluation order](#ds204-change-includes-calls-to-have-a-more-natural-evaluation-order)
+  - [DS205: Consider reworking code to avoid use of IIFEs](#ds205-consider-reworking-code-to-avoid-use-of-iifes)
+  - [DS206: Consider reworking classes to avoid `initClass`](#ds206-consider-reworking-classes-to-avoid-initclass)
+  - [DS207: Consider shorter variations of null checks](#ds207-consider-shorter-variations-of-null-checks)
+  - [DS208: Avoid top-level `this`](#ds208-avoid-top-level-this)
+  - [DS209: Avoid top-level `return`](#ds209-avoid-top-level-return)
+- [DS3XX: General considerations](#ds3xx-general-considerations)
+  - [DS301: Make sure your code works in strict mode](#ds301-make-sure-your-code-works-in-strict-mode)
+  - [DS302: Make sure your build system handles `Array.prototype.includes`](#ds302-make-sure-your-build-system-handles-arrayprototypeincludes)
+  - [DS303: Use a formatter like ESLint or Prettier.](#ds303-use-a-formatter-like-eslint-or-prettier)
+
+# DS0XX: Highest priority
+
+## DS001: Remove Babel/TypeScript constructor workaround
+
+### Overview
 
 CoffeeScript classes allow `this` to be used before `super` in a subclass
 constructor, while JavaScript classes do not. To work around this issue,
@@ -32,9 +61,9 @@ ES5 or earlier, depends on the implementation details of Babel and TypeScript,
 and uses `Function.prototype.toString`, `eval`, and an `if (false)` conditional,
 so it's best seen as an ugly hack that you should remove as soon as you can.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 class FriendlyPerson extends Person
   handleGreeting: =>
@@ -42,7 +71,7 @@ class FriendlyPerson extends Person
     return
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 class FriendlyPerson extends Person {
   constructor(...args) {
@@ -63,7 +92,7 @@ class FriendlyPerson extends Person {
 }
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 class FriendlyPerson extends Person {
   constructor(...args) {
@@ -77,7 +106,7 @@ class FriendlyPerson extends Person {
 }
 ```
 
-#### How to address
+### How to address
 
 First, remove the self-contained workaround code block from the top of the
 constructor. This will cause the code to crash (or not compile).
@@ -90,11 +119,11 @@ not be assigned yet. In some frameworks like Backbone, the `super` call does
 significant work, and you may need to rewrite some of your code to ensure that
 method bindings and field assignments are done before they are used.
 
-## DS1XX: Common cleanup tasks
+# DS1XX: Common cleanup tasks
 
-### DS101: Remove unnecessary use of `Array.from`
+## DS101: Remove unnecessary use of `Array.from`
 
-#### Overview
+### Overview
 
 CoffeeScript has various operations, such as `for-in`, `in`, array
 destructuring, and array spread, which need to iterate through an array. All of
@@ -114,9 +143,9 @@ cases like these, decaffeinate uses
 [Array.from](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from)
 in many array operations to convert the value to an actual array if necessary.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 for lion in lions
   lion.roar()
@@ -126,7 +155,7 @@ if today in holidays
 eat(avocados...)
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 for (let lion of Array.from(lions)) {
   lion.roar();
@@ -138,7 +167,7 @@ if (Array.from(holidays).includes(today)) {
 eat(...Array.from(avocados || []));
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 for (let lion of lions) {
   lion.roar();
@@ -150,7 +179,7 @@ if (holidays.includes(today)) {
 eat(...avocados);
 ```
 
-#### How to address
+### How to address
 
 Whenever code generated by decaffeinate uses `Array.from`, you should read the
 code to understand what kind of value it is. In most cases, it will be a plain
@@ -168,9 +197,9 @@ Note that the `--loose-for-expressions`, `--loose-for-of`, and
 `--loose-includes` options tell decaffeinate to skip `Array.from` in some
 situations.
 
-### DS102: Remove unnecessary code created because of implicit returns
+## DS102: Remove unnecessary code created because of implicit returns
 
-#### Overview
+### Overview
 
 CoffeeScript's behavior is that functions always implicitly return their last
 statement. That means that the last statement is treated as an expression (for
@@ -182,9 +211,9 @@ return behavior is unintentional and it's better for the function to simply have
 no return value, but decaffeinate has no way of knowing whether the return value
 is actually used, so it always mimics CoffeeScript's behavior.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 greetFriends = (people) ->
   for person in people
@@ -192,7 +221,7 @@ greetFriends = (people) ->
       person.greet()
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 let greetFriends = people =>
   (() => {
@@ -209,7 +238,7 @@ let greetFriends = people =>
 ;
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 function greetFriends(people) {
   for (const person of people) {
@@ -220,7 +249,7 @@ function greetFriends(people) {
 }
 ```
 
-#### How to address
+### How to address
 
 After converting your code to JavaScript, look at the end of each function and
 make sure it still makes sense for it to return a value. If not, adjust the code
@@ -239,9 +268,9 @@ returns is to run the custom CoffeeLint rule
 on your code and change each function to either explicitly return its last
 statement or to have an empty `return` at the end.
 
-### DS103: Rewrite code to no longer use `__guard__`
+## DS103: Rewrite code to no longer use `__guard__`
 
-#### Overview
+### Overview
 
 CoffeeScript "soak" operations, like `a?.b`, `c?[d]`, and `f?()`, have no
 obvious equivalent in JavaScript, especially for complex cases. In simple cases,
@@ -250,16 +279,16 @@ this is not possible. Instead, decaffeinate generates a `__guard__` function (or
 another function with a similar name) and uses nested calls and arrow functions
 to implement the conditional evaluation behavior.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 cleanUp = (apartment) ->
   apartment?.getBathroom()?.shower.scrub()
   return
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 let cleanUp = function(apartment) {
   __guard__(apartment != null ? apartment.getBathroom() : undefined, x => x.shower.scrub());
@@ -269,7 +298,7 @@ function __guard__(value, transform) {
 }
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 function cleanUp(apartment) {
   const bathroom = apartment && apartment.getBathroom();
@@ -280,7 +309,7 @@ function cleanUp(apartment) {
 }
 ```
 
-#### How to address
+### How to address
 
 In most cases, it's best to find all uses of `__guard__`, look at the original
 CoffeeScript, and manually translate the code to JavaScript. It often is also
@@ -305,9 +334,9 @@ with intermediate variables. Some external libraries also help:
   [Babel plugin](https://github.com/babel/babel/tree/7.0/packages/babel-plugin-transform-optional-chaining)
   that can enable the current experimental behavior.
 
-### DS104: Avoid inline assignments
+## DS104: Avoid inline assignments
 
-#### Overview
+### Overview
 
 In various situations, decaffeinate needs to store an expression to a variable,
 e.g. so that a function can be called once and the result used twice. To
@@ -315,35 +344,35 @@ preserve evaluation order and simplify the implementation, it usually generates
 an assignment within an expression. This is correct, but can make the code hard
 to read, and the variable name is auto-generated by decaffeinate.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 accounts[getAccountId()] //= splitFactor
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 let name;
 accounts[name = getAccountId()] = Math.floor(accounts[name] / splitFactor);
 ```
 
-##### Cleaner JavaScript
+#### Cleaner JavaScript
 ```js
 const accountId = getAccountId();
 accounts[accountId] = Math.floor(accounts[accountId] / splitFactor);
 ```
 
-#### How to address
+### How to address
 
 In most cases, an inline assignment can simply be pulled out into a variable
 initializer before the code that uses it. Keep in mind that in some situations,
 this may change the evaluation order of function calls. You should also revisit
 the names of any variables that were auto-generated.
 
-### DS105: Use default params and defaults within assignments when possible
+## DS105: Use default params and defaults within assignments when possible
 
-#### Overview
+### Overview
 
 Default parameters and defaults within assignments behave slightly differently
 between CoffeeScript and JavaScript: in CoffeeScript, the default value is used
@@ -353,9 +382,9 @@ means decaffeinate can't safely convert CoffeeScript default values to
 JavaScript default values, so it re-implements them with CoffeeScript behavior
 instead.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 guessPosition = (pos = 0) ->
   {grid = []} = board
@@ -365,7 +394,7 @@ guessPosition = (pos = 0) ->
     return 'Miss.'
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 let guessPosition = function(pos) {
   if (pos == null) { pos = 0; }
@@ -378,7 +407,7 @@ let guessPosition = function(pos) {
 };
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 function guessPosition(pos = 0) {
   const {grid = []} = board;
@@ -390,7 +419,7 @@ function guessPosition(pos = 0) {
 }
 ```
 
-#### How to address
+### How to address
 
 For each function where you want to use default params, look at all of its
 usages and determine if the specified value can ever be `null` (as opposed to
@@ -402,11 +431,11 @@ and the same strategy can be used for defaults within complex assignments.
 Note that you can use the `--loose-default-params` option if you want
 decaffeinate to automatically use default params in the generated code.
 
-## DS2XX: Other cleanup tasks
+# DS2XX: Other cleanup tasks
 
-### DS201: Simplify complex destructure assignments
+## DS201: Simplify complex destructure assignments
 
-#### Overview
+### Overview
 
 Nested destructure operations can in some cases be converted safely to
 JavaScript as a destructure operation, but in some complex cases, JavaScript
@@ -418,14 +447,14 @@ assignment syntax is incorrect or not flexible enough:
 In these cases, decaffeinate reimplements the more straightforward algorithm
 using repeated assignments.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 {left: {right: {left: {left: {right: [firstValue, ..., lastValue]}}}}} = tree;
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 let obj = tree.left,
   obj1 = obj.right,
@@ -436,22 +465,22 @@ let obj = tree.left,
   lastValue = array[array.length - 1];
 ```
 
-##### Cleaner JavaScript
+#### Cleaner JavaScript
 ```js
 const {left: {right: {left: {left: {right: values}}}}} = tree;
 const firstValue = values[0];
 const lastValue = values[values.length - 1];
 ```
 
-#### How to address
+### How to address
 
 In most cases, some destructure operations can still be done to replace the
 repeated assignments, and often the original destructure form works if you know
 that `Array.from` or strictly-equivalent default values are unnecessary.
 
-### DS202: Simplify dynamic range loops
+## DS202: Simplify dynamic range loops
 
-#### Overview
+### Overview
 
 Ranges in CoffeeScript have a direction, either up or down, depending on whether
 the range start is greater than or less than the range end. In some cases,
@@ -459,37 +488,37 @@ decaffeinate doesn't know the direction of the range, so it needs to generate
 code that decides at runtime which direction to iterate, which can make loops
 much more verbose than they need to be.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 for guess in [firstGuess..lastGuess]
   makeGuess(guess)
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 for (let guess = firstGuess, end = lastGuess, asc = firstGuess <= end; asc ? guess <= end : guess >= end; asc ? guess++ : guess--) {
   makeGuess(guess);
 }
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 for (let guess = firstGuess; guess <= lastGuess; guess++) {
   makeGuess(guess);
 }
 ```
 
-#### How to address
+### How to address
 
 In most cases, a loop will either always loop up or always loop down, and the
 direction is clear from the code, so you can rewrite the loop in the more
 straightforward way.
 
-### DS203: Remove `|| {}` from converted for-own loops
+## DS203: Remove `|| {}` from converted for-own loops
 
-#### Overview
+### Overview
 
 CoffeeScript's `for own a of b` syntax allows iterating over `null` and
 `undefined`, so decaffeinate needs to replicate this behavior. The simplest way
@@ -497,36 +526,36 @@ in JavaScript to loop over an object's own properties is to iterate over
 `Object.keys`, but unfortunately, this crashes on `null` and `undefined`, so
 decaffeinate inserts `|| {}` to handle that case.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 for own name of teamMembers
   console.log "Great work, #{name}!"
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 for (let name of Object.keys(teamMembers || {})) {
   console.log(`Great work, ${name}!`);
 }
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 for (let name of Object.keys(teamMembers)) {
   console.log(`Great work, ${name}!`);
 }
 ```
 
-#### How to address
+### How to address
 
 Double-check that you'll never iterate over `null` or `undefined` (this is rare,
 but does occasionally come up), and if so, remove the `|| {}`.
 
-### DS204: Change `includes` calls to have a more natural evaluation order
+## DS204: Change `includes` calls to have a more natural evaluation order
 
-#### Overview
+### Overview
 
 CoffeeScript converts `a in b` to `b.includes(a)`. Since the order of `a` and
 `b` are switched, it can cause subtle issues if they are function calls where
@@ -534,15 +563,15 @@ the order of evaluation matters, or if one is a function call that might affect
 the result of the other. To be safe, in complex cases, decaffeinate saves the
 left-hand side to a variable that gets evaluated first.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 if getLime() in getCoconut()
   drinkThemBoth()
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 let needle;
 if ((needle = getLime(), Array.from(getCoconut()).includes(needle))) {
@@ -550,22 +579,22 @@ if ((needle = getLime(), Array.from(getCoconut()).includes(needle))) {
 }
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 if (getCoconut().includes(getLime())) {
   drinkThemBoth();
 }
 ```
 
-#### How to address
+### How to address
 
 Double-check that the evaluation order doesn't matter and that neither side has
 a side-effect that would affect the result of the other side. If so, it's safe
 to change the code back to use `.includes` without an intermediate assignment.
 
-### DS205: Consider reworking code to avoid use of IIFEs
+## DS205: Consider reworking code to avoid use of IIFEs
 
-#### Overview
+### Overview
 
 CoffeeScript allows most statements (e.g. `if`, `switch`, `for`, and `while`) to
 be treated as expressions. In complex cases, decaffeinate handles this by
@@ -573,9 +602,9 @@ creating an inline function and then immediately calling it (also known as an
 IIFE). This works, but sometimes results in JavaScript code that is confusing to
 read.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 eat(switch desiredFlavor()
   when 'sweet'
@@ -586,7 +615,7 @@ eat(switch desiredFlavor()
     'water')
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 eat((() => { switch (desiredFlavor()) {
   case 'sweet':
@@ -598,7 +627,7 @@ eat((() => { switch (desiredFlavor()) {
 } })());
 ```
 
-##### Cleaner JavaScript
+#### Cleaner JavaScript
 ```js
 switch (desiredFlavor()) {
   case 'sweet':
@@ -612,15 +641,15 @@ switch (desiredFlavor()) {
 }
 ```
 
-#### How to address
+### How to address
 
 When you see an IIFE generated by decaffeinate, think if there's a way to rework
 the code to be more natural. IIFEs aren't always bad, but often times there's a
 cleaner alternative.
 
-### DS206: Consider reworking classes to avoid `initClass`
+## DS206: Consider reworking classes to avoid `initClass`
 
-#### Overview
+### Overview
 
 CoffeeScript allows arbitrary code within class bodies. Variables can be
 assigned in a special class scope, prototype and class fields can be assigned,
@@ -629,9 +658,9 @@ methods can be conditionally defined, etc. JavaScript only allows methods
 creates a static method called `initClass` that runs all of the other class body
 code.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 class Circle
   PI = 3.14159265358979
@@ -641,7 +670,7 @@ class Circle
     PI * @radius * @radius
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 var Circle = (function() {
   let PI = undefined;
@@ -662,7 +691,7 @@ var Circle = (function() {
 })();
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 const PI = 3.14159265358979;
 class Circle {
@@ -678,7 +707,7 @@ class Circle {
 }
 ```
 
-#### How to address
+### How to address
 
 Many use cases of code within class bodies can be replaced by other mechanisms:
 * Constants used within the class can usually be pulled out as external
@@ -695,23 +724,23 @@ Many use cases of code within class bodies can be replaced by other mechanisms:
 In other cases, it still makes sense to modify the class constructor or
 prototype, in which case it may be fine to keep `initClass`.
 
-### DS207: Consider shorter variations of null checks
+## DS207: Consider shorter variations of null checks
 
-#### Overview
+### Overview
 
 CoffeeScript has several operators that make it easy to check whether a value is
 `null` or `undefined`. In JavaScript this can be done using `a != null`, but
 often it is preferable to simply use the value as a boolean.
 
-#### Example
+### Example
 
-##### CoffeeScript
+#### CoffeeScript
 ```coffee
 if currentUser()?
   sendMessage(customMessage() ? 'Hello')
 ```
 
-##### JavaScript after decaffeinate
+#### JavaScript after decaffeinate
 ```js
 if (currentUser() != null) {
   let left;
@@ -719,23 +748,23 @@ if (currentUser() != null) {
 }
 ```
 
-##### Cleaner JavaScript (may not be equivalent)
+#### Cleaner JavaScript (may not be equivalent)
 ```js
 if (currentUser()) {
   sendMessage(customMessage() || 'Hello');
 }
 ```
 
-#### How to address
+### How to address
 
 Depending on your preferred code style, you may want to get rid of `!= null`
 when a boolean coercion would work. Regardless, keep in mind that if the value
 might be `false`, `''`, `0`, or `NaN`, then a boolean coercion may not work as
 expected.
 
-### DS208: Avoid top-level `this`
+## DS208: Avoid top-level `this`
 
-#### Overview
+### Overview
 
 Top-level `this` in JavaScript can mean several things, depending on context:
 * In the browser, it refers to `window`.
@@ -747,7 +776,7 @@ decaffeinate is unopinionated and produces JavaScript code that still uses
 `undefined` to implement the behavior for JS modules. Generally, new code should
 avoid using top-level `this`, and instead use a more explicit value.
 
-#### How to address
+### How to address
 
 Go through your code and change top-level `this` usages to either `window` or
 `exports`, as applicable.
@@ -756,9 +785,9 @@ If you're running in Node.js and you want top-level `this` to work anyway, one
 approach is to use the `top-level-this-to-exports.js` jscodeshift script
 provided by [bulk-decaffeinate](https://github.com/decaffeinate/bulk-decaffeinate).
 
-### DS209: Avoid top-level `return`
+## DS209: Avoid top-level `return`
 
-#### Overview
+### Overview
 
 Some module implementations (e.g. Node.js's module system) work by taking an
 entire file and wrapping the contents it in a function which gets called. This
@@ -767,7 +796,7 @@ execution of the file at that point. Top-level returns are considered a syntax
 error by the spec and Babel refuses to compile them, so they are generally
 considered bad practice.
 
-#### How to address
+### How to address
 
 Avoid top-level returns by rewriting your code to use some alternate form of
 control flow.
@@ -776,18 +805,18 @@ If you're using Babel, you can instruct it to to allow top-level returns anyway
 by adding a line like `"parserOpts": {"allowReturnOutsideFunction": true}` to
 your config.
 
-## DS3XX: General considerations
+# DS3XX: General considerations
 
-### DS301: Make sure your code works in strict mode
+## DS301: Make sure your code works in strict mode
 
-#### Overview
+### Overview
 
 JavaScript modules always run in strict mode, so Babel always adds "use strict"
 to your code. CoffeeScript does not add "use strict", so in some situations,
 converting a codebase from CoffeeScript to Babel causes errors due to strict
 mode.
 
-#### How to address
+### How to address
 
 See the [strict mode docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode)
 for full information on strict mode. For example, CoffeeScript code might use
@@ -798,16 +827,16 @@ If you're using Babel and want to disable strict mode, there is a plugin called
 [babel-plugin-transform-remove-strict-mode](https://github.com/genify/babel-plugin-transform-remove-strict-mode)
 that lets you do that.
 
-### DS302: Make sure your build system handles `Array.prototype.includes`
+## DS302: Make sure your build system handles `Array.prototype.includes`
 
-#### Overview
+### Overview
 
 The `Array.prototype.includes` function is part of ES2016. This means that it is
 officially part of the language, but not available in all browsers/runtimes, and
 unlike most syntax features, it can't be transpiled. decaffeinate changes
 `a in b` to `b.includes(a)`, so it requires `includes`.
 
-#### How to address
+### How to address
 
 You can usually use [babel-polyfill](https://babeljs.io/docs/usage/polyfill/) or
 similar to add `includes` to the global `Array.prototype`.
@@ -816,9 +845,9 @@ There is an [open task](https://github.com/decaffeinate/decaffeinate/issues/1102
 to add an option to disable the use of `includes`, which will be useful for
 things like libraries that don't want to add a polyfill.
 
-### DS303: Use a formatter like ESLint or Prettier.
+## DS303: Use a formatter like ESLint or Prettier.
 
-#### Overview
+### Overview
 
 decaffeinate makes an attempt at preserving formatting and making the output
 look nice, but it isn't perfect, and in some situations, decaffeinate puts less
@@ -828,7 +857,7 @@ around the parameter for single-parameter arrow functions, and fixing that is
 low-priority since ESLint is able to either add or remove parens to match the
 desired code style.
 
-#### How to address
+### How to address
 
 Investigate formatters like [ESLint](http://eslint.org/) and
 [Prettier](https://prettier.io/), find one that works for you, and run it after
