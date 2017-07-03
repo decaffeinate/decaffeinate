@@ -1,4 +1,5 @@
 import BinaryOpPatcher from './BinaryOpPatcher';
+import { SHORTEN_NULL_CHECKS } from '../../../suggestions';
 
 export default class ExistsOpPatcher extends BinaryOpPatcher {
   /**
@@ -17,6 +18,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
    * LEFT '?' RIGHT → `LEFT != null ? LEFT : RIGHT`
    */
   patchAsExpression() {
+    this.addSuggestion(SHORTEN_NULL_CHECKS);
     let needsTypeofCheck = this.left.mayBeUnboundReference();
     if (needsTypeofCheck) {
       // `a ? b` → `typeof a ? b`
@@ -47,6 +49,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
    * LEFT '?' RIGHT → `if (LEFT == null) { RIGHT }`
    */
   patchAsStatement() {
+    this.addSuggestion(SHORTEN_NULL_CHECKS);
     let needsTypeofCheck = this.left.mayBeUnboundReference();
     // `a ? b` → `if (a ? b`
     //            ^^^

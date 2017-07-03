@@ -1,6 +1,7 @@
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import NodePatcher from './../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
+import { REMOVE_ARRAY_FROM } from '../../../suggestions';
 
 /**
  * Handles spread operations, e.g. `a(b...)` or `[a...]`.
@@ -65,6 +66,7 @@ export default class SpreadPatcher extends NodePatcher {
         this.expression.node.data === 'arguments') {
       return false;
     }
+    this.addSuggestion(REMOVE_ARRAY_FROM);
     return true;
   }
 }

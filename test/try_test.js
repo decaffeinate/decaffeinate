@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('try', () => {
   it('handles multi-line try/catch with catch assignee', () => {
@@ -388,5 +389,17 @@ describe('try', () => {
     `, `
       let x = (() => { try { throw a; } catch (error) { return b; } })();
     `);
+  });
+
+  it('properly acts as an implicit return parent in expression form', () => {
+    validate(`
+      arr = for i in [1, 2, 3]
+        val = try
+          1
+        catch
+          2
+        val
+      setResult(arr)
+    `, [1, 1, 1]);
   });
 });

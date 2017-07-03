@@ -3,6 +3,7 @@
  */
 import SlicePatcher from './SlicePatcher';
 import findSoakContainer from '../../../utils/findSoakContainer';
+import { REMOVE_GUARD } from '../../../suggestions';
 
 const GUARD_HELPER =
   `function __guard__(value, transform) {
@@ -12,6 +13,7 @@ const GUARD_HELPER =
 export default class SoakedSlicePatcher extends SlicePatcher {
   patchAsExpression() {
     this.registerHelper('__guard__', GUARD_HELPER);
+    this.addSuggestion(REMOVE_GUARD);
 
     let soakContainer = findSoakContainer(this);
     let varName = soakContainer.claimFreeBinding('x');
@@ -35,6 +37,7 @@ export default class SoakedSlicePatcher extends SlicePatcher {
   getSpliceCode(expressionCode: string): string {
     let spliceStart = this.captureCodeForPatchOperation(() => {
       this.registerHelper('__guard__', GUARD_HELPER);
+      this.addSuggestion(REMOVE_GUARD);
       let varName = this.claimFreeBinding('x');
       this.insert(this.expression.outerEnd, `, ${varName} => ${varName}`);
       this.patchAsSpliceExpressionStart();

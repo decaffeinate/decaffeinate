@@ -1,7 +1,9 @@
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
+import { SHORTEN_NULL_CHECKS } from '../../../suggestions';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression({ needsParens=false }={}) {
+    this.addSuggestion(SHORTEN_NULL_CHECKS);
     let shouldAddParens = this.negated ||
       (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
@@ -50,6 +52,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       return;
     }
 
+    this.addSuggestion(SHORTEN_NULL_CHECKS);
     let assigneeAgain;
     if (this.needsTypeofCheck()) {
       // `a ?= b` → `if (typeof a ?= b`

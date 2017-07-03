@@ -7,6 +7,7 @@ import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher';
 import findSoakContainer from '../../../utils/findSoakContainer';
 import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
 import ternaryNeedsParens from '../../../utils/ternaryNeedsParens';
+import { REMOVE_GUARD } from '../../../suggestions';
 
 const GUARD_FUNC_HELPER =
   `function __guardFunc__(func, transform) {
@@ -98,6 +99,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     }
 
     this.registerHelper('__guardMethod__', GUARD_METHOD_HELPER);
+    this.addSuggestion(REMOVE_GUARD);
     if (fn instanceof SoakedMemberAccessOpPatcher) {
       fn.setShouldSkipSoakPatch();
     }
@@ -124,6 +126,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     let {expression, indexingExpr} = fn;
 
     this.registerHelper('__guardMethod__', GUARD_METHOD_HELPER);
+    this.addSuggestion(REMOVE_GUARD);
     if (fn instanceof SoakedDynamicMemberAccessOpPatcher) {
       fn.setShouldSkipSoakPatch();
     }
@@ -145,6 +148,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
 
   patchNonMethodCall() {
     this.registerHelper('__guardFunc__', GUARD_FUNC_HELPER);
+    this.addSuggestion(REMOVE_GUARD);
     let callStartToken = this.getCallStartToken();
     let soakContainer = findSoakContainer(this);
     let varName = soakContainer.claimFreeBinding('f');

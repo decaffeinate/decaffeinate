@@ -2,6 +2,7 @@ import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import findSoakContainer from '../../../utils/findSoakContainer';
 import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
 import ternaryNeedsParens from '../../../utils/ternaryNeedsParens';
+import { REMOVE_GUARD, SHORTEN_NULL_CHECKS } from '../../../suggestions';
 
 const GUARD_HELPER =
   `function __guard__(value, transform) {
@@ -33,6 +34,7 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
   }
 
   patchAsConditional() {
+    this.addSuggestion(SHORTEN_NULL_CHECKS);
     let soakContainer = findSoakContainer(this);
     let memberNameToken = this.getMemberNameSourceToken();
     let expressionCode = this.expression.patchRepeatable();
@@ -64,6 +66,7 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
 
   patchAsGuardCall() {
     this.registerHelper('__guard__', GUARD_HELPER);
+    this.addSuggestion(REMOVE_GUARD);
 
     let soakContainer = findSoakContainer(this);
     let varName = soakContainer.claimFreeBinding('x');

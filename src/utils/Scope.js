@@ -180,8 +180,9 @@ export default class Scope {
         break;
 
       case 'Class':
-        if (node.nameAssignee && node.nameAssignee.type === 'Identifier') {
-          this.assigns(node.nameAssignee.data, node.nameAssignee);
+        if (node.nameAssignee && node.nameAssignee.type === 'Identifier' && this.parent) {
+          // Classes have their own scope, but their name is bound to the parent scope.
+          this.parent.assigns(node.nameAssignee.data, node.nameAssignee);
         }
         break;
     }

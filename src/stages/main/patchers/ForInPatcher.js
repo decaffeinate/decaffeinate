@@ -9,6 +9,10 @@ import traverse from '../../../utils/traverse';
 import type BlockPatcher from './BlockPatcher';
 import type NodePatcher from './../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
+import {
+  REMOVE_ARRAY_FROM,
+  SIMPLIFY_DYNAMIC_RANGE_LOOPS
+} from '../../../suggestions';
 
 const UP = 'UP';
 const DOWN = 'DOWN';
@@ -528,11 +532,19 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   shouldWrapMapExpressionTargetInArrayFrom() {
-    return !this.options.looseForExpressions && !this.isTargetAlreadyArray();
+    let shouldWrap = !this.options.looseForExpressions && !this.isTargetAlreadyArray();
+    if (shouldWrap) {
+      this.addSuggestion(REMOVE_ARRAY_FROM);
+    }
+    return shouldWrap;
   }
 
   shouldWrapForOfStatementTargetInArrayFrom() {
-    return !this.options.looseForOf && !this.isTargetAlreadyArray();
+    let shouldWrap = !this.options.looseForOf && !this.isTargetAlreadyArray();
+    if (shouldWrap) {
+      this.addSuggestion(REMOVE_ARRAY_FROM);
+    }
+    return shouldWrap;
   }
 
   /**
@@ -565,12 +577,14 @@ export default class ForInPatcher extends ForPatcher {
         let right = this.target.right.node.data;
         return left > right ? DOWN : UP;
       } else {
+        this.addSuggestion(SIMPLIFY_DYNAMIC_RANGE_LOOPS);
         return UNKNOWN;
       }
     } else {
       if (step.isLiteral) {
         return step.negated ? DOWN : UP;
       } else {
+        this.addSuggestion(SIMPLIFY_DYNAMIC_RANGE_LOOPS);
         return UNKNOWN;
       }
     }

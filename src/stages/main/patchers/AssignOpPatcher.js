@@ -18,6 +18,11 @@ import NodePatcher from './../../../patchers/NodePatcher';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
 import containsSuperCall from '../../../utils/containsSuperCall';
 import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
+import {
+  REMOVE_ARRAY_FROM,
+  SHORTEN_NULL_CHECKS,
+  SIMPLIFY_COMPLEX_ASSIGNMENTS,
+} from '../../../suggestions';
 
 import type { PatcherContext } from './../../../patchers/types';
 
@@ -67,6 +72,7 @@ export default class AssignOpPatcher extends NodePatcher {
     if (canPatchAssigneeToJavaScript(this.assignee.node)) {
       this.patchSimpleAssignment();
     } else {
+      this.addSuggestion(SIMPLIFY_COMPLEX_ASSIGNMENTS);
       let assignments = [];
 
       // In an expression context, the result should always be the value of the
@@ -104,6 +110,7 @@ export default class AssignOpPatcher extends NodePatcher {
         this.insert(this.contentEnd, ')');
       }
     } else {
+      this.addSuggestion(SIMPLIFY_COMPLEX_ASSIGNMENTS);
       let assignments = this.generateAssignments(
         this.assignee, this.expression.patchAndGetCode(), this.expression.isRepeatable());
       this.overwriteWithAssignments(assignments);
@@ -120,6 +127,7 @@ export default class AssignOpPatcher extends NodePatcher {
     let needsArrayFrom = this.assignee instanceof ArrayInitialiserPatcher;
     this.assignee.patch();
     if (needsArrayFrom) {
+      this.addSuggestion(REMOVE_ARRAY_FROM);
       this.insert(this.expression.outerStart, 'Array.from(');
     }
 
@@ -161,6 +169,7 @@ export default class AssignOpPatcher extends NodePatcher {
     if (canPatchAssigneeToJavaScript(patcher.node)) {
       let assigneeCode = patcher.patchAndGetCode();
       if (patcher instanceof ArrayInitialiserPatcher) {
+        this.addSuggestion(REMOVE_ARRAY_FROM);
         return [`${assigneeCode} = Array.from(${ref})`];
       } else {
         return [`${assigneeCode} = ${ref}`];
@@ -230,6 +239,7 @@ export default class AssignOpPatcher extends NodePatcher {
     } else if (patcher instanceof SlicePatcher) {
       return [patcher.getSpliceCode(ref)];
     } else if (patcher instanceof AssignOpPatcher) {
+      this.addSuggestion(SHORTEN_NULL_CHECKS);
       if (!refIsRepeatable) {
         let valReference = this.claimFreeBinding('val');
         return [
