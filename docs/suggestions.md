@@ -8,8 +8,10 @@ about the JavaScript produced by decaffeinate and how to clean it up without
 introducing bugs.
 
 There are two ways to use this list:
-* When running decaffeinate on a CoffeeScript file, it prints a list of
-  suggestion codes with cleanup suggestions relevant to that file.
+* After running decaffeinate, each resulting JavaScript file has a list of
+  suggestion codes with cleanup suggestions relevant to that file. You can jump
+  to the docs for these specific suggestions, since they will be most useful to
+  you.
 * If you're trying to run decaffeinate on a large codebase, it's probably a good
   idea to read all points in this list to get an understanding of what cleanup
   steps will be required.
@@ -118,6 +120,10 @@ done during the super call and make sure that it is ok for the class fields to
 not be assigned yet. In some frameworks like Backbone, the `super` call does
 significant work, and you may need to rewrite some of your code to ensure that
 method bindings and field assignments are done before they are used.
+
+If you prefer, you can run decaffeinate with
+`--disable-babel-constructor-workaround` or `--disallow-invalid-constructors` to
+avoid generating the workaround code.
 
 # DS1XX: Common cleanup tasks
 

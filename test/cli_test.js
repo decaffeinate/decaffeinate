@@ -1,4 +1,4 @@
-import assert, { equal } from 'assert';
+import assert, { equal, fail } from 'assert';
 import { execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { copySync } from 'fs-extra';
@@ -19,6 +19,22 @@ function runCli(argStr, stdin, expectedStdout) {
   equal(stdout.trim(), expectedStdout.trim());
 }
 
+function runCliExpectError(argStr, stdin, expectedStderr) {
+  if (stdin[0] === '\n') {
+    stdin = stripSharedIndent(stdin);
+  }
+  if (expectedStderr[0] === '\n') {
+    expectedStderr = stripSharedIndent(expectedStderr);
+  }
+
+  try {
+    execSync('./bin/decaffeinate ' + argStr, {input: stdin,});
+    fail('Expected the CLI to fail.');
+  } catch (e) {
+    equal(e.output[2].toString().trim(), expectedStderr.trim());
+  }
+}
+
 describe('decaffeinate CLI', () => {
   it('accepts a file on stdin', () => {
     runCli('', `
@@ -26,9 +42,9 @@ describe('decaffeinate CLI', () => {
       x = 1
       exports.b = 2
     `, `
-      import a from 'a';
-      let x = 1;
-      export let b = 2;
+      const a = require('a');
+      const x = 1;
+      exports.b = 2;
     `);
   });
 
@@ -39,19 +55,39 @@ describe('decaffeinate CLI', () => {
           literate = true
     `, `
       // This is a literate file.
-      let literate = true;
+      const literate = true;
     `);
   });
 
-  it('respects the --keep-commonjs flag', () => {
+  it('keeps imports as commonjs by default', () => {
+    runCli('', `
+      a = require 'a'
+    `, `
+      const a = require('a');
+    `);
+  });
+
+  it('treats the --keep-commonjs option as a no-op', () => {
     runCli('--keep-commonjs', `
       a = require 'a'
     `, `
-      let a = require('a');
+      const a = require('a');
     `);
   });
 
-  it('respects the --force-default-export flag', () => {
+  it('respects the --use-js-modules flag', () => {
+    runCli('--use-js-modules', `
+      exports.a = 1
+      exports.b = 2
+    `, `
+      let defaultExport = {};
+      defaultExport.a = 1;
+      defaultExport.b = 2;
+      export default defaultExport;
+    `);
+  });
+
+  it('treats the --force-default-export flag as an alias for --use-js-modules', () => {
     runCli('--force-default-export', `
       exports.a = 1
       exports.b = 2
@@ -64,7 +100,7 @@ describe('decaffeinate CLI', () => {
   });
 
   it('respects the --safe-import-function-identifiers option', () => {
-    runCli('--safe-import-function-identifiers foo', `
+    runCli('--use-js-modules --safe-import-function-identifiers foo', `
       a = require 'a'
       foo()
       b = require 'b'
@@ -75,15 +111,41 @@ describe('decaffeinate CLI', () => {
       foo();
       import b from 'b';
       bar();
-      let c = require('c');
+      const c = require('c');
     `);
   });
 
-  it('respects the --prefer-const option', () => {
+  it('respects the --loose-js-modules option', () => {
+    runCli('--use-js-modules --loose-js-modules', `
+      exports.a = 1
+      exports.b = 2
+    `, `
+      export let a = 1;
+      export let b = 2;
+    `);
+  });
+
+  it('prefers const with no options specified', () => {
+    runCli('', `
+      a = 1
+    `, `
+      const a = 1;
+    `);
+  });
+
+  it('allows the --prefer-const option, which is a no-op', () => {
     runCli('--prefer-const', `
       a = 1
     `, `
       const a = 1;
+    `);
+  });
+
+  it('respects the --prefer-let option', () => {
+    runCli('--prefer-let', `
+      a = 1
+    `, `
+      let a = 1;
     `);
   });
 
@@ -95,7 +157,7 @@ describe('decaffeinate CLI', () => {
             c
         return
     `, `
-      let f = function(x = 1) {
+      const f = function(x = 1) {
         if (x >= 0) {
           for (let a of b) {
             c;
@@ -110,7 +172,12 @@ describe('decaffeinate CLI', () => {
       f = (x = 1) ->
         2
     `, `
-      let f = (x = 1) => 2;
+      /*
+       * decaffeinate suggestions:
+       * DS102: Remove unnecessary code created because of implicit returns
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
+      const f = (x = 1) => 2;
     `);
   });
 
@@ -118,7 +185,7 @@ describe('decaffeinate CLI', () => {
     runCli('--loose-for-expressions', `
       x = (a + 1 for a in b)
     `, `
-      let x = (b.map((a) => a + 1));
+      const x = (b.map((a) => a + 1));
     `);
   });
 
@@ -152,7 +219,79 @@ describe('decaffeinate CLI', () => {
     `);
   });
 
-  it('respects the --allow-invalid-constructors option', () => {
+  it('adds the Babel constructor workaround by default', () => {
+    runCli('', `
+      class A extends B
+        constructor: ->
+          @a = 1
+          super
+    `, `
+      /*
+       * decaffeinate suggestions:
+       * DS001: Remove Babel/TypeScript constructor workaround
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
+      class A extends B {
+        constructor() {
+          {
+            // Hack: trick Babel/TypeScript into allowing this before super.
+            if (false) { super(); }
+            let thisFn = (() => { this; }).toString();
+            let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+            eval(\`$\{thisName} = this;\`);
+          }
+          this.a = 1;
+          super(...arguments);
+        }
+      }
+    `);
+  });
+
+  it('treats the --enable-babel-constructor-workaround option as a no-op', () => {
+    runCli('--enable-babel-constructor-workaround', `
+      class A extends B
+        constructor: ->
+          @a = 1
+          super
+    `, `
+      /*
+       * decaffeinate suggestions:
+       * DS001: Remove Babel/TypeScript constructor workaround
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
+      class A extends B {
+        constructor() {
+          {
+            // Hack: trick Babel/TypeScript into allowing this before super.
+            if (false) { super(); }
+            let thisFn = (() => { this; }).toString();
+            let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+            eval(\`$\{thisName} = this;\`);
+          }
+          this.a = 1;
+          super(...arguments);
+        }
+      }
+    `);
+  });
+
+  it('respects the --disable-babel-constructor-workaround option', () => {
+    runCli('--disable-babel-constructor-workaround', `
+      class A extends B
+        constructor: ->
+          @a = 1
+          super
+    `, `
+      class A extends B {
+        constructor() {
+          this.a = 1;
+          super(...arguments);
+        }
+      }
+    `);
+  });
+
+  it('respects the --allow-invalid-constructors option as an alias for --disable-babel-constructor-workaround', () => {
     runCli('--allow-invalid-constructors', `
       class A extends B
         constructor: ->
@@ -168,26 +307,50 @@ describe('decaffeinate CLI', () => {
     `);
   });
 
-  it('respects the --enable-babel-constructor-workaround option', () => {
-    runCli('--enable-babel-constructor-workaround', `
+  it('respects the --disallow-invalid-constructors option', () => {
+    runCliExpectError('--disallow-invalid-constructors', `
       class A extends B
         constructor: ->
           @a = 1
           super
     `, `
-      class A extends B {
-        constructor() {
-          {
-            // Hack: trick babel into allowing this before super.
-            if (false) { super(); }
-            let thisFn = (() => { this; }).toString();
-            let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
-            eval(\`\${thisName} = this;\`);
-          }
-          this.a = 1;
-          super(...arguments);
-        }
-      }
+      stdin: Cannot automatically convert a subclass with a constructor that uses \`this\` before \`super\`.
+  
+      JavaScript requires all subclass constructors to call \`super\` and to do so
+      before the first use of \`this\`, so the following cases cannot be converted
+      automatically:
+      * Constructors in subclasses that use \`this\` before \`super\`.
+      * Constructors in subclasses that omit the \`super\` call.
+      * Subclasses that use \`=>\` method syntax to automatically bind methods.
+      
+      To convert these cases to JavaScript anyway, remove the option
+      --disallow-invalid-constructors when running decaffeinate.
+        1 | class A extends B
+      > 2 |   constructor: ->
+      > 3 |     @a = 1
+      > 4 |     super(arguments...)
+    `);
+  });
+
+  it('enables suggestions by default', () => {
+    runCli('', `
+      a?
+    `, `
+      /*
+       * decaffeinate suggestions:
+       * DS207: Consider shorter variations of null checks
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
+      typeof a !== 'undefined' && a !== null;
+    `);
+  });
+
+
+  it('respects the --disable-suggestion-comment option', () => {
+    runCli('--disable-suggestion-comment', `
+      a?
+    `, `
+      typeof a !== 'undefined' && a !== null;
     `);
   });
 
@@ -218,13 +381,13 @@ describe('decaffeinate CLI', () => {
 
   it('properly modernizes a JS file', () => {
     copySync('./test/fixtures/F.js', './test/fixtures/F.tmp.js');
-    runCli('test/fixtures/F.tmp.js --modernize-js', '', `
+    runCli('test/fixtures/F.tmp.js --modernize-js --use-js-modules', '', `
       test/fixtures/F.tmp.js → test/fixtures/F.tmp.js
     `);
     let contents = readFileSync('./test/fixtures/F.tmp.js').toString();
     assert.equal(stripSharedIndent(contents), stripSharedIndent(`
       import path from 'path';
-      let b = 1;
+      const b = 1;
     `));
   });
 
@@ -234,13 +397,13 @@ describe('decaffeinate CLI', () => {
 
   it('discovers JS files with --modernize-js specified', () => {
     copySync('./test/fixtures/F.js', './test/fixtures/searchDir/F.js');
-    runCli('test/fixtures/searchDir --modernize-js', '', `
+    runCli('test/fixtures/searchDir --modernize-js --use-js-modules', '', `
       test/fixtures/searchDir/F.js → test/fixtures/searchDir/F.js
     `);
     let contents = readFileSync('./test/fixtures/searchDir/F.js').toString();
     assert.equal(stripSharedIndent(contents), stripSharedIndent(`
       import path from 'path';
-      let b = 1;
+      const b = 1;
     `));
   });
 });

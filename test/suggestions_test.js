@@ -16,7 +16,7 @@ describe('suggestions', () => {
       class A extends B {
         constructor(...args) {
           {
-            // Hack: trick babel into allowing this before super.
+            // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { this; }).toString();
             let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -32,8 +32,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        enableBabelConstructorWorkaround: true,
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -45,7 +44,7 @@ describe('suggestions', () => {
       const x = 1;
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -67,7 +66,7 @@ describe('suggestions', () => {
       class A extends B {
         constructor(c) {
           {
-            // Hack: trick babel into allowing this before super.
+            // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { this; }).toString();
             let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -80,7 +79,7 @@ describe('suggestions', () => {
       class E extends F {
         constructor(g) {
           {
-            // Hack: trick babel into allowing this before super.
+            // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { this; }).toString();
             let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -92,8 +91,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
-        enableBabelConstructorWorkaround: true,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -113,7 +111,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -128,7 +126,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -145,7 +143,7 @@ describe('suggestions', () => {
       Array.from(b).includes(a);
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -163,7 +161,7 @@ describe('suggestions', () => {
       () => f();
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -179,7 +177,7 @@ describe('suggestions', () => {
       });
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -193,7 +191,7 @@ describe('suggestions', () => {
       values = values.map(val => val + 1);
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -213,7 +211,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -232,7 +230,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -250,7 +248,7 @@ describe('suggestions', () => {
       accounts[name = getAccountId()] = Math.floor(accounts[name] / splitFactor);
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -262,7 +260,7 @@ describe('suggestions', () => {
       accounts[accountId] = Math.floor(accounts[accountId] / splitFactor);
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -279,7 +277,7 @@ describe('suggestions', () => {
       const array = d.a, b = array[0], c = array[array.length - 1];
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -291,7 +289,7 @@ describe('suggestions', () => {
       const {a: {b: c}} = d;
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -311,7 +309,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -326,7 +324,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -346,7 +344,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -366,7 +364,7 @@ describe('suggestions', () => {
       (needle = a(), Array.from(b()).includes(needle));
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -383,7 +381,7 @@ describe('suggestions', () => {
       Array.from(b).includes(a);
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -407,7 +405,7 @@ describe('suggestions', () => {
       } })();
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -434,7 +432,7 @@ describe('suggestions', () => {
       });
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -457,7 +455,7 @@ describe('suggestions', () => {
       A.initClass();
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -472,7 +470,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -491,7 +489,7 @@ describe('suggestions', () => {
       const x = a != null ? a : b;
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -510,7 +508,7 @@ describe('suggestions', () => {
       const b = (a != null);
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -527,7 +525,7 @@ describe('suggestions', () => {
       this;
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -547,7 +545,7 @@ describe('suggestions', () => {
       };
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -562,7 +560,7 @@ describe('suggestions', () => {
       });
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -577,7 +575,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -597,7 +595,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });
@@ -618,7 +616,7 @@ describe('suggestions', () => {
       }
     `, {
       options: {
-        disableSuggestions: false,
+        disableSuggestionComment: false,
       },
     });
   });

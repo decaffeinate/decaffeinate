@@ -115,26 +115,27 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 * `--modernize-js`: Treat the input as JavaScript and only run the
   JavaScript-to-JavaScript transforms, modifying the file(s) in-place.
 * `--literate`: Treat the input file as Literate CoffeeScript.
-* `--keep-commonjs`: Do not convert `require` and `module.exports` to `import`
-  and `export`.
-* `--force-default-export`: When converting to `export`, use a single
-  `export default` rather than trying to generate named imports where possible.
+* `--disable-suggestion-comment`: Do not include a comment with followup
+  suggestions at the top of the output file.
+* `--use-js-modules`: Convert `require` and `module.exports` to `import` and
+  `export`.
+* `--loose-js-modules`: Allow named exports when converting to JS modules.
 * `--safe-import-function-identifiers`: Comma-separated list of function names
   that may safely be in the `import`/`require` section of the file. All other
   function calls will disqualify later `require`s from being converted to
   `import`s.
-* `--prefer-const`: Use `const` when possible in output code.
+* `--prefer-let`: Use `let` instead of `const` for most variables in output
+  code.
 * `--loose`: Enable all `--loose...` options.
 * `--loose-default-params`: Convert CS default params to JS default params.
 * `--loose-for-expressions`: Do not wrap expression loop targets in `Array.from`.
 * `--loose-for-of`: Do not wrap JS `for...of` loop targets in `Array.from`.
 * `--loose-includes`: Do not wrap in `Array.from` when converting `in` to `includes`.
 * `--loose-comparison-negation`: Allow unsafe simplifications like `!(a > b)` to `a <= b`.
-* `--allow-invalid-constructors`: Don't error when constructors use `this`
-  before super or omit the `super` call in a subclass.
-* `--enable-babel-constructor-workaround`: Use a hacky Babel-specific workaround
-  to allow `this` before `super` in constructors. Also works when using
-  TypeScript.
+* `--disable-babel-constructor-workaround`: Never include the Babel/TypeScript
+  workaround code to allow `this` before `super` in constructors.
+* `--disallow-invalid-constructors`: Give an error when constructors use `this`
+  before `super` or omit the `super` call in a subclass.
 
 For more usage details, see the output of `decaffeinate --help`.
 

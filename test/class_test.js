@@ -80,8 +80,7 @@ describe('classes', () => {
       });
     `, {
       options: {
-        allowInvalidConstructors: true,
-        enableBabelConstructorWorkaround: false,
+        disableBabelConstructorWorkaround: true,
       }
     });
   });
@@ -178,13 +177,17 @@ describe('classes', () => {
       `);
     });
 
-    it('errors by default when using this before super in a constructor', () => {
+    it('errors when specified when using this before super in a constructor', () => {
       assertError(`
         class A extends B
           constructor: ->
             @a = 2
             super
-      `, 'Cannot automatically convert a subclass with a constructor that uses `this` before `super`.');
+      `,
+        'Cannot automatically convert a subclass with a constructor that uses `this` before `super`.',
+        {
+          disallowInvalidConstructors: true,
+        });
     });
 
     it('does not error when using `this` in a function before `super` in a constructor', () => {
@@ -205,23 +208,31 @@ describe('classes', () => {
       `);
     });
 
-    it('errors by default when a subclass constructor omits super', () => {
+    it('errors when specified when a subclass constructor omits super', () => {
       assertError(`
         class A extends B
           constructor: ->
             @a = 2
-      `, 'Cannot automatically convert a subclass with a constructor that does not call super.');
+      `,
+        'Cannot automatically convert a subclass with a constructor that does not call super.',
+        {
+          disallowInvalidConstructors: true,
+        });
     });
 
-    it('errors by default when a subclass uses a bound method', () => {
+    it('errors when specified when a subclass uses a bound method', () => {
       assertError(`
       class A extends B
         a: =>
           1
-    `, 'Cannot automatically convert a subclass that uses bound methods.');
+    `,
+        'Cannot automatically convert a subclass that uses bound methods.',
+        {
+          disallowInvalidConstructors: true,
+        });
     });
 
-    it('errors by default with an existing constructor and bound methods in a subclass', () => {
+    it('errors when specified with an existing constructor and bound methods in a subclass', () => {
       assertError(`
       class A extends B
         a: =>
@@ -230,10 +241,14 @@ describe('classes', () => {
         constructor: ->
           super()
           this.b = 2;
-    `, 'Cannot automatically convert a subclass that uses bound methods.');
+    `,
+        'Cannot automatically convert a subclass that uses bound methods.',
+        {
+          disallowInvalidConstructors: true,
+        });
     });
 
-    it('does not error when specified when using this before super in a constructor', () => {
+    it('disables the babel workaround when using this before super in a constructor', () => {
       check(`
         class A extends B
           constructor: ->
@@ -248,13 +263,12 @@ describe('classes', () => {
         }
       `, {
         options: {
-          allowInvalidConstructors: true,
-          enableBabelConstructorWorkaround: false,
+          disableBabelConstructorWorkaround: true,
         }
       });
     });
 
-    it('does not error when specified when a subclass constructor omits super', () => {
+    it('disables the babel workaround when a subclass constructor omits super', () => {
       check(`
         class A extends B
           constructor: ->
@@ -267,8 +281,7 @@ describe('classes', () => {
         }
       `, {
         options: {
-          allowInvalidConstructors: true,
-          enableBabelConstructorWorkaround: false,
+          disableBabelConstructorWorkaround: true,
         }
       });
     });
@@ -291,8 +304,7 @@ describe('classes', () => {
       }
     `, {
         options: {
-          allowInvalidConstructors: true,
-          enableBabelConstructorWorkaround: false,
+          disableBabelConstructorWorkaround: true,
         }
       });
     });
@@ -320,13 +332,12 @@ describe('classes', () => {
       }
     `, {
         options: {
-          allowInvalidConstructors: true,
-          enableBabelConstructorWorkaround: false,
+          disableBabelConstructorWorkaround: true,
         }
       });
     });
 
-    it('generates workaround code when specified when using this before super in a constructor', () => {
+    it('generates workaround code when using this before super in a constructor', () => {
       check(`
         class A extends B
           constructor: ->
@@ -336,7 +347,7 @@ describe('classes', () => {
         class A extends B {
           constructor() {
             {
-              // Hack: trick babel into allowing this before super.
+              // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { this; }).toString();
               let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -346,14 +357,10 @@ describe('classes', () => {
             super(...arguments);
           }
         }
-      `, {
-        options: {
-          enableBabelConstructorWorkaround: true
-        }
-      });
+      `);
     });
 
-    it('generates workaround code when specified when a subclass constructor omits super', () => {
+    it('generates workaround code when a subclass constructor omits super', () => {
       check(`
         class A extends B
           constructor: ->
@@ -362,7 +369,7 @@ describe('classes', () => {
         class A extends B {
           constructor() {
             {
-              // Hack: trick babel into allowing this before super.
+              // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { this; }).toString();
               let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -371,14 +378,10 @@ describe('classes', () => {
             this.a = 2;
           }
         }
-      `, {
-        options: {
-          enableBabelConstructorWorkaround: true
-        }
-      });
+      `);
     });
 
-    it('generates workaround code when specified when a subclass has a bound method and no constructor', () => {
+    it('generates workaround code when a subclass has a bound method and no constructor', () => {
       check(`
         class A extends B
           foo: =>
@@ -387,7 +390,7 @@ describe('classes', () => {
         class A extends B {
           constructor(...args) {
             {
-              // Hack: trick babel into allowing this before super.
+              // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { this; }).toString();
               let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -401,14 +404,10 @@ describe('classes', () => {
             return null;
           }
         }
-      `, {
-        options: {
-          enableBabelConstructorWorkaround: true
-        }
-      });
+      `);
     });
 
-    it('generates workaround code when specified when a subclass has a bound method and a normal constructor', () => {
+    it('generates workaround code when a subclass has a bound method and a normal constructor', () => {
       check(`
         class A extends B
           constructor: ->
@@ -421,7 +420,7 @@ describe('classes', () => {
         class A extends B {
           constructor() {
             {
-              // Hack: trick babel into allowing this before super.
+              // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { this; }).toString();
               let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -436,14 +435,10 @@ describe('classes', () => {
             return null;
           }
         }
-      `, {
-        options: {
-          enableBabelConstructorWorkaround: true
-        }
-      });
+      `);
     });
 
-    it('generates workaround code when specified when a subclass has a bound method and an empty constructor', () => {
+    it('generates workaround code when a subclass has a bound method and an empty constructor', () => {
       check(`
         class A extends B
           constructor: ->
@@ -454,7 +449,7 @@ describe('classes', () => {
         class A extends B {
           constructor() {
             {
-              // Hack: trick babel into allowing this before super.
+              // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { this; }).toString();
               let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -467,14 +462,10 @@ describe('classes', () => {
             return null;
           }
         }
-      `, {
-        options: {
-          enableBabelConstructorWorkaround: true
-        }
-      });
+      `);
     });
 
-    it('does not generate workaround code when the flag is set but the workaround is unnecessary', () => {
+    it('does not generate workaround code when the workaround is unnecessary', () => {
       check(`
         class A extends B
           constructor: ->
@@ -487,11 +478,7 @@ describe('classes', () => {
             this.x = 3;
           }
         }
-      `, {
-        options: {
-          enableBabelConstructorWorkaround: true
-        }
-      });
+      `);
     });
 
     it('properly generates workaround code when constructors have default parameters', () => {
@@ -504,7 +491,7 @@ describe('classes', () => {
         class A extends B {
           constructor(c) {
             {
-              // Hack: trick babel into allowing this before super.
+              // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { this; }).toString();
               let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
@@ -515,11 +502,7 @@ describe('classes', () => {
             super(...arguments);
           }
         }
-      `, {
-        options: {
-          enableBabelConstructorWorkaround: true
-        }
-      });
+      `);
     });
 
     it('chooses variables that do not conflict', () => {
@@ -624,8 +607,7 @@ describe('classes', () => {
       }
     `, {
       options: {
-        allowInvalidConstructors: true,
-        enableBabelConstructorWorkaround: false,
+        disableBabelConstructorWorkaround: true,
       }
     });
   });
@@ -641,8 +623,7 @@ describe('classes', () => {
       }
     `, {
       options: {
-        allowInvalidConstructors: true,
-        enableBabelConstructorWorkaround: false,
+        disableBabelConstructorWorkaround: true,
       }
     });
   });
@@ -1026,8 +1007,7 @@ describe('classes', () => {
       }
     `, {
       options: {
-        allowInvalidConstructors: true,
-        enableBabelConstructorWorkaround: false,
+        disableBabelConstructorWorkaround: true,
       }
     });
   });
@@ -1094,8 +1074,7 @@ describe('classes', () => {
       }
     `, {
       options: {
-        allowInvalidConstructors: true,
-        enableBabelConstructorWorkaround: false,
+        disableBabelConstructorWorkaround: true,
       }
     });
   });

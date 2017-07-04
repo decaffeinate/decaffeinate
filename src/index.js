@@ -26,36 +26,36 @@ export type Options = {
   filename: ?string,
   runToStage: ?string,
   literate: ?boolean,
-  disableSuggestions: ?boolean,
-  keepCommonJS: ?boolean,
-  forceDefaultExport: ?boolean,
+  disableSuggestionComment: ?boolean,
+  useJSModules: ?boolean,
+  looseJSModules: ?boolean,
   safeImportFunctionIdentifiers: ?Array<string>,
-  preferConst: ?boolean,
+  preferLet: ?boolean,
   looseDefaultParams: ?boolean,
   looseForExpressions: ?boolean,
   looseForOf: ?boolean,
   looseIncludes: ?boolean,
   looseComparisonNegation: ?boolean,
-  allowInvalidConstructors: ?boolean,
-  enableBabelConstructorWorkaround: ?boolean,
+  disableBabelConstructorWorkaround: ?boolean,
+  disallowInvalidConstructors: ?boolean,
 };
 
 const DEFAULT_OPTIONS = {
   filename: 'input.coffee',
   runToStage: null,
   literate: false,
-  disableSuggestions: true,
-  keepCommonJS: false,
-  forceDefaultExport: false,
+  disableSuggestionComment: false,
+  useJSModules: false,
+  looseJSModules: false,
   safeImportFunctionIdentifiers: [],
-  preferConst: false,
+  preferLet: false,
   looseDefaultParams: false,
   looseForExpressions: false,
   looseForOf: false,
   looseIncludes: false,
   looseComparisonNegation: false,
-  allowInvalidConstructors: false,
-  enableBabelConstructorWorkaround: false,
+  disableBabelConstructorWorkaround: false,
+  disallowInvalidConstructors: false,
 };
 
 type ConversionResult = {
@@ -103,7 +103,7 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
     }
   }
   let result = runStages(source, options, stages);
-  if (!options.disableSuggestions) {
+  if (!options.disableSuggestionComment) {
     result.code = prependSuggestionComment(result.code, result.suggestions);
   }
   result.code = convertNewlines(result.code, originalNewlineStr);

@@ -48,12 +48,16 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.literate = true;
         break;
 
-      case '--keep-commonjs':
-        baseOptions.keepCommonJS = true;
+      case '--disable-suggestion-comment':
+        baseOptions.disableSuggestionComment = true;
         break;
 
-      case '--force-default-export':
-        baseOptions.forceDefaultExport = true;
+      case '--use-js-modules':
+        baseOptions.useJSModules = true;
+        break;
+
+      case '--loose-js-modules':
+        baseOptions.looseJSModules = true;
         break;
 
       case '--safe-import-function-identifiers':
@@ -61,8 +65,16 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.safeImportFunctionIdentifiers = args[i].split(',');
         break;
 
-      case '--prefer-const':
-        baseOptions.preferConst = true;
+      case '--prefer-let':
+        baseOptions.preferLet = true;
+        break;
+
+      case '--disable-babel-constructor-workaround':
+        baseOptions.disableBabelConstructorWorkaround = true;
+        break;
+
+      case '--disallow-invalid-constructors':
+        baseOptions.disallowInvalidConstructors = true;
         break;
 
       case '--loose':
@@ -71,6 +83,7 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.looseForOf = true;
         baseOptions.looseIncludes = true;
         baseOptions.looseComparisonNegation = true;
+        baseOptions.looseJSModules = true;
         break;
 
       case '--loose-default-params':
@@ -93,12 +106,19 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.looseComparisonNegation = true;
         break;
 
-      case '--allow-invalid-constructors':
-        baseOptions.allowInvalidConstructors = true;
+      // Legacy options that are now a no-op.
+      case '--prefer-const':
+      case '--keep-commonjs':
+      case '--enable-babel-constructor-workaround':
         break;
 
-      case '--enable-babel-constructor-workaround':
-        baseOptions.enableBabelConstructorWorkaround = true;
+      // Legacy options that are now aliases for other options.
+      case '--force-default-export':
+        baseOptions.useJSModules = true;
+        break;
+
+      case '--allow-invalid-constructors':
+        baseOptions.disableBabelConstructorWorkaround = true;
         break;
 
       default:
@@ -231,14 +251,16 @@ function usage() {
   console.log('                           JavaScript-to-JavaScript transforms, modifying the file(s)');
   console.log('                           in-place.');
   console.log('  --literate               Treat the input file as Literate CoffeeScript.');
-  console.log('  --keep-commonjs          Do not convert require and module.exports to import and export.');
-  console.log('  --force-default-export   When converting to export, use a single "export default" rather ');
-  console.log('                           than trying to generate named imports where possible.');
+  console.log('  --disable-suggestion-comment');
+  console.log('                           Do not include a comment with followup suggestions at the');
+  console.log('                           top of the output file.');
+  console.log('  --use-js-modules         Convert require and module.exports to import and export.');
+  console.log('  --loose-js-modules       Allow named exports when converting to JS modules.');
   console.log('  --safe-import-function-identifiers');
   console.log('                           Comma-separated list of function names that may safely be in the ');
   console.log('                           import/require section of the file. All other function calls ');
   console.log('                           will disqualify later requires from being converted to imports.');
-  console.log('  --prefer-const           Use the const keyword for variables when possible.');
+  console.log('  --prefer-let             Use let instead of const for most variables in output code.');
   console.log('  --loose                  Enable all --loose... options.');
   console.log('  --loose-default-params   Convert CS default params to JS default params.');
   console.log('  --loose-for-expressions  Do not wrap expression loop targets in Array.from.');
@@ -246,12 +268,12 @@ function usage() {
   console.log('  --loose-includes         Do not wrap in Array.from when converting in to includes.');
   console.log('  --loose-comparison-negation');
   console.log('                           Allow unsafe simplifications like `!(a > b)` to `a <= b`.');
-  console.log('  --allow-invalid-constructors');
-  console.log('                           Don\'t error when constructors use this before super or omit');
-  console.log('                           the super call in a subclass.');
-  console.log('  --enable-babel-constructor-workaround');
-  console.log('                           Use a hacky Babel-specific workaround to allow this before');
-  console.log('                           super in constructors. Also works when using TypeScript.');
+  console.log('  --disable-babel-constructor-workaround');
+  console.log('                           Never include the Babel/TypeScript workaround code to allow');
+  console.log('                           this before super in constructors.');
+  console.log('  --disallow-invalid-constructors');
+  console.log('                           Give an error when constructors use this before super or');
+  console.log('                           omit the super call in a subclass.');
   console.log();
   console.log('EXAMPLES');
   console.log();

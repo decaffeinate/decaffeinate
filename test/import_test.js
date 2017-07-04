@@ -1,7 +1,7 @@
 import check from './support/check';
 
 describe('imports', () => {
-  it('converts commonjs code to JS modules by default', () => {
+  it('converts commonjs code to JS modules with named exports when specified', () => {
     check(`
       x = require('x');
       module.exports.y = 3;
@@ -10,23 +10,20 @@ describe('imports', () => {
       export let y = 3;
     `, {
       options: {
-        keepCommonJS: false,
+        useJSModules: true,
+        looseJSModules: true,
       },
     });
   });
 
-  it('keeps commonjs when the preference is specified', () => {
+  it('keeps commonjs by default', () => {
     check(`
       x = require('x');
       module.exports.y = 3;
     `, `
       const x = require('x');
       module.exports.y = 3;
-    `, {
-      options: {
-        keepCommonJS: true,
-      },
-    });
+    `);
   });
 
   it('properly passes down function identifiers', () => {
@@ -44,13 +41,13 @@ describe('imports', () => {
       const z = require('z');
     `, {
       options: {
-        keepCommonJS: false,
+        useJSModules: true,
         safeImportFunctionIdentifiers: ['foo'],
       },
     });
   });
 
-  it('allows forcing a default export', () => {
+  it('forces a default export by default', () => {
     check(`
       exports.a = b;
       exports.c = d;
@@ -61,8 +58,7 @@ describe('imports', () => {
       export default defaultExport;
     `, {
       options: {
-        keepCommonJS: false,
-        forceDefaultExport: true,
+        useJSModules: true,
       },
     });
   });

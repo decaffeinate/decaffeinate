@@ -23,7 +23,7 @@ likely aren't worth sacrificing code quality for.
 
 **decaffeinate may not be fully correct in these situations:**
 * Test cases in the CoffeeScript test suite. While the vast majority of these
-  test cases can be handed by decaffeinate, some of them exercise edge cases in
+  test cases can be handled by decaffeinate, some of them exercise edge cases in
   the language that seem to never occur in other projects.
 * Other contrived examples that do not come up in the real world.
 
