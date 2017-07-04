@@ -1,13 +1,4 @@
 import check from './support/check';
-import {
-  AVOID_IIFES, AVOID_INITCLASS,
-  AVOID_INLINE_ASSIGNMENTS, AVOID_TOP_LEVEL_RETURN, AVOID_TOP_LEVEL_THIS,
-  CLEAN_UP_FOR_OWN_LOOPS,
-  CLEAN_UP_IMPLICIT_RETURNS, FIX_INCLUDES_EVALUATION_ORDER, REMOVE_ARRAY_FROM,
-  REMOVE_BABEL_WORKAROUND, REMOVE_GUARD, SHORTEN_NULL_CHECKS,
-  SIMPLIFY_COMPLEX_ASSIGNMENTS,
-  SIMPLIFY_DYNAMIC_RANGE_LOOPS
-} from '../src/suggestions';
 
 describe('suggestions', () => {
   it('provides a suggestion for the babel constructor workaround', () => {
@@ -16,6 +7,12 @@ describe('suggestions', () => {
         c: =>
           d
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS001: Remove Babel/TypeScript constructor workaround
+       * DS102: Remove unnecessary code created because of implicit returns
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       class A extends B {
         constructor(...args) {
           {
@@ -23,7 +20,7 @@ describe('suggestions', () => {
             if (false) { super(); }
             let thisFn = (() => { this; }).toString();
             let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
-            eval(\`\${thisName} = this;\`);
+            eval(\`$\{thisName} = this;\`);
           }
           this.c = this.c.bind(this);
           super(...args);
@@ -34,11 +31,10 @@ describe('suggestions', () => {
         }
       }
     `, {
-      options: {enableBabelConstructorWorkaround: true},
-      expectedSuggestions: [
-        REMOVE_BABEL_WORKAROUND,
-        CLEAN_UP_IMPLICIT_RETURNS,
-      ],
+      options: {
+        enableBabelConstructorWorkaround: true,
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -48,7 +44,9 @@ describe('suggestions', () => {
     `, `
       const x = 1;
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -61,6 +59,11 @@ describe('suggestions', () => {
         constructor: (@g) ->
           super
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS001: Remove Babel/TypeScript constructor workaround
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       class A extends B {
         constructor(c) {
           {
@@ -88,10 +91,10 @@ describe('suggestions', () => {
         }
       }
     `, {
-      options: {enableBabelConstructorWorkaround: true},
-      expectedSuggestions: [
-        REMOVE_BABEL_WORKAROUND,
-      ],
+      options: {
+        disableSuggestions: false,
+        enableBabelConstructorWorkaround: true,
+      },
     });
   });
 
@@ -100,13 +103,18 @@ describe('suggestions', () => {
       for a in b
         c
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS101: Remove unnecessary use of Array.from
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       for (let a of Array.from(b)) {
         c;
       }
     `, {
-      expectedSuggestions: [
-        REMOVE_ARRAY_FROM,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -119,7 +127,9 @@ describe('suggestions', () => {
         b;
       }
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -127,11 +137,16 @@ describe('suggestions', () => {
     check(`
       a in b
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS101: Remove unnecessary use of Array.from
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       Array.from(b).includes(a);
     `, {
-      expectedSuggestions: [
-        REMOVE_ARRAY_FROM,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -140,11 +155,16 @@ describe('suggestions', () => {
       ->
         f()
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS102: Remove unnecessary code created because of implicit returns
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       () => f();
     `, {
-      expectedSuggestions: [
-        CLEAN_UP_IMPLICIT_RETURNS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -158,7 +178,9 @@ describe('suggestions', () => {
         f();
       });
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -170,7 +192,9 @@ describe('suggestions', () => {
       let values = [1, 2, 3];
       values = values.map(val => val + 1);
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -178,14 +202,19 @@ describe('suggestions', () => {
     check(`
       a()?.b
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS103: Rewrite code to no longer use __guard__
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       __guard__(a(), x => x.b);
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
     `, {
-      expectedSuggestions: [
-        REMOVE_GUARD,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -193,13 +222,18 @@ describe('suggestions', () => {
     check(`
       a?.b
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS207: Consider shorter variations of null checks
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       if (typeof a !== 'undefined' && a !== null) {
         a.b;
       }
     `, {
-      expectedSuggestions: [
-        SHORTEN_NULL_CHECKS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -207,12 +241,17 @@ describe('suggestions', () => {
     check(`
       accounts[getAccountId()] //= splitFactor
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS104: Avoid inline assignments
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       let name;
       accounts[name = getAccountId()] = Math.floor(accounts[name] / splitFactor);
     `, {
-      expectedSuggestions: [
-        AVOID_INLINE_ASSIGNMENTS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -222,7 +261,9 @@ describe('suggestions', () => {
     `, `
       accounts[accountId] = Math.floor(accounts[accountId] / splitFactor);
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -230,11 +271,16 @@ describe('suggestions', () => {
     check(`
       {a: [b, ..., c]} = d
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS201: Simplify complex destructure assignments
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       const array = d.a, b = array[0], c = array[array.length - 1];
     `, {
-      expectedSuggestions: [
-        SIMPLIFY_COMPLEX_ASSIGNMENTS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -244,7 +290,9 @@ describe('suggestions', () => {
     `, `
       const {a: {b: c}} = d;
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -253,13 +301,18 @@ describe('suggestions', () => {
       for a in [b..c]
         d
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS202: Simplify dynamic range loops
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       for (let a = b, end = c, asc = b <= end; asc ? a <= end : a >= end; asc ? a++ : a--) {
         d;
       }
     `, {
-      expectedSuggestions: [
-        SIMPLIFY_DYNAMIC_RANGE_LOOPS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -272,7 +325,9 @@ describe('suggestions', () => {
         d;
       }
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -281,13 +336,18 @@ describe('suggestions', () => {
       for own a of b
         c
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS203: Remove \`|| {}\` from converted for-own loops
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       for (let a of Object.keys(b || {})) {
         c;
       }
     `, {
-      expectedSuggestions: [
-        CLEAN_UP_FOR_OWN_LOOPS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -295,14 +355,19 @@ describe('suggestions', () => {
     check(`
       a() in b()
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS101: Remove unnecessary use of Array.from
+       * DS104: Avoid inline assignments
+       * DS204: Change includes calls to have a more natural evaluation order
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       let needle;
       (needle = a(), Array.from(b()).includes(needle));
     `, {
-      expectedSuggestions: [
-        REMOVE_ARRAY_FROM,
-        AVOID_INLINE_ASSIGNMENTS,
-        FIX_INCLUDES_EVALUATION_ORDER,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -310,11 +375,16 @@ describe('suggestions', () => {
     check(`
       a in b
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS101: Remove unnecessary use of Array.from
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       Array.from(b).includes(a);
     `, {
-      expectedSuggestions: [
-        REMOVE_ARRAY_FROM,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -325,15 +395,20 @@ describe('suggestions', () => {
       catch b
         c
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS205: Consider reworking code to avoid use of IIFEs
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       const x = (() => { try {
         return a;
       } catch (b) {
         return c;
       } })();
     `, {
-      expectedSuggestions: [
-        AVOID_IIFES,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -345,6 +420,11 @@ describe('suggestions', () => {
         else
           c
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS102: Remove unnecessary code created because of implicit returns
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       (function() {
         if (a) {
           return b;
@@ -353,9 +433,9 @@ describe('suggestions', () => {
         }
       });
     `, {
-      expectedSuggestions: [
-        CLEAN_UP_IMPLICIT_RETURNS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -364,6 +444,11 @@ describe('suggestions', () => {
       class A
         b: c
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS206: Consider reworking classes to avoid initClass
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       class A {
         static initClass() {
           this.prototype.b = c;
@@ -371,9 +456,9 @@ describe('suggestions', () => {
       }
       A.initClass();
     `, {
-      expectedSuggestions: [
-        AVOID_INITCLASS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -386,7 +471,9 @@ describe('suggestions', () => {
         b() { return c; }
       }
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -395,12 +482,17 @@ describe('suggestions', () => {
       a = 1
       x = a ? b
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS207: Consider shorter variations of null checks
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       const a = 1;
       const x = a != null ? a : b;
     `, {
-      expectedSuggestions: [
-        SHORTEN_NULL_CHECKS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -409,12 +501,17 @@ describe('suggestions', () => {
       a = 1
       b = a?
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS207: Consider shorter variations of null checks
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       const a = 1;
       const b = (a != null);
     `, {
-      expectedSuggestions: [
-        SHORTEN_NULL_CHECKS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -422,11 +519,16 @@ describe('suggestions', () => {
     check(`
       this
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS208: Avoid top-level this
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       this;
     `, {
-      expectedSuggestions: [
-        AVOID_TOP_LEVEL_THIS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -435,13 +537,18 @@ describe('suggestions', () => {
       =>
         return this
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS208: Avoid top-level this
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       () => {
         return this;
       };
     `, {
-      expectedSuggestions: [
-        AVOID_TOP_LEVEL_THIS,
-      ],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -454,7 +561,9 @@ describe('suggestions', () => {
         return this;
       });
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -467,7 +576,9 @@ describe('suggestions', () => {
         static b() { return c; }
       }
     `, {
-      expectedSuggestions: [],
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 
@@ -476,13 +587,39 @@ describe('suggestions', () => {
       if foo
         return
     `, `
+      /*
+       * decaffeinate suggestions:
+       * DS209: Avoid top-level return
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       if (foo) {
         return;
       }
     `, {
-      expectedSuggestions: [
-        AVOID_TOP_LEVEL_RETURN
-      ],
+      options: {
+        disableSuggestions: false,
+      },
+    });
+  });
+
+  it('preserves a shebang line at the top of the file', () => {
+    check(`
+      #!/usr/bin/env coffee
+      a?.b
+    `, `
+      #!/usr/bin/env node
+      /*
+       * decaffeinate suggestions:
+       * DS207: Consider shorter variations of null checks
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
+      if (typeof a !== 'undefined' && a !== null) {
+        a.b;
+      }
+    `, {
+      options: {
+        disableSuggestions: false,
+      },
     });
   });
 });

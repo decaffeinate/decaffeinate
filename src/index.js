@@ -4,7 +4,7 @@ import SemicolonsStage from './stages/semicolons/index';
 import EsnextStage from './stages/esnext/index';
 import LiterateStage from './stages/literate/index';
 import MainStage from './stages/main/index';
-import { mergeSuggestions } from './suggestions';
+import { mergeSuggestions, prependSuggestionComment } from './suggestions';
 import NormalizeStage from './stages/normalize/index';
 import convertNewlines from './utils/convertNewlines';
 import detectNewlineStr from './utils/detectNewlineStr';
@@ -26,6 +26,7 @@ export type Options = {
   filename: ?string,
   runToStage: ?string,
   literate: ?boolean,
+  disableSuggestions: ?boolean,
   keepCommonJS: ?boolean,
   forceDefaultExport: ?boolean,
   safeImportFunctionIdentifiers: ?Array<string>,
@@ -43,6 +44,7 @@ const DEFAULT_OPTIONS = {
   filename: 'input.coffee',
   runToStage: null,
   literate: false,
+  disableSuggestions: true,
   keepCommonJS: false,
   forceDefaultExport: false,
   safeImportFunctionIdentifiers: [],
@@ -58,7 +60,6 @@ const DEFAULT_OPTIONS = {
 
 type ConversionResult = {
   code: string,
-  suggestions: Array<Suggestion>,
 };
 
 export type StageResult = {
@@ -102,8 +103,13 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
     }
   }
   let result = runStages(source, options, stages);
+  if (!options.disableSuggestions) {
+    result.code = prependSuggestionComment(result.code, result.suggestions);
+  }
   result.code = convertNewlines(result.code, originalNewlineStr);
-  return result;
+  return {
+    code: result.code,
+  };
 }
 
 export function modernizeJS(source: string, options: ?Options={}): ConversionResult {
@@ -116,7 +122,9 @@ export function modernizeJS(source: string, options: ?Options={}): ConversionRes
   ];
   let result = runStages(source, options, stages);
   result.code = convertNewlines(result.code, originalNewlineStr);
-  return result;
+  return {
+    code: result.code,
+  };
 }
 
 function runStages(initialContent: string, options: Options, stages: Array<Stage>): ConversionResult {

@@ -82,3 +82,27 @@ export function mergeSuggestions(suggestions: Array<Suggestion>): Array<Suggesti
   }
   return Object.keys(suggestionsByCode).sort().map(code => suggestionsByCode[code]);
 }
+
+export function prependSuggestionComment(code: string, suggestions: Array<Suggestion>): string {
+  if (suggestions.length === 0) {
+    return code;
+  }
+  let commentLines = [
+    '/*',
+    ' * decaffeinate suggestions:',
+    ...suggestions.map(({suggestionCode, message}) => ` * ${suggestionCode}: ${message}`),
+    ' * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md',
+    ' */'
+  ];
+
+  let codeLines = code.split('\n');
+  if (codeLines[0].startsWith('#!')) {
+    return [
+      codeLines[0],
+      ...commentLines,
+      ...codeLines.slice(1),
+    ].join('\n');
+  } else {
+    return [...commentLines, ...codeLines].join('\n');
+  }
+}
