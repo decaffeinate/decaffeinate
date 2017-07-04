@@ -11,7 +11,7 @@ export default function check(source, expected, {options={}, expectedSuggestions
     let converted = convert(source, options);
     strictEqual(converted.code, expected);
     if (expectedSuggestions) {
-      deepEqual(expectedSuggestions, converted.suggestions);
+      deepEqual(converted.suggestions, expectedSuggestions);
     }
   } catch (err) {
     if (PatchError.detect(err)) {

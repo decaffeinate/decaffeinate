@@ -23,6 +23,8 @@ function attachScope(node: Node) {
     case 'Function':
     case 'BoundFunction':
     case 'GeneratorFunction':
+    case 'BoundGeneratorFunction':
+    case 'Class':
       node.scope = new Scope(node, node.parentNode.scope);
       break;
 

@@ -8,6 +8,7 @@ import IdentifierPatcher from './IdentifierPatcher';
 import ProgramPatcher from './ProgramPatcher';
 
 import type { PatcherContext } from './../../../patchers/types';
+import { AVOID_INITCLASS } from '../../../suggestions';
 
 export default class ClassPatcher extends NodePatcher {
   nameAssignee: ?NodePatcher;
@@ -57,6 +58,7 @@ export default class ClassPatcher extends NodePatcher {
       return;
     }
 
+    this.addSuggestion(AVOID_INITCLASS);
     let insertPoint = this.getInitClassInsertPoint();
     let nonMethodPatchers = this.getNonMethodPatchers();
     let customConstructorInfo = this.extractCustomConstructorInfo();

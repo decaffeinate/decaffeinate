@@ -2,6 +2,7 @@ import NodePatcher from './../../../patchers/NodePatcher';
 import ConditionalPatcher from './ConditionalPatcher';
 import SwitchPatcher from './SwitchPatcher';
 import type { PatcherContext } from './../../../patchers/types';
+import { AVOID_TOP_LEVEL_RETURN } from '../../../suggestions';
 
 export default class ReturnPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -30,6 +31,9 @@ export default class ReturnPatcher extends NodePatcher {
   }
 
   patchAsStatement() {
+    if (this.node.scope.containerNode.type === 'Program') {
+      this.addSuggestion(AVOID_TOP_LEVEL_RETURN);
+    }
     if (this.expression) {
       if (this.willConvertToImplicitReturn()) {
         this.remove(this.contentStart, this.expression.outerStart);

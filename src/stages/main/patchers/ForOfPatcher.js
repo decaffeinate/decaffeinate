@@ -1,5 +1,6 @@
 import ForPatcher from './ForPatcher';
 import { SourceType } from 'coffee-lex';
+import { CLEAN_UP_FOR_OWN_LOOPS } from '../../../suggestions';
 
 export default class ForOfPatcher extends ForPatcher {
   patchAsStatement() {
@@ -50,6 +51,7 @@ export default class ForOfPatcher extends ForPatcher {
 
     let relationToken = this.getRelationToken();
     if (this.node.isOwn) {
+      this.addSuggestion(CLEAN_UP_FOR_OWN_LOOPS);
       if (shouldExtractTarget) {
         this.overwrite(relationToken.end, this.target.outerEnd,
           ` Object.keys(${targetReference} || {})) {`);

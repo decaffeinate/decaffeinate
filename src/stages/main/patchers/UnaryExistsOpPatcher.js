@@ -1,4 +1,5 @@
 import UnaryOpPatcher from './UnaryOpPatcher';
+import { SHORTEN_NULL_CHECKS } from '../../../suggestions';
 
 /**
  * Handles unary exists, e.g. `a?`.
@@ -52,6 +53,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    * EXPRESSION '?'
    */
   patchAsStatement() {
+    this.addSuggestion(SHORTEN_NULL_CHECKS);
     let { node: { expression }, negated } = this;
     let needsTypeofCheck = this.needsTypeofCheck();
 

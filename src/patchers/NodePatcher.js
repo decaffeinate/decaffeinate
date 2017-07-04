@@ -7,6 +7,11 @@ import { SourceType } from 'coffee-lex';
 import { isFunction, isSemanticToken } from '../utils/types';
 import { logger } from '../utils/debug';
 import traverse from '../utils/traverse';
+import {
+  AVOID_IIFES,
+  AVOID_INLINE_ASSIGNMENTS,
+  CLEAN_UP_IMPLICIT_RETURNS
+} from '../suggestions';
 
 export default class NodePatcher {
   node: Node;
@@ -343,6 +348,7 @@ export default class NodePatcher {
         this.commitDeferredSuffix();
       });
     } else {
+      this.addSuggestion(AVOID_INLINE_ASSIGNMENTS);
       // Can't repeat it, so we assign it to a free variable and return that,
       // i.e. `a + b` → `(ref = a + b)`.
       if (repeatableOptions.parens) {
@@ -727,6 +733,9 @@ export default class NodePatcher {
         this.remove(patcher.innerEnd, patcher.outerEnd);
       }
       return;
+    }
+    if (isFunction(this.node) && this.isMultiline()) {
+      this.addSuggestion(CLEAN_UP_IMPLICIT_RETURNS);
     }
     patcher.setRequiresExpression();
     this.insert(patcher.outerStart, 'return ');
@@ -1299,6 +1308,7 @@ export default class NodePatcher {
   }
 
   patchInIIFE(innerPatchFn: () => void) {
+    this.addSuggestion(AVOID_IIFES);
     if (this.containsYield()) {
       this.insert(this.innerStart, 'yield* (function*() {');
     } else {

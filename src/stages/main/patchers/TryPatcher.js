@@ -143,6 +143,10 @@ export default class TryPatcher extends NodePatcher {
     });
   }
 
+  canHandleImplicitReturn(): boolean {
+    return this.willPatchAsExpression();
+  }
+
   /**
    * If we're a statement, our children can handle implicit return, so no need
    * to convert to an expression.

@@ -7,6 +7,10 @@ import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import StringPatcher from './StringPatcher';
 import type NodePatcher from './../../../patchers/NodePatcher';
 import type { SourceToken, PatcherContext } from './../../../patchers/types';
+import {
+  FIX_INCLUDES_EVALUATION_ORDER,
+  REMOVE_ARRAY_FROM
+} from '../../../suggestions';
 import { SourceType } from 'coffee-lex';
 
 /**
@@ -69,6 +73,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
   }
 
   patchWithLHSExtracted() {
+    this.addSuggestion(FIX_INCLUDES_EVALUATION_ORDER);
     // `a() in b` → `(needle = a(), in b`
     //               ^^^^^^^^^^^^^^^
     this.insert(this.contentStart, '(');
@@ -103,7 +108,11 @@ export default class InOpPatcher extends BinaryOpPatcher {
     if (this.options.looseIncludes) {
       return false;
     }
-    return !(this.right instanceof ArrayInitialiserPatcher);
+    let shouldWrap = !(this.right instanceof ArrayInitialiserPatcher);
+    if (shouldWrap) {
+      this.addSuggestion(REMOVE_ARRAY_FROM);
+    }
+    return shouldWrap;
   }
 
   rhsNeedsParens() {
