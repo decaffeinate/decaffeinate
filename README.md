@@ -124,6 +124,7 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
   function calls will disqualify later `require`s from being converted to
   `import`s.
 * `--prefer-const`: Use `const` when possible in output code.
+* `--loose`: Enable all `--loose...` options.
 * `--loose-default-params`: Convert CS default params to JS default params.
 * `--loose-for-expressions`: Do not wrap expression loop targets in `Array.from`.
 * `--loose-for-of`: Do not wrap JS `for...of` loop targets in `Array.from`.
