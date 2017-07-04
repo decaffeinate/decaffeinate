@@ -244,8 +244,8 @@ describe('objects', () => {
         c: d
     `, `
       (function() {
-        let b = 1;
-        let d = 2;
+        const b = 1;
+        const d = 2;
         return {
           a: b,
           c: d
@@ -266,7 +266,7 @@ describe('objects', () => {
     check(`
       x = {"FOO", "BAR", "BAZ"}
     `, `
-      let x = {"FOO": "FOO", "BAR": "BAR", "BAZ": "BAZ"};
+      const x = {"FOO": "FOO", "BAR": "BAR", "BAZ": "BAZ"};
     `);
   });
 
@@ -274,7 +274,7 @@ describe('objects', () => {
     check(`
       x = {"a#{b}c"}
     `, `
-      let x = {[\`a\${b}c\`]: \`a\${b}c\`};
+      const x = {[\`a\${b}c\`]: \`a\${b}c\`};
     `);
   });
 
@@ -283,7 +283,7 @@ describe('objects', () => {
       x = {"a#{b()}c"}
     `, `
       let ref;
-      let x = {[ref = \`a\${b()}c\`]: ref};
+      const x = {[ref = \`a\${b()}c\`]: ref};
     `);
   });
 
@@ -294,7 +294,7 @@ describe('objects', () => {
         c: d
       )
     `, `
-      let x = ({
+      const x = ({
         a: b,
         c: d
       });
@@ -398,7 +398,7 @@ describe('objects', () => {
         c: d
         e: f
     `, `
-      let a = typeof b !== 'undefined' && b !== null ? b : {
+      const a = typeof b !== 'undefined' && b !== null ? b : {
         c: d,
         e: f
       };
@@ -422,7 +422,7 @@ describe('objects', () => {
     check(`
       x = if count then {a: b: c} else {d: e: f}
     `, `
-      let x = count ? {a: {b: c}} : {d: {e: f}};
+      const x = count ? {a: {b: c}} : {d: {e: f}};
     `);
   });
 

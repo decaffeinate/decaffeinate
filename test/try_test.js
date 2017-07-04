@@ -123,7 +123,7 @@ describe('try', () => {
     check(`
       a = try b()
     `, `
-      let a = (() => { try { return b(); } catch (error) {} })();
+      const a = (() => { try { return b(); } catch (error) {} })();
     `);
   });
 
@@ -133,7 +133,7 @@ describe('try', () => {
       try
         foo()
     `, `
-      let error = null;
+      const error = null;
       try {
         foo();
       } catch (error1) {}
@@ -252,7 +252,7 @@ describe('try', () => {
     check(`
       x = (try a catch b then c)
     `, `
-      let x = ((() => { try { return a; } catch (b) { return c; } })());
+      const x = ((() => { try { return a; } catch (b) { return c; } })());
     `);
   });
 
@@ -312,7 +312,7 @@ describe('try', () => {
       try {
         a;
       } catch (error) {
-        let array = error.b, c = array[0], d = array[array.length - 1];
+        const array = error.b, c = array[0], d = array[array.length - 1];
         e;
       }
     `);
@@ -328,7 +328,7 @@ describe('try', () => {
       try {
         a;
       } catch (error1) {
-        let {error} = error1;
+        const {error} = error1;
         b;
       }
     `);
@@ -369,8 +369,8 @@ describe('try', () => {
         catch error
           continue
     `, `
-      let x = (() => {
-        let result = [];
+      const x = (() => {
+        const result = [];
         for (let a of Array.from(b)) {
           try {
             continue;
@@ -387,7 +387,7 @@ describe('try', () => {
     check(`
       x = try throw a catch then b
     `, `
-      let x = (() => { try { throw a; } catch (error) { return b; } })();
+      const x = (() => { try { throw a; } catch (error) { return b; } })();
     `);
   });
 

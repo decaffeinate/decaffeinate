@@ -60,7 +60,7 @@ describe('conditionals', () => {
       if a?
         c
     `, `
-      let a = b;
+      const a = b;
       if (a != null) {
         c;
       }
@@ -244,10 +244,10 @@ describe('conditionals', () => {
       () =>
         z((() => {
           if (a) {
-          let c = a;
+          const c = a;
           return a + c;
         } else {
-          let d = a;
+          const d = a;
           return a - d;
         }
         })())
@@ -345,7 +345,7 @@ describe('conditionals', () => {
     check(`
       x = (a unless b)
     `, `
-      let x = (!b ? a : undefined);
+      const x = (!b ? a : undefined);
     `);
   });
 
@@ -357,9 +357,9 @@ describe('conditionals', () => {
           test: "Hello world" unless isValid
       }
     `, `
-      let isValid = true;
+      const isValid = true;
 
-      let testing = {
+      const testing = {
           test: !isValid ? "Hello world" : undefined
       };
     `);
@@ -409,7 +409,7 @@ describe('conditionals', () => {
     check(`
       r = if (f is 0.5) then a else b
     `, `
-      let r = (f === 0.5) ? a : b;
+      const r = (f === 0.5) ? a : b;
     `);
   });
 
@@ -435,7 +435,7 @@ describe('conditionals', () => {
         else if d
           e
     `, `
-      let a = (() => {
+      const a = (() => {
         if (b) {
           return c;
         } else if (d) {
@@ -471,7 +471,7 @@ describe('conditionals', () => {
         else
           1
     `, `
-      let c =
+      const c =
         (() => {
         if (a) {
           let x = 0;
@@ -507,7 +507,7 @@ describe('conditionals', () => {
         else
           b
     `, `
-      let x =
+      const x =
         a ?
           // Do nothing
         undefined :
@@ -538,7 +538,7 @@ describe('conditionals', () => {
         else
           # Do nothing
     `, `
-      let x =
+      const x =
         a ?
           b
          : undefined;
@@ -565,11 +565,11 @@ describe('conditionals', () => {
             d
         y
     `, `
-      let x = (() => {
-        let result = [];
+      const x = (() => {
+        const result = [];
         for (let i = 0; i < b.length; i++) {
           var a = b[i];
-          let y = 
+          const y = 
             (() => {
             if (a) {
               if (b) {
@@ -636,7 +636,7 @@ describe('conditionals', () => {
       else
       )
     `, `
-      let x = (true ?
+      const x = (true ?
         undefined/* a */
        : undefined
       );
@@ -817,7 +817,7 @@ describe('conditionals', () => {
       x = if a
         ;
     `, `
-      let x = a ?
+      const x = a ?
         undefined : undefined;
     `);
   });
@@ -829,7 +829,7 @@ describe('conditionals', () => {
       else
         b
     `, `
-      let x = a ?
+      const x = a ?
         undefined
       :
         b;

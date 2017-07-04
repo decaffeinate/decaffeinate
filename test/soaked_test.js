@@ -126,7 +126,7 @@ describe('soaked expressions', () => {
       check(`
       a = b?()
     `, `
-      let a = typeof b === 'function' ? b() : undefined;
+      const a = typeof b === 'function' ? b() : undefined;
     `);
     });
 
@@ -202,7 +202,7 @@ describe('soaked expressions', () => {
         x = 5
         a()?.b(x)
       `, `
-        let x = 5;
+        const x = 5;
         __guard__(a(), x1 => x1.b(x));
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
@@ -282,7 +282,7 @@ describe('soaked expressions', () => {
       check(`
         a = b?[c]
       `, `
-        let a = typeof b !== 'undefined' && b !== null ? b[c] : undefined;
+        const a = typeof b !== 'undefined' && b !== null ? b[c] : undefined;
       `);
     });
 
@@ -291,8 +291,8 @@ describe('soaked expressions', () => {
         b = {}
         a = b?[c]
       `, `
-        let b = {};
-        let a = b != null ? b[c] : undefined;
+        const b = {};
+        const a = b != null ? b[c] : undefined;
       `);
     });
 
@@ -584,7 +584,7 @@ describe('soaked expressions', () => {
       a = b()?.c ? d
     `, `
       let left;
-      let a = (left = __guard__(b(), x => x.c)) != null ? left : d;
+      const a = (left = __guard__(b(), x => x.c)) != null ? left : d;
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
@@ -596,7 +596,7 @@ describe('soaked expressions', () => {
       a = b()?[c()] ? d
     `, `
       let left;
-      let a = (left = __guard__(b(), x => x[c()])) != null ? left : d;
+      const a = (left = __guard__(b(), x => x[c()])) != null ? left : d;
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
@@ -658,8 +658,8 @@ describe('soaked expressions', () => {
       i + j for j, i in foo()?.bar ? [] 
     `, `
       let left;
-      let iterable = (left = __guard__(foo(), x => x.bar)) != null ? left : [];
-      for (let i = 0; i < iterable.length; i++) { let j = iterable[i]; i + j; } 
+      const iterable = (left = __guard__(foo(), x => x.bar)) != null ? left : [];
+      for (let i = 0; i < iterable.length; i++) { const j = iterable[i]; i + j; } 
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
@@ -693,7 +693,7 @@ describe('soaked expressions', () => {
       a = f()
       ++a?.b[c()]
     `, `
-      let a = f();
+      const a = f();
       if (a != null) {
         ++a.b[c()];
       }
@@ -704,7 +704,7 @@ describe('soaked expressions', () => {
     check(`
       x = ++a?.b[c()]
     `, `
-      let x = typeof a !== 'undefined' && a !== null ? ++a.b[c()] : undefined;
+      const x = typeof a !== 'undefined' && a !== null ? ++a.b[c()] : undefined;
     `);
   });
 
@@ -713,8 +713,8 @@ describe('soaked expressions', () => {
       a = f()
       x = ++a?.b[c()]
     `, `
-      let a = f();
-      let x = a != null ? ++a.b[c()] : undefined;
+      const a = f();
+      const x = a != null ? ++a.b[c()] : undefined;
     `);
   });
 
@@ -723,8 +723,8 @@ describe('soaked expressions', () => {
       a = f()
       x = a?.b or []
     `, `
-      let a = f();
-      let x = (a != null ? a.b : undefined) || [];
+      const a = f();
+      const x = (a != null ? a.b : undefined) || [];
     `);
   });
 
@@ -734,7 +734,7 @@ describe('soaked expressions', () => {
       if a?.b?.c?
         d
     `, `
-      let a = f();
+      const a = f();
       if (__guard__(a != null ? a.b : undefined, x => x.c) != null) {
         d;
       }
@@ -749,7 +749,7 @@ describe('soaked expressions', () => {
       a = b?.filter(-> c) ? null
     `, `
       let left;
-      let a = (left = (typeof b !== 'undefined' && b !== null ? b.filter(() => c) : undefined)) != null ? left : null;
+      const a = (left = (typeof b !== 'undefined' && b !== null ? b.filter(() => c) : undefined)) != null ? left : null;
     `);
   });
 
@@ -758,8 +758,8 @@ describe('soaked expressions', () => {
       b = 0
       a = if b?.c then d else e
     `, `
-      let b = 0;
-      let a = (b != null ? b.c : undefined) ? d : e;
+      const b = 0;
+      const a = (b != null ? b.c : undefined) ? d : e;
     `);
   });
 
@@ -776,7 +776,7 @@ describe('soaked expressions', () => {
       while a?.b
         break
     `, `
-      let a = {};
+      const a = {};
       while (a != null ? a.b : undefined) {
         break;
       }
@@ -789,9 +789,9 @@ describe('soaked expressions', () => {
       b = {}
       d = a[b?.c]
     `, `
-      let a = {};
-      let b = {};
-      let d = a[b != null ? b.c : undefined];
+      const a = {};
+      const b = {};
+      const d = a[b != null ? b.c : undefined];
     `);
   });
 
@@ -843,7 +843,7 @@ describe('soaked expressions', () => {
     check(`
       a = b?.c = 1
     `, `
-      let a = (typeof b !== 'undefined' && b !== null ? b.c = 1 : undefined);
+      const a = (typeof b !== 'undefined' && b !== null ? b.c = 1 : undefined);
     `);
   });
 
@@ -882,7 +882,7 @@ describe('soaked expressions', () => {
     check(`
       a = b?[c..d]
     `, `
-      let a = __guard__(b, x => x.slice(c, +d + 1 || undefined));
+      const a = __guard__(b, x => x.slice(c, +d + 1 || undefined));
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
@@ -893,7 +893,7 @@ describe('soaked expressions', () => {
     check(`
       a = b?[c..d].e
     `, `
-      let a = __guard__(b, x => x.slice(c, +d + 1 || undefined).e);
+      const a = __guard__(b, x => x.slice(c, +d + 1 || undefined).e);
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
@@ -929,7 +929,7 @@ describe('soaked expressions', () => {
       unless (a?.b)
         c
     `, `
-      let a = {b: 1};
+      const a = {b: 1};
       if (!(a != null ? a.b : undefined)) {
         c;
       }
@@ -942,7 +942,7 @@ describe('soaked expressions', () => {
       unless (a?.b.c)
         d
     `, `
-      let a = {b: 1};
+      const a = {b: 1};
       if (!(a != null ? a.b.c : undefined)) {
         d;
       }
@@ -955,7 +955,7 @@ describe('soaked expressions', () => {
       until (a?.b)
         c
     `, `
-      let a = {b: 1};
+      const a = {b: 1};
       while (!(a != null ? a.b : undefined)) {
         c;
       }
@@ -968,7 +968,7 @@ describe('soaked expressions', () => {
       unless c and (a?.b)
         d
     `, `
-      let a = {b: 1};
+      const a = {b: 1};
       if (!c || (!(a != null ? a.b : undefined))) {
         d;
       }
@@ -982,7 +982,7 @@ describe('soaked expressions', () => {
         when (a?.b)
           c
     `, `
-      let a = {b: 1};
+      const a = {b: 1};
       switch (false) {
         case (!(a != null ? a.b : undefined)):
           c;

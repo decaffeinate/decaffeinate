@@ -6,7 +6,7 @@ describe('`do`', () => {
   });
   
   it('creates an IIFE returning the last value', () => {
-    check(`one = do -> 1`, `let one = (() => 1)();`);
+    check(`one = do -> 1`, `const one = (() => 1)();`);
   });
 
   it('creates an IIFE with bound functions', () => {
@@ -36,7 +36,7 @@ describe('`do`', () => {
         result
     `, `
       (function(i, n) {
-        let result = i + n;
+        const result = i + n;
         return result;
       })(i, 0);
     `);
@@ -50,7 +50,7 @@ describe('`do`', () => {
     `, `
       (function() {
         let b;
-        let a = 1;
+        const a = 1;
         return b = a;
       }()) + 1;
     `);

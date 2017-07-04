@@ -16,11 +16,11 @@ describe('literate mode', () => {
     `, `
       // This is a *thing*.
       // It doesn't do much.
-      let thing = 1;
+      const thing = 1;
       
       // This is another thing. It's a little more interesting.
-      let otherThing = (() => {
-        let result = [];
+      const otherThing = (() => {
+        const result = [];
         for (let foo of Array.from(stuff)) {
           if ((foo % 2) === 0) {
             result.push(foo + 1);
@@ -44,9 +44,9 @@ describe('literate mode', () => {
           c = 3
       Those are the first three letters of the alphabet.
     `, `
-      let a = 1;
-      let b = 2;
-      let c = 3;
+      const a = 1;
+      const b = 2;
+      const c = 3;
       // Those are the first three letters of the alphabet.
     `, {
       options: {
@@ -68,7 +68,7 @@ describe('literate mode', () => {
       //   indent
       //     all that I want
       //       and it still will be in a comment.
-      let exceptNow = true;
+      const exceptNow = true;
     `, {
       options: {
         literate: true,
@@ -117,7 +117,7 @@ describe('literate mode', () => {
     check(`
       a = 1
     `, `
-      let a = 1;
+      const a = 1;
     `, {
       options: {
         filename: 'foo.coffee',

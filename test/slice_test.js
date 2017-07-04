@@ -49,7 +49,7 @@ describe('slice', () => {
     check(`
       a = (b for c in d when e)[...2]
     `, `
-      let a = (Array.from(d).filter((c) => e).map((c) => b)).slice(0, 2);
+      const a = (Array.from(d).filter((c) => e).map((c) => b)).slice(0, 2);
     `);
   });
 

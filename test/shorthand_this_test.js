@@ -2,11 +2,11 @@ import check from './support/check';
 
 describe('changing shorthand this to longhand this', function() {
   it('changes shorthand member expressions to longhand member expressions', () => {
-    check(`a = @b`, `let a = this.b;`);
+    check(`a = @b`, `const a = this.b;`);
   });
 
   it('changes shorthand computed member expressions to longhand computed member expressions', () => {
-    check(`a = @[b]`, `let a = this[b];`);
+    check(`a = @[b]`, `const a = this[b];`);
   });
 
   it('changes shorthand standalone this to longhand standalone this', () => {

@@ -6,7 +6,7 @@ describe('expansion', () => {
     check(`
       [..., a, b] = arr
     `, `
-      let a = arr[arr.length - 2], b = arr[arr.length - 1];
+      const a = arr[arr.length - 2], b = arr[arr.length - 1];
     `);
   });
 
@@ -14,7 +14,7 @@ describe('expansion', () => {
     check(`
       [a..., b, c] = arr
     `, `
-      let adjustedLength = Math.max(arr.length, 2),
+      const adjustedLength = Math.max(arr.length, 2),
         a = arr.slice(0, adjustedLength - 2),
         b = arr[adjustedLength - 2],
         c = arr[adjustedLength - 1];
@@ -25,7 +25,7 @@ describe('expansion', () => {
     check(`
       [a, b..., c] = arr
     `, `
-      let a = arr[0],
+      const a = arr[0],
         adjustedLength = Math.max(arr.length, 2),
         b = arr.slice(1, adjustedLength - 1),
         c = arr[adjustedLength - 1];
@@ -36,7 +36,7 @@ describe('expansion', () => {
     check(`
       [a, b, c...] = arr
     `, `
-      let [a, b, ...c] = Array.from(arr);
+      const [a, b, ...c] = Array.from(arr);
     `);
   });
 
@@ -45,7 +45,7 @@ describe('expansion', () => {
       (..., a, b) ->
     `, `
       (function(...args) {
-        let a = args[args.length - 2], b = args[args.length - 1];
+        const a = args[args.length - 2], b = args[args.length - 1];
       });
     `);
   });
@@ -55,7 +55,7 @@ describe('expansion', () => {
       (..., a = 1) ->
     `, `
       (function(...args) {
-        let val = args[args.length - 1], a = val != null ? val : 1;
+        const val = args[args.length - 1], a = val != null ? val : 1;
       });
     `);
   });
@@ -77,7 +77,7 @@ describe('expansion', () => {
         console.log a
         return
     `, `
-      let a = 1;
+      const a = 1;
       (function(...args) {
         this.a = args[args.length - 1];
         console.log(a);
@@ -90,7 +90,7 @@ describe('expansion', () => {
       (a..., b, c) ->
     `, `
       (function(...args) {
-        let adjustedLength = Math.max(args.length, 2),
+        const adjustedLength = Math.max(args.length, 2),
           a = args.slice(0, adjustedLength - 2),
           b = args[adjustedLength - 2],
           c = args[adjustedLength - 1];
@@ -102,7 +102,7 @@ describe('expansion', () => {
     check(`
       [a, b, ...] = arr
     `, `
-      let [a, b] = Array.from(arr);
+      const [a, b] = Array.from(arr);
     `);
   });
 
@@ -126,7 +126,7 @@ describe('expansion', () => {
     check(`
       [a, b, ..., c, d] = arr
     `, `
-      let a = arr[0], b = arr[1], c = arr[arr.length - 2], d = arr[arr.length - 1];
+      const a = arr[0], b = arr[1], c = arr[arr.length - 2], d = arr[arr.length - 1];
     `);
   });
 
@@ -135,7 +135,7 @@ describe('expansion', () => {
       (a, b, ..., c, d) ->
     `, `
       (function(...args) {
-        let a = args[0], b = args[1], c = args[args.length - 2], d = args[args.length - 1];
+        const a = args[0], b = args[1], c = args[args.length - 2], d = args[args.length - 1];
       });
     `);
   });
@@ -145,7 +145,7 @@ describe('expansion', () => {
       (a, b, c..., d, e) ->
     `, `
       (function(a, b, ...rest) {
-        let adjustedLength = Math.max(rest.length, 2),
+        const adjustedLength = Math.max(rest.length, 2),
           c = rest.slice(0, adjustedLength - 2),
           d = rest[adjustedLength - 2],
           e = rest[adjustedLength - 1];
@@ -158,7 +158,7 @@ describe('expansion', () => {
       (a, b, ..., c, d) =>
     `, `
       (...args) => {
-        let a = args[0], b = args[1], c = args[args.length - 2], d = args[args.length - 1];
+        const a = args[0], b = args[1], c = args[args.length - 2], d = args[args.length - 1];
       };
     `);
   });
@@ -169,7 +169,7 @@ describe('expansion', () => {
         d
     `, `
       (function(a, ...rest) {
-        let array = rest[0], b = array[array.length - 1], c = rest[1];
+        const array = rest[0], b = array[array.length - 1], c = rest[1];
         return d;
       });
     `);
@@ -179,7 +179,7 @@ describe('expansion', () => {
     check(`
       fn = ([a,b]) -> {a:a,b:b}
     `, `
-      let fn = function(...args) { let [a,b] = Array.from(args[0]); return {a,b}; };
+      const fn = function(...args) { const [a,b] = Array.from(args[0]); return {a,b}; };
     `);
   });
 
@@ -193,7 +193,7 @@ describe('expansion', () => {
         f
     `, `
       var f = function(...args) {
-        let a = args[0], b = args[1], {
+        const a = args[0], b = args[1], {
           c,
           d,
           e,
@@ -207,7 +207,7 @@ describe('expansion', () => {
     check(`
       [a, b, ..., c, d] = getArray()
     `, `
-      let array = getArray(),
+      const array = getArray(),
         a = array[0],
         b = array[1],
         c = array[array.length - 2],
@@ -219,7 +219,7 @@ describe('expansion', () => {
     check(`
       [a, b, c..., d, e] = getArray()
     `, `
-      let array = getArray(),
+      const array = getArray(),
         a = array[0],
         b = array[1],
         adjustedLength = Math.max(array.length, 4),
@@ -233,7 +233,7 @@ describe('expansion', () => {
     check(`
       [..., {a, b}] = arr
     `, `
-      let {a, b} = arr[arr.length - 1];
+      const {a, b} = arr[arr.length - 1];
     `);
   });
 
@@ -241,7 +241,7 @@ describe('expansion', () => {
     check(`
       [..., {a: b, c: d}] = arr
     `, `
-      let {a: b, c: d} = arr[arr.length - 1];
+      const {a: b, c: d} = arr[arr.length - 1];
     `);
   });
 
@@ -249,7 +249,7 @@ describe('expansion', () => {
     check(`
       [..., [..., a]] = arr
     `, `
-      let array = arr[arr.length - 1], a = array[array.length - 1];
+      const array = arr[arr.length - 1], a = array[array.length - 1];
     `);
   });
 
@@ -266,7 +266,7 @@ describe('expansion', () => {
     check(`
       [a, [b]..., c] = arr
     `, `
-      let a = arr[0],
+      const a = arr[0],
         adjustedLength = Math.max(arr.length, 2),
         [b] = Array.from(arr.slice(1, adjustedLength - 1)),
         c = arr[adjustedLength - 1];
@@ -277,7 +277,7 @@ describe('expansion', () => {
     check(`
       [..., a = 1] = arr
     `, `
-      let val = arr[arr.length - 1], a = val != null ? val : 1;
+      const val = arr[arr.length - 1], a = val != null ? val : 1;
     `);
   });
 
@@ -294,7 +294,7 @@ describe('expansion', () => {
     check(`
       {a = 1} = {}
     `, `
-      let obj = {}, val = obj.a, a = val != null ? val : 1;
+      const obj = {}, val = obj.a, a = val != null ? val : 1;
     `);
   });
 
@@ -302,7 +302,7 @@ describe('expansion', () => {
     check(`
       {"#{a b}": c = d} = e
     `, `
-      let val = e[\`\${a(b)}\`], c = val != null ? val : d;
+      const val = e[\`\${a(b)}\`], c = val != null ? val : d;
     `);
   });
 
@@ -354,7 +354,7 @@ describe('expansion', () => {
     check(`
       [] = a()
     `, `
-      let array = a();
+      const array = a();
     `);
   });
 
@@ -385,7 +385,7 @@ describe('expansion', () => {
     check(`
       [{a = 1}...] = b
     `, `
-      let obj = b.slice(0, b.length - 0), val = obj.a, a = val != null ? val : 1;
+      const obj = b.slice(0, b.length - 0), val = obj.a, a = val != null ? val : 1;
     `);
   });
 

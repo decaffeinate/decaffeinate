@@ -8,7 +8,11 @@ export default function check(source, expected, {options={}, expectedSuggestions
   if (expected[0] === '\n') { expected = stripSharedIndent(expected); }
 
   try {
-    let converted = convert(source, options);
+    let converted = convert(source, Object.assign({
+      preferConst: true,
+      keepCommonJS: true,
+      enableBabelConstructorWorkaround: true,
+    }, options));
     strictEqual(converted.code, expected);
     if (expectedSuggestions) {
       deepEqual(converted.suggestions, expectedSuggestions);

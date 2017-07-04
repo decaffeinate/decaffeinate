@@ -19,7 +19,7 @@ describe('for loops', () => {
         k
     `, `
       for (let k in o) {
-        let v = o[k];
+        const v = o[k];
         k;
       }
     `);
@@ -30,9 +30,9 @@ describe('for loops', () => {
       for k, v of getObject()
         k
     `, `
-      let object = getObject();
+      const object = getObject();
       for (let k in object) {
-        let v = object[k];
+        const v = object[k];
         k;
       }
     `);
@@ -44,7 +44,7 @@ describe('for loops', () => {
         k + x
     `, `
       for (let k in o) {
-        let {x, y} = o[k];
+        const {x, y} = o[k];
         k + x;
       }
     `);
@@ -55,9 +55,9 @@ describe('for loops', () => {
       for key, {x, y} of getObject()
         key + x
     `, `
-      let object = getObject();
+      const object = getObject();
       for (let key in object) {
-        let {x, y} = object[key];
+        const {x, y} = object[key];
         key + x;
       }
     `);
@@ -69,7 +69,7 @@ describe('for loops', () => {
         console.log v
     `, `
       for (let k in obj) {
-        let v = obj[k];
+        const v = obj[k];
         if (k === v) {
           console.log(v);
         }
@@ -119,10 +119,10 @@ describe('for loops', () => {
       a(k + v for k, v of obj() when k)
     `, `
       a((() => {
-        let result = [];
-        let object = obj();
+        const result = [];
+        const object = obj();
         for (let k in object) {
-          let v = object[k];
+          const v = object[k];
           if (k) {
             result.push(k + v);
           }
@@ -141,10 +141,10 @@ describe('for loops', () => {
             v)
     `, `
       a((() => {
-        let result = [];
-        let object = obj();
+        const result = [];
+        const object = obj();
         for (let k in object) {
-          let v = object[k];
+          const v = object[k];
           if (x) {
             if (k) {
               result.push(k);
@@ -166,7 +166,7 @@ describe('for loops', () => {
         a
     `, `
       for (let j = 0; j < b.length; j++) {
-        let a = b[j];
+        const a = b[j];
         a;
       }
     `);
@@ -189,7 +189,7 @@ describe('for loops', () => {
         a + b
     `, `
       for (let i = 0; i < c.length; i++) {
-        let { a, b } = c[i];
+        const { a, b } = c[i];
         a + b;
       }
     `);
@@ -212,7 +212,7 @@ describe('for loops', () => {
         i = 1
     `, `
       for (let j = 0; j <= 1; j++) {
-        let i = 1;
+        const i = 1;
       }
     `);
   });
@@ -343,7 +343,7 @@ describe('for loops', () => {
     check(`
       x = for [0..2] then a
     `, `
-      let x = [0, 1, 2].map((i) => a);
+      const x = [0, 1, 2].map((i) => a);
     `);
   });
 
@@ -353,7 +353,7 @@ describe('for loops', () => {
         a
     `, `
       for (let i = 0; i < b.length; i += 2) {
-        let a = b[i];
+        const a = b[i];
         a;
       }
     `);
@@ -365,7 +365,7 @@ describe('for loops', () => {
         a
     `, `
       for (let i = b.length - 1; i >= 0; i--) {
-        let a = b[i];
+        const a = b[i];
         a;
       }
     `);
@@ -377,7 +377,7 @@ describe('for loops', () => {
         a
     `, `
       for (let i = b.length - 1; i >= 0; i -= 2) {
-        let a = b[i];
+        const a = b[i];
         a;
       }
     `);
@@ -402,7 +402,7 @@ describe('for loops', () => {
         a
     `, `
       for (let i = 0; i < b.length; i++) {
-        let a = b[i];
+        const a = b[i];
         if (a.c) {
           a;
         }
@@ -422,7 +422,7 @@ describe('for loops', () => {
     check(`
       for a, i in b when a.c then a
     `, `
-      for (let i = 0; i < b.length; i++) { let a = b[i]; if (a.c) { a; } }
+      for (let i = 0; i < b.length; i++) { const a = b[i]; if (a.c) { a; } }
     `);
   });
 
@@ -432,7 +432,7 @@ describe('for loops', () => {
         a
     `, `
       for (let i = 0; i < b.length; i += 2) {
-        let a = b[i];
+        const a = b[i];
         if (a.c) {
           a;
         }
@@ -445,9 +445,9 @@ describe('for loops', () => {
       for e, i in list()
         break
     `, `
-      let iterable = list();
+      const iterable = list();
       for (let i = 0; i < iterable.length; i++) {
-        let e = iterable[i];
+        const e = iterable[i];
         break;
       }
     `);
@@ -525,7 +525,7 @@ describe('for loops', () => {
         a()
     `, `
       for (let step = c(d), asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) {
-        let a = b[i];
+        const a = b[i];
         a();
       }
     `);
@@ -552,7 +552,7 @@ describe('for loops', () => {
       a(k for k of o)
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         for (let k in o) {
           result.push(k);
         }
@@ -566,7 +566,7 @@ describe('for loops', () => {
       a(k for k of o when c)
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         for (let k in o) {
           if (c) {
             result.push(k);
@@ -613,7 +613,7 @@ describe('for loops', () => {
     `, `
       let e;
       a((() => {
-        let result = [];
+        const result = [];
         for (e of Array.from(l)) {
           result.push(e);
         }
@@ -631,9 +631,9 @@ describe('for loops', () => {
     `, `
       let i;
       a((() => {
-        let result = [];
+        const result = [];
         for (i = 0; i < l.length; i++) {
-          let e = l[i];
+          const e = l[i];
           result.push(e);
         }
         return result;
@@ -648,7 +648,7 @@ describe('for loops', () => {
         @e)
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         for (this.e of Array.from(l)) {
           result.push(this.e);
         }
@@ -723,7 +723,7 @@ describe('for loops', () => {
         y + 2)
     `, `
       console.log((() => {
-        let result = [];
+        const result = [];
         for (let x of [1, 2, 3]) {
           let y = x + 1;
           if (y > 2) {
@@ -745,10 +745,10 @@ describe('for loops', () => {
         y + 2)
     `, `
       console.log((() => {
-        let result = [];
-        let iterable = [1, 2, 3];
+        const result = [];
+        const iterable = [1, 2, 3];
         for (let i = 0; i < iterable.length; i++) {
-          let x = iterable[i];
+          const x = iterable[i];
           let y = x + 1;
           if (y > 2) {
             y -= 1;
@@ -768,10 +768,10 @@ describe('for loops', () => {
           break
         b + 1
     `, `
-      let x = (() => {
-        let result = [];
+      const x = (() => {
+        const result = [];
         for (let a of Array.from(f())) {
-          let b = g(a);
+          const b = g(a);
           if (b > 3) {
             break;
           }
@@ -787,9 +787,9 @@ describe('for loops', () => {
       a(b for c in d by e)
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         for (let step = e, asc = step > 0, i = asc ? 0 : d.length - 1; asc ? i < d.length : i >= 0; i += step) {
-          let c = d[i];
+          const c = d[i];
           result.push(b);
         }
         return result;
@@ -802,9 +802,9 @@ describe('for loops', () => {
       a(b for x, i in l when c)
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         for (let i = 0; i < l.length; i++) {
-          let x = l[i];
+          const x = l[i];
           if (c) {
             result.push(b);
           }
@@ -823,10 +823,10 @@ describe('for loops', () => {
             i)
     `, `
       a((() => {
-        let result = [];
-        let iterable = l();
+        const result = [];
+        const iterable = l();
         for (let step = s, asc = step > 0, i = asc ? 0 : iterable.length - 1; asc ? i < iterable.length : i >= 0; i += step) {
-          let x = iterable[i];
+          const x = iterable[i];
           if (x) {
             if (i) {
               result.push(x);
@@ -854,7 +854,7 @@ describe('for loops', () => {
     `, `
       () =>
         (() => {
-          let result = [];
+          const result = [];
           for (let a of Array.from(b)) {
             if (a) {
               result.push(b);
@@ -878,9 +878,9 @@ describe('for loops', () => {
           a + c
     `, `
       for (let i = 0; i < b.length; i++) {
-        let a = b[i];
+        const a = b[i];
         for (let j = 0; j < d.length; j++) {
-          let c = d[j];
+          const c = d[j];
           a + c;
         }
       }
@@ -915,7 +915,7 @@ describe('for loops', () => {
         console.log key, value
     `, `
       for (let key of Object.keys(list || {})) {
-        let value = list[key];
+        const value = list[key];
         console.log(key, value);
       }
     `);
@@ -926,9 +926,9 @@ describe('for loops', () => {
       for own key, value of getObject()
         console.log key, value
     `, `
-      let object = getObject();
+      const object = getObject();
       for (let key of Object.keys(object || {})) {
-        let value = object[key];
+        const value = object[key];
         console.log(key, value);
       }
     `);
@@ -964,10 +964,10 @@ describe('for loops', () => {
             v)
     `, `
       a((() => {
-        let result = [];
-        let object = obj();
+        const result = [];
+        const object = obj();
         for (let k of Object.keys(object || {})) {
-          let v = object[k];
+          const v = object[k];
           if (x) {
             if (k) {
               result.push(k);
@@ -1042,7 +1042,7 @@ describe('for loops', () => {
         console.log('foo')
       )()
     `, `
-      for (let i = 0; i < b.length; i++) { let a = b[i]; (() => console.log('foo'))(); }
+      for (let i = 0; i < b.length; i++) { const a = b[i]; (() => console.log('foo'))(); }
     `);
   });
 
@@ -1053,7 +1053,7 @@ describe('for loops', () => {
         console.log x + ', ' + y;
     `, `
       for (let entry of Array.from(someArray)) {
-        let {x, y} = getPoint(entry);
+        const {x, y} = getPoint(entry);
         console.log(x + ', ' + y);
       }
     `);
@@ -1086,9 +1086,9 @@ describe('for loops', () => {
       for a, i in b c
         d()
     `, `
-      let iterable = b(c);
+      const iterable = b(c);
       for (let i = 0; i < iterable.length; i++) {
-        let a = iterable[i];
+        const a = iterable[i];
         d();
       }
     `));
@@ -1099,7 +1099,7 @@ describe('for loops', () => {
         c: d
         e: f
     `, `
-      let x = Array.from(b).map((a) => ({
+      const x = Array.from(b).map((a) => ({
         c: d,
         e: f
       }));
@@ -1110,8 +1110,8 @@ describe('for loops', () => {
       x = for a in b
         break
     `, `
-      let x = (() => {
-        let result = [];
+      const x = (() => {
+        const result = [];
         for (let a of Array.from(b)) {
           break;
         }
@@ -1127,8 +1127,8 @@ describe('for loops', () => {
         else if b
           continue
     `, `
-      let x = (() => {
-        let result = [];
+      const x = (() => {
+        const result = [];
         for (let a of Array.from(b)) {
           if (a) {
             result.push(a);
@@ -1148,9 +1148,9 @@ describe('for loops', () => {
       for k, v of data when v?
         filteredData[k] = v
     `, `
-      let filteredData = {};
+      const filteredData = {};
       for (let k in data) {
-        let v = data[k];
+        const v = data[k];
         if (v != null) {
           filteredData[k] = v;
         }
@@ -1162,7 +1162,7 @@ describe('for loops', () => {
     check(`
       a = (b for b in c when b not of e)
     `, `
-      let a = (Array.from(c).filter((b) => !(b in e)).map((b) => b));
+      const a = (Array.from(c).filter((b) => !(b in e)).map((b) => b));
     `);
   });
 
@@ -1170,8 +1170,8 @@ describe('for loops', () => {
     check(`
       a = (b for b of c when d not of e)
     `, `
-      let a = ((() => {
-        let result = [];
+      const a = ((() => {
+        const result = [];
         for (let b in c) {
           if (!(d in e)) {
             result.push(b);
@@ -1188,7 +1188,7 @@ describe('for loops', () => {
         console.log a
     `, `
       for (let a in (typeof c !== 'undefined' && c !== null ? c.d : undefined)) {
-        let b = (typeof c !== 'undefined' && c !== null ? c.d : undefined)[a];
+        const b = (typeof c !== 'undefined' && c !== null ? c.d : undefined)[a];
         console.log(a);
       }
     `);
@@ -1220,7 +1220,7 @@ describe('for loops', () => {
     check(`
       a for a in b by c d
     `, `
-      for (let step = c(d), asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { let a = b[i]; a; }
+      for (let step = c(d), asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { const a = b[i]; a; }
     `);
   });
 
@@ -1244,7 +1244,7 @@ describe('for loops', () => {
     check(`
       a for a in b by if c then d
     `, `
-      for (let step = c ? d : undefined, asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { let a = b[i]; a; }
+      for (let step = c ? d : undefined, asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { const a = b[i]; a; }
     `);
   });
 
@@ -1254,7 +1254,7 @@ describe('for loops', () => {
         f
     `, `
       for (let step = (c * d) / e, asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) {
-        let a = b[i];
+        const a = b[i];
         f;
       }
     `);
@@ -1266,7 +1266,7 @@ describe('for loops', () => {
         c
     `, `
       for (let value of Array.from(b)) {
-        let a = value[value.length - 1];
+        const a = value[value.length - 1];
         c;
       }
     `);
@@ -1276,9 +1276,9 @@ describe('for loops', () => {
     check(`
       x = (a for [a = 1] in b)
     `, `
-      let x = ((() => {
-        let result = [];
-        for (let value of Array.from(b)) {     let val = value[0], a = val != null ? val : 1; result.push(a);
+      const x = ((() => {
+        const result = [];
+        for (let value of Array.from(b)) {     const val = value[0], a = val != null ? val : 1; result.push(a);
         }
         return result;
       })());
@@ -1291,8 +1291,8 @@ describe('for loops', () => {
         k + v
     `, `
       for (let k in m) {
-        let value = m[k];
-        let v = value[value.length - 1];
+        const value = m[k];
+        const v = value[value.length - 1];
         k + v;
       }
     `);
@@ -1303,7 +1303,7 @@ describe('for loops', () => {
       a for b in c by do ->
         d
     `, `
-      for (let step = (() => d)(), asc = step > 0, i = asc ? 0 : c.length - 1; asc ? i < c.length : i >= 0; i += step) { let b = c[i]; a; }
+      for (let step = (() => d)(), asc = step > 0, i = asc ? 0 : c.length - 1; asc ? i < c.length : i >= 0; i += step) { const b = c[i]; a; }
     `);
   });
 
@@ -1319,9 +1319,9 @@ describe('for loops', () => {
     `, `
       () =>
         (() => {
-          let result = [];
+          const result = [];
           for (let i = 0; i < b.length; i++) {
-            let a = b[i];
+            const a = b[i];
             result.push(function() {
               c;
               return function*() {
@@ -1341,9 +1341,9 @@ describe('for loops', () => {
         c
     `, `
       let left;
-      let object = (left = a()) != null ? left : b;
+      const object = (left = a()) != null ? left : b;
       for (let k in object) {
-        let v = object[k];
+        const v = object[k];
         c;
       }
     `);
@@ -1355,9 +1355,9 @@ describe('for loops', () => {
         c
     `, `
       let left;
-      let object = (left = a()) != null ? left : b;
+      const object = (left = a()) != null ? left : b;
       for (let k of Object.keys(object || {})) {
-        let v = object[k];
+        const v = object[k];
         c;
       }
     `);
@@ -1391,7 +1391,7 @@ describe('for loops', () => {
     check(`
       foo = () -> null for i in []; t
     `, `
-      let foo = function() { for (let i of []) { null; } return t; };
+      const foo = function() { for (let i of []) { null; } return t; };
     `);
   });
 
@@ -1413,9 +1413,9 @@ describe('for loops', () => {
             scriptsPath = Path.resolve ".", path
           robot.load scriptsPath
     `, `
-      let loadScripts = () =>
+      const loadScripts = () =>
         (() => {
-          let result = [];
+          const result = [];
           for (let path of Array.from(Options.scripts)) {
             var scriptsPath;
             if (path[0] === '/') {
@@ -1438,7 +1438,7 @@ describe('for loops', () => {
     `, `
       (function*() {
         return yield* (function*() {
-          let result = [];
+          const result = [];
           for (let i = 3; i <= 4; i++) {
             result.push(yield i);
           }
@@ -1455,9 +1455,9 @@ describe('for loops', () => {
         console.log i
         i = 10
     `, `
-      let arr = [1, 2, 3];
+      const arr = [1, 2, 3];
       for (let j = 0, i = j; j < arr.length; j++, i = j) {
-        let val = arr[i];
+        const val = arr[i];
         console.log(i);
         i = 10;
       }
@@ -1474,11 +1474,11 @@ describe('for loops', () => {
         f()
     `, `
       let j;
-      let arr = [1, 2, 3];
+      const arr = [1, 2, 3];
       let i = 0;
-      let f = () => i = 10;
+      const f = () => i = 10;
       for (j = 0, i = j; j < arr.length; j++, i = j) {
-        let val = arr[i];
+        const val = arr[i];
         console.log(i);
         f();
       }
@@ -1494,7 +1494,7 @@ describe('for loops', () => {
         console.log i
     `, `
       let i, val;
-      let arr = [1, 2, 3];
+      const arr = [1, 2, 3];
       for (i = 0; i < arr.length; i++) {
         val = arr[i];
         console.log(i);
@@ -1542,8 +1542,8 @@ describe('for loops', () => {
             break
           when 2 then
     `, `
-      let arr = (() => {
-        let result = [];
+      const arr = (() => {
+        const result = [];
         for (let a of Array.from(b)) {
           switch (a) {
             case 0:
@@ -1569,8 +1569,8 @@ describe('for loops', () => {
           when d then e
           else
     `, `
-      let arr = (() => {
-        let result = [];
+      const arr = (() => {
+        const result = [];
         for (let a of Array.from(b)) {
           switch (c) {
             case d: result.push(e); break;
@@ -1589,8 +1589,8 @@ describe('for loops', () => {
           b
         else
     `, `
-      let arr = (() => {
-        let result = [];
+      const arr = (() => {
+        const result = [];
         for (let i of [1, 2, 3]) {
           if (a) {
             result.push(b);
@@ -1610,8 +1610,8 @@ describe('for loops', () => {
             if e then f
             else g
     `, `
-      let x = (() => {
-        let result = [];
+      const x = (() => {
+        const result = [];
         for (let a of Array.from(b)) {
           switch (c) {
             case d:
@@ -1633,8 +1633,8 @@ describe('for loops', () => {
         if c
           d  # e
     `, `
-      let arr = (() => {
-        let result = [];
+      const arr = (() => {
+        const result = [];
         for (let a of Array.from(b)) {
           if (c) {
             result.push(d);  // e
@@ -1653,7 +1653,7 @@ describe('for loops', () => {
         i += 5
     `, `
       for (let j = 0, i = j; j < arr.length; j++, i = j) {
-        let a = arr[i];
+        const a = arr[i];
         i += 5;
       }
     `);
@@ -1665,7 +1665,7 @@ describe('for loops', () => {
         i++
     `, `
       for (let j = 0, i = j; j < arr.length; j++, i = j) {
-        let a = arr[i];
+        const a = arr[i];
         i++;
       }
     `);
@@ -1681,9 +1681,9 @@ describe('for loops', () => {
     `, `
       let j;
       let i = 0;
-      let f = () => i++;
+      const f = () => i++;
       for (j = 0, i = j; j < arr.length; j++, i = j) {
-        let a = arr[i];
+        const a = arr[i];
         f();
       }
     `);
@@ -1720,8 +1720,8 @@ describe('for loops', () => {
     `, `
       let a;
       a;
-      let x = ((() => {
-        let result = [];
+      const x = ((() => {
+        const result = [];
         for (a of []) {     result.push(a);
         }
         return result;
@@ -1742,7 +1742,7 @@ describe('for loops', () => {
       x = for a in b
         ;
     `, `
-      let x = Array.from(b).map((a) =>
+      const x = Array.from(b).map((a) =>
         undefined);
     `);
   });
@@ -1752,7 +1752,7 @@ describe('for loops', () => {
       x = for a in b
         c;
     `, `
-      let x = Array.from(b).map((a) =>
+      const x = Array.from(b).map((a) =>
         c);
     `);
   });

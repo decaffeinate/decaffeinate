@@ -89,7 +89,7 @@ describe('binary operators', () => {
     check(`
       x = (a ? b)
     `, `
-      let x = (typeof a !== 'undefined' && a !== null ? a : b);
+      const x = (typeof a !== 'undefined' && a !== null ? a : b);
     `);
   });
 
@@ -121,7 +121,7 @@ describe('binary operators', () => {
     check(`
       x = (a.b ? a)
     `, `
-      let x = (a.b != null ? a.b : a);
+      const x = (a.b != null ? a.b : a);
     `);
   });
 
@@ -129,7 +129,7 @@ describe('binary operators', () => {
     check(`
       x = (@a.b ? c)
     `, `
-      let x = (this.a.b != null ? this.a.b : c);
+      const x = (this.a.b != null ? this.a.b : c);
     `);
   });
 
@@ -147,7 +147,7 @@ describe('binary operators', () => {
       x = (a() ? b)
     `, `
       let left;
-      let x = ((left = a()) != null ? left : b);
+      const x = ((left = a()) != null ? left : b);
     `);
   });
 
@@ -171,8 +171,8 @@ describe('binary operators', () => {
         x = a() ? @b
       `, `
         let left1;
-        let left = 1;
-        let x = (left1 = a()) != null ? left1 : this.b;
+        const left = 1;
+        const x = (left1 = a()) != null ? left1 : this.b;
       `);
   });
 
@@ -182,8 +182,8 @@ describe('binary operators', () => {
         y = c() ? @d
       `, `
         let left, left1;
-        let x = (left = a()) != null ? left : this.b;
-        let y = (left1 = c()) != null ? left1 : this.d;
+        const x = (left = a()) != null ? left : this.b;
+        const y = (left1 = c()) != null ? left1 : this.d;
       `);
   });
 
@@ -191,7 +191,7 @@ describe('binary operators', () => {
     check(`
       x = 1 + (y ? 0)
     `, `
-      let x = 1 + (typeof y !== 'undefined' && y !== null ? y : 0);
+      const x = 1 + (typeof y !== 'undefined' && y !== null ? y : 0);
     `);
   });
 
@@ -208,7 +208,7 @@ describe('binary operators', () => {
     check(`
       value = object.id << 8 | object.type
     `, `
-      let value = (object.id << 8) | object.type;
+      const value = (object.id << 8) | object.type;
     `);
   });
 
@@ -287,7 +287,7 @@ describe('binary operators', () => {
     check(`
       a = then b
     `, `
-      let a = b;
+      const a = b;
     `);
   });
 
@@ -303,7 +303,7 @@ describe('binary operators', () => {
     check(`
       a =then b
     `, `
-      let a = b;
+      const a = b;
     `);
   });
 

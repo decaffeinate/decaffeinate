@@ -18,7 +18,7 @@ describe('semicolons', () => {
         arguments # c
       d
     `, `
-      let a = function() {
+      const a = function() {
         return arguments; // c
       };
       d;
@@ -46,7 +46,7 @@ describe('semicolons', () => {
   });
 
   it('adds them after assignments', () => {
-    check(`a = 1`, `let a = 1;`);
+    check(`a = 1`, `const a = 1;`);
   });
 
   it('does not add them after `if` statements', () => {
@@ -107,7 +107,7 @@ describe('semicolons', () => {
       x = 1
       -> 2
     `, `
-      let x = 1;
+      const x = 1;
       () => 2;
     `);
   });

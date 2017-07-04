@@ -134,7 +134,7 @@ describe('automatic conversions', () => {
 
   describe('converting all at once', () => {
     it('adds semicolons after call parentheses', () => {
-      check(`Ember = require "ember"`, `import Ember from "ember";`);
+      check(`Ember = require "ember"`, `const Ember = require("ember");`);
     });
 
     it('adds braces to implicit object literals', () => {
@@ -148,7 +148,7 @@ describe('automatic conversions', () => {
           {a}
       `, `
         (function() {
-          let a = 1;
+          const a = 1;
           return {a};
         });
       `);

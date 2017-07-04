@@ -91,7 +91,7 @@ describe('while', () => {
       a(b while c)
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         while (c) {
           result.push(b);
         }
@@ -105,7 +105,7 @@ describe('while', () => {
       a(b while c when d)
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         while (c) {
           if (d) {
             result.push(b);
@@ -127,7 +127,7 @@ describe('while', () => {
       )
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         
         while (b) {
           if (c) {
@@ -156,7 +156,7 @@ describe('while', () => {
       )
     `, `
       a((() => {
-        let result = [];
+        const result = [];
         
         while (b) {
           switch (c) {
@@ -195,7 +195,7 @@ describe('while', () => {
     `, `
       () =>
         (() => {
-          let result = [];
+          const result = [];
           while (true) {
             result.push(() => a);
           }
@@ -258,7 +258,7 @@ describe('while', () => {
                     f)
     `, `
       longName((() => {
-        let result = [];
+        const result = [];
         while (a) {
           if (b) {
             if (c) {
@@ -281,7 +281,7 @@ describe('while', () => {
       while a?
         c
     `, `
-      let a = b;
+      const a = b;
       while (a != null) {
         c;
       }
@@ -294,10 +294,10 @@ describe('while', () => {
         yield a while true
     `, `
       (function*() { return yield* (function*() {
-        let result = [];
+        const result = [];
         while (false) {
           result.push(yield* (function*() {
-            let result1 = [];
+            const result1 = [];
             while (true) {
               result1.push(yield a);
             }
@@ -317,10 +317,10 @@ describe('while', () => {
     `, `
       (function*() {
         return yield* (function*() {
-          let result = [];
+          const result = [];
           while (false) {
             result.push(yield* (function*() {
-              let result1 = [];
+              const result1 = [];
               while (true) {
                 result1.push(yield arguments.length);
               }
@@ -341,10 +341,10 @@ describe('while', () => {
     `, `
       (function*() {
         return yield* (function*() {
-          let result = [];
+          const result = [];
           while (false) {
             result.push(yield* (function*() {
-              let result1 = [];
+              const result1 = [];
               while (true) {
                 result1.push(yield (function() { return arguments.length; }));
               }
@@ -395,7 +395,7 @@ describe('while', () => {
       a(b while c, d)
     `, `
       a(((() => {
-        let result = [];
+        const result = [];
         while (c) {
           result.push(b);
         }
@@ -409,7 +409,7 @@ describe('while', () => {
       [a while b, c]
     `, `
       [((() => {
-        let result = [];
+        const result = [];
         while (b) {
           result.push(a);
         }
@@ -423,7 +423,7 @@ describe('while', () => {
       {a: b while c, d}
     `, `
       ({a: ((() => {
-        let result = [];
+        const result = [];
         while (c) {
           result.push(b);
         }

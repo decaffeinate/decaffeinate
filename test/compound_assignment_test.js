@@ -224,7 +224,7 @@ describe('compound assignment', () => {
         [a[b()] ||= c]
       `, `
         let name1;
-        let name = 'abc';
+        const name = 'abc';
         [a[name1 = b()] || (a[name1] = c)];
       `);
     });
@@ -484,7 +484,7 @@ describe('compound assignment', () => {
         a[b()] ||= c
       `, `
         let name1;
-        let name = 'abc';
+        const name = 'abc';
         if (!a[name1 = b()]) { a[name1] = c; }
       `);
     });

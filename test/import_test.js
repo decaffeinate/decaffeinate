@@ -8,7 +8,11 @@ describe('imports', () => {
     `, `
       import x from 'x';
       export let y = 3;
-    `);
+    `, {
+      options: {
+        keepCommonJS: false,
+      },
+    });
   });
 
   it('keeps commonjs when the preference is specified', () => {
@@ -16,7 +20,7 @@ describe('imports', () => {
       x = require('x');
       module.exports.y = 3;
     `, `
-      let x = require('x');
+      const x = require('x');
       module.exports.y = 3;
     `, {
       options: {
@@ -37,9 +41,10 @@ describe('imports', () => {
       foo();
       import y from 'y';
       bar();
-      let z = require('z');
+      const z = require('z');
     `, {
       options: {
+        keepCommonJS: false,
         safeImportFunctionIdentifiers: ['foo'],
       },
     });
@@ -56,6 +61,7 @@ describe('imports', () => {
       export default defaultExport;
     `, {
       options: {
+        keepCommonJS: false,
         forceDefaultExport: true,
       },
     });

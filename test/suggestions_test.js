@@ -46,7 +46,7 @@ describe('suggestions', () => {
     check(`
       x = 1
     `, `
-      let x = 1;
+      const x = 1;
     `, {
       expectedSuggestions: [],
     });
@@ -230,7 +230,7 @@ describe('suggestions', () => {
     check(`
       {a: [b, ..., c]} = d
     `, `
-      let array = d.a, b = array[0], c = array[array.length - 1];
+      const array = d.a, b = array[0], c = array[array.length - 1];
     `, {
       expectedSuggestions: [
         SIMPLIFY_COMPLEX_ASSIGNMENTS,
@@ -242,7 +242,7 @@ describe('suggestions', () => {
     check(`
       {a: {b: c}} = d
     `, `
-      let {a: {b: c}} = d;
+      const {a: {b: c}} = d;
     `, {
       expectedSuggestions: [],
     });
@@ -325,7 +325,7 @@ describe('suggestions', () => {
       catch b
         c
     `, `
-      let x = (() => { try {
+      const x = (() => { try {
         return a;
       } catch (b) {
         return c;
@@ -395,8 +395,8 @@ describe('suggestions', () => {
       a = 1
       x = a ? b
     `, `
-      let a = 1;
-      let x = a != null ? a : b;
+      const a = 1;
+      const x = a != null ? a : b;
     `, {
       expectedSuggestions: [
         SHORTEN_NULL_CHECKS,
@@ -409,8 +409,8 @@ describe('suggestions', () => {
       a = 1
       b = a?
     `, `
-      let a = 1;
-      let b = (a != null);
+      const a = 1;
+      const b = (a != null);
     `, {
       expectedSuggestions: [
         SHORTEN_NULL_CHECKS,

@@ -61,7 +61,7 @@ describe('default params', () => {
         console.log a
         return
     `, `
-      let a = 3;
+      const a = 3;
       (function(a1) {
         if (a1 == null) { a1 = b(); }
         this.a = a1;
@@ -77,7 +77,7 @@ describe('default params', () => {
     `, `
       (function(param) {
         if (param == null) { param = {}; }
-        let {a} = param;
+        const {a} = param;
       });
     `);
   });
@@ -94,7 +94,7 @@ describe('default params', () => {
         let a;
         return a = function(param) {
           if (param == null) { param = {}; }
-          let {
+          const {
             b,
           } = param;
           return c;
@@ -110,9 +110,9 @@ describe('default params', () => {
       } = {}) ->
         return c
     `, `
-      let a = function(param) {
+      const a = function(param) {
         if (param == null) { param = {}; }
-        let {
+        const {
           b,
         } = param;
         return c;
@@ -124,7 +124,7 @@ describe('default params', () => {
     check(`
       filter = (items, predicate = (-> true)) -> items.filter(predicate)
     `, `
-      let filter = function(items, predicate) { if (predicate == null) { predicate = () => true; } return items.filter(predicate); };
+      const filter = function(items, predicate) { if (predicate == null) { predicate = () => true; } return items.filter(predicate); };
     `);
   });
 

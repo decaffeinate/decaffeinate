@@ -78,7 +78,7 @@ describe('function calls', () => {
     check(`
       a= new c ([b()])
     `, `
-      let a= new c(([b()]));
+      const a= new c(([b()]));
     `);
   });
 
@@ -140,7 +140,7 @@ describe('function calls', () => {
         1
       )()
     `, `
-      let x = (() => 1)();
+      const x = (() => 1)();
     `);
   });
 
@@ -587,7 +587,7 @@ describe('function calls', () => {
     `, `
       a(() =>
         (() => {
-          let result = [];
+          const result = [];
           for (let b of Array.from(c)) {
             if (d) {
               result.push(e[f]);
@@ -613,7 +613,7 @@ describe('function calls', () => {
     `, `
       a(() =>
         (() => {
-          let result = [];
+          const result = [];
           for (let b of Array.from(c)) {
             if (d) {
               result.push(e);
@@ -756,7 +756,7 @@ describe('function calls', () => {
           
         }
         , function(err, data) {
-          let p = data;
+          const p = data;
           return done(err);
         })
       );
