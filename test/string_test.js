@@ -61,7 +61,7 @@ describe('strings', () => {
            bar
           """
     `, `
-      let a = \`\\
+      const a = \`\\
       foo
       bar\\
       \`;
@@ -94,7 +94,7 @@ describe('strings', () => {
            multi line
            string"
       `, `
-      let a = \`this is a \\
+      const a = \`this is a \\
       multi line \\
       string\`;
     `);
@@ -117,7 +117,7 @@ describe('strings', () => {
       a = "a\\
       b"
       `, `
-      let a = \`a\\
+      const a = \`a\\
       b\`;
     `);
   });

@@ -17,7 +17,7 @@ describe('classes', () => {
         a: ->
           1
     `, `
-      let Animal = class {
+      const Animal = class {
         a() {
           return 1;
         }
@@ -80,7 +80,8 @@ describe('classes', () => {
       });
     `, {
       options: {
-        allowInvalidConstructors: true
+        allowInvalidConstructors: true,
+        enableBabelConstructorWorkaround: false,
       }
     });
   });
@@ -196,7 +197,7 @@ describe('classes', () => {
       `, `
         class A extends B {
           constructor() {
-            let f = function() { return this.a = 2; };
+            const f = function() { return this.a = 2; };
             super(...arguments);
             f();
           }
@@ -247,7 +248,8 @@ describe('classes', () => {
         }
       `, {
         options: {
-          allowInvalidConstructors: true
+          allowInvalidConstructors: true,
+          enableBabelConstructorWorkaround: false,
         }
       });
     });
@@ -265,7 +267,8 @@ describe('classes', () => {
         }
       `, {
         options: {
-          allowInvalidConstructors: true
+          allowInvalidConstructors: true,
+          enableBabelConstructorWorkaround: false,
         }
       });
     });
@@ -288,7 +291,8 @@ describe('classes', () => {
       }
     `, {
         options: {
-          allowInvalidConstructors: true
+          allowInvalidConstructors: true,
+          enableBabelConstructorWorkaround: false,
         }
       });
     });
@@ -316,7 +320,8 @@ describe('classes', () => {
       }
     `, {
         options: {
-          allowInvalidConstructors: true
+          allowInvalidConstructors: true,
+          enableBabelConstructorWorkaround: false,
         }
       });
     });
@@ -619,7 +624,8 @@ describe('classes', () => {
       }
     `, {
       options: {
-        allowInvalidConstructors: true
+        allowInvalidConstructors: true,
+        enableBabelConstructorWorkaround: false,
       }
     });
   });
@@ -635,7 +641,8 @@ describe('classes', () => {
       }
     `, {
       options: {
-        allowInvalidConstructors: true
+        allowInvalidConstructors: true,
+        enableBabelConstructorWorkaround: false,
       }
     });
   });
@@ -1019,7 +1026,8 @@ describe('classes', () => {
       }
     `, {
       options: {
-        allowInvalidConstructors: true
+        allowInvalidConstructors: true,
+        enableBabelConstructorWorkaround: false,
       }
     });
   });
@@ -1086,7 +1094,8 @@ describe('classes', () => {
       }
     `, {
       options: {
-        allowInvalidConstructors: true
+        allowInvalidConstructors: true,
+        enableBabelConstructorWorkaround: false,
       }
     });
   });
@@ -1150,7 +1159,7 @@ describe('classes', () => {
       f = ->
       class A then constructor: f
     `, `
-      let f = function() {};
+      const f = function() {};
       let createA = undefined;
       class A {
         static initClass() {
@@ -1199,7 +1208,7 @@ describe('classes', () => {
       }
       class B extends A {}
       (cls = B).prototype.c = function() { return cls.prototype.__proto__.c.call(this, ...arguments); };
-      let b = new B();
+      const b = new B();
       b.c();
     `);
   });
@@ -1235,7 +1244,7 @@ describe('classes', () => {
         b: c
     `, `
       const A = (function() {
-        let Cls = class {
+        const Cls = class {
           static initClass() {
             this.prototype.b = c;
           }
@@ -1254,7 +1263,7 @@ describe('classes', () => {
     `, `
       const A = (function() {
         let d = undefined;
-        let Cls = class {
+        const Cls = class {
           static initClass() {
             this.prototype.b = c;
             d = e;
@@ -1306,7 +1315,7 @@ describe('classes', () => {
         class A
           b: c
     `, `
-      let f = function() {
+      const f = function() {
         let A;
         return A = (function() {
           A = class A {
@@ -1377,7 +1386,7 @@ describe('classes', () => {
       class A
         constructor: f
     `, `
-      let f = function() { return this.x = 3; };
+      const f = function() { return this.x = 3; };
       let createA = undefined;
       class A {
         static initClass() {
@@ -1398,7 +1407,7 @@ describe('classes', () => {
         constructor: fn
         method: =>
     `, `
-      let fn = function() {};
+      const fn = function() {};
       let createA = undefined;
       class A {
         static initClass() {
@@ -1551,7 +1560,7 @@ describe('classes', () => {
       class B
         constructor: makeCtor 1
     `, `
-      let makeCtor = function() {};
+      const makeCtor = function() {};
       let createB = undefined;
       class B {
         static initClass() {
@@ -1570,7 +1579,7 @@ describe('classes', () => {
       class
         x: 1
     `, `
-      let Cls = class {
+      const Cls = class {
         static initClass() {
           this.prototype.x = 1;
         }
@@ -1589,7 +1598,7 @@ describe('classes', () => {
         e: f
     `, `
       let A;
-      let x = (A = (function() {
+      const x = (A = (function() {
         A = class A {
           static initClass() {
             this.prototype.e = f;
@@ -1612,7 +1621,7 @@ describe('classes', () => {
       rethinkdb.monday = new (class extends RDBConstant then tt: protoTermType.MONDAY, st: 'monday')()
     `, `
       rethinkdb.monday = new ((function() {
-        let Cls = (class extends RDBConstant {
+        const Cls = (class extends RDBConstant {
           static initClass() {
             this.prototype.tt = protoTermType.MONDAY; this.prototype.st = 'monday';
             
@@ -1640,7 +1649,7 @@ describe('classes', () => {
           c # d
     `, `
       let A;
-      let x = (A = class A {
+      const x = (A = class A {
         b() {
           return c; // d
         }

@@ -22,7 +22,7 @@ describe('string interpolation', () => {
   });
 
   it('handles multi-line triple-quoted strings correctly', () => {
-    check('a = """\n     #{b}\n     c\n    """', 'let a = `\\\n${b}\nc\\\n`;');
+    check('a = """\n     #{b}\n     c\n    """', 'const a = `\\\n${b}\nc\\\n`;');
   });
 
   it('handles double quotes inside triple-double quotes', () => {
@@ -31,7 +31,7 @@ describe('string interpolation', () => {
       bar="#{bar}"
       """
     `, `
-      let a=\`\\
+      const a=\`\\
       bar="\${bar}"\\
       \`;
     `);
@@ -43,7 +43,7 @@ describe('string interpolation', () => {
       b # foo!
       }"
     `, `
-      let a=\`\${
+      const a=\`\${
       b // foo!
       }\`;
     `);

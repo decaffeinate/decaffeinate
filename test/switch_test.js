@@ -206,7 +206,7 @@ describe('switch', () => {
             d
       e
     `, `
-      let a = function() {
+      const a = function() {
         switch (b) {
           case c:
             return d;
@@ -266,7 +266,7 @@ describe('switch', () => {
           return g
         else e
     `, `
-      let a = (() => { switch (b) {
+      const a = (() => { switch (b) {
         case c: return d;
         case f:
           return g;
@@ -402,8 +402,8 @@ describe('switch', () => {
           else
             e
     `, `
-      let x = (() => {
-        let result = [];
+      const x = (() => {
+        const result = [];
         for (let a of Array.from(b)) {
           switch (a) {
             case 'c':
@@ -428,11 +428,11 @@ describe('switch', () => {
             e
         y
     `, `
-      let x = (() => {
-        let result = [];
+      const x = (() => {
+        const result = [];
         for (let i = 0; i < b.length; i++) {
           var a = b[i];
-          let y = (() => { switch (a) {
+          const y = (() => { switch (a) {
             case 'c':
               return d;
             default:
@@ -523,7 +523,7 @@ describe('switch', () => {
         when b
           (break)
     `, `
-      let x = (() => { switch (a) {
+      const x = (() => { switch (a) {
         case b:
           break;
       } })();

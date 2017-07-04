@@ -3,11 +3,11 @@ import validate from './support/validate';
 
 describe('regular expressions', () => {
   it('passes regular expressions through as-is', () => {
-    check(`a = /foo\\s/`, `let a = /foo\\s/;`);
+    check(`a = /foo\\s/`, `const a = /foo\\s/;`);
   });
 
   it('passes regular expressions with hash through as-is in an assignment context', () => {
-    check(`a = /foo#\\s/`, `let a = /foo#\\s/;`);
+    check(`a = /foo#\\s/`, `const a = /foo#\\s/;`);
   });
 
   it('passes regular expressions with hash through as-is in a function call context', () => {
@@ -21,7 +21,7 @@ describe('regular expressions', () => {
         bar
       ///
     `, `
-      let a = new RegExp(\`\\
+      const a = new RegExp(\`\\
       foo.*\\
       bar\\
       \`);
@@ -29,11 +29,11 @@ describe('regular expressions', () => {
   });
 
   it('preserves slash escapes in regular expressions', () => {
-    check(`a = /foo\\/bar/`, `let a = /foo\\/bar/;`);
+    check(`a = /foo\\/bar/`, `const a = /foo\\/bar/;`);
   });
 
   it('preserves regular expression flags', () => {
-    check(`a = /a/ig`, `let a = /a/ig;`);
+    check(`a = /a/ig`, `const a = /a/ig;`);
   });
 
   it('handles back-to-back escapes correctly', () => {

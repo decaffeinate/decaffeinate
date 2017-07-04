@@ -54,7 +54,11 @@ function runCodeAndExtract(source: string) {
 
 function runValidation(source: string, expectedOutput: ?any) {
   let coffeeES5 = compile(source, { bare: true });
-  let decaffeinateES6 = convert(source).code;
+  let decaffeinateES6 = convert(source, {
+    preferConst: true,
+    keepCommonJS: true,
+    enableBabelConstructorWorkaround: true,
+  }).code;
   let decaffeinateES5 = babel.transform(decaffeinateES6, { presets: ['es2015'] }).code;
 
   let coffeeOutput = runCodeAndExtract(coffeeES5);

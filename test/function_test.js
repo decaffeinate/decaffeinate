@@ -74,16 +74,16 @@ describe('functions', () => {
 
       module.exports = { validExpirationDate }
     `, `
-      let validExpirationDate = function(month, year) {
-        let today = new Date();
-        let fullYear = 2000 + parseInt(year);
+      const validExpirationDate = function(month, year) {
+        const today = new Date();
+        const fullYear = 2000 + parseInt(year);
         return (/^\\d{1,2}$/.test(month)) && (/^\\d{1,2}$/.test(year)) &&
           ((month >= 1) && (month <= 12)) &&
           (fullYear >= today.getFullYear()) &&
           ((fullYear !== today.getFullYear()) || (month > today.getMonth())); // Date.month is 0 indexed
       };
 
-      export { validExpirationDate };
+      module.exports = { validExpirationDate };
     `);
   });
 
@@ -104,7 +104,7 @@ describe('functions', () => {
   });
 
   it('leaves fat arrow functions as arrow functions', () => {
-    check(`add = (a, b) => a + b`, `let add = (a, b) => a + b;`);
+    check(`add = (a, b) => a + b`, `const add = (a, b) => a + b;`);
   });
 
   it('adds a block to fat arrow functions if their body is a block', () => {
@@ -112,7 +112,7 @@ describe('functions', () => {
       add = (a, b) =>
         a + b
     `, `
-      let add = (a, b) => {
+      const add = (a, b) => {
         return a + b;
       };
     `);
@@ -152,7 +152,7 @@ describe('functions', () => {
     check(`
       x = => arguments[0] + this
     `, `
-      let x = function() { return arguments[0] + this; }.bind(this);
+      const x = function() { return arguments[0] + this; }.bind(this);
     `);
   });
 
@@ -222,7 +222,7 @@ describe('functions', () => {
         return x
     `, `
       (function*() {
-        let x = yield 2;
+        const x = yield 2;
         return x;
       });
     `);
@@ -235,7 +235,7 @@ describe('functions', () => {
         return x
     `, `
       (function*() {
-        let x = yield* 2;
+        const x = yield* 2;
         return x;
       });
     `);
@@ -465,7 +465,7 @@ describe('functions', () => {
         a
     `, `
       f(() => {
-        let a = 1;
+        const a = 1;
         return a;
       });
     `)

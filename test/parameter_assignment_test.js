@@ -50,11 +50,11 @@ describe('parameter assignment', () => {
         b = 2
         a + b
     `, `
-      let a = 1;
+      const a = 1;
       (function(a1, b1) {
         this.a = a1;
         this.b = b1;
-        let b = 2;
+        const b = 2;
         return a + b;
       });
     `);

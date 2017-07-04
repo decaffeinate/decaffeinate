@@ -14,7 +14,7 @@ describe('implicit return', () => {
   });
 
   it('is not added when one is already there', () => {
-    check(`a = -> b(); return c`, `let a = function() { b(); return c; };`);
+    check(`a = -> b(); return c`, `const a = function() { b(); return c; };`);
   });
 
   it('is not added for the last expression in a block-less bound function', () => {

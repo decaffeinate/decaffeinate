@@ -43,7 +43,7 @@ describe('chained comparison', () => {
       a < b() < c
     `, `
       let middle1;
-      let middle = 1;
+      const middle = 1;
       a < (middle1 = b()) && middle1 < c;
     `);
   });

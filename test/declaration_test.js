@@ -2,7 +2,7 @@ import check from './support/check';
 
 describe('declarations', () => {
   it('adds inline declarations for assignments as statements', () => {
-    check(`a = 1`, `let a = 1;`);
+    check(`a = 1`, `const a = 1;`);
   });
 
   it('adds separate declarations for assignments as expressions', () => {
@@ -64,7 +64,7 @@ describe('declarations', () => {
     `, `
       if (a) {
         if (b) {
-          let c = 1;
+          const c = 1;
         }
       }
     `);
@@ -87,11 +87,11 @@ describe('declarations', () => {
   });
 
   it('adds variable declarations for destructuring array assignment', () => {
-    check(`[a] = b`, `let [a] = Array.from(b);`);
+    check(`[a] = b`, `const [a] = Array.from(b);`);
   });
 
   it('adds variable declarations for destructuring object assignment', () => {
-    check(`{a} = b`, `let {a} = b;`);
+    check(`{a} = b`, `const {a} = b;`);
   });
 
   it('does not add variable declarations for destructuring array assignment with previously declared bindings', () => {
@@ -143,8 +143,8 @@ describe('declarations', () => {
       b = c = 2
     `, `
       let c;
-      let a = 1;
-      let b = (c = 2);
+      const a = 1;
+      const b = (c = 2);
     `);
   });
 
