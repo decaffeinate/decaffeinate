@@ -65,6 +65,14 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.preferConst = true;
         break;
 
+      case '--loose':
+        baseOptions.looseDefaultParams = true;
+        baseOptions.looseForExpressions = true;
+        baseOptions.looseForOf = true;
+        baseOptions.looseIncludes = true;
+        baseOptions.looseComparisonNegation = true;
+        break;
+
       case '--loose-default-params':
         baseOptions.looseDefaultParams = true;
         break;
@@ -231,6 +239,7 @@ function usage() {
   console.log('                           import/require section of the file. All other function calls ');
   console.log('                           will disqualify later requires from being converted to imports.');
   console.log('  --prefer-const           Use the const keyword for variables when possible.');
+  console.log('  --loose                  Enable all --loose... options.');
   console.log('  --loose-default-params   Convert CS default params to JS default params.');
   console.log('  --loose-for-expressions  Do not wrap expression loop targets in Array.from.');
   console.log('  --loose-for-of           Do not wrap JS for...of loop targets in Array.from.');

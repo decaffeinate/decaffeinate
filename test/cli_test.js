@@ -87,6 +87,24 @@ describe('decaffeinate CLI', () => {
     `);
   });
 
+  it('respects the --loose option', () => {
+    runCli('--loose', `
+      f = (x = 1) ->
+        unless x < 0
+          for a in b
+            c
+        return
+    `, `
+      let f = function(x = 1) {
+        if (x >= 0) {
+          for (let a of b) {
+            c;
+          }
+        }
+      };
+    `);
+  });
+
   it('respects the --loose-default-params option', () => {
     runCli('--loose-default-params', `
       f = (x = 1) ->
