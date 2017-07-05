@@ -1,4 +1,5 @@
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import BlockPatcher from './BlockPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ForPatcher from './ForPatcher';
 import RangePatcher from './RangePatcher';
@@ -6,7 +7,6 @@ import countVariableUsages from '../../../utils/countVariableUsages';
 import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
 import Scope from '../../../utils/Scope';
 import traverse from '../../../utils/traverse';
-import type BlockPatcher from './BlockPatcher';
 import type NodePatcher from './../../../patchers/NodePatcher';
 import type { PatcherContext } from './../../../patchers/types';
 import {
@@ -59,6 +59,7 @@ export default class ForInPatcher extends ForPatcher {
       this.insert(this.target.contentEnd, ')');
     }
 
+    let mapInsertPoint;
     if (this.filter !== null) {
       // b when c d  ->  b.filter((a) => c d
       this.overwrite(
@@ -67,14 +68,37 @@ export default class ForInPatcher extends ForPatcher {
       );
       this.filter.patch();
       // b.filter((a) => c d  ->  b.filter((a) => c).map((a) => d
-      this.insert(this.filter.outerEnd, `).map((${assigneeCode}) =>`);
+      this.insert(this.filter.outerEnd, `)`);
+      mapInsertPoint = this.filter.outerEnd;
+    } else {
+      mapInsertPoint = this.target.outerEnd;
+    }
+    if (this.isMapBodyNoOp()) {
+      this.remove(mapInsertPoint, this.body.outerEnd);
     } else {
       // b d  ->  b.map((a) => d
-      this.insert(this.target.outerEnd, `.map((${assigneeCode}) =>`);
+      this.insert(mapInsertPoint, `.map((${assigneeCode}) =>`);
+      this.patchBodyForExpressionLoop();
+      // b.filter((a) => c).map((a) => d  ->  b.filter((a) => c).map((a) => d)
+      this.insert(this.body.outerEnd, ')');
     }
-    this.patchBodyForExpressionLoop();
-    // b.filter((a) => c).map((a) => d  ->  b.filter((a) => c).map((a) => d)
-    this.insert(this.body.outerEnd, ')');
+  }
+
+  /**
+   * In a case like `x = for a in b when c then a`, we should skip the `map`
+   * altogether and just use a `filter`.
+   */
+  isMapBodyNoOp() {
+    if (this.valAssignee instanceof IdentifierPatcher) {
+      let varName = this.valAssignee.node.data;
+      if (this.body instanceof BlockPatcher &&
+          this.body.statements.length === 1 &&
+          this.body.statements[0] instanceof IdentifierPatcher &&
+          this.body.statements[0].node.data === varName) {
+        return true;
+      }
+    }
+    return false;
   }
 
   patchBodyForExpressionLoop() {
