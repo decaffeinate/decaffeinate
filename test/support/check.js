@@ -9,10 +9,7 @@ export default function check(source, expected, {options={}}={}) {
 
   try {
     let converted = convert(source, Object.assign({
-      preferConst: true,
-      keepCommonJS: true,
-      enableBabelConstructorWorkaround: true,
-      disableSuggestions: true,
+      disableSuggestionComment: true,
     }, options));
     strictEqual(converted.code, expected);
   } catch (err) {

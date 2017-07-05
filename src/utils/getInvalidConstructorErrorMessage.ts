@@ -11,15 +11,7 @@ export default function getInvalidConstructorErrorMessage(firstSentence: string)
     * Constructors in subclasses that omit the \`super\` call.
     * Subclasses that use \`=>\` method syntax to automatically bind methods.
     
-    To convert these cases to JavaScript anyway, run decaffeinate with
-    --allow-invalid-constructors. You will then need to fix these cases after the
-    conversion to JavaScript. Alternatively, you may want to first edit your
-    CoffeeScript code to avoid the above cases, so that decaffeinate can run without
-    this error message.
-    
-    If you are using Babel or TypeScript, you can run decaffeinate with
-    --enable-babel-constructor-workaround to generate Babel-specific code to allow
-    constructors that don't call \`super\`. Note that this approach is fragile and
-    may break in future versions of Babel/TypeScript.
+    To convert these cases to JavaScript anyway, remove the option
+    --disallow-invalid-constructors when running decaffeinate.
   `);
 }

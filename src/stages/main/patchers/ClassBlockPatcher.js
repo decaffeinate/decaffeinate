@@ -62,11 +62,11 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   shouldAllowInvalidConstructors() {
-    return this.options.allowInvalidConstructors || this.options.enableBabelConstructorWorkaround;
+    return !this.options.disallowInvalidConstructors;
   }
 
   shouldEnableBabelWorkaround() {
-    let shouldEnable = this.options.enableBabelConstructorWorkaround;
+    let shouldEnable = !this.options.disableBabelConstructorWorkaround;
     if (shouldEnable) {
       this.addSuggestion(REMOVE_BABEL_WORKAROUND);
     }

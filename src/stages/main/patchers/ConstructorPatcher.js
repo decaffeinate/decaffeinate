@@ -58,8 +58,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
    * call or uses `this` before `super`.
    */
   checkForConstructorErrors() {
-    if (this.options.allowInvalidConstructors ||
-        this.options.enableBabelConstructorWorkaround) {
+    if (!this.options.disallowInvalidConstructors) {
       return;
     }
 
@@ -70,7 +69,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   }
 
   shouldAddBabelWorkaround(): boolean {
-    let shouldEnable = this.options.enableBabelConstructorWorkaround &&
+    let shouldEnable = !this.options.disableBabelConstructorWorkaround &&
       this.getInvalidConstructorMessage() !== null;
     if (shouldEnable) {
       this.addSuggestion(REMOVE_BABEL_WORKAROUND);
