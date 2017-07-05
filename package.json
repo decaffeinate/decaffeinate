@@ -11,12 +11,11 @@
     "flow": "flow check",
     "lint": "tslint --config tslint.json --project tsconfig.json --type-check && eslint src test",
     "lint-fix": "tslint --config tslint.json --project tsconfig.json --type-check --fix && eslint src test --fix",
-    "pretest": "npm run build",
+    "pretest": "yarn run build",
     "test": "mocha",
     "prebuild": "rimraf dist && mkdirp dist && npm run flow && npm run lint",
     "build": "rollup -c",
-    "prepublish": "npm run build",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "prepublish": "yarn run build",
     "update-website": "ts-node ./script/update-website.ts"
   },
   "repository": {

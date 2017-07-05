@@ -9,7 +9,11 @@ JavaScript with decaffeinate.
 ## Installation and usage
 
 ```
+# via yarn
+$ yarn global add decaffeinate
+# via npm
 $ npm install -g decaffeinate
+
 $ decaffeinate input.coffee
 input.coffee → input.js
 ```
