@@ -125,6 +125,17 @@ describe('decaffeinate CLI', () => {
     `);
   });
 
+  it('respects the --no-array-includes option', () => {
+    runCli('--no-array-includes', `
+      a in b
+    `, `
+      __in__(a, b);
+      function __in__(needle, haystack) {
+        return Array.from(haystack).indexOf(needle) >= 0;
+      }
+    `);
+  });
+
   it('prefers const with no options specified', () => {
     runCli('', `
       a = 1

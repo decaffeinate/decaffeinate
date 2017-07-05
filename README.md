@@ -123,6 +123,8 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 * `--literate`: Treat the input file as Literate CoffeeScript.
 * `--disable-suggestion-comment`: Do not include a comment with followup
   suggestions at the top of the output file.
+* `--no-array-includes`: Do not use `Array.prototype.includes` in generated
+  code.
 * `--use-js-modules`: Convert `require` and `module.exports` to `import` and
   `export`.
 * `--loose-js-modules`: Allow named exports when converting to JS modules.

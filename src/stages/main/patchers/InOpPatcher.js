@@ -13,6 +13,11 @@ import {
 } from '../../../suggestions';
 import { SourceType } from 'coffee-lex';
 
+const IN_HELPER = `\
+function __in__(needle, haystack) {
+  return Array.from(haystack).indexOf(needle) >= 0;
+}`;
+
 /**
  * Handles `in` operators, e.g. `a in b` and `a not in b`.
  */
@@ -39,6 +44,11 @@ export default class InOpPatcher extends BinaryOpPatcher {
    * LEFT 'in' RIGHT
    */
   patchAsExpression() {
+    if (this.options.noArrayIncludes) {
+      this.patchAsIndexLookup();
+      return;
+    }
+
     if (!this.left.isPure() || !this.right.isPure()) {
       this.patchWithLHSExtracted();
       return;
@@ -125,6 +135,32 @@ export default class InOpPatcher extends BinaryOpPatcher {
       !(this.right instanceof FunctionApplicationPatcher) &&
       !(this.right instanceof ArrayInitialiserPatcher) &&
       !(this.right instanceof StringPatcher);
+  }
+
+  patchAsIndexLookup() {
+    let helper = this.registerHelper('__in__', IN_HELPER);
+
+    if (this.negated) {
+      // `a in b` → `!a in b`
+      //             ^
+      this.insert(this.left.outerStart, '!');
+    }
+
+    // `a in b` → `__in__(a in b`
+    //             ^^^^^^^
+    this.insert(this.left.outerStart, `${helper}(`);
+
+    this.left.patch();
+
+    // `__in__(a in b` → `__in__(a, b`
+    //          ^^^^              ^^
+    this.overwrite(this.left.outerEnd, this.right.outerStart, ', ');
+
+    this.right.patch();
+
+    // `__in__(a, b` → `__in__(a, b)`
+    //                             ^
+    this.insert(this.right.outerEnd, ')');
   }
 
   /**

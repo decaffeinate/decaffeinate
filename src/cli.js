@@ -52,6 +52,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.disableSuggestionComment = true;
         break;
 
+      case '--no-array-includes':
+        baseOptions.noArrayIncludes = true;
+        break;
+
       case '--use-js-modules':
         baseOptions.useJSModules = true;
         break;
@@ -254,6 +258,7 @@ function usage() {
   console.log('  --disable-suggestion-comment');
   console.log('                           Do not include a comment with followup suggestions at the');
   console.log('                           top of the output file.');
+  console.log('  --no-array-includes      Do not use Array.prototype.includes in generated code.');
   console.log('  --use-js-modules         Convert require and module.exports to import and export.');
   console.log('  --loose-js-modules       Allow named exports when converting to JS modules.');
   console.log('  --safe-import-function-identifiers');

@@ -218,4 +218,19 @@ describe('in operator', () => {
       }
     `);
   });
+
+  it('respects the noArrayIncludes option', () => {
+    check(`
+      a in b
+    `, `
+      __in__(a, b);
+      function __in__(needle, haystack) {
+        return Array.from(haystack).indexOf(needle) >= 0;
+      }
+    `, {
+      options: {
+        noArrayIncludes: true,
+      }
+    });
+  });
 });

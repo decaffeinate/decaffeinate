@@ -848,9 +848,10 @@ unlike most syntax features, it can't be transpiled. decaffeinate changes
 You can usually use [babel-polyfill](https://babeljs.io/docs/usage/polyfill/) or
 similar to add `includes` to the global `Array.prototype`.
 
-There is an [open task](https://github.com/decaffeinate/decaffeinate/issues/1102)
-to add an option to disable the use of `includes`, which will be useful for
-things like libraries that don't want to add a polyfill.
+If you would rather not support `Array.prototype.includes` (e.g. in library
+code), you can pass the `--no-array-includes` option to decaffeinate to have it
+produce an `__in__` helper instead. You will most likely want to replace
+`__in__` as a cleanup step.
 
 ## DS303: Use a formatter like ESLint or Prettier
 
