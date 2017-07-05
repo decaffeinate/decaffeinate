@@ -20,7 +20,9 @@ For real-world use cases, you'll likely want to spend some time understanding
 the different options and nuances of the decaffeinate tool. You'll also likely
 want to run decaffeinate using the [bulk-decaffeinate] wrapper tool, or write
 your own wrapper script. See the [Conversion Guide][conversion-guide] for more
-information and advice on running decaffeinate on real-world code.
+information and advice on running decaffeinate on real-world code, and see
+[Cleanup suggestions after running decaffeinate][suggestions] for advice on
+cleaning up the converted JavaScript code and other things to keep in mind.
 
 ## Status
 
@@ -143,4 +145,5 @@ For more usage details, see the output of `decaffeinate --help`.
 [bulk-decaffeinate]: https://github.com/decaffeinate/bulk-decaffeinate
 [issues]: https://github.com/decaffeinate/decaffeinate/issues
 [conversion-guide]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md
+[suggestions]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
 [correctness-issues]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/correctness-issues.md

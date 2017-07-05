@@ -46,7 +46,8 @@ Generated using https://tableofcontents.herokuapp.com/
 - [DS3XX: General considerations](#ds3xx-general-considerations)
   - [DS301: Make sure your code works in strict mode](#ds301-make-sure-your-code-works-in-strict-mode)
   - [DS302: Make sure your build system handles `Array.prototype.includes`](#ds302-make-sure-your-build-system-handles-arrayprototypeincludes)
-  - [DS303: Use a formatter like ESLint or Prettier.](#ds303-use-a-formatter-like-eslint-or-prettier)
+  - [DS303: Use a formatter like ESLint or Prettier](#ds303-use-a-formatter-like-eslint-or-prettier)
+  - [DS304: Consider configuring decaffeinate to convert to JS modules](#ds304-consider-configuring-decaffeinate-to-convert-to-js-modules)
 
 # DS0XX: Highest priority
 
@@ -851,7 +852,7 @@ There is an [open task](https://github.com/decaffeinate/decaffeinate/issues/1102
 to add an option to disable the use of `includes`, which will be useful for
 things like libraries that don't want to add a polyfill.
 
-## DS303: Use a formatter like ESLint or Prettier.
+## DS303: Use a formatter like ESLint or Prettier
 
 ### Overview
 
@@ -871,3 +872,27 @@ converting code to JavaScript.
 
 Note that [bulk-decaffeinate](https://github.com/decaffeinate/bulk-decaffeinate)
 expects an ESLint config and automatically runs `eslint --fix` on all files.
+
+## DS304: Consider configuring decaffeinate to convert to JS modules
+
+### Overview
+
+In most situations, you can and should use `import`/`export` syntax in new
+JavaScript code. Automatically converting CoffeeScript code to this syntax can
+be error-prone, so decaffeinate skips this step by default, but you can opt into
+the behavior using the `--use-js-modules` option. One challenge with this
+approach is the decaffeinate cannot accurately match named imports to named
+exports across files, so some import statements will be invalid.
+
+### How to address
+
+The most straightforward way to do this is to use
+[bulk-decaffeinate](https://github.com/decaffeinate/bulk-decaffeinate) and the
+`--use-js-modules` option there. That option will instruct decaffeinate to use
+JS modules and also run a follow-up transform that fixes imports across the
+codebase to be named or default imports as necessary.
+
+You may also want to consider the `--loose-js-modules` option, which produces
+better-looking exports by using named exports when possible, but is more
+fragile. For example, some types of code that dynamically produce exports will
+not be converted correctly, and mocking/stubbing libraries may stop working.

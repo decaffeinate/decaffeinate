@@ -73,20 +73,11 @@ CoffeeScript code until it can be converted. Also feel free to file a bug on the
 Compare your new `.js` file against your `.coffee` file. Does the
 conversion seem correct? Is there anything that was done incorrectly? Or
 perhaps there are simply a few things that worked well in CoffeeScript
-but don't work as well in JavaScript. For example, watch out for:
+but don't work as well in JavaScript.
 
-* CoffeeScript has implicit returns in all functions. Ensure that all
-  the `return` statements in the generated JavaScript are intentional.
-* You may be using a linter that disallows the use of double-equal,
-  which will flag anything that looked like `a.b?` in CoffeeScript as
-  lint in JavaScript since it converts to `a.b != null`. In such cases,
-  it may be that all you really wanted was a truthy check (i.e. `a.b`)
-  or a strict comparison to `null`. If you want the equivalent to `a?.b`
-  in a linter-friendly way, use
-  `typeof a.b !== 'undefined' && a.b !== null`.
-* decaffeinate sometimes has to create temporary variables for you.
-  Ensure that the variable names generated make sense in context, or
-  re-write the JavaScript to avoid the use of temporary variables.
+For a comprehensive list of things to keep in mind when looking over the
+JavaScript output, see
+[Cleanup suggestions after running decaffeinate](./correctness-issues.md).
 
 ### Run your tests
 
