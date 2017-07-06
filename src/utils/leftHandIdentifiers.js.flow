@@ -1,0 +1,3 @@
+declare function leftHandIdentifiers(node: Node): Array<Node>;
+
+export default leftHandIdentifiers;

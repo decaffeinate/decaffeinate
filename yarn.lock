@@ -35,6 +35,20 @@
     conventional-changelog "0.0.17"
     github-url-from-git "^1.4.0"
 
+"@types/babel-types@*":
+  version "6.7.16"
+  resolved "https://registry.yarnpkg.com/@types/babel-types/-/babel-types-6.7.16.tgz#e2602896636858a0067971f7ca4bb8678038293f"
+
+"@types/babylon@^6.16.1":
+  version "6.16.1"
+  resolved "https://registry.yarnpkg.com/@types/babylon/-/babylon-6.16.1.tgz#e4d10ab9e43a73703a17c6f41438bede28769340"
+  dependencies:
+    "@types/babel-types" "*"
+
+"@types/json-stable-stringify@^1.0.31":
+  version "1.0.31"
+  resolved "https://registry.yarnpkg.com/@types/json-stable-stringify/-/json-stable-stringify-1.0.31.tgz#b6c7bc507f5267e88cd2839b3ac6a2b39b653a32"
+
 "@types/mocha@^2.2.41":
   version "2.2.41"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.41.tgz#e27cf0817153eb9f2713b2d3f6c68f1e1c3ca608"
@@ -1061,17 +1075,19 @@ debug@2.6.0:
   dependencies:
     ms "0.7.2"
 
-decaffeinate-coffeescript@1.10.0-patch24:
-  version "1.10.0-patch24"
-  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0-patch24.tgz#11ed2b31c7253686ded645aa29521ba38741e811"
+decaffeinate-coffeescript@1.10.0-patch25, decaffeinate-coffeescript@^1.10.0-patch25:
+  version "1.10.0-patch25"
+  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0-patch25.tgz#81816adc6361bd7d1e59d9034c8c5bfcea00677e"
 
-decaffeinate-parser@^17.1.6:
-  version "17.1.6"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-17.1.6.tgz#8056ee54f5b772f59dfac70488a5bf77649f1cb2"
+decaffeinate-parser@^17.1.8:
+  version "17.1.8"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-17.1.8.tgz#08ec4fe475f06c6720dbb0a8938a04329ac75834"
   dependencies:
+    "@types/babylon" "^6.16.1"
+    "@types/json-stable-stringify" "^1.0.31"
     babylon "^6.14.1"
     coffee-lex "^7.0.0"
-    decaffeinate-coffeescript "1.10.0-patch24"
+    decaffeinate-coffeescript "1.10.0-patch25"
     json-stable-stringify "^1.0.1"
     lines-and-columns "^1.1.6"
 
@@ -3691,7 +3707,7 @@ tslib@^1.7.1:
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.7.1.tgz#bc8004164691923a79fe8378bbeb3da2017538ec"
 
-tslint@^5.3.2:
+tslint@^5.5.0:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.5.0.tgz#10e8dab3e3061fa61e9442e8cee3982acf20a6aa"
   dependencies:
@@ -3740,7 +3756,7 @@ typescript@^1.8.9:
   version "1.8.10"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-1.8.10.tgz#b475d6e0dff0bf50f296e5ca6ef9fbb5c7320f1e"
 
-typescript@^2.3.3:
+typescript@^2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
 
