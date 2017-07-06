@@ -1,7 +1,5 @@
-/* @flow */
-
+import { Node } from 'decaffeinate-parser/dist/nodes';
 import traverse from './traverse';
-import type { Node } from '../patchers/types';
 
 /**
  * Determine if there are any soak operations within this subtree of the AST.
@@ -17,6 +15,7 @@ export default function nodeContainsSoakOperation(searchNode: Node): boolean {
         node.type === 'SoakedMemberAccessOp') {
       foundSoak = true;
     }
+    return true;
   });
   return foundSoak;
 }

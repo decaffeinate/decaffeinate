@@ -1,7 +1,7 @@
 import { strictEqual } from 'assert';
 import formatCoffeeScriptAst from '../../src/utils/formatCoffeeScriptAst';
-import stripSharedIndent from '../../src/utils/stripSharedIndent';
 import parse from '../../src/utils/parse';
+import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('formatCoffeeScriptAst', () => {
   it('formats an AST for normal CoffeeScript code', () => {

@@ -2,7 +2,7 @@ import { strictEqual } from 'assert';
 import { parse } from 'decaffeinate-parser';
 import countVariableUsages from '../../src/utils/countVariableUsages';
 
-describe('countVariableUsages', function() {
+describe('countVariableUsages', () => {
   it('does simple counting within a program', () => {
     let ast = parse(`
       x = 1
