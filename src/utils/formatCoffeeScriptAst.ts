@@ -1,11 +1,13 @@
+import { Base } from 'decaffeinate-coffeescript/lib/coffee-script/nodes';
+import ParseContext from 'decaffeinate-parser/dist/util/ParseContext';
 import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData';
 
-export default function formatCoffeeScriptAst(context): string {
+export default function formatCoffeeScriptAst(context: ParseContext): string {
   let resultLines = formatAstNodeLines(context.ast, context);
   return resultLines.map(line => line + '\n').join('');
 }
 
-function formatAstNodeLines(node, context) {
+function formatAstNodeLines(node: Base, context: ParseContext): Array<string> {
   let propLines = [];
   let blacklistedProps = ['locationData'];
   // Show the non-node children first.
@@ -59,7 +61,7 @@ function formatAstNodeLines(node, context) {
   ];
 }
 
-function shouldTraverse(value) {
+function shouldTraverse(value: {}): boolean {
   if (Array.isArray(value)) {
     return value.length === 0 || shouldTraverse(value[0]);
   }
@@ -70,7 +72,7 @@ function shouldTraverse(value) {
  * CoffeeScript AST nodes are always instances of a custom class, so use the
  * constructor name to distinguish between node children and non-node children.
  */
-function isNode(value) {
+function isNode(value: {}): boolean {
   if (!value) {
     return false;
   }

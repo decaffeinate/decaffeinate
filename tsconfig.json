@@ -6,10 +6,12 @@
     "declaration": true,
     "lib": ["es2015"],
     "experimentalDecorators": true,
+    "noImplicitAny": true,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "suppressImplicitAnyIndexErrors": true
   },
   "exclude": [
     "node_modules",

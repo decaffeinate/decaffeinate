@@ -83,7 +83,7 @@ function isPrimaryInstance(): boolean {
   return jobNumber.endsWith('.1');
 }
 
-async function updateWebsite() {
+async function updateWebsite(): Promise<void> {
   await configureGithubRemote('website', 'decaffeinate/decaffeinate-project.org');
 
   let latestVersion = await getLatestVersion((await pkg())['name']);

@@ -3,6 +3,6 @@
  * use `then` or contain a newline. In both cases, surrounding the expression in
  * parens is enough to rearrange the code without introducing a parse error.
  */
-export default function postfixExpressionRequiresParens(exprCode: string) {
+export default function postfixExpressionRequiresParens(exprCode: string): boolean {
   return exprCode.includes('then') || exprCode.includes('\n');
 }
