@@ -579,17 +579,17 @@ describe('for loops', () => {
 
   it('handles for-in loops used in an expression context', () => {
     check(`
-      a(e for e in l)
+      a(f for e in l)
     `, `
-      a(Array.from(l).map((e) => e));
+      a(Array.from(l).map((e) => f));
     `);
   });
 
   it('skips Array.from when using looseForExpressions', () => {
     check(`
-      a(e for e in l)
+      a(f for e in l)
     `, `
-      a(l.map((e) => e));
+      a(l.map((e) => f));
     `, {
       options: {
         looseForExpressions: true
@@ -599,9 +599,9 @@ describe('for loops', () => {
 
   it('does not wrap in Array.from for for-in expressions over an array literal', () => {
     check(`
-      a(b for b in [c, d])
+      a(e for b in [c, d])
     `, `
-      a([c, d].map((b) => b));
+      a([c, d].map((b) => e));
     `);
   });
 
@@ -660,17 +660,17 @@ describe('for loops', () => {
   it('handles for-in loops used as an implicit return', () => {
     check(`
       ->
-        a for a in b
+        c for a in b
     `, `
-      () => Array.from(b).map((a) => a);
+      () => Array.from(b).map((a) => c);
     `);
   });
 
   it('handles for-in loop expressions with a filter', () => {
     check(`
-      f(a for a in b when c)
+      f(d for a in b when c)
     `, `
-      f(Array.from(b).filter((a) => c).map((a) => a));
+      f(Array.from(b).filter((a) => c).map((a) => d));
     `);
   });
 
@@ -1160,9 +1160,9 @@ describe('for loops', () => {
 
   it('handles a `when` clause with a `not of` in map/filter transformations', () => {
     check(`
-      a = (b for b in c when b not of e)
+      a = (f for b in c when b not of e)
     `, `
-      const a = (Array.from(c).filter((b) => !(b in e)).map((b) => b));
+      const a = (Array.from(c).filter((b) => !(b in e)).map((b) => f));
     `);
   });
 
@@ -1365,25 +1365,25 @@ describe('for loops', () => {
 
   it('handles a post-for as a function argument', () => {
     check(`
-      a(b for b in c, d)
+      a(e for b in c, d)
     `, `
-      a((Array.from(c).map((b) => b)), d);
+      a((Array.from(c).map((b) => e)), d);
     `);
   });
 
   it('handles a post-for as an array element', () => {
     check(`
-      [a for a in b, c]
+      [d for a in b, c]
     `, `
-      [(Array.from(b).map((a) => a)), c];
+      [(Array.from(b).map((a) => d)), c];
     `);
   });
 
   it('handles a post-for as an object element', () => {
     check(`
-      {a: b for b in c, d}
+      {a: e for b in c, d}
     `, `
-      ({a: (Array.from(c).map((b) => b)), d});
+      ({a: (Array.from(c).map((b) => e)), d});
     `);
   });
 
@@ -1754,6 +1754,22 @@ describe('for loops', () => {
     `, `
       const x = Array.from(b).map((a) =>
         c);
+    `);
+  });
+
+  it('skips map on a no-op map with filter', () => {
+    check(`
+      -> a for a in b when a > 0
+    `, `
+      () => Array.from(b).filter((a) => a > 0);
+    `);
+  });
+
+  it('skips map on a no-op map without filter', () => {
+    check(`
+      -> a for a in b
+    `, `
+      () => Array.from(b);
     `);
   });
 });
