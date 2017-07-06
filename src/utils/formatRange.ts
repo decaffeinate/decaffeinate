@@ -9,11 +9,11 @@
  */
 import ParseContext from 'decaffeinate-parser/dist/util/ParseContext';
 
-export default function formatRange(startIndex: number, endIndex: number, context: ParseContext) {
+export default function formatRange(startIndex: number, endIndex: number, context: ParseContext): string {
   return `[${formatIndex(startIndex, context)}-${formatIndex(endIndex, context)}]`;
 }
 
-function formatIndex(index: number, context: ParseContext) {
+function formatIndex(index: number, context: ParseContext): string {
   if (index > context.source.length) {
     index = context.source.length;
   }

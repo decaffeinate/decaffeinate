@@ -13,7 +13,7 @@
     "no-internal-module": true,
     "no-var-keyword": true,
     "prefer-for-of": true,
-    "typedef": [true, "parameter", "property-declaration"],
+    "typedef": [true, "call-signature", "parameter", "property-declaration"],
     "typedef-whitespace": [
       true,
       {
