@@ -1,7 +1,7 @@
 import { strictEqual } from 'assert';
 import formatCoffeeLexTokens from '../../src/utils/formatCoffeeLexTokens';
-import stripSharedIndent from '../../src/utils/stripSharedIndent';
 import parse from '../../src/utils/parse';
+import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('formatCoffeeLexTokens', () => {
   it('formats tokens for normal CoffeeScript code', () => {

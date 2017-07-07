@@ -1,0 +1,5 @@
+declare function traverse(node: Node, callback: (node: Node, descend: (node: Node) => void, hasChildren: boolean) => boolean | null): void;
+declare function childPropertyNames(node: Node): Array<string>;
+
+export default traverse;
+export { childPropertyNames };

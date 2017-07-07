@@ -1,15 +1,13 @@
-/* @flow */
-
-import type { Node } from '../patchers/types';
-
 /**
  * Traverses an AST node, calling a callback for each node in the hierarchy in
  * source order.
  */
-export default function traverse(node: Node, callback: (node: Node, descend: (node: Node) => void, hasChildren: boolean) => ?boolean) {
+import { Node } from 'decaffeinate-parser/dist/nodes';
+
+export default function traverse(node: Node, callback: (node: Node, descend: (node: Node) => void, hasChildren: boolean) => boolean | void): void {
   let descended = false;
 
-  function descend(parent) {
+  function descend(parent: Node): void {
     descended = true;
 
     childPropertyNames(parent).forEach(property => {
@@ -39,7 +37,7 @@ export default function traverse(node: Node, callback: (node: Node, descend: (no
   }
 }
 
-const ORDER = {
+const ORDER: {[nodeType: string]: Array<string> | undefined} = {
   ArrayInitialiser: ['members'],
   AssignOp: ['assignee', 'expression'],
   BareSuperFunctionApplication: [],

@@ -61,20 +61,10 @@ function formatAstNodeLines(node: Base, context: ParseContext): Array<string> {
   ];
 }
 
-function shouldTraverse(value: {}): boolean {
+// tslint:disable-next-line no-any
+function shouldTraverse(value: any): boolean {
   if (Array.isArray(value)) {
     return value.length === 0 || shouldTraverse(value[0]);
   }
-  return isNode(value);
-}
-
-/**
- * CoffeeScript AST nodes are always instances of a custom class, so use the
- * constructor name to distinguish between node children and non-node children.
- */
-function isNode(value: {}): boolean {
-  if (!value) {
-    return false;
-  }
-  return ['String', 'Number', 'Boolean', 'Array', 'Object'].indexOf(value.constructor.name) === -1;
+  return value instanceof Base;
 }
