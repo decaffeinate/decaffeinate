@@ -1,4 +1,3 @@
-/* @flow */
 /* eslint-disable no-process-exit */
 
 import PatchError from './utils/PatchError';

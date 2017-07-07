@@ -35,6 +35,12 @@
     conventional-changelog "0.0.17"
     github-url-from-git "^1.4.0"
 
+"@types/babel-traverse@^6.7.17":
+  version "6.7.17"
+  resolved "https://registry.yarnpkg.com/@types/babel-traverse/-/babel-traverse-6.7.17.tgz#5212a4edced81f53a6c4fb1fd7a34aa4ff6cf36b"
+  dependencies:
+    "@types/babel-types" "*"
+
 "@types/babel-types@*":
   version "6.7.16"
   resolved "https://registry.yarnpkg.com/@types/babel-types/-/babel-types-6.7.16.tgz#e2602896636858a0067971f7ca4bb8678038293f"
@@ -60,8 +66,8 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@^8.0.0":
-  version "8.0.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.7.tgz#fb0ad04b5b6f6eabe0372a32a8f1fbba5c130cae"
+  version "8.0.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.8.tgz#0dc4ca2c6f6fc69baee16c5e928c4a627f517ada"
 
 abbrev@1:
   version "1.1.0"
@@ -78,17 +84,17 @@ acorn@^3.0.4:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-3.3.0.tgz#45e37fb39e8da3f25baee3ff5369e2bb5f22017a"
 
 acorn@^5.0.1:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.1.0.tgz#e468bf609b0672700e02f878ae2f1b360fe24b4f"
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.1.1.tgz#53fe161111f912ab999ee887a90a0bc52822fd75"
 
-add-variable-declarations@^3.0.1:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/add-variable-declarations/-/add-variable-declarations-3.0.2.tgz#22ed35b66401e4e6210509ca1627b296b93c7e1c"
+add-variable-declarations@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/add-variable-declarations/-/add-variable-declarations-3.0.5.tgz#8b20efd4e98afbcef3266bc0699fa16676533d39"
   dependencies:
     babel-traverse "^6.13.0"
     babel-types "^6.24.1"
     babylon "^6.8.4"
-    magic-string "^0.21.3"
+    magic-string "^0.22.1"
 
 agent-base@2:
   version "2.1.1"
@@ -902,8 +908,8 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
 coffee-lex@^7.0.0:
-  version "7.0.7"
-  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-7.0.7.tgz#d11cfc2f4b3300a5e3abc777df6fd0f9bf05c3ea"
+  version "7.0.8"
+  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-7.0.8.tgz#65ef41d1b89cf019332b1638c990c66afa5deba8"
 
 color-convert@^1.0.0:
   version "1.9.0"
@@ -1075,7 +1081,7 @@ debug@2.6.0:
   dependencies:
     ms "0.7.2"
 
-decaffeinate-coffeescript@1.10.0-patch25, decaffeinate-coffeescript@^1.10.0-patch25:
+decaffeinate-coffeescript@1.10.0-patch25:
   version "1.10.0-patch25"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0-patch25.tgz#81816adc6361bd7d1e59d9034c8c5bfcea00677e"
 
@@ -1154,9 +1160,13 @@ dezalgo@^1.0.1:
     asap "^2.0.0"
     wrappy "1"
 
-diff@3.2.0, diff@^3.1.0, diff@^3.2.0:
+diff@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.2.0.tgz#c9ce393a4b7cbd0b058a725c93df299027868ff9"
+
+diff@^3.1.0, diff@^3.2.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/diff/-/diff-3.3.0.tgz#056695150d7aa93237ca7e378ac3b1682b7963b9"
 
 doctrine@^2.0.0:
   version "2.0.0"
@@ -1262,14 +1272,15 @@ eslint@^4.1.0:
     table "^4.0.1"
     text-table "~0.2.0"
 
-esnext@^3.1.0:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/esnext/-/esnext-3.1.4.tgz#e8b20076e6a847693dd69b65f3b0bd9681520a8c"
+esnext@^3.1.7:
+  version "3.1.7"
+  resolved "https://registry.yarnpkg.com/esnext/-/esnext-3.1.7.tgz#1650846a2803ee13188b6c66142ed483993cc6de"
   dependencies:
+    "@types/babel-traverse" "^6.7.17"
     babel-traverse "^6.21.0"
     babel-types "^6.21.0"
     babylon "^6.14.1"
-    magic-string "^0.19.0"
+    magic-string "^0.22.1"
     mkdirp "^0.5.1"
     shebang-regex "^2.0.0"
     strip-indent "^2.0.0"
@@ -2310,21 +2321,9 @@ lru-cache@2:
   version "2.7.3"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-2.7.3.tgz#6d4524e8b955f95d4f5b58851ce21dd72fb4e952"
 
-magic-string@^0.17.0:
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.17.0.tgz#c1c2c2f3e30d2a568f055a96ea11ce03664fb772"
-  dependencies:
-    vlq "^0.2.1"
-
-magic-string@^0.19.0:
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.19.1.tgz#14d768013caf2ec8fdea16a49af82fc377e75201"
-  dependencies:
-    vlq "^0.2.1"
-
-magic-string@^0.21.3:
-  version "0.21.3"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.21.3.tgz#87e201009ebfde6f46dc5757305a70af71e31624"
+magic-string@^0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.22.1.tgz#a1bda64dfd4ae6c63797a45a67ee473b1f8d0e0f"
   dependencies:
     vlq "^0.2.1"
 
@@ -2547,8 +2546,8 @@ netrc@0.1.4, netrc@^0.1.4:
   resolved "https://registry.yarnpkg.com/netrc/-/netrc-0.1.4.tgz#6be94fcaca8d77ade0a9670dc460914c94472444"
 
 node-emoji@^1.4.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/node-emoji/-/node-emoji-1.5.1.tgz#fd918e412769bf8c448051238233840b2aff16a1"
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/node-emoji/-/node-emoji-1.6.1.tgz#7d2f0a8fd11237cba0ddcef3bdc015dc50b011f9"
   dependencies:
     string.prototype.codepointat "^0.2.0"
 
@@ -3524,8 +3523,8 @@ supports-color@^2.0.0:
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
 supports-color@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-4.1.0.tgz#92cc14bb3dad8928ca5656c33e19a19f20af5c7a"
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-4.2.0.tgz#ad986dc7eb2315d009b4d77c8169c2231a684037"
   dependencies:
     has-flag "^2.0.0"
 

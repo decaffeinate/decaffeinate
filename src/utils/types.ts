@@ -1,7 +1,6 @@
-/* @flow */
-
-import type { Node, SourceToken } from '../patchers/types';
 import { SourceType } from 'coffee-lex';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import { Node } from 'decaffeinate-parser/dist/nodes';
 
 /**
  * Determines whether a node represents a function, i.e. `->` or `=>`.

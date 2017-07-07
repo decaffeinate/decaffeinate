@@ -1,6 +1,5 @@
 import PatcherError from '../utils/PatchError';
 import adjustIndent from '../utils/adjustIndent';
-import repeat from 'repeating';
 import type { SourceToken, SourceTokenListIndex, RepeatableOptions, PatcherContext, DecaffeinateContext, Editor, SourceTokenList } from './types';
 import type { Options } from '../index';
 import { SourceType } from 'coffee-lex';
@@ -1109,7 +1108,7 @@ export default class NodePatcher {
 
     this.adjustedIndentLevel += offset;
     let indentString = this.getProgramIndentString();
-    let indentToChange = repeat(indentString, Math.abs(offset));
+    let indentToChange = indentString.repeat(Math.abs(offset));
     let start = this.outerStart;
     let end = this.outerEnd;
     let { source } = this.context;

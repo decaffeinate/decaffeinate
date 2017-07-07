@@ -2,7 +2,7 @@ import { strictEqual } from 'assert';
 import PatchError from '../../src/utils/PatchError';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
-describe('PatchError', function() {
+describe('PatchError', () => {
   it('handles files not ending in newlines', () => {
     let error = new PatchError('Sample error', 'abcdefg', 2, 4);
     let expected = stripSharedIndent(`

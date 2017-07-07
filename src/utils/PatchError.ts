@@ -1,21 +1,14 @@
 import LinesAndColumns from 'lines-and-columns';
-import printTable from './printTable';
-import repeat from 'repeating';
+import printTable, { Column } from './printTable';
 
 export default class PatchError extends Error {
-  message: string;
-  source: string;
-  start: number;
-  end: number;
-  error: ?Error;
-
-  constructor(message: string, source: string, start: number, end: number, error: ?Error) {
+  constructor(
+    readonly message: string,
+    readonly source: string,
+    readonly start: number,
+    readonly end: number,
+  ) {
     super(message);
-    this.message = message;
-    this.source = source;
-    this.start = start;
-    this.end = end;
-    this.error = error;
   }
 
   toString(): string {
@@ -53,7 +46,7 @@ export default class PatchError extends Error {
     let displayStartLine = Math.max(0, startLoc.line - 2);
     let displayEndLine = endLoc.line + 2;
 
-    let rows = [];
+    let rows: Array<Array<string>> = [];
 
     for (let line = displayStartLine; line <= displayEndLine; line++) {
       let startOfLine = lineMap.indexForLocation({ line, column: 0 });
@@ -79,7 +72,7 @@ export default class PatchError extends Error {
         let highlightLength = Math.max(endLoc.column - startLoc.column, 1);
         rows.push(
           [`>`, `${line + 1} |`, lineSource],
-          [``, `|`, repeat(' ', startLoc.column) + repeat('^', highlightLength)]
+          [``, `|`, ' '.repeat(startLoc.column) + '^'.repeat(highlightLength)]
         );
       } else {
         rows.push(
@@ -88,7 +81,7 @@ export default class PatchError extends Error {
       }
     }
 
-    let columns = [
+    let columns: Array<Column> = [
       { id: 'marker', align: 'right' },
       { id: 'line', align: 'right' },
       { id: 'source', align: 'left' }
