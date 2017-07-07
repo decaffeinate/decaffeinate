@@ -7,13 +7,13 @@
  * For example, if a program is just "foo", then the "foo" token has this range:
  * [1:1(0)-1:4(3)]
  */
-import ParseContext from 'decaffeinate-parser/dist/util/ParseContext';
+import DecaffeinateContext from './DecaffeinateContext';
 
-export default function formatRange(startIndex: number, endIndex: number, context: ParseContext): string {
+export default function formatRange(startIndex: number, endIndex: number, context: DecaffeinateContext): string {
   return `[${formatIndex(startIndex, context)}-${formatIndex(endIndex, context)}]`;
 }
 
-function formatIndex(index: number, context: ParseContext): string {
+function formatIndex(index: number, context: DecaffeinateContext): string {
   if (index > context.source.length) {
     index = context.source.length;
   }

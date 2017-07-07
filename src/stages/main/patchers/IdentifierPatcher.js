@@ -11,6 +11,6 @@ export default class IdentifierPatcher extends PassthroughPatcher {
    * we don't crash if this variable hasn't been declared.
    */
   mayBeUnboundReference() {
-    return !this.node.scope.hasBinding(this.node.data);
+    return !this.getScope().hasBinding(this.node.data);
   }
 }

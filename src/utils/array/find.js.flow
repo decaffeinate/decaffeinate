@@ -1,5 +1,0 @@
-/* @flow */
-
-declare function find<T>(array: Array<T>, iterator: (element: T, i: number, array: Array<T>) => boolean, context: any): T | typeof undefined;
-
-export default find;

@@ -7,12 +7,12 @@ import MainStage from './stages/main/index';
 import { mergeSuggestions, prependSuggestionComment } from './suggestions';
 import NormalizeStage from './stages/normalize/index';
 import convertNewlines from './utils/convertNewlines';
+import DecaffeinateContext from './utils/DecaffeinateContext';
 import detectNewlineStr from './utils/detectNewlineStr';
 import formatCoffeeLexAst from './utils/formatCoffeeLexTokens';
 import formatCoffeeScriptAst from './utils/formatCoffeeScriptAst';
 import formatCoffeeScriptLexerTokens from './utils/formatCoffeeScriptLexerTokens';
 import formatDecaffeinateParserAst from './utils/formatDecaffeinateParserAst';
-import parse from './utils/parse';
 import PatchError from './utils/PatchError';
 import removeUnicodeBOMIfNecessary from './utils/removeUnicodeBOMIfNecessary';
 import resolveToPatchError from './utils/resolveToPatchError';
@@ -153,22 +153,22 @@ function runStage(stage: Stage, content: string, options: Options): StageResult 
 }
 
 function convertCustomStage(source: string, stageName: string): ConversionResult {
-  let ast = parse(source);
+  let context = DecaffeinateContext.create(source);
   if (stageName === 'coffeescript-lexer') {
     return {
-      code: formatCoffeeScriptLexerTokens(tokens(source), ast.context),
+      code: formatCoffeeScriptLexerTokens(tokens(source), context),
     };
   } else if (stageName === 'coffeescript-parser') {
     return {
-      code: formatCoffeeScriptAst(ast.context),
+      code: formatCoffeeScriptAst(context),
     };
   } else if (stageName === 'coffee-lex') {
     return {
-      code: formatCoffeeLexAst(ast.context),
+      code: formatCoffeeLexAst(context),
     };
   } else if (stageName === 'decaffeinate-parser') {
     return {
-      code: formatDecaffeinateParserAst(ast),
+      code: formatDecaffeinateParserAst(context),
     };
   } else {
     throw new Error(`Unrecognized stage name: ${stageName}`);

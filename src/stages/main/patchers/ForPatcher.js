@@ -40,7 +40,7 @@ export default class ForPatcher extends LoopPatcher {
     let patcher = this;
     while (patcher) {
       if (patcher instanceof BlockPatcher &&
-        patcher.parent.node === this.node.scope.containerNode) {
+        patcher.parent.node === this.getScope().containerNode) {
         return patcher;
       }
       patcher = patcher.parent;

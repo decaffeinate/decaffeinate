@@ -86,7 +86,7 @@ export default class FunctionPatcher extends NodePatcher {
     let uniqueExplicitBindings = [...new Set(neededExplicitBindings)];
     // To avoid ugly code, limit the explicit `var` to cases where we're
     // actually shadowing an outer variable.
-    uniqueExplicitBindings = uniqueExplicitBindings.filter(name => this.parent.node.scope.hasBinding(name));
+    uniqueExplicitBindings = uniqueExplicitBindings.filter(name => this.parent.getScope().hasBinding(name));
     if (uniqueExplicitBindings.length > 0) {
       assignments.unshift(`\`var ${uniqueExplicitBindings.join(', ')};\``);
     }
@@ -101,7 +101,7 @@ export default class FunctionPatcher extends NodePatcher {
     } else if (assignments.length) {
       // as the body if there is no body
       // Add a return statement for non-constructor methods without body to avoid bad implicit return
-      if (this.node.parentNode.type !== 'Constructor') {
+      if (this.context.getParent(this.node).type !== 'Constructor') {
         assignments.push('return');
       }
       let indent = this.getIndent(1);

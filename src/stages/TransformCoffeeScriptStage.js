@@ -1,8 +1,8 @@
 import MagicString from 'magic-string';
 import NodePatcher from '../patchers/NodePatcher';
+import DecaffeinateContext from '../utils/DecaffeinateContext';
 import PatchError from '../utils/PatchError';
-import parse from '../utils/parse';
-import type { Node, ParseContext, Editor } from '../patchers/types';
+import type { Node, Editor } from '../patchers/types';
 import { childPropertyNames } from '../utils/traverse';
 import { logger } from '../utils/debug';
 import type { Options, StageResult } from '../index';
@@ -12,9 +12,9 @@ export default class TransformCoffeeScriptStage {
     let log = logger(this.name);
     log(content);
 
-    let ast = parse(content);
+    let context = DecaffeinateContext.create(content);
     let editor = new MagicString(content);
-    let stage = new this(ast, ast.context, editor, options);
+    let stage = new this(context.programNode, context, editor, options);
     let patcher = stage.build();
     patcher.patch();
     return {
@@ -31,7 +31,7 @@ export default class TransformCoffeeScriptStage {
     return '.js';
   }
 
-  constructor(ast: Node, context: ParseContext, editor: Editor, options: Options) {
+  constructor(ast: Node, context: DecaffeinateContext, editor: Editor, options: Options) {
     this.ast = ast;
     this.context = context;
     this.editor = editor;

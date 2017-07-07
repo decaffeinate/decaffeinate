@@ -1,8 +1,8 @@
 import { LocationData } from 'decaffeinate-coffeescript/lib/coffee-script/nodes';
-import ParseContext from 'decaffeinate-parser/dist/util/ParseContext';
+import DecaffeinateContext from './DecaffeinateContext';
 import formatRange from './formatRange';
 
-export default function formatCoffeeScriptLocationData(locationData: LocationData, context: ParseContext): string {
+export default function formatCoffeeScriptLocationData(locationData: LocationData, context: DecaffeinateContext): string {
   let {first_line, first_column, last_line, last_column} = locationData;
   let firstIndex = context.linesAndColumns.indexForLocation({line: first_line, column: first_column});
   if (firstIndex === null) {

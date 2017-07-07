@@ -3,7 +3,7 @@ import { fail, strictEqual } from 'assert';
 import { convert } from 'esnext';
 import MagicString from 'magic-string';
 
-import parse from '../../src/utils/parse';
+import DecaffeinateContext from '../../src/utils/DecaffeinateContext';
 import PatchError from '../../src/utils/PatchError';
 import resolveToPatchError from '../../src/utils/resolveToPatchError';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
@@ -34,7 +34,7 @@ describe('resolveToPatchError', () => {
           f()
         console.log 'test'`);
     try {
-      parse(content);
+      DecaffeinateContext.create(content);
       fail('Expected an exception to be thrown.');
     } catch (e) {
       let patchError = resolveToPatchError(e, content, 'testStage');
