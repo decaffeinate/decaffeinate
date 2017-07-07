@@ -1,8 +1,7 @@
+import { Node } from 'decaffeinate-parser/dist/nodes';
 import traverse from './traverse';
 
-import type { Node } from '../patchers/types';
-
-export default function containsSuperCall(node: Node) {
+export default function containsSuperCall(node: Node): boolean {
   let foundSuper = false;
   traverse(node, child => {
     if (foundSuper) {
@@ -15,6 +14,7 @@ export default function containsSuperCall(node: Node) {
       // Don't go into other classes.
       return false;
     }
+    return true;
   });
   return foundSuper;
 }

@@ -1,14 +1,15 @@
-/* @flow */
+export type Column = {
+  id: string,
+  align: 'left' | 'right',
+};
 
-import repeat from 'repeating';
-
-type Table = {
+export type Table = {
   rows: Array<Array<string>>,
-  columns: Array<{ id: string, align: 'left' | 'right' }>
+  columns: Array<Column>,
 };
 
 export default function printTable(table: Table, buffer: string=' '): string {
-  let widths = [];
+  let widths: Array<number> = [];
   table.rows.forEach(row => {
     row.forEach((cell, i) => {
       if (widths.length <= i) {
@@ -26,7 +27,7 @@ export default function printTable(table: Table, buffer: string=' '): string {
       if (column.align === 'left') {
         output += cell;
       } else if (column.align === 'right') {
-        output += repeat(' ', widths[i] - cell.length) + cell;
+        output += ' '.repeat(widths[i] - cell.length) + cell;
       }
       if (i < row.length - 1) {
         output += buffer;

@@ -1,5 +1,4 @@
 import { SourceType } from 'coffee-lex';
-import repeat from 'repeating';
 
 import NodePatcher from './../../../patchers/NodePatcher';
 import escape from '../../../utils/escape';
@@ -73,7 +72,7 @@ export default class InterpolatedPatcher extends NodePatcher {
         if (token.type === SourceType.STRING_PADDING) {
           let paddingCode = this.slice(token.start, token.end);
           let numNewlines = (paddingCode.match(/\n/g) || []).length;
-          this.overwrite(token.start, token.end, repeat('\\\n', numNewlines));
+          this.overwrite(token.start, token.end, '\\\n'.repeat(numNewlines));
         } else if (token.type === SourceType.STRING_LINE_SEPARATOR) {
           this.insert(token.start, ' \\');
         } else if (token.type === SourceType.STRING_CONTENT) {

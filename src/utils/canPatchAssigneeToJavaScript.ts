@@ -1,5 +1,3 @@
-import type { Node } from '../patchers/types';
-
 /**
  * Determine if the given assignee (array destructure, object destructure, rest,
  * etc.) can be translated to JavaScript directly. If not, we'll need to expand
@@ -9,14 +7,21 @@ import type { Node } from '../patchers/types';
  * since CS falls back to the default if the value is undefined or null, while
  * JS falls back to the default if the value only if the value is undefined.
  */
+import {
+  ArrayInitialiser, DynamicMemberAccessOp, Expansion, Identifier,
+  MemberAccessOp, Node, ObjectInitialiser, ObjectInitialiserMember,
+  ProtoMemberAccessOp, Rest, SoakedDynamicMemberAccessOp, SoakedMemberAccessOp,
+  SoakedProtoMemberAccessOp, Spread
+} from 'decaffeinate-parser/dist/nodes';
+
 export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boolean = true): boolean {
-  if ([
-        'Identifier', 'MemberAccessOp', 'SoakedMemberAccessOp', 'ProtoMemberAccessOp',
-        'DynamicMemberAccessOp', 'SoakedDynamicMemberAccessOp', 'SoakedProtoMemberAccessOp',
-      ].indexOf(node.type) > -1) {
+  if (node instanceof Identifier || node instanceof MemberAccessOp ||
+      node instanceof SoakedMemberAccessOp || node instanceof ProtoMemberAccessOp ||
+      node instanceof DynamicMemberAccessOp || node instanceof SoakedDynamicMemberAccessOp ||
+      node instanceof SoakedProtoMemberAccessOp) {
     return true;
   }
-  if (node.type === 'ArrayInitialiser') {
+  if (node instanceof ArrayInitialiser) {
     // Nested array destructures can't convert cleanly because we need to wrap
     // them in Array.from.
     if (!isTopLevel) {
@@ -28,15 +33,19 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
       return false;
     }
     return node.members.every((member, i) => {
-      let isFinalExpansion = (i === node.members.length - 1) &&
-          ['Spread', 'Rest', 'Expansion'].indexOf(member.type) > -1;
-      let isValidFinalExpansion = isFinalExpansion && (
-        member.type === 'Expansion' || canPatchAssigneeToJavaScript(member.expression)
-      );
-      return isValidFinalExpansion || canPatchAssigneeToJavaScript(member, false);
+      let isInFinalPosition = i === node.members.length - 1;
+      if (isInFinalPosition && member instanceof Expansion) {
+        return true;
+      }
+      if (isInFinalPosition &&
+          (member instanceof Spread || member instanceof Rest) &&
+          canPatchAssigneeToJavaScript(member.expression)) {
+        return true;
+      }
+      return canPatchAssigneeToJavaScript(member, false);
     });
   }
-  if (node.type === 'ObjectInitialiser') {
+  if (node instanceof ObjectInitialiser) {
     // JS empty destructure crashes if the RHS is undefined or null, so more
     // precisely copy the behavior for empty destructures.
     if (node.members.length === 0) {
@@ -44,7 +53,7 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
     }
     return node.members.every(node => canPatchAssigneeToJavaScript(node, false));
   }
-  if (node.type === 'ObjectInitialiserMember') {
+  if (node instanceof ObjectInitialiserMember) {
     return canPatchAssigneeToJavaScript(node.expression, false);
   }
   return false;
