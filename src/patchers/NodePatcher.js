@@ -1,7 +1,7 @@
 import PatcherError from '../utils/PatchError';
 import adjustIndent from '../utils/adjustIndent';
 import repeat from 'repeating';
-import type { SourceToken, SourceTokenListIndex, RepeatableOptions, PatcherContext, ParseContext, Editor, SourceTokenList } from './types';
+import type { SourceToken, SourceTokenListIndex, RepeatableOptions, PatcherContext, DecaffeinateContext, Editor, SourceTokenList } from './types';
 import type { Options } from '../index';
 import { SourceType } from 'coffee-lex';
 import { isFunction, isSemanticToken } from '../utils/types';
@@ -15,7 +15,7 @@ import {
 
 export default class NodePatcher {
   node: Node;
-  context: ParseContext;
+  context: DecaffeinateContext;
   editor: Editor;
   options: Options;
   log: (...args: Array<any>) => void;
@@ -1048,6 +1048,10 @@ export default class NodePatcher {
     return this._hadUnparenthesizedNegation || false;
   }
 
+  getScope(): Scope {
+    return this.context.getScope(this.node);
+  }
+
   /**
    * Gets the indent string for the line that starts this patcher's node.
    */
@@ -1280,7 +1284,7 @@ export default class NodePatcher {
    * Claim a binding that is unique in the current scope.
    */
   claimFreeBinding(ref: ?string|Array<string>=null): string {
-    return this.node.scope.claimFreeBinding(this.node, ref);
+    return this.getScope().claimFreeBinding(this.node, ref);
   }
 
   /**

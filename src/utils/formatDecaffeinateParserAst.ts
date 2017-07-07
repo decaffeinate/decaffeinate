@@ -1,18 +1,18 @@
-import { Node, Program } from 'decaffeinate-parser/dist/nodes';
-import ParseContext from 'decaffeinate-parser/dist/util/ParseContext';
+import { Node } from 'decaffeinate-parser/dist/nodes';
+import DecaffeinateContext from './DecaffeinateContext';
 import formatRange from './formatRange';
 import {childPropertyNames} from './traverse';
 
-export default function formatDecaffeinateParserAst(ast: Program): string {
-  let resultLines = formatAstNodeLines(ast, ast.context);
+export default function formatDecaffeinateParserAst(context: DecaffeinateContext): string {
+  let resultLines = formatAstNodeLines(context.programNode, context);
   return resultLines.map(line => line + '\n').join('');
 }
 
-function formatAstNodeLines(node: Node, context: ParseContext): Array<string> {
+function formatAstNodeLines(node: Node, context: DecaffeinateContext): Array<string> {
   let propLines = [];
   let childPropNames = childPropertyNames(node);
   let blacklistedProps = childPropNames.concat(
-    ['raw', 'line', 'column', 'type', 'range', 'scope', 'parentNode', 'context', 'start', 'end']
+    ['raw', 'line', 'column', 'type', 'range', 'scope', 'context', 'start', 'end']
   );
   for (let key of Object.keys(node)) {
     if (blacklistedProps.indexOf(key) !== -1) {

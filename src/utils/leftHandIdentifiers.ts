@@ -11,7 +11,7 @@ import flatMap from './flatMap';
  *   Given `{a, b: c}`, returns [`a`, `c`].
  *   Given `[a, {b, c: d}]`, returns [`a`, `b`, `d`].
  */
-export default function leftHandIdentifiers(node: Node): Array<Node> {
+export default function leftHandIdentifiers(node: Node): Array<Identifier> {
   if (node instanceof Identifier) {
     return [node];
   } else if (node instanceof ArrayInitialiser) {

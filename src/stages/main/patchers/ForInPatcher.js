@@ -152,11 +152,11 @@ export default class ForInPatcher extends ForPatcher {
       let name = assignee.node.data;
       // Find the enclosing function or program node for the binding so we can
       // find all usages of this variable.
-      let assignmentNode = this.node.scope.getBinding(name);
+      let assignmentNode = this.getScope().getBinding(name);
       if (!assignmentNode) {
         throw this.error('Expected loop assignee to have a binding in its scope.');
       }
-      let containerNode = assignmentNode.scope.containerNode;
+      let containerNode = this.context.getScope(assignmentNode).containerNode;
       // If the number of usages in the enclosing function is more than the
       // number of usages in the loop, then there must be some external usages,
       // so we can't safely change this to a parameter.
@@ -342,7 +342,7 @@ export default class ForInPatcher extends ForPatcher {
     // that only looks at assignments within the loop body. But assignments
     // within closures could also happen temporally in the loop, so bail out if
     // we see one of those.
-    if (this.node.scope.hasInnerClosureModification(userIndex)) {
+    if (this.getScope().hasInnerClosureModification(userIndex)) {
       return true;
     }
     let fakeScope = new Scope(this.node, null);

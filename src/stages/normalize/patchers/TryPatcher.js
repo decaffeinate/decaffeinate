@@ -73,7 +73,7 @@ export default class TryPatcher extends NodePatcher {
     let exceptionVarUsages = this.catchBody
       ? countVariableUsages(this.catchBody.node, varName) + 1
       : 1;
-    let totalVarUsages = countVariableUsages(this.node.scope.containerNode, varName);
+    let totalVarUsages = countVariableUsages(this.getScope().containerNode, varName);
     return totalVarUsages > exceptionVarUsages;
   }
 }

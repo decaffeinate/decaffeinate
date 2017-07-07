@@ -13,7 +13,7 @@ export type Node = {
   column: number,
 };
 
-export type ParseContext = {
+export type DecaffeinateContext = {
   source: string,
 };
 
@@ -31,7 +31,7 @@ export type Editor = {
 
 export type PatcherContext = {
   node: Node;
-  context: ParseContext;
+  context: DecaffeinateContext;
   editor: Editor;
   options: Options;
   addSuggestion: (Suggestion) => void;

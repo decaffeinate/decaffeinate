@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
+import DecaffeinateContext from '../../src/utils/DecaffeinateContext';
 import formatDecaffeinateParserAst from '../../src/utils/formatDecaffeinateParserAst';
-import parse from '../../src/utils/parse';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('formatDecaffeinateParserAst', () => {
@@ -10,8 +10,8 @@ describe('formatDecaffeinateParserAst', () => {
         x = a()
         break
     `);
-    let ast = parse(source);
-    let formattedTokens = formatDecaffeinateParserAst(ast);
+    let context = DecaffeinateContext.create(source);
+    let formattedTokens = formatDecaffeinateParserAst(context);
     strictEqual(formattedTokens, stripSharedIndent(`
       Program [1:1(0)-3:8(22)] {
         body: Block [1:1(0)-3:8(22)] {

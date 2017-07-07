@@ -18,7 +18,7 @@ export default class ThisPatcher extends NodePatcher {
   }
 
   reportTopLevelThisIfNecessary() {
-    let scope = this.node.scope;
+    let scope = this.getScope();
     while (scope.parent &&
         [
           'Program', 'Function', 'GeneratorFunction', 'Class'

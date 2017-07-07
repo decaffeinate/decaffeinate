@@ -31,7 +31,7 @@ export default class ReturnPatcher extends NodePatcher {
   }
 
   patchAsStatement() {
-    if (this.node.scope.containerNode.type === 'Program') {
+    if (this.getScope().containerNode.type === 'Program') {
       this.addSuggestion(AVOID_TOP_LEVEL_RETURN);
     }
     if (this.expression) {

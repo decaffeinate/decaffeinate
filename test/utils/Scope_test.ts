@@ -1,11 +1,12 @@
 import { ok, strictEqual } from 'assert';
 import { parse } from 'decaffeinate-parser';
+import { AssignOp, Identifier, Node } from 'decaffeinate-parser/dist/nodes';
 import Scope from '../../src/utils/Scope';
 
-describe('Scope', function() {
-  let A = {};
-  let A2 = {};
-  let containerNode = {};
+describe('Scope', () => {
+  let A = new Identifier(0, 0, 0, 1, 'x', 'x');
+  let A2 = new Identifier(0, 0, 0, 1, 'y', 'y');
+  let containerNode = new Identifier(0, 0, 0, 1, 'z', 'z');
 
   it('has no bindings by default', () => {
     let scope = new Scope(containerNode);
@@ -115,7 +116,7 @@ describe('Scope', function() {
 
     it('adds a counter to the end of the binding if the binding is already taken', () => {
       let scope = new Scope(containerNode);
-      let node = statement('ref = ref1 = 0');
+      let node = statement('ref = ref1 = 0') as AssignOp;
       scope.processNode(node);
       scope.processNode(node.expression);
       strictEqual(scope.claimFreeBinding(node), 'ref2');
@@ -145,6 +146,10 @@ describe('Scope', function() {
   });
 });
 
-function statement(code) {
-  return parse(code).body.statements[0];
+function statement(code: string): Node {
+  let body = parse(code).body;
+  if (!body) {
+    throw new Error('Expected non-null body.');
+  }
+  return body.statements[0];
 }

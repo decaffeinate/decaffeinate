@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
+import DecaffeinateContext from '../../src/utils/DecaffeinateContext';
 import formatCoffeeLexTokens from '../../src/utils/formatCoffeeLexTokens';
-import parse from '../../src/utils/parse';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('formatCoffeeLexTokens', () => {
@@ -9,7 +9,7 @@ describe('formatCoffeeLexTokens', () => {
       x = for a in b
         a()
     `);
-    let context = parse(source).context;
+    let context = DecaffeinateContext.create(source);
     let formattedTokens = formatCoffeeLexTokens(context);
     strictEqual(formattedTokens, stripSharedIndent(`
       [1:1(0)-1:2(1)]: IDENTIFIER

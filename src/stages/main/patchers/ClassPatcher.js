@@ -145,7 +145,7 @@ export default class ClassPatcher extends NodePatcher {
    */
   isNameAlreadyDeclared(): boolean {
     let name = this.getName();
-    return name && this.node.scope.getBinding(name) !== this.nameAssignee.node;
+    return name && this.getScope().getBinding(name) !== this.nameAssignee.node;
   }
 
   /**

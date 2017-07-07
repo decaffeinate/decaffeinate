@@ -4,37 +4,28 @@
  */
 import { Node } from 'decaffeinate-parser/dist/nodes';
 
-export default function traverse(node: Node, callback: (node: Node, descend: (node: Node) => void, hasChildren: boolean) => boolean | void): void {
-  let descended = false;
-
-  function descend(parent: Node): void {
-    descended = true;
-
-    childPropertyNames(parent).forEach(property => {
-      let value = parent[property];
-      if (Array.isArray(value)) {
-        value.forEach(child => {
-          if (child) {
-            child.parentNode = parent;
-            traverse(child, callback);
-          }
-        });
-      } else if (value) {
-        value.parentNode = parent;
-        traverse(value, callback);
-      }
-    });
+export default function traverse(
+  node: Node,
+  callback: (node: Node, parent: Node | null) => boolean | void
+): void {
+  function traverseRec(currentNode: Node, currentParent: Node | null): void {
+    let shouldDescend = callback(currentNode, currentParent);
+    if (shouldDescend !== false) {
+      childPropertyNames(currentNode).forEach(property => {
+        let value = currentNode[property];
+        if (Array.isArray(value)) {
+          value.forEach(child => {
+            if (child) {
+              traverseRec(child, currentNode);
+            }
+          });
+        } else if (value) {
+          traverseRec(value, currentNode);
+        }
+      });
+    }
   }
-
-  let shouldDescend = callback(
-    node,
-    descend,
-    childPropertyNames(node).length === 0
-  );
-
-  if (!descended && shouldDescend !== false) {
-    descend(node);
-  }
+  traverseRec(node, null);
 }
 
 const ORDER: {[nodeType: string]: Array<string> | undefined} = {

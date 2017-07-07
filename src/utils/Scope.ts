@@ -1,10 +1,7 @@
-/* @flow */
-
-import find from './array/find';
+import { ArrayInitialiser, AssignOp, BaseFunction, Class, CompoundAssignOp, DefaultParam, Expansion, For, Identifier, MemberAccessOp, Node, ObjectInitialiser, PostDecrementOp, PostIncrementOp, PreDecrementOp, PreIncrementOp, Rest, Try } from 'decaffeinate-parser/dist/nodes';
 import flatMap from './flatMap';
 import isReservedWord from './isReservedWord';
 import leftHandIdentifiers from './leftHandIdentifiers';
-import type { Node } from '../patchers/types';
 
 type Bindings = { [key: string]: Node };
 
@@ -12,21 +9,20 @@ type Bindings = { [key: string]: Node };
  * Represents a CoffeeScript scope and its bindings.
  */
 export default class Scope {
-  parent: ?Scope;
-  bindings: Bindings;
-  modificationsAfterDeclaration: { [key: string]: boolean };
-  innerClosureModifications: { [key: string]: boolean };
-  containerNode: Node;
+  private bindings: Bindings;
+  private modificationsAfterDeclaration: { [key: string]: boolean };
+  private innerClosureModifications: { [key: string]: boolean };
 
-  constructor(containerNode: Node, parent: ?Scope=null) {
-    this.parent = parent;
+  constructor(
+    readonly containerNode: Node,
+    readonly parent: Scope | null = null
+  ) {
     this.bindings = Object.create(parent ? parent.bindings : {});
     this.modificationsAfterDeclaration = {};
     this.innerClosureModifications = {};
-    this.containerNode = containerNode;
   }
 
-  getBinding(name: string): ?Node {
+  getBinding(name: string): Node | null {
     return this.bindings[this.key(name)] || null;
   }
 
@@ -57,7 +53,7 @@ export default class Scope {
   /**
    * Mark that the given name is explicitly declared, e.g. in a parameter.
    */
-  declares(name: string, node: Node) {
+  declares(name: string, node: Node): void {
     let key = this.key(name);
     this.bindings[key] = node;
   }
@@ -66,7 +62,7 @@ export default class Scope {
    * Mark that the given name is part of an assignment. This might introduce a
    * new variable or might set an existing variable, depending on context.
    */
-  assigns(name: string, node: Node) {
+  assigns(name: string, node: Node): void {
     if (!this.bindings[this.key(name)]) {
       // Not defined in this or any parent scope.
       this.declares(name, node);
@@ -78,8 +74,8 @@ export default class Scope {
   /**
    * Mark that the given name is part of a modification, e.g. `+=` or `++`.
    */
-  modifies(name: string) {
-    let scope = this;
+  modifies(name: string): void {
+    let scope: Scope | null = this;
     while (scope) {
       if (scope.hasOwnBinding(name)) {
         scope.modificationsAfterDeclaration[this.key(name)] = true;
@@ -92,10 +88,10 @@ export default class Scope {
     }
   }
 
-  claimFreeBinding(node: Node, name: ?(string | Array<string>)=null): string {
+  claimFreeBinding(node: Node, name: (string | Array<string> | null) = null): string {
     if (!name) { name = 'ref'; }
     let names = Array.isArray(name) ? name : [name];
-    let binding = find(names, name => this.isBindingAvailable(name));
+    let binding = names.find(name => this.isBindingAvailable(name));
 
     if (!binding) {
       let counter = 0;
@@ -104,7 +100,7 @@ export default class Scope {
           throw new Error(`Unable to find free binding for names ${names.toString()}`);
         }
         counter += 1;
-        binding = find(names, name => this.isBindingAvailable(`${name}${counter}`));
+        binding = names.find(name => this.isBindingAvailable(`${name}${counter}`));
       }
       binding = `${binding}${counter}`;
     }
@@ -130,61 +126,41 @@ export default class Scope {
   /**
    * Handles declarations or assigns for any bindings for a given node.
    */
-  processNode(node: Node) {
-    switch (node.type) {
-      case 'AssignOp':
-        leftHandIdentifiers(node.assignee).forEach(identifier =>
-          this.assigns(identifier.data, identifier)
-        );
-        break;
-
-      case 'CompoundAssignOp':
-        if (node.assignee.type === 'Identifier') {
-          this.modifies(node.assignee.data);
-        }
-        break;
-
-      case 'PostDecrementOp':
-      case 'PostIncrementOp':
-      case 'PreDecrementOp':
-      case 'PreIncrementOp':
-        if (node.expression.type === 'Identifier') {
-          this.modifies(node.expression.data);
-        }
-        break;
-
-      case 'Function':
-      case 'BoundFunction':
-      case 'GeneratorFunction':
-      case 'BoundGeneratorFunction':
-        getBindingsForNode(node).forEach(identifier => this.declares(identifier.data, identifier));
-        break;
-
-      case 'ForIn':
-      case 'ForOf':
-        [node.keyAssignee, node.valAssignee].forEach(assignee => {
-          if (assignee) {
-            leftHandIdentifiers(assignee).forEach(identifier =>
-              this.assigns(identifier.data, identifier)
-            );
-          }
-        });
-        break;
-
-      case 'Try':
-        if (node.catchAssignee) {
-          leftHandIdentifiers(node.catchAssignee).forEach(identifier =>
+  processNode(node: Node): void {
+    if (node instanceof AssignOp) {
+      leftHandIdentifiers(node.assignee).forEach(identifier =>
+        this.assigns(identifier.data, identifier)
+      );
+    } else if (node instanceof CompoundAssignOp) {
+      if (node.assignee instanceof Identifier) {
+        this.modifies(node.assignee.data);
+      }
+    } else if (node instanceof PostDecrementOp || node instanceof PostIncrementOp ||
+        node instanceof PreDecrementOp || node instanceof PreIncrementOp) {
+      if (node.expression instanceof Identifier) {
+        this.modifies(node.expression.data);
+      }
+    } else if (node instanceof BaseFunction) {
+      getBindingsForNode(node).forEach(identifier => this.declares(identifier.data, identifier));
+    } else if (node instanceof For) {
+      [node.keyAssignee, node.valAssignee].forEach(assignee => {
+        if (assignee) {
+          leftHandIdentifiers(assignee).forEach(identifier =>
             this.assigns(identifier.data, identifier)
           );
         }
-        break;
-
-      case 'Class':
-        if (node.nameAssignee && node.nameAssignee.type === 'Identifier' && this.parent) {
-          // Classes have their own scope, but their name is bound to the parent scope.
-          this.parent.assigns(node.nameAssignee.data, node.nameAssignee);
-        }
-        break;
+      });
+    } else if (node instanceof Try) {
+      if (node.catchAssignee) {
+        leftHandIdentifiers(node.catchAssignee).forEach(identifier =>
+          this.assigns(identifier.data, identifier)
+        );
+      }
+    } else if (node instanceof Class) {
+      if (node.nameAssignee && node.nameAssignee instanceof Identifier && this.parent) {
+        // Classes have their own scope, but their name is bound to the parent scope.
+        this.parent.assigns(node.nameAssignee.data, node.nameAssignee);
+      }
     }
   }
 
@@ -204,30 +180,19 @@ export default class Scope {
 /**
  * Gets all the identifiers representing bindings in `node`.
  */
-function getBindingsForNode(node: Node): Array<Node> {
-  switch (node.type) {
-    case 'Function':
-    case 'GeneratorFunction':
-    case 'BoundFunction':
-    case 'BoundGeneratorFunction':
-      return flatMap(node.parameters, getBindingsForNode);
-
-    case 'Identifier':
-    case 'ArrayInitialiser':
-    case 'ObjectInitialiser':
-      return leftHandIdentifiers(node);
-
-    case 'DefaultParam':
-      return getBindingsForNode(node.param);
-
-    case 'Rest':
-      return getBindingsForNode(node.expression);
-
-    case 'Expansion':
-    case 'MemberAccessOp':
-      return [];
-
-    default:
-      throw new Error(`unexpected parameter type: ${node.type}`);
+function getBindingsForNode(node: Node): Array<Identifier> {
+  if (node instanceof BaseFunction) {
+    return flatMap(node.parameters, getBindingsForNode);
+  } else if (node instanceof Identifier || node instanceof ArrayInitialiser ||
+      node instanceof ObjectInitialiser) {
+    return leftHandIdentifiers(node);
+  } else if (node instanceof DefaultParam) {
+    return getBindingsForNode(node.param);
+  } else if (node instanceof Rest) {
+    return getBindingsForNode(node.expression);
+  } else if (node instanceof Expansion || node instanceof MemberAccessOp) {
+    return [];
+  } else {
+    throw new Error(`unexpected parameter type: ${node.type}`);
   }
 }
