@@ -35,7 +35,22 @@
     conventional-changelog "0.0.17"
     github-url-from-git "^1.4.0"
 
-"@types/babel-traverse@^6.7.17":
+"@types/babel-core@^6.7.14":
+  version "6.7.14"
+  resolved "https://registry.yarnpkg.com/@types/babel-core/-/babel-core-6.7.14.tgz#a08c900a98e8987c1a98d2ea4fa0a1805a7d131f"
+  dependencies:
+    "@types/babel-template" "*"
+    "@types/babel-traverse" "*"
+    "@types/babel-types" "*"
+
+"@types/babel-template@*":
+  version "6.7.14"
+  resolved "https://registry.yarnpkg.com/@types/babel-template/-/babel-template-6.7.14.tgz#8088a56f9d697d620d3d079c3ef66025b7a08d02"
+  dependencies:
+    "@types/babel-types" "*"
+    "@types/babylon" "*"
+
+"@types/babel-traverse@*", "@types/babel-traverse@^6.7.17":
   version "6.7.17"
   resolved "https://registry.yarnpkg.com/@types/babel-traverse/-/babel-traverse-6.7.17.tgz#5212a4edced81f53a6c4fb1fd7a34aa4ff6cf36b"
   dependencies:
@@ -45,7 +60,7 @@
   version "6.7.16"
   resolved "https://registry.yarnpkg.com/@types/babel-types/-/babel-types-6.7.16.tgz#e2602896636858a0067971f7ca4bb8678038293f"
 
-"@types/babylon@^6.16.1":
+"@types/babylon@*", "@types/babylon@^6.16.1":
   version "6.16.1"
   resolved "https://registry.yarnpkg.com/@types/babylon/-/babylon-6.16.1.tgz#e4d10ab9e43a73703a17c6f41438bede28769340"
   dependencies:
@@ -1080,10 +1095,6 @@ debug@2.6.0:
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.0.tgz#bc596bcabe7617f11d9fa15361eded5608b8499b"
   dependencies:
     ms "0.7.2"
-
-decaffeinate-coffeescript@1.10.0-patch25:
-  version "1.10.0-patch25"
-  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0-patch25.tgz#81816adc6361bd7d1e59d9034c8c5bfcea00677e"
 
 decaffeinate-coffeescript@1.10.0-patch26:
   version "1.10.0-patch26"

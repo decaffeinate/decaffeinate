@@ -36,6 +36,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@types/babel-core": "^6.7.14",
     "add-variable-declarations": "^3.0.5",
     "ast-processor-babylon-config": "^1.0.0",
     "automatic-semicolon-insertion": "^1.0.2",

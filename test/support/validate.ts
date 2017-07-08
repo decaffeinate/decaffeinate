@@ -1,8 +1,13 @@
 import * as babel from 'babel-core';
-import * as vm from 'vm';
 import { compile } from 'decaffeinate-coffeescript';
-import { convert, PatchError } from '../../src/index';
+import * as vm from 'vm';
+import { convert } from '../../src/index';
+import PatchError from '../../src/utils/PatchError';
 import assertDeepEqual from './assertDeepEqual';
+
+export type ValidateOptions = {
+  requireNode6?: boolean,
+};
 
 /**
  * validate takes coffee-script as input with code that calls the setResult
@@ -21,7 +26,8 @@ import assertDeepEqual from './assertDeepEqual';
  * Optionally, expectedOutput can be specified. If it is, the the result of the
  * 'o' variable must be equal to that value.
  */
-export default function validate(source: string, expectedOutput: ?any, { requireNode6 = false } = {}) {
+export default function validate(
+    source: string, expectedOutput: {}, {requireNode6 = false}: ValidateOptions = {}): void {
   if (requireNode6 && !isAtLeastNode6()) {
     return;
   }
@@ -35,11 +41,13 @@ export default function validate(source: string, expectedOutput: ?any, { require
   }
 }
 
-function runCodeAndExtract(source: string) {
+// tslint:disable-next-line:no-any
+function runCodeAndExtract(source: string): any {
   let result = null;
   let numCalls = 0;
   let sandbox = {
-    setResult(r) {
+    // tslint:disable-next-line:no-any
+    setResult(r: any): void {
       result = r;
       numCalls++;
     }
@@ -52,15 +60,15 @@ function runCodeAndExtract(source: string) {
   return result;
 }
 
-function runValidation(source: string, expectedOutput: ?any) {
-  let coffeeES5 = compile(source, { bare: true });
+function runValidation(source: string, expectedOutput: {}): void {
+  let coffeeES5 = compile(source, { bare: true }) as string;
   let decaffeinateES6 = convert(source).code;
-  let decaffeinateES5 = babel.transform(decaffeinateES6, { presets: ['es2015'] }).code;
+  let decaffeinateES5 = babel.transform(decaffeinateES6, { presets: ['es2015'] }).code || '';
 
   let coffeeOutput = runCodeAndExtract(coffeeES5);
   let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
   try {
-    assertDeepEqual(decaffeinateOutput, coffeeOutput);
+    assertDeepEqual(decaffeinateOutput, coffeeOutput, 'decaffeinate and coffee output were different.');
   } catch (err) {
     // add some additional context for debugging
     err.message = `Additional Debug:
@@ -84,14 +92,14 @@ ${err.message}`;
   // Make sure babel and V8 behave the same if we're on node >= 6.
   if (isAtLeastNode6()) {
     let nodeOutput = runCodeAndExtract(decaffeinateES6);
-    assertDeepEqual(decaffeinateOutput, nodeOutput);
+    assertDeepEqual(decaffeinateOutput, nodeOutput, 'babel and node output were different.');
   }
 
   if (expectedOutput !== undefined) {
-    assertDeepEqual(decaffeinateOutput, expectedOutput);
+    assertDeepEqual(decaffeinateOutput, expectedOutput, 'decaffeinate and expected output were different.');
   }
 }
 
-function isAtLeastNode6() {
+function isAtLeastNode6(): boolean {
   return Number(process.version.slice(1).split('.')[0]) >= 6;
 }
