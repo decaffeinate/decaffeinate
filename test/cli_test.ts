@@ -1,11 +1,11 @@
-import assert, { equal, fail } from 'assert';
+import { equal, ok } from 'assert';
 import { execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { copySync } from 'fs-extra';
 
 import stripSharedIndent from '../src/utils/stripSharedIndent';
 
-function runCli(argStr, stdin, expectedStdout) {
+function runCli(argStr: string, stdin: string, expectedStdout: string): void {
   if (stdin[0] === '\n') {
     stdin = stripSharedIndent(stdin);
   }
@@ -19,7 +19,7 @@ function runCli(argStr, stdin, expectedStdout) {
   equal(stdout.trim(), expectedStdout.trim());
 }
 
-function runCliExpectError(argStr, stdin, expectedStderr) {
+function runCliExpectError(argStr: string, stdin: string, expectedStderr: string): void {
   if (stdin[0] === '\n') {
     stdin = stripSharedIndent(stdin);
   }
@@ -29,7 +29,7 @@ function runCliExpectError(argStr, stdin, expectedStderr) {
 
   try {
     execSync('./bin/decaffeinate ' + argStr, {input: stdin,});
-    fail('Expected the CLI to fail.');
+    ok(false, 'Expected the CLI to fail.');
   } catch (e) {
     equal(e.output[2].toString().trim(), expectedStderr.trim());
   }
@@ -371,23 +371,23 @@ describe('decaffeinate CLI', () => {
       test/fixtures/B.coffee.md → test/fixtures/B.js
       test/fixtures/C.litcoffee → test/fixtures/C.js
     `);
-    assert(existsSync('test/fixtures/A.js'));
-    assert(existsSync('test/fixtures/B.js'));
-    assert(existsSync('test/fixtures/C.js'));
+    ok(existsSync('test/fixtures/A.js'));
+    ok(existsSync('test/fixtures/B.js'));
+    ok(existsSync('test/fixtures/C.js'));
   });
 
   it('properly converts an unrecognized extension', () => {
     runCli('./test/fixtures/D.cjsx', '', `
       ./test/fixtures/D.cjsx → test/fixtures/D.js
     `);
-    assert(existsSync('test/fixtures/D.js'));
+    ok(existsSync('test/fixtures/D.js'));
   });
 
   it('properly converts an extensionless file', () => {
     runCli('./test/fixtures/E', '', `
       ./test/fixtures/E → test/fixtures/E.js
     `);
-    assert(existsSync('test/fixtures/E.js'));
+    ok(existsSync('test/fixtures/E.js'));
   });
 
   it('properly modernizes a JS file', () => {
@@ -396,7 +396,7 @@ describe('decaffeinate CLI', () => {
       test/fixtures/F.tmp.js → test/fixtures/F.tmp.js
     `);
     let contents = readFileSync('./test/fixtures/F.tmp.js').toString();
-    assert.equal(stripSharedIndent(contents), stripSharedIndent(`
+    equal(stripSharedIndent(contents), stripSharedIndent(`
       import path from 'path';
       const b = 1;
     `));
@@ -412,7 +412,7 @@ describe('decaffeinate CLI', () => {
       test/fixtures/searchDir/F.js → test/fixtures/searchDir/F.js
     `);
     let contents = readFileSync('./test/fixtures/searchDir/F.js').toString();
-    assert.equal(stripSharedIndent(contents), stripSharedIndent(`
+    equal(stripSharedIndent(contents), stripSharedIndent(`
       import path from 'path';
       const b = 1;
     `));

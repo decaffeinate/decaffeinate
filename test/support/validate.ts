@@ -27,7 +27,8 @@ export type ValidateOptions = {
  * 'o' variable must be equal to that value.
  */
 export default function validate(
-    source: string, expectedOutput: {}, {requireNode6 = false}: ValidateOptions = {}): void {
+    // tslint:disable-next-line:no-any
+    source: string, expectedOutput?: any, {requireNode6 = false}: ValidateOptions = {}): void {
   if (requireNode6 && !isAtLeastNode6()) {
     return;
   }

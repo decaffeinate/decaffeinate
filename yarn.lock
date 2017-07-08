@@ -66,6 +66,12 @@
   dependencies:
     "@types/babel-types" "*"
 
+"@types/fs-extra@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-3.0.3.tgz#1d66eb670ebf657e57c0fda014df340c19d8aa0c"
+  dependencies:
+    "@types/node" "*"
+
 "@types/json-stable-stringify@^1.0.31":
   version "1.0.31"
   resolved "https://registry.yarnpkg.com/@types/json-stable-stringify/-/json-stable-stringify-1.0.31.tgz#b6c7bc507f5267e88cd2839b3ac6a2b39b653a32"
