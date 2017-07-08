@@ -20,4 +20,9 @@ export type RepeatableOptions = {
 };
 
 export type PatchOptions = {
+  needsParens?: boolean,
+  fnNeedsParens?: boolean,
+  skipParens?: boolean,
+  leftBrace?: boolean,
+  rightBrace?: boolean,
 };

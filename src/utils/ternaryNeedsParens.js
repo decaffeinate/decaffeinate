@@ -1,5 +1,3 @@
-/* @flow */
-
 import AssignOpPatcher from '../stages/main/patchers/AssignOpPatcher';
 import ConditionalPatcher from '../stages/main/patchers/ConditionalPatcher';
 import DynamicMemberAccessOpPatcher from '../stages/main/patchers/DynamicMemberAccessOpPatcher';
