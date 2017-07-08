@@ -1772,4 +1772,16 @@ describe('for loops', () => {
       () => Array.from(b);
     `);
   });
+
+  it('allows an expression loop with an empty body and does not populate the result array', () => {
+    check(`
+      x = for a in b then
+    `, `
+      const x = (() => {
+        const result = [];
+        for (let a of Array.from(b)) {}
+        return result;
+      })(); 
+    `);
+  });
 });
