@@ -1,22 +1,24 @@
 import { SourceType } from 'coffee-lex';
 
+import { Block } from 'decaffeinate-parser/dist/nodes';
+import notNull from '../utils/notNull';
 import NodePatcher from './NodePatcher';
-import type { PatcherContext } from './types';
+import { PatcherContext } from './types';
 
 export default class SharedBlockPatcher extends NodePatcher {
+  node: Block;
   statements: Array<NodePatcher>;
-  shouldPatchInline: ?boolean;
+  shouldPatchInline: boolean | null = null;
 
   constructor(patcherContext: PatcherContext, statements: Array<NodePatcher>) {
     super(patcherContext);
     this.statements = statements;
-    this.shouldPatchInline = null;
   }
 
   /**
    * Insert statements somewhere in this block.
    */
-  insertStatementsAtIndex(statements: Array<string>, index: number) {
+  insertStatementsAtIndex(statements: Array<string>, index: number): void {
     let separator = this.inline() ? '; ' : ';\n';
     if (index === this.statements.length) {
       let lastStatement = this.statements[this.statements.length - 1];
@@ -25,7 +27,7 @@ export default class SharedBlockPatcher extends NodePatcher {
         lastStatement.outerEndTokenIndex
       );
       let insertionPoint = terminatorTokenIndex ?
-        this.sourceTokenAtIndex(terminatorTokenIndex).start :
+        notNull(this.sourceTokenAtIndex(terminatorTokenIndex)).start :
         lastStatement.outerEnd;
       insertionPoint = Math.min(insertionPoint, this.getBoundingPatcher().innerEnd);
       let indent = lastStatement.getIndent();
@@ -65,7 +67,7 @@ export default class SharedBlockPatcher extends NodePatcher {
    *   needs to be done later, just before the body itself is patched. See the
    *   uses of shouldConvertInlineBodyToNonInline in LoopPatcher for an example.
    */
-  insertLineBefore(statement: string, indent: string = this.getIndent()) {
+  insertLineBefore(statement: string, indent: string = this.getIndent()): void {
     if (this.inline()) {
       this.insert(this.outerStart, `${statement}; `);
     } else if (this.node.inline) {
@@ -79,7 +81,7 @@ export default class SharedBlockPatcher extends NodePatcher {
     }
   }
 
-  insertLineAfter(statement: string, indent: string) {
+  insertLineAfter(statement: string, indent: string): void {
     if (this.inline()) {
       this.insert(this.outerEnd, `; ${statement}`);
     } else {

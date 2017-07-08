@@ -1,8 +1,9 @@
 import { SourceType } from 'coffee-lex';
 
-import NodePatcher from './../../../patchers/NodePatcher';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import { PatcherContext } from '../../../patchers/types';
 import normalizeListItem from '../../../utils/normalizeListItem';
-import type { PatcherContext } from './../../../patchers/types';
+import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class FunctionApplicationPatcher extends NodePatcher {
   fn: NodePatcher;
@@ -14,7 +15,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     this.args = args;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     let implicitCall = this.isImplicitCall();
     let { args } = this;
 
@@ -52,7 +53,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * any indentation parsing. But in some cases it's best to instead insert the
    * close-paren properly-indented on its own line.
    */
-  insertImplicitCloseParen() {
+  insertImplicitCloseParen(): void {
     let argListCode = this.slice(
       this.args[0].contentStart, this.args[this.args.length - 1].contentEnd);
     let isArgListMultiline = argListCode.indexOf('\n') !== -1;
@@ -90,14 +91,15 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     this.insert(this.contentEnd, ')');
   }
 
-  getFollowingCloseParenIfExists() {
+  getFollowingCloseParenIfExists(): SourceToken | null {
     let tokenIndex = this.contentEndTokenIndex;
     let token;
     do {
-      tokenIndex = tokenIndex.next();
-      if (tokenIndex === null) {
+      let nextTokenIndex = tokenIndex.next();
+      if (nextTokenIndex === null) {
         return null;
       }
+      tokenIndex = nextTokenIndex;
       token = this.sourceTokenAtIndex(tokenIndex);
       if (token === null) {
         return null;
@@ -117,7 +119,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    */
   getMaxCloseParenInsertPoint(): number {
     let maxInsertionPoint = this.getEditingBounds()[1];
-    let enclosingIndentedPatcher = this;
+    let enclosingIndentedPatcher: NodePatcher = this;
     while (
         !enclosingIndentedPatcher.isFirstNodeInLine(enclosingIndentedPatcher.contentStart) &&
         enclosingIndentedPatcher.parent) {
@@ -149,11 +151,17 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * Get the source index after the function and the question mark, if any.
    * This is the start of the region to insert an open-paren if necessary
    */
-  getFuncEnd() {
+  getFuncEnd(): number {
     if (this.node.type === 'SoakedFunctionApplication' || this.node.type === 'SoakedNewOp') {
       let questionMarkTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         this.fn.outerEndTokenIndex, SourceType.EXISTENCE);
+      if (!questionMarkTokenIndex) {
+        throw this.error('Expected to find question mark token index.');
+      }
       let questionMarkToken = this.sourceTokenAtIndex(questionMarkTokenIndex);
+      if (!questionMarkToken) {
+        throw this.error('Expected to find question mark token.');
+      }
       return questionMarkToken.end;
     } else {
       return this.fn.outerEnd;

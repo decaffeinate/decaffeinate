@@ -1,6 +1,6 @@
-import NodePatcher from './../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
+import { PatcherContext } from '../../../patchers/types';
 import normalizeListItem from '../../../utils/normalizeListItem';
+import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class ArrayInitialiserPatcher extends NodePatcher {
   members: Array<NodePatcher>;
@@ -10,7 +10,7 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
     this.members = members;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     for (let [i, member] of this.members.entries()) {
       member.patch();
       normalizeListItem(this, member, this.members[i + 1]);

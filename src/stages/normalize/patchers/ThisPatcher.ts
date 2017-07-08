@@ -1,5 +1,6 @@
 import { SourceType } from 'coffee-lex';
 import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
+import { PatchOptions, RepeatableOptions } from '../../../patchers/types';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 
 export default class ThisPatcher extends PassthroughPatcher {
@@ -7,7 +8,7 @@ export default class ThisPatcher extends PassthroughPatcher {
    * When patching a shorthand like `@a` as repeatable, we need to add a dot to
    * make the result still syntactically valid.
    */
-  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {
+  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions: PatchOptions={}): string {
     let ref = super.patchAsRepeatableExpression(repeatableOptions, patchOptions);
     let addedParens = (!this.isRepeatable() || repeatableOptions.forceRepeat) &&
       repeatableOptions.parens;

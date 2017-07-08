@@ -1,8 +1,8 @@
+import { While } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
 import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
 import postfixNodeNeedsOuterParens from '../../../utils/postfixNodeNeedsOuterParens';
-
-import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Normalizes `while` loops by rewriting post-`while` into standard `while`, e.g.
@@ -14,18 +14,19 @@ import type { PatcherContext } from './../../../patchers/types';
  *   while b() then a()
  */
 export default class WhilePatcher extends NodePatcher {
+  node: While;
   condition: NodePatcher;
-  guard: ?NodePatcher;
-  body: ?NodePatcher;
+  guard: NodePatcher | null;
+  body: NodePatcher | null;
   
-  constructor(patcherContext: PatcherContext, condition: NodePatcher, guard: ?NodePatcher, body: NodePatcher) {
+  constructor(patcherContext: PatcherContext, condition: NodePatcher, guard: NodePatcher | null, body: NodePatcher) {
     super(patcherContext);
     this.condition = condition;
     this.guard = guard;
     this.body = body;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.condition.patch();
     if (this.guard) {
       this.guard.patch();
@@ -39,7 +40,7 @@ export default class WhilePatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     this.patchAsExpression();
   }
 
@@ -49,7 +50,10 @@ export default class WhilePatcher extends NodePatcher {
    *
    * @private
    */
-  normalize() {
+  normalize(): void {
+    if (this.body === null) {
+      throw this.error('Expected non-null body.');
+    }
     let patchedCondition = this.slice(
       this.condition.outerStart,
       this.condition.outerEnd
@@ -61,12 +65,12 @@ export default class WhilePatcher extends NodePatcher {
       this.body.outerStart,
       this.body.outerEnd
     );
-    let patchedGuard = this.guard ? this.slice(
-      this.guard.outerStart,
-      this.guard.outerEnd
-    ) : null;
-    if (patchedGuard !== null && postfixExpressionRequiresParens(patchedGuard) && !this.guard.isSurroundedByParentheses()) {
-      patchedGuard = `(${patchedGuard})`;
+    let patchedGuard = null;
+    if (this.guard) {
+      patchedGuard = this.slice(this.guard.outerStart, this.guard.outerEnd);
+      if (postfixExpressionRequiresParens(patchedGuard) && !this.guard.isSurroundedByParentheses()) {
+        patchedGuard = `(${patchedGuard})`;
+      }
     }
     let whileToken = this.node.isUntil ? 'until' : 'while';
     let newContent = `${whileToken} ${patchedCondition} ${patchedGuard ? `when ${patchedGuard} ` : ''}then ${patchedBody}`;
@@ -84,6 +88,6 @@ export default class WhilePatcher extends NodePatcher {
    * @private
    */
   isPostWhile(): boolean {
-    return this.body && this.condition.contentStart > this.body.contentStart;
+    return this.body !== null && this.condition.contentStart > this.body.contentStart;
   }
 }

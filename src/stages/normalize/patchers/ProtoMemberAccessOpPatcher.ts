@@ -1,7 +1,7 @@
 import { SourceType } from 'coffee-lex';
-import type SourceToken from 'coffee-lex/dist/SourceToken';
+import SourceToken from 'coffee-lex/dist/SourceToken';
 import NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext } from '../../../patchers/types';
+import { PatcherContext } from '../../../patchers/types';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 
 export default class ProtoMemberAccessOpPatcher extends NodePatcher {
@@ -12,7 +12,7 @@ export default class ProtoMemberAccessOpPatcher extends NodePatcher {
     this.expression = expression;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.expression.patch();
     // `a::b` → `a.prototype.b`
     //   ^^       ^^^^^^^^^^

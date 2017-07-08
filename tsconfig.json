@@ -11,7 +11,10 @@
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "downlevelIteration": true,
+    "noEmitHelpers": true,
+    "importHelpers": true
   },
   "exclude": [
     "node_modules",
