@@ -18,47 +18,9 @@ import removeUnicodeBOMIfNecessary from './utils/removeUnicodeBOMIfNecessary';
 import resolveToPatchError from './utils/resolveToPatchError';
 
 export { default as run } from './cli';
+import { DEFAULT_OPTIONS } from './options';
 import type { Suggestion } from './suggestions';
 export { PatchError };
-
-
-export type Options = {
-  filename: ?string,
-  runToStage: ?string,
-  literate: ?boolean,
-  disableSuggestionComment: ?boolean,
-  noArrayIncludes: ?boolean,
-  useJSModules: ?boolean,
-  looseJSModules: ?boolean,
-  safeImportFunctionIdentifiers: ?Array<string>,
-  preferLet: ?boolean,
-  looseDefaultParams: ?boolean,
-  looseForExpressions: ?boolean,
-  looseForOf: ?boolean,
-  looseIncludes: ?boolean,
-  looseComparisonNegation: ?boolean,
-  disableBabelConstructorWorkaround: ?boolean,
-  disallowInvalidConstructors: ?boolean,
-};
-
-const DEFAULT_OPTIONS = {
-  filename: 'input.coffee',
-  runToStage: null,
-  literate: false,
-  disableSuggestionComment: false,
-  noArrayIncludes: false,
-  useJSModules: false,
-  looseJSModules: false,
-  safeImportFunctionIdentifiers: [],
-  preferLet: false,
-  looseDefaultParams: false,
-  looseForExpressions: false,
-  looseForOf: false,
-  looseIncludes: false,
-  looseComparisonNegation: false,
-  disableBabelConstructorWorkaround: false,
-  disallowInvalidConstructors: false,
-};
 
 type ConversionResult = {
   code: string,
