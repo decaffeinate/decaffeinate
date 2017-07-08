@@ -40,8 +40,6 @@ export default class ExtendsOpPatcher extends BinaryOpPatcher {
   operatorTokenPredicate(): (token: SourceToken) => boolean {
     // Right now the "extends" token is an identifier rather than a binary
     // operator, so treat it as a special case for this node type.
-    return (token: SourceToken) =>
-      token.type === SourceType.IDENTIFIER &&
-        this.sourceOfToken(token) === 'extends';
+    return (token: SourceToken) => token.type === SourceType.EXTENDS;
   }
 }

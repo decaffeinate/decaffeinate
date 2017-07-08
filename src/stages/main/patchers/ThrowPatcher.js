@@ -60,7 +60,7 @@ export default class ThrowPatcher extends NodePatcher {
   patchAsStatement() {
     let throwToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
     if (throwToken.type !== SourceType.THROW) {
-      this.error('Expected to find throw token at the start of throw statement.');
+      throw this.error('Expected to find throw token at the start of throw statement.');
     }
     let spacing = this.slice(throwToken.end, this.expression.outerStart);
     if (spacing.indexOf('\n') !== -1) {
