@@ -1,4 +1,3 @@
-/* @flow */
 import AssignOpPatcher from '../stages/main/patchers/AssignOpPatcher';
 import FunctionApplicationPatcher from '../stages/main/patchers/FunctionApplicationPatcher';
 import MemberAccessOpPatcher from '../stages/main/patchers/MemberAccessOpPatcher';
