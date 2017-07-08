@@ -1,6 +1,5 @@
-/* @flow */
 
-import type NodePatcher from '../patchers/NodePatcher';
+import NodePatcher from '../patchers/NodePatcher';
 
 function isAlreadyEscaped(i: number, start: number, patcher: NodePatcher): boolean {
   let numLeadingBackslashes = 0;
@@ -11,7 +10,7 @@ function isAlreadyEscaped(i: number, start: number, patcher: NodePatcher): boole
   return numLeadingBackslashes % 2 === 1;
 }
 
-export default function escapeSpecialWhitespaceInRange(start: number, end: number, patcher: NodePatcher) {
+export default function escapeSpecialWhitespaceInRange(start: number, end: number, patcher: NodePatcher): void {
   for (let i = start; i < end; i++) {
     let unicodeSequence = null;
     if (patcher.context.source[i] === '\u2028') {

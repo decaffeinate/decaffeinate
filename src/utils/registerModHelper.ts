@@ -1,6 +1,4 @@
-/* @flow */
-
-import type NodePatcher from '../patchers/NodePatcher';
+import NodePatcher from '../patchers/NodePatcher';
 
 const MOD_HELPER =
   `function __mod__(a, b) {

@@ -900,15 +900,23 @@ export default class NodePatcher {
   /**
    * Gets the first token in the content of this node.
    */
-  firstToken(): SourceToken | null {
-    return this.sourceTokenAtIndex(this.contentStartTokenIndex);
+  firstToken(): SourceToken {
+    let token = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+    if (!token) {
+      throw this.error('Expected to find a first token for node.');
+    }
+    return token;
   }
 
   /**
    * Gets the last token in the content of this node.
    */
-  lastToken(): SourceToken | null {
-    return this.sourceTokenAtIndex(this.contentEndTokenIndex);
+  lastToken(): SourceToken {
+    let token = this.sourceTokenAtIndex(this.contentEndTokenIndex);
+    if (!token) {
+      throw this.error('Expected to find a last token for node.');
+    }
+    return token;
   }
 
   /**

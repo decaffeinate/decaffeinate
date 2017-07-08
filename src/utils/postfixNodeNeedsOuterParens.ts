@@ -1,7 +1,5 @@
-/* @flow */
-
 import { SourceType } from 'coffee-lex';
-import type NodePatcher from '../patchers/NodePatcher';
+import NodePatcher from '../patchers/NodePatcher';
 
 /**
  * Determine if the given postfix if/while/for needs to have parens wrapped

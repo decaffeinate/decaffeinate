@@ -1,8 +1,6 @@
-/* @flow */
+import NodePatcher from '../patchers/NodePatcher';
 
-import type NodePatcher from '../patchers/NodePatcher';
-
-export default function escapeZeroCharsInRange(start: number, end: number, patcher: NodePatcher) {
+export default function escapeZeroCharsInRange(start: number, end: number, patcher: NodePatcher): void {
   let numBackslashes = 0;
   for (let i = start; i < end; i++) {
     if (patcher.context.source[i] === '\\') {
