@@ -1,24 +1,35 @@
-import PatcherError from '../utils/PatchError';
-import adjustIndent from '../utils/adjustIndent';
-import type { SourceToken, SourceTokenListIndex, RepeatableOptions, PatcherContext, DecaffeinateContext, Editor, SourceTokenList } from './types';
-import type { Options } from '../index';
 import { SourceType } from 'coffee-lex';
-import { isFunction, isSemanticToken } from '../utils/types';
-import { logger } from '../utils/debug';
-import traverse from '../utils/traverse';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
+import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import {
+  FunctionApplication, Identifier, NewOp, Node, SoakedFunctionApplication
+} from 'decaffeinate-parser/dist/nodes';
+import MagicString from 'magic-string';
+import { Options } from '../options';
 import {
   AVOID_IIFES,
   AVOID_INLINE_ASSIGNMENTS,
-  CLEAN_UP_IMPLICIT_RETURNS
+  CLEAN_UP_IMPLICIT_RETURNS, Suggestion
 } from '../suggestions';
+import adjustIndent from '../utils/adjustIndent';
+import { logger } from '../utils/debug';
+import DecaffeinateContext from '../utils/DecaffeinateContext';
+import notNull from '../utils/notNull';
+import PatcherError from '../utils/PatchError';
+import Scope from '../utils/Scope';
+import traverse from '../utils/traverse';
+import { isFunction, isSemanticToken } from '../utils/types';
+import { PatcherContext, PatchOptions, RepeatableOptions } from './types';
 
 export default class NodePatcher {
   node: Node;
   context: DecaffeinateContext;
-  editor: Editor;
+  editor: MagicString;
   options: Options;
-  log: (...args: Array<any>) => void;
-  parent: ?NodePatcher;
+  addSuggestion: (suggestion: Suggestion) => void;
+  log: (...args: Array<{}>) => void;
+  parent: NodePatcher | null;
 
   contentStart: number;
   contentEnd: number;
@@ -34,7 +45,15 @@ export default class NodePatcher {
   outerEndTokenIndex: SourceTokenListIndex;
 
   adjustedIndentLevel: number = 0;
+  _assignee: boolean = false;
   _containsYield: boolean = false;
+  _deferredSuffix: string = '';
+  _expression: boolean = false;
+  _hadUnparenthesizedNegation: boolean = false;
+  _implicitlyReturns: boolean = false;
+  _repeatableOptions: RepeatableOptions | null = null;
+  _repeatCode: string | null = null;
+  _returns: boolean = false;
 
   constructor({node, context, editor, options, addSuggestion}: PatcherContext) {
     this.log = logger(this.constructor.name);
@@ -51,21 +70,21 @@ export default class NodePatcher {
   /**
    * Allow patcher classes to override the class used to patch their children.
    */
-  static patcherClassForChildNode(/* node: Node, property: string */): ?Class<NodePatcher> {
+  static patcherClassForChildNode(/* node: Node, property: string */): typeof NodePatcher | null {
     return null;
   }
 
   /**
    * Allow patcher classes that would patch a node to chose a different class.
    */
-  static patcherClassOverrideForNode(node: Node): ?Class<NodePatcher> { // eslint-disable-line no-unused-vars
+  static patcherClassOverrideForNode(_node: Node): typeof NodePatcher | null { // eslint-disable-line no-unused-vars
     return null;
   }
 
   /**
    * @private
    */
-  setupLocationInformation() {
+  setupLocationInformation(): void {
     let { node, context } = this;
 
     /**
@@ -168,15 +187,15 @@ export default class NodePatcher {
     if (innerStartTokenIndex === firstSourceTokenIndex) {
       this.innerStart = this.contentStart;
     } else {
-      this.innerStart = tokens.tokenAtIndex(innerStartTokenIndex).end;
+      this.innerStart = notNull(tokens.tokenAtIndex(innerStartTokenIndex)).end;
     }
     if (innerEndTokenIndex === lastSourceTokenIndex) {
       this.innerEnd = this.contentEnd;
     } else {
-      this.innerEnd = tokens.tokenAtIndex(innerEndTokenIndex).start;
+      this.innerEnd = notNull(tokens.tokenAtIndex(innerEndTokenIndex)).start;
     }
-    this.outerStart = tokens.tokenAtIndex(outerStartTokenIndex).start;
-    this.outerEnd = tokens.tokenAtIndex(outerEndTokenIndex).end;
+    this.outerStart = notNull(tokens.tokenAtIndex(outerStartTokenIndex)).start;
+    this.outerEnd = notNull(tokens.tokenAtIndex(outerEndTokenIndex)).end;
   }
 
   /**
@@ -184,7 +203,7 @@ export default class NodePatcher {
    * to customize its behavior, or override `shouldTrimContentRange` to enable
    * or disable it.
    */
-  trimContentRange() {
+  trimContentRange(): void {
     let context = this.context;
 
     for (;;) {
@@ -211,7 +230,7 @@ export default class NodePatcher {
   /**
    * Decides whether to trim the content range of this node.
    */
-  shouldTrimContentRange() {
+  shouldTrimContentRange(): boolean {
     return false;
   }
 
@@ -219,16 +238,16 @@ export default class NodePatcher {
    * Called when the patcher tree is complete so we can do any processing that
    * requires communication with other patchers.
    */
-  initialize() {}
+  initialize(): void {}
 
   /**
    * Calls methods on `editor` to transform the source code represented by
    * `node` from CoffeeScript to JavaScript. By default this method delegates
    * to other patcher methods which can be overridden individually.
    */
-  patch(options={}) {
+  patch(options: PatchOptions = {}): void {
     this.withPrettyErrors(() => {
-      if (this._repeatableOptions !== undefined) {
+      if (this._repeatableOptions !== null) {
         this._repeatCode = this.patchAsRepeatableExpression(
           this._repeatableOptions, options);
       } else if (this.forcedToPatchAsExpression()) {
@@ -256,7 +275,7 @@ export default class NodePatcher {
    * The actual implementation for making the node repeatable should be in
    * patchAsRepeatableExpression.
    */
-  patchRepeatable(repeatableOptions: RepeatableOptions={}): string {
+  patchRepeatable(repeatableOptions: RepeatableOptions = {}): string {
     this.setRequiresRepeatableExpression(repeatableOptions);
     this.patch();
     return this.getRepeatCode();
@@ -270,7 +289,7 @@ export default class NodePatcher {
    * this, we look at the range from contentStart - 1 to contentStart before and
    * after patching and include anything new that was added.
    */
-  patchAndGetCode(options={}) {
+  patchAndGetCode(options: PatchOptions = {}): string {
     return this.captureCodeForPatchOperation(() => this.patch(options));
   }
 
@@ -307,7 +326,7 @@ export default class NodePatcher {
   /**
    * Catch errors and throw them again annotated with the current node.
    */
-  withPrettyErrors(body: () => void) {
+  withPrettyErrors(body: () => void): void {
     try {
       body();
     } catch (err) {
@@ -340,7 +359,8 @@ export default class NodePatcher {
    *
    * @protected
    */
-  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions={}, patchOptions={}): string {
+  patchAsRepeatableExpression(
+      repeatableOptions: RepeatableOptions = {}, patchOptions: PatchOptions = {}): string {
     if (this.isRepeatable() && !repeatableOptions.forceRepeat) {
       return this.captureCodeForPatchOperation(() => {
         this.patchAsForcedExpression(patchOptions);
@@ -367,14 +387,14 @@ export default class NodePatcher {
   /**
    * Override this to patch the node as an expression.
    */
-  patchAsExpression() {
+  patchAsExpression(_options: PatchOptions = {}): void {
     throw this.error(`'patchAsExpression' must be overridden in subclasses`);
   }
 
   /**
    * Override this to patch the node as a statement.
    */
-  patchAsStatement(options={}) {
+  patchAsStatement(options: PatchOptions = {}): void {
     let addParens = this.statementShouldAddParens();
     if (addParens) {
       this.insert(this.outerStart, '(');
@@ -390,14 +410,14 @@ export default class NodePatcher {
    * an expression, often by wrapping it in an immediately invoked function
    * expression (IIFE).
    */
-  patchAsForcedExpression() {
-    this.patchAsExpression();
+  patchAsForcedExpression(options: PatchOptions = {}): void {
+    this.patchAsExpression(options);
   }
 
   /**
    * Insert content at the specified index.
    */
-  insert(index: number, content: string) {
+  insert(index: number, content: string): void {
     if (typeof index !== 'number') {
       throw new Error(
         `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
@@ -424,7 +444,7 @@ export default class NodePatcher {
    * out of order, so it's ok to use `prependLeft` to ensure that the code ends
    * up before the later values.
    */
-  prependLeft(index: number, content: string) {
+  prependLeft(index: number, content: string): void {
     if (typeof index !== 'number') {
       throw new Error(
         `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
@@ -478,7 +498,7 @@ export default class NodePatcher {
   /**
    * @protected
    */
-  assertEditableIndex(index: number) {
+  assertEditableIndex(index: number): void {
     if (!this.isIndexEditable(index)) {
       let [ start, end ] = this.getEditingBounds();
       throw this.error(
@@ -494,7 +514,7 @@ export default class NodePatcher {
    * possible. Note that if a node or a node's parent is wrapped in parentheses
    * we cannot adjust the bounds beyond the inside of the parentheses.
    */
-  adjustBoundsToInclude(index: number) {
+  adjustBoundsToInclude(index: number): void {
     this.assertEditableIndex(index);
 
     if (index < this.innerStart) {
@@ -525,7 +545,7 @@ export default class NodePatcher {
   /**
    * Replace the content between the start and end indexes with new content.
    */
-  overwrite(start: number, end: number, content: string) {
+  overwrite(start: number, end: number, content: string): void {
     if (typeof start !== 'number' || typeof end !== 'number') {
       throw new Error(
         `cannot overwrite non-numeric range [${start}, ${end}) ` +
@@ -543,7 +563,7 @@ export default class NodePatcher {
   /**
    * Remove the content between the start and end indexes.
    */
-  remove(start: number, end: number) {
+  remove(start: number, end: number): void {
     if (typeof start !== 'number' || typeof end !== 'number') {
       throw new Error(
         `cannot remove non-numeric range [${start}, ${end})`
@@ -559,7 +579,7 @@ export default class NodePatcher {
   /**
    * Moves content in a range to another index.
    */
-  move(start: number, end: number, index: number) {
+  move(start: number, end: number, index: number): void {
     if (typeof start !== 'number' || typeof end !== 'number') {
       throw this.error(
         `cannot remove non-numeric range [${start}, ${end})`
@@ -606,14 +626,14 @@ export default class NodePatcher {
   /**
    * Tells us to force this patcher to generate an expression, or else throw.
    */
-  setRequiresExpression() {
+  setRequiresExpression(): void {
     this.setExpression(true);
   }
 
   /**
    * Tells us to try to patch as an expression, returning whether it can.
    */
-  setExpression(force=false): boolean {
+  setExpression(force: boolean = false): boolean {
     if (force) {
       if (!this.canPatchAsExpression()) {
         throw this.error(`cannot represent ${this.node.type} as an expression`);
@@ -658,7 +678,7 @@ export default class NodePatcher {
    * Marks this node as an assignee. Nested assignees, like destructure
    * operations, should override this method and propagate it to the children.
    */
-  setAssignee() {
+  setAssignee(): void {
     this._assignee = true;
   }
 
@@ -666,7 +686,7 @@ export default class NodePatcher {
    * Checks if this node has been marked as an assignee. This is particularly
    * useful for distinguishing rest from spread operations.
    */
-  isAssignee() {
+  isAssignee(): boolean {
     return this._assignee;
   }
 
@@ -680,7 +700,7 @@ export default class NodePatcher {
   /**
    * Causes the node to be returned from its function.
    */
-  setImplicitlyReturns() {
+  setImplicitlyReturns(): void {
     this._implicitlyReturns = true;
   }
 
@@ -696,7 +716,7 @@ export default class NodePatcher {
     if (this.canHandleImplicitReturn()) {
       return this;
     } else {
-      return this.parent.implicitReturnPatcher();
+      return notNull(this.parent).implicitReturnPatcher();
     }
   }
 
@@ -725,7 +745,7 @@ export default class NodePatcher {
    * parens removed, so the implicit return patching may need to remove
    * surrounding parens.
    */
-  patchImplicitReturnStart(patcher: NodePatcher) {
+  patchImplicitReturnStart(patcher: NodePatcher): void {
     if (patcher.node.type === 'Break' || patcher.node.type === 'Continue') {
       if (patcher.isSurroundedByParentheses()) {
         this.remove(patcher.outerStart, patcher.innerStart);
@@ -743,14 +763,14 @@ export default class NodePatcher {
   /**
    * Return null to indicate that no empty case code should be generated.
    */
-  getEmptyImplicitReturnCode() {
+  getEmptyImplicitReturnCode(): string | null {
     return null;
   }
 
   /**
    * Patch the end of an implicitly-returned descendant.
    */
-  patchImplicitReturnEnd(patcher: NodePatcher) { // eslint-disable-line no-unused-vars
+  patchImplicitReturnEnd(_patcher: NodePatcher): void { // eslint-disable-line no-unused-vars
     // Nothing to do.
   }
 
@@ -764,7 +784,7 @@ export default class NodePatcher {
   /**
    * Marks this patcher's as containing a node that explicitly returns.
    */
-  setExplicitlyReturns() {
+  setExplicitlyReturns(): void {
     this._returns = true;
     if (this.parent) {
       this.parent.setExplicitlyReturns();
@@ -777,10 +797,7 @@ export default class NodePatcher {
    * should end with a close-paren, and to do so in a way that respects patching
    * order (doesn't add the close-paren too early).
    */
-  appendDeferredSuffix(suffix: string) {
-    if (!this._deferredSuffix) {
-      this._deferredSuffix = '';
-    }
+  appendDeferredSuffix(suffix: string): void {
     this._deferredSuffix += suffix;
   }
 
@@ -790,7 +807,7 @@ export default class NodePatcher {
    *
    * @protected
    */
-  commitDeferredSuffix() {
+  commitDeferredSuffix(): void {
     if (this._deferredSuffix) {
       this.insert(this.innerEnd, this._deferredSuffix);
     }
@@ -834,7 +851,7 @@ export default class NodePatcher {
   /**
    * Gets the index of the token starting at a particular source index.
    */
-  indexOfSourceTokenStartingAtSourceIndex(index: number): ?SourceTokenListIndex {
+  indexOfSourceTokenStartingAtSourceIndex(index: number): SourceTokenListIndex | null {
     return this.getProgramSourceTokens().indexOfTokenStartingAtSourceIndex(index);
   }
 
@@ -842,7 +859,7 @@ export default class NodePatcher {
    * Gets the index of the token between left and right patchers that matches
    * a predicate function.
    */
-  indexOfSourceTokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, predicate: (token: SourceToken) => boolean): ?SourceTokenListIndex {
+  indexOfSourceTokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, predicate: (token: SourceToken) => boolean): SourceTokenListIndex | null {
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(left.outerEnd, right.outerStart, predicate);
   }
 
@@ -850,7 +867,7 @@ export default class NodePatcher {
    * Gets the index of the token between source locations that matches a
    * predicate function.
    */
-  indexOfSourceTokenBetweenSourceIndicesMatching(left: number, right: number, predicate: (token: SourceToken) => boolean): ?SourceTokenListIndex {
+  indexOfSourceTokenBetweenSourceIndicesMatching(left: number, right: number, predicate: (token: SourceToken) => boolean): SourceTokenListIndex | null {
     let tokenList = this.getProgramSourceTokens();
     return tokenList.indexOfTokenMatchingPredicate(
       token => {
@@ -869,7 +886,7 @@ export default class NodePatcher {
   /**
    * Gets the token at a particular index.
    */
-  sourceTokenAtIndex(index: SourceTokenListIndex): ?SourceToken {
+  sourceTokenAtIndex(index: SourceTokenListIndex): SourceToken | null {
     return this.getProgramSourceTokens().tokenAtIndex(index);
   }
 
@@ -883,22 +900,22 @@ export default class NodePatcher {
   /**
    * Gets the first token in the content of this node.
    */
-  firstToken() {
+  firstToken(): SourceToken | null {
     return this.sourceTokenAtIndex(this.contentStartTokenIndex);
   }
 
   /**
    * Gets the last token in the content of this node.
    */
-  lastToken() {
+  lastToken(): SourceToken | null {
     return this.sourceTokenAtIndex(this.contentEndTokenIndex);
   }
 
   /**
    * Gets the token after the end of this node, or null if there is none.
    */
-  nextSemanticToken(): ?SourceToken {
-    return this.getFirstSemanticToken(this.contentEnd, this.editor.original.length);
+  nextSemanticToken(): SourceToken | null {
+    return this.getFirstSemanticToken(this.contentEnd, this.context.source.length);
   }
 
   /**
@@ -926,7 +943,7 @@ export default class NodePatcher {
    * Gets the index of a token after `contentStart` with the matching type, ignoring
    * non-semantic types by default.
    */
-  indexOfSourceTokenAfterSourceTokenIndex(start: SourceTokenListIndex, type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): ?SourceTokenListIndex {
+  indexOfSourceTokenAfterSourceTokenIndex(start: SourceTokenListIndex, type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): SourceTokenListIndex | null {
     let index = this.getProgramSourceTokens()
       .indexOfTokenMatchingPredicate(predicate, start.next());
     if (!index) {
@@ -976,20 +993,22 @@ export default class NodePatcher {
         rightTokenType,
         this.outerStartTokenIndex
       );
-    if (!parenRange) return false;
+    if (!parenRange) {
+      return false;
+    }
     let rparenIndex = parenRange[1].previous();
-    let rparen = this.sourceTokenAtIndex(rparenIndex);
+    let rparen = this.sourceTokenAtIndex(notNull(rparenIndex));
     return rparen === afterToken;
   }
 
-  surroundInParens() {
+  surroundInParens(): void {
     if (!this.isSurroundedByParentheses()) {
       this.insert(this.outerStart, '(');
       this.insert(this.outerEnd, ')');
     }
   }
 
-  getBoundingPatcher(): ?NodePatcher {
+  getBoundingPatcher(): NodePatcher {
     if (this.isSurroundedByParentheses()) {
       return this;
     } else if (this.parent) {
@@ -1007,10 +1026,10 @@ export default class NodePatcher {
     }
   }
 
-  isNodeFunctionApplication(node) {
-    return node.type === 'FunctionApplication' ||
-        node.type === 'SoakedFunctionApplication' ||
-        node.type === 'NewOp';
+  isNodeFunctionApplication(node: Node): node is FunctionApplication | SoakedFunctionApplication | NewOp {
+    return node instanceof FunctionApplication ||
+      node instanceof SoakedFunctionApplication ||
+      node instanceof NewOp;
   }
 
   /**
@@ -1028,7 +1047,7 @@ export default class NodePatcher {
    * Subclasses that need to worry about precedence (e.g. binary operators)
    * should override this method and do something more appropriate.
    */
-  negate() {
+  negate(): void {
     this.insert(this.contentStart, '!');
     this._hadUnparenthesizedNegation = true;
   }
@@ -1043,8 +1062,8 @@ export default class NodePatcher {
    * Note that most custom negate() implementations already add parens, so they
    * don't need to return true here.
    */
-  hadUnparenthesizedNegation() {
-    return this._hadUnparenthesizedNegation || false;
+  hadUnparenthesizedNegation(): boolean {
+    return this._hadUnparenthesizedNegation;
   }
 
   getScope(): Scope {
@@ -1067,7 +1086,7 @@ export default class NodePatcher {
    * if necessary. This also sets the "adjusted indent" level, so that later
    * calls to getIndent will return this value.
    */
-  setIndent(indentStr: string) {
+  setIndent(indentStr: string): void {
     let currentIndent = this.getIndent();
     let indentLength = this.getProgramIndentString().length;
     let currentIndentLevel = currentIndent.length / indentLength;
@@ -1089,7 +1108,7 @@ export default class NodePatcher {
    * Gets the indent string used for each indent in this program.
    */
   getProgramIndentString(): string {
-    return this.parent.getProgramIndentString();
+    return notNull(this.parent).getProgramIndentString();
   }
 
   /**
@@ -1101,7 +1120,7 @@ export default class NodePatcher {
    * that strings inserted before child nodes appear after the indent, not
    * before.
    */
-  indent(offset: number=1, {skipFirstLine=false}: {skipFirstLine: boolean}={}) {
+  indent(offset: number=1, {skipFirstLine=false}: {skipFirstLine?: boolean}={}): void {
     if (offset === 0) {
       return;
     }
@@ -1158,7 +1177,7 @@ export default class NodePatcher {
     }
   }
 
-  isFirstNodeInLine(startingPoint = this.outerStart) {
+  isFirstNodeInLine(startingPoint: number = this.outerStart): boolean {
     let { source } = this.context;
     for (let i = startingPoint - 1; i >= 0 && source[i] !== '\n'; i--) {
       if (source[i] !== '\t' && source[i] !== ' ') {
@@ -1186,7 +1205,7 @@ export default class NodePatcher {
   /**
    * Appends the given content on a new line after the end of the current line.
    */
-  appendLineAfter(content: string, indentOffset: number=0) {
+  appendLineAfter(content: string, indentOffset: number=0): void {
     let boundingPatcher = this.getBoundingPatcher();
     let endOfLine = this.getEndOfLine();
     this.insert(
@@ -1196,19 +1215,10 @@ export default class NodePatcher {
   }
 
   /**
-   * Appends the given content at the end of the current line.
-   */
-  appendToEndOfLine(content: string) {
-    let boundingPatcher = this.getBoundingPatcher();
-    let endOfLine = this.getEndOfLine();
-    this.insert(Math.min(endOfLine, boundingPatcher.innerEnd), content);
-  }
-
-  /**
    * Generate an error referring to a particular section of the source.
    */
-  error(message: string, start: number=this.contentStart, end: number=this.contentEnd, error: ?Error=null): PatcherError {
-    let patcherError = new PatcherError(message, this.context.source, start, end, error);
+  error(message: string, start: number = this.contentStart, end: number = this.contentEnd, error: Error | null = null): PatcherError {
+    let patcherError = new PatcherError(message, this.context.source, start, end);
     if (error) { patcherError.stack = error.stack; }
     return patcherError;
   }
@@ -1217,7 +1227,7 @@ export default class NodePatcher {
    * Register a helper to be reused in several places.
    */
   registerHelper(name: string, code: string): string {
-    return this.parent.registerHelper(name, code);
+    return notNull(this.parent).registerHelper(name, code);
   }
 
   /**
@@ -1245,7 +1255,7 @@ export default class NodePatcher {
    * it possible to reference the value afterward with no additional
    * side-effects.
    */
-  setRequiresRepeatableExpression(repeatableOptions: RepeatableOptions = {}) {
+  setRequiresRepeatableExpression(repeatableOptions: RepeatableOptions = {}): void {
     this._repeatableOptions = repeatableOptions;
   }
 
@@ -1254,7 +1264,7 @@ export default class NodePatcher {
    * repeat options used. Generally this should only be used for advanced cases,
    * like transferring the repeat code result from one patcher to another.
    */
-  getRepeatableOptions(): ?RepeatableOptions {
+  getRepeatableOptions(): RepeatableOptions | null {
     return this._repeatableOptions;
   }
 
@@ -1264,7 +1274,7 @@ export default class NodePatcher {
    * side-effects.
    */
   getRepeatCode(): string {
-    if (this._repeatCode === undefined) {
+    if (this._repeatCode === null) {
       throw new Error('Must patch as a repeatable expression to access repeat code.');
     }
     return this._repeatCode;
@@ -1275,14 +1285,14 @@ export default class NodePatcher {
    * for advanced cases, like transferring the repeat code result from one
    * patcher to another.
    */
-  overrideRepeatCode(repeatCode) {
+  overrideRepeatCode(repeatCode: string): void {
     this._repeatCode = repeatCode;
   }
 
   /**
    * Claim a binding that is unique in the current scope.
    */
-  claimFreeBinding(ref: ?string|Array<string>=null): string {
+  claimFreeBinding(ref: string | Array<string> | null = null): string {
     return this.getScope().claimFreeBinding(this.node, ref);
   }
 
@@ -1296,7 +1306,7 @@ export default class NodePatcher {
   /**
    * Gets the first "interesting token" in the indexed range (default range is `this` + parent)
    */
-  getFirstSemanticToken(from: number=this.contentStart, to: number=this.parent.contentEnd): ?SourceToken {
+  getFirstSemanticToken(from: number=this.contentStart, to: number = notNull(this.parent).contentEnd): SourceToken | null {
     let nextSemanticIdx = this.indexOfSourceTokenBetweenSourceIndicesMatching(from, to, isSemanticToken);
     return nextSemanticIdx && this.sourceTokenAtIndex(nextSemanticIdx);
   }
@@ -1306,11 +1316,11 @@ export default class NodePatcher {
    * value, to guard against the case where this node is a variable that doesn't
    * exist. IdentifierPatcher overrides this to check the current scope.
    */
-  mayBeUnboundReference() {
+  mayBeUnboundReference(): boolean {
     return false;
   }
 
-  patchInIIFE(innerPatchFn: () => void) {
+  patchInIIFE(innerPatchFn: () => void): void {
     this.addSuggestion(AVOID_IIFES);
     if (this.containsYield()) {
       this.insert(this.innerStart, 'yield* (function*() {');
@@ -1332,7 +1342,7 @@ export default class NodePatcher {
   /**
    * Call to indicate that this node yields.
    */
-  yields() {
+  yields(): void {
     this._containsYield = true;
     if (this.parent && !isFunction(this.parent.node)) {
       this.parent.yields();
@@ -1343,14 +1353,14 @@ export default class NodePatcher {
    * Determine if this node or one of its children within the function is a
    * yield statement.
    */
-  containsYield() {
+  containsYield(): boolean {
     return this._containsYield;
   }
 
   /**
    * @private
    */
-  referencesArguments() {
+  referencesArguments(): boolean {
     let result = false;
 
     traverse(this.node, node => {
@@ -1358,9 +1368,10 @@ export default class NodePatcher {
         return false;
       }
 
-      if (node.type === 'Identifier' && node.data === 'arguments') {
+      if (node instanceof Identifier && node.data === 'arguments') {
         result = true;
       }
+      return true;
     });
 
     return result;

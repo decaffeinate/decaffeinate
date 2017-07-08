@@ -1,5 +1,3 @@
-/* @flow */
-
 export type Suggestion = {
   suggestionCode: string,
   message: string,
