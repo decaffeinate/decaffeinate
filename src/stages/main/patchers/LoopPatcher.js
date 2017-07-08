@@ -13,9 +13,11 @@ export default class LoopPatcher extends NodePatcher {
     // and the indent level is more logically the indent level of our parent.
     let baseIndent = this.parent.getIndent(0);
     let iifeBodyIndent = this.getLoopIndent();
-    this.body.setShouldPatchInline(false);
-    this.body.setImplicitlyReturns();
-    this.body.setIndent(this.getLoopBodyIndent());
+    if (this.body !== null) {
+      this.body.setShouldPatchInline(false);
+      this.body.setImplicitlyReturns();
+      this.body.setIndent(this.getLoopBodyIndent());
+    }
     let resultBinding = this.getResultArrayBinding();
     this.patchInIIFE(() => {
       this.insert(this.innerStart, `\n${iifeBodyIndent}${resultBinding} = [];\n${iifeBodyIndent}`);

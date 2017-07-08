@@ -128,7 +128,7 @@ export default class ForInPatcher extends ForPatcher {
     if (this.step !== null) {
       return false;
     }
-    if (!this.body.prefersToPatchAsExpression()) {
+    if (this.body === null || !this.body.prefersToPatchAsExpression()) {
       return false;
     }
     // The high-level approach of a.filter(...).map((x, i) => ...) doesn't work,
