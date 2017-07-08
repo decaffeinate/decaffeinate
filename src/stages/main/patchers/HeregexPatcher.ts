@@ -3,7 +3,7 @@ import InterpolatedPatcher from './InterpolatedPatcher';
 const CLOSE_TOKEN_BASE_LENGTH = 3;
 
 export default class HeregexPatcher extends InterpolatedPatcher {
-  patchAsExpression() {
+  patchAsExpression(): void {
     let openToken = this.firstToken();
     let closeToken = this.lastToken();
 
@@ -22,7 +22,7 @@ export default class HeregexPatcher extends InterpolatedPatcher {
     this.escapeQuasis(/^\\\s/, ['`', '${', '\\']);
   }
 
-  shouldExcapeZeroChars() {
+  shouldExcapeZeroChars(): boolean {
     return true;
   }
 }

@@ -1,5 +1,5 @@
 import NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext } from '../../../patchers/types';
+import { PatcherContext } from '../../../patchers/types';
 
 export default class IncrementDecrementPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -9,15 +9,15 @@ export default class IncrementDecrementPatcher extends NodePatcher {
     this.expression = expression;
   }
 
-  initialize() {
+  initialize(): void {
     this.expression.setRequiresExpression();
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.expression.patch();
   }
 
-  isRepeatable() {
+  isRepeatable(): boolean {
     return false;
   }
 }

@@ -1,4 +1,4 @@
-import { PatcherContext } from '../../../patchers/types';
+import { PatcherContext, PatchOptions } from '../../../patchers/types';
 import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class UnaryOpPatcher extends NodePatcher {
@@ -16,8 +16,8 @@ export default class UnaryOpPatcher extends NodePatcher {
   /**
    * OP EXPRESSION
    */
-  patchAsExpression(): void {
-    this.expression.patch({ needsParens: true });
+  patchAsExpression(options: PatchOptions = {}): void {
+    this.expression.patch({ ...options, needsParens: true });
   }
 
   /**

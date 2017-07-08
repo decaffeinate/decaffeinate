@@ -1,10 +1,13 @@
-import UnaryOpPatcher from './UnaryOpPatcher';
+import { UnaryExistsOp } from 'decaffeinate-parser/dist/nodes';
+import { PatchOptions } from '../../../patchers/types';
 import { SHORTEN_NULL_CHECKS } from '../../../suggestions';
+import UnaryOpPatcher from './UnaryOpPatcher';
 
 /**
  * Handles unary exists, e.g. `a?`.
  */
 export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
+  node: UnaryExistsOp;
   negated: boolean = false;
 
   /**
@@ -34,7 +37,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    *
    *   'set? ' + (a != null);
    */
-  patchAsExpression({ needsParens=true }={}) {
+  patchAsExpression({needsParens=true}: PatchOptions = {}): void {
     let addParens = needsParens && !this.isSurroundedByParentheses();
     if (addParens) {
       // `a?` → `(a?`
@@ -52,7 +55,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
   /**
    * EXPRESSION '?'
    */
-  patchAsStatement() {
+  patchAsStatement(): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
     let { node: { expression }, negated } = this;
     let needsTypeofCheck = this.needsTypeofCheck();
@@ -102,7 +105,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    * Flips negated flag but doesn't edit anything immediately so that we can
    * use the correct operator in `patch`.
    */
-  negate() {
+  negate(): void {
     this.negated = !this.negated;
   }
 
