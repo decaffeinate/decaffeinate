@@ -1,7 +1,7 @@
-import ExpansionPatcher from './ExpansionPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import { PatcherContext } from '../../../patchers/types';
+import NodePatcher from './../../../patchers/NodePatcher';
+import ExpansionPatcher from './ExpansionPatcher';
 
 export default class ArrayInitialiserPatcher extends NodePatcher {
   members: Array<NodePatcher>;
@@ -11,16 +11,16 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
     this.members = members;
   }
 
-  initialize() {
+  initialize(): void {
     this.members.forEach(member => member.setRequiresExpression());
   }
 
-  setAssignee() {
+  setAssignee(): void {
     this.members.forEach(member => member.setAssignee());
     super.setAssignee();
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.members.forEach((member, i, members) => {
       let isLast = i === members.length - 1;
 
@@ -38,7 +38,7 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
     });
   }
 
-  isPure() {
+  isPure(): boolean {
     return this.members.every(member => member.isPure());
   }
 }

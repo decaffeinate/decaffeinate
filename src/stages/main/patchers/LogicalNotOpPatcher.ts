@@ -1,3 +1,4 @@
+import { PatchOptions } from '../../../patchers/types';
 import UnaryOpPatcher from './UnaryOpPatcher';
 
 export default class LogicalNotOpPatcher extends UnaryOpPatcher {
@@ -12,7 +13,7 @@ export default class LogicalNotOpPatcher extends UnaryOpPatcher {
   /**
    * ( `!` | `not` ) EXPRESSION
    */
-  patchAsExpression(options={}) {
+  patchAsExpression(options: PatchOptions = {}): void {
     if (this.expression.canHandleNegationInternally()) {
       this.expression.negate();
       this.remove(this.contentStart, this.expression.outerStart);
