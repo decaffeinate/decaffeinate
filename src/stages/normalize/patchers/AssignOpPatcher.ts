@@ -1,22 +1,29 @@
 import { SourceType } from 'coffee-lex';
+import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
+import containsSuperCall from '../../../utils/containsSuperCall';
+import notNull from '../../../utils/notNull';
 import ClassPatcher from './ClassPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
-import NodePatcher from '../../../patchers/NodePatcher';
-import containsSuperCall from '../../../utils/containsSuperCall';
+
+export type EarlySuperTransformInfo = {
+  classCode: string,
+  accessCode: string,
+};
 
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;
   expression: NodePatcher;
 
   constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: NodePatcher) {
-    super(patcherContext, assignee, expression);
+    super(patcherContext);
     this.assignee = assignee;
     this.expression = expression;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.prepareEarlySuperTransform();
     let isDynamicallyCreatedClassAssignment = this.isDynamicallyCreatedClassAssignment();
     if (isDynamicallyCreatedClassAssignment) {
@@ -30,27 +37,28 @@ export default class AssignOpPatcher extends NodePatcher {
     this.expression.patch();
   }
 
-  isDynamicallyCreatedClassAssignment() {
+  isDynamicallyCreatedClassAssignment(): boolean {
     let classParent = this.getClassParent();
-    return classParent &&
+    return classParent !== null &&
       classParent.isClassAssignment(this.node) &&
-      !(classParent.isClassMethod(this) && classParent.body.statements.indexOf(this) > -1);
+      !(classParent.isClassMethod(this) &&
+        notNull(classParent.body).statements.indexOf(this) > -1);
   }
 
-  patchClassAssignmentPrefix() {
+  patchClassAssignmentPrefix(): void {
     if (this.node.type === 'ClassProtoAssignOp') {
       this.insert(this.assignee.outerStart, '@prototype.');
     }
   }
 
-  patchClassAssignmentOperator() {
+  patchClassAssignmentOperator(): void {
     let colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
       token => token.type === SourceType.COLON
     );
     if (colonIndex) {
-      let colonToken = this.sourceTokenAtIndex(colonIndex);
+      let colonToken = notNull(this.sourceTokenAtIndex(colonIndex));
       this.overwrite(colonToken.start, colonToken.end, ' =');
     }
   }
@@ -58,8 +66,8 @@ export default class AssignOpPatcher extends NodePatcher {
   /**
    * If we are within a class body (not a method), return that class.
    */
-  getClassParent() {
-    let parent = this;
+  getClassParent(): ClassPatcher | null {
+    let parent: NodePatcher | null = this;
     while (parent) {
       if (parent instanceof FunctionPatcher) {
         return null;
@@ -76,7 +84,7 @@ export default class AssignOpPatcher extends NodePatcher {
    * the normalize stage instead of the main stage. Otherwise, the `super` will
    * resolve to `initClass` instead of the proper static method.
    */
-  needsEarlySuperTransform() {
+  needsEarlySuperTransform(): boolean {
     if (!this.isDynamicallyCreatedClassAssignment()) {
       return false;
     }
@@ -85,7 +93,7 @@ export default class AssignOpPatcher extends NodePatcher {
       containsSuperCall(this.expression.node);
   }
 
-  prepareEarlySuperTransform() {
+  prepareEarlySuperTransform(): void {
     if (this.needsEarlySuperTransform()) {
       if (this.assignee instanceof MemberAccessOpPatcher) {
         this.assignee.expression.setRequiresRepeatableExpression({
@@ -109,7 +117,7 @@ export default class AssignOpPatcher extends NodePatcher {
     }
   }
 
-  getEarlySuperTransformInfo() {
+  getEarlySuperTransformInfo(): EarlySuperTransformInfo | null {
     if (this.needsEarlySuperTransform()) {
       if (this.assignee instanceof MemberAccessOpPatcher) {
         return {
@@ -132,14 +140,14 @@ export default class AssignOpPatcher extends NodePatcher {
    * Assignment operators are allowed to have a `then` token after them for some
    * reason, and it doesn't do anything, so just get rid of it.
    */
-  removeUnnecessaryThenToken() {
+  removeUnnecessaryThenToken(): void {
     let thenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
       token => token.type === SourceType.THEN
     );
     if (thenIndex) {
-      let thenToken = this.sourceTokenAtIndex(thenIndex);
+      let thenToken = notNull(this.sourceTokenAtIndex(thenIndex));
       if (this.slice(thenToken.start - 1, thenToken.start) === ' ') {
         this.remove(thenToken.start - 1, thenToken.end);
       } else {

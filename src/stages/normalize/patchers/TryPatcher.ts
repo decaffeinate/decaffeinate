@@ -1,16 +1,19 @@
 import NodePatcher from '../../../patchers/NodePatcher';
-import type BlockPatcher from './BlockPatcher';
-import type { PatcherContext } from '../../../patchers/types';
-import IdentifierPatcher from './IdentifierPatcher';
+import { PatcherContext } from '../../../patchers/types';
 import countVariableUsages from '../../../utils/countVariableUsages';
+import BlockPatcher from './BlockPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
 
 export default class TryPatcher extends NodePatcher {
-  body: ?BlockPatcher;
-  catchAssignee: ?NodePatcher;
-  catchBody: ?BlockPatcher;
-  finallyBody: ?BlockPatcher;
+  body: BlockPatcher | null;
+  catchAssignee: NodePatcher | null;
+  catchBody: BlockPatcher | null;
+  finallyBody: BlockPatcher | null;
 
-  constructor(patcherContext: PatcherContext, body: ?BlockPatcher, catchAssignee: ?NodePatcher, catchBody: ?BlockPatcher, finallyBody: ?BlockPatcher) {
+  constructor(
+      patcherContext: PatcherContext, body: BlockPatcher | null,
+      catchAssignee: NodePatcher | null, catchBody: BlockPatcher | null,
+      finallyBody: BlockPatcher | null) {
     super(patcherContext);
     this.body = body;
     this.catchAssignee = catchAssignee;
@@ -18,12 +21,12 @@ export default class TryPatcher extends NodePatcher {
     this.finallyBody = finallyBody;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     if (this.body) {
       this.body.patch();
     }
     let bodyPrefixLine = this.patchCatchAssignee();
-    if (bodyPrefixLine !== null) {
+    if (bodyPrefixLine !== null && this.catchAssignee) {
       if (this.catchBody) {
         this.catchBody.insertLineBefore(bodyPrefixLine);
       } else {
@@ -38,7 +41,7 @@ export default class TryPatcher extends NodePatcher {
     }
   }
 
-  patchCatchAssignee() {
+  patchCatchAssignee(): string | null {
     if (!this.catchAssignee) {
       return null;
     }

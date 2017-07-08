@@ -1,23 +1,15 @@
 import { SourceType } from 'coffee-lex';
 
-import SharedBlockPatcher from './../../../patchers/SharedBlockPatcher';
+import NodePatcher from '../../../patchers/NodePatcher';
 import getStartOfLine from '../../../utils/getStartOfLine';
-
-import type { PatcherContext } from './../../../patchers/types';
+import SharedBlockPatcher from './../../../patchers/SharedBlockPatcher';
 
 export default class BlockPatcher extends SharedBlockPatcher {
-  statements: Array<NodePatcher>;
-
-  constructor(patcherContext: PatcherContext, statements: Array<NodePatcher>) {
-    super(patcherContext);
-    this.statements = statements;
-  }
-
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.patchAsStatement();
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     if (this.node.inline) {
       for (let [i, statement] of this.statements.entries()) {
         statement.patch();
@@ -64,7 +56,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * inserts yet, since otherwise we might remove other code in addition to the
    * whitespace, or we might remove too much whitespace.
    */
-  removePrecedingSpaceChars(index, numToRemove) {
+  removePrecedingSpaceChars(index: number, numToRemove: number): void {
     let numRemaining = numToRemove;
     for (let i = index; numRemaining > 0 && i > 0; i--) {
       let contents = this.slice(i - 1, i);
@@ -82,7 +74,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * If this statement starts immediately after its line's initial indentation,
    * return the length of that indentation. Otherwise, return null.
    */
-  getIndentLength(statement) {
+  getIndentLength(statement: NodePatcher): number | null {
     let startOfLine = getStartOfLine(this.context.source, statement.outerStart);
     let indentText = this.context.source.slice(startOfLine, statement.outerStart);
     if (/^[ \t]*$/.test(indentText)) {
@@ -96,7 +88,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * Statements can be comma-separated within classes, which is equivalent to
    * semicolons, so just change them to semicolons.
    */
-  normalizeBetweenStatements(leftStatement, rightStatement) {
+  normalizeBetweenStatements(leftStatement: NodePatcher, rightStatement: NodePatcher): void {
     let commaTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       leftStatement, rightStatement, t => t.type === SourceType.COMMA);
     if (!commaTokenIndex) {

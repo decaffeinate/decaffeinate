@@ -1,34 +1,36 @@
+import { MemberAccessOp } from 'decaffeinate-parser/dist/nodes';
+import NodePatcher, { AddThisAssignmentCallback } from '../../../patchers/NodePatcher';
 import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
+import { PatcherContext } from '../../../patchers/types';
 import DefaultParamPatcher from './DefaultParamPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
-import type NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext } from '../../../patchers/types';
 
 export default class MemberAccessOpPatcher extends PassthroughPatcher {
+  node: MemberAccessOp;
   expression: NodePatcher;
-  member: NodePatcher;
+  member: IdentifierPatcher;
 
-  constructor(patcherContext: PatcherContext, expression: NodePatcher, member: NodePatcher) {
+  constructor(patcherContext: PatcherContext, expression: NodePatcher, member: IdentifierPatcher) {
     super(patcherContext, expression, member);
     this.expression = expression;
     this.member = member;
   }
 
-  shouldTrimContentRange() {
+  shouldTrimContentRange(): boolean {
     return true;
   }
 
-  patch() {
+  patch(): void {
     super.patch();
     let callback = this.findAddThisAssignmentCallback();
     if (callback) {
-      let content = this.slice(this.contentStart, this.contentEnd);
-      this.overwrite(this.contentStart, this.contentEnd, callback(this.node.member.data, content));
+      this.overwrite(this.contentStart, this.contentEnd, callback(this.node.member.data));
     }
   }
 
-  findAddThisAssignmentCallback() {
-    let patcher = this;
+  findAddThisAssignmentCallback(): AddThisAssignmentCallback | null {
+    let patcher: NodePatcher | null = this;
 
     while (patcher) {
       if (patcher.addThisAssignmentAtScopeHeader) {

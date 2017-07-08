@@ -1,22 +1,18 @@
-import NodePatcher from './NodePatcher';
-import type { PatcherContext } from './types';
-import blank from '../utils/blank';
 import determineIndent from '../utils/determineIndent';
+import NodePatcher from './NodePatcher';
+import { PatcherContext } from './types';
 
 export default class ProgramPatcher extends NodePatcher {
-  body: ?NodePatcher;
-  helpers: { [key: string]: string };
-  _indentString: ?string;
+  body: NodePatcher | null;
+  helpers: Map<string, string> = new Map();
+  _indentString: string | null = null;
 
-  constructor(patcherContext: PatcherContext, body: ?NodePatcher) {
+  constructor(patcherContext: PatcherContext, body: NodePatcher | null) {
     super(patcherContext);
     this.body = body;
-
-    this.helpers = blank();
-    this._indentString = null;
   }
 
-  shouldTrimContentRange() {
+  shouldTrimContentRange(): boolean {
     return true;
   }
 
@@ -27,19 +23,19 @@ export default class ProgramPatcher extends NodePatcher {
    */
   registerHelper(name: string, code: string): string {
     code = code.trim();
-    if (name in this.helpers) {
-      if (this.helpers[name] !== code) {
+    if (this.helpers.has(name)) {
+      if (this.helpers.get(name) !== code) {
         throw new Error(`BUG: cannot override helper '${name}'`);
       }
     } else {
-      this.helpers[name] = code;
+      this.helpers.set(name, code);
     }
     return name;
   }
 
-  patchHelpers() {
-    for (let helper in this.helpers) {
-      this.editor.append(`\n${this.helpers[helper]}`);
+  patchHelpers(): void {
+    for (let helper of this.helpers.values()) {
+      this.editor.append(`\n${helper}`);
     }
   }
 

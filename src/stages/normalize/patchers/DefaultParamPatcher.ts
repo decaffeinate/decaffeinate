@@ -1,7 +1,9 @@
+import NodePatcher, { AddDefaultParamCallback } from '../../../patchers/NodePatcher';
+import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
+import { PatcherContext } from '../../../patchers/types';
 import AssignOpPatcher from './AssignOpPatcher';
 import DoOpPatcher from './DoOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
-import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
 
 export default class DefaultParamPatcher extends PassthroughPatcher {
   param: NodePatcher;
@@ -13,7 +15,7 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
     this.value = value;
   }
 
-  patch() {
+  patch(): void {
     // Note that when there is both a `this` assignment and a default param
     // assignment (e.g. `(@a=b()) -> c`), assignment callbacks are run
     // bottom-up, so by the time this code runs, any necessary parameter
@@ -33,8 +35,8 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
     }
   }
 
-  findAddDefaultParamAssignmentCallback() {
-    let patcher = this;
+  findAddDefaultParamAssignmentCallback(): AddDefaultParamCallback | null {
+    let patcher: NodePatcher | null = this;
 
     while (patcher) {
       if (patcher.addDefaultParamAssignmentAtScopeHeader) {
@@ -61,7 +63,7 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
    * Also skip the conversion when the default is to `null`, since the behavior
    * between CoffeeScript and JavaScript happens to be the same in that case.
    */
-  shouldExtractToConditionalAssign() {
+  shouldExtractToConditionalAssign(): boolean {
     if (this.options.looseDefaultParams) {
       return false;
     }

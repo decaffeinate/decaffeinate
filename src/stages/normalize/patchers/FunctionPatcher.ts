@@ -1,28 +1,30 @@
 import { SourceType } from 'coffee-lex';
+import { Constructor, Node } from 'decaffeinate-parser/dist/nodes';
+import { PatcherContext } from '../../../patchers/types';
+import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import getAssigneeBindings from '../../../utils/getAssigneeBindings';
+import normalizeListItem from '../../../utils/normalizeListItem';
+import notNull from '../../../utils/notNull';
+import stripSharedIndent from '../../../utils/stripSharedIndent';
+import NodePatcher from './../../../patchers/NodePatcher';
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import BlockPatcher from './BlockPatcher';
 import DefaultParamPatcher from './DefaultParamPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import RestPatcher from './SpreadPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
-import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
-import getAssigneeBindings from '../../../utils/getAssigneeBindings';
-import normalizeListItem from '../../../utils/normalizeListItem';
-import stripSharedIndent from '../../../utils/stripSharedIndent';
-
-import type { PatcherContext } from './../../../patchers/types';
 
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
-  body: ?NodePatcher;
+  body: BlockPatcher | null;
 
-  constructor(patcherContext: PatcherContext, parameters: Array<NodePatcher>, body: ?NodePatcher) {
+  constructor(patcherContext: PatcherContext, parameters: Array<NodePatcher>, body: BlockPatcher | null) {
     super(patcherContext);
     this.parameters = parameters;
     this.body = body;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     // Make sure there is at least one character of whitespace between the ->
     // and the body, since otherwise the main stage can run into subtle
     // magic-string issues later.
@@ -86,7 +88,8 @@ export default class FunctionPatcher extends NodePatcher {
     let uniqueExplicitBindings = [...new Set(neededExplicitBindings)];
     // To avoid ugly code, limit the explicit `var` to cases where we're
     // actually shadowing an outer variable.
-    uniqueExplicitBindings = uniqueExplicitBindings.filter(name => this.parent.getScope().hasBinding(name));
+    uniqueExplicitBindings = uniqueExplicitBindings.filter(
+      name => notNull(this.parent).getScope().hasBinding(name));
     if (uniqueExplicitBindings.length > 0) {
       assignments.unshift(`\`var ${uniqueExplicitBindings.join(', ')};\``);
     }
@@ -101,7 +104,7 @@ export default class FunctionPatcher extends NodePatcher {
     } else if (assignments.length) {
       // as the body if there is no body
       // Add a return statement for non-constructor methods without body to avoid bad implicit return
-      if (this.context.getParent(this.node).type !== 'Constructor') {
+      if (!(this.context.getParent(this.node) instanceof Constructor)) {
         assignments.push('return');
       }
       let indent = this.getIndent(1);
@@ -115,23 +118,23 @@ export default class FunctionPatcher extends NodePatcher {
    * Also declare any variables that are assigned and need to be
    * function-scoped, so the outer code can insert `var` declarations.
    */
-  patchParameterAndGetAssignments(parameter: NodePatcher) {
-    let thisAssignments = [];
-    let defaultParamAssignments = [];
+  patchParameterAndGetAssignments(parameter: NodePatcher): {newAssignments: Array<string>, newBindings: Array<string>} {
+    let thisAssignments: Array<string> = [];
+    let defaultParamAssignments: Array<string> = [];
 
-    let newBindings = [];
+    let newBindings: Array<string> = [];
 
     // To avoid knowledge of all the details how assignments can be nested in nodes,
     // we add a callback to the function node before patching the parameters and remove it afterwards.
     // This is detected and used by the MemberAccessOpPatcher to claim a free binding for this parameter
     // (from the functions scope, not the body's scope)
-    this.addThisAssignmentAtScopeHeader = (memberName: string) => {
+    this.addThisAssignmentAtScopeHeader = (memberName: string): string => {
       let varName = this.claimFreeBinding(memberName);
       thisAssignments.push(`@${memberName} = ${varName}`);
       this.log(`Replacing parameter @${memberName} with ${varName}`);
       return varName;
     };
-    this.addDefaultParamAssignmentAtScopeHeader = (assigneeCode: string, initCode: string, assigneeNode: Node) => {
+    this.addDefaultParamAssignmentAtScopeHeader = (assigneeCode: string, initCode: string, assigneeNode: Node): string => {
       if (assigneeNode.type === 'Identifier' || assigneeNode.type === 'MemberAccessOp') {
         // Wrap in parens to avoid precedence issues for inline statements. The
         // parens will be removed later in normal situations.
@@ -169,7 +172,7 @@ export default class FunctionPatcher extends NodePatcher {
    * CoffeeScript strip common leading whitespace, so the resulting code is
    * still the same.
    */
-  fixGeneratedAssigneeWhitespace(assigneeCode: string) {
+  fixGeneratedAssigneeWhitespace(assigneeCode: string): string {
     let firstNewlineIndex = assigneeCode.indexOf('\n');
     if (firstNewlineIndex < 0) {
       return assigneeCode;

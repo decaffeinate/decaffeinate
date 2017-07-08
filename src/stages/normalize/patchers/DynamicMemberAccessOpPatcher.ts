@@ -1,6 +1,6 @@
+import NodePatcher from '../../../patchers/NodePatcher';
 import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
-import type NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext } from '../../../patchers/types';
+import { PatcherContext } from '../../../patchers/types';
 
 export default class DynamicMemberAccessOpPatcher extends PassthroughPatcher {
   expression: NodePatcher;

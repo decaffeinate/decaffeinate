@@ -7,15 +7,33 @@ import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ProgramPatcher from './ProgramPatcher';
 
-import type { PatcherContext } from './../../../patchers/types';
+import {
+  AssignOp, BaseAssignOp, BaseFunction, ClassProtoAssignOp,
+  DynamicMemberAccessOp, Identifier,
+  MemberAccessOp, Node,
+  This
+} from 'decaffeinate-parser/dist/nodes';
+import { PatcherContext } from '../../../patchers/types';
 import { AVOID_INITCLASS } from '../../../suggestions';
 
-export default class ClassPatcher extends NodePatcher {
-  nameAssignee: ?NodePatcher;
-  superclass: ?NodePatcher;
-  body: ?BlockPatcher;
+export type NonMethodInfo = {
+  patcher: NodePatcher,
+  deleteStart: number,
+};
 
-  constructor(patcherContext: PatcherContext, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?BlockPatcher) {
+export type CustomConstructorInfo = {
+  ctorName: string,
+  expressionCode: string,
+};
+
+export default class ClassPatcher extends NodePatcher {
+  nameAssignee: NodePatcher | null;
+  superclass: NodePatcher | null;
+  body: BlockPatcher | null;
+
+  constructor(
+      patcherContext: PatcherContext, nameAssignee: NodePatcher | null,
+      parent: NodePatcher | null, body: BlockPatcher | null) {
     super(patcherContext);
     this.nameAssignee = nameAssignee;
     this.superclass = parent;
@@ -32,7 +50,7 @@ export default class ClassPatcher extends NodePatcher {
    *   it does so in a way that is unlikely to cause problems in reasonable
    *   code.
    */
-  patchAsStatement() {
+  patchAsStatement(): void {
     // Indentation needs to happen before child patching in case we have child
     // classes or other nested indentation situations.
     if (this.needsIndent()) {
@@ -75,12 +93,13 @@ export default class ClassPatcher extends NodePatcher {
       this.insert(this.outerStart, `do ->\n${indent}`);
     }
 
-    let needsTmpName = !(this.nameAssignee instanceof IdentifierPatcher);
+    let needsTmpName = false;
     let classRef;
-    if (needsTmpName) {
-      classRef = this.claimFreeBinding('Cls');
-    } else {
+    if (this.nameAssignee instanceof IdentifierPatcher) {
       classRef = this.nameAssignee.node.data;
+    } else {
+      classRef = this.claimFreeBinding('Cls');
+      needsTmpName = true;
     }
 
     let assignmentNames = this.generateInitClassMethod(
@@ -101,15 +120,17 @@ export default class ClassPatcher extends NodePatcher {
   /**
    * For now, code in class bodies is only supported for statement classes.
    */
-  patchAsExpression() {
-    this.body.patch();
+  patchAsExpression(): void {
+    if (this.body) {
+      this.body.patch();
+    }
   }
 
-  needsIndent() {
+  needsIndent(): boolean {
     return this.needsInitClass() && this.shouldUseIIFE();
   }
 
-  needsInitClass() {
+  needsInitClass(): boolean {
     if (!this.body) {
       return false;
     }
@@ -125,7 +146,7 @@ export default class ClassPatcher extends NodePatcher {
     return true;
   }
 
-  removeThenTokenIfNecessary() {
+  removeThenTokenIfNecessary(): void {
     let searchStart;
     if (this.superclass) {
       searchStart = this.superclass.outerEnd;
@@ -150,7 +171,7 @@ export default class ClassPatcher extends NodePatcher {
     }
   }
 
-  shouldUseIIFE() {
+  shouldUseIIFE(): boolean {
     let nonMethodPatchers = this.getNonMethodPatchers();
     if (this.hasAnyAssignments(nonMethodPatchers)) {
       return true;
@@ -169,7 +190,7 @@ export default class ClassPatcher extends NodePatcher {
     return true;
   }
 
-  getInitClassInsertPoint() {
+  getInitClassInsertPoint(): number {
     if (this.superclass) {
       return this.superclass.outerEnd;
     }
@@ -184,7 +205,10 @@ export default class ClassPatcher extends NodePatcher {
    * methods. These will later be moved to the top of the class in a static
    * method.
    */
-  getNonMethodPatchers() {
+  getNonMethodPatchers(): Array<NonMethodInfo> {
+    if (!this.body) {
+      throw this.error('Expected non-null body.');
+    }
     let nonMethodPatchers = [];
     let deleteStart = this.getInitClassInsertPoint();
     for (let patcher of this.body.statements) {
@@ -199,37 +223,38 @@ export default class ClassPatcher extends NodePatcher {
     return nonMethodPatchers;
   }
 
-  isClassMethod(patcher) {
+  isClassMethod(patcher: NodePatcher): boolean {
     if (patcher instanceof ConstructorPatcher) {
       return true;
     }
-    if (this.isClassAssignment(patcher.node)) {
+    let node = patcher.node;
+    if (this.isClassAssignment(node)) {
       // Bound static methods must be moved to initClass so they are properly
       // bound.
-      if (patcher.node.type === 'AssignOp' &&
-          ['BoundFunction', 'BoundGeneratorFunction'].indexOf(patcher.expression.node.type) >= 0) {
+      if (node instanceof AssignOp &&
+          ['BoundFunction', 'BoundGeneratorFunction'].indexOf(node.expression.type) >= 0) {
         return false;
       }
-      if (patcher.expression instanceof FunctionPatcher) {
+      if (node.expression instanceof BaseFunction) {
         return true;
       }
     }
     return false;
   }
 
-  isClassAssignment(node) {
-    if (node.type === 'ClassProtoAssignOp') {
+  isClassAssignment(node: Node): node is BaseAssignOp {
+    if (node instanceof ClassProtoAssignOp) {
       return true;
     }
-    if (node.type === 'AssignOp') {
+    if (node instanceof AssignOp) {
       let {assignee} = node;
-      if (assignee.type === 'MemberAccessOp' || assignee.type === 'DynamicMemberAccessOp') {
-        if (assignee.expression.type === 'This') {
+      if (assignee instanceof MemberAccessOp || assignee instanceof DynamicMemberAccessOp) {
+        if (assignee.expression instanceof This) {
           return true;
         }
-        if (this.nameAssignee) {
+        if (this.nameAssignee && this.nameAssignee instanceof IdentifierPatcher) {
           let className = this.nameAssignee.node.data;
-          if (assignee.expression.type === 'Identifier' &&
+          if (assignee.expression instanceof Identifier &&
               assignee.expression.data === className) {
             return true;
           }
@@ -239,7 +264,10 @@ export default class ClassPatcher extends NodePatcher {
     return false;
   }
 
-  needsCustomConstructor() {
+  needsCustomConstructor(): boolean {
+    if (!this.body) {
+      throw this.error('Expected non-null body.');
+    }
     for (let patcher of this.body.statements) {
       if (patcher instanceof ConstructorPatcher &&
           !(patcher.expression instanceof FunctionPatcher)) {
@@ -257,7 +285,10 @@ export default class ClassPatcher extends NodePatcher {
    * function, and overwrite the constructor with a function that forwards to
    * that constructor function.
    */
-  extractCustomConstructorInfo() {
+  extractCustomConstructorInfo(): CustomConstructorInfo | null {
+    if (!this.body) {
+      throw this.error('Expected non-null body.');
+    }
     for (let patcher of this.body.statements) {
       if (patcher instanceof ConstructorPatcher) {
         if (!(patcher.expression instanceof FunctionPatcher)) {
@@ -298,7 +329,11 @@ export default class ClassPatcher extends NodePatcher {
    * declare them outside the class body to make them accessible within the
    * class.
    */
-  generateInitClassMethod(nonMethodPatchers, customConstructorInfo, insertPoint) {
+  generateInitClassMethod(
+      nonMethodPatchers: Array<NonMethodInfo>,
+      customConstructorInfo: CustomConstructorInfo | null,
+      insertPoint: number
+  ): Array<string> {
     let bodyIndent = this.getBodyIndent();
     let indentString = this.getProgramIndentString();
     this.insert(insertPoint, `\n${bodyIndent}@initClass: ->`);
@@ -326,7 +361,7 @@ export default class ClassPatcher extends NodePatcher {
     return assignmentNames;
   }
 
-  hasAnyAssignments(nonMethodPatchers) {
+  hasAnyAssignments(nonMethodPatchers: Array<NonMethodInfo>): boolean {
     for (let {patcher} of nonMethodPatchers) {
       if (this.getAssignmentName(patcher)) {
         return true;
@@ -335,7 +370,10 @@ export default class ClassPatcher extends NodePatcher {
     return false;
   }
 
-  getBodyIndent() {
+  getBodyIndent(): string {
+    if (!this.body) {
+      throw this.error('Expected non-null body.');
+    }
     let bodyNodeIndent = this.body.getIndent();
     // If the body is inline, generate code at one indent level up instead of
     // at the class indentation level.
@@ -352,9 +390,9 @@ export default class ClassPatcher extends NodePatcher {
    * within the class body. Note that this is incomplete at the moment and only
    * covers the common case of a single variable being defined.
    */
-  getAssignmentName(statementPatcher) {
-    if (statementPatcher.node.type === 'AssignOp' &&
-        statementPatcher.assignee instanceof IdentifierPatcher) {
+  getAssignmentName(statementPatcher: NodePatcher): string | null {
+    if (statementPatcher.node instanceof AssignOp &&
+        statementPatcher.node.assignee instanceof Identifier) {
       return statementPatcher.node.assignee.data;
     }
     if (statementPatcher instanceof ClassPatcher &&

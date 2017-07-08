@@ -1,10 +1,11 @@
 import { SourceType } from 'coffee-lex';
-import type { SourceTokenListIndex } from 'coffee-lex';
 
+import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
 import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
 import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';
 import postfixNodeNeedsOuterParens from '../../../utils/postfixNodeNeedsOuterParens';
-import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Normalizes conditionals by rewriting post-`if` into standard `if`, e.g.
@@ -17,17 +18,17 @@ import type { PatcherContext } from './../../../patchers/types';
  */
 export default class ConditionalPatcher extends NodePatcher {
   condition: NodePatcher;
-  consequent: ?NodePatcher;
-  alternate: ?NodePatcher;
+  consequent: NodePatcher | null;
+  alternate: NodePatcher | null;
 
-  constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: NodePatcher, alternate: ?NodePatcher) {
+  constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: NodePatcher, alternate: NodePatcher | null) {
     super(patcherContext);
     this.condition = condition;
     this.consequent = consequent;
     this.alternate = alternate;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     if (this.isPostIf()) {
       this.patchPostIf();
     } else {
@@ -45,7 +46,10 @@ export default class ConditionalPatcher extends NodePatcher {
    * `CONSEQUENT 'if' CONDITION` → `if CONDITION then CONSEQUENT`
    * `CONSEQUENT 'unless' CONDITION` → `unless CONDITION then CONSEQUENT`
    */
-  patchPostIf() {
+  patchPostIf(): void {
+    if (!this.consequent) {
+      throw this.error('Expected non-null consequent for post-if.');
+    }
     this.condition.patch();
     if (postfixExpressionRequiresParens(this.slice(this.condition.contentStart, this.condition.contentEnd)) &&
         !this.condition.isSurroundedByParentheses()) {
@@ -85,7 +89,7 @@ export default class ConditionalPatcher extends NodePatcher {
       if (token && token.type === SourceType.IF) {
         break;
       }
-      index = index.previous();
+      index = notNull(index.previous());
     }
 
     if (!index) {

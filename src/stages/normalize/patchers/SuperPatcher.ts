@@ -1,11 +1,13 @@
 import { SourceType } from 'coffee-lex';
 
-import AssignOpPatcher from './AssignOpPatcher';
-import ClassPatcher from './ClassPatcher';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
+import AssignOpPatcher, { EarlySuperTransformInfo } from './AssignOpPatcher';
+import ClassPatcher from './ClassPatcher';
 
 export default class SuperPatcher extends NodePatcher {
-  patchAsExpression() {
+  patchAsExpression(): void {
     let earlyTransformInfo = this.getEarlyTransformInfo();
     if (earlyTransformInfo) {
       this.patchEarlySuperTransform(earlyTransformInfo);
@@ -19,7 +21,7 @@ export default class SuperPatcher extends NodePatcher {
    * super calls in the normalize stage. Otherwise, the code will move into an
    * initClass method and super calls will refer to super.initClass.
    */
-  patchEarlySuperTransform({classCode, accessCode}) {
+  patchEarlySuperTransform({classCode, accessCode}: EarlySuperTransformInfo): void {
     // Note that this code snippet works for static methods but not instance
     // methods. Expanded super calls for instance methods are handled in the
     // main stage.
@@ -32,7 +34,7 @@ export default class SuperPatcher extends NodePatcher {
     }
   }
 
-  getEarlyTransformInfo() {
+  getEarlyTransformInfo(): EarlySuperTransformInfo | null {
     let parent = this.parent;
     while (parent) {
       if (parent instanceof AssignOpPatcher) {
@@ -54,6 +56,6 @@ export default class SuperPatcher extends NodePatcher {
     if (!openParenTokenIndex) {
       throw this.error('Expected open-paren after super.');
     }
-    return this.sourceTokenAtIndex(openParenTokenIndex);
+    return notNull(this.sourceTokenAtIndex(openParenTokenIndex));
   }
 }

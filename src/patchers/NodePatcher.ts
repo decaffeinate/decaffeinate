@@ -22,6 +22,9 @@ import traverse from '../utils/traverse';
 import { isFunction, isSemanticToken } from '../utils/types';
 import { PatcherContext, PatchOptions, RepeatableOptions } from './types';
 
+export type AddThisAssignmentCallback = (memberName: string) => string;
+export type AddDefaultParamCallback = (assigneeCode: string, initCode: string, assigneeNode: Node) => string;
+
 export default class NodePatcher {
   node: Node;
   context: DecaffeinateContext;
@@ -54,6 +57,10 @@ export default class NodePatcher {
   _repeatableOptions: RepeatableOptions | null = null;
   _repeatCode: string | null = null;
   _returns: boolean = false;
+
+  // Temporary callbacks that can be added for inter-node communication.
+  addThisAssignmentAtScopeHeader: AddThisAssignmentCallback | null = null;
+  addDefaultParamAssignmentAtScopeHeader: AddDefaultParamCallback | null = null;
 
   constructor({node, context, editor, options, addSuggestion}: PatcherContext) {
     this.log = logger(this.constructor.name);

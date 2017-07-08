@@ -1,15 +1,15 @@
 import NodePatcher from './NodePatcher';
-import type { PatcherContext } from './types';
+import { PatcherContext } from './types';
 
 export default class PassthroughPatcher extends NodePatcher {
-  children: Array<?NodePatcher|Array<?NodePatcher>>;
+  children: Array<NodePatcher | Array<NodePatcher> | null>;
   
-  constructor(patcherContext: PatcherContext, ...children: Array<?NodePatcher|Array<?NodePatcher>>) {
+  constructor(patcherContext: PatcherContext, ...children: Array<NodePatcher | Array<NodePatcher> | null>) {
     super(patcherContext);
     this.children = children;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.children.forEach(child => {
       if (Array.isArray(child)) {
         child.forEach(child => child && child.patch());

@@ -1,6 +1,6 @@
-import NodePatcher from './../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
 import normalizeListItem from '../../../utils/normalizeListItem';
-import type { PatcherContext } from './../../../patchers/types';
+import NodePatcher from './../../../patchers/NodePatcher';
 
 /**
  * Handles object literals.
@@ -13,7 +13,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     this.members = members;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     for (let [i, member] of this.members.entries()) {
       member.patch();
       normalizeListItem(this, member, this.members[i + 1]);
