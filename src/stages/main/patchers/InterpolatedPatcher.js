@@ -95,7 +95,7 @@ export default class InterpolatedPatcher extends NodePatcher {
         quasi.contentStartTokenIndex, quasi.contentEndTokenIndex.next()).toArray();
       for (let token of tokens) {
         if (token.type === SourceType.STRING_CONTENT) {
-          escape(this.editor, skipPattern, escapeStrings, token.start, token.end);
+          escape(this.context.source, this.editor, skipPattern, escapeStrings, token.start, token.end);
         }
       }
     }

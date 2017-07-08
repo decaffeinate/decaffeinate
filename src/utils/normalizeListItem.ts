@@ -4,11 +4,13 @@
  * syntax in the normalize stage.
  */
 import { SourceType } from 'coffee-lex';
+import NodePatcher from '../patchers/NodePatcher';
+import notNull from './notNull';
 import traverse from './traverse';
 
-import type NodePatcher from '../patchers/NodePatcher';
-
-export default function normalizeListItem(patcher: NodePatcher, listItemPatcher: NodePatcher, nextListItemPatcher: ?NodePatcher) {
+export default function normalizeListItem(
+    patcher: NodePatcher, listItemPatcher: NodePatcher,
+    nextListItemPatcher: NodePatcher | null): void {
   // If the last token of the arg is a comma, then the actual delimiter must
   // be a newline and the comma is unnecessary and can cause a syntax error
   // when combined with other normalize stage transformations. So just
@@ -34,7 +36,7 @@ export default function normalizeListItem(patcher: NodePatcher, listItemPatcher:
     // between them (comma tokens, or technically semicolons are treated as
     // commas as well).
     let commaTokens = patcher.getProgramSourceTokens()
-      .slice(listItemPatcher.outerEndTokenIndex.next(), nextListItemPatcher.outerStartTokenIndex)
+      .slice(notNull(listItemPatcher.outerEndTokenIndex.next()), nextListItemPatcher.outerStartTokenIndex)
       .filter(token => token.type === SourceType.COMMA || token.type === SourceType.SEMICOLON)
       .toArray();
 
@@ -90,6 +92,7 @@ function patcherEndsInStatement(patcher: NodePatcher): boolean {
     if (child.type === 'Block' && child.range[1] === patcher.contentEnd) {
       found = true;
     }
+    return true;
   });
   return found;
 }

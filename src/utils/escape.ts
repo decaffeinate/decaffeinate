@@ -1,6 +1,4 @@
-/* @flow */
-
-import type MagicString from 'magic-string';
+import MagicString from 'magic-string';
 
 /**
  * Inserts string escape characters before certain characters/strings to be
@@ -11,8 +9,9 @@ import type MagicString from 'magic-string';
  * character, but for heregexes, we only skip a backslash followed by
  * whitespace.
  */
-export default function escape(patcher: MagicString, skipPattern: RegExp, escapeStrings: Array<string>, start: number, end: number) {
-  let source = patcher.original;
+export default function escape(
+    source: string, patcher: MagicString, skipPattern: RegExp,
+    escapeStrings: Array<string>, start: number, end: number): void {
   for (let i = start; i < end; i++) {
     if (skipPattern.test(source.slice(i, end))) {
       i++;
