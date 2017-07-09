@@ -1,13 +1,13 @@
+import NodePatcher from '../patchers/NodePatcher';
 import AssignOpPatcher from '../stages/main/patchers/AssignOpPatcher';
 import ConditionalPatcher from '../stages/main/patchers/ConditionalPatcher';
 import DynamicMemberAccessOpPatcher from '../stages/main/patchers/DynamicMemberAccessOpPatcher';
-import InOpPatcher from '../stages/main/patchers/InOpPatcher';
 import FunctionApplicationPatcher from '../stages/main/patchers/FunctionApplicationPatcher';
+import InOpPatcher from '../stages/main/patchers/InOpPatcher';
 import SoakedDynamicMemberAccessOpPatcher from '../stages/main/patchers/SoakedDynamicMemberAccessOpPatcher';
 import SoakedFunctionApplicationPatcher from '../stages/main/patchers/SoakedFunctionApplicationPatcher';
 import SoakedMemberAccessOpPatcher from '../stages/main/patchers/SoakedMemberAccessOpPatcher';
 import WhilePatcher from '../stages/main/patchers/WhilePatcher';
-import type NodePatcher from '../patchers/NodePatcher';
 
 /**
  * Given a main stage patcher, determine from the AST if it needs to be wrapped
