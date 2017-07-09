@@ -1,8 +1,6 @@
-/* @flow */
+import NodePatcher from '../patchers/NodePatcher';
 import BlockPatcher from '../stages/main/patchers/BlockPatcher';
 import traverse from './traverse';
-
-import type NodePatcher from '../patchers/NodePatcher';
 
 /**
  * Determine if this is a block has an object initializer as its leftmost node.
@@ -24,6 +22,7 @@ export default function blockStartsWithObjectInitialiser(patcher: NodePatcher): 
       foundInitialObject = true;
       return false;
     }
+    return true;
   });
   return foundInitialObject;
 }

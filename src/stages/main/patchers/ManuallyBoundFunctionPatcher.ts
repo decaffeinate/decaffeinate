@@ -1,16 +1,17 @@
+import { PatchOptions } from '../../../patchers/types';
 import FunctionPatcher from './FunctionPatcher';
 
 /**
  * Handles bound functions that cannot become arrow functions.
  */
 export default class ManuallyBoundFunctionPatcher extends FunctionPatcher {
-  patchAsStatement(options={}) {
+  patchAsStatement(options: PatchOptions = {}): void {
     this.insert(this.innerStart, '(');
     super.patchAsExpression(options);
     this.insert(this.innerEnd, '.bind(this))');
   }
 
-  patchAsExpression(options={}) {
+  patchAsExpression(options: PatchOptions = {}): void {
     super.patchAsExpression(options);
     // If we're instructed to patch as a method, then it won't be legal to add
     // `.bind(this)`, so skip that step. Calling code is expected to bind us

@@ -25,6 +25,13 @@ import { PatcherContext, PatchOptions, RepeatableOptions } from './types';
 export type AddThisAssignmentCallback = (memberName: string) => string;
 export type AddDefaultParamCallback = (assigneeCode: string, initCode: string, assigneeNode: Node) => string;
 
+export interface PatcherClass {
+  // The "children" arg is some number of NodePatchers, but there doesn't seem
+  // to be an easy way to have TypeScript understand that.
+  // tslint:disable-next-line:no-any
+  new(context: PatcherContext, ...children: Array<any>): NodePatcher;
+}
+
 export default class NodePatcher {
   node: Node;
   context: DecaffeinateContext;
@@ -77,14 +84,14 @@ export default class NodePatcher {
   /**
    * Allow patcher classes to override the class used to patch their children.
    */
-  static patcherClassForChildNode(/* node: Node, property: string */): typeof NodePatcher | null {
+  static patcherClassForChildNode(/* node: Node, property: string */): PatcherClass | null {
     return null;
   }
 
   /**
    * Allow patcher classes that would patch a node to chose a different class.
    */
-  static patcherClassOverrideForNode(_node: Node): typeof NodePatcher | null { // eslint-disable-line no-unused-vars
+  static patcherClassOverrideForNode(_node: Node): PatcherClass | null { // eslint-disable-line no-unused-vars
     return null;
   }
 

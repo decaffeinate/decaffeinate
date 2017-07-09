@@ -1,44 +1,64 @@
-import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
-import BlockPatcher from './BlockPatcher';
-import IdentifierPatcher from './IdentifierPatcher';
-import ForPatcher from './ForPatcher';
-import RangePatcher from './RangePatcher';
-import countVariableUsages from '../../../utils/countVariableUsages';
-import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
-import Scope from '../../../utils/Scope';
-import traverse from '../../../utils/traverse';
-import type NodePatcher from './../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
+import {
+  Float, Int, Number, UnaryNegateOp
+} from 'decaffeinate-parser/dist/nodes';
+import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
 import {
   REMOVE_ARRAY_FROM,
   SIMPLIFY_DYNAMIC_RANGE_LOOPS
 } from '../../../suggestions';
+import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
+import countVariableUsages from '../../../utils/countVariableUsages';
+import notNull from '../../../utils/notNull';
+import Scope from '../../../utils/Scope';
+import traverse from '../../../utils/traverse';
+import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
+import BlockPatcher from './BlockPatcher';
+import ForPatcher from './ForPatcher';
+import IdentifierPatcher from './IdentifierPatcher';
+import RangePatcher from './RangePatcher';
+import UnaryMathOpPatcher from './UnaryMathOpPatcher';
 
 const UP = 'UP';
 const DOWN = 'DOWN';
 const UNKNOWN = 'UNKNOWN';
-type IndexDirection = 'UP' | 'DOWN' | 'UNKNOWN';
+export type IndexDirection = 'UP' | 'DOWN' | 'UNKNOWN';
 
 export default class ForInPatcher extends ForPatcher {
-  constructor(patcherContext: PatcherContext, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, step: ?NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
+  step: NodePatcher | null;
+  _ascReference: string | null = null;
+  _endCode: string | null = null;
+  _endReference: string | null = null;
+  _internalIndexBinding: string | null = null;
+  _startCode: string | null = null;
+  _startReference: string | null = null;
+  _valueBinding: string | null = null;
+  _step: Step | null = null;
+
+  constructor(
+      patcherContext: PatcherContext, keyAssignee: NodePatcher | null,
+      valAssignee: NodePatcher | null, target: NodePatcher,
+      step: NodePatcher | null, filter: NodePatcher | null, body: BlockPatcher) {
     super(patcherContext, keyAssignee, valAssignee, target, filter, body);
     this.step = step;
-    this._internalIndexBinding = null;
   }
 
-  initialize() {
+  initialize(): void {
     super.initialize();
     if (this.step) {
       this.step.setRequiresExpression();
     }
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     // When possible, we want to transform the loop into a use of `map`, but
     // there are some cases when we can't. Use the more general approach of a
     // statement loop within an IIFE if that's the case.
     if (!this.canPatchAsMapExpression()) {
       return super.patchAsExpression();
+    }
+    if (!this.body) {
+      throw this.error('Expected non-null body.');
     }
     this.removeThenToken();
 
@@ -88,20 +108,25 @@ export default class ForInPatcher extends ForPatcher {
    * In a case like `x = for a in b when c then a`, we should skip the `map`
    * altogether and just use a `filter`.
    */
-  isMapBodyNoOp() {
+  isMapBodyNoOp(): boolean {
     if (this.valAssignee instanceof IdentifierPatcher) {
       let varName = this.valAssignee.node.data;
       if (this.body instanceof BlockPatcher &&
-          this.body.statements.length === 1 &&
-          this.body.statements[0] instanceof IdentifierPatcher &&
-          this.body.statements[0].node.data === varName) {
-        return true;
+          this.body.statements.length === 1) {
+        let statement = this.body.statements[0];
+        if (statement instanceof IdentifierPatcher &&
+            statement.node.data === varName) {
+          return true;
+        }
       }
     }
     return false;
   }
 
-  patchBodyForExpressionLoop() {
+  patchBodyForExpressionLoop(): void {
+    if (!this.body) {
+      throw this.error('Expected non-null body.');
+    }
     this.body.setRequiresExpression();
     let bodyNeedsParens = blockStartsWithObjectInitialiser(this.body)
       && !this.body.isSurroundedByParentheses();
@@ -143,7 +168,7 @@ export default class ForInPatcher extends ForPatcher {
     return true;
   }
 
-  canAssigneesBecomeParams() {
+  canAssigneesBecomeParams(): boolean {
     let assignees = [this.valAssignee, this.keyAssignee].filter(assignee => assignee);
     for (let assignee of assignees) {
       if (!(assignee instanceof IdentifierPatcher)) {
@@ -171,7 +196,7 @@ export default class ForInPatcher extends ForPatcher {
     return this.willPatchAsExpression() && !this.canPatchAsMapExpression();
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     if (this.body && !this.body.inline()) {
       this.body.setIndent(this.getLoopBodyIndent());
     }
@@ -194,7 +219,7 @@ export default class ForInPatcher extends ForPatcher {
    * As long as we aren't using the loop index or a step, we prefer to use JS
    * for-of loops.
    */
-  shouldPatchAsForOf() {
+  shouldPatchAsForOf(): boolean {
     return (
       !this.shouldPatchAsInitTestUpdateLoop() &&
       this.step === null &&
@@ -226,7 +251,7 @@ export default class ForInPatcher extends ForPatcher {
     }
   }
 
-  patchForLoopHeader() {
+  patchForLoopHeader(): void {
     if (this.requiresExtractingTarget()) {
       this.insert(this.innerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`);
     }
@@ -240,18 +265,20 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   getLastHeaderPatcher(): NodePatcher {
-    return [this.step, this.filter, this.target]
-      .filter(patcher => patcher)
-      .reduce((last, patcher) =>
-        patcher.contentEnd > last.contentEnd ? patcher : last
-      );
+    let resultPatcher = null;
+    for (let patcher of [this.step, this.filter, this.target]) {
+      if (patcher && (resultPatcher === null || patcher.contentEnd > resultPatcher.contentEnd)) {
+        resultPatcher = patcher;
+      }
+    }
+    return notNull(resultPatcher);
   }
 
-  patchForLoopBody() {
+  patchForLoopBody(): void {
     this.removeThenToken();
     this.patchPossibleNewlineAfterLoopHeader(this.getLastHeaderPatcher().outerEnd);
 
-    if (!this.shouldPatchAsInitTestUpdateLoop() && this.valAssignee) {
+    if (this.body && !this.shouldPatchAsInitTestUpdateLoop() && this.valAssignee) {
       let valueAssignment = `${this.getValueBinding()} = ${this.getTargetReference()}[${this.getIndexBinding()}]`;
       if (this.valAssignee.statementNeedsParens()) {
         valueAssignment = `(${valueAssignment})`;
@@ -268,7 +295,7 @@ export default class ForInPatcher extends ForPatcher {
    * an array-like object, so this transform sacrifices 100% correctness in
    * favor of cleaner code.
    */
-  patchForOfLoop() {
+  patchForOfLoop(): void {
     // Save the filter code and remove if it it's there.
     this.getFilterCode();
     if (this.filter) {
@@ -298,14 +325,14 @@ export default class ForInPatcher extends ForPatcher {
     this.patchBodyAndFilter();
   }
 
-  getLoopHeaderEnd() {
+  getLoopHeaderEnd(): number {
     return Math.max(
       this.step ? this.step.outerEnd : -1,
       super.getLoopHeaderEnd()
     );
   }
 
-  requiresExtractingTarget() {
+  requiresExtractingTarget(): boolean {
     return (
       !this.shouldPatchAsInitTestUpdateLoop() &&
       !this.target.isRepeatable() &&
@@ -313,7 +340,7 @@ export default class ForInPatcher extends ForPatcher {
     );
   }
 
-  targetBindingCandidate() {
+  targetBindingCandidate(): string {
     return 'iterable';
   }
 
@@ -323,7 +350,7 @@ export default class ForInPatcher extends ForPatcher {
    * the loop body, we need to choose a different variable name and make the
    * loop code a little more complex.
    */
-  getInternalIndexBinding() {
+  getInternalIndexBinding(): string {
     if (!this._internalIndexBinding) {
       if (this.needsUniqueIndexName()) {
         this._internalIndexBinding = this.claimFreeBinding(this.indexBindingCandidates());
@@ -334,7 +361,7 @@ export default class ForInPatcher extends ForPatcher {
     return this._internalIndexBinding;
   }
 
-  needsUniqueIndexName() {
+  needsUniqueIndexName(): boolean {
     let userIndex = this.getIndexBinding();
 
     // We need to extract this to a variable if there's an assignment within the
@@ -399,6 +426,9 @@ export default class ForInPatcher extends ForPatcher {
   getTestCode(): string {
     let direction = this.getIndexDirection();
     if (this.shouldPatchAsInitTestUpdateLoop()) {
+      if (!(this.target instanceof RangePatcher)) {
+        throw this.error('Expected range patcher for target.');
+      }
       let inclusive = this.target.isInclusive();
       let gt = inclusive ? '>=' : '>';
       let lt = inclusive ? '<=' : '<';
@@ -456,7 +486,7 @@ export default class ForInPatcher extends ForPatcher {
     }
   }
 
-  getStartReference() {
+  getStartReference(): string {
     if (!this.shouldExtractStart()) {
       return this.getStartCode();
     }
@@ -466,7 +496,10 @@ export default class ForInPatcher extends ForPatcher {
     return this._startReference;
   }
 
-  isStartFixed() {
+  isStartFixed(): boolean {
+    if (!(this.target instanceof RangePatcher)) {
+      throw this.error('Expected target to be a range.');
+    }
     return this.target.left.node.type === 'Int' || this.target.left.node.type === 'Float';
   }
 
@@ -475,20 +508,26 @@ export default class ForInPatcher extends ForPatcher {
    * intermediate variable. We only need to save a variable if it's not
    * repeatable and we need to use it to compute the direction.
    */
-  shouldExtractStart() {
+  shouldExtractStart(): boolean {
+    if (!(this.target instanceof RangePatcher)) {
+      throw this.error('Expected target to be a range.');
+    }
     return !this.target.left.isRepeatable() &&
       this.getIndexDirection() === UNKNOWN &&
       this.getStep().isVirtual;
   }
 
-  getStartCode() {
+  getStartCode(): string {
+    if (!(this.target instanceof RangePatcher)) {
+      throw this.error('Expected target to be a range.');
+    }
     if (!this._startCode) {
       this._startCode = this.target.left.patchAndGetCode();
     }
     return this._startCode;
   }
 
-  getEndReference() {
+  getEndReference(): string {
     if (this.isEndFixed()) {
       return this.getEndCode();
     }
@@ -498,18 +537,24 @@ export default class ForInPatcher extends ForPatcher {
     return this._endReference;
   }
 
-  isEndFixed() {
+  isEndFixed(): boolean {
+    if (!(this.target instanceof RangePatcher)) {
+      throw this.error('Expected target to be a range.');
+    }
     return this.target.right.node.type === 'Int' || this.target.right.node.type === 'Float';
   }
 
-  getEndCode() {
+  getEndCode(): string {
+    if (!(this.target instanceof RangePatcher)) {
+      throw this.error('Expected target to be a range.');
+    }
     if (!this._endCode) {
       this._endCode = this.target.right.patchAndGetCode();
     }
     return this._endCode;
   }
 
-  getAscReference() {
+  getAscReference(): string {
     if (!this._ascReference) {
       this._ascReference = this.claimFreeBinding('asc');
     }
@@ -520,7 +565,7 @@ export default class ForInPatcher extends ForPatcher {
    * Return the code snippet to determine whether the loop counts up or down, in
    * the event that it needs to be computed at runtime.
    */
-  getAscCode() {
+  getAscCode(): string {
     let step = this.getStep();
     if (step.isVirtual) {
       if (!this.shouldPatchAsInitTestUpdateLoop()) {
@@ -535,7 +580,7 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   getStep(): Step {
-    if (this._step === undefined) {
+    if (this._step === null) {
       this._step = new Step(this.step);
     }
     return this._step;
@@ -555,7 +600,7 @@ export default class ForInPatcher extends ForPatcher {
     return this.target instanceof RangePatcher;
   }
 
-  shouldWrapMapExpressionTargetInArrayFrom() {
+  shouldWrapMapExpressionTargetInArrayFrom(): boolean {
     let shouldWrap = !this.options.looseForExpressions && !this.isTargetAlreadyArray();
     if (shouldWrap) {
       this.addSuggestion(REMOVE_ARRAY_FROM);
@@ -563,7 +608,7 @@ export default class ForInPatcher extends ForPatcher {
     return shouldWrap;
   }
 
-  shouldWrapForOfStatementTargetInArrayFrom() {
+  shouldWrapForOfStatementTargetInArrayFrom(): boolean {
     let shouldWrap = !this.options.looseForOf && !this.isTargetAlreadyArray();
     if (shouldWrap) {
       this.addSuggestion(REMOVE_ARRAY_FROM);
@@ -576,7 +621,7 @@ export default class ForInPatcher extends ForPatcher {
    * then there's no need to use Array.from to convert from an array-like object
    * to an array.
    */
-  isTargetAlreadyArray() {
+  isTargetAlreadyArray(): boolean {
     return this.target instanceof RangePatcher || this.target instanceof ArrayInitialiserPatcher;
   }
 
@@ -594,9 +639,15 @@ export default class ForInPatcher extends ForPatcher {
   getIndexDirection(): IndexDirection {
     let step = this.getStep();
     if (this.shouldPatchAsInitTestUpdateLoop()) {
+      if (!(this.target instanceof RangePatcher)) {
+        throw this.error('Expected target to be a range.');
+      }
       if (!step.isVirtual && step.isLiteral) {
         return step.negated ? DOWN : UP;
       } else if (this.hasFixedRange()) {
+        if (!(this.target.left.node instanceof Number) || !(this.target.right.node instanceof Number)) {
+          throw this.error('Expected numbers for the left and right of the range.');
+        }
         let left = this.target.left.node.data;
         let right = this.target.right.node.data;
         return left > right ? DOWN : UP;
@@ -627,20 +678,20 @@ export default class ForInPatcher extends ForPatcher {
   }
 }
 
-class Step {
+export class Step {
   isLiteral: boolean;
   isVirtual: boolean;
   negated: boolean;
   init: string;
   update: string;
-  number: ?number;
+  number: number | null;
   raw: string;
 
-  constructor(patcher: ?NodePatcher) {
+  constructor(patcher: NodePatcher | null) {
     let negated = false;
     let root = patcher;
     let apply = (patcher: NodePatcher) => {
-      if (patcher.node.type === 'UnaryNegateOp') {
+      if (patcher.node instanceof UnaryNegateOp && patcher instanceof UnaryMathOpPatcher) {
         negated = !negated;
         apply(patcher.expression);
       } else {
@@ -649,12 +700,17 @@ class Step {
     };
     if (patcher) {
       apply(patcher);
-      this.isLiteral = root.node.type === 'Int' || root.node.type === 'Float';
+      if (!root) {
+        throw new Error('Expected non-null root.');
+      }
+      this.isLiteral = root.node instanceof Int || root.node instanceof Float;
       this.init = patcher.patchAndGetCode();
-      if (this.isLiteral) {
+      if (root.node instanceof Int || root.node instanceof Float) {
+        this.isLiteral = true;
         this.update = root.slice(root.contentStart, root.contentEnd);
         this.number = root.node.data;
       } else {
+        this.isLiteral = false;
         this.update = root.claimFreeBinding('step');
         this.number = null;
       }

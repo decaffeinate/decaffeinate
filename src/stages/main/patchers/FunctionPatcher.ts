@@ -1,20 +1,23 @@
-import NodePatcher from './../../../patchers/NodePatcher';
-import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import { SourceType } from 'coffee-lex';
-import type BlockPatcher from './BlockPatcher';
-import type { PatcherContext, SourceToken } from './../../../patchers/types';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import { PatcherContext, PatchOptions } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
+import NodePatcher from './../../../patchers/NodePatcher';
+import BlockPatcher from './BlockPatcher';
+import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
-  body: ?BlockPatcher;
+  body: BlockPatcher | null;
+  _implicitReturnsDisabled: boolean = false;
 
-  constructor(patcherContext: PatcherContext, parameters: Array<NodePatcher>, body: ?NodePatcher) {
+  constructor(patcherContext: PatcherContext, parameters: Array<NodePatcher>, body: BlockPatcher | null) {
     super(patcherContext);
     this.parameters = parameters;
     this.body = body;
   }
 
-  initialize() {
+  initialize(): void {
     if (this.body && !this.implicitReturnsDisabled()) {
       this.body.setImplicitlyReturns();
     }
@@ -24,7 +27,7 @@ export default class FunctionPatcher extends NodePatcher {
     });
   }
 
-  patchAsExpression({ method=false }={}) {
+  patchAsExpression({method=false}: PatchOptions = {}): void {
     this.patchFunctionStart({ method });
     this.parameters.forEach((parameter, i) => {
       let isLast = i === this.parameters.length - 1;
@@ -34,10 +37,10 @@ export default class FunctionPatcher extends NodePatcher {
         this.insert(parameter.outerEnd, ',');
       }
     });
-    this.patchFunctionBody({ method });
+    this.patchFunctionBody();
   }
 
-  patchFunctionStart({ method=false }) {
+  patchFunctionStart({method=false}: {method: boolean}): void {
     let arrow = this.getArrowToken();
 
     if (!method) {
@@ -51,7 +54,7 @@ export default class FunctionPatcher extends NodePatcher {
     this.overwrite(arrow.start, arrow.end, '{');
   }
 
-  patchFunctionBody() {
+  patchFunctionBody(): void {
     if (this.body) {
       if (this.isSurroundedByParentheses()) {
         this.body.patch({ leftBrace: false, rightBrace: false });
@@ -68,7 +71,7 @@ export default class FunctionPatcher extends NodePatcher {
     }
   }
 
-  isEndOfFunctionCall() {
+  isEndOfFunctionCall(): boolean {
     return this.parent instanceof FunctionApplicationPatcher &&
       this.parent.args[this.parent.args.length - 1] === this;
   }
@@ -81,12 +84,21 @@ export default class FunctionPatcher extends NodePatcher {
    * However, if the close-paren is at the end of our line, it usually looks
    * better to put the }) on the next line instead.
    */
-  placeCloseBraceBeforeFunctionCallEnd() {
-    let closeParenIndex = this.parent.indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.contentEnd, this.parent.contentEnd,
+  placeCloseBraceBeforeFunctionCallEnd(): void {
+    if (!this.body) {
+      throw this.error('Expected non-null body.');
+    }
+    let closeParenIndex = notNull(this.parent).indexOfSourceTokenBetweenSourceIndicesMatching(
+      this.contentEnd, notNull(this.parent).contentEnd,
       token => token.type === SourceType.CALL_END || token.type === SourceType.RPAREN
     );
+    if (!closeParenIndex) {
+      throw this.error('Expected to find close paren index after function call.');
+    }
     let closeParen = this.sourceTokenAtIndex(closeParenIndex);
+    if (!closeParen) {
+      throw this.error('Expected to find close paren after function call.');
+    }
     let shouldMoveCloseParen = !this.body.inline() &&
       !this.slice(this.contentEnd, closeParen.start).includes('\n');
     if (shouldMoveCloseParen) {
@@ -105,13 +117,22 @@ export default class FunctionPatcher extends NodePatcher {
           SourceType.RPAREN,
           this.contentStartTokenIndex
         );
+      if (!parenRange) {
+        throw this.error('Expected to find function paren range in function.');
+      }
       let rparenIndex = parenRange[1].previous();
-      arrowIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+      if (!rparenIndex) {
+        throw this.error('Expected to find rparen index in function.');
+      }
+      arrowIndex = notNull(this.indexOfSourceTokenAfterSourceTokenIndex(
         rparenIndex,
         SourceType.FUNCTION
-      );
+      ));
     }
     let arrow = this.sourceTokenAtIndex(arrowIndex);
+    if (!arrow) {
+      throw this.error('Expected to find arrow token in function.');
+    }
     let expectedArrowType = this.expectedArrowType();
     let actualArrowType = this.sourceOfToken(arrow);
     if (actualArrowType !== expectedArrowType) {
@@ -128,14 +149,14 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   hasParamStart(): boolean {
-    return this.sourceTokenAtIndex(this.contentStartTokenIndex).type === SourceType.LPAREN;
+    return notNull(this.sourceTokenAtIndex(this.contentStartTokenIndex)).type === SourceType.LPAREN;
   }
 
   canHandleImplicitReturn(): boolean {
     return true;
   }
 
-  setExplicitlyReturns() {
+  setExplicitlyReturns(): void {
     // Stop propagation of return info at functions.
   }
 
@@ -143,7 +164,7 @@ export default class FunctionPatcher extends NodePatcher {
    * Call before initialization to prevent this function from implicitly
    * returning its last statement.
    */
-  disableImplicitReturns() {
+  disableImplicitReturns(): void {
     this._implicitReturnsDisabled = true;
   }
 

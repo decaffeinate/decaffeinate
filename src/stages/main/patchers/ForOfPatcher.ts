@@ -1,9 +1,15 @@
-import ForPatcher from './ForPatcher';
 import { SourceType } from 'coffee-lex';
+import { ForOf } from 'decaffeinate-parser/dist/nodes';
+import NodePatcher from '../../../patchers/NodePatcher';
 import { CLEAN_UP_FOR_OWN_LOOPS } from '../../../suggestions';
+import notNull from '../../../utils/notNull';
+import ForPatcher from './ForPatcher';
 
 export default class ForOfPatcher extends ForPatcher {
-  patchAsStatement() {
+  node: ForOf;
+  keyAssignee: NodePatcher;
+
+  patchAsStatement(): void {
     if (this.body && !this.body.inline()) {
       this.body.setIndent(this.getLoopBodyIndent());
     }
@@ -81,28 +87,31 @@ export default class ForOfPatcher extends ForPatcher {
 
     this.removeThenToken();
     this.patchPossibleNewlineAfterLoopHeader(this.target.outerEnd);
-    if (valueAssignment !== null) {
+    if (valueAssignment !== null && this.body !== null) {
       this.body.insertLineBefore(valueAssignment, this.getOuterLoopBodyIndent());
     }
     this.patchBodyAndFilter();
   }
 
-  removeOwnTokenIfExists() {
+  removeOwnTokenIfExists(): void {
     if (this.node.isOwn) {
       let ownIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         this.contentStartTokenIndex,
         SourceType.OWN
       );
-      let ownToken = this.sourceTokenAtIndex(ownIndex);
+      if (!ownIndex) {
+        throw this.error('Expected to find own token in for-own.');
+      }
+      let ownToken = notNull(this.sourceTokenAtIndex(ownIndex));
       this.remove(ownToken.start, this.keyAssignee.outerStart);
     }
   }
 
-  requiresExtractingTarget() {
-    return !this.target.isRepeatable() && this.valAssignee;
+  requiresExtractingTarget(): boolean {
+    return !this.target.isRepeatable() && this.valAssignee !== null;
   }
 
-  targetBindingCandidate() {
+  targetBindingCandidate(): string {
     return 'object';
   }
 

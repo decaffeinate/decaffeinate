@@ -1,23 +1,27 @@
-import NodePatcher from './../../../patchers/NodePatcher';
-import type BlockPatcher from './BlockPatcher';
-import type { PatcherContext, SourceTokenListIndex } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { Conditional } from 'decaffeinate-parser/dist/nodes';
+import { PatcherContext, PatchOptions } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
+import NodePatcher from './../../../patchers/NodePatcher';
+import BlockPatcher from './BlockPatcher';
 
 export default class ConditionalPatcher extends NodePatcher {
+  node: Conditional;
   condition: NodePatcher;
-  consequent: ?BlockPatcher;
-  alternate: ?BlockPatcher;
+  consequent: BlockPatcher | null;
+  alternate: BlockPatcher | null;
 
   negated: boolean = false;
 
-  constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: BlockPatcher, alternate: ?BlockPatcher) {
+  constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: BlockPatcher | null, alternate: BlockPatcher | null) {
     super(patcherContext);
     this.condition = condition;
     this.consequent = consequent;
     this.alternate = alternate;
   }
 
-  initialize() {
+  initialize(): void {
     this.condition.setRequiresExpression();
   }
 
@@ -46,7 +50,7 @@ export default class ConditionalPatcher extends NodePatcher {
     );
   }
 
-  setExpression(force=false): boolean {
+  setExpression(force: boolean = false): boolean {
     let willPatchAsExpression = super.setExpression(force);
     if (willPatchAsExpression && this.willPatchAsTernary()) {
       if (this.consequent) {
@@ -55,10 +59,12 @@ export default class ConditionalPatcher extends NodePatcher {
       if (this.alternate) {
         this.alternate.setRequiresExpression();
       }
+      return true;
     }
+    return false;
   }
 
-  negate() {
+  negate(): void {
     this.negated = !this.negated;
   }
 
@@ -79,7 +85,7 @@ export default class ConditionalPatcher extends NodePatcher {
     return !this.willPatchAsTernary() && this.forcedToPatchAsExpression();
   }
 
-  patchAsExpression({ needsParens }={}) {
+  patchAsExpression({needsParens}: PatchOptions = {}): void {
     let addParens = this.negated ||
       (needsParens && !this.isSurroundedByParentheses());
 
@@ -99,7 +105,7 @@ export default class ConditionalPatcher extends NodePatcher {
 
     let thenTokenIndex = this.getThenTokenIndex();
     if (thenTokenIndex) {
-      let thenToken = this.sourceTokenAtIndex(thenTokenIndex);
+      let thenToken = notNull(this.sourceTokenAtIndex(thenTokenIndex));
       // `a then b` → `a ? b`
       //    ^^^^         ^
       this.overwrite(thenToken.start, thenToken.end, '?');
@@ -114,6 +120,9 @@ export default class ConditionalPatcher extends NodePatcher {
 
     let { consequent, alternate } = this;
     if (consequent && alternate) {
+      if (!elseToken) {
+        throw this.error('Expected else token in conditional.');
+      }
       consequent.patch();
       // `a ? b else c` → `a ? b : c`
       this.overwrite(elseToken.start, elseToken.end, ':');
@@ -124,9 +133,12 @@ export default class ConditionalPatcher extends NodePatcher {
       if (elseToken !== null) {
         this.overwrite(elseToken.start, elseToken.end, ' : undefined');
       } else {
-        this.insert(this.consequent.outerEnd, ' : undefined');
+        this.insert(consequent.outerEnd, ' : undefined');
       }
     } else if (alternate) {
+      if (!elseToken) {
+        throw this.error('Expected else token in conditional.');
+      }
       this.overwrite(elseToken.start, elseToken.end, 'undefined :');
       alternate.patch();
     }
@@ -136,7 +148,7 @@ export default class ConditionalPatcher extends NodePatcher {
     }
   }
 
-  patchAsForcedExpression() {
+  patchAsForcedExpression(): void {
     if (this.willPatchAsTernary()) {
       // We didn't want to be an expression because we don't have an alternate,
       // which means that the alternate of a generated ternary would be
@@ -148,15 +160,15 @@ export default class ConditionalPatcher extends NodePatcher {
     }
   }
 
-  patchAsIIFE() {
+  patchAsIIFE(): void {
     if (this.negated) {
       this.insert(this.innerStart, '!');
     }
 
     // We're only patched as an expression due to a parent instructing us to,
     // and the indent level is more logically the indent level of our parent.
-    let baseIndent = this.parent.getIndent(0);
-    let conditionIndent = this.parent.getIndent(1);
+    let baseIndent = notNull(this.parent).getIndent(0);
+    let conditionIndent = notNull(this.parent).getIndent(1);
     if (this.consequent) {
       this.consequent.setShouldPatchInline(false);
       this.consequent.setImplicitlyReturns();
@@ -176,7 +188,7 @@ export default class ConditionalPatcher extends NodePatcher {
     return this.willPatchAsIIFE();
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     this.patchConditionForStatement();
     this.patchConsequentForStatement();
     this.patchAlternateForStatement();
@@ -185,10 +197,10 @@ export default class ConditionalPatcher extends NodePatcher {
   /**
    * @private
    */
-  patchConditionForStatement() {
+  patchConditionForStatement(): void {
     // `unless a` → `if a`
     //  ^^^^^^        ^^
-    let ifToken = this.sourceTokenAtIndex(this.getIfSourceTokenIndex());
+    let ifToken = notNull(this.sourceTokenAtIndex(this.getIfSourceTokenIndex()));
     this.overwrite(ifToken.start, ifToken.end, 'if');
 
     let conditionHasParentheses = this.condition.isSurroundedByParentheses();
@@ -209,7 +221,7 @@ export default class ConditionalPatcher extends NodePatcher {
 
     let thenTokenIndex = this.getThenTokenIndex();
     if (thenTokenIndex) {
-      let thenToken = this.sourceTokenAtIndex(thenTokenIndex);
+      let thenToken = notNull(this.sourceTokenAtIndex(thenTokenIndex));
       // `if (a) then b` → `if (a) b`
       //         ^^^^^
       if (this.consequent) {
@@ -223,12 +235,12 @@ export default class ConditionalPatcher extends NodePatcher {
   /**
    * @private
    */
-  patchConsequentForStatement() {
+  patchConsequentForStatement(): void {
     this.insert(this.condition.outerEnd, ' {');
 
     if (this.alternate) {
-      let elseTokenIndex = this.getElseSourceTokenIndex();
-      let elseToken = this.sourceTokenAtIndex(elseTokenIndex);
+      let elseTokenIndex = notNull(this.getElseSourceTokenIndex());
+      let elseToken = notNull(this.sourceTokenAtIndex(elseTokenIndex));
       let rightBracePosition = elseToken.start;
       if (this.consequent !== null) {
         this.consequent.patch({ leftBrace: false, rightBrace: false });
@@ -246,22 +258,22 @@ export default class ConditionalPatcher extends NodePatcher {
   /**
    * @private
    */
-  patchAlternateForStatement() {
+  patchAlternateForStatement(): void {
     let elseTokenIndex = this.getElseSourceTokenIndex();
-    if (this.alternate) {
-      let ifToken = this.sourceTokenAtIndex(elseTokenIndex.next());
+    if (this.alternate && elseTokenIndex) {
+      let ifToken = this.sourceTokenAtIndex(notNull(elseTokenIndex.next()));
       let isElseIf = ifToken ? ifToken.type === SourceType.IF : false;
       if (isElseIf) {
         // Let the nested ConditionalPatcher handle braces.
         this.alternate.patch({ leftBrace: false, rightBrace: false });
       } else {
-        let elseToken = this.sourceTokenAtIndex(elseTokenIndex);
+        let elseToken = notNull(this.sourceTokenAtIndex(elseTokenIndex));
         let leftBracePosition = elseToken.end;
         this.insert(leftBracePosition, ' {');
         this.alternate.patch({ leftBrace: false });
       }
     } else if (elseTokenIndex !== null) {
-      let elseToken = this.sourceTokenAtIndex(elseTokenIndex);
+      let elseToken = notNull(this.sourceTokenAtIndex(elseTokenIndex));
       this.insert(elseToken.end, ' {}');
     } else if (super.implicitlyReturns()) {
       let emptyImplicitReturnCode =
@@ -279,11 +291,11 @@ export default class ConditionalPatcher extends NodePatcher {
    * implicit return nodes, so no need to turn the conditional into an
    * expression for implicit return purposes.
    */
-  implicitlyReturns() {
+  implicitlyReturns(): boolean {
     return super.implicitlyReturns() && this.willPatchAsExpression();
   }
 
-  setImplicitlyReturns() {
+  setImplicitlyReturns(): void {
     super.setImplicitlyReturns();
     if (this.consequent) {
       this.consequent.setImplicitlyReturns();
@@ -310,7 +322,7 @@ export default class ConditionalPatcher extends NodePatcher {
     if (!ifTokenIndex) {
       throw this.error('expected IF token at start of conditional');
     }
-    let ifToken = this.sourceTokenAtIndex(ifTokenIndex);
+    let ifToken = notNull(this.sourceTokenAtIndex(ifTokenIndex));
     if (ifToken.type !== SourceType.IF) {
       throw this.error(
         `expected IF token at start of conditional, but got ${SourceType[ifToken.type]}`
@@ -324,7 +336,7 @@ export default class ConditionalPatcher extends NodePatcher {
    *
    * @private
    */
-  getElseSourceTokenIndex(): ?SourceTokenListIndex {
+  getElseSourceTokenIndex(): SourceTokenListIndex | null {
     let elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.consequent !== null ? this.consequent.outerEnd : this.condition.outerEnd,
       this.alternate !== null ? this.alternate.outerStart : this.outerEnd,
@@ -333,7 +345,7 @@ export default class ConditionalPatcher extends NodePatcher {
     if (this.alternate !== null && !elseTokenIndex) {
       throw this.error(
         'expected ELSE token between consequent and alternate',
-        this.consequent.outerEnd,
+        this.consequent !== null ? this.consequent.outerEnd : this.condition.outerEnd,
         this.alternate.outerStart
       );
     }
@@ -346,7 +358,7 @@ export default class ConditionalPatcher extends NodePatcher {
    *
    * @private
    */
-  getThenTokenIndex(): ?SourceTokenListIndex {
+  getThenTokenIndex(): SourceTokenListIndex | null {
     let searchEnd;
     if (this.consequent) {
       searchEnd = this.consequent.outerStart;
