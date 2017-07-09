@@ -1,5 +1,5 @@
+import ClassAssignOpPatcher from '../stages/main/patchers/ClassAssignOpPatcher';
 import IdentifierPatcher from '../stages/main/patchers/IdentifierPatcher';
-import type ClassAssignOpPatcher from '../stages/main/patchers/ClassAssignOpPatcher';
 
 export default function getBindingCodeForMethod(method: ClassAssignOpPatcher): string {
   let accessCode;

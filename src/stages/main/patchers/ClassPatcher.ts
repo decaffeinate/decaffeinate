@@ -1,31 +1,34 @@
+import { SourceType } from 'coffee-lex';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import { Node } from 'decaffeinate-parser/dist/nodes';
+import { PatcherContext, PatchOptions } from '../../../patchers/types';
+import { isForbiddenJsName } from '../../../utils/isReservedWord';
+import notNull from '../../../utils/notNull';
+import NodePatcher, { PatcherClass } from './../../../patchers/NodePatcher';
 import ClassBlockPatcher from './ClassBlockPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
-import { isForbiddenJsName } from '../../../utils/isReservedWord';
-import type { SourceToken, PatcherContext } from './../../../patchers/types';
-import { SourceType } from 'coffee-lex';
 
 export default class ClassPatcher extends NodePatcher {
-  nameAssignee: ?NodePatcher;
-  superclass: ?NodePatcher;
-  body: ?ClassBlockPatcher;
+  nameAssignee: NodePatcher | null;
+  superclass: NodePatcher | null;
+  body: ClassBlockPatcher | null;
 
-  constructor(patcherContext: PatcherContext, nameAssignee: ?NodePatcher, parent: ?NodePatcher, body: ?ClassBlockPatcher) {
+  constructor(patcherContext: PatcherContext, nameAssignee: NodePatcher | null, parent: NodePatcher | null, body: ClassBlockPatcher | null) {
     super(patcherContext);
     this.nameAssignee = nameAssignee;
     this.superclass = parent;
     this.body = body;
   }
 
-  static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
+  static patcherClassForChildNode(_node: Node, property: string): PatcherClass | null {
     if (property === 'body') {
       return ClassBlockPatcher;
     }
     return null;
   }
 
-  initialize() {
+  initialize(): void {
     if (this.nameAssignee) {
       this.nameAssignee.setRequiresExpression();
     }
@@ -34,7 +37,7 @@ export default class ClassPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     let hasParens = this.isSurroundedByParentheses();
     let anonymous = this.isAnonymous();
     if (anonymous && !hasParens) {
@@ -52,7 +55,7 @@ export default class ClassPatcher extends NodePatcher {
     }
   }
 
-  patchAsExpression({ skipParens = false } = {}) {
+  patchAsExpression({skipParens = false}: PatchOptions = {}): void {
     let needsAssignment = this.nameAssignee &&
       (this.isNamespaced() || this.isNameAlreadyDeclared() || this.willPatchAsExpression());
     let needsParens = !skipParens && needsAssignment &&
@@ -61,7 +64,7 @@ export default class ClassPatcher extends NodePatcher {
     if (needsParens) {
       this.insert(this.contentStart, '(');
     }
-    if (needsAssignment) {
+    if (needsAssignment && this.nameAssignee) {
       let classToken = this.getClassToken();
       // `class A.B` → `A.B`
       //  ^^^^^^
@@ -114,7 +117,7 @@ export default class ClassPatcher extends NodePatcher {
    */
   getClassToken(): SourceToken {
     let tokens = this.context.sourceTokens;
-    let classSourceToken = tokens.tokenAtIndex(this.contentStartTokenIndex);
+    let classSourceToken = notNull(tokens.tokenAtIndex(this.contentStartTokenIndex));
     if (classSourceToken.type !== SourceType.CLASS) {
       throw this.error(
         `expected CLASS token but found ${SourceType[classSourceToken.type]}`,
@@ -145,13 +148,15 @@ export default class ClassPatcher extends NodePatcher {
    */
   isNameAlreadyDeclared(): boolean {
     let name = this.getName();
-    return name && this.getScope().getBinding(name) !== this.nameAssignee.node;
+    return this.nameAssignee !== null &&
+      name !== null &&
+      this.getScope().getBinding(name) !== this.nameAssignee.node;
   }
 
   /**
    * @private
    */
-  getName(): ?string {
+  getName(): string | null {
     let { nameAssignee } = this;
     let name;
     if (nameAssignee instanceof IdentifierPatcher) {

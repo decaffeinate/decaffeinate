@@ -1,22 +1,22 @@
 import { SourceType } from 'coffee-lex';
 
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
+import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
-import ClassPatcher from './ClassPatcher';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher';
+import ClassPatcher from './ClassPatcher';
 import ConstructorPatcher from './ConstructorPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
-import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
 
-import type { SourceToken } from './../../../patchers/types';
-
-type MethodInfo = {
-  classCode: string;
+export type MethodInfo = {
+  classCode: string | null;
   // Code to access the method from the prototype. If null, this is a constructor.
-  accessCode: ?string;
-}
+  accessCode: string | null;
+};
 
 /**
  * Transform CS super to JS super. For constructors, we can keep the form
@@ -26,7 +26,7 @@ type MethodInfo = {
  * using CS's algorithm and insert a more direct prototype method call.
  */
 export default class SuperPatcher extends NodePatcher {
-  patchAsExpression() {
+  patchAsExpression(): void {
     let { classCode, accessCode } = this.getEnclosingMethodInfo();
     if (this.canConvertToJsSuper()) {
       if (accessCode) {
@@ -98,7 +98,7 @@ export default class SuperPatcher extends NodePatcher {
   /**
    * @private
    */
-  getEnclosingClassName(patcher: NodePatcher): string {
+  getEnclosingClassName(patcher: NodePatcher): string | null {
     let { parent } = patcher;
     while (parent) {
       if (parent instanceof ClassPatcher) {
@@ -136,7 +136,7 @@ export default class SuperPatcher extends NodePatcher {
    *
    * @private
    */
-  getPrototypeAssignInfo(patcher: NodePatcher): ?MethodInfo {
+  getPrototypeAssignInfo(patcher: NodePatcher): MethodInfo | null {
     let prototypeAssignPatchers = extractPrototypeAssignPatchers(patcher);
     if (!prototypeAssignPatchers) {
       return null;
@@ -172,7 +172,7 @@ export default class SuperPatcher extends NodePatcher {
    *
    * @private
    */
-  canConvertToJsSuper() {
+  canConvertToJsSuper(): boolean {
     let methodAssignment = this.getEnclosingMethodAssignment();
     if (methodAssignment instanceof ConstructorPatcher ||
         methodAssignment instanceof ClassAssignOpPatcher) {
@@ -204,6 +204,6 @@ export default class SuperPatcher extends NodePatcher {
     if (!openParenTokenIndex) {
       throw this.error('Expected open-paren after super.');
     }
-    return this.sourceTokenAtIndex(openParenTokenIndex);
+    return notNull(this.sourceTokenAtIndex(openParenTokenIndex));
   }
 }

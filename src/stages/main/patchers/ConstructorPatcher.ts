@@ -1,16 +1,21 @@
-import ClassPatcher from './ClassPatcher';
-import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
+import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext, PatchOptions } from '../../../patchers/types';
+import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
 import babelConstructorWorkaroundLines from '../../../utils/babelConstructorWorkaroundLines';
 import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
 import getInvalidConstructorErrorMessage from '../../../utils/getInvalidConstructorErrorMessage';
 import traverse from '../../../utils/traverse';
 import { isFunction } from '../../../utils/types';
-import type FunctionPatcher from './FunctionPatcher';
-import type NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
-import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
+import ClassBlockPatcher from './ClassBlockPatcher';
+import ClassPatcher from './ClassPatcher';
+import FunctionPatcher from './FunctionPatcher';
+import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
+  expression: FunctionPatcher;
+
+  _bindings: Array<string> | null = null;
+
   constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: FunctionPatcher) {
     super(patcherContext, assignee, expression);
 
@@ -18,7 +23,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     expression.disableImplicitReturns();
   }
 
-  patch(options={}) {
+  patch(options: PatchOptions = {}): void {
     this.checkForConstructorErrors();
 
     if (this.expression.body) {
@@ -45,7 +50,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   }
 
   getLinesToInsert(): Array<string> {
-    let lines = [];
+    let lines: Array<string> = [];
     if (this.shouldAddBabelWorkaround()) {
       lines = lines.concat(babelConstructorWorkaroundLines);
     }
@@ -57,7 +62,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
    * Give an up-front error if this is a subclass that either omits the `super`
    * call or uses `this` before `super`.
    */
-  checkForConstructorErrors() {
+  checkForConstructorErrors(): void {
     if (!this.options.disallowInvalidConstructors) {
       return;
     }
@@ -81,8 +86,8 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
    * Return a string with an error if this constructor is invalid (generally one
    * that uses this before super). Otherwise return null.
    */
-  getInvalidConstructorMessage(): ?string {
-    if (!this.isSubclass()) {
+  getInvalidConstructorMessage(): string | null {
+    if (!this.getEnclosingClassPatcher().isSubclass()) {
       return null;
     }
 
@@ -106,22 +111,29 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
 
   getBindings(): Array<string> {
     if (!this._bindings) {
-      let boundMethods = this.parent.boundInstanceMethods();
+      let boundMethods = this.getEnclosingClassBlockPatcher().boundInstanceMethods();
       let bindings = boundMethods.map(getBindingCodeForMethod);
       this._bindings = bindings;
     }
     return this._bindings;
   }
 
-  isSubclass() {
-    let enclosingClass = this.parent.parent;
-    if (!(enclosingClass instanceof ClassPatcher)) {
+  getEnclosingClassPatcher(): ClassPatcher {
+    let enclosingClassBlock = this.getEnclosingClassBlockPatcher();
+    if (!(enclosingClassBlock.parent instanceof ClassPatcher)) {
       throw this.error('Expected grandparent of ConstructorPatcher to be ClassPatcher.');
     }
-    return enclosingClass.isSubclass();
+    return enclosingClassBlock.parent;
   }
 
-  getIndexOfSuperStatement() {
+  getEnclosingClassBlockPatcher(): ClassBlockPatcher {
+    if (!(this.parent instanceof ClassBlockPatcher)) {
+      throw this.error('Expected parent of ConstructorPatcher to be ClassBlockPatcher.');
+    }
+    return this.parent;
+  }
+
+  getIndexOfSuperStatement(): number {
     if (!this.expression.body) {
       return -1;
     }
@@ -139,6 +151,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
           // Don't go into other classes.
           return false;
         }
+        return true;
       });
       if (callsSuper) {
         return i;
@@ -147,7 +160,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     return -1;
   }
 
-  getIndexOfFirstThisStatement() {
+  getIndexOfFirstThisStatement(): number {
     if (!this.expression.body) {
       return -1;
     }
@@ -165,6 +178,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
           // Don't go into other classes or functions.
           return false;
         }
+        return true;
       });
       if (usesThis) {
         return i;

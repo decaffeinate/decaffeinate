@@ -1,23 +1,25 @@
-import BlockPatcher from './BlockPatcher';
-import ClassAssignOpPatcher from './ClassAssignOpPatcher';
-import ConstructorPatcher from './ConstructorPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
+import { Node } from 'decaffeinate-parser/dist/nodes';
+import { PatchOptions } from '../../../patchers/types';
+import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
 import adjustIndent from '../../../utils/adjustIndent';
 import babelConstructorWorkaroundLines from '../../../utils/babelConstructorWorkaroundLines';
 import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
 import getInvalidConstructorErrorMessage from '../../../utils/getInvalidConstructorErrorMessage';
-import type ClassPatcher from './ClassPatcher';
-import type { Node } from './../../../patchers/types';
-import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
+import { PatcherClass } from './../../../patchers/NodePatcher';
+import BlockPatcher from './BlockPatcher';
+import ClassAssignOpPatcher from './ClassAssignOpPatcher';
+import ClassPatcher from './ClassPatcher';
+import ConstructorPatcher from './ConstructorPatcher';
 
 export default class ClassBlockPatcher extends BlockPatcher {
-  static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
+  static patcherClassForChildNode(node: Node, property: string): PatcherClass | null {
     if (property === 'statements' && node.type === 'AssignOp') {
       return ClassAssignOpPatcher;
     }
+    return null;
   }
 
-  patch(options={}) {
+  patch(options: PatchOptions = {}): void {
     for (let boundMethod of this.boundInstanceMethods()) {
       boundMethod.key.setRequiresRepeatableExpression();
     }
@@ -61,11 +63,11 @@ export default class ClassBlockPatcher extends BlockPatcher {
     }
   }
 
-  shouldAllowInvalidConstructors() {
+  shouldAllowInvalidConstructors(): boolean {
     return !this.options.disallowInvalidConstructors;
   }
 
-  shouldEnableBabelWorkaround() {
+  shouldEnableBabelWorkaround(): boolean {
     let shouldEnable = !this.options.disableBabelConstructorWorkaround;
     if (shouldEnable) {
       this.addSuggestion(REMOVE_BABEL_WORKAROUND);
@@ -74,6 +76,9 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
   
   getClassPatcher(): ClassPatcher {
+    if (!(this.parent instanceof ClassPatcher)) {
+      throw this.error('Expected class block parent to be a class.');
+    }
     return this.parent;
   }
 
@@ -88,12 +93,12 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   boundInstanceMethods(): Array<ClassAssignOpPatcher> {
-    return this.statements.filter(statement => {
-      if (statement instanceof ClassAssignOpPatcher) {
-        return statement.isBoundInstanceMethod();
-      } else {
-        return false;
+    let boundMethods = [];
+    for (let statement of this.statements) {
+      if (statement instanceof ClassAssignOpPatcher && statement.isBoundInstanceMethod()) {
+        boundMethods.push(statement);
       }
-    });
+    }
+    return boundMethods;
   }
 }
