@@ -1,11 +1,11 @@
 import { tokens } from 'decaffeinate-coffeescript';
 import AddVariableDeclarationsStage from './stages/add-variable-declarations/index';
-import SemicolonsStage from './stages/semicolons/index';
 import EsnextStage from './stages/esnext/index';
 import LiterateStage from './stages/literate/index';
 import MainStage from './stages/main/index';
-import { mergeSuggestions, prependSuggestionComment } from './suggestions';
 import NormalizeStage from './stages/normalize/index';
+import SemicolonsStage from './stages/semicolons/index';
+import { mergeSuggestions, prependSuggestionComment, Suggestion } from './suggestions';
 import convertNewlines from './utils/convertNewlines';
 import DecaffeinateContext from './utils/DecaffeinateContext';
 import detectNewlineStr from './utils/detectNewlineStr';
@@ -18,18 +18,18 @@ import removeUnicodeBOMIfNecessary from './utils/removeUnicodeBOMIfNecessary';
 import resolveToPatchError from './utils/resolveToPatchError';
 
 export { default as run } from './cli';
-import { DEFAULT_OPTIONS } from './options';
-import type { Suggestion } from './suggestions';
+import { DEFAULT_OPTIONS, Options } from './options';
+import notNull from './utils/notNull';
 export { PatchError };
 
-type ConversionResult = {
+export type ConversionResult = {
   code: string,
 };
 
 export type StageResult = {
   code: string,
   suggestions: Array<Suggestion>,
-}
+};
 
 type Stage = {
   name: string,
@@ -40,15 +40,15 @@ type Stage = {
  * Convert CoffeeScript source code into modern JavaScript preserving comments
  * and formatting.
  */
-export function convert(source: string, options: ?Options={}): ConversionResult {
+export function convert(source: string, options: Options = {}): ConversionResult {
   source = removeUnicodeBOMIfNecessary(source);
   options = Object.assign({}, DEFAULT_OPTIONS, options);
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
 
   let literate = options.literate ||
-    options.filename.endsWith('.litcoffee') ||
-    options.filename.endsWith('.coffee.md');
+    notNull(options.filename).endsWith('.litcoffee') ||
+    notNull(options.filename).endsWith('.coffee.md');
   let stages = [
     ...(literate ? [LiterateStage] : []),
     NormalizeStage,
@@ -76,7 +76,7 @@ export function convert(source: string, options: ?Options={}): ConversionResult 
   };
 }
 
-export function modernizeJS(source: string, options: ?Options={}): ConversionResult {
+export function modernizeJS(source: string, options: Options = {}): ConversionResult {
   source = removeUnicodeBOMIfNecessary(source);
   options = Object.assign({}, DEFAULT_OPTIONS, options);
   let originalNewlineStr = detectNewlineStr(source);
@@ -91,9 +91,9 @@ export function modernizeJS(source: string, options: ?Options={}): ConversionRes
   };
 }
 
-function runStages(initialContent: string, options: Options, stages: Array<Stage>): ConversionResult {
+function runStages(initialContent: string, options: Options, stages: Array<Stage>): StageResult {
   let content = initialContent;
-  let suggestions = [];
+  let suggestions: Array<Suggestion> = [];
   stages.forEach(stage => {
     let { code, suggestions: stageSuggestions } = runStage(stage, content, options);
     content = code;

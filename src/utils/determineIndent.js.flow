@@ -1,5 +1,0 @@
-/* @flow */
-
-declare function determineIndent(source: string): string;
-
-export default determineIndent;

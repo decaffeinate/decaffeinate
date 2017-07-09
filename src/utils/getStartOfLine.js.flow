@@ -1,5 +1,0 @@
-/* @flow */
-
-declare function getStartOfLine(source: string, offset: number): number;
-
-export default getStartOfLine;

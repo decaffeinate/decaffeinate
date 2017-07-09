@@ -1,4 +1,4 @@
-import type { StageResult } from '../../index';
+import { StageResult } from '../../index';
 
 const VALID_INDENTATIONS = ['    ', '   \t', '  \t', ' \t', '\t'];
 
@@ -63,7 +63,7 @@ function convertCodeFromLiterate(code: string): string {
  * All blank lines between the comment lines and the following code are removed,
  * which generally matches JS comment style.
  */
-function convertCommentLines(commentLines: ?Array<string>): Array<string> {
+function convertCommentLines(commentLines: Array<string> | null): Array<string> {
   if (commentLines === null) {
     return [];
   }

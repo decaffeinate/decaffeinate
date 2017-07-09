@@ -1,6 +1,9 @@
+import { NodePath } from 'babel-traverse';
+import { Identifier, VariableDeclaration } from 'babel-types';
 import { allPlugins, convert } from 'esnext';
+import { StageResult } from '../../index';
+import { Options } from '../../options';
 import { logger } from '../../utils/debug';
-import type { Options, StageResult } from '../../index';
 
 export default class EsnextStage {
   static run(content: string, options: Options): StageResult {
@@ -14,7 +17,7 @@ export default class EsnextStage {
     let { code } = convert(content, {
       plugins,
       'declarations.block-scope': {
-        disableConst({ node, parent }): boolean {
+        disableConst({node, parent}: NodePath<VariableDeclaration>): boolean {
           if (options.preferLet) {
             return (
               // Only use `const` for top-level variables…
@@ -24,7 +27,7 @@ export default class EsnextStage {
               // … without any sort of destructuring …
               node.declarations[0].id.type !== 'Identifier' ||
               // … starting with a capital letter.
-              !/^[$_]?[A-Z]+$/.test(node.declarations[0].id.name)
+              !/^[$_]?[A-Z]+$/.test((node.declarations[0].id as Identifier).name)
             );
           } else {
             return false;

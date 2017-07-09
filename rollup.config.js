@@ -12,7 +12,7 @@ var pkg = require('./package.json');
 var external = Object.keys(pkg.dependencies).concat(['path', 'fs']);
 
 export default {
-  entry: 'src/index.js',
+  entry: 'src/index.ts',
   plugins: [
     json(),
     ts({ typescript: TypeScript }),

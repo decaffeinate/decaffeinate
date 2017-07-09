@@ -30,6 +30,8 @@ export interface PatcherClass {
   // to be an easy way to have TypeScript understand that.
   // tslint:disable-next-line:no-any
   new(context: PatcherContext, ...children: Array<any>): NodePatcher;
+  patcherClassForChildNode(node: Node, property: string): PatcherClass | null;
+  patcherClassOverrideForNode(node: Node): PatcherClass | null;
 }
 
 export default class NodePatcher {

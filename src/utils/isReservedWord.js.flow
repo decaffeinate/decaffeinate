@@ -1,5 +1,0 @@
-declare function isReservedWord(name: string): boolean;
-declare function isForbiddenJsName(name: string): boolean;
-
-export default isReservedWord;
-export { isForbiddenJsName };
