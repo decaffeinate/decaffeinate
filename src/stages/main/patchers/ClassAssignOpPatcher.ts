@@ -1,4 +1,10 @@
+import { SourceType } from 'coffee-lex';
+import { Node } from 'decaffeinate-parser/dist/nodes';
+import { PatcherClass } from '../../../patchers/NodePatcher';
+import containsSuperCall from '../../../utils/containsSuperCall';
+import notNull from '../../../utils/notNull';
 import ClassBoundMethodFunctionPatcher from './ClassBoundMethodFunctionPatcher';
+import ClassPatcher from './ClassPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
@@ -7,13 +13,9 @@ import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
 import StringPatcher from './StringPatcher';
 import ThisPatcher from './ThisPatcher';
-import type NodePatcher from './../../../patchers/NodePatcher';
-import type { Node } from './../../../patchers/types';
-import containsSuperCall from '../../../utils/containsSuperCall';
-import { SourceType } from 'coffee-lex';
 
 export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
-  static patcherClassForChildNode(node: Node, property: string): ?Class<NodePatcher> {
+  static patcherClassForChildNode(node: Node, property: string): PatcherClass | null {
     if (property === 'expression' && node.type === 'BoundFunction') {
       return ClassBoundMethodFunctionPatcher;
     }
@@ -27,7 +29,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     return !this.isMethod();
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.markKeyRepeatableIfNecessary();
     super.patchAsExpression();
     if (this.isStaticMethod()) {
@@ -49,9 +51,9 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    * If the method name is computed, we'll need to repeat it for any super call
    * that we do, so mark it as repeatable now.
    */
-  markKeyRepeatableIfNecessary() {
+  markKeyRepeatableIfNecessary(): void {
     if (this.expression instanceof FunctionPatcher &&
-        containsSuperCall(this.expression.node)) {
+      containsSuperCall(this.expression.node)) {
       if (this.isStaticMethod()) {
         if (this.key instanceof DynamicMemberAccessOpPatcher) {
           this.key.indexingExpr.setRequiresRepeatableExpression({
@@ -75,7 +77,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   /**
    * @protected
    */
-  patchKey() {
+  patchKey(): void {
     if (this.isStaticMethod()) {
       // Don't do anything special; the details around this are handled elsewhere.
       this.key.patch();
@@ -87,7 +89,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   /**
    * @protected
    */
-  patchAsProperty() {
+  patchAsProperty(): void {
     // `name: null` → `name = null`
     //      ^^             ^^^
     let colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
@@ -98,7 +100,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     if (!colonIndex) {
       throw this.error('expected a colon between the key and expression of a class property');
     }
-    let colonToken = this.sourceTokenAtIndex(colonIndex);
+    let colonToken = notNull(this.sourceTokenAtIndex(colonIndex));
     this.overwrite(colonToken.start, colonToken.end, ' =');
     this.patchExpression();
   }
@@ -127,12 +129,20 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
       return true;
     }
 
-    let className = this.parent.parent.nameAssignee;
+    let className = this.getEnclosingClassPatcher().nameAssignee;
     return (
       className instanceof IdentifierPatcher &&
       memberObject instanceof IdentifierPatcher &&
       className.node.data === className.node.data
     );
+  }
+
+  getEnclosingClassPatcher(): ClassPatcher {
+    let enclosingClassPatcher = notNull(this.parent).parent;
+    if (!(enclosingClassPatcher instanceof ClassPatcher)) {
+      throw this.error("Expected parent's parent to be a class.");
+    }
+    return enclosingClassPatcher;
   }
 
   isBoundInstanceMethod(): boolean {

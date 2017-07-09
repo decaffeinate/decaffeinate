@@ -1,11 +1,10 @@
+import NodePatcher from '../patchers/NodePatcher';
 import AssignOpPatcher from '../stages/main/patchers/AssignOpPatcher';
 import DynamicMemberAccessOpPatcher from '../stages/main/patchers/DynamicMemberAccessOpPatcher';
 import FunctionPatcher from '../stages/main/patchers/FunctionPatcher';
 import MemberAccessOpPatcher from '../stages/main/patchers/MemberAccessOpPatcher';
 
-import type NodePatcher from '../patchers/NodePatcher';
-
-type PrototypeAssignPatchers = ?{
+export type PrototypeAssignPatchers = {
   classRefPatcher: NodePatcher;
   // Either a MemberAccessOpPatcher or a DynamicMemberAccessOpPatcher.
   methodAccessPatcher: NodePatcher;
@@ -16,7 +15,7 @@ type PrototypeAssignPatchers = ?{
  * prototype. This means that a super call within the function needs access to
  * the enclosing function.
  */
-export default function extractPrototypeAssignPatchers(patcher: NodePatcher): PrototypeAssignPatchers {
+export default function extractPrototypeAssignPatchers(patcher: NodePatcher): PrototypeAssignPatchers | null {
   if (!(patcher instanceof AssignOpPatcher) ||
       !(patcher.expression instanceof FunctionPatcher) ||
       !(patcher.assignee instanceof MemberAccessOpPatcher ||
