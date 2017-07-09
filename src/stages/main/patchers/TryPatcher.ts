@@ -1,18 +1,26 @@
-import NodePatcher from '../../../patchers/NodePatcher';
-import type BlockPatcher from './BlockPatcher';
-import type { PatcherContext, SourceToken, SourceTokenListIndex } from '../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
+import BlockPatcher from './BlockPatcher';
 
 /**
  * Handles `try` statements, e.g. `try a catch e then console.log(e)`.
  */
 export default class TryPatcher extends NodePatcher {
-  body: ?BlockPatcher;
-  catchAssignee: ?NodePatcher;
-  catchBody: ?BlockPatcher;
-  finallyBody: ?BlockPatcher;
+  body: BlockPatcher | null;
+  catchAssignee: NodePatcher | null;
+  catchBody: BlockPatcher | null;
+  finallyBody: BlockPatcher | null;
 
-  constructor(patcherContext: PatcherContext, body: ?BlockPatcher, catchAssignee: ?NodePatcher, catchBody: ?BlockPatcher, finallyBody: ?BlockPatcher) {
+  _errorBinding: string | null = null;
+
+  constructor(
+      patcherContext: PatcherContext, body: BlockPatcher | null,
+      catchAssignee: NodePatcher | null, catchBody: BlockPatcher | null,
+      finallyBody: BlockPatcher | null) {
     super(patcherContext);
     this.body = body;
     this.catchAssignee = catchAssignee;
@@ -20,14 +28,14 @@ export default class TryPatcher extends NodePatcher {
     this.finallyBody = finallyBody;
   }
 
-  initialize() {
+  initialize(): void {
     if (this.catchAssignee) {
       this.catchAssignee.setAssignee();
       this.catchAssignee.setRequiresExpression();
     }
   }
 
-  canPatchAsExpression() {
+  canPatchAsExpression(): boolean {
     if (this.body && !this.body.canPatchAsExpression()) {
       return false;
     }
@@ -43,7 +51,7 @@ export default class TryPatcher extends NodePatcher {
   /**
    * 'try' BODY ( 'catch' ASSIGNEE? CATCH-BODY? )? ( 'finally' FINALLY-BODY )?
    */
-  patchAsStatement() {
+  patchAsStatement(): void {
     let tryToken = this.getTryToken();
     let catchToken = this.getCatchToken();
     let thenTokenIndex = this.getThenTokenIndex();
@@ -60,7 +68,7 @@ export default class TryPatcher extends NodePatcher {
           this.body.patch({ leftBrace: false, rightBrace: false });
           // `try { a; catch err` → `try { a; } catch err`
           //                                  ^^
-          this.insert((catchToken || finallyToken).start, '} ');
+          this.insert(notNull(catchToken || finallyToken).start, '} ');
         } else {
           this.body.patch({ leftBrace: false });
         }
@@ -69,13 +77,16 @@ export default class TryPatcher extends NodePatcher {
       this.insert(tryToken.end, '}');
     }
 
-
     if (thenTokenIndex) {
-      let thenToken = this.sourceTokenAtIndex(thenTokenIndex);
-      let nextToken = this.sourceTokenAtIndex(thenTokenIndex.next());
+      let thenToken = notNull(this.sourceTokenAtIndex(thenTokenIndex));
+      let nextToken = this.sourceTokenAtIndex(notNull(thenTokenIndex.next()));
       // `try { a; } catch err then b` → `try { a; } catch err b`
       //                       ^^^^^
-      this.remove(thenToken.start, nextToken.start);
+      if (nextToken) {
+        this.remove(thenToken.start, nextToken.start);
+      } else {
+        this.remove(thenToken.start, thenToken.end);
+      }
     }
 
     if (catchToken) {
@@ -132,7 +143,7 @@ export default class TryPatcher extends NodePatcher {
     }
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     // Make our children return since we're wrapping in a function.
     this.setImplicitlyReturns();
 
@@ -151,11 +162,11 @@ export default class TryPatcher extends NodePatcher {
    * If we're a statement, our children can handle implicit return, so no need
    * to convert to an expression.
    */
-  implicitlyReturns() {
+  implicitlyReturns(): boolean {
     return super.implicitlyReturns() && this.willPatchAsExpression();
   }
 
-  setImplicitlyReturns() {
+  setImplicitlyReturns(): void {
     super.setImplicitlyReturns();
     if (this.body) {
       this.body.setImplicitlyReturns();
@@ -184,7 +195,7 @@ export default class TryPatcher extends NodePatcher {
   /**
    * @private
    */
-  getCatchToken(): ?SourceToken {
+  getCatchToken(): SourceToken | null {
     let searchStart;
     if (this.body) {
       searchStart = this.body.outerEnd;
@@ -215,7 +226,7 @@ export default class TryPatcher extends NodePatcher {
   /**
    * @private
    */
-  getThenTokenIndex(): ?SourceTokenListIndex {
+  getThenTokenIndex(): SourceTokenListIndex | null {
     let searchStart;
     if (this.catchAssignee) {
       searchStart = this.catchAssignee.outerEnd;
@@ -243,7 +254,7 @@ export default class TryPatcher extends NodePatcher {
   /**
    * @private
    */
-  getFinallyToken(): ?SourceToken {
+  getFinallyToken(): SourceToken | null {
     let searchStart;
     if (this.catchBody) {
       searchStart = this.catchBody.outerEnd;

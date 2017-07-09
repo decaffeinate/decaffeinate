@@ -1,3 +1,12 @@
+import { SourceType } from 'coffee-lex';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import { InOp } from 'decaffeinate-parser/dist/nodes';
+import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
+import {
+  FIX_INCLUDES_EVALUATION_ORDER,
+  REMOVE_ARRAY_FROM
+} from '../../../suggestions';
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import BinaryOpPatcher from './BinaryOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
@@ -5,13 +14,6 @@ import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import StringPatcher from './StringPatcher';
-import type NodePatcher from './../../../patchers/NodePatcher';
-import type { SourceToken, PatcherContext } from './../../../patchers/types';
-import {
-  FIX_INCLUDES_EVALUATION_ORDER,
-  REMOVE_ARRAY_FROM
-} from '../../../suggestions';
-import { SourceType } from 'coffee-lex';
 
 const IN_HELPER = `\
 function __in__(needle, haystack) {
@@ -29,10 +31,10 @@ export default class InOpPatcher extends BinaryOpPatcher {
    */
   constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
     super(patcherContext, left, right);
-    this.negated = patcherContext.node.isNot;
+    this.negated = (patcherContext.node as InOp).isNot;
   }
 
-  negate() {
+  negate(): void {
     this.negated = !this.negated;
   }
 
@@ -43,7 +45,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
   /**
    * LEFT 'in' RIGHT
    */
-  patchAsExpression() {
+  patchAsExpression(): void {
     if (this.options.noArrayIncludes) {
       this.patchAsIndexLookup();
       return;
@@ -82,7 +84,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
     this.insert(this.left.outerEnd, ')');
   }
 
-  patchWithLHSExtracted() {
+  patchWithLHSExtracted(): void {
     this.addSuggestion(FIX_INCLUDES_EVALUATION_ORDER);
     // `a() in b` → `(needle = a(), in b`
     //               ^^^^^^^^^^^^^^^
@@ -114,7 +116,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
     this.insert(this.right.outerEnd, `.includes(${leftRef}))`);
   }
 
-  shouldWrapInArrayFrom() {
+  shouldWrapInArrayFrom(): boolean {
     if (this.options.looseIncludes) {
       return false;
     }
@@ -125,7 +127,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
     return shouldWrap;
   }
 
-  rhsNeedsParens() {
+  rhsNeedsParens(): boolean {
     // In typical cases, when converting `a in b` to `b.includes(a)`, parens
     // won't be necessary around the `b`, but to be safe, only skip the parens
     // in a specific set of known-good cases.
@@ -137,7 +139,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
       !(this.right instanceof StringPatcher);
   }
 
-  patchAsIndexLookup() {
+  patchAsIndexLookup(): void {
     let helper = this.registerHelper('__in__', IN_HELPER);
 
     if (this.negated) {

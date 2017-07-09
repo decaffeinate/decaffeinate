@@ -1,8 +1,11 @@
-import NodePatcher from './../../../patchers/NodePatcher';
-import LoopPatcher from './LoopPatcher';
-import type BlockPatcher from './BlockPatcher';
-import type { PatcherContext, SourceTokenListIndex } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { While } from 'decaffeinate-parser/dist/nodes';
+import { PatcherContext } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
+import NodePatcher from './../../../patchers/NodePatcher';
+import BlockPatcher from './BlockPatcher';
+import LoopPatcher from './LoopPatcher';
 
 /**
  * Handles `while` loops, e.g.
@@ -11,16 +14,18 @@ import { SourceType } from 'coffee-lex';
  *     b
  */
 export default class WhilePatcher extends LoopPatcher {
-  condition: NodePatcher;
-  guard: ?NodePatcher;
+  node: While;
 
-  constructor(patcherContext: PatcherContext, condition: NodePatcher, guard: ?NodePatcher, body: BlockPatcher) {
+  condition: NodePatcher;
+  guard: NodePatcher | null;
+
+  constructor(patcherContext: PatcherContext, condition: NodePatcher, guard: NodePatcher | null, body: BlockPatcher) {
     super(patcherContext, body);
     this.condition = condition;
     this.guard = guard;
   }
 
-  initialize() {
+  initialize(): void {
     this.condition.setRequiresExpression();
     if (this.guard !== null) {
       this.guard.setRequiresExpression();
@@ -31,14 +36,14 @@ export default class WhilePatcher extends LoopPatcher {
    * ( 'while' | 'until' ) CONDITION ('when' GUARD)? 'then' BODY
    * ( 'while' | 'until' ) CONDITION ('when' GUARD)? NEWLINE INDENT BODY
    */
-  patchAsStatement() {
+  patchAsStatement(): void {
     if (this.body && !this.body.inline()) {
       this.body.setIndent(this.getLoopBodyIndent());
     }
 
     // `until a` → `while a`
     //  ^^^^^       ^^^^^
-    let whileToken = this.sourceTokenAtIndex(this.getWhileTokenIndex());
+    let whileToken = notNull(this.sourceTokenAtIndex(this.getWhileTokenIndex()));
 
     this.overwrite(whileToken.start, whileToken.end, 'while');
 
@@ -56,7 +61,7 @@ export default class WhilePatcher extends LoopPatcher {
 
     if (this.guard) {
       let guardNeedsParens = !this.guard.isSurroundedByParentheses();
-      if (this.body.inline()) {
+      if (this.body && this.body.inline()) {
         // `while (a when b` → `while (a) { if (b`
         //          ^^^^^^              ^^^^^^^^
         this.overwrite(
@@ -87,8 +92,8 @@ export default class WhilePatcher extends LoopPatcher {
 
     let thenIndex = this.getThenTokenIndex();
     if (thenIndex) {
-      let thenToken = this.sourceTokenAtIndex(thenIndex);
-      let nextToken = this.sourceTokenAtIndex(thenIndex.next());
+      let thenToken = notNull(this.sourceTokenAtIndex(thenIndex));
+      let nextToken = this.sourceTokenAtIndex(notNull(thenIndex.next()));
       if (nextToken) {
         this.remove(thenToken.start, nextToken.start);
       } else {
@@ -132,7 +137,7 @@ export default class WhilePatcher extends LoopPatcher {
   /**
    * @private
    */
-  getThenTokenIndex(): ?SourceTokenListIndex {
+  getThenTokenIndex(): SourceTokenListIndex | null {
     let whileTokenIndex = this.getWhileTokenIndex();
     if (!whileTokenIndex) {
       throw this.error(`could not get first token of 'while' loop`);
@@ -163,7 +168,7 @@ export default class WhilePatcher extends LoopPatcher {
     );
   }
 
-  getLoopBodyIndent() {
+  getLoopBodyIndent(): string {
     if (this.guard) {
       return this.getOuterLoopBodyIndent() + this.getProgramIndentString();
     } else {

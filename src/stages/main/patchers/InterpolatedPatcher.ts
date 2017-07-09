@@ -7,12 +7,13 @@ import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespa
 import escapeZeroCharsInRange from '../../../utils/escapeZeroCharsInRange';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
+import QuasiPatcher from './QuasiPatcher';
 
 export default class InterpolatedPatcher extends NodePatcher {
-  quasis: Array<NodePatcher>;
+  quasis: Array<QuasiPatcher>;
   expressions: Array<NodePatcher | null>;
 
-  constructor(patcherContext: PatcherContext, quasis: Array<NodePatcher>, expressions: Array<NodePatcher>) {
+  constructor(patcherContext: PatcherContext, quasis: Array<QuasiPatcher>, expressions: Array<NodePatcher>) {
     super(patcherContext);
     this.quasis = quasis;
     this.expressions = expressions;
