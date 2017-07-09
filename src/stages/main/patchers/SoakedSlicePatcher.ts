@@ -1,9 +1,9 @@
 /**
  * Handles soaked array or string slicing, e.g. `names?[i..]`.
  */
-import SlicePatcher from './SlicePatcher';
-import findSoakContainer from '../../../utils/findSoakContainer';
 import { REMOVE_GUARD } from '../../../suggestions';
+import findSoakContainer from '../../../utils/findSoakContainer';
+import SlicePatcher from './SlicePatcher';
 
 const GUARD_HELPER =
   `function __guard__(value, transform) {
@@ -11,7 +11,7 @@ const GUARD_HELPER =
 }`;
 
 export default class SoakedSlicePatcher extends SlicePatcher {
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.registerHelper('__guard__', GUARD_HELPER);
     this.addSuggestion(REMOVE_GUARD);
 

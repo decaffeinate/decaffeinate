@@ -1,8 +1,10 @@
-import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
+import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
+import { REMOVE_GUARD, SHORTEN_NULL_CHECKS } from '../../../suggestions';
 import findSoakContainer from '../../../utils/findSoakContainer';
 import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
 import ternaryNeedsParens from '../../../utils/ternaryNeedsParens';
-import { REMOVE_GUARD, SHORTEN_NULL_CHECKS } from '../../../suggestions';
+import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 
 const GUARD_HELPER =
   `function __guard__(value, transform) {
@@ -17,7 +19,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
     this._shouldSkipSoakPatch = false;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     if (!this._shouldSkipSoakPatch) {
       if (this.shouldPatchAsConditional()) {
         this.patchAsConditional();
@@ -30,11 +32,11 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
     }
   }
 
-  shouldPatchAsConditional() {
+  shouldPatchAsConditional(): boolean {
     return this.expression.isRepeatable() && !nodeContainsSoakOperation(this.expression.node);
   }
 
-  patchAsConditional() {
+  patchAsConditional(): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
     let soakContainer = findSoakContainer(this);
     let expressionCode = this.expression.patchRepeatable();
@@ -65,7 +67,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
     }
   }
 
-  patchAsGuardCall() {
+  patchAsGuardCall(): void {
     this.registerHelper('__guard__', GUARD_HELPER);
     this.addSuggestion(REMOVE_GUARD);
     let soakContainer = findSoakContainer(this);
@@ -82,7 +84,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
     this.indexingExpr.patch();
   }
 
-  setShouldSkipSoakPatch() {
+  setShouldSkipSoakPatch(): void {
     this._shouldSkipSoakPatch = true;
   }
 }

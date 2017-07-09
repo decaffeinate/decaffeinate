@@ -1,12 +1,12 @@
+import NodePatcher from '../patchers/NodePatcher';
 import AssignOpPatcher from '../stages/main/patchers/AssignOpPatcher';
+import DynamicMemberAccessOpPatcher from '../stages/main/patchers/DynamicMemberAccessOpPatcher';
 import FunctionApplicationPatcher from '../stages/main/patchers/FunctionApplicationPatcher';
 import MemberAccessOpPatcher from '../stages/main/patchers/MemberAccessOpPatcher';
-import DynamicMemberAccessOpPatcher from '../stages/main/patchers/DynamicMemberAccessOpPatcher';
 import SoakedDynamicMemberAccessOpPatcher from '../stages/main/patchers/SoakedDynamicMemberAccessOpPatcher';
 import SoakedFunctionApplicationPatcher from '../stages/main/patchers/SoakedFunctionApplicationPatcher';
 import SoakedMemberAccessOpPatcher from '../stages/main/patchers/SoakedMemberAccessOpPatcher';
-
-import type NodePatcher from '../patchers/NodePatcher';
+import notNull from './notNull';
 
 /**
  * Find the enclosing node defining the "soak range" for a given soak operation.
@@ -17,7 +17,7 @@ import type NodePatcher from '../patchers/NodePatcher';
 export default function findSoakContainer(patcher: NodePatcher): NodePatcher {
   let result = patcher;
   while (canParentHandleSoak(result)) {
-    result = result.parent;
+    result = notNull(result.parent);
   }
   return result;
 }
@@ -74,11 +74,6 @@ function canParentHandleSoak(patcher: NodePatcher): boolean {
         'PostIncrementOp', 'PostDecrementOp', 'PreIncrementOp', 'PreDecrementOp', 'DeleteOp'
       ].indexOf(patcher.parent.node.type) >= 0) {
     return true;
-  }
-  if ([].indexOf(patcher.parent.node.type) >= 0) {
-    throw patcher.parent.error(
-      'Expressions like `++a?.b`, `--a?.b`, and `delete a?.b` are not supported yet.'
-    );
   }
   return false;
 }

@@ -1,8 +1,8 @@
-import MemberAccessOpPatcher from './MemberAccessOpPatcher';
+import { REMOVE_GUARD, SHORTEN_NULL_CHECKS } from '../../../suggestions';
 import findSoakContainer from '../../../utils/findSoakContainer';
 import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
 import ternaryNeedsParens from '../../../utils/ternaryNeedsParens';
-import { REMOVE_GUARD, SHORTEN_NULL_CHECKS } from '../../../suggestions';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 
 const GUARD_HELPER =
   `function __guard__(value, transform) {
@@ -10,14 +10,9 @@ const GUARD_HELPER =
 }`;
 
 export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
-  _shouldSkipSoakPatch: boolean;
+  _shouldSkipSoakPatch: boolean = false;
 
-  constructor(patcherContext: PatcherContext, expression: NodePatcher) {
-    super(patcherContext, expression);
-    this._shouldSkipSoakPatch = false;
-  }
-
-  patchAsExpression() {
+  patchAsExpression(): void {
     if (!this._shouldSkipSoakPatch) {
       if (this.shouldPatchAsConditional()) {
         this.patchAsConditional();
@@ -29,11 +24,11 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
     }
   }
 
-  shouldPatchAsConditional() {
+  shouldPatchAsConditional(): boolean {
     return this.expression.isRepeatable() && !nodeContainsSoakOperation(this.expression.node);
   }
 
-  patchAsConditional() {
+  patchAsConditional(): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
     let soakContainer = findSoakContainer(this);
     let memberNameToken = this.getMemberNameSourceToken();
@@ -64,7 +59,7 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
     }
   }
 
-  patchAsGuardCall() {
+  patchAsGuardCall(): void {
     this.registerHelper('__guard__', GUARD_HELPER);
     this.addSuggestion(REMOVE_GUARD);
 
@@ -85,7 +80,7 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
     this.expression.patch();
   }
 
-  setShouldSkipSoakPatch() {
+  setShouldSkipSoakPatch(): void {
     this._shouldSkipSoakPatch = true;
   }
 

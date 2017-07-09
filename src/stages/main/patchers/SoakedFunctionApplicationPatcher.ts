@@ -1,13 +1,15 @@
 import { SourceType } from 'coffee-lex';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import { REMOVE_GUARD } from '../../../suggestions';
+import findSoakContainer from '../../../utils/findSoakContainer';
+import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
+import notNull from '../../../utils/notNull';
+import ternaryNeedsParens from '../../../utils/ternaryNeedsParens';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import SoakedDynamicMemberAccessOpPatcher from './SoakedDynamicMemberAccessOpPatcher';
 import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher';
-import findSoakContainer from '../../../utils/findSoakContainer';
-import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
-import ternaryNeedsParens from '../../../utils/ternaryNeedsParens';
-import { REMOVE_GUARD } from '../../../suggestions';
 
 const GUARD_FUNC_HELPER =
   `function __guardFunc__(func, transform) {
@@ -43,7 +45,7 @@ const GUARD_METHOD_HELPER =
 }`;
 
 export default class SoakedFunctionApplicationPatcher extends FunctionApplicationPatcher {
-  patchAsExpression() {
+  patchAsExpression(): void {
     if (this.shouldPatchAsConditional()) {
       this.patchAsConditional();
     } else {
@@ -58,11 +60,11 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     }
   }
 
-  shouldPatchAsConditional() {
+  shouldPatchAsConditional(): boolean {
     return this.fn.isRepeatable() && !nodeContainsSoakOperation(this.fn.node);
   }
 
-  patchAsConditional() {
+  patchAsConditional(): void {
     let soakContainer = findSoakContainer(this);
     this.fn.setRequiresRepeatableExpression();
     super.patchAsExpression();
@@ -92,7 +94,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
   /**
    * Change a.b?() to __guardMethod__(a, 'b', o => o.b())
    */
-  patchMethodCall(fn: MemberAccessOpPatcher) {
+  patchMethodCall(fn: MemberAccessOpPatcher): void {
     let memberName = fn.getMemberName();
     if (fn.hasImplicitOperator()) {
       fn.setSkipImplicitDotCreation();
@@ -122,7 +124,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
   /**
    * Change a[b]?() to __guardMethod__(a, b, (o, m) => o[m]())
    */
-  patchDynamicMethodCall(fn: DynamicMemberAccessOpPatcher) {
+  patchDynamicMethodCall(fn: DynamicMemberAccessOpPatcher): void {
     let {expression, indexingExpr} = fn;
 
     this.registerHelper('__guardMethod__', GUARD_METHOD_HELPER);
@@ -146,7 +148,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     soakContainer.appendDeferredSuffix(')');
   }
 
-  patchNonMethodCall() {
+  patchNonMethodCall(): void {
     this.registerHelper('__guardFunc__', GUARD_FUNC_HELPER);
     this.addSuggestion(REMOVE_GUARD);
     let callStartToken = this.getCallStartToken();
@@ -170,6 +172,6 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     if (!index || index.isAfter(this.contentEndTokenIndex)) {
       throw this.error(`unable to find open-paren for function call`);
     }
-    return tokens.tokenAtIndex(index);
+    return notNull(tokens.tokenAtIndex(index));
   }
 }
