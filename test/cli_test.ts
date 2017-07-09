@@ -366,36 +366,36 @@ describe('decaffeinate CLI', () => {
   });
 
   it('discovers and converts CoffeeScript files when prompted', () => {
-    runCli('./test/fixtures', '', `
-      test/fixtures/A.coffee → test/fixtures/A.js
-      test/fixtures/B.coffee.md → test/fixtures/B.js
-      test/fixtures/C.litcoffee → test/fixtures/C.js
+    runCli('./test_fixtures', '', `
+      test_fixtures/A.coffee → test_fixtures/A.js
+      test_fixtures/B.coffee.md → test_fixtures/B.js
+      test_fixtures/C.litcoffee → test_fixtures/C.js
     `);
-    ok(existsSync('test/fixtures/A.js'));
-    ok(existsSync('test/fixtures/B.js'));
-    ok(existsSync('test/fixtures/C.js'));
+    ok(existsSync('test_fixtures/A.js'));
+    ok(existsSync('test_fixtures/B.js'));
+    ok(existsSync('test_fixtures/C.js'));
   });
 
   it('properly converts an unrecognized extension', () => {
-    runCli('./test/fixtures/D.cjsx', '', `
-      ./test/fixtures/D.cjsx → test/fixtures/D.js
+    runCli('./test_fixtures/D.cjsx', '', `
+      ./test_fixtures/D.cjsx → test_fixtures/D.js
     `);
-    ok(existsSync('test/fixtures/D.js'));
+    ok(existsSync('test_fixtures/D.js'));
   });
 
   it('properly converts an extensionless file', () => {
-    runCli('./test/fixtures/E', '', `
-      ./test/fixtures/E → test/fixtures/E.js
+    runCli('./test_fixtures/E', '', `
+      ./test_fixtures/E → test_fixtures/E.js
     `);
-    ok(existsSync('test/fixtures/E.js'));
+    ok(existsSync('test_fixtures/E.js'));
   });
 
   it('properly modernizes a JS file', () => {
-    copySync('./test/fixtures/F.js', './test/fixtures/F.tmp.js');
-    runCli('test/fixtures/F.tmp.js --modernize-js --use-js-modules', '', `
-      test/fixtures/F.tmp.js → test/fixtures/F.tmp.js
+    copySync('./test_fixtures/F.js', './test_fixtures/F.tmp.js');
+    runCli('test_fixtures/F.tmp.js --modernize-js --use-js-modules', '', `
+      test_fixtures/F.tmp.js → test_fixtures/F.tmp.js
     `);
-    let contents = readFileSync('./test/fixtures/F.tmp.js').toString();
+    let contents = readFileSync('./test_fixtures/F.tmp.js').toString();
     equal(stripSharedIndent(contents), stripSharedIndent(`
       import path from 'path';
       const b = 1;
@@ -407,11 +407,11 @@ describe('decaffeinate CLI', () => {
   });
 
   it('discovers JS files with --modernize-js specified', () => {
-    copySync('./test/fixtures/F.js', './test/fixtures/searchDir/F.js');
-    runCli('test/fixtures/searchDir --modernize-js --use-js-modules', '', `
-      test/fixtures/searchDir/F.js → test/fixtures/searchDir/F.js
+    copySync('./test_fixtures/F.js', './test_fixtures/searchDir/F.js');
+    runCli('test_fixtures/searchDir --modernize-js --use-js-modules', '', `
+      test_fixtures/searchDir/F.js → test_fixtures/searchDir/F.js
     `);
-    let contents = readFileSync('./test/fixtures/searchDir/F.js').toString();
+    let contents = readFileSync('./test_fixtures/searchDir/F.js').toString();
     equal(stripSharedIndent(contents), stripSharedIndent(`
       import path from 'path';
       const b = 1;
