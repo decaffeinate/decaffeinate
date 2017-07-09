@@ -1,3 +1,13 @@
+import { PatcherContext } from '../../../patchers/types';
+import {
+  REMOVE_ARRAY_FROM,
+  SHORTEN_NULL_CHECKS,
+  SIMPLIFY_COMPLEX_ASSIGNMENTS,
+} from '../../../suggestions';
+import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import containsSuperCall from '../../../utils/containsSuperCall';
+import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
+import NodePatcher from './../../../patchers/NodePatcher';
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
 import DoOpPatcher from './DoOpPatcher';
@@ -11,20 +21,9 @@ import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 import ObjectInitialiserPatcher from './ObjectInitialiserPatcher';
 import ReturnPatcher from './ReturnPatcher';
 import SlicePatcher from './SlicePatcher';
+import SpreadPatcher from './SpreadPatcher';
 import StringPatcher from './StringPatcher';
 import ThisPatcher from './ThisPatcher';
-import SpreadPatcher from './SpreadPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
-import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
-import containsSuperCall from '../../../utils/containsSuperCall';
-import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
-import {
-  REMOVE_ARRAY_FROM,
-  SHORTEN_NULL_CHECKS,
-  SIMPLIFY_COMPLEX_ASSIGNMENTS,
-} from '../../../suggestions';
-
-import type { PatcherContext } from './../../../patchers/types';
 
 const MULTI_ASSIGN_SINGLE_LINE_MAX_LENGTH = 100;
 
@@ -39,17 +38,17 @@ export default class AssignOpPatcher extends NodePatcher {
     this.expression = expression;
   }
 
-  initialize() {
+  initialize(): void {
     this.assignee.setAssignee();
     this.assignee.setRequiresExpression();
     this.expression.setRequiresExpression();
   }
 
-  negate() {
+  negate(): void {
     this.negated = !this.negated;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.markProtoAssignmentRepeatableIfNecessary();
     let shouldAddParens = this.negated ||
       (this.willResultInSeqExpression() &&
@@ -98,7 +97,7 @@ export default class AssignOpPatcher extends NodePatcher {
     }
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     this.markProtoAssignmentRepeatableIfNecessary();
     if (canPatchAssigneeToJavaScript(this.assignee.node)) {
       let shouldAddParens = this.assignee.statementShouldAddParens();
@@ -117,13 +116,13 @@ export default class AssignOpPatcher extends NodePatcher {
     }
   }
 
-  willResultInSeqExpression() {
+  willResultInSeqExpression(): boolean {
     return this.willPatchAsExpression() &&
       (!canPatchAssigneeToJavaScript(this.assignee.node) ||
         this.assignee instanceof ArrayInitialiserPatcher);
   }
 
-  patchSimpleAssignment() {
+  patchSimpleAssignment(): void {
     let needsArrayFrom = this.assignee instanceof ArrayInitialiserPatcher;
     this.assignee.patch();
     if (needsArrayFrom) {
@@ -144,7 +143,7 @@ export default class AssignOpPatcher extends NodePatcher {
     }
   }
 
-  overwriteWithAssignments(assignments: Array<string>) {
+  overwriteWithAssignments(assignments: Array<string>): void {
     let assignmentCode = assignments.join(', ');
     if (assignmentCode.length > MULTI_ASSIGN_SINGLE_LINE_MAX_LENGTH) {
       assignmentCode = assignments.join(`,\n${this.getIndent(1)}`);
@@ -272,13 +271,13 @@ export default class AssignOpPatcher extends NodePatcher {
    * mark the `A` expression, and possibly the indexed value, as repeatable so
    * that the super transform can make use of it.
    */
-  markProtoAssignmentRepeatableIfNecessary() {
+  markProtoAssignmentRepeatableIfNecessary(): void {
     if (!(this.expression instanceof FunctionPatcher && containsSuperCall(this.expression.node))) {
-      return null;
+      return;
     }
     let prototypeAssignPatchers = extractPrototypeAssignPatchers(this);
     if (!prototypeAssignPatchers) {
-      return null;
+      return;
     }
     let { classRefPatcher, methodAccessPatcher } = prototypeAssignPatchers;
     classRefPatcher.setRequiresRepeatableExpression({

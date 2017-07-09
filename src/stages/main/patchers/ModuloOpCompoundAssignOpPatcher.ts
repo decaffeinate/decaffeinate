@@ -1,8 +1,9 @@
-import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
+import { PatchOptions } from '../../../patchers/types';
 import registerModHelper from '../../../utils/registerModHelper';
+import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class ModuloOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression({ needsParens=false }={}) {
+  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
     let helper = registerModHelper(this);
 
     let shouldAddParens = this.negated ||
@@ -31,7 +32,7 @@ export default class ModuloOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     }
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     this.patchAsExpression();
   }
 }

@@ -1,7 +1,8 @@
+import { PatchOptions } from '../../../patchers/types';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression({ needsParens=false }={}) {
+  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
     let shouldAddParens = this.negated ||
       (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
@@ -38,7 +39,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
     }
   }
 
-  patchAsStatement(options={}) {
+  patchAsStatement(options: PatchOptions = {}): void {
     if (this.lhsHasSoakOperation()) {
       this.patchAsExpression(options);
       return;

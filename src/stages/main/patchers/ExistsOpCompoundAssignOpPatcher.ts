@@ -1,8 +1,9 @@
-import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
+import { PatchOptions } from '../../../patchers/types';
 import { SHORTEN_NULL_CHECKS } from '../../../suggestions';
+import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression({ needsParens=false }={}) {
+  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
     let shouldAddParens = this.negated ||
       (needsParens && !this.isSurroundedByParentheses());
@@ -46,8 +47,8 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
     }
   }
 
-  patchAsStatement(options={}) {
-    if (this.lhsHasSoakOperation(options)) {
+  patchAsStatement(): void {
+    if (this.lhsHasSoakOperation()) {
       this.patchAsExpression();
       return;
     }
@@ -90,7 +91,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
    * than just `a != null`. We need to emit the more defensive version if the
    * variable might not be declared.
    */
-  needsTypeofCheck() {
+  needsTypeofCheck(): boolean {
     return this.assignee.mayBeUnboundReference();
   }
 

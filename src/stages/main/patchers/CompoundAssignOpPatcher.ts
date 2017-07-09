@@ -1,7 +1,8 @@
-import AssignOpPatcher from './AssignOpPatcher';
-import type { SourceToken } from './../../../patchers/types';
-import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
 import { SourceType } from 'coffee-lex';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
+import notNull from '../../../utils/notNull';
+import AssignOpPatcher from './AssignOpPatcher';
 
 export default class CompoundAssignOpPatcher extends AssignOpPatcher {
   getOperatorToken(): SourceToken {
@@ -17,7 +18,7 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
         this.expression.outerStart
       );
     }
-    return this.sourceTokenAtIndex(operatorIndex);
+    return notNull(this.sourceTokenAtIndex(operatorIndex));
   }
 
   /**
@@ -32,7 +33,7 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
    * may be a __guard__ call surrounding the whole thing, so we can't patch
    * statement code, so instead run the expression code path.
    */
-  lhsHasSoakOperation() {
+  lhsHasSoakOperation(): boolean {
     return nodeContainsSoakOperation(this.assignee.node);
   }
 }

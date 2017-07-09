@@ -1,8 +1,8 @@
+import { PatcherContext, PatchOptions } from '../../../patchers/types';
+import NodePatcher from './../../../patchers/NodePatcher';
 import AssignOpPatcher from './AssignOpPatcher';
 import BlockPatcher from './BlockPatcher';
 import ReturnPatcher from './ReturnPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
 
 export default class YieldPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -12,7 +12,7 @@ export default class YieldPatcher extends NodePatcher {
     this.expression = expression;
   }
   
-  initialize() {
+  initialize(): void {
     this.yields();
     this.expression.setRequiresExpression();
   }
@@ -20,7 +20,7 @@ export default class YieldPatcher extends NodePatcher {
   /**
    * 'yield' EXPRESSION
    */
-  patchAsExpression({ needsParens=true }={}) {
+  patchAsExpression({needsParens = true}: PatchOptions = {}): void {
     let surroundInParens = this.needsParens() && !this.isSurroundedByParentheses();
     if (surroundInParens) {
       this.insert(this.contentStart, '(');
@@ -31,7 +31,7 @@ export default class YieldPatcher extends NodePatcher {
     }
   }
 
-  needsParens() {
+  needsParens(): boolean {
     return !(
       this.parent instanceof BlockPatcher ||
       this.parent instanceof ReturnPatcher ||

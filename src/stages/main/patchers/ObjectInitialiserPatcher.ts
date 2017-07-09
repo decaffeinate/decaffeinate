@@ -4,6 +4,7 @@ import { PatcherContext } from '../../../patchers/types';
 import notNull from '../../../utils/notNull';
 import { isSemanticToken } from '../../../utils/types';
 import NodePatcher from './../../../patchers/NodePatcher';
+import AssignOpPatcher from './AssignOpPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 
 export type OpenCurlyInfo = {
@@ -16,9 +17,9 @@ export type OpenCurlyInfo = {
  * Handles object literals.
  */
 export default class ObjectInitialiserPatcher extends NodePatcher {
-  members: Array<ObjectInitialiserMemberPatcher>;
+  members: Array<ObjectInitialiserMemberPatcher | AssignOpPatcher>;
 
-  constructor(patcherContext: PatcherContext, members: Array<ObjectInitialiserMemberPatcher>) {
+  constructor(patcherContext: PatcherContext, members: Array<ObjectInitialiserMemberPatcher | AssignOpPatcher>) {
     super(patcherContext);
     this.members = members;
   }
