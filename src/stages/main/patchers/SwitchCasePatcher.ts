@@ -1,12 +1,14 @@
-import BlockPatcher from './BlockPatcher';
-import NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext, SourceToken } from '../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
+import BlockPatcher from './BlockPatcher';
 import BreakPatcher from './BreakPatcher';
 
 export default class SwitchCasePatcher extends NodePatcher {
   conditions: Array<NodePatcher>;
-  consequent: ?NodePatcher;
+  consequent: NodePatcher | null;
 
   negated: boolean;
 
@@ -17,11 +19,11 @@ export default class SwitchCasePatcher extends NodePatcher {
     this.negated = false;
   }
 
-  initialize() {
+  initialize(): void {
     this.conditions.forEach(condition => condition.setRequiresExpression());
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     let lastCondition = this.conditions[this.conditions.length - 1];
 
     // `when a, b, c then d` → `a, b, c then d`
@@ -83,14 +85,14 @@ export default class SwitchCasePatcher extends NodePatcher {
     }
   }
 
-  setImplicitlyReturns() {
+  setImplicitlyReturns(): void {
     super.setImplicitlyReturns();
     if (this.consequent !== null) {
       this.consequent.setImplicitlyReturns();
     }
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     this.patchAsStatement();
   }
 
@@ -98,7 +100,7 @@ export default class SwitchCasePatcher extends NodePatcher {
    * Don't actually negate the conditions until just before patching, since
    * otherwise we might accidentally overwrite a ! character that gets inserted.
    */
-  negate() {
+  negate(): void {
     this.negated = !this.negated;
   }
 
@@ -120,7 +122,7 @@ export default class SwitchCasePatcher extends NodePatcher {
    * @private
    */
   getCommaTokens(): Array<SourceToken> {
-    let result = [];
+    let result: Array<SourceToken> = [];
     for (let i = 1; i < this.conditions.length; i++) {
       let left = this.conditions[i - 1];
       let right = this.conditions[i];
@@ -134,7 +136,7 @@ export default class SwitchCasePatcher extends NodePatcher {
           right.contentStart
         );
       }
-      result.push(this.sourceTokenAtIndex(commaIndex));
+      result.push(notNull(this.sourceTokenAtIndex(commaIndex)));
     }
     return result;
   }
@@ -155,7 +157,7 @@ export default class SwitchCasePatcher extends NodePatcher {
    *
    * @private
    */
-  getThenToken(): ?SourceToken {
+  getThenToken(): SourceToken | null {
     let thenTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.conditions[0].outerEnd,
       this.consequent !== null ? this.consequent.outerStart : this.contentEnd,

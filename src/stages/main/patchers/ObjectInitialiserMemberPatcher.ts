@@ -7,7 +7,7 @@ import ThisPatcher from './ThisPatcher';
  * Handles object properties.
  */
 export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatcher {
-  patchAsProperty() {
+  patchAsProperty(): void {
     if (this.key.node === this.expression.node) {
       this.patchAsShorthand({
         expand: this.key.node.type !== 'Identifier'
@@ -20,13 +20,12 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
   /**
    * @private
    */
-  patchAsShorthand({ expand=false }={}) {
+  patchAsShorthand({expand=false}: {expand: boolean}): void {
     let { key } = this;
     if (key instanceof MemberAccessOpPatcher) {
       key.patch();
       // e.g. `{ @name }`
-      let memberAccessKey = (key: MemberAccessOpPatcher);
-      if (!(memberAccessKey.expression instanceof ThisPatcher)) {
+      if (!(key.expression instanceof ThisPatcher)) {
         throw this.error(
           `expected property key member access on 'this', e.g. '@name'`
         );
@@ -34,8 +33,8 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
       // `{ @name }` → `{ name: @name }`
       //                  ^^^^^^
       this.insert(
-        memberAccessKey.outerStart,
-        `${memberAccessKey.getMemberName()}: `
+        key.outerStart,
+        `${key.getMemberName()}: `
       );
     } else if (expand) {
       let isComputed = key instanceof StringPatcher && key.shouldBecomeTemplateLiteral();

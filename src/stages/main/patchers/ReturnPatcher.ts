@@ -1,18 +1,18 @@
+import { PatcherContext } from '../../../patchers/types';
+import { AVOID_TOP_LEVEL_RETURN } from '../../../suggestions';
 import NodePatcher from './../../../patchers/NodePatcher';
 import ConditionalPatcher from './ConditionalPatcher';
 import SwitchPatcher from './SwitchPatcher';
-import type { PatcherContext } from './../../../patchers/types';
-import { AVOID_TOP_LEVEL_RETURN } from '../../../suggestions';
 
 export default class ReturnPatcher extends NodePatcher {
-  expression: NodePatcher;
+  expression: NodePatcher | null;
   
-  constructor(patcherContext: PatcherContext, expression: ?NodePatcher) {
+  constructor(patcherContext: PatcherContext, expression: NodePatcher | null) {
     super(patcherContext);
     this.expression = expression;
   }
 
-  initialize() {
+  initialize(): void {
     this.setExplicitlyReturns();
     if (this.expression !== null) {
       if (this.willConvertToImplicitReturn()) {
@@ -30,7 +30,7 @@ export default class ReturnPatcher extends NodePatcher {
     return false;
   }
 
-  patchAsStatement() {
+  patchAsStatement(): void {
     if (this.getScope().containerNode.type === 'Program') {
       this.addSuggestion(AVOID_TOP_LEVEL_RETURN);
     }
@@ -42,7 +42,10 @@ export default class ReturnPatcher extends NodePatcher {
     }
   }
 
-  willConvertToImplicitReturn() {
+  willConvertToImplicitReturn(): boolean {
+    if (!this.expression) {
+      throw this.error('Expected non-null expression.');
+    }
     return !this.expression.isSurroundedByParentheses() && (
       this.expression instanceof ConditionalPatcher ||
       this.expression instanceof SwitchPatcher

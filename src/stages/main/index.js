@@ -77,6 +77,7 @@ import type NodePatcher from './../../patchers/NodePatcher';
 import type { Node } from '../../patchers/types';
 import BreakPatcher from './patchers/BreakPatcher';
 import ContinuePatcher from './patchers/ContinuePatcher';
+import QuasiPatcher from './patchers/QuasiPatcher';
 
 export default class MainStage extends TransformCoffeeScriptStage {
   patcherConstructorForNode(node: Node): ?Class<NodePatcher> {
@@ -91,7 +92,6 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'Float':
       case 'Null':
       case 'Undefined':
-      case 'Quasi':
         return PassthroughPatcher;
 
       case 'Break':
@@ -99,6 +99,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'Continue':
         return ContinuePatcher;
+
+      case 'Quasi':
+        return QuasiPatcher;
 
       case 'FunctionApplication':
         return FunctionApplicationPatcher;

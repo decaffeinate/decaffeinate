@@ -1,41 +1,49 @@
+import { SourceType } from 'coffee-lex';
+import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { PatcherContext } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
+import { isSemanticToken } from '../../../utils/types';
 import NodePatcher from './../../../patchers/NodePatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
-import type { PatcherContext } from './../../../patchers/types';
-import { SourceType } from 'coffee-lex';
-import { isSemanticToken } from '../../../utils/types';
+
+export type OpenCurlyInfo = {
+  curlyBraceInsertionPosition: number,
+  textToInsert: string,
+  shouldIndent: boolean,
+};
 
 /**
  * Handles object literals.
  */
 export default class ObjectInitialiserPatcher extends NodePatcher {
-  members: Array<NodePatcher>;
+  members: Array<ObjectInitialiserMemberPatcher>;
 
-  constructor(patcherContext: PatcherContext, members: Array<NodePatcher>) {
+  constructor(patcherContext: PatcherContext, members: Array<ObjectInitialiserMemberPatcher>) {
     super(patcherContext);
     this.members = members;
   }
 
-  initialize() {
+  initialize(): void {
     this.members.forEach(member => member.setRequiresExpression());
   }
 
-  setAssignee() {
+  setAssignee(): void {
     this.members.forEach(member => member.expression.setAssignee());
     super.setAssignee();
   }
 
-  setExpression(force) {
+  setExpression(force: boolean): boolean {
     if (this.isImplicitObject()) {
       let { curlyBraceInsertionPosition } = this.getOpenCurlyInfo();
       this.adjustBoundsToInclude(curlyBraceInsertionPosition);
     }
-    super.setExpression(force);
+    return super.setExpression(force);
   }
 
   /**
    * Objects as expressions are very similar to their CoffeeScript equivalents.
    */
-  patchAsExpression() {
+  patchAsExpression(): void {
     let implicitObject = this.isImplicitObject();
     if (implicitObject) {
       let {
@@ -58,7 +66,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     }
   }
 
-  getOpenCurlyInfo() {
+  getOpenCurlyInfo(): OpenCurlyInfo {
     let curlyBraceInsertionPosition = this.innerStart;
     let textToInsert = '{';
     let shouldIndent = false;
@@ -67,7 +75,8 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
         textToInsert = `{\n${this.getIndent()}`;
         shouldIndent = true;
       } else {
-        let tokenIndexBeforeOuterStartTokenIndex = this.outerStartTokenIndex;
+        let tokenIndexBeforeOuterStartTokenIndex: SourceTokenListIndex | null
+          = this.outerStartTokenIndex;
         if (!this.isSurroundedByParentheses()) {
           tokenIndexBeforeOuterStartTokenIndex = tokenIndexBeforeOuterStartTokenIndex.previous();
         }
@@ -78,7 +87,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
             tokenIndexBeforeOuterStartTokenIndex
           );
           if (precedingTokenIndex) {
-            let precedingToken = this.sourceTokenAtIndex(precedingTokenIndex);
+            let precedingToken = notNull(this.sourceTokenAtIndex(precedingTokenIndex));
             curlyBraceInsertionPosition = precedingToken.end;
             let precedingTokenText = this.sourceOfToken(precedingToken);
             let lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
@@ -110,7 +119,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
    * [1]: It is actually valid code, though. It's a block with a labeled
    * statement `a` with a single expression statement, being the literal 0.
    */
-  patchAsStatement() {
+  patchAsStatement(): void {
     let needsParentheses = !this.isSurroundedByParentheses();
     let implicitObject = this.isImplicitObject();
     if (needsParentheses) {
@@ -143,14 +152,15 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   shouldExpandCurlyBraces(): boolean {
     return (
       this.isMultiline() ||
-      (this.parent instanceof ObjectInitialiserMemberPatcher && this.parent.parent.isMultiline())
+      (this.parent instanceof ObjectInitialiserMemberPatcher &&
+        notNull(this.parent.parent).isMultiline())
     );
   }
 
   /**
    * @private
    */
-  patchMembers() {
+  patchMembers(): void {
     this.members.forEach((member, i, members) => {
       member.patch();
       if (i !== members.length - 1) {
@@ -169,8 +179,8 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
    */
   isImplicitObject(): boolean {
     let tokens = this.context.sourceTokens;
-    let indexOfFirstToken = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
-    return tokens.tokenAtIndex(indexOfFirstToken).type !== SourceType.LBRACE;
+    let indexOfFirstToken = notNull(tokens.indexOfTokenStartingAtSourceIndex(this.contentStart));
+    return notNull(tokens.tokenAtIndex(indexOfFirstToken)).type !== SourceType.LBRACE;
   }
 
   /**

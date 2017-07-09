@@ -1,3 +1,5 @@
+import { PatcherContext } from '../../../patchers/types';
+import NodePatcher from './../../../patchers/NodePatcher';
 import BoundFunctionPatcher from './BoundFunctionPatcher';
 import BoundGeneratorFunctionPatcher from './BoundGeneratorFunctionPatcher';
 import FunctionPatcher from './FunctionPatcher';
@@ -5,8 +7,6 @@ import GeneratorFunctionPatcher from './GeneratorFunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
 import StringPatcher from './StringPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
 
 /**
  * Handles object properties.
@@ -21,7 +21,7 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     this.expression = expression;
   }
 
-  initialize() {
+  initialize(): void {
     this.key.setRequiresExpression();
     this.expression.setRequiresExpression();
   }
@@ -29,15 +29,15 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   /**
    * KEY : EXPRESSION
    */
-  patchAsExpression(options={}) {
+  patchAsExpression(): void {
     if (this.isMethod()) {
-      this.patchAsMethod(options);
+      this.patchAsMethod();
     } else {
-      this.patchAsProperty(options);
+      this.patchAsProperty();
     }
   }
 
-  patchAsMethod() {
+  patchAsMethod(): void {
     if (this.isGeneratorMethod()) {
       this.insert(this.key.outerStart, '*');
     }
@@ -52,12 +52,12 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     this.patchExpression();
   }
 
-  patchAsProperty() {
+  patchAsProperty(): void {
     this.patchKey();
     this.patchExpression();
   }
 
-  patchKey() {
+  patchKey(): void {
     let computedKeyPatcher = this.getComputedKeyPatcher();
     if (computedKeyPatcher !== null) {
       // Since we're replacing an expression like `"#{foo}"` with just `foo`,
@@ -93,7 +93,7 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
    * literal is the best way to do computed keys in CoffeeScript. This method
    * gets the patcher for that computed key node, if any.
    */
-  getComputedKeyPatcher() {
+  getComputedKeyPatcher(): NodePatcher | null {
     if (this.key instanceof StringPatcher &&
         this.key.quasis.length === 2 &&
         this.key.expressions.length === 1 &&
@@ -104,7 +104,7 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
     return null;
   }
 
-  patchExpression() {
+  patchExpression(): void {
     this.expression.patch({ method: this.isMethod() });
   }
 

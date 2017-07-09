@@ -1,6 +1,7 @@
-import NodePatcher from './../../../patchers/NodePatcher';
-import type { PatcherContext } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import { PatcherContext } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
+import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class ThrowPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -10,7 +11,7 @@ export default class ThrowPatcher extends NodePatcher {
     this.expression = expression;
   }
 
-  initialize() {
+  initialize(): void {
     this.expression.setRequiresExpression();
   }
 
@@ -25,7 +26,7 @@ export default class ThrowPatcher extends NodePatcher {
    * Throw statements that are in the implicit return position should simply
    * be left alone as they're pure statements in JS and don't have a value.
    */
-  setImplicitlyReturns() {
+  setImplicitlyReturns(): void {
     // throw can't be an implicit return
   }
 
@@ -33,7 +34,7 @@ export default class ThrowPatcher extends NodePatcher {
    * `throw` statements cannot normally be used as expressions, so we wrap them
    * in an arrow function IIFE.
    */
-  patchAsExpression() {
+  patchAsExpression(): void {
     let hasParens = this.isSurroundedByParentheses();
     if (!hasParens) {
       // `throw err` → `(throw err`
@@ -57,8 +58,8 @@ export default class ThrowPatcher extends NodePatcher {
     this.insert(this.outerEnd, '()');
   }
 
-  patchAsStatement() {
-    let throwToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+  patchAsStatement(): void {
+    let throwToken = notNull(this.sourceTokenAtIndex(this.contentStartTokenIndex));
     if (throwToken.type !== SourceType.THROW) {
       throw this.error('Expected to find throw token at the start of throw statement.');
     }
