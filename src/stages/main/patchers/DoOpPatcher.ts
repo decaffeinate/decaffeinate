@@ -1,10 +1,12 @@
+import { SourceType } from 'coffee-lex';
+import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import NodePatcher from '../../../patchers/NodePatcher';
+import { PatcherContext } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
 import AssignOpPatcher from './AssignOpPatcher';
 import DefaultParamPatcher from './DefaultParamPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
-import NodePatcher from '../../../patchers/NodePatcher';
-import type { PatcherContext, SourceTokenListIndex } from '../../../patchers/types';
-import { SourceType } from 'coffee-lex';
 
 export default class DoOpPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -14,14 +16,14 @@ export default class DoOpPatcher extends NodePatcher {
     this.expression = expression;
   }
 
-  initialize() {
+  initialize(): void {
     this.expression.setRequiresExpression();
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     let doTokenIndex = this.getDoTokenIndex();
-    let doToken = this.sourceTokenAtIndex(doTokenIndex);
-    let nextToken = this.sourceTokenAtIndex(doTokenIndex.next());
+    let doToken = notNull(this.sourceTokenAtIndex(doTokenIndex));
+    let nextToken = notNull(this.sourceTokenAtIndex(notNull(doTokenIndex.next())));
     this.remove(doToken.start, nextToken.start);
 
     let addParens = !this.isSurroundedByParentheses() && !(
@@ -38,7 +40,7 @@ export default class DoOpPatcher extends NodePatcher {
       this.insert(this.outerEnd, ')');
     }
 
-    let args = [];
+    let args: Array<string> = [];
     if (this.hasDoFunction()) {
       let func = this.getDoFunction();
       func.parameters.forEach(param => {

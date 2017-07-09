@@ -1,20 +1,25 @@
-import FunctionPatcher from './FunctionPatcher';
-import NodePatcher from './../../../patchers/SharedBlockPatcher';
-import SharedBlockPatcher from '../../../patchers/SharedBlockPatcher';
-import ReturnPatcher from './ReturnPatcher';
-import type { SourceToken } from './../../../patchers/types';
 import { SourceType } from 'coffee-lex';
+import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import SharedBlockPatcher from '../../../patchers/SharedBlockPatcher';
+import { PatchOptions } from '../../../patchers/types';
 import countVariableUsages from '../../../utils/countVariableUsages';
+import notNull from '../../../utils/notNull';
+import NodePatcher from './../../../patchers/SharedBlockPatcher';
+import ForPatcher from './ForPatcher';
+import FunctionPatcher from './FunctionPatcher';
+import ReturnPatcher from './ReturnPatcher';
 
 export default class BlockPatcher extends SharedBlockPatcher {
-  _forPatcherDescendants = [];
-  _explicitDeclarationsToAdd = [];
+  statements: Array<NodePatcher>;
+
+  _forPatcherDescendants: Array<ForPatcher> = [];
+  _explicitDeclarationsToAdd: Array<string> = [];
 
   /**
    * Called by initialize within child ForPatchers, so this array will be
    * available in our initialize method.
    */
-  markForPatcherDescendant(forPatcher: ForPatcher) {
+  markForPatcherDescendant(forPatcher: ForPatcher): void {
     this._forPatcherDescendants.push(forPatcher);
   }
 
@@ -24,7 +29,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * if the variable is used outside the loop body, so we want to explicitly
    * declare the variable at the top of the block in that case.
    */
-  initialize() {
+  initialize(): void {
     for (let forPatcher of this._forPatcherDescendants) {
       for (let name of forPatcher.getIIFEAssignments()) {
         if (countVariableUsages(this.node, name) > countVariableUsages(forPatcher.node, name) &&
@@ -45,14 +50,16 @@ export default class BlockPatcher extends SharedBlockPatcher {
       (this.statements.length === 1 &&  this.statements[0].prefersToPatchAsExpression());
   }
 
-  setExpression(force=false): boolean {
+  setExpression(force: boolean = false): boolean {
     let willPatchAsExpression = super.setExpression(force);
     if (willPatchAsExpression && this.prefersToPatchAsExpression()) {
       this.statements.forEach(statement => statement.setExpression());
+      return true;
     }
+    return false;
   }
 
-  setImplicitlyReturns() {
+  setImplicitlyReturns(): void {
     // A block can have no statements if it only had a block comment.
     if (this.statements.length > 0) {
       this.statements[this.statements.length - 1].setImplicitlyReturns();
@@ -63,11 +70,11 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * Force the patcher to treat the block as inline (semicolon-separated
    * statements) or not (newline-separated statements).
    */
-  setShouldPatchInline(shouldPatchInline: boolean) {
+  setShouldPatchInline(shouldPatchInline: boolean): void {
     this.shouldPatchInline = shouldPatchInline;
   }
 
-  patchAsStatement({ leftBrace=true, rightBrace=true }={}) {
+  patchAsStatement({leftBrace=true, rightBrace=true}: PatchOptions = {}): void {
     if (leftBrace) {
       this.insert(this.innerStart, '{');
     }
@@ -76,7 +83,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
       this.insertStatementsAtIndex([`var ${this._explicitDeclarationsToAdd.join(', ')};`], 0);
     }
 
-    let constructor = null;
+    let constructor: NodePatcher | null = null;
     this.statements.forEach(
       (statement, i, statements) => {
         if (i === statements.length - 1 && this.parent instanceof FunctionPatcher) {
@@ -114,7 +121,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
     }
   }
 
-  patchInnerStatement(statement) {
+  patchInnerStatement(statement: NodePatcher): void {
     let hasImplicitReturn = (
       statement.implicitlyReturns() &&
       !statement.explicitlyReturns()
@@ -147,9 +154,11 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * line by itself. Otherwise, there might be bugs like code being pulled into
    * a comment on the previous line.
    */
-  removeFinalEmptyReturn(statement) {
-    let previousToken = this.sourceTokenAtIndex(statement.contentStartTokenIndex.previous());
-    let nextToken = this.sourceTokenAtIndex(statement.contentEndTokenIndex.next());
+  removeFinalEmptyReturn(statement: NodePatcher): void {
+    let previousTokenIndex = statement.contentStartTokenIndex.previous();
+    let nextTokenIndex = statement.contentEndTokenIndex.next();
+    let previousToken = previousTokenIndex && this.sourceTokenAtIndex(previousTokenIndex);
+    let nextToken = nextTokenIndex && this.sourceTokenAtIndex(nextTokenIndex);
 
     if (previousToken && previousToken.type === SourceType.NEWLINE &&
         (!nextToken || nextToken.type === SourceType.NEWLINE)) {
@@ -164,7 +173,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
   patchAsExpression({
     leftBrace=this.statements.length > 1,
     rightBrace=this.statements.length > 1
-    }={}) {
+  }: PatchOptions = {}): void {
     if (leftBrace) {
       this.insert(this.innerStart, '(');
     }
@@ -176,12 +185,12 @@ export default class BlockPatcher extends SharedBlockPatcher {
           statement.setRequiresExpression();
           statement.patch();
           if (i !== statements.length - 1) {
-            let semicolonTokenIndex = this.getSemicolonSourceTokenBetween(
+            let semicolonTokenIndex = this.getSemicolonSourceTokenIndexBetween(
               statement,
               statements[i + 1]
             );
             if (semicolonTokenIndex) {
-              let semicolonToken = this.sourceTokenAtIndex(semicolonTokenIndex);
+              let semicolonToken = notNull(this.sourceTokenAtIndex(semicolonTokenIndex));
               this.overwrite(semicolonToken.start, semicolonToken.end, ',');
             } else {
               this.insert(statement.outerEnd, ',');
@@ -202,7 +211,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
   /**
    * @private
    */
-  getSemicolonSourceTokenBetween(left: NodePatcher, right: NodePatcher): ?SourceToken {
+  getSemicolonSourceTokenIndexBetween(left: NodePatcher, right: NodePatcher): SourceTokenListIndex | null {
     return this.indexOfSourceTokenBetweenPatchersMatching(
       left,
       right,
