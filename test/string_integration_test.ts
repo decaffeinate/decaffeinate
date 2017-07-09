@@ -1,6 +1,6 @@
 import validate from './support/validate';
 
-function generateTwoLineTests(strings) {
+function generateTwoLineTests(strings: Array<string>): Array<string> {
   let output = [];
   for (let line1 of strings) {
     for (let line2 of strings) {
@@ -10,7 +10,7 @@ function generateTwoLineTests(strings) {
   return output;
 }
 
-function generateThreeLineTests(strings) {
+function generateThreeLineTests(strings: Array<string>): Array<string> {
   let output = [];
   for (let line1 of strings) {
     for (let line2 of strings) {
@@ -22,13 +22,13 @@ function generateThreeLineTests(strings) {
   return output;
 }
 
-function runAssignmentTest(quote, string) {
+function runAssignmentTest(quote: string, string: string): void {
   validate(
 `testVariable = "test variable"
 setResult(${quote}${string}${quote})`);
 }
 
-function runFunctionTest(quote, string) {
+function runFunctionTest(quote: string, string: string): void {
   validate(
 `runTest = () ->
   testVariable = "test variable"
@@ -36,7 +36,7 @@ function runFunctionTest(quote, string) {
 setResult(runTest())`);
 }
 
-describe('string integration', function() {
+describe('string integration', function(): void {
   this.timeout(60000);
   let strings = ['', '   ', 'word', '   leading indent', 'trailing indent   ',
                  '    leading and trailing indent    '];

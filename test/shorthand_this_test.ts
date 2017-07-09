@@ -1,6 +1,6 @@
 import check from './support/check';
 
-describe('changing shorthand this to longhand this', function() {
+describe('changing shorthand this to longhand this', () => {
   it('changes shorthand member expressions to longhand member expressions', () => {
     check(`a = @b`, `const a = this.b;`);
   });
