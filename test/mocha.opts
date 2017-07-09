@@ -1,4 +1,3 @@
 --compilers ts:ts-node/register
---require babel-register
 --recursive
 --timeout 10000
