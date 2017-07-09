@@ -1,8 +1,7 @@
 import addVariableDeclarations from 'add-variable-declarations';
 import MagicString from 'magic-string';
+import { StageResult } from '../../index';
 import { logger } from '../../utils/debug';
-
-import type { StageResult } from '../../index';
 
 export default class AddVariableDeclarationsStage {
   static run(content: string): StageResult {

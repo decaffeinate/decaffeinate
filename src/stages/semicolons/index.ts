@@ -1,26 +1,23 @@
+import { Insertion, Removal } from 'ast-processor-babylon-config-types';
+const buildConfig = require('ast-processor-babylon-config');
+const asi = require('automatic-semicolon-insertion');
+import { parse, PluginName } from 'babylon';
 import MagicString from 'magic-string';
-import asi from 'automatic-semicolon-insertion';
-import buildConfig from 'ast-processor-babylon-config';
+import { StageResult } from '../../index';
 import { logger } from '../../utils/debug';
-import { parse } from 'babylon';
 
-import type { StageResult } from '../../index';
-
-const BABYLON_PLUGINS = [
+const BABYLON_PLUGINS: Array<PluginName> = [
   'flow',
   'jsx',
-  'asyncFunctions',
   'asyncGenerators',
   'classConstructorCall',
   'classProperties',
   'decorators',
   'doExpressions',
-  'exponentiationOperator',
   'exportExtensions',
   'functionBind',
   'functionSent',
   'objectRestSpread',
-  'trailingFunctionCommas'
 ];
 
 export default class SemicolonsStage {
@@ -38,8 +35,8 @@ export default class SemicolonsStage {
 
     asi(config);
 
-    config.insertions.forEach(({ index, content }) => editor.appendLeft(index, content));
-    config.removals.forEach(({ start, end }) => editor.remove(start, end));
+    config.insertions.forEach(({ index, content }: Insertion) => editor.appendLeft(index, content));
+    config.removals.forEach(({ start, end }: Removal) => editor.remove(start, end));
 
     return {
       code: editor.toString(),

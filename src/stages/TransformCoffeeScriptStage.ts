@@ -1,11 +1,16 @@
+import { Node } from 'decaffeinate-parser/dist/nodes';
 import MagicString from 'magic-string';
-import NodePatcher from '../patchers/NodePatcher';
-import DecaffeinateContext from '../utils/DecaffeinateContext';
-import PatchError from '../utils/PatchError';
-import type { Node, Editor } from '../patchers/types';
-import { childPropertyNames } from '../utils/traverse';
+import { StageResult } from '../index';
+import { Options } from '../options';
+import NodePatcher, { PatcherClass } from '../patchers/NodePatcher';
+import { Suggestion } from '../suggestions';
 import { logger } from '../utils/debug';
-import type { Options, StageResult } from '../index';
+import DecaffeinateContext from '../utils/DecaffeinateContext';
+import notNull from '../utils/notNull';
+import PatchError from '../utils/PatchError';
+import { childPropertyNames } from '../utils/traverse';
+
+export type ChildType = NodePatcher | Array<NodePatcher | null> | null;
 
 export default class TransformCoffeeScriptStage {
   static run(content: string, options: Options): StageResult {
@@ -23,28 +28,21 @@ export default class TransformCoffeeScriptStage {
     };
   }
 
-  static get inputExtension() {
-    return '.coffee';
-  }
+  root: NodePatcher | null = null;
+  patchers: Array<NodePatcher> = [];
+  suggestions: Array<Suggestion> = [];
 
-  static get outputExtension() {
-    return '.js';
-  }
-
-  constructor(ast: Node, context: DecaffeinateContext, editor: Editor, options: Options) {
-    this.ast = ast;
-    this.context = context;
-    this.editor = editor;
-    this.options = options;
-    this.root = null;
-    this.patchers = [];
-    this.suggestions = [];
+  constructor(
+      readonly ast: Node,
+      readonly context: DecaffeinateContext,
+      readonly editor: MagicString,
+      readonly options: Options) {
   }
 
   /**
    * This should be overridden in subclasses.
    */
-  patcherConstructorForNode(node: Node): ?Class<NodePatcher> { // eslint-disable-line no-unused-vars
+  patcherConstructorForNode(_node: Node): PatcherClass | null { // eslint-disable-line no-unused-vars
     return null;
   }
 
@@ -55,17 +53,17 @@ export default class TransformCoffeeScriptStage {
     return this.root;
   }
 
-  patcherForNode(node: Node, parent: ?Class<NodePatcher>=null, property: ?string=null): NodePatcher {
+  patcherForNode(node: Node, parent: PatcherClass | null = null, property: string | null = null): NodePatcher {
     let constructor = this._patcherConstructorForNode(node);
 
     if (parent) {
-      let override = parent.patcherClassForChildNode(node, property);
+      let override = parent.patcherClassForChildNode(node, notNull(property));
       if (override) {
         constructor = override;
       }
     }
 
-    let children = childPropertyNames(node).map(name => {
+    let children: Array<ChildType> = childPropertyNames(node).map(name => {
       let child = node[name];
       if (!child) {
         return null;
@@ -83,7 +81,7 @@ export default class TransformCoffeeScriptStage {
       context: this.context,
       editor: this.editor,
       options: this.options,
-      addSuggestion: suggestion => { this.suggestions.push(suggestion); },
+      addSuggestion: (suggestion: Suggestion) => { this.suggestions.push(suggestion); },
     };
     let patcher = new constructor(patcherContext, ...children);
     this.patchers.push(patcher);
@@ -92,7 +90,7 @@ export default class TransformCoffeeScriptStage {
     return patcher;
   }
 
-  associateParent(parent, child) {
+  associateParent(parent: NodePatcher, child: Array<ChildType> | NodePatcher | null): void {
     if (Array.isArray(child)) {
       child.forEach(item => this.associateParent(parent, item));
     } else if (child) {
@@ -100,7 +98,7 @@ export default class TransformCoffeeScriptStage {
     }
   }
 
-  _patcherConstructorForNode(node: Node): Class<NodePatcher> {
+  _patcherConstructorForNode(node: Node): PatcherClass {
     let constructor = this.patcherConstructorForNode(node);
 
     if (constructor === null) {
@@ -109,7 +107,8 @@ export default class TransformCoffeeScriptStage {
         `no patcher available for node type: ${node.type}` +
         `${props.length ? ` (props: ${props.join(', ')})` : ''}`,
         this.context.source,
-        ...node.range
+        node.start,
+        node.end
       );
     }
 

@@ -1,5 +1,0 @@
-declare function traverse(node: Node, callback: (node: Node, parent: Node | null) => boolean | void): void;
-declare function childPropertyNames(node: Node): Array<string>;
-
-export default traverse;
-export { childPropertyNames };

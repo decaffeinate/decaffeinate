@@ -1,40 +1,36 @@
+import { Node } from 'decaffeinate-parser/dist/nodes';
+import { PatcherClass } from '../../patchers/NodePatcher';
+import PassthroughPatcher from '../../patchers/PassthroughPatcher';
+import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';
 import ArrayInitialiserPatcher from './patchers/ArrayInitialiserPatcher';
+import AssignOpPatcher from './patchers/AssignOpPatcher';
 import BlockPatcher from './patchers/BlockPatcher';
 import ClassPatcher from './patchers/ClassPatcher';
-import AssignOpPatcher from './patchers/AssignOpPatcher';
 import ConditionalPatcher from './patchers/ConditionalPatcher';
 import ConstructorPatcher from './patchers/ConstructorPatcher';
+import DefaultParamPatcher from './patchers/DefaultParamPatcher';
 import DoOpPatcher from './patchers/DoOpPatcher';
 import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher';
 import ExpansionPatcher from './patchers/ExpansionPatcher';
 import ForInPatcher from './patchers/ForInPatcher';
 import ForOfPatcher from './patchers/ForOfPatcher';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher';
+import FunctionPatcher from './patchers/FunctionPatcher';
 import IdentifierPatcher from './patchers/IdentifierPatcher';
 import LoopPatcher from './patchers/LoopPatcher';
-import NodePatcher from '../../patchers/NodePatcher';
-import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
+import MemberAccessOpPatcher from './patchers/MemberAccessOpPatcher';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher';
-import PassthroughPatcher from '../../patchers/PassthroughPatcher';
+import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
 import ProtoMemberAccessOpPatcher from './patchers/ProtoMemberAccessOpPatcher';
 import SpreadPatcher from './patchers/SpreadPatcher';
 import SuperPatcher from './patchers/SuperPatcher';
 import ThisPatcher from './patchers/ThisPatcher';
 import TryPatcher from './patchers/TryPatcher';
-import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';
 import WhilePatcher from './patchers/WhilePatcher';
-import MemberAccessOpPatcher from './patchers/MemberAccessOpPatcher';
-import FunctionPatcher from './patchers/FunctionPatcher';
-import DefaultParamPatcher from './patchers/DefaultParamPatcher';
-import type { Node } from '../../patchers/types';
 
 export default class NormalizeStage extends TransformCoffeeScriptStage {
-  static get outputExtension(): string {
-    return '.coffee';
-  }
-
-  patcherConstructorForNode(node: Node): ?Class<NodePatcher> {
+  patcherConstructorForNode(node: Node): PatcherClass | null {
     switch (node.type) {
       case 'ArrayInitialiser':
         return ArrayInitialiserPatcher;

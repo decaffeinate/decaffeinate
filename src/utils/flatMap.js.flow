@@ -1,5 +1,0 @@
-/* @flow */
-
-declare function flatMap<T, U>(list: Array<T>, map: (element: T) => Array<U>): Array<U>;
-
-export default flatMap;

@@ -1,15 +1,15 @@
 /* eslint-disable no-process-exit */
 
-import PatchError from './utils/PatchError';
+import { readdir, readFile, stat, writeFile } from 'fs';
+import { basename, dirname, extname, join } from 'path';
 import { convert, modernizeJS } from './index';
-import type { Options } from './index';
-import { join, dirname, basename, extname } from 'path';
-import { stat, readdir, readFile, writeFile } from 'fs';
+import { Options } from './options';
+import PatchError from './utils/PatchError';
 
 /**
  * Run the script with the user-supplied arguments.
  */
-export default function run(args: Array<string>) {
+export default function run(args: Array<string>): void {
   let options = parseArguments(args);
 
   if (options.paths.length) {
@@ -27,7 +27,7 @@ type CLIOptions = {
 
 function parseArguments(args: Array<string>): CLIOptions {
   let paths = [];
-  let baseOptions = {};
+  let baseOptions: Options = {};
   let modernizeJS = false;
 
   for (let i = 0; i < args.length; i++) {
@@ -140,11 +140,11 @@ function parseArguments(args: Array<string>): CLIOptions {
 /**
  * Run decaffeinate on the given paths, changing them in place.
  */
-function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ?((errors: Array<Error>) => void)=null) {
-  let errors = [];
+function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ((errors: Array<Error>) => void) | null = null): void {
+  let errors: Array<Error> = [];
   let pending = paths.slice();
 
-  function processPath(path: string) {
+  function processPath(path: string): void {
     stat(path, (err, info) => {
       if (err) { errors.push(err); }
       else if (info.isDirectory()) {
@@ -155,7 +155,7 @@ function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ?((er
     });
   }
 
-  function processDirectory(path: string) {
+  function processDirectory(path: string): void {
     readdir(path, (err, children) => {
       if (err) { errors.push(err); }
       else {
@@ -177,7 +177,7 @@ function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ?((er
     });
   }
 
-  function processFile(path: string) {
+  function processFile(path: string): void {
     let extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
     let outputPath = join(dirname(path), basename(path, extension)) + '.js';
     console.log(`${path} → ${outputPath}`);
@@ -195,9 +195,13 @@ function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ?((er
     });
   }
 
-  function processNext() {
+  function processNext(): void {
     if (pending.length > 0) {
-      processPath(pending.shift());
+      let nextPath = pending.shift();
+      if (!nextPath) {
+        throw new Error('Expected a next path.');
+      }
+      processPath(nextPath);
     } else if (callback) {
       callback(errors);
     }
@@ -206,7 +210,7 @@ function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ?((er
   processNext();
 }
 
-function runWithStdio(options: CLIOptions) {
+function runWithStdio(options: CLIOptions): void {
   let data = '';
   process.stdin.on('data', chunk => data += chunk);
   process.stdin.on('end', () => {
@@ -240,7 +244,7 @@ function runWithCode(name: string, code: string, options: CLIOptions): string {
 /**
  * Print usage help.
  */
-function usage() {
+function usage(): void {
   let exe = basename(process.argv[1]);
   console.log('%s [OPTIONS] PATH [PATH …]', exe);
   console.log('%s [OPTIONS] < INPUT', exe);
