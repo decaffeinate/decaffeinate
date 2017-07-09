@@ -1,17 +1,23 @@
+import { PatcherContext } from '../../../patchers/types';
+import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
+import BlockPatcher from './BlockPatcher';
 
 export default class LoopPatcher extends NodePatcher {
-  body: ?BlockPatcher;
+  body: BlockPatcher | null;
+
+  _resultArrayBinding: string | null = null;
+  _resultArrayElementBinding: string | null = null;
 
   constructor(patcherContext: PatcherContext, body: BlockPatcher) {
     super(patcherContext);
     this.body = body;
   }
 
-  patchAsExpression() {
+  patchAsExpression(): void {
     // We're only patched as an expression due to a parent instructing us to,
     // and the indent level is more logically the indent level of our parent.
-    let baseIndent = this.parent.getIndent(0);
+    let baseIndent = notNull(this.parent).getIndent(0);
     let iifeBodyIndent = this.getLoopIndent();
     if (this.body !== null) {
       this.body.setShouldPatchInline(false);
@@ -53,9 +59,9 @@ export default class LoopPatcher extends NodePatcher {
    * only code that actually is adjusted is the loop body (but only when it's
    * not an inline body), and this is done relatively early on in all cases.
    */
-  getLoopIndent() {
+  getLoopIndent(): string {
     if (this.willPatchAsExpression()) {
-      return this.parent.getIndent(1);
+      return notNull(this.parent).getIndent(1);
     } else {
       return this.getIndent();
     }
@@ -64,14 +70,14 @@ export default class LoopPatcher extends NodePatcher {
   /**
    * @see getLoopIndent.
    */
-  getOuterLoopBodyIndent() {
+  getOuterLoopBodyIndent(): string {
     return this.getLoopIndent() + this.getProgramIndentString();
   }
 
   /**
    * @see getLoopIndent.
    */
-  getLoopBodyIndent() {
+  getLoopBodyIndent(): string {
     throw this.error(`'getLoopBodyIndent' must be overridden in subclasses`);
   }
 
@@ -82,13 +88,13 @@ export default class LoopPatcher extends NodePatcher {
    * generating code around the body, then we need to directly create the
    * indentation just before patching the body.
    */
-  patchPossibleNewlineAfterLoopHeader(loopHeaderEndIndex: number) {
-    if (this.shouldConvertInlineBodyToNonInline()) {
+  patchPossibleNewlineAfterLoopHeader(loopHeaderEndIndex: number): void {
+    if (this.body && this.shouldConvertInlineBodyToNonInline()) {
       this.overwrite(loopHeaderEndIndex, this.body.contentStart, `\n`);
     }
   }
 
-  patchBody() {
+  patchBody(): void {
     if (this.body) {
       if (this.shouldConvertInlineBodyToNonInline()) {
         this.body.insert(this.body.outerStart, this.getLoopBodyIndent());
@@ -97,8 +103,8 @@ export default class LoopPatcher extends NodePatcher {
     }
   }
 
-  shouldConvertInlineBodyToNonInline() {
-    return this.willPatchAsExpression() && this.body.node.inline;
+  shouldConvertInlineBodyToNonInline(): boolean {
+    return this.willPatchAsExpression() && this.body !== null && this.body.node.inline;
   }
 
   canHandleImplicitReturn(): boolean {
@@ -130,7 +136,7 @@ export default class LoopPatcher extends NodePatcher {
    * then `item` will naturally have the value `undefined` which we then push
    * at the end of the loop body.
    */
-  patchImplicitReturnStart(patcher: NodePatcher) {
+  patchImplicitReturnStart(patcher: NodePatcher): void {
     // Control flow statements like break and continue should be skipped.
     // Unlike some other control flow statements, CoffeeScript does not allow
     // them to be wrapped in parens, so we don't need to remove any parens here.
@@ -146,14 +152,14 @@ export default class LoopPatcher extends NodePatcher {
   /**
    * @see patchImplicitReturnStart
    */
-  patchImplicitReturnEnd(patcher: NodePatcher) {
+  patchImplicitReturnEnd(patcher: NodePatcher): void {
     if (!patcher.canPatchAsExpression()) {
       return;
     }
     this.insert(patcher.outerEnd, `)`);
   }
 
-  getEmptyImplicitReturnCode() {
+  getEmptyImplicitReturnCode(): string {
     return `${this.getResultArrayBinding()}.push(undefined)`;
   }
 
@@ -177,7 +183,7 @@ export default class LoopPatcher extends NodePatcher {
     return this._resultArrayElementBinding;
   }
 
-  statementNeedsSemicolon() {
+  statementNeedsSemicolon(): boolean {
     return false;
   }
 }

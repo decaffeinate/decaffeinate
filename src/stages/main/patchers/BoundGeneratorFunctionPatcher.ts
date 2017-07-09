@@ -1,7 +1,8 @@
+import { PatchOptions } from '../../../patchers/types';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
 
 export default class BoundGeneratorFunctionPatcher extends ManuallyBoundFunctionPatcher {
-  patchFunctionStart({ method=false }) {
+  patchFunctionStart({method = false}: PatchOptions = {}): void {
     let arrow = this.getArrowToken();
 
     if (!method) {

@@ -1,18 +1,28 @@
+import { SourceType } from 'coffee-lex';
+import SourceToken from 'coffee-lex/dist/SourceToken';
+import { PatcherContext } from '../../../patchers/types';
+import getAssigneeBindings from '../../../utils/getAssigneeBindings';
+import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
 import BlockPatcher from './BlockPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import LoopPatcher from './LoopPatcher';
-import type { PatcherContext, SourceToken } from './../../../patchers/types';
-import { SourceType } from 'coffee-lex';
-import getAssigneeBindings from '../../../utils/getAssigneeBindings';
 
-export default class ForPatcher extends LoopPatcher {
-  keyAssignee: ?NodePatcher;
-  valAssignee: ?NodePatcher;
+export default abstract class ForPatcher extends LoopPatcher {
+  keyAssignee: NodePatcher | null;
+  valAssignee: NodePatcher | null;
   target: NodePatcher;
-  filter: ?NodePatcher;
+  filter: NodePatcher | null;
 
-  constructor(patcherContext: PatcherContext, keyAssignee: ?NodePatcher, valAssignee: ?NodePatcher, target: NodePatcher, filter: ?NodePatcher, body: BlockPatcher) {
+  _filterCode: string | null = null;
+  _targetCode: string | null = null;
+  _indexBinding: string | null = null;
+  _targetReference: string | null = null;
+
+  constructor(
+      patcherContext: PatcherContext, keyAssignee: NodePatcher | null,
+      valAssignee: NodePatcher | null, target: NodePatcher,
+      filter: NodePatcher | null, body: BlockPatcher) {
     super(patcherContext, body);
     this.keyAssignee = keyAssignee;
     this.valAssignee = valAssignee;
@@ -20,7 +30,7 @@ export default class ForPatcher extends LoopPatcher {
     this.filter = filter;
   }
 
-  initialize() {
+  initialize(): void {
     if (this.keyAssignee) {
       this.keyAssignee.setAssignee();
       this.keyAssignee.setRequiresExpression();
@@ -37,10 +47,10 @@ export default class ForPatcher extends LoopPatcher {
   }
 
   getEnclosingScopeBlock(): BlockPatcher {
-    let patcher = this;
+    let patcher: NodePatcher | null = this;
     while (patcher) {
       if (patcher instanceof BlockPatcher &&
-        patcher.parent.node === this.getScope().containerNode) {
+          notNull(patcher.parent).node === this.getScope().containerNode) {
         return patcher;
       }
       patcher = patcher.parent;
@@ -67,7 +77,7 @@ export default class ForPatcher extends LoopPatcher {
     }
   }
 
-  getFilterCode(): ?string {
+  getFilterCode(): string | null {
     let filter = this.filter;
     if (!filter) {
       return null;
@@ -78,7 +88,7 @@ export default class ForPatcher extends LoopPatcher {
     return this._filterCode;
   }
 
-  getLoopBodyIndent() {
+  getLoopBodyIndent(): string {
     if (this.filter) {
       return this.getOuterLoopBodyIndent() + this.getProgramIndentString();
     } else {
@@ -86,7 +96,7 @@ export default class ForPatcher extends LoopPatcher {
     }
   }
 
-  patchBodyAndFilter() {
+  patchBodyAndFilter(): void {
     if (this.body) {
       if (this.filter) {
         this.body.insertLineBefore(`if (${this.getFilterCode()}) {`, this.getOuterLoopBodyIndent());
@@ -108,13 +118,13 @@ export default class ForPatcher extends LoopPatcher {
 
   getRelationToken(): SourceToken {
     let tokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      this.keyAssignee || this.valAssignee, this.target,
+      notNull(this.keyAssignee || this.valAssignee), this.target,
       token => token.type === SourceType.RELATION
     );
     if (!tokenIndex) {
       throw this.error(`cannot find relation keyword in 'for' loop`);
     }
-    return this.sourceTokenAtIndex(tokenIndex);
+    return notNull(this.sourceTokenAtIndex(tokenIndex));
   }
 
   /**
@@ -154,7 +164,7 @@ export default class ForPatcher extends LoopPatcher {
   /**
    * @protected
    */
-  removeThenToken() {
+  removeThenToken(): void {
     let searchStart = this.getLoopHeaderEnd();
     let searchEnd;
     if (this.body) {
@@ -171,8 +181,9 @@ export default class ForPatcher extends LoopPatcher {
       searchStart, searchEnd, token => token.type === SourceType.THEN
     );
     if (index) {
-      let thenToken = this.sourceTokenAtIndex(index);
-      let nextToken = this.sourceTokenAtIndex(index.next());
+      let thenToken = notNull(this.sourceTokenAtIndex(index));
+      let nextIndex = index.next();
+      let nextToken = nextIndex && this.sourceTokenAtIndex(nextIndex);
       if (nextToken) {
         this.remove(thenToken.start, nextToken.start);
       } else {
@@ -186,7 +197,7 @@ export default class ForPatcher extends LoopPatcher {
    * or the body. This can be overridden to account for additional loop header
    * elements.
    */
-  getLoopHeaderEnd() {
+  getLoopHeaderEnd(): number {
     return Math.max(
       this.filter ? this.filter.outerEnd : -1,
       this.target.outerEnd,
@@ -195,15 +206,15 @@ export default class ForPatcher extends LoopPatcher {
 
   getTargetCode(): string {
     this.computeTargetCodeIfNecessary();
-    return this._targetCode;
+    return notNull(this._targetCode);
   }
 
   getTargetReference(): string {
     this.computeTargetCodeIfNecessary();
-    return this._targetReference;
+    return notNull(this._targetReference);
   }
 
-  computeTargetCodeIfNecessary() {
+  computeTargetCodeIfNecessary(): void {
     if (!this._targetReference || !this._targetCode) {
       this._targetCode = this.target.patchAndGetCode();
       if (this.requiresExtractingTarget()) {
@@ -213,4 +224,7 @@ export default class ForPatcher extends LoopPatcher {
       }
     }
   }
+
+  abstract requiresExtractingTarget(): boolean;
+  abstract targetBindingCandidate(): string;
 }

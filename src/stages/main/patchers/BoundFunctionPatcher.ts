@@ -1,20 +1,22 @@
+import { Identifier, Node } from 'decaffeinate-parser/dist/nodes';
+import { PatcherClass } from '../../../patchers/NodePatcher';
+import { PatchOptions } from '../../../patchers/types';
+import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
+import notNull from '../../../utils/notNull';
+import traverse from '../../../utils/traverse';
+import { isFunction } from '../../../utils/types';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
-import NodePatcher from './../../../patchers/NodePatcher';
-import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
-import traverse from '../../../utils/traverse';
-import type { Node } from './../../../patchers/types';
-import { isFunction } from '../../../utils/types';
 
 /**
  * Handles bound functions, i.e. "fat arrows".
  */
 export default class BoundFunctionPatcher extends FunctionPatcher {
-  initialize() {
+  initialize(): void {
     super.initialize();
     if (this.hasInlineBody()) {
-      this.body.setExpression();
+      notNull(this.body).setExpression();
     }
   }
 
@@ -22,19 +24,20 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
    * Use a slightly-modified version of the regular `FunctionPatcher` when
    * we can't use arrow functions.
    */
-  static patcherClassOverrideForNode(node: Node): ?Class<NodePatcher> {
+  static patcherClassOverrideForNode(node: Node): PatcherClass | null {
     let referencesArguments = false;
 
     traverse(node, child => {
       if (referencesArguments) {
         // We already found a reference, so skip this.
         return false;
-      } else if (child.type === 'Identifier' && child.data === 'arguments') {
+      } else if (child instanceof Identifier && child.data === 'arguments') {
         referencesArguments = true;
       } else if (child !== node && isFunction(child)) {
         // Don't descend into other functions.
         return false;
       }
+      return true;
     });
 
     if (referencesArguments) {
@@ -45,11 +48,11 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
   }
 
   // There's no difference between statement and expression arrow functions.
-  patchAsStatement(options={}) {
+  patchAsStatement(options: PatchOptions = {}): void {
     this.patchAsExpression(options);
   }
 
-  patchFunctionStart() {
+  patchFunctionStart(): void {
     let arrow = this.getArrowToken();
 
     if (!this.hasParamStart()) {
@@ -78,7 +81,7 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
     return !(param instanceof IdentifierPatcher);
   }
 
-  patchFunctionBody() {
+  patchFunctionBody(): void {
     if (this.body) {
       if (!this.willPatchBodyInline()) {
         if (this.isEndOfFunctionCall()) {

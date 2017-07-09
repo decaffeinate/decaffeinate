@@ -25,4 +25,5 @@ export type PatchOptions = {
   skipParens?: boolean,
   leftBrace?: boolean,
   rightBrace?: boolean,
+  method?: boolean,
 };
