@@ -1,9 +1,11 @@
+import { ok } from 'assert';
+import { convert } from '../../src/index';
+import { DEFAULT_OPTIONS, Options } from '../../src/options';
 import PatchError from '../../src/utils/PatchError';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
-import { convert } from '../../src/index';
-import { ok } from 'assert';
 
-export default function assertError(source, expectedErrorText, options={}) {
+export default function assertError(
+    source: string, expectedErrorText: string, options: Options=DEFAULT_OPTIONS): void {
   if (source[0] === '\n') { source = stripSharedIndent(source); }
 
   try {
