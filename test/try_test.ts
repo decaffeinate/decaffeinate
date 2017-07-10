@@ -402,4 +402,16 @@ describe('try', () => {
       setResult(arr)
     `, [1, 1, 1]);
   });
+
+  it('properly handles a try/catch with `then` and an empty catch block', () => {
+    check(`
+      try
+        a
+      catch b then
+    `, `
+      try {
+        a;
+      } catch (b) {} 
+    `);
+  });
 });
