@@ -242,7 +242,14 @@ export default class TryPatcher extends NodePatcher {
     } else if (this.finallyBody) {
       searchEnd = this.finallyBody.outerStart;
     } else {
-      searchEnd = this.contentEnd;
+      // The CoffeeScript AST doesn't always include a "then" in the node range,
+      // so look one more token past the end.
+      let nextToken = this.nextSemanticToken();
+      if (nextToken) {
+        searchEnd = nextToken.end;
+      } else {
+        searchEnd = this.contentEnd;
+      }
     }
 
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
