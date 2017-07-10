@@ -17,6 +17,11 @@ $ npm install -g decaffeinate
 
 $ decaffeinate input.coffee
 input.coffee → input.js
+
+# convert all files in directory and subdirectories
+$ decaffeinate .
+input.coffee → input.js
+subfolder/input.coffee → subfolder/input.js
 ```
 
 Alternatively, paste code into the online [repl] to immediately see the output.
