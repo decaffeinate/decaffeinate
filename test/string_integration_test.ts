@@ -37,7 +37,7 @@ setResult(runTest())`);
 }
 
 describe('string integration', function(): void {
-  this.timeout(60000);
+  this.timeout(180000);
   let strings = ['', '   ', 'word', '   leading indent', 'trailing indent   ',
                  '    leading and trailing indent    '];
   let quotes = [
