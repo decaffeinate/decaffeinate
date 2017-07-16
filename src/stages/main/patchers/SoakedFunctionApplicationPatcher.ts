@@ -46,7 +46,9 @@ const GUARD_METHOD_HELPER =
 
 export default class SoakedFunctionApplicationPatcher extends FunctionApplicationPatcher {
   patchAsExpression(): void {
-    if (this.shouldPatchAsConditional()) {
+    if (this.shouldPatchAsOptionalChaining()) {
+      this.patchAsOptionalChaining();
+    } else if (this.shouldPatchAsConditional()) {
       this.patchAsConditional();
     } else {
       if (this.fn instanceof MemberAccessOpPatcher) {
@@ -60,8 +62,20 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     }
   }
 
+  shouldPatchAsOptionalChaining(): boolean {
+    return this.options.useOptionalChaining === true && !this.fn.mayBeUnboundReference();
+  }
+
   shouldPatchAsConditional(): boolean {
     return this.fn.isRepeatable() && !nodeContainsSoakOperation(this.fn.node);
+  }
+
+  patchAsOptionalChaining(): void {
+    let callStartToken = this.getCallStartToken();
+    // `a?(b)` → `a?.(b)`
+    //              ^
+    this.insert(callStartToken.start, '.');
+    super.patchAsExpression();
   }
 
   patchAsConditional(): void {

@@ -18,6 +18,7 @@ const BABYLON_PLUGINS: Array<PluginName> = [
   'functionBind',
   'functionSent',
   'objectRestSpread',
+  'optionalChaining' as any,  // tslint:disable-line no-any
 ];
 
 export default class SemicolonsStage {
@@ -29,8 +30,9 @@ export default class SemicolonsStage {
     let ast = parse(content, {
       sourceType: 'module',
       plugins: BABYLON_PLUGINS,
-      allowReturnOutsideFunction: true
-    });
+      allowReturnOutsideFunction: true,
+      tokens: true,
+    } as any);  // tslint:disable-line no-any
     let config = buildConfig(content, ast);
 
     asi(config);

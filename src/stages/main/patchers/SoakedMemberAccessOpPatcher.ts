@@ -14,7 +14,9 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
 
   patchAsExpression(): void {
     if (!this._shouldSkipSoakPatch) {
-      if (this.shouldPatchAsConditional()) {
+      if (this.shouldPatchAsOptionalChaining()) {
+        this.patchAsOptionalChaining();
+      } else if (this.shouldPatchAsConditional()) {
         this.patchAsConditional();
       } else {
         this.patchAsGuardCall();
@@ -24,8 +26,17 @@ export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
     }
   }
 
+  shouldPatchAsOptionalChaining(): boolean {
+    return this.options.useOptionalChaining === true && !this.expression.mayBeUnboundReference();
+  }
+
   shouldPatchAsConditional(): boolean {
     return this.expression.isRepeatable() && !nodeContainsSoakOperation(this.expression.node);
+  }
+
+  patchAsOptionalChaining(): void {
+    // The operator is the same, so nothing special to do.
+    this.expression.patch();
   }
 
   patchAsConditional(): void {
