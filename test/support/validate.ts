@@ -2,11 +2,16 @@ import * as babel from 'babel-core';
 import { compile } from 'decaffeinate-coffeescript';
 import * as vm from 'vm';
 import { convert } from '../../src/index';
+import { Options } from '../../src/options';
 import PatchError from '../../src/utils/PatchError';
 import assertDeepEqual from './assertDeepEqual';
 
 export type ValidateOptions = {
   requireNode6?: boolean,
+  options?: Options,
+  // If we generate syntax not supported by node, don't try running the
+  // resulting JS there directly.
+  skipNodeCheck?: boolean,
 };
 
 /**
@@ -28,12 +33,14 @@ export type ValidateOptions = {
  */
 export default function validate(
     // tslint:disable-next-line:no-any
-    source: string, expectedOutput?: any, {requireNode6 = false}: ValidateOptions = {}): void {
+    source: string, expectedOutput?: any,
+    {requireNode6 = false, options = {}, skipNodeCheck = false}: ValidateOptions = {}
+  ): void {
   if (requireNode6 && !isAtLeastNode6()) {
     return;
   }
   try {
-    runValidation(source, expectedOutput);
+    runValidation(source, expectedOutput, options, skipNodeCheck);
   } catch (err) {
     if (PatchError.detect(err)) {
       console.error(PatchError.prettyPrint(err));
@@ -61,10 +68,13 @@ function runCodeAndExtract(source: string): any {
   return result;
 }
 
-function runValidation(source: string, expectedOutput: {}): void {
+function runValidation(source: string, expectedOutput: {}, options: Options, skipNodeCheck: boolean): void {
   let coffeeES5 = compile(source, { bare: true }) as string;
-  let decaffeinateES6 = convert(source).code;
-  let decaffeinateES5 = babel.transform(decaffeinateES6, { presets: ['es2015'] }).code || '';
+  let decaffeinateES6 = convert(source, options).code;
+  let decaffeinateES5 = babel.transform(decaffeinateES6, {
+    presets: ['es2015'],
+    plugins: ['transform-optional-chaining'],
+  }).code || '';
 
   let coffeeOutput = runCodeAndExtract(coffeeES5);
   let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
@@ -91,7 +101,7 @@ ${err.message}`;
   }
 
   // Make sure babel and V8 behave the same if we're on node >= 6.
-  if (isAtLeastNode6()) {
+  if (!skipNodeCheck && isAtLeastNode6()) {
     let nodeOutput = runCodeAndExtract(decaffeinateES6);
     assertDeepEqual(decaffeinateOutput, nodeOutput, 'babel and node output were different.');
   }

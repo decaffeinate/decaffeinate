@@ -125,6 +125,9 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
   suggestions at the top of the output file.
 * `--no-array-includes`: Do not use `Array.prototype.includes` in generated
   code.
+* `--use-optional-chaining`: Use the upcoming
+  [optional chaining](https://github.com/tc39/proposal-optional-chaining) syntax
+  for operators like `?.`.
 * `--use-js-modules`: Convert `require` and `module.exports` to `import` and
   `export`.
 * `--loose-js-modules`: Allow named exports when converting to JS modules.
