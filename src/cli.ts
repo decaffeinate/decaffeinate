@@ -5,6 +5,7 @@ import { basename, dirname, extname, join } from 'path';
 import { convert, modernizeJS } from './index';
 import { Options } from './options';
 import PatchError from './utils/PatchError';
+const pkg = require('../package');
 
 /**
  * Run the script with the user-supplied arguments.
@@ -36,6 +37,12 @@ function parseArguments(args: Array<string>): CLIOptions {
       case '-h':
       case '--help':
         usage();
+        process.exit(0);
+        break;
+
+      case '-v':
+      case '--version':
+        version();
         process.exit(0);
         break;
 
@@ -243,6 +250,13 @@ function runWithCode(name: string, code: string, options: CLIOptions): string {
       throw err;
     }
   }
+}
+
+/**
+ * Print version
+ */
+function version(): void {
+  console.log('%s v%s', pkg.name, pkg.version);
 }
 
 /**
