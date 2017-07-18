@@ -36,6 +36,11 @@ function runCliExpectError(argStr: string, stdin: string, expectedStderr: string
 }
 
 describe('decaffeinate CLI', () => {
+  it('print current version', () => {
+    runCli('--version', '', 'decaffeinate v0.0.0-development');
+    runCli('-v', '', 'decaffeinate v0.0.0-development');
+  });
+
   it('accepts a file on stdin', () => {
     runCli('', `
       a = require 'a'
