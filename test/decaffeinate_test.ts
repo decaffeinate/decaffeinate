@@ -197,3 +197,49 @@ describe('automatic conversions', () => {
     });
   });
 });
+
+describe('runToStage', () => {
+  it('allows displaying the decaffeinate-parser AST', () => {
+    check(`
+      @a b
+    `, `
+      Program [1:1(0)-1:5(4)] {
+        body: Block [1:1(0)-1:5(4)] {
+          inline: false
+          statements: [
+            FunctionApplication [1:1(0)-1:5(4)] {
+              function: MemberAccessOp [1:1(0)-1:3(2)] {
+                expression: This [1:1(0)-1:2(1)] {
+                }
+                member: Identifier [1:2(1)-1:3(2)] {
+                  data: "a"
+                }
+              }
+              arguments: [
+                Identifier [1:4(3)-1:5(4)] {
+                  data: "b"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    `, {
+      options: {
+        runToStage: 'decaffeinate-parser',
+      }
+    });
+  });
+
+  it('allows running to an intermediate stage', () => {
+    check(`
+      @a b
+    `, `
+      @a(b)
+    `, {
+      options: {
+        runToStage: 'NormalizeStage',
+      }
+    });
+  });
+});
