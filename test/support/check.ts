@@ -18,7 +18,11 @@ export default function check(
       disableSuggestionComment: true,
       ...options,
     });
-    strictEqual(converted.code, expected);
+    let actual = converted.code;
+    if (actual.endsWith('\n') && !expected.endsWith('\n')) {
+      actual = actual.substr(0, actual.length - 1);
+    }
+    strictEqual(actual, expected);
   } catch (err) {
     if (PatchError.detect(err)) {
       console.error(PatchError.prettyPrint(err));
