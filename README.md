@@ -1,4 +1,5 @@
-# decaffeinate [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate) [![npm](https://img.shields.io/npm/v/decaffeinate.svg)](https://www.npmjs.com/package/decaffeinate) [![Greenkeeper badge](https://badges.greenkeeper.io/decaffeinate/decaffeinate.svg)](https://greenkeeper.io/)
+# decaffeinate [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate) [![npm](https://img.shields.io/npm/v/decaffeinate.svg)](https://www.npmjs.com/package/decaffeinate) [![Greenkeeper badge](https://badges.greenkeeper.io/decaffeinate/decaffeinate.svg)](https://greenkeeper.io/) [![Join the chat at https://gitter.im/decaffeinate](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/decaffeinate/Lobby)
+
 
 Goodbye CoffeeScript, hello JavaScript!
 
@@ -27,6 +28,11 @@ your own wrapper script. See the [Conversion Guide][conversion-guide] for more
 information and advice on running decaffeinate on real-world code, and see
 [Cleanup suggestions after running decaffeinate][suggestions] for advice on
 cleaning up the converted JavaScript code and other things to keep in mind.
+
+## Questions and support
+
+Feel free to join the [gitter chat room](https://gitter.im/decaffeinate/Lobby)
+to ask questions, or you can file an issue on the [issues] page.
 
 ## Status
 
