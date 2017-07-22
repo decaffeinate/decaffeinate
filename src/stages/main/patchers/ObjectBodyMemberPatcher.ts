@@ -11,9 +11,10 @@ import StringPatcher from './StringPatcher';
 /**
  * Handles object properties.
  */
-export default class ObjectBodyMemberPatcher extends NodePatcher {
+export default abstract class ObjectBodyMemberPatcher extends NodePatcher {
   key: NodePatcher;
-  expression: NodePatcher;
+  // Expression is null for shorthand object initializers.
+  expression: NodePatcher | null;
 
   constructor(patcherContext: PatcherContext, key: NodePatcher, expression: NodePatcher) {
     super(patcherContext);
@@ -23,7 +24,9 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
 
   initialize(): void {
     this.key.setRequiresExpression();
-    this.expression.setRequiresExpression();
+    if (this.expression) {
+      this.expression.setRequiresExpression();
+    }
   }
 
   /**
@@ -38,6 +41,9 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   }
 
   patchAsMethod(): void {
+    if (!this.expression) {
+      throw this.error('Expected expression to be non-null in method case.');
+    }
     if (this.isGeneratorMethod()) {
       this.insert(this.key.outerStart, '*');
     }
@@ -105,7 +111,9 @@ export default class ObjectBodyMemberPatcher extends NodePatcher {
   }
 
   patchExpression(): void {
-    this.expression.patch({ method: this.isMethod() });
+    if (this.expression) {
+      this.expression.patch({ method: this.isMethod() });
+    }
   }
 
   /**

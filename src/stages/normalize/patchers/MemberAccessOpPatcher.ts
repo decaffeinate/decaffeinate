@@ -4,7 +4,6 @@ import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
 import { PatcherContext } from '../../../patchers/types';
 import DefaultParamPatcher from './DefaultParamPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
-import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 
 export default class MemberAccessOpPatcher extends PassthroughPatcher {
   node: MemberAccessOp;
@@ -41,10 +40,6 @@ export default class MemberAccessOpPatcher extends PassthroughPatcher {
       // destructure (e.g. the logical `a` key in `({@a}) ->`).
       if (patcher.parent instanceof DefaultParamPatcher &&
           patcher.parent.value === patcher) {
-        break;
-      }
-      if (patcher.parent instanceof ObjectInitialiserMemberPatcher &&
-          patcher.parent.key === patcher) {
         break;
       }
       patcher = patcher.parent;

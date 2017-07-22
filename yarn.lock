@@ -66,7 +66,7 @@
   dependencies:
     "@types/babel-types" "*"
 
-"@types/fs-extra@4.0.0":
+"@types/fs-extra@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-4.0.0.tgz#1dd742ad5c9bce308f7a52d02ebc01421bc9102f"
   dependencies:
@@ -992,9 +992,9 @@ decaffeinate-coffeescript@1.10.0-patch26:
   version "1.10.0-patch26"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0-patch26.tgz#d3f23fcb7e3d574ad38182b44ef6f62c2757fdfe"
 
-decaffeinate-parser@^18.0.0:
-  version "18.0.0"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-18.0.0.tgz#2b99ce0a96c0bc10ec3a2bd18ec2dd8ce7189a16"
+decaffeinate-parser@^19.0.0:
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-19.0.0.tgz#3ac4b713c995b33b9c052993b48c42b58c64f103"
   dependencies:
     "@types/babylon" "^6.16.1"
     "@types/json-stable-stringify" "^1.0.31"

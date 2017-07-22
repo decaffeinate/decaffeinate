@@ -111,8 +111,8 @@ export default class NodePatcher {
      *   console.log(a + b)
      *               ^    ^
      */
-    this.contentStart = node.range[0];
-    this.contentEnd = node.range[1];
+    this.contentStart = node.start;
+    this.contentEnd = node.end;
 
     if (this.shouldTrimContentRange()) {
       this.trimContentRange();

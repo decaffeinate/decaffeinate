@@ -89,7 +89,7 @@ function patcherEndsInStatement(patcher: NodePatcher): boolean {
     if (found) {
       return false;
     }
-    if (child.type === 'Block' && child.range[1] === patcher.contentEnd) {
+    if (child.type === 'Block' && child.end === patcher.contentEnd) {
       found = true;
     }
     return true;
