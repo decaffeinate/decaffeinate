@@ -1,5 +1,5 @@
+import { traverse } from 'decaffeinate-parser';
 import { Node } from 'decaffeinate-parser/dist/nodes';
-import traverse from './traverse';
 
 /**
  * Determine if there are any soak operations within this subtree of the AST.

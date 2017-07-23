@@ -1,9 +1,9 @@
+import { traverse } from 'decaffeinate-parser';
 import { Identifier, Node } from 'decaffeinate-parser/dist/nodes';
 import { PatcherClass } from '../../../patchers/NodePatcher';
 import { PatchOptions } from '../../../patchers/types';
 import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
 import notNull from '../../../utils/notNull';
-import traverse from '../../../utils/traverse';
 import { isFunction } from '../../../utils/types';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';

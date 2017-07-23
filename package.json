@@ -47,7 +47,7 @@
     "babylon": "7.0.0-beta.16",
     "coffee-lex": "^8.0.0",
     "decaffeinate-coffeescript": "1.10.0-patch26",
-    "decaffeinate-parser": "^19.0.0",
+    "decaffeinate-parser": "^19.1.0",
     "detect-indent": "^4.0.0",
     "esnext": "^3.2.0",
     "lines-and-columns": "^1.1.5",

@@ -1,5 +1,5 @@
+import { traverse } from 'decaffeinate-parser';
 import { Identifier, Node } from 'decaffeinate-parser/dist/nodes';
-import traverse from './traverse';
 
 /**
  * Gets the number of usages of the given name in the given node.

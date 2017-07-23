@@ -1,10 +1,9 @@
 import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
 import { Block } from 'decaffeinate-coffeescript/lib/coffee-script/nodes';
-import { parse as decaffeinateParse } from 'decaffeinate-parser';
+import { parse as decaffeinateParse, traverse } from 'decaffeinate-parser';
 import { Node, Program } from 'decaffeinate-parser/dist/nodes';
 import LinesAndColumns from 'lines-and-columns';
 import Scope from './Scope';
-import traverse from './traverse';
 
 /**
  * Class that provides access to various useful things to know about

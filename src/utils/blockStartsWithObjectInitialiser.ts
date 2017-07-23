@@ -1,6 +1,6 @@
+import { traverse } from 'decaffeinate-parser';
 import NodePatcher from '../patchers/NodePatcher';
 import BlockPatcher from '../stages/main/patchers/BlockPatcher';
-import traverse from './traverse';
 
 /**
  * Determine if this is a block has an object initializer as its leftmost node.
