@@ -992,9 +992,9 @@ decaffeinate-coffeescript@1.10.0-patch26:
   version "1.10.0-patch26"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0-patch26.tgz#d3f23fcb7e3d574ad38182b44ef6f62c2757fdfe"
 
-decaffeinate-parser@^19.0.0:
-  version "19.0.0"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-19.0.0.tgz#3ac4b713c995b33b9c052993b48c42b58c64f103"
+decaffeinate-parser@^19.1.0:
+  version "19.1.0"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-19.1.0.tgz#11d7f5edad9f03167c3eed8ba05126ccf716bbb2"
   dependencies:
     "@types/babylon" "^6.16.1"
     "@types/json-stable-stringify" "^1.0.31"

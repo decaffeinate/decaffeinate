@@ -1,5 +1,5 @@
+import { traverse } from 'decaffeinate-parser';
 import { Node } from 'decaffeinate-parser/dist/nodes';
-import traverse from './traverse';
 
 export default function containsSuperCall(node: Node): boolean {
   let foundSuper = false;

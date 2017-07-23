@@ -8,7 +8,6 @@ import { logger } from '../utils/debug';
 import DecaffeinateContext from '../utils/DecaffeinateContext';
 import notNull from '../utils/notNull';
 import PatchError from '../utils/PatchError';
-import { childPropertyNames } from '../utils/traverse';
 
 export type ChildType = NodePatcher | Array<NodePatcher | null> | null;
 
@@ -63,7 +62,7 @@ export default class TransformCoffeeScriptStage {
       }
     }
 
-    let children: Array<ChildType> = childPropertyNames(node).map(name => {
+    let children: Array<ChildType> = node.getChildNames().map(name => {
       let child = node[name];
       if (!child) {
         return null;
@@ -102,7 +101,7 @@ export default class TransformCoffeeScriptStage {
     let constructor = this.patcherConstructorForNode(node);
 
     if (constructor === null) {
-      let props = childPropertyNames(node);
+      let props = node.getChildNames();
       throw new PatchError(
         `no patcher available for node type: ${node.type}` +
         `${props.length ? ` (props: ${props.join(', ')})` : ''}`,

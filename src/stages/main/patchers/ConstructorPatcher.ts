@@ -1,10 +1,10 @@
+import { traverse } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
 import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
 import babelConstructorWorkaroundLines from '../../../utils/babelConstructorWorkaroundLines';
 import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
 import getInvalidConstructorErrorMessage from '../../../utils/getInvalidConstructorErrorMessage';
-import traverse from '../../../utils/traverse';
 import { isFunction } from '../../../utils/types';
 import ClassBlockPatcher from './ClassBlockPatcher';
 import ClassPatcher from './ClassPatcher';

@@ -1,3 +1,4 @@
+import { traverse } from 'decaffeinate-parser';
 import {
   Float, Int, Number, UnaryNegateOp
 } from 'decaffeinate-parser/dist/nodes';
@@ -11,7 +12,6 @@ import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObje
 import countVariableUsages from '../../../utils/countVariableUsages';
 import notNull from '../../../utils/notNull';
 import Scope from '../../../utils/Scope';
-import traverse from '../../../utils/traverse';
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import BlockPatcher from './BlockPatcher';
 import ForPatcher from './ForPatcher';

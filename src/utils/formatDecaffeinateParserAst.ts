@@ -1,7 +1,6 @@
 import { Node } from 'decaffeinate-parser/dist/nodes';
 import DecaffeinateContext from './DecaffeinateContext';
 import formatRange from './formatRange';
-import {childPropertyNames} from './traverse';
 
 export default function formatDecaffeinateParserAst(context: DecaffeinateContext): string {
   let resultLines = formatAstNodeLines(context.programNode, context);
@@ -10,7 +9,7 @@ export default function formatDecaffeinateParserAst(context: DecaffeinateContext
 
 function formatAstNodeLines(node: Node, context: DecaffeinateContext): Array<string> {
   let propLines = [];
-  let childPropNames = childPropertyNames(node);
+  let childPropNames = node.getChildNames();
   let blacklistedProps = childPropNames.concat(
     ['raw', 'line', 'column', 'type', 'parentNode', 'context', 'start', 'end']
   );

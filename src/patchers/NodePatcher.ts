@@ -2,6 +2,7 @@ import { SourceType } from 'coffee-lex';
 import SourceToken from 'coffee-lex/dist/SourceToken';
 import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
 import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { traverse } from 'decaffeinate-parser';
 import {
   FunctionApplication, Identifier, NewOp, Node, SoakedFunctionApplication
 } from 'decaffeinate-parser/dist/nodes';
@@ -18,7 +19,6 @@ import DecaffeinateContext from '../utils/DecaffeinateContext';
 import notNull from '../utils/notNull';
 import PatcherError from '../utils/PatchError';
 import Scope from '../utils/Scope';
-import traverse from '../utils/traverse';
 import { isFunction, isSemanticToken } from '../utils/types';
 import { PatcherContext, PatchOptions, RepeatableOptions } from './types';
 

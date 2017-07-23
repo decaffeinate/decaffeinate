@@ -4,9 +4,9 @@
  * syntax in the normalize stage.
  */
 import { SourceType } from 'coffee-lex';
+import { traverse } from 'decaffeinate-parser';
 import NodePatcher from '../patchers/NodePatcher';
 import notNull from './notNull';
-import traverse from './traverse';
 
 export default function normalizeListItem(
     patcher: NodePatcher, listItemPatcher: NodePatcher,
