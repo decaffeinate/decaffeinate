@@ -225,7 +225,7 @@ export default class AssignOpPatcher extends NodePatcher {
       for (let member of patcher.members) {
         if (member instanceof ObjectInitialiserMemberPatcher) {
           let valueCode = `${ref}${this.accessFieldForObjectDestructure(member.key)}`;
-          assignments.push(...this.generateAssignments(member.expression, valueCode, false));
+          assignments.push(...this.generateAssignments(member.expression || member.key, valueCode, false));
         } else if (member instanceof AssignOpPatcher) {
           // Assignments like {a = b} = c end up as an assign op.
           let valueCode = `${ref}${this.accessFieldForObjectDestructure(member.assignee)}`;

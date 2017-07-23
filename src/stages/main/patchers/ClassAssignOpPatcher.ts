@@ -90,6 +90,9 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    * @protected
    */
   patchAsProperty(): void {
+    if (!this.expression) {
+      throw this.error('Expected value expression for class assign op.');
+    }
     // `name: null` → `name = null`
     //      ^^             ^^^
     let colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
@@ -146,6 +149,9 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   }
 
   isBoundInstanceMethod(): boolean {
+    if (!this.expression) {
+      throw this.error('Expected value expression for class assign op.');
+    }
     return (
       !this.isStaticMethod() &&
       (this.expression.node.type === 'BoundFunction' ||

@@ -7,8 +7,17 @@ import ThisPatcher from './ThisPatcher';
  * Handles object properties.
  */
 export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatcher {
+  setAssignee(): void {
+    if (this.expression === null) {
+      this.key.setAssignee();
+    } else {
+      this.expression.setAssignee();
+    }
+    super.setAssignee();
+  }
+
   patchAsProperty(): void {
-    if (this.key.node === this.expression.node) {
+    if (this.expression === null) {
       this.patchAsShorthand({
         expand: this.key.node.type !== 'Identifier'
       });

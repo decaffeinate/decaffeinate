@@ -18,7 +18,7 @@ export default function blockStartsWithObjectInitialiser(patcher: NodePatcher): 
       // Already found.
       return false;
     }
-    if (child.type === 'ObjectInitialiser' && child.range[0] === statement.contentStart) {
+    if (child.type === 'ObjectInitialiser' && child.start === statement.contentStart) {
       foundInitialObject = true;
       return false;
     }

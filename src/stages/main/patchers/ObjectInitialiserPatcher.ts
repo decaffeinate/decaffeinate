@@ -29,7 +29,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   }
 
   setAssignee(): void {
-    this.members.forEach(member => member.expression.setAssignee());
+    this.members.forEach(member => member.setAssignee());
     super.setAssignee();
   }
 

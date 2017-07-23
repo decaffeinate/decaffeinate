@@ -20,7 +20,7 @@ export default function getAssigneeBindings(node: Node): Array<string> {
     }
     return bindings;
   } else if (node instanceof ObjectInitialiserMember) {
-    return getAssigneeBindings(node.expression);
+    return getAssigneeBindings(node.expression || node.key);
   } else if (node instanceof AssignOp) {
     return getAssigneeBindings(node.assignee);
   } else if (node instanceof Spread || node instanceof Rest) {

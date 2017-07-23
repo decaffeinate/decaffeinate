@@ -54,7 +54,7 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
     return node.members.every(node => canPatchAssigneeToJavaScript(node, false));
   }
   if (node instanceof ObjectInitialiserMember) {
-    return canPatchAssigneeToJavaScript(node.expression, false);
+    return canPatchAssigneeToJavaScript(node.expression || node.key, false);
   }
   return false;
 }
