@@ -992,6 +992,14 @@ export default class NodePatcher {
    * Also check if these parents are matching, to avoid false positives on things like `(a) && (b)`
    */
   isSurroundedByParentheses(): boolean {
+    // Surrounding parens will extend outer start/end beyond content start/end,
+    // so only consider parens in that case. If we didn't exit early here, we'd
+    // get false positives for nodes that start and end with parens without
+    // actually being surrounded by parens.
+    if (this.contentStart === this.outerStart && this.contentEnd === this.outerEnd) {
+      return false;
+    }
+
     let beforeToken = this.sourceTokenAtIndex(this.outerStartTokenIndex);
     let afterToken = this.sourceTokenAtIndex(this.outerEndTokenIndex);
 
