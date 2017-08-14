@@ -520,4 +520,16 @@ describe('functions', () => {
       setResult(a)
     `, 1)
   );
+
+  it('handles a default param and a parenthesized body', () =>
+    check(`
+      (a = 1) ->
+        (a)
+    `, `
+      (function(a) {
+        if (a == null) { a = 1; }
+        return (a);
+      });
+    `)
+  );
 });
