@@ -1784,4 +1784,30 @@ describe('for loops', () => {
       })(); 
     `);
   });
+
+  it('does not convert to filter and map when the condition might have a side-effect', () => {
+    check(`
+      x = for a in [1, 2, 3] when b = a - 1
+        b
+    `, `
+      const x = (() => {
+        const result = [];
+        for (let a of [1, 2, 3]) {
+          var b;
+          if ((b = a - 1)) {
+            result.push(b);
+          }
+        }
+        return result;
+      })();
+    `);
+  });
+
+  it('behaves correctly on side-effects', () => {
+    validate(`
+      setResult(for a in [1, 2, 3] when b = a - 1 then b)
+    `,
+      [1, 2]
+    );
+  });
 });
