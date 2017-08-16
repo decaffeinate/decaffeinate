@@ -72,7 +72,7 @@
     "mversion": "^1.10.1",
     "mz": "^2.6.0",
     "rimraf": "^2.5.4",
-    "semantic-release": "^6.3.6",
+    "semantic-release": "^7.0.1",
     "surge": "^0.19.0",
     "ts-node": "^3.0.0",
     "tslint": "^5.5.0",
