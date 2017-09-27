@@ -63,7 +63,7 @@
   ],
   "devDependencies": {
     "@types/mocha": "^2.2.41",
-    "@types/mz": "0.0.31",
+    "@types/mz": "0.0.32",
     "@types/node": "^8.0.0",
     "babel-core": "7.0.0-alpha.15",
     "fs-extra": "^4.0.0",
