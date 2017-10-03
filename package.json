@@ -68,7 +68,7 @@
     "babel-core": "7.0.0-alpha.15",
     "fs-extra": "^4.0.0",
     "mkdirp": "^0.5.1",
-    "mocha": "^3.0.0",
+    "mocha": "^4.0.0",
     "mversion": "^1.10.1",
     "mz": "^2.6.0",
     "rimraf": "^2.5.4",
