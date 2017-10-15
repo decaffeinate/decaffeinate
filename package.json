@@ -42,7 +42,7 @@
     "add-variable-declarations": "^3.1.0",
     "ast-processor-babylon-config": "^1.0.0",
     "automatic-semicolon-insertion": "^1.0.2",
-    "babel-plugin-transform-optional-chaining": "7.0.0-alpha.15",
+    "babel-plugin-transform-optional-chaining": "7.0.0-beta.3",
     "babel-preset-es2015": "7.0.0-alpha.15",
     "babylon": "7.0.0-beta.16",
     "coffee-lex": "^8.0.0",
