@@ -1240,10 +1240,12 @@ export default class NodePatcher {
   appendLineAfter(content: string, indentOffset: number=0): void {
     let boundingPatcher = this.getBoundingPatcher();
     let endOfLine = this.getEndOfLine();
-    this.insert(
-      Math.min(endOfLine, boundingPatcher.innerEnd),
-      `\n${this.getIndent(indentOffset)}${content}`
-    );
+    let nextToken = this.nextSemanticToken();
+    let insertPoint = Math.min(Math.min(endOfLine, boundingPatcher.innerEnd));
+    if (nextToken) {
+      insertPoint = Math.min(insertPoint, nextToken.start);
+    }
+    this.insert(insertPoint, `\n${this.getIndent(indentOffset)}${content}`);
   }
 
   /**
