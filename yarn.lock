@@ -1198,8 +1198,8 @@ decaffeinate-coffeescript@1.10.0-patch26:
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.10.0-patch26.tgz#d3f23fcb7e3d574ad38182b44ef6f62c2757fdfe"
 
 decaffeinate-parser@^19.1.0:
-  version "19.1.0"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-19.1.0.tgz#11d7f5edad9f03167c3eed8ba05126ccf716bbb2"
+  version "19.1.2"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-19.1.2.tgz#a5e694ef001f493dbd85219b93d546ad5bf763e5"
   dependencies:
     "@types/babylon" "^6.16.1"
     "@types/json-stable-stringify" "^1.0.31"
