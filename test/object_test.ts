@@ -513,4 +513,17 @@ describe('objects', () => {
       });
     `);
   });
+
+  it('handles an object literal ending in a semicolon', () => {
+    check(`
+      o = 
+        a: 1
+        b: 2;
+    `, `
+      const o = { 
+        a: 1,
+        b: 2
+      };
+    `);
+  });
 });
