@@ -497,4 +497,20 @@ describe('objects', () => {
       });
     `);
   });
+
+  it('handles nested objects with an inner statement ending in a semicolon', () => {
+    check(`
+      a:
+        b: ->
+          c;
+    `, `
+      ({
+        a: {
+          b() {
+            return c;
+          }
+        }
+      });
+    `);
+  });
 });
