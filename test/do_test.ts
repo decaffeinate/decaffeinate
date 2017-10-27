@@ -1,4 +1,5 @@
 import check from './support/check';
+import validate from './support/validate';
 
 describe('`do`', () => {
   it('becomes a normal call expression when not given a function expression', () => {
@@ -48,11 +49,11 @@ describe('`do`', () => {
         a = 1
         b = a) + 1
     `, `
-      (function() {
+      ((function() {
         let b;
         const a = 1;
         return b = a;
-      }()) + 1;
+      })()) + 1;
     `);
   });
 
@@ -93,5 +94,23 @@ describe('`do`', () => {
     `, `
       (!a)();
     `);
+  });
+
+  it('places the function call properly for parenthesized do expressions', () => {
+    check(`
+      (do => 1)
+    `, `
+      (() => 1)();
+    `);
+  });
+
+  it('properly handles a complex nested do use case (#1189)', () => {
+    validate(`
+      setTimeout = (f, n) -> f()
+      arr = []
+      for i in [0...5]
+        setTimeout((do (i) => => arr.push(i)), 0);
+      setResult(arr)
+    `, [0, 1, 2, 3, 4]);
   });
 });
