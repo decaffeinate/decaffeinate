@@ -113,4 +113,15 @@ describe('`do`', () => {
       setResult(arr)
     `, [0, 1, 2, 3, 4]);
   });
+
+  it('handles a do expression with trailing whitespace', () => {
+    check(`
+      do ->
+        return b 
+      
+    `, `
+      (() => b)();
+      
+    `, {shouldStripIndent: false});
+  });
 });

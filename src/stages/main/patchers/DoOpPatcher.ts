@@ -34,7 +34,7 @@ export default class DoOpPatcher extends NodePatcher {
     this.expression.patch();
 
     if (addParens) {
-      this.insert(this.contentEnd, ')');
+      this.insert(this.innerEnd, ')');
     }
 
     let args: Array<string> = [];
@@ -50,7 +50,7 @@ export default class DoOpPatcher extends NodePatcher {
         }
       });
     }
-    this.insert(this.contentEnd, `(${args.join(', ')})`);
+    this.insert(this.innerEnd, `(${args.join(', ')})`);
   }
 
   /**
