@@ -536,4 +536,25 @@ describe('objects', () => {
         b: c});
     `);
   });
+
+  it('correctly handles comma-separated implicit object args', () => {
+    check(`
+      somefunc 
+        hey: 1,
+        yo: 2,
+      ,
+        sup: 2,
+        friend: 3
+    `, `
+      somefunc({ 
+        hey: 1,
+        yo: 2
+      }
+      , {
+        sup: 2,
+        friend: 3
+      }
+      );
+    `);
+  });
 });
