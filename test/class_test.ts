@@ -1870,4 +1870,29 @@ describe('classes', () => {
       setResult(B.a())
     `, 3);
   });
+
+  it('handles complex class expressions with trailing whitespace', () => {
+    check(`
+      A = class B
+        c: d
+        e: ->
+          f 
+      
+    `, `
+      let B;
+      const A = (B = (function() {
+        B = class B {
+          static initClass() {
+            this.prototype.c = d;
+          }
+          e() {
+            return f;
+          }
+        };
+        B.initClass();
+        return B; 
+      })());
+      
+    `, {shouldStripIndent: false});
+  });
 });

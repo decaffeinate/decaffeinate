@@ -6,12 +6,19 @@ import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 export type Extra = {
   options?: Options;
+  shouldStripIndent?: boolean;
 };
 
 export default function check(
-    source: string, expected: string, {options={}}: Extra = {}): void {
-  if (source[0] === '\n') { source = stripSharedIndent(source); }
-  if (expected[0] === '\n') { expected = stripSharedIndent(expected); }
+    source: string, expected: string, {options={}, shouldStripIndent=true}: Extra = {}): void {
+  if (shouldStripIndent) {
+    if (source[0] === '\n') {
+      source = stripSharedIndent(source);
+    }
+    if (expected[0] === '\n') {
+      expected = stripSharedIndent(expected);
+    }
+  }
 
   try {
     let converted = convert(source, {
