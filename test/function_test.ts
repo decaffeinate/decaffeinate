@@ -532,4 +532,15 @@ describe('functions', () => {
       });
     `)
   );
+
+  it('handles a function call with a lambda as the first arg', () =>
+    check(`
+      a ->
+        b
+      , c
+    `, `
+      a(() => b
+      , c);
+    `)
+  );
 });

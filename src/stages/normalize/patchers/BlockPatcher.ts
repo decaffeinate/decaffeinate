@@ -86,7 +86,8 @@ export default class BlockPatcher extends SharedBlockPatcher {
    */
   normalizeAfterStatement(statement: NodePatcher): void {
     let followingComma = statement.nextSemanticToken();
-    if (!followingComma || followingComma.type !== SourceType.COMMA) {
+    if (!followingComma || followingComma.type !== SourceType.COMMA ||
+        followingComma.start >= this.contentEnd) {
       return;
     }
     this.overwrite(followingComma.start, followingComma.end, ';');
