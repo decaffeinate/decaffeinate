@@ -11,11 +11,9 @@ export default class BlockPatcher extends SharedBlockPatcher {
 
   patchAsStatement(): void {
     if (this.node.inline) {
-      for (let [i, statement] of this.statements.entries()) {
+      for (let statement of this.statements) {
         statement.patch();
-        if (i < this.statements.length - 1) {
-          this.normalizeBetweenStatements(statement, this.statements[i + 1]);
-        }
+        this.normalizeAfterStatement(statement);
       }
       return;
     }
@@ -26,7 +24,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
     // we need to correct any inconsistent indentation in the normalize step so
     // that the result CoffeeScript will always be valid.
     let blockIndentLength = null;
-    for (let [i, statement] of this.statements.entries()) {
+    for (let statement of this.statements) {
       let indentLength = this.getIndentLength(statement);
       if (indentLength !== null) {
         if (blockIndentLength === null) {
@@ -44,9 +42,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
         }
       }
       statement.patch();
-      if (i < this.statements.length - 1) {
-        this.normalizeBetweenStatements(statement, this.statements[i + 1]);
-      }
+      this.normalizeAfterStatement(statement);
     }
   }
 
@@ -88,16 +84,11 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * Statements can be comma-separated within classes, which is equivalent to
    * semicolons, so just change them to semicolons.
    */
-  normalizeBetweenStatements(leftStatement: NodePatcher, rightStatement: NodePatcher): void {
-    let commaTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      leftStatement, rightStatement, t => t.type === SourceType.COMMA);
-    if (!commaTokenIndex) {
+  normalizeAfterStatement(statement: NodePatcher): void {
+    let followingComma = statement.nextSemanticToken();
+    if (!followingComma || followingComma.type !== SourceType.COMMA) {
       return;
     }
-    let commaToken = this.sourceTokenAtIndex(commaTokenIndex);
-    if (!commaToken) {
-      return;
-    }
-    this.overwrite(commaToken.start, commaToken.end, ';');
+    this.overwrite(followingComma.start, followingComma.end, ';');
   }
 }
