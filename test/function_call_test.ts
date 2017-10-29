@@ -643,8 +643,8 @@ describe('function calls', () => {
       , d
     `, `
       a(
-        {b: c},
-       d);
+        {b: c}
+      , d);
     `);
   });
 

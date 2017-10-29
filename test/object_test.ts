@@ -527,13 +527,34 @@ describe('objects', () => {
     `);
   });
 
-  it.skip('handles an implicit object arg ending in a comma', () => {
+  it('handles an implicit object arg ending in a comma', () => {
     check(`
       a
         b: c,
     `, `
       a({
         b: c});
+    `);
+  });
+
+  it('correctly handles comma-separated implicit object args', () => {
+    check(`
+      somefunc 
+        hey: 1,
+        yo: 2,
+      ,
+        sup: 2,
+        friend: 3
+    `, `
+      somefunc({ 
+        hey: 1,
+        yo: 2
+      }
+      , {
+        sup: 2,
+        friend: 3
+      }
+      );
     `);
   });
 });
