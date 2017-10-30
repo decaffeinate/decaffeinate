@@ -50,8 +50,10 @@ export default function normalizeListItem(
     }
 
     // In some rare cases (when the LHS is an implicit object initializer), the
-    // parser allows two commas, so get rid of the second.
-    for (let extraneousComma of commaTokens.slice(1)) {
+    // parser allows two commas. The first one is an unnecessary object
+    // initializer delimiter, and the second may be a needed arg delimiter, so
+    // get rid of the first in these situations.
+    for (let extraneousComma of commaTokens.slice(0, -1)) {
       patcher.remove(extraneousComma.start, extraneousComma.end);
     }
   }
