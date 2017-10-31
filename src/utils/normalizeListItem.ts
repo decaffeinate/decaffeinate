@@ -48,12 +48,6 @@ export default function normalizeListItem(
         commaTokens.length === 0) {
       patcher.insert(listItemPatcher.outerEnd, ',');
     }
-
-    // In some rare cases (when the LHS is an implicit object initializer), the
-    // parser allows two commas, so get rid of the second.
-    for (let extraneousComma of commaTokens.slice(1)) {
-      patcher.remove(extraneousComma.start, extraneousComma.end);
-    }
   }
 }
 
