@@ -51,9 +51,9 @@ Project                                                  | Lines of CoffeeScript
 [hubot][hubot] [\[1\]](#converted-note)                  | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
 [autoprefixer][autoprefixer] [\[1\]](#converted-note)    | 4.8K                  | ![autoprefixer-conversion-status] | ![autoprefixer-test-status]
 [coffeelint]                                             | 8.8K                  | ![coffeelint-conversion-status]   | ![coffeelint-test-status]
-[vimium]                                                 | 11K                   | ![vimium-conversion-status]       | ![vimium-test-status]
-[coffeescript][coffeescript] [\[2\]](#coffeescript-note) | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
-[atom]                                                   | 51K                   | ![atom-conversion-status]         | ![atom-test-status]
+[vimium][vimium] [\[2\]](#correctness-note)              | 11K                   | ![vimium-conversion-status]       | ![vimium-test-status]
+[coffeescript][coffeescript] [\[2\]](#correctness-note)  | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
+[atom][atom] [\[1\]](#converted-note)                    | 51K                   | ![atom-conversion-status]         | ![atom-test-status]
 [atom-org]                                               | 170K                  | ![atom-org-conversion-status]     | ![atom-org-test-status]
 [codecombat]                                             | 230K                  | ![codecombat-conversion-status]   | ![codecombat-test-status]
 
@@ -62,10 +62,12 @@ Project                                                  | Lines of CoffeeScript
 **Notes:**
 1. <a id='converted-note'></a>Hubot and Autoprefixer have fully moved to
    JavaScript using decaffeinate. This build runs on the last commit before the
-   switch to JS.
-2. <a id='coffeescript-note'></a>Some CoffeeScript tests are disabled because
+   switch to JS. Atom has mostly moved to JavaScript using decaffeinate, so this
+   build runs on an earlier revision that was primarily CoffeeScript.
+2. <a id='correctness-note'></a>Some CoffeeScript tests are disabled because
    they are difficult to fix and test cases that do not seem to come up in
-   real-world code. See
+   real-world code. The Vimium test suite has also been modified slightly to
+   work around a correctness issue. See
    [How decaffeinate approaches correctness][correctness-issues] for full details.
 
 To contribute to this list, send a pull request to the [decaffeinate-examples]
