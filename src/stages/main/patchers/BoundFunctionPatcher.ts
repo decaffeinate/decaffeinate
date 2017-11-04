@@ -1,10 +1,9 @@
-import { traverse } from 'decaffeinate-parser';
-import { Identifier, Node } from 'decaffeinate-parser/dist/nodes';
+import { Node } from 'decaffeinate-parser/dist/nodes';
 import { PatcherClass } from '../../../patchers/NodePatcher';
 import { PatchOptions } from '../../../patchers/types';
 import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
 import notNull from '../../../utils/notNull';
-import { isFunction } from '../../../utils/types';
+import referencesArguments from '../../../utils/referencesArguments';
 import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
@@ -25,22 +24,7 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
    * we can't use arrow functions.
    */
   static patcherClassOverrideForNode(node: Node): PatcherClass | null {
-    let referencesArguments = false;
-
-    traverse(node, child => {
-      if (referencesArguments) {
-        // We already found a reference, so skip this.
-        return false;
-      } else if (child instanceof Identifier && child.data === 'arguments') {
-        referencesArguments = true;
-      } else if (child !== node && isFunction(child)) {
-        // Don't descend into other functions.
-        return false;
-      }
-      return true;
-    });
-
-    if (referencesArguments) {
+    if (referencesArguments(node)) {
       return ManuallyBoundFunctionPatcher;
     } else {
       return null;

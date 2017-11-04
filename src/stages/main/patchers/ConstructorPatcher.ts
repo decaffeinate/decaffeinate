@@ -1,8 +1,10 @@
-import { traverse } from 'decaffeinate-parser';
+import { Class, This } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
 import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
 import babelConstructorWorkaroundLines from '../../../utils/babelConstructorWorkaroundLines';
+import containsDescendant from '../../../utils/containsDescendant';
+import containsSuperCall from '../../../utils/containsSuperCall';
 import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
 import getInvalidConstructorErrorMessage from '../../../utils/getInvalidConstructorErrorMessage';
 import { isFunction } from '../../../utils/types';
@@ -139,21 +141,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     }
     let statements = this.expression.body.statements;
     for (let i = 0; i < statements.length; i++) {
-      let callsSuper = false;
-      traverse(statements[i].node, child => {
-        if (callsSuper) {
-          // Already found it, skip this one.
-          return false;
-        } else if (child.type === 'Super') {
-          // Found it.
-          callsSuper = true;
-        } else if (child.type === 'Class') {
-          // Don't go into other classes.
-          return false;
-        }
-        return true;
-      });
-      if (callsSuper) {
+      if (containsSuperCall(statements[i].node)) {
         return i;
       }
     }
@@ -166,20 +154,11 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     }
     let statements = this.expression.body.statements;
     for (let i = 0; i < statements.length; i++) {
-      let usesThis = false;
-      traverse(statements[i].node, child => {
-        if (usesThis) {
-          // Already found it, skip this one.
-          return false;
-        } else if (child.type === 'This') {
-          // Found it.
-          usesThis = true;
-        } else if (child.type === 'Class' || isFunction(child)) {
-          // Don't go into other classes or functions.
-          return false;
-        }
-        return true;
-      });
+      let usesThis = containsDescendant(
+        statements[i].node,
+        child => child instanceof This,
+        {shouldStopTraversal: child => child instanceof Class || isFunction(child)}
+      );
       if (usesThis) {
         return i;
       }

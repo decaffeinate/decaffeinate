@@ -2,9 +2,8 @@ import { SourceType } from 'coffee-lex';
 import SourceToken from 'coffee-lex/dist/SourceToken';
 import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
 import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
-import { traverse } from 'decaffeinate-parser';
 import {
-  FunctionApplication, Identifier, NewOp, Node, SoakedFunctionApplication
+  FunctionApplication, NewOp, Node, SoakedFunctionApplication
 } from 'decaffeinate-parser/dist/nodes';
 import MagicString from 'magic-string';
 import { Options } from '../options';
@@ -18,6 +17,7 @@ import { logger } from '../utils/debug';
 import DecaffeinateContext from '../utils/DecaffeinateContext';
 import notNull from '../utils/notNull';
 import PatcherError from '../utils/PatchError';
+import referencesArguments from '../utils/referencesArguments';
 import Scope from '../utils/Scope';
 import { isFunction, isSemanticToken } from '../utils/types';
 import { PatcherContext, PatchOptions, RepeatableOptions } from './types';
@@ -1363,7 +1363,7 @@ export default class NodePatcher {
     }
     innerPatchFn();
     if (this.containsYield()) {
-      if (this.referencesArguments()) {
+      if (referencesArguments(this.node)) {
         this.insert(this.innerEnd, '}).apply(this, arguments)');
       } else {
         this.insert(this.innerEnd, '}).call(this)');
@@ -1389,25 +1389,5 @@ export default class NodePatcher {
    */
   containsYield(): boolean {
     return this._containsYield;
-  }
-
-  /**
-   * @private
-   */
-  referencesArguments(): boolean {
-    let result = false;
-
-    traverse(this.node, node => {
-      if (result || isFunction(node)) {
-        return false;
-      }
-
-      if (node instanceof Identifier && node.data === 'arguments') {
-        result = true;
-      }
-      return true;
-    });
-
-    return result;
   }
 }
