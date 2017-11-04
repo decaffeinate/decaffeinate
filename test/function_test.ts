@@ -543,4 +543,45 @@ describe('functions', () => {
       , c);
     `)
   );
+
+  it('applies proper variable scopes with sibling arrow functions (#1201)', () =>
+    check(`
+      () =>
+        a = 1
+        return
+      
+      () =>
+        a = 2
+        return
+    `, `
+      () => {
+        const a = 1;
+      };
+      
+      () => {
+        const a = 2;
+      };
+    `)
+  );
+
+  it('applies proper variable scopes with sibling blockless arrow functions (#1202)', () =>
+    check(`
+      () => a = 1
+      () => a = 2
+    `, `
+      () => { let a;
+      return a = 1; };
+      () => { let a;
+      return a = 2; };
+    `)
+  );
+
+  it('correctly handles scoping for an assignment in an inline arrow function', () =>
+    validate(`
+      f = => a = 1
+      a = 2
+      f()
+      setResult(a)
+    `, 2)
+  );
 });

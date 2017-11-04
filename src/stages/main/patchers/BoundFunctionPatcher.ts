@@ -1,7 +1,8 @@
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { AssignOp, Node } from 'decaffeinate-parser/dist/nodes';
 import { PatcherClass } from '../../../patchers/NodePatcher';
 import { PatchOptions } from '../../../patchers/types';
 import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
+import containsDescendant from '../../../utils/containsDescendant';
 import notNull from '../../../utils/notNull';
 import referencesArguments from '../../../utils/referencesArguments';
 import FunctionPatcher from './FunctionPatcher';
@@ -14,7 +15,7 @@ import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
 export default class BoundFunctionPatcher extends FunctionPatcher {
   initialize(): void {
     super.initialize();
-    if (this.hasInlineBody()) {
+    if (this.shouldPatchAsBlocklessArrowFunction()) {
       notNull(this.body).setExpression();
     }
   }
@@ -96,11 +97,17 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
   }
 
   willPatchBodyInline(): boolean {
-    return this.body ? this.body.willPatchAsExpression() : false;
+    return this.body !== null && this.body.willPatchAsExpression();
   }
 
-  hasInlineBody(): boolean {
-    return this.body ? this.body.inline() : false;
+  shouldPatchAsBlocklessArrowFunction(): boolean {
+    if (!this.body) {
+      return false;
+    }
+    if (containsDescendant(this.node, child => child instanceof AssignOp)) {
+      return false;
+    }
+    return this.body.inline();
   }
 
   /**
