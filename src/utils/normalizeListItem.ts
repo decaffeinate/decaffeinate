@@ -4,8 +4,9 @@
  * syntax in the normalize stage.
  */
 import { SourceType } from 'coffee-lex';
-import { traverse } from 'decaffeinate-parser';
+import { Block } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../patchers/NodePatcher';
+import containsDescendant from './containsDescendant';
 import notNull from './notNull';
 
 export default function normalizeListItem(
@@ -78,15 +79,7 @@ function isNestedListItem(patcher: NodePatcher): boolean {
  * they're not included in the normal statement bounds.
  */
 function patcherEndsInStatement(patcher: NodePatcher): boolean {
-  let found = false;
-  traverse(patcher.node, child => {
-    if (found) {
-      return false;
-    }
-    if (child.type === 'Block' && child.end === patcher.contentEnd) {
-      found = true;
-    }
-    return true;
-  });
-  return found;
+  return containsDescendant(patcher.node, child =>
+    child instanceof Block && child.end === patcher.contentEnd
+  );
 }

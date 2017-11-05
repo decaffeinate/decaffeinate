@@ -1,6 +1,7 @@
-import { traverse } from 'decaffeinate-parser';
+import { ObjectInitialiser } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../patchers/NodePatcher';
 import BlockPatcher from '../stages/main/patchers/BlockPatcher';
+import containsDescendant from './containsDescendant';
 
 /**
  * Determine if this is a block has an object initializer as its leftmost node.
@@ -12,17 +13,6 @@ export default function blockStartsWithObjectInitialiser(patcher: NodePatcher): 
     return false;
   }
   let statement = patcher.statements[0];
-  let foundInitialObject = false;
-  traverse(statement.node, child => {
-    if (foundInitialObject) {
-      // Already found.
-      return false;
-    }
-    if (child.type === 'ObjectInitialiser' && child.start === statement.contentStart) {
-      foundInitialObject = true;
-      return false;
-    }
-    return true;
-  });
-  return foundInitialObject;
+  return containsDescendant(statement.node, child =>
+    child instanceof ObjectInitialiser && child.start === statement.contentStart);
 }

@@ -1,20 +1,12 @@
-import { traverse } from 'decaffeinate-parser';
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import {
+  BareSuperFunctionApplication, Class, Node, Super
+} from 'decaffeinate-parser/dist/nodes';
+import containsDescendant from './containsDescendant';
 
 export default function containsSuperCall(node: Node): boolean {
-  let foundSuper = false;
-  traverse(node, child => {
-    if (foundSuper) {
-      // Already found it, skip this one.
-      return false;
-    } else if (child.type === 'Super' || child.type === 'BareSuperFunctionApplication') {
-      // Found it.
-      foundSuper = true;
-    } else if (child.type === 'Class') {
-      // Don't go into other classes.
-      return false;
-    }
-    return true;
-  });
-  return foundSuper;
+  return containsDescendant(
+    node,
+    child => child instanceof Super || child instanceof BareSuperFunctionApplication,
+    {shouldStopTraversal: child => child instanceof Class}
+  );
 }
