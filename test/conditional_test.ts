@@ -835,4 +835,41 @@ describe('conditionals', () => {
         b;
     `);
   });
+
+  it('handles an IIFE conditional with an assigned variable used later', () => {
+    check(`
+      a =
+        if b
+          c = d
+        else if e
+          f
+      c
+    `, `
+      let c;
+      const a =
+        (() => {
+        if (b) {
+          return c = d;
+        } else if (e) {
+          return f;
+        }
+      })();
+      c;
+    `);
+  });
+
+  it('produces the right result with an IIFE conditional with assignment followed by access', () => {
+    validate(`
+      value = 3
+      
+      result =
+        if value == 3
+          x = 1
+        else if value == 4
+          2
+      
+      if value == 3
+        setResult(x)
+    `, 1);
+  });
 });

@@ -26,6 +26,7 @@ export default class WhilePatcher extends LoopPatcher {
   }
 
   initialize(): void {
+    super.initialize();
     this.condition.setRequiresExpression();
     if (this.guard !== null) {
       this.guard.setRequiresExpression();

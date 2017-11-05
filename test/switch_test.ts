@@ -599,4 +599,22 @@ describe('switch', () => {
       setResult('' + f())
     `, 'undefined');
   });
+
+  it('handles an IIFE switch with an assignment followed by access', () => {
+    check(`
+      a =
+        switch b
+          when c
+            d = e
+      d
+    `, `
+      let d;
+      const a =
+        (() => { switch (b) {
+          case c:
+            return d = e;
+        } })();
+      d;
+    `);
+  });
 });

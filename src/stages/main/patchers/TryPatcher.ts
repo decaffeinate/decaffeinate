@@ -3,6 +3,7 @@ import SourceToken from 'coffee-lex/dist/SourceToken';
 import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
+import getEnclosingScopeBlock from '../../../utils/getEnclosingScopeBlock';
 import notNull from '../../../utils/notNull';
 import BlockPatcher from './BlockPatcher';
 
@@ -33,6 +34,7 @@ export default class TryPatcher extends NodePatcher {
       this.catchAssignee.setAssignee();
       this.catchAssignee.setRequiresExpression();
     }
+    getEnclosingScopeBlock(this).markIIFEPatcherDescendant(this);
   }
 
   canPatchAsExpression(): boolean {
@@ -152,6 +154,10 @@ export default class TryPatcher extends NodePatcher {
       this.patchAsStatement();
       this.insert(this.innerEnd, ' ');
     });
+  }
+
+  willPatchAsIIFE(): boolean {
+    return this.willPatchAsExpression();
   }
 
   canHandleImplicitReturn(): boolean {

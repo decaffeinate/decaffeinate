@@ -2,6 +2,7 @@ import { SourceType } from 'coffee-lex';
 import SourceToken from 'coffee-lex/dist/SourceToken';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
+import getEnclosingScopeBlock from '../../../utils/getEnclosingScopeBlock';
 
 export default class SwitchPatcher extends NodePatcher {
   expression: NodePatcher;
@@ -19,6 +20,7 @@ export default class SwitchPatcher extends NodePatcher {
     if (this.expression) {
       this.expression.setRequiresExpression();
     }
+    getEnclosingScopeBlock(this).markIIFEPatcherDescendant(this);
   }
 
   prefersToPatchAsExpression(): boolean {
@@ -95,6 +97,10 @@ export default class SwitchPatcher extends NodePatcher {
       this.patchAsStatement();
       this.insert(this.innerEnd, ' ');
     });
+  }
+
+  willPatchAsIIFE(): boolean {
+    return this.willPatchAsExpression();
   }
 
   canHandleImplicitReturn(): boolean {

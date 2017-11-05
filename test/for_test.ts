@@ -1810,4 +1810,46 @@ describe('for loops', () => {
       [1, 2]
     );
   });
+
+  it('handles an IIFE for-in with an assignment followed by access', () => {
+    check(`
+      a =
+        for b in c
+          d = e
+          break
+      d
+    `, `
+      let d;
+      const a =
+        (() => {
+        const result = [];
+        for (let b of Array.from(c)) {
+          d = e;
+          break;
+        }
+        return result;
+      })();
+      d;
+    `);
+  });
+
+  it('handles an IIFE for-of with an assignment followed by access', () => {
+    check(`
+      a =
+        for b of c
+          d = e
+      d
+    `, `
+      let d;
+      const a =
+        (() => {
+        const result = [];
+        for (let b in c) {
+          result.push(d = e);
+        }
+        return result;
+      })();
+      d;
+    `);
+  });
 });

@@ -414,4 +414,21 @@ describe('try', () => {
       } catch (b) {} 
     `);
   });
+
+  it('handles an IIFE try/catch with an assignment followed by access', () => {
+    check(`
+      a =
+        try
+          b = c
+        catch
+      b
+    `, `
+      let b;
+      const a =
+        (() => { try {
+          return b = c;
+        } catch (error) {} })();
+      b;
+    `);
+  });
 });
