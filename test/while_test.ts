@@ -455,4 +455,24 @@ describe('while', () => {
       while (true) {} 
     `);
   });
+
+  it('handles an IIFE while with an assignment followed by access', () => {
+    check(`
+      a =
+        while b
+          c = d
+      c
+    `, `
+      let c;
+      const a =
+        (() => {
+        const result = [];
+        while (b) {
+          result.push(c = d);
+        }
+        return result;
+      })();
+      c;
+    `);
+  });
 });

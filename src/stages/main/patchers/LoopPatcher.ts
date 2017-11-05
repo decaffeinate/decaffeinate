@@ -1,4 +1,5 @@
 import { PatcherContext } from '../../../patchers/types';
+import getEnclosingScopeBlock from '../../../utils/getEnclosingScopeBlock';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
 import BlockPatcher from './BlockPatcher';
@@ -12,6 +13,10 @@ export default class LoopPatcher extends NodePatcher {
   constructor(patcherContext: PatcherContext, body: BlockPatcher) {
     super(patcherContext);
     this.body = body;
+  }
+
+  initialize(): void {
+    getEnclosingScopeBlock(this).markIIFEPatcherDescendant(this);
   }
 
   patchAsExpression(): void {

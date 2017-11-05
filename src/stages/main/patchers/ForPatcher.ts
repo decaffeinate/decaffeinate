@@ -31,6 +31,7 @@ export default abstract class ForPatcher extends LoopPatcher {
   }
 
   initialize(): void {
+    super.initialize();
     if (this.keyAssignee) {
       this.keyAssignee.setAssignee();
       this.keyAssignee.setRequiresExpression();
@@ -43,19 +44,6 @@ export default abstract class ForPatcher extends LoopPatcher {
     if (this.filter) {
       this.filter.setRequiresExpression();
     }
-    this.getEnclosingScopeBlock().markForPatcherDescendant(this);
-  }
-
-  getEnclosingScopeBlock(): BlockPatcher {
-    let patcher: NodePatcher | null = this;
-    while (patcher) {
-      if (patcher instanceof BlockPatcher &&
-          notNull(patcher.parent).node === this.getScope().containerNode) {
-        return patcher;
-      }
-      patcher = patcher.parent;
-    }
-    throw this.error('Expected to find enclosing scope block.');
   }
 
   /**

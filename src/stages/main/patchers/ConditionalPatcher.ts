@@ -2,6 +2,7 @@ import { SourceType } from 'coffee-lex';
 import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
 import { Conditional } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
+import getEnclosingScopeBlock from '../../../utils/getEnclosingScopeBlock';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
 import BlockPatcher from './BlockPatcher';
@@ -23,6 +24,7 @@ export default class ConditionalPatcher extends NodePatcher {
 
   initialize(): void {
     this.condition.setRequiresExpression();
+    getEnclosingScopeBlock(this).markIIFEPatcherDescendant(this);
   }
 
   /**

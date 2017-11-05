@@ -1,38 +1,53 @@
 import { SourceType } from 'coffee-lex';
 import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { traverse } from 'decaffeinate-parser';
+import NodePatcher from '../../../patchers/NodePatcher';
 import SharedBlockPatcher from '../../../patchers/SharedBlockPatcher';
 import { PatchOptions } from '../../../patchers/types';
 import countVariableUsages from '../../../utils/countVariableUsages';
 import notNull from '../../../utils/notNull';
-import NodePatcher from './../../../patchers/SharedBlockPatcher';
-import ForPatcher from './ForPatcher';
+import Scope from '../../../utils/Scope';
 import FunctionPatcher from './FunctionPatcher';
 import ReturnPatcher from './ReturnPatcher';
+
+/**
+ * Any child patcher that might be turned into an IIFE during patching. Each
+ * such child must call markIIFEPatcherDescendant on this patcher in the
+ * initialize step.
+ */
+export interface IIFEPatcher extends NodePatcher {
+  willPatchAsIIFE(): boolean;
+}
 
 export default class BlockPatcher extends SharedBlockPatcher {
   statements: Array<NodePatcher>;
 
-  _forPatcherDescendants: Array<ForPatcher> = [];
+  _iifePatcherDescendants: Array<IIFEPatcher> = [];
   _explicitDeclarationsToAdd: Array<string> = [];
 
-  /**
-   * Called by initialize within child ForPatchers, so this array will be
-   * available in our initialize method.
-   */
-  markForPatcherDescendant(forPatcher: ForPatcher): void {
-    this._forPatcherDescendants.push(forPatcher);
+  markIIFEPatcherDescendant(iifePatcher: IIFEPatcher): void {
+    this._iifePatcherDescendants.push(iifePatcher);
   }
 
   /**
-   * In some cases, loops assign to variables, but will be turned into IIFEs,
-   * moving the variable scope into the IIFE. This can cause incorrect behavior
-   * if the variable is used outside the loop body, so we want to explicitly
-   * declare the variable at the top of the block in that case.
+   * In some cases, CoffeeScript constructs must be turned into IIFEs, but also
+   * have assignments within them. The assignments should be seen as belonging
+   * to the outer function scope, not the IIFE function scope, so we need to
+   * explicitly hoist any variables that could be affected.
    */
   initialize(): void {
-    for (let forPatcher of this._forPatcherDescendants) {
-      for (let name of forPatcher.getIIFEAssignments()) {
-        if (countVariableUsages(this.node, name) > countVariableUsages(forPatcher.node, name) &&
+    for (let iifePatcher of this._iifePatcherDescendants) {
+      if (!iifePatcher.willPatchAsIIFE()) {
+        continue;
+      }
+      // Use the scope code to find all assignments, including loop assignees,
+      // destructuring, etc.
+      let fakeScope = new Scope(iifePatcher.node);
+      traverse(iifePatcher.node, child => {
+        fakeScope.processNode(child);
+      });
+      for (let name of fakeScope.getOwnNames()) {
+        if (countVariableUsages(this.node, name) > countVariableUsages(iifePatcher.node, name) &&
             this._explicitDeclarationsToAdd.indexOf(name) === -1) {
           this._explicitDeclarationsToAdd.push(name);
         }
