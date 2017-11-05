@@ -799,8 +799,8 @@ describe('soaked expressions', () => {
     checkSoak(`
       a()?[b()] ?= d
     `, `
-      let base;
       let name;
+      let base;
       __guard__((base = a()), x => x[name = b()] != null ? base[name] : (base[name] = d));
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
@@ -830,8 +830,8 @@ describe('soaked expressions', () => {
     checkSoak(`
       a()?[b()] and= d
     `, `
-      let base;
       let name;
+      let base;
       __guard__((base = a()), x => x[name = b()] && (base[name] = d));
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
