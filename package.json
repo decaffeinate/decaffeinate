@@ -44,7 +44,7 @@
     "automatic-semicolon-insertion": "^1.0.2",
     "babel-plugin-transform-optional-chaining": "^7.0.0-beta.3",
     "babel-preset-es2015": "^7.0.0-beta.3",
-    "babylon": "7.0.0-beta.16",
+    "babylon": "7.0.0-beta.34",
     "coffee-lex": "^8.0.0",
     "decaffeinate-coffeescript": "1.10.0-patch26",
     "decaffeinate-parser": "^19.1.0",
