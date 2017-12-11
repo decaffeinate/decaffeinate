@@ -47,6 +47,10 @@
     lodash "^4.17.4"
     pify "^3.0.0"
 
+"@types/arrify@^1.0.1":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/arrify/-/arrify-1.0.2.tgz#4a6856b9bfd4713c781df95349c6b15db60d4de1"
+
 "@types/babel-core@^6.7.14":
   version "6.7.14"
   resolved "https://registry.yarnpkg.com/@types/babel-core/-/babel-core-6.7.14.tgz#a08c900a98e8987c1a98d2ea4fa0a1805a7d131f"
@@ -78,6 +82,10 @@
   dependencies:
     "@types/babel-types" "*"
 
+"@types/diff@^3.2.1":
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-3.2.2.tgz#4d6f45537322a7a420d353a0939513c7e96d14a6"
+
 "@types/fs-extra@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-4.0.0.tgz#1dd742ad5c9bce308f7a52d02ebc01421bc9102f"
@@ -87,6 +95,16 @@
 "@types/json-stable-stringify@^1.0.31":
   version "1.0.31"
   resolved "https://registry.yarnpkg.com/@types/json-stable-stringify/-/json-stable-stringify-1.0.31.tgz#b6c7bc507f5267e88cd2839b3ac6a2b39b653a32"
+
+"@types/minimist@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
+
+"@types/mkdirp@^0.5.0":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@types/mkdirp/-/mkdirp-0.5.2.tgz#503aacfe5cc2703d5484326b1b27efa67a339c1f"
+  dependencies:
+    "@types/node" "*"
 
 "@types/mocha@^2.2.43":
   version "2.2.43"
@@ -101,6 +119,32 @@
 "@types/node@*", "@types/node@^8.0.0":
   version "8.0.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.8.tgz#0dc4ca2c6f6fc69baee16c5e928c4a627f517ada"
+
+"@types/node@^8.0.27":
+  version "8.0.57"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.57.tgz#e5d8b4dc112763e35cfc51988f4f38da3c486d99"
+
+"@types/source-map-support@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@types/source-map-support/-/source-map-support-0.4.0.tgz#a62a1866614af68c888173c001481f242aaf148b"
+  dependencies:
+    "@types/node" "*"
+
+"@types/strip-bom@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/strip-bom/-/strip-bom-3.0.0.tgz#14a8ec3956c2e81edb7520790aecf21c290aebd2"
+
+"@types/strip-json-comments@0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@types/strip-json-comments/-/strip-json-comments-0.0.30.tgz#9aa30c04db212a9a0649d6ae6fd50accc40748a1"
+
+"@types/v8flags@github:types/npm-v8flags#de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d":
+  version "2.0.0"
+  resolved "https://codeload.github.com/types/npm-v8flags/tar.gz/de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d"
+
+"@types/yn@github:types/npm-yn#ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9":
+  version "2.0.0"
+  resolved "https://codeload.github.com/types/npm-yn/tar.gz/ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9"
 
 JSONStream@^1.0.4:
   version "1.3.1"
@@ -909,6 +953,14 @@ chalk@^2.0.0:
 chalk@^2.1.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.2.0.tgz#477b3bf2f9b8fd5ca9e429747e37f724ee7af240"
+  dependencies:
+    ansi-styles "^3.1.0"
+    escape-string-regexp "^1.0.5"
+    supports-color "^4.0.0"
+
+chalk@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.3.0.tgz#b5ea48efc9c1793dccc9b4767c93914d3f2d52ba"
   dependencies:
     ansi-styles "^3.1.0"
     escape-string-regexp "^1.0.5"
@@ -1806,6 +1858,12 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
+homedir-polyfill@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/homedir-polyfill/-/homedir-polyfill-1.0.1.tgz#4c2bbc8a758998feebf5ed68580f76d46768b4bc"
+  dependencies:
+    parse-passwd "^1.0.0"
+
 hosted-git-info@^2.1.4, hosted-git-info@^2.4.2:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.5.0.tgz#6d60e34b3abbc8313062c3b798ef8d901a07af3c"
@@ -2689,6 +2747,10 @@ parse-json@^2.2.0:
   dependencies:
     error-ex "^1.2.0"
 
+parse-passwd@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/parse-passwd/-/parse-passwd-1.0.0.tgz#6d5b934a456993b23d37f40a382d6f1666a8e5c6"
+
 path-exists@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/path-exists/-/path-exists-2.1.0.tgz#0feb6c64f0fc518d9a754dd5efb62c7022761f4b"
@@ -3201,11 +3263,11 @@ sntp@1.x.x:
   dependencies:
     hoek "2.x.x"
 
-source-map-support@^0.4.0:
-  version "0.4.15"
-  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.15.tgz#03202df65c06d2bd8c7ec2362a193056fef8d3b1"
+source-map-support@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.0.tgz#2018a7ad2bdf8faf2691e5fddab26bed5a2bacab"
   dependencies:
-    source-map "^0.5.6"
+    source-map "^0.6.0"
 
 source-map@^0.4.4:
   version "0.4.4"
@@ -3217,7 +3279,11 @@ source-map@^0.5.0:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
 
-source-map@^0.5.6, source-map@~0.5.1:
+source-map@^0.6.0:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
+
+source-map@~0.5.1:
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.6.tgz#75ce38f52bf0733c5a7f0c118d81334a2bb5f412"
 
@@ -3533,25 +3599,35 @@ trim-right@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
 
-ts-node@^3.0.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-3.2.0.tgz#9814f0c0141784900cf12fef1197ad4b7f4d23d1"
+ts-node@4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-4.0.1.tgz#4d368088b50c382d78285c029784ea0f32a4eb5c"
   dependencies:
+    "@types/arrify" "^1.0.1"
+    "@types/diff" "^3.2.1"
+    "@types/minimist" "^1.2.0"
+    "@types/mkdirp" "^0.5.0"
+    "@types/node" "^8.0.27"
+    "@types/source-map-support" "^0.4.0"
+    "@types/v8flags" types/npm-v8flags#de224ae1cd5fd7dbb4e7158a6cc7a29e5315930d
+    "@types/yn" types/npm-yn#ca75f6c82940fae6a06fb41d2d37a6aa9b4ea8e9
     arrify "^1.0.0"
-    chalk "^2.0.0"
+    chalk "^2.3.0"
     diff "^3.1.0"
     make-error "^1.1.1"
     minimist "^1.2.0"
     mkdirp "^0.5.1"
-    source-map-support "^0.4.0"
-    tsconfig "^6.0.0"
-    v8flags "^2.0.11"
+    source-map-support "^0.5.0"
+    tsconfig "^7.0.0"
+    v8flags "^3.0.0"
     yn "^2.0.0"
 
-tsconfig@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/tsconfig/-/tsconfig-6.0.0.tgz#6b0e8376003d7af1864f8df8f89dd0059ffcd032"
+tsconfig@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/tsconfig/-/tsconfig-7.0.0.tgz#84538875a4dc216e5c4a5432b3a4dec3d54e91b7"
   dependencies:
+    "@types/strip-bom" "^3.0.0"
+    "@types/strip-json-comments" "0.0.30"
     strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
@@ -3665,7 +3741,7 @@ url-parse-as-address@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/url-parse-as-address/-/url-parse-as-address-1.0.0.tgz#fb80901883f338b3cbed3538f5faa26adaf7f2e7"
 
-user-home@^1.0.0, user-home@^1.1.1:
+user-home@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/user-home/-/user-home-1.1.1.tgz#2b5be23a32b63a7c9deb8d0f28d485724a3df190"
 
@@ -3692,11 +3768,11 @@ uuid@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.1.0.tgz#3dd3d3e790abc24d7b0d3a034ffababe28ebbc04"
 
-v8flags@^2.0.11:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/v8flags/-/v8flags-2.1.1.tgz#aab1a1fa30d45f88dd321148875ac02c0b55e5b4"
+v8flags@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/v8flags/-/v8flags-3.0.1.tgz#dce8fc379c17d9f2c9e9ed78d89ce00052b1b76b"
   dependencies:
-    user-home "^1.1.1"
+    homedir-polyfill "^1.0.1"
 
 validate-npm-package-license@^3.0.1:
   version "3.0.1"
