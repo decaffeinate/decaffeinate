@@ -7,7 +7,9 @@ cache:
 notifications:
   email: false
 before_install:
-  - yarn global add greenkeeper-lockfile@1
+  # TODO: Switch this back to yarn when greenkeeperio/greenkeeper-lockfile#98 is fixed.
+  # https://github.com/greenkeeperio/greenkeeper-lockfile/issues/98
+  - npm install --global greenkeeper-lockfile@1
 before_script:
   - greenkeeper-lockfile-update
 after_script:
