@@ -18,8 +18,9 @@ describe('formatCoffeeScriptAst', () => {
             param: undefined
             subpattern: undefined
             operatorToken: undefined
+            moduleDeclaration: undefined
             variable: Value [1:1(0)-1:2(1)] {
-              base: Literal [1:1(0)-1:2(1)] {
+              base: IdentifierLiteral [1:1(0)-1:2(1)] {
                 value: "x"
               }
               properties: []
@@ -27,14 +28,13 @@ describe('formatCoffeeScriptAst', () => {
             value: Call [1:5(4)-1:8(7)] {
               soak: false
               isNew: false
-              isSuper: false
-              args: []
               variable: Value [1:5(4)-1:6(5)] {
-                base: Literal [1:5(4)-1:6(5)] {
+                base: IdentifierLiteral [1:5(4)-1:6(5)] {
                   value: "a"
                 }
                 properties: []
               }
+              args: []
             }
           }
         ]
@@ -59,7 +59,7 @@ describe('formatCoffeeScriptAst', () => {
             cases: [
               [
                 Value [2:8(14)-2:9(15)] {
-                  base: Literal [2:8(14)-2:9(15)] {
+                  base: NumberLiteral [2:8(14)-2:9(15)] {
                     value: "1"
                   }
                   properties: []
@@ -67,7 +67,7 @@ describe('formatCoffeeScriptAst', () => {
                 Block [3:5(20)-3:6(21)] {
                   expressions: [
                     Value [3:5(20)-3:6(21)] {
-                      base: Literal [3:5(20)-3:6(21)] {
+                      base: NumberLiteral [3:5(20)-3:6(21)] {
                         value: "2"
                       }
                       properties: []
