@@ -103,9 +103,9 @@ async function updateWebsite(): Promise<void> {
   } else {
     console.log(`${currentVersion} != ${latestVersion}, installing decaffeinate v${latestVersion}…`);
     let args = [
-      'install',
-      '--save-dev',
-      '--save-exact',
+      'add',
+      '--dev',
+      '--exact',
       `decaffeinate@${latestVersion}`
     ];
 
@@ -113,7 +113,7 @@ async function updateWebsite(): Promise<void> {
       args.unshift('--registry', decaffeinateRegistry);
     }
 
-    await run('npm', args);
+    await run('yarn', args);
 
     if (await hasChanges()) {
       if (commit) {
