@@ -109,8 +109,7 @@ describe('member access', () => {
         foo
       .then
     `, `
-      Q(() => P(() => foo).then
-       );
+      Q(() => P(() => foo) ).then;
     `);
   });
 
@@ -121,8 +120,7 @@ describe('member access', () => {
         
       .then
     `, `
-      Q(() => P(() => foo).then
-       );
+      Q(() => P(() => foo) ).then;
     `);
   });
 
@@ -133,8 +131,7 @@ describe('member access', () => {
           
          .then
     `, `
-      Q(() => P(() => foo).then
-       );
+      Q(() => P(() => foo) ).then;
     `);
   });
 
