@@ -32,7 +32,10 @@ cleaning up the converted JavaScript code and other things to keep in mind.
 ## Questions and support
 
 Feel free to join the [gitter chat room](https://gitter.im/decaffeinate/Lobby)
-to ask questions, or you can file an issue on the [issues] page.
+to ask questions, or you can file an issue on the [issues] page:
+- [report a crash][crash-issue]
+- [report incorrect output][wrong-issue]
+- [request a feature][feature-issue]
 
 ## Status
 
@@ -161,6 +164,9 @@ For more usage details, see the output of `decaffeinate --help`.
 [repl]: http://decaffeinate-project.org/repl/
 [bulk-decaffeinate]: https://github.com/decaffeinate/bulk-decaffeinate
 [issues]: https://github.com/decaffeinate/decaffeinate/issues
+[crash-issue]: https://github.com/decaffeinate/decaffeinate/issues/new?template=crash.md
+[wrong-issue]: https://github.com/decaffeinate/decaffeinate/issues/new?template=wrong.md
+[feature-issue]: https://github.com/decaffeinate/decaffeinate/issues/new?template=feature.md
 [conversion-guide]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md
 [suggestions]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
 [correctness-issues]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/correctness-issues.md
