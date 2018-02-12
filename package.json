@@ -43,7 +43,7 @@
     "babel-preset-es2015": "^7.0.0-beta.3",
     "babylon": "7.0.0-beta.34",
     "coffee-lex": "^8.0.0",
-    "decaffeinate-coffeescript": "1.12.7-patch.1",
+    "decaffeinate-coffeescript": "1.12.7-patch.2",
     "decaffeinate-parser": "^20.0.0",
     "detect-indent": "^4.0.0",
     "esnext": "^3.2.0",
