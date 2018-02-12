@@ -89,7 +89,7 @@ async function updateWebsite(): Promise<void> {
   let latestVersion = await getLatestVersion((await pkg())['name']);
   let currentRef = await gitRevParse('HEAD');
   let decaffeinatePackage = await pkg();
-  let decaffeinateRegistry = decaffeinatePackage['publishConfig'];
+  let decaffeinateRegistry = decaffeinatePackage['publishConfig']['registry'];
 
   console.log('Setting up website repo…');
   await run('git', ['fetch', '-f', 'website', 'master:website-master']);
