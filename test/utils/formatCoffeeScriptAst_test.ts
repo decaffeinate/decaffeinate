@@ -1,5 +1,6 @@
 import { strictEqual } from 'assert';
-import DecaffeinateContext from '../../src/utils/DecaffeinateContext';
+import {nodes} from 'decaffeinate-coffeescript';
+import CodeContext from '../../src/utils/CodeContext';
 import formatCoffeeScriptAst from '../../src/utils/formatCoffeeScriptAst';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
@@ -8,8 +9,7 @@ describe('formatCoffeeScriptAst', () => {
     let source = stripSharedIndent(`
       x = a()
     `);
-    let context = DecaffeinateContext.create(source);
-    let formattedTokens = formatCoffeeScriptAst(context);
+    let formattedTokens = formatCoffeeScriptAst(nodes(source), new CodeContext(source));
     strictEqual(formattedTokens, stripSharedIndent(`
       Block [1:1(0)-1:8(7)] {
         expressions: [
@@ -48,8 +48,7 @@ describe('formatCoffeeScriptAst', () => {
         when 1
           2
     `);
-    let context = DecaffeinateContext.create(source);
-    let formattedTokens = formatCoffeeScriptAst(context);
+    let formattedTokens = formatCoffeeScriptAst(nodes(source), new CodeContext(source));
     strictEqual(formattedTokens, stripSharedIndent(`
       Block [1:1(0)-3:6(21)] {
         expressions: [

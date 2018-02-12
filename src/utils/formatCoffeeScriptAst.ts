@@ -1,13 +1,13 @@
 import { Base } from 'decaffeinate-coffeescript/lib/coffee-script/nodes';
-import DecaffeinateContext from './DecaffeinateContext';
+import CodeContext from './CodeContext';
 import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData';
 
-export default function formatCoffeeScriptAst(context: DecaffeinateContext): string {
-  let resultLines = formatAstNodeLines(context.coffeeAST, context);
+export default function formatCoffeeScriptAst(program: Base, context: CodeContext): string {
+  let resultLines = formatAstNodeLines(program, context);
   return resultLines.map(line => line + '\n').join('');
 }
 
-function formatAstNodeLines(node: Base, context: DecaffeinateContext): Array<string> {
+function formatAstNodeLines(node: Base, context: CodeContext): Array<string> {
   let propLines = [];
   let blacklistedProps = ['locationData'];
   // Show the non-node children first.
