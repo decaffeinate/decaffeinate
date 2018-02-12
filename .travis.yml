@@ -1,28 +1,39 @@
 sudo: false
 language: node_js
+
 cache:
   yarn: true
   directories:
     - node_modules
+
 notifications:
   email: false
+
 before_install:
   - yarn global add greenkeeper-lockfile@1
 before_script:
   - greenkeeper-lockfile-update
 after_script:
   - greenkeeper-lockfile-upload
+
 node_js:
   - '9'
   - '8'
   - '6'
   - '4'
-after_success:
-  - 'curl -Lo travis_after_all.py https://git.io/travis_after_all'
-  - python travis_after_all.py
-  - export $(cat .to_export_back) &> /dev/null
-  - semantic-release pre && yarn run build && npm publish && semantic-release post
-  - npm run update-website
+
+deploy:
+  # Publish to NPM.
+  - provider: script
+    script: semantic-release pre && yarn build && npm publish && semantic-release post
+    on:
+      branch: master
+  # Update the website.
+  - provider: script
+    script: yarn update-website
+    on:
+      branch: master
+
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/
