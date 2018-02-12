@@ -1011,9 +1011,9 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-coffee-lex@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-8.0.0.tgz#acdc94e8122351f254465854facba4c7afee5a6c"
+coffee-lex@^8.1.1:
+  version "8.1.1"
+  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-8.1.1.tgz#d00f4388351eda23ddff8df9d706267c9608c615"
 
 color-convert@^1.0.0:
   version "1.9.0"
@@ -1257,17 +1257,17 @@ debug@3.1.0, debug@^3.0.1:
   dependencies:
     ms "2.0.0"
 
-decaffeinate-coffeescript@1.12.7-patch.1:
-  version "1.12.7-patch.1"
-  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.1.tgz#e44b7a4b8bc91fccb8add06fa95dd309b30178cf"
+decaffeinate-coffeescript@1.12.7-patch.2:
+  version "1.12.7-patch.2"
+  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.2.tgz#c0a453395e0194bcf0dce8d81dbf7170c5a1d578"
 
-decaffeinate-parser@^20.0.0:
-  version "20.0.0"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-20.0.0.tgz#937a68099fb20696a71a764de8a85595b794ef44"
+decaffeinate-parser@^20.2.2:
+  version "20.2.2"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-20.2.2.tgz#589d00e6694327b707c74b29dea17c9732aa696c"
   dependencies:
     babylon "^6.18.0"
-    coffee-lex "^8.0.0"
-    decaffeinate-coffeescript "1.12.7-patch.1"
+    coffee-lex "^8.1.1"
+    decaffeinate-coffeescript "1.12.7-patch.2"
     json-stable-stringify "^1.0.1"
     lines-and-columns "^1.1.6"
 

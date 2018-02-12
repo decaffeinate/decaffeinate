@@ -7,6 +7,7 @@ import NodePatcher from './../../../patchers/NodePatcher';
 import BlockPatcher from './BlockPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import LoopPatcher from './LoopPatcher';
+import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 
 export default abstract class ForPatcher extends LoopPatcher {
   keyAssignee: NodePatcher | null;
@@ -105,9 +106,20 @@ export default abstract class ForPatcher extends LoopPatcher {
   }
 
   getRelationToken(): SourceToken {
-    let tokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-      notNull(this.keyAssignee || this.valAssignee), this.target,
-      token => token.type === SourceType.RELATION
+    let searchStart = -1;
+    if (this.keyAssignee) {
+      searchStart = Math.max(this.keyAssignee.outerEnd);
+    }
+    if (this.valAssignee) {
+      searchStart = Math.max(this.valAssignee.outerEnd);
+    }
+    if (searchStart === -1) {
+      throw this.error('Expected to find a good starting point to search for relation token.');
+    }
+    let tokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+      searchStart, this.target.outerStart,
+      // "of" and "in" are relation tokens, but "from" is a plain identifier.
+      token => token.type === SourceType.RELATION || token.type === SourceType.IDENTIFIER
     );
     if (!tokenIndex) {
       throw this.error(`cannot find relation keyword in 'for' loop`);
@@ -131,15 +143,22 @@ export default abstract class ForPatcher extends LoopPatcher {
   computeIndexBinding(): string {
     let keyAssignee = this.keyAssignee;
     if (keyAssignee) {
-      if (!(keyAssignee instanceof IdentifierPatcher)) {
-        // CoffeeScript requires that the index be an identifier, not a pattern
+      if (keyAssignee instanceof MemberAccessOpPatcher) {
+        return `this.${keyAssignee.member.node.data}`;
+      } else if (keyAssignee instanceof IdentifierPatcher) {
+        return this.slice(keyAssignee.contentStart, keyAssignee.contentEnd);
+      } else {
+        // CoffeeScript requires that the index be an identifier or this-assignment, not a pattern
         // matching expression, so this should never happen.
-        throw keyAssignee.error(`expected loop index to be an identifier`);
+        throw keyAssignee.error(`expected loop index to be an identifier or this-assignment`);
       }
-      return this.slice(keyAssignee.contentStart, keyAssignee.contentEnd);
     } else {
       return this.claimFreeBinding(this.indexBindingCandidates());
     }
+  }
+
+  isThisAssignIndexBinding(): boolean {
+    return this.keyAssignee instanceof MemberAccessOpPatcher;
   }
 
   /**

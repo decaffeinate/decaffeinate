@@ -25,4 +25,12 @@ describe('embedded JavaScript', () => {
   it('removes parens around inline JS even when it would cause precedence issues', () => {
     validate('setResult(10 - (`5 + 3`))', 8);
   });
+
+  it('handles triple-backtick embedded JS', () => {
+    check('```a + b;```', 'a + b;');
+  });
+
+  it('handles escaped backticks in inline JS', () => {
+    check('`s + \\`hello\\`;`', 's + `hello`;');
+  });
 });

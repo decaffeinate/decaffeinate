@@ -12,6 +12,7 @@ import DefaultParamPatcher from './patchers/DefaultParamPatcher';
 import DoOpPatcher from './patchers/DoOpPatcher';
 import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher';
 import ExpansionPatcher from './patchers/ExpansionPatcher';
+import ForFromPatcher from './patchers/ForFromPatcher';
 import ForInPatcher from './patchers/ForInPatcher';
 import ForOfPatcher from './patchers/ForOfPatcher';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher';
@@ -67,6 +68,9 @@ export default class NormalizeStage extends TransformCoffeeScriptStage {
 
       case 'ForOf':
         return ForOfPatcher;
+
+      case 'ForFrom':
+        return ForFromPatcher;
 
       case 'FunctionApplication':
       case 'NewOp':
