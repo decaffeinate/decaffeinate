@@ -57,6 +57,30 @@ class A extends {}
 
 This affects the Vimium test suite.
 
+### Inline JS that relies on CoffeeScript implementation details may not be transformed correctly
+
+CoffeeScript and decaffeinate both emit inline JS (surrounded by backticks)
+without modifying the contents. However, in some cases, it is possible to create
+inline JS that depends on the details of the surrounding JavaScript. For
+example, CS1 transforms fat arrow functions in a way where `_this` refers to the
+outer this and `this` refers to the inner this (which normally wouldn't be
+accessible). decaffeinate and CS2 create JS arrow functions, so `this` refers to
+the outer this, and there is no inner this. Code relying on this transform may
+break after decaffeinate (or after upgrading to CS2).
+
+The following code prints "this2" in CS1 and prints "this1" in CS2 and after
+being transformed by decaffeinate:
+
+```coffee
+f = ->
+  g = =>
+    console.log `this`.val
+  g.apply {val: 'this2'}
+f.apply {val: 'this1'}
+```
+
+This affects the "don't touch `` `this` ``" test in the CoffeeScript test suite.
+
 ### Classes cannot be called without `new`
 
 decaffeinate always produces JavaScript `class` declarations, which are more
@@ -85,7 +109,7 @@ after decaffeinate when run in a modern JS implementation:
 new =>
 ```
 
-This affects "`new` works against bare function" test in the CoffeeScript test
+This affects the "`new` works against bare function" test in the CoffeeScript test
 suite.
 
 ### Static property inheritance is implemented differently
