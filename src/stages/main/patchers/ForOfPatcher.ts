@@ -35,6 +35,9 @@ export default class ForOfPatcher extends ForPatcher {
     let keyBinding = this.getIndexBinding();
     this.insert(keyAssignee.outerStart, '(');
 
+    // Overwrite key assignee in case it was something like @key.
+    this.overwrite(this.keyAssignee.contentStart, this.keyAssignee.contentEnd, keyBinding);
+
     // Patch the target. Also get a reference in case we need it.
     let targetReference = this.getTargetReference();
 

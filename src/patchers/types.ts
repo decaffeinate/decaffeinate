@@ -26,4 +26,5 @@ export type PatchOptions = {
   leftBrace?: boolean,
   rightBrace?: boolean,
   method?: boolean,
+  forceTemplateLiteral?: boolean,
 };

@@ -5,16 +5,18 @@ import BlockPatcher from './BlockPatcher';
 import ReturnPatcher from './ReturnPatcher';
 
 export default class YieldPatcher extends NodePatcher {
-  expression: NodePatcher;
+  expression: NodePatcher | null;
   
-  constructor(patcherContext: PatcherContext, expression: NodePatcher) {
+  constructor(patcherContext: PatcherContext, expression: NodePatcher | null) {
     super(patcherContext);
     this.expression = expression;
   }
   
   initialize(): void {
     this.yields();
-    this.expression.setRequiresExpression();
+    if (this.expression) {
+      this.expression.setRequiresExpression();
+    }
   }
 
   /**
@@ -25,7 +27,9 @@ export default class YieldPatcher extends NodePatcher {
     if (surroundInParens) {
       this.insert(this.contentStart, '(');
     }
-    this.expression.patch({ needsParens });
+    if (this.expression) {
+      this.expression.patch({ needsParens });
+    }
     if (surroundInParens) {
       this.insert(this.contentEnd, ')');
     }

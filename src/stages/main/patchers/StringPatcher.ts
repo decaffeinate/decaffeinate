@@ -1,4 +1,5 @@
 import { SourceType } from 'coffee-lex';
+import {PatchOptions} from '../../../patchers/types';
 
 import InterpolatedPatcher from './InterpolatedPatcher';
 
@@ -7,8 +8,8 @@ import InterpolatedPatcher from './InterpolatedPatcher';
  * interpolations and whether or not they are multiline.
  */
 export default class StringPatcher extends InterpolatedPatcher {
-  patchAsExpression(): void {
-    let shouldBecomeTemplateLiteral = this.shouldBecomeTemplateLiteral();
+  patchAsExpression({forceTemplateLiteral}: PatchOptions = {}): void {
+    let shouldBecomeTemplateLiteral = forceTemplateLiteral || this.shouldBecomeTemplateLiteral();
 
     let escapeStrings = [];
     let openQuoteToken = this.firstToken();

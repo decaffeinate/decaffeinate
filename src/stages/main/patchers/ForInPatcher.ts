@@ -24,6 +24,10 @@ const DOWN = 'DOWN';
 const UNKNOWN = 'UNKNOWN';
 export type IndexDirection = 'UP' | 'DOWN' | 'UNKNOWN';
 
+/**
+ * Patcher for CS for...in. We also subclass this patcher for CS for...from, since the behavior is
+ * nearly the same.
+ */
 export default class ForInPatcher extends ForPatcher {
   step: NodePatcher | null;
   _ascReference: string | null = null;
@@ -221,6 +225,8 @@ export default class ForInPatcher extends ForPatcher {
   /**
    * As long as we aren't using the loop index or a step, we prefer to use JS
    * for-of loops.
+   *
+   * Overridden by CS for...from to always patch as JS for...of.
    */
   shouldPatchAsForOf(): boolean {
     return (
@@ -365,6 +371,11 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   needsUniqueIndexName(): boolean {
+    // Determining whether this.i is ever modified is hard, so we just assume
+    // it might be modified.
+    if (this.isThisAssignIndexBinding()) {
+      return true;
+    }
     let userIndex = this.getIndexBinding();
 
     // We need to extract this to a variable if there's an assignment within the
@@ -611,6 +622,9 @@ export default class ForInPatcher extends ForPatcher {
     return shouldWrap;
   }
 
+  /**
+   * Overridden by ForFromPatcher to always return false.
+   */
   shouldWrapForOfStatementTargetInArrayFrom(): boolean {
     let shouldWrap = !this.options.looseForOf && !this.isTargetAlreadyArray();
     if (shouldWrap) {

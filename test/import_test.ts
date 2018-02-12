@@ -62,4 +62,74 @@ describe('imports', () => {
       },
     });
   });
+
+  it('handles ES module default import', () => {
+    check(`
+      import a from 'b'
+    `, `
+      import a from 'b';
+    `);
+  });
+
+  it('handles ES module namespace import', () => {
+    check(`
+      import * as a from 'b'
+    `, `
+      import * as a from 'b';
+    `);
+  });
+
+  it('handles ES module aliased named import', () => {
+    check(`
+      import {a as b, c} from 'd'
+    `, `
+      import {a as b, c} from 'd';
+    `);
+  });
+
+  it('handles ES module export binding list', () => {
+    check(`
+      export {a as b, c}
+    `, `
+      export {a as b, c};
+    `);
+  });
+
+  it('handles ES module default export', () => {
+    check(`
+      export default a b
+    `, `
+      export default a(b);
+    `);
+  });
+
+  it('handles ES module star export', () => {
+    check(`
+      export * from 'a'
+    `, `
+      export * from 'a';
+    `);
+  });
+
+  it('handles ES module assignment named export', () => {
+    check(`
+      export a = 1
+    `, `
+      export var a = 1;
+    `);
+  });
+
+  it('handles ES module class named export', () => {
+    check(`
+      export class A
+        b: ->
+          c
+    `, `
+      export class A {
+        b() {
+          return c;
+        }
+      }
+    `);
+  });
 });

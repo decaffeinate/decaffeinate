@@ -325,6 +325,18 @@ describe('functions', () => {
     `);
   });
 
+  it('allows bare `yield`', () => {
+    check(`
+      ->
+        yield
+        return
+    `, `
+      (function*() {
+        yield;
+      });
+    `);
+  });
+
   it('keeps function with a spread in braces', () => {
     check(`(args...) =>`, `(...args) => {};`);
   });

@@ -25,9 +25,11 @@ import ExistsOpCompoundAssignOpPatcher from './patchers/ExistsOpCompoundAssignOp
 import ExistsOpPatcher from './patchers/ExistsOpPatcher';
 import ExpansionPatcher from './patchers/ExpansionPatcher';
 import ExpOpPatcher from './patchers/ExpOpPatcher';
+import ExportNamedDeclarationPatcher from './patchers/ExportNamedDeclarationPatcher';
 import ExtendsOpPatcher from './patchers/ExtendsOpPatcher';
 import FloorDivideOpCompoundAssignOpPatcher from './patchers/FloorDivideOpCompoundAssignOpPatcher';
 import FloorDivideOpPatcher from './patchers/FloorDivideOpPatcher';
+import ForFromPatcher from './patchers/ForFromPatcher';
 import ForInPatcher from './patchers/ForInPatcher';
 import ForOfPatcher from './patchers/ForOfPatcher';
 import FunctionApplicationPatcher from './patchers/FunctionApplicationPatcher';
@@ -67,6 +69,7 @@ import StringPatcher from './patchers/StringPatcher';
 import SuperPatcher from './patchers/SuperPatcher';
 import SwitchCasePatcher from './patchers/SwitchCasePatcher';
 import SwitchPatcher from './patchers/SwitchPatcher';
+import TaggedTemplateLiteralPatcher from './patchers/TaggedTemplateLiteralPatcher';
 import ThisPatcher from './patchers/ThisPatcher';
 import ThrowPatcher from './patchers/ThrowPatcher';
 import TryPatcher from './patchers/TryPatcher';
@@ -87,6 +90,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'String':
         return StringPatcher;
+
+      case 'TaggedTemplateLiteral':
+        return TaggedTemplateLiteralPatcher;
 
       case 'Int':
       case 'Float':
@@ -240,6 +246,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'ForIn':
         return ForInPatcher;
 
+      case 'ForFrom':
+        return ForFromPatcher;
+
       case 'ForOf':
         return ForOfPatcher;
 
@@ -340,6 +349,17 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'ExtendsOp':
         return ExtendsOpPatcher;
+
+      case 'ImportDeclaration':
+      case 'ExportBindingsDeclaration':
+      case 'ExportDefaultDeclaration':
+      case 'ExportAllDeclaration':
+      case 'ModuleSpecifier':
+        // Most import/export syntax is exactly the same in CS and JS.
+        return PassthroughPatcher;
+
+      case 'ExportNamedDeclaration':
+        return ExportNamedDeclarationPatcher;
 
       default:
         return null;

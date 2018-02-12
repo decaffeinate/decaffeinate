@@ -1852,4 +1852,76 @@ describe('for loops', () => {
       d;
     `);
   });
+
+  it('handles for...from statements', () => {
+    check(`
+      for a from b
+        c
+    `, `
+      for (let a of b) {
+        c;
+      }
+    `);
+  });
+
+  it('handles for...from expressions', () => {
+    check(`
+      a = (for c from d then b)
+    `, `
+      const a = (Array.from(d).map((c) => b));
+    `);
+  });
+
+  it('handles postfix for...from expressions', () => {
+    check(`
+      a = (b for c from d)
+    `, `
+      const a = (Array.from(d).map((c) => b));
+    `);
+  });
+
+  it('allows @index assignees in for expressions', () => {
+    check(`
+      ->
+        for a, @i in arr
+          c
+        return
+    `, `
+      (function() {
+        let i;
+        for (i = 0, this.i = i; i < arr.length; i++, this.i = i) {
+          const a = arr[this.i];
+          c;
+        }
+      });
+    `);
+  });
+
+  it('disallows loop expressions when there is an index binding', () => {
+    check(`
+      x = (for a, @i in arr then c)
+    `, `
+      const x = ((() => {
+        let i;
+        const result = [];
+        for (i = 0, this.i = i; i < arr.length; i++, this.i = i) {
+          const a = arr[this.i];
+          result.push(c);
+        }
+        return result;
+      })());
+    `);
+  });
+
+  it('handles @key assignees for CS for...of loops', () => {
+    check(`
+      for @key, value of obj
+        a
+    `, `
+      for (this.key in obj) {
+        const value = obj[this.key];
+        a;
+      }
+    `);
+  });
 });

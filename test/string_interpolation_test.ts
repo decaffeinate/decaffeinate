@@ -171,4 +171,20 @@ describe('string interpolation', () => {
       \`\`;
     `);
   });
+
+  it('handles tagged template literals', () => {
+    check(`
+      a"b#{c}d"
+    `, `
+      a\`b\${c}d\`;
+    `);
+  });
+
+  it('emits a tagged template literal even if there are no interpolations', () => {
+    check(`
+      a"b"
+    `, `
+      a\`b\`;
+    `);
+  });
 });
