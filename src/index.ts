@@ -1,4 +1,6 @@
-import { tokens } from 'decaffeinate-coffeescript';
+import lex from 'coffee-lex';
+import { nodes as getCoffeeNodes, tokens as getCoffeeTokens } from 'decaffeinate-coffeescript';
+import {parse as decaffeinateParse} from 'decaffeinate-parser';
 import AddVariableDeclarationsStage from './stages/add-variable-declarations/index';
 import EsnextStage from './stages/esnext/index';
 import LiterateStage from './stages/literate/index';
@@ -6,8 +8,8 @@ import MainStage from './stages/main/index';
 import NormalizeStage from './stages/normalize/index';
 import SemicolonsStage from './stages/semicolons/index';
 import { mergeSuggestions, prependSuggestionComment, Suggestion } from './suggestions';
+import CodeContext from './utils/CodeContext';
 import convertNewlines from './utils/convertNewlines';
-import DecaffeinateContext from './utils/DecaffeinateContext';
 import detectNewlineStr from './utils/detectNewlineStr';
 import formatCoffeeLexAst from './utils/formatCoffeeLexTokens';
 import formatCoffeeScriptAst from './utils/formatCoffeeScriptAst';
@@ -115,22 +117,22 @@ function runStage(stage: Stage, content: string, options: Options): StageResult 
 }
 
 function convertCustomStage(source: string, stageName: string): ConversionResult {
-  let context = DecaffeinateContext.create(source);
+  let context = new CodeContext(source);
   if (stageName === 'coffeescript-lexer') {
     return {
-      code: formatCoffeeScriptLexerTokens(tokens(source), context),
+      code: formatCoffeeScriptLexerTokens(getCoffeeTokens(source), context),
     };
   } else if (stageName === 'coffeescript-parser') {
     return {
-      code: formatCoffeeScriptAst(context),
+      code: formatCoffeeScriptAst(getCoffeeNodes(source), context),
     };
   } else if (stageName === 'coffee-lex') {
     return {
-      code: formatCoffeeLexAst(context),
+      code: formatCoffeeLexAst(lex(source), context),
     };
   } else if (stageName === 'decaffeinate-parser') {
     return {
-      code: formatDecaffeinateParserAst(context),
+      code: formatDecaffeinateParserAst(decaffeinateParse(source), context),
     };
   } else {
     throw new Error(`Unrecognized stage name: ${stageName}`);

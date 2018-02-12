@@ -1,12 +1,11 @@
 import { SourceType } from 'coffee-lex';
+import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
 
-import DecaffeinateContext from './DecaffeinateContext';
-import formatRange from './formatRange';
+import CodeContext from './CodeContext';
 
-export default function formatCoffeeLexTokens(context: DecaffeinateContext): string {
-  let tokens = context.sourceTokens;
+export default function formatCoffeeLexTokens(tokens: SourceTokenList, context: CodeContext): string {
   let resultLines = tokens.map(token =>
-    `${formatRange(token.start, token.end, context)}: ${SourceType[token.type]}`
+    `${context.formatRange(token.start, token.end)}: ${SourceType[token.type]}`
   );
   return resultLines.map(line => line + '\n').join('');
 }

@@ -1,13 +1,12 @@
 import { Node } from 'decaffeinate-parser/dist/nodes';
-import DecaffeinateContext from './DecaffeinateContext';
-import formatRange from './formatRange';
+import CodeContext from './CodeContext';
 
-export default function formatDecaffeinateParserAst(context: DecaffeinateContext): string {
-  let resultLines = formatAstNodeLines(context.programNode, context);
+export default function formatDecaffeinateParserAst(program: Node, context: CodeContext): string {
+  let resultLines = formatAstNodeLines(program, context);
   return resultLines.map(line => line + '\n').join('');
 }
 
-function formatAstNodeLines(node: Node, context: DecaffeinateContext): Array<string> {
+function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
   let propLines = [];
   let childPropNames = node.getChildNames();
   let blacklistedProps = childPropNames.concat(
@@ -44,7 +43,7 @@ function formatAstNodeLines(node: Node, context: DecaffeinateContext): Array<str
       propLines.push(...childLines);
     }
   }
-  let rangeStr = formatRange(node.start, node.end, context);
+  let rangeStr = context.formatRange(node.start, node.end);
   return [
     `${node.type} ${rangeStr} {`,
     ...propLines.map(s => '  ' + s),

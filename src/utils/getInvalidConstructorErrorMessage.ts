@@ -1,4 +1,4 @@
-import stripSharedIndent from "./stripSharedIndent";
+import stripSharedIndent from './stripSharedIndent';
 
 export default function getInvalidConstructorErrorMessage(firstSentence: string): string {
   return stripSharedIndent(`

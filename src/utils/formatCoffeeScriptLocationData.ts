@@ -1,8 +1,7 @@
 import { LocationData } from 'decaffeinate-coffeescript/lib/coffee-script/nodes';
-import DecaffeinateContext from './DecaffeinateContext';
-import formatRange from './formatRange';
+import CodeContext from './CodeContext';
 
-export default function formatCoffeeScriptLocationData(locationData: LocationData, context: DecaffeinateContext): string {
+export default function formatCoffeeScriptLocationData(locationData: LocationData, context: CodeContext): string {
   let {first_line, first_column, last_line, last_column} = locationData;
   let firstIndex = context.linesAndColumns.indexForLocation({line: first_line, column: first_column});
   if (firstIndex === null) {
@@ -12,5 +11,5 @@ export default function formatCoffeeScriptLocationData(locationData: LocationDat
   if (lastIndex === null) {
     return 'INVALID RANGE';
   }
-  return formatRange(firstIndex, lastIndex + 1, context);
+  return context.formatRange(firstIndex, lastIndex + 1);
 }
