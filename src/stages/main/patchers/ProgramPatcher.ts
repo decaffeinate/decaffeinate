@@ -13,10 +13,10 @@ export default class ProgramPatcher extends SharedProgramPatcher {
 
   patchAsStatement(): void {
     this.patchComments();
+    this.patchContinuations();
     if (this.body) {
       this.body.patch({ leftBrace: false, rightBrace: false });
     }
-    this.patchContinuations();
     this.patchHelpers();
   }
 
@@ -28,14 +28,7 @@ export default class ProgramPatcher extends SharedProgramPatcher {
   patchContinuations(): void {
     this.getProgramSourceTokens().forEach(token => {
       if (token.type === SourceType.CONTINUATION) {
-        try {
-          this.remove(token.start, token.end);
-        } catch (e) {
-          this.log(
-            'Warning: Ignoring a continuation token because it could not be ' +
-            'removed. Most likely, this is because its range has already ' +
-            'been overwritten.');
-        }
+        this.remove(token.start, token.end);
       }
     });
   }

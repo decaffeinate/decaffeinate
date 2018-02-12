@@ -872,4 +872,15 @@ describe('conditionals', () => {
         setResult(x)
     `, 1);
   });
+
+  it('handles multiline inline conditionals with an existential operator condition (#1230)', () => {
+    check(`
+      test  = if \\
+        cond? \\
+        then 'true' else 'no'
+    `, `
+      const test  = (typeof cond !== 'undefined' && cond !== null) 
+        ? 'true' : 'no';
+    `);
+  });
 });
