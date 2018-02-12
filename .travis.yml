@@ -25,12 +25,17 @@ node_js:
 deploy:
   # Publish to NPM.
   - provider: script
-    script: semantic-release pre && yarn build && npm publish && semantic-release post
+    script:
+      - yarn install
+      - yarn global add semantic-release
+      - semantic-release pre && yarn build && npm publish && semantic-release post
     on:
       branch: master
   # Update the website.
   - provider: script
-    script: yarn update-website
+    script:
+      - yarn install
+      - yarn update-website
     on:
       branch: master
 
