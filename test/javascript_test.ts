@@ -33,4 +33,13 @@ describe('embedded JavaScript', () => {
   it('handles escaped backticks in inline JS', () => {
     check('`s + \\`hello\\`;`', 's + `hello`;');
   });
+
+  it('handles escaped backslashes before escaped backticks in inline JS', () => {
+    // Five backslashes produces JS "\\`", which is a single backslash followed by a backtick.
+    validate('setResult(`"\\\\\\\\\\`"`);', '\\`');
+  });
+
+  it('does not handle escaped backslashes when not followed by a backtick', () => {
+    validate('setResult(`"\\\\\\\\"`);', '\\\\');
+  });
 });
