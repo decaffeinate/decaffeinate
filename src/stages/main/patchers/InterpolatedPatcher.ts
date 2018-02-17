@@ -2,6 +2,8 @@ import { SourceType } from 'coffee-lex';
 
 import SourceToken from 'coffee-lex/dist/SourceToken';
 import { PatcherContext } from '../../../patchers/types';
+import downgradeUnicodeCodePointEscapesInRange
+  from '../../../utils/downgradeUnicodeCodePointEscapesInRange';
 import escape from '../../../utils/escape';
 import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespaceInRange';
 import escapeZeroCharsInRange from '../../../utils/escapeZeroCharsInRange';
@@ -85,12 +87,19 @@ export default class InterpolatedPatcher extends NodePatcher {
           if (this.shouldExcapeZeroChars()) {
             escapeZeroCharsInRange(token.start, token.end, this);
           }
+          if (this.shouldDowngradeUnicodeCodePointEscapes()) {
+            downgradeUnicodeCodePointEscapesInRange(token.start, token.end, this, {needsExtraEscape: true});
+          }
         }
       }
     }
   }
 
   shouldExcapeZeroChars(): boolean {
+    return false;
+  }
+
+  shouldDowngradeUnicodeCodePointEscapes(): boolean {
     return false;
   }
 

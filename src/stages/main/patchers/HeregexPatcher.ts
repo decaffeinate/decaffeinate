@@ -1,8 +1,11 @@
+import {Heregex} from 'decaffeinate-parser/dist/nodes';
 import InterpolatedPatcher from './InterpolatedPatcher';
 
 const CLOSE_TOKEN_BASE_LENGTH = 3;
 
 export default class HeregexPatcher extends InterpolatedPatcher {
+  node: Heregex;
+
   patchAsExpression(): void {
     let openToken = this.firstToken();
     let closeToken = this.lastToken();
@@ -24,5 +27,9 @@ export default class HeregexPatcher extends InterpolatedPatcher {
 
   shouldExcapeZeroChars(): boolean {
     return true;
+  }
+
+  shouldDowngradeUnicodeCodePointEscapes(): boolean {
+    return !this.node.flags.unicode;
   }
 }
