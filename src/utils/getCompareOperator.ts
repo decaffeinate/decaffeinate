@@ -21,8 +21,6 @@ export default function getCompareOperator(operator: string, negated: boolean): 
       return negated ? '<' : '>=';
 
     default:
-      throw this.error(
-        `unsupported equality/inequality type: ${operator}`
-      );
+      throw new Error(`unsupported equality/inequality type: ${operator}`);
   }
 }

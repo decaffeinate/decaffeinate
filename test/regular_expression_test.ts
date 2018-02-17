@@ -151,4 +151,60 @@ describe('regular expressions', () => {
       new RegExp(\`\\\\\\\\[\\\\\\\\]\`);
     `);
   });
+
+  it('replaces unicode code point escapes with regular unicode escapes in regexes', () => {
+    check(`
+      /\\u{a}/
+      `, `
+      /\\u000a/;
+    `);
+  });
+
+  it('replaces non-BMP unicode code point escapes with regular unicode escapes in regexes', () => {
+    check(`
+      /\\u{10000}/
+      `, `
+      /\\ud800\\udc00/;
+    `);
+  });
+
+  it('replaces heregex unicode code point escapes with regular unicode escapes', () => {
+    check(`
+      ///\\u{a}///
+      `, `
+      new RegExp(\`\\\\u000a\`);
+    `);
+  });
+
+  it('replaces heregex non-BMP unicode code point escapes with regular unicode escapes', () => {
+    check(`
+      ///\\u{10000}///
+      `, `
+      new RegExp(\`\\\\ud800\\\\udc00\`);
+    `);
+  });
+
+  it('does not downgrade unicode code point escapes when the "u" flag is specified', () => {
+    check(`
+      /\\u{a}/u
+      `, `
+      /\\u{a}/u;
+    `);
+  });
+
+  it('does not downgrade heregex unicode code point escapes when the "u" flag is specified', () => {
+    check(`
+      ///\\u{a}///u
+      `, `
+      new RegExp(\`\\\\u{a}\`, 'u');
+    `);
+  });
+
+  it('does not replace unicode when u is preceded by two backslashes', () => {
+    check(`
+      /\\\\u{a}/
+      `, `
+      /\\\\u{a}/;
+    `);
+  });
 });
