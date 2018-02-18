@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import {nodes} from 'decaffeinate-coffeescript';
+import {nodes} from 'decaffeinate-coffeescript2';
 import CodeContext from '../../src/utils/CodeContext';
 import formatCoffeeScriptAst from '../../src/utils/formatCoffeeScriptAst';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
@@ -20,25 +20,34 @@ describe('formatCoffeeScriptAst', () => {
             operatorToken: undefined
             moduleDeclaration: undefined
             variable: Value [1:1(0)-1:2(1)] {
+              isDefaultValue: false
               base: IdentifierLiteral [1:1(0)-1:2(1)] {
                 value: "x"
               }
               properties: []
             }
-            value: Call [1:5(4)-1:8(7)] {
-              soak: false
-              isNew: false
-              variable: Value [1:5(4)-1:6(5)] {
-                base: IdentifierLiteral [1:5(4)-1:6(5)] {
-                  value: "a"
+            value: Value [1:5(4)-1:8(7)] {
+              isDefaultValue: false
+              base: Call [1:5(4)-1:8(7)] {
+                soak: false
+                token: undefined
+                isNew: false
+                csx: false
+                variable: Value [1:5(4)-1:6(5)] {
+                  isDefaultValue: false
+                  base: IdentifierLiteral [1:5(4)-1:6(5)] {
+                    value: "a"
+                  }
+                  properties: []
                 }
-                properties: []
+                args: []
               }
-              args: []
+              properties: []
             }
           }
         ]
       }
+
     `) + '\n');
   });
 
@@ -58,6 +67,7 @@ describe('formatCoffeeScriptAst', () => {
             cases: [
               [
                 Value [2:8(14)-2:9(15)] {
+                  isDefaultValue: false
                   base: NumberLiteral [2:8(14)-2:9(15)] {
                     value: "1"
                   }
@@ -66,6 +76,7 @@ describe('formatCoffeeScriptAst', () => {
                 Block [3:5(20)-3:6(21)] {
                   expressions: [
                     Value [3:5(20)-3:6(21)] {
+                      isDefaultValue: false
                       base: NumberLiteral [3:5(20)-3:6(21)] {
                         value: "2"
                       }

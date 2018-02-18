@@ -16,7 +16,6 @@ node_js:
   - '9'
   - '8'
   - '6'
-  - '4'
 after_success:
   - 'curl -Lo travis_after_all.py https://git.io/travis_after_all'
   - python travis_after_all.py

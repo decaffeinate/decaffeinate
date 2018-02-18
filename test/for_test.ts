@@ -1742,8 +1742,12 @@ describe('for loops', () => {
       x = for a in b
         ;
     `, `
-      const x = Array.from(b).map((a) =>
-        undefined);
+      const x = (() => {
+        const result = [];
+        for (let a of Array.from(b)) {
+        }
+        return result;
+      })();
     `);
   });
 

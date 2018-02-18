@@ -1257,17 +1257,22 @@ debug@3.1.0, debug@^3.0.1:
   dependencies:
     ms "2.0.0"
 
+decaffeinate-coffeescript2@2.2.1-patch.1:
+  version "2.2.1-patch.1"
+  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript2/-/decaffeinate-coffeescript2-2.2.1-patch.1.tgz#e63a33cfb5870534107b82cb2604f1e4ff126684"
+
 decaffeinate-coffeescript@1.12.7-patch.2:
   version "1.12.7-patch.2"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.2.tgz#c0a453395e0194bcf0dce8d81dbf7170c5a1d578"
 
-decaffeinate-parser@^20.2.2:
-  version "20.2.2"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-20.2.2.tgz#589d00e6694327b707c74b29dea17c9732aa696c"
+decaffeinate-parser@^21.0.1:
+  version "21.0.1"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-21.0.1.tgz#86f4c43a8a3819e64e2ce467cc00f058b4c7f33e"
   dependencies:
     babylon "^6.18.0"
     coffee-lex "^8.1.1"
     decaffeinate-coffeescript "1.12.7-patch.2"
+    decaffeinate-coffeescript2 "2.2.1-patch.1"
     json-stable-stringify "^1.0.1"
     lines-and-columns "^1.1.6"
 

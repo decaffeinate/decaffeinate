@@ -141,8 +141,25 @@ export default class ConditionalPatcher extends NodePatcher {
       if (!elseToken) {
         throw this.error('Expected else token in conditional.');
       }
+      // We might have just a semicolon as the consequent. In that case, it will be null in the AST
+      // but we will need to remove it.
+      let semicolonTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+        this.condition.outerEnd, elseToken.start, (token) => token.type === SourceType.SEMICOLON
+      );
+      if (semicolonTokenIndex) {
+        let semicolonToken = this.sourceTokenAtIndex(semicolonTokenIndex);
+        if (semicolonToken) {
+          this.remove(semicolonToken.start, semicolonToken.end);
+        }
+      }
       this.overwrite(elseToken.start, elseToken.end, 'undefined :');
       alternate.patch();
+    } else {
+      if (elseToken !== null) {
+        this.overwrite(elseToken.start, elseToken.end, 'undefined : undefined');
+      } else {
+        this.insert(this.condition.outerEnd, ' undefined : undefined');
+      }
     }
 
     if (addParens) {

@@ -619,11 +619,10 @@ describe('conditionals', () => {
       (function() {
         if (false) {
           // comment
-        } else if (true) {
+        } else if (true) {} 
           /*
           block comment
           */
-        }
         else {}
       });
     `);
@@ -637,8 +636,8 @@ describe('conditionals', () => {
       )
     `, `
       const x = (true ?
-        undefined/* a */
-       : undefined
+        /* a */
+      undefined : undefined
       );
     `);
   });
@@ -817,8 +816,8 @@ describe('conditionals', () => {
       x = if a
         ;
     `, `
-      const x = a ?
-        undefined : undefined;
+      const x = a ? undefined : undefined
+        ;
     `);
   });
 
@@ -830,8 +829,8 @@ describe('conditionals', () => {
         b
     `, `
       const x = a ?
-        undefined
-      :
+        
+      undefined :
         b;
     `);
   });

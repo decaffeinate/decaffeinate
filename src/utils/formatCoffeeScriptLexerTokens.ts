@@ -1,4 +1,4 @@
-import { Token } from 'decaffeinate-coffeescript/lib/coffee-script/lexer';
+import { Token } from 'decaffeinate-coffeescript2/lib/coffeescript/lexer';
 import CodeContext from './CodeContext';
 import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData';
 
