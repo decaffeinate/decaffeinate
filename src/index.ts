@@ -1,5 +1,5 @@
 import lex from 'coffee-lex';
-import { nodes as getCoffeeNodes, tokens as getCoffeeTokens } from 'decaffeinate-coffeescript';
+import { nodes as getCoffeeNodes, tokens as getCoffeeTokens } from 'decaffeinate-coffeescript2';
 import {parse as decaffeinateParse} from 'decaffeinate-parser';
 import AddVariableDeclarationsStage from './stages/add-variable-declarations/index';
 import EsnextStage from './stages/esnext/index';

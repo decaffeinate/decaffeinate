@@ -44,7 +44,8 @@
     "babylon": "7.0.0-beta.34",
     "coffee-lex": "^8.1.1",
     "decaffeinate-coffeescript": "1.12.7-patch.2",
-    "decaffeinate-parser": "^20.2.2",
+    "decaffeinate-coffeescript2": "2.2.1-patch.1",
+    "decaffeinate-parser": "^21.0.1",
     "detect-indent": "^4.0.0",
     "esnext": "^3.2.0",
     "lines-and-columns": "^1.1.5",
@@ -52,7 +53,7 @@
     "tslib": "^1.7.1"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "files": [
     "bin",

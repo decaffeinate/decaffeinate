@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { tokens } from 'decaffeinate-coffeescript';
+import { tokens } from 'decaffeinate-coffeescript2';
 import CodeContext from '../../src/utils/CodeContext';
 import formatCoffeeScriptLexerTokens from '../../src/utils/formatCoffeeScriptLexerTokens';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';

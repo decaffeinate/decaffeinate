@@ -753,8 +753,7 @@ describe('function calls', () => {
     `, `
       fn1(done =>
         fn2('string', function(object) {
-          
-        }
+          }
         , function(err, data) {
           const p = data;
           return done(err);

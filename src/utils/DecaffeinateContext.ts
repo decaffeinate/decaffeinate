@@ -1,5 +1,5 @@
 import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
-import { Block } from 'decaffeinate-coffeescript/lib/coffee-script/nodes';
+import { Block } from 'decaffeinate-coffeescript2/lib/coffeescript/nodes';
 import { parse as decaffeinateParse, traverse } from 'decaffeinate-parser';
 import { Node, Program } from 'decaffeinate-parser/dist/nodes';
 import LinesAndColumns from 'lines-and-columns';
