@@ -60,7 +60,11 @@ describe('in operator', () => {
   it('works with negated `in`', () => {
     check(`
       a not in b
+      a ! in b
+      a !in b
     `, `
+      !Array.from(b).includes(a);
+      !Array.from(b).includes(a);
       !Array.from(b).includes(a);
     `);
   });
