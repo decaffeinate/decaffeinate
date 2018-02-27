@@ -11,6 +11,8 @@ describe('instanceof', () => {
 
   it('works with negated `instanceof`', () => {
     check(`a not instanceof b`, `!(a instanceof b);`);
+    check(`a ! instanceof b`, `!(a instanceof b);`);
+    check(`a !instanceof b`, `!(a instanceof b);`);
   });
 
   // Ideally we wouldn't have redundant parens here, but it makes the

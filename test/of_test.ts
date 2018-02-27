@@ -20,7 +20,11 @@ describe('of operator', () => {
   it('works with negated `of`', () => {
     check(`
       a not of b
+      a !of b
+      a ! of b
     `, `
+      !(a in b);
+      !(a in b);
       !(a in b);
     `);
   });
