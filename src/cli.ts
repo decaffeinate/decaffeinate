@@ -1,6 +1,6 @@
 /* eslint-disable no-process-exit */
 
-import { readdir, readFile, stat, writeFile } from 'fs';
+import { readdir, readFile, stat, writeFile } from 'mz/fs';
 import { basename, dirname, extname, join } from 'path';
 import { convert, modernizeJS } from './index';
 import { Options } from './options';
@@ -156,20 +156,22 @@ function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ((err
   let pending = paths.slice();
 
   function processPath(path: string): void {
-    stat(path, (err, info) => {
-      if (err) { errors.push(err); }
-      else if (info.isDirectory()) {
-        processDirectory(path);
-      } else {
-        processFile(path);
-      }
-    });
+    stat(path)
+      .then(info => {
+        if (info.isDirectory()) {
+          processDirectory(path);
+        } else {
+          processFile(path);
+        }
+      })
+      .catch(err => {
+        errors.push(err);
+      });
   }
 
   function processDirectory(path: string): void {
-    readdir(path, (err, children) => {
-      if (err) { errors.push(err); }
-      else {
+    readdir(path)
+      .then(children => {
         pending.unshift(
           ...children
             .filter(child => {
@@ -183,27 +185,30 @@ function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ((err
             })
             .map(child => join(path, child))
         );
-      }
-      processNext();
-    });
+      })
+      .catch(err => {
+        errors.push(err);
+      })
+      .then(() => {
+        processNext();
+      });
   }
 
   function processFile(path: string): void {
     let extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
     let outputPath = join(dirname(path), basename(path, extension)) + '.js';
     console.log(`${path} → ${outputPath}`);
-    readFile(path, 'utf8', (err, data) => {
-      if (err) {
+    readFile(path, 'utf8')
+      .then(data => {
+        let resultCode = runWithCode(path, data, options);
+        return writeFile(outputPath, resultCode);
+      })
+      .catch(err => {
         errors.push(err);
-        processNext();
-        return;
-      }
-      let resultCode = runWithCode(path, data, options);
-      writeFile(outputPath, resultCode, err => {
-        if (err) { errors.push(err); }
+      })
+      .then(() => {
         processNext();
       });
-    });
   }
 
   function processNext(): void {
