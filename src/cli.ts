@@ -10,21 +10,21 @@ const pkg = require('../package');
 /**
  * Run the script with the user-supplied arguments.
  */
-export default function run(args: Array<string>): void {
+export default async function run(args: Array<string>): Promise<void> {
   let options = parseArguments(args);
 
   if (options.paths.length) {
-    runWithPaths(options.paths, options);
+    await runWithPaths(options.paths, options);
   } else {
-    runWithStdio(options);
+    await runWithStdio(options);
   }
 }
 
-type CLIOptions = {
-  paths: Array<string>,
-  baseOptions: Options,
-  modernizeJS: boolean,
-};
+interface CLIOptions {
+  paths: Array<string>;
+  baseOptions: Options;
+  modernizeJS: boolean;
+}
 
 function parseArguments(args: Array<string>): CLIOptions {
   let paths = [];
@@ -151,87 +151,72 @@ function parseArguments(args: Array<string>): CLIOptions {
 /**
  * Run decaffeinate on the given paths, changing them in place.
  */
-function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ((errors: Array<Error>) => void) | null = null): void {
+async function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ((errors: Array<Error>) => void) | null = null): Promise<void> {
   let errors: Array<Error> = [];
   let pending = paths.slice();
 
-  function processPath(path: string): void {
-    stat(path)
-      .then(info => {
-        if (info.isDirectory()) {
-          processDirectory(path);
-        } else {
-          processFile(path);
-        }
-      })
-      .catch(err => {
-        errors.push(err);
-      });
-  }
-
-  function processDirectory(path: string): void {
-    readdir(path)
-      .then(children => {
-        pending.unshift(
-          ...children
-            .filter(child => {
-              if (options.modernizeJS) {
-                return child.endsWith('.js');
-              } else {
-                return child.endsWith('.coffee') ||
-                  child.endsWith('.litcoffee') ||
-                  child.endsWith('.coffee.md');
-              }
-            })
-            .map(child => join(path, child))
-        );
-      })
-      .catch(err => {
-        errors.push(err);
-      })
-      .then(() => {
-        processNext();
-      });
-  }
-
-  function processFile(path: string): void {
-    let extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
-    let outputPath = join(dirname(path), basename(path, extension)) + '.js';
-    console.log(`${path} → ${outputPath}`);
-    readFile(path, 'utf8')
-      .then(data => {
-        let resultCode = runWithCode(path, data, options);
-        return writeFile(outputPath, resultCode);
-      })
-      .catch(err => {
-        errors.push(err);
-      })
-      .then(() => {
-        processNext();
-      });
-  }
-
-  function processNext(): void {
-    if (pending.length > 0) {
-      let nextPath = pending.shift();
-      if (!nextPath) {
-        throw new Error('Expected a next path.');
-      }
-      processPath(nextPath);
-    } else if (callback) {
-      callback(errors);
+  async function processPath(path: string): Promise<void> {
+    let info = await stat(path);
+    if (info.isDirectory()) {
+      await processDirectory(path);
+    } else {
+      await processFile(path);
     }
   }
 
-  processNext();
+  async function processDirectory(path: string): Promise<void> {
+    let children = await readdir(path);
+    pending.unshift(
+      ...children
+        .filter(child => {
+          if (options.modernizeJS) {
+            return child.endsWith('.js');
+          } else {
+            return child.endsWith('.coffee') ||
+              child.endsWith('.litcoffee') ||
+              child.endsWith('.coffee.md');
+          }
+        })
+        .map(child => join(path, child))
+    );
+  }
+
+  async function processFile(path: string): Promise<void> {
+    let extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
+    let outputPath = join(dirname(path), basename(path, extension)) + '.js';
+    console.log(`${path} → ${outputPath}`);
+    let data = await readFile(path, 'utf8');
+    let resultCode = runWithCode(path, data, options);
+    await writeFile(outputPath, resultCode);
+  }
+
+  async function processAll(): Promise<void> {
+    while (pending.length > 0) {
+      let nextPath = pending.shift() as string;
+      try {
+        await processPath(nextPath);
+      } catch (err) {
+        errors.push(err);
+      }
+    }
+
+    if (callback) {
+      await callback(errors);
+    }
+  }
+
+  await processAll();
 }
 
-function runWithStdio(options: CLIOptions): void {
-  let data = '';
-  process.stdin.on('data', chunk => data += chunk);
-  process.stdin.on('end', () => {
-    let resultCode = runWithCode('stdin', data, options);
-    process.stdout.write(resultCode);
+async function runWithStdio(options: CLIOptions): Promise<void> {
+  return new Promise<void>(resolve => {
+    let data = '';
+    process.stdin.on('data', chunk => data += chunk);
+    process.stdin.on('end', () => {
+      let resultCode = runWithCode('stdin', data, options);
+      process.stdout.write(resultCode);
+      resolve();
+    });
   });
 }
 
