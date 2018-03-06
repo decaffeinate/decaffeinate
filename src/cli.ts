@@ -151,10 +151,7 @@ function parseArguments(args: Array<string>): CLIOptions {
 /**
  * Run decaffeinate on the given paths, changing them in place.
  */
-async function runWithPaths(paths: Array<string>, options: CLIOptions, callback: ((errors: Array<Error>) => void) | null = null): Promise<void> {
-  let errors: Array<Error> = [];
-  let pending = paths.slice();
-
+async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<void> {
   async function processPath(path: string): Promise<void> {
     let info = await stat(path);
     if (info.isDirectory()) {
@@ -166,19 +163,18 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions, callback:
 
   async function processDirectory(path: string): Promise<void> {
     let children = await readdir(path);
-    pending.unshift(
-      ...children
-        .filter(child => {
-          if (options.modernizeJS) {
-            return child.endsWith('.js');
-          } else {
-            return child.endsWith('.coffee') ||
-              child.endsWith('.litcoffee') ||
-              child.endsWith('.coffee.md');
-          }
-        })
-        .map(child => join(path, child))
-    );
+
+    for (let child of children) {
+      let childPath = join(path, child);
+
+      if (options.modernizeJS) {
+        if (child.endsWith('.js')) {
+          await processPath(childPath);
+        }
+      } else if (child.endsWith('.coffee') || child.endsWith('.litcoffee') || child.endsWith('.coffee.md')) {
+        await processPath(childPath);
+      }
+    }
   }
 
   async function processFile(path: string): Promise<void> {
@@ -190,22 +186,9 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions, callback:
     await writeFile(outputPath, resultCode);
   }
 
-  async function processAll(): Promise<void> {
-    while (pending.length > 0) {
-      let nextPath = pending.shift() as string;
-      try {
-        await processPath(nextPath);
-      } catch (err) {
-        errors.push(err);
-      }
-    }
-
-    if (callback) {
-      await callback(errors);
-    }
+  for (let path of paths) {
+    await processPath(path);
   }
-
-  await processAll();
 }
 
 async function runWithStdio(options: CLIOptions): Promise<void> {
@@ -235,10 +218,8 @@ function runWithCode(name: string, code: string, options: CLIOptions): string {
     if (PatchError.detect(err)) {
       console.error(`${name}: ${PatchError.prettyPrint(err)}`);
       process.exit(1);
-      throw new Error();
-    } else {
-      throw err;
     }
+    throw err;
   }
 }
 
