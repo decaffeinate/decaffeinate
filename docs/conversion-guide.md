@@ -15,7 +15,7 @@ This guide assumes a few things:
    including standard library polyfills like `Array.prototype.includes`.
 1. You understand CoffeeScript, ES6, and the files being converted
    reasonably well.
-1. You are using Linux, Mac OS X, or a compatible OS and are comfortable
+1. You are using Linux, macOS, or a compatible OS and are comfortable
    using the command line. This may work on Windows with some
    adjustments.
 
