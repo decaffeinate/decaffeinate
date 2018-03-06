@@ -300,7 +300,7 @@ function usage(): void {
   console.log('  # Pipe an example from the command-line.');
   console.log('  $ echo "a = 1" | decaffeinate');
   console.log();
-  console.log('  # On OS X this may come in handy:');
+  console.log('  # On macOS this may come in handy:');
   console.log('  $ pbpaste | decaffeinate | pbcopy');
   console.log();
   console.log('  # Process everything in a directory.');
