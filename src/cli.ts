@@ -166,8 +166,11 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
 
     for (let child of children) {
       let childPath = join(path, child);
+      let childStat = await stat(childPath);
 
-      if (options.modernizeJS) {
+      if (childStat.isDirectory()) {
+        await processDirectory(childPath);
+      } else if (options.modernizeJS) {
         if (child.endsWith('.js')) {
           await processPath(childPath);
         }
