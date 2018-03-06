@@ -375,6 +375,7 @@ describe('decaffeinate CLI', () => {
       test_fixtures/A.coffee → test_fixtures/A.js
       test_fixtures/B.coffee.md → test_fixtures/B.js
       test_fixtures/C.litcoffee → test_fixtures/C.js
+      test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js
     `);
     ok(existsSync('test_fixtures/A.js'));
     ok(existsSync('test_fixtures/B.js'));
@@ -420,6 +421,16 @@ describe('decaffeinate CLI', () => {
     equal(stripSharedIndent(contents), stripSharedIndent(`
       import path from 'path';
       const b = 1;
+    `));
+  });
+
+  it('recursively scans directories', () => {
+    runCli('test_fixtures/level1', '', `
+      test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js 
+    `);
+    let contents = readFileSync('./test_fixtures/level1/level2/file.js').toString();
+    equal(stripSharedIndent(contents), stripSharedIndent(`
+      const a = 1;
     `));
   });
 });
