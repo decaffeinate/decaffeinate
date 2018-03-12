@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS1} from './support/check';
 
 describe('comments', () => {
   it('converts line comments to // form', () => {
@@ -73,8 +73,8 @@ describe('comments', () => {
     `);
   });
 
-  it('preserves trailing comments in function bodies', () => {
-    check(`
+  it('preserves trailing comments in function bodies in CS1', () => {
+    checkCS1(`
       a ->
         if b
           c

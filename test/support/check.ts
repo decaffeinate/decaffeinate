@@ -11,6 +11,24 @@ export type Extra = {
 
 export default function check(
     source: string, expected: string, {options={}, shouldStripIndent=true}: Extra = {}): void {
+  ({source, expected} = maybeStripIndent(shouldStripIndent, source, expected));
+  checkOutput(source, expected, {...options, useCS2: false});
+  checkOutput(source, expected, {...options, useCS2: true});
+}
+
+export function checkCS1(
+    source: string, expected: string, {options={}, shouldStripIndent=true}: Extra = {}): void {
+  ({source, expected} = maybeStripIndent(shouldStripIndent, source, expected));
+  checkOutput(source, expected, {...options, useCS2: false});
+}
+
+export function checkCS2(
+    source: string, expected: string, {options={}, shouldStripIndent=true}: Extra = {}): void {
+  ({source, expected} = maybeStripIndent(shouldStripIndent, source, expected));
+  checkOutput(source, expected, {...options, useCS2: true});
+}
+
+function maybeStripIndent(shouldStripIndent: boolean, source: string, expected: string): {source: string, expected: string} {
   if (shouldStripIndent) {
     if (source[0] === '\n') {
       source = stripSharedIndent(source);
@@ -19,7 +37,10 @@ export default function check(
       expected = stripSharedIndent(expected);
     }
   }
+  return {source, expected};
+}
 
+function checkOutput(source: string, expected: string, options: Options): void {
   try {
     let converted = convert(source, {
       disableSuggestionComment: true,

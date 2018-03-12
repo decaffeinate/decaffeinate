@@ -21,8 +21,8 @@ export default class DecaffeinateContext {
   ) {
   }
 
-  static create(source: string): DecaffeinateContext {
-    let program = decaffeinateParse(source);
+  static create(source: string, useCS2: boolean): DecaffeinateContext {
+    let program = decaffeinateParse(source, {useCS2});
     return new DecaffeinateContext(
       program,
       source,

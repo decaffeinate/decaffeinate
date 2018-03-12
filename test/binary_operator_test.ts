@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS1} from './support/check';
 
 describe('binary operators', () => {
   it('passes subtraction through', () => {
@@ -239,7 +239,7 @@ describe('binary operators', () => {
   });
 
   it('handles `extends` operator', () => {
-    check(`
+    checkCS1(`
       a extends b
     `, `
       __extends__(a, b);
@@ -325,7 +325,7 @@ describe('binary operators', () => {
   });
 
   it('handles an "extends" usage on the RHS of a binary operator', () => {
-    check(`
+    checkCS1(`
       a or (b extends c)
     `, `
       a || (__extends__(b, c));

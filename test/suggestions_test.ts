@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS1} from './support/check';
 
 describe('suggestions', () => {
   it('provides a suggestion for the babel constructor workaround', () => {
@@ -50,7 +50,7 @@ describe('suggestions', () => {
   });
 
   it('only shows one of each suggestion', () => {
-    check(`
+    checkCS1(`
       class A extends B
         constructor: (@c) ->
           super
