@@ -95,6 +95,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.disallowInvalidConstructors = true;
         break;
 
+      case '--bind-methods-after-super-call':
+        baseOptions.bindMethodsAfterSuperCall = true;
+        break;
+
       case '--loose':
         baseOptions.looseDefaultParams = true;
         baseOptions.looseForExpressions = true;
