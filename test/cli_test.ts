@@ -53,6 +53,14 @@ describe('decaffeinate CLI', () => {
     `);
   });
 
+  it('respects the --use-cs2 flag', () => {
+    runCli('--use-cs2', `
+      a = [...b, c]
+    `, `
+      const a = [...b, c];
+    `);
+  });
+
   it('respects the --literate flag', () => {
     runCli('--literate', `
       This is a literate file.

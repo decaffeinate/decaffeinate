@@ -134,6 +134,9 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 
 ## Options
 
+* `--use-cs2`: Treat the input as CoffeeScript 2 code. CoffeeScript 2 has some
+  small breaking changes and differences in behavior compared with CS1, so
+  decaffeinate assumes CS1 by default and allows CS2 via this flag.
 * `--modernize-js`: Treat the input as JavaScript and only run the
   JavaScript-to-JavaScript transforms, modifying the file(s) in-place.
 * `--literate`: Treat the input file as Literate CoffeeScript.

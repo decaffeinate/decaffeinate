@@ -1,3 +1,4 @@
+import SourceType from 'coffee-lex/dist/SourceType';
 import { Identifier } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import { REMOVE_ARRAY_FROM } from '../../../suggestions';
@@ -31,18 +32,23 @@ export default class SpreadPatcher extends NodePatcher {
    */
   patchAsExpression(): void {
     let needsArrayFrom = this.needsArrayFrom();
+    let isEllipsisOnLHS = this.firstToken().type === SourceType.RANGE;
 
-    // `a...` → `...Array.from(a...`
-    //           ^^^^^^^^^^^^^^
-    this.insert(this.expression.outerStart, '...');
+    if (!isEllipsisOnLHS) {
+      // `a...` → `...Array.from(a...`
+      //           ^^^^^^^^^^^^^^
+      this.insert(this.expression.outerStart, '...');
+    }
     if (needsArrayFrom) {
       this.insert(this.expression.outerStart, 'Array.from(');
     }
     this.expression.patch();
 
-    // `...Array.from(a...` → `...Array.from(a`
-    //                 ^^^
-    this.remove(this.expression.outerEnd, this.contentEnd);
+    if (!isEllipsisOnLHS) {
+      // `...Array.from(a...` → `...Array.from(a`
+      //                 ^^^
+      this.remove(this.expression.outerEnd, this.contentEnd);
+    }
     if (needsArrayFrom) {
       // Replicate a bug in CoffeeScript where you're allowed to pass null or
       // undefined when the argument spread is the only argument.
@@ -58,6 +64,10 @@ export default class SpreadPatcher extends NodePatcher {
   }
 
   needsArrayFrom(): boolean {
+    // CS2 converts spread to JS spread, so Array.from is never necessary.
+    if (this.options.useCS2) {
+      return false;
+    }
     // Rest operations should never use Array.from.
     if (this.isAssignee()) {
       return false;
