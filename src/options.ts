@@ -1,5 +1,6 @@
 export type Options = {
   filename?: string,
+  useCS2?: boolean,
   runToStage?: string | null,
   literate?: boolean,
   disableSuggestionComment?: boolean,
@@ -20,6 +21,7 @@ export type Options = {
 
 export const DEFAULT_OPTIONS: Options = {
   filename: 'input.coffee',
+  useCS2: false,
   runToStage: null,
   literate: false,
   disableSuggestionComment: false,

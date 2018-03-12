@@ -16,7 +16,7 @@ export default class TransformCoffeeScriptStage {
     let log = logger(this.name);
     log(content);
 
-    let context = DecaffeinateContext.create(content);
+    let context = DecaffeinateContext.create(content, Boolean(options.useCS2));
     let editor = new MagicString(content);
     let stage = new this(context.programNode, context, editor, options);
     let patcher = stage.build();

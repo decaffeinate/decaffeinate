@@ -37,7 +37,7 @@ describe('resolveToPatchError', () => {
           f()
         console.log 'test'`);
     try {
-      DecaffeinateContext.create(content);
+      DecaffeinateContext.create(content, false);
       ok(false, 'Expected an exception to be thrown.');
     } catch (e) {
       let patchError = resolveToPatchError(e, content, 'testStage');

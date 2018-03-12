@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS1} from './support/check';
 
 describe('function calls', () => {
   it('inserts commas after arguments if they are not there', () => {
@@ -340,7 +340,7 @@ describe('function calls', () => {
   });
 
   it('handles nested multi-line callbacks with inconsistent spacing (#370)', () => {
-    check(`
+    checkCS1(`
       define [
       ], () ->
       

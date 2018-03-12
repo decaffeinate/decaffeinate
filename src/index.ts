@@ -65,7 +65,7 @@ export function convert(source: string, options: Options = {}): ConversionResult
     if (stageIndex !== -1) {
       stages = stages.slice(0, stageIndex + 1);
     } else {
-      return convertCustomStage(source, runToStage);
+      return convertCustomStage(source, runToStage, Boolean(options.useCS2));
     }
   }
   let result = runStages(source, options, stages);
@@ -116,7 +116,7 @@ function runStage(stage: Stage, content: string, options: Options): StageResult 
   }
 }
 
-function convertCustomStage(source: string, stageName: string): ConversionResult {
+function convertCustomStage(source: string, stageName: string, useCS2: boolean): ConversionResult {
   let context = new CodeContext(source);
   if (stageName === 'coffeescript-lexer') {
     return {
@@ -132,7 +132,7 @@ function convertCustomStage(source: string, stageName: string): ConversionResult
     };
   } else if (stageName === 'decaffeinate-parser') {
     return {
-      code: formatDecaffeinateParserAst(decaffeinateParse(source), context),
+      code: formatDecaffeinateParserAst(decaffeinateParse(source, {useCS2}), context),
     };
   } else {
     throw new Error(`Unrecognized stage name: ${stageName}`);

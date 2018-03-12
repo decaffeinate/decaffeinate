@@ -1,5 +1,5 @@
 import assertError from './support/assertError';
-import check from './support/check';
+import check, {checkCS1} from './support/check';
 import validate from './support/validate';
 
 describe('classes', () => {
@@ -191,7 +191,7 @@ describe('classes', () => {
     });
 
     it('does not error when using `this` in a function before `super` in a constructor', () => {
-      check(`
+      checkCS1(`
         class A extends B
           constructor: ->
             f = -> @a = 2
@@ -249,7 +249,7 @@ describe('classes', () => {
     });
 
     it('disables the babel workaround when using this before super in a constructor', () => {
-      check(`
+      checkCS1(`
         class A extends B
           constructor: ->
             @a = 2
@@ -338,7 +338,7 @@ describe('classes', () => {
     });
 
     it('generates workaround code when using this before super in a constructor', () => {
-      check(`
+      checkCS1(`
         class A extends B
           constructor: ->
             @a = 2
@@ -408,7 +408,7 @@ describe('classes', () => {
     });
 
     it('generates workaround code when a subclass has a bound method and a normal constructor', () => {
-      check(`
+      checkCS1(`
         class A extends B
           constructor: ->
             super
@@ -466,7 +466,7 @@ describe('classes', () => {
     });
 
     it('does not generate workaround code when the workaround is unnecessary', () => {
-      check(`
+      checkCS1(`
         class A extends B
           constructor: ->
             super
@@ -482,7 +482,7 @@ describe('classes', () => {
     });
 
     it('properly generates workaround code when constructors have default parameters', () => {
-      check(`
+      checkCS1(`
         class A extends B
           constructor: (c={}) ->
             @d = e
@@ -712,7 +712,7 @@ describe('classes', () => {
   });
 
   it('converts `super` inside non-constructor methods to a named lookup', () => {
-    check(`
+    checkCS1(`
       class A extends B
         a: ->
           super
@@ -740,7 +740,7 @@ describe('classes', () => {
   });
 
   it('converts `super` inside static methods to a named lookup', () => {
-    check(`
+    checkCS1(`
       class A extends B
         @a: ->
           super
@@ -990,7 +990,7 @@ describe('classes', () => {
   });
 
   it('handles a bound method and an implicit super in the constructor', () => {
-    check(`
+    checkCS1(`
       class X extends Y
         constructor: ->
           super
@@ -1047,7 +1047,7 @@ describe('classes', () => {
   });
 
   it('places method bindings at the start of the constructor even if there is a super call', () => {
-    check(`
+    checkCS1(`
       class X extends Y
         constructor: ->
           if a
@@ -1173,7 +1173,7 @@ describe('classes', () => {
   });
 
   it('handles a super call on a method assigned directly to the prototype', () => {
-    check(`
+    checkCS1(`
       class A
         c: -> console.log 'Hello'
       class B extends A
@@ -1708,7 +1708,7 @@ describe('classes', () => {
   });
 
   it('saves the method name for dynamic prototype method assignments', () => {
-    check(`
+    checkCS1(`
       A::[m] = -> super
     `, `
       let cls, method;
@@ -1730,7 +1730,7 @@ describe('classes', () => {
   });
 
   it('generates proper class accesses in super used in initClass', () => {
-    check(`
+    checkCS1(`
       class A extends B
         @::f = -> super
     `, `
@@ -1745,7 +1745,7 @@ describe('classes', () => {
   });
 
   it('properly saves the method name for computed methods using super', () => {
-    check(`
+    checkCS1(`
       class A extends B
         "#{m}": -> super
     `, `
@@ -1757,7 +1757,7 @@ describe('classes', () => {
   });
 
   it('handles dynamically-added methods using super on other classes added within class bodies', () => {
-    check(`
+    checkCS1(`
       class A
         @b::m = -> super
     `, `
@@ -1783,7 +1783,7 @@ describe('classes', () => {
   });
 
   it('properly handles dynamic keys with static methods using super', () => {
-    check(`
+    checkCS1(`
       class A extends B
         @[c] = -> super
     `, `
@@ -1795,7 +1795,7 @@ describe('classes', () => {
   });
 
   it('properly handles static methods calling super from within initClass', () => {
-    check(`
+    checkCS1(`
       class A extends B
         if a
           @b = -> super
@@ -1831,7 +1831,7 @@ describe('classes', () => {
   });
 
   it('properly handles static methods with dynamic names calling super from within initClass', () => {
-    check(`
+    checkCS1(`
       class A extends B
         if a
           @[b] = -> super

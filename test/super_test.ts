@@ -1,8 +1,8 @@
-import check from './support/check';
+import check, {checkCS1} from './support/check';
 
 describe('super', () => {
   it('spreads `arguments` when no arguments are given', () => {
-    check(`
+    checkCS1(`
       class C extends B
         constructor: (x) ->
           super
@@ -24,7 +24,7 @@ describe('super', () => {
 
   // https://github.com/decaffeinate/decaffeinate/issues/375
   it('can be used as an argument to another call', () => {
-    check(`
+    checkCS1(`
       class A
         b: ->
           c(super)
@@ -38,7 +38,7 @@ describe('super', () => {
   });
 
   it('allows super within a class assigned to a variable', () => {
-    check(`
+    checkCS1(`
       A = class extends B
         f: ->
           super
@@ -52,7 +52,7 @@ describe('super', () => {
   });
 
   it('allows super within a method assignment with a property access class', () => {
-    check(`
+    checkCS1(`
       a.b.prototype.c = -> super
     `, `
       let cls;
@@ -61,7 +61,7 @@ describe('super', () => {
   });
 
   it('allows super within a method assignment with a computed class', () => {
-    check(`
+    checkCS1(`
       a().prototype.b = -> super
     `, `
       let cls;
@@ -70,7 +70,7 @@ describe('super', () => {
   });
 
   it('allows super within a dynamic prototype member access', () => {
-    check(`
+    checkCS1(`
       A().prototype[b()] = ->
         super
     `, `
@@ -91,7 +91,7 @@ describe('super', () => {
   });
 
   it('allows super on a method with a non-identifier name', () => {
-    check(`
+    checkCS1(`
       class A
         0: -> super
     `, `
@@ -102,7 +102,7 @@ describe('super', () => {
   });
 
   it('allows super on a method with a non-repeatable computed name', () => {
-    check(`
+    checkCS1(`
       class A
         "#{b()}": -> super
     `, `

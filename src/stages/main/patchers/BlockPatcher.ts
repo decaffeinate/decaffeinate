@@ -90,6 +90,11 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   patchAsStatement({leftBrace=true, rightBrace=true}: PatchOptions = {}): void {
+    if (this.isSurroundedByParentheses()) {
+      this.remove(this.outerStart, this.innerStart);
+      this.remove(this.innerEnd, this.outerEnd);
+    }
+
     if (leftBrace) {
       this.insert(this.innerStart, '{');
     }
@@ -239,5 +244,9 @@ export default class BlockPatcher extends SharedBlockPatcher {
    */
   allCodePathsPresent(): boolean {
     return this.statements[this.statements.length - 1].allCodePathsPresent();
+  }
+
+  allowPatchingOuterBounds(): boolean {
+    return true;
   }
 }

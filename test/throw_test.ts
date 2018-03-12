@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS1} from './support/check';
 
 describe('throw', () => {
   it('is preserved when used in a statement context', () => {
@@ -52,7 +52,7 @@ describe('throw', () => {
   });
 
   it('allows multiline throw statements', () => {
-    check(`
+    checkCS1(`
       throw
         a
     `, `
@@ -61,7 +61,7 @@ describe('throw', () => {
   });
 
   it('allows multiline throw expressions', () => {
-    check(`
+    checkCS1(`
       (throw
         a)
     `, `

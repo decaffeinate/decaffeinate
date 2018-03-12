@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS1} from './support/check';
 import validate from './support/validate';
 
 describe('regular expressions', () => {
@@ -48,8 +48,8 @@ describe('regular expressions', () => {
     check(`///a\nb///gi`, `new RegExp(\`a\\\nb\`, 'gi');`);
   });
 
-  it('handles interpolations within heregexes', () => {
-    check(`
+  it('handles interpolations within comments in heregexes in CS1', () => {
+    checkCS1(`
       ///
         foo  # hello #{abc}d
         #{bar}
