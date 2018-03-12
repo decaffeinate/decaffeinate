@@ -168,6 +168,7 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
   before `super` or omit the `super` call in a subclass.
 * `--bind-methods-after-super-call`: Bind methods after `super` constructor call to avoid
   the invalid constructor error (see `--disallow-invalid-constructors`)
+* `--correct-static-generator-methods`: provides a correct syntax on converting a static generator method.
 
 For more usage details, see the output of `decaffeinate --help`.
 

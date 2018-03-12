@@ -43,7 +43,16 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
       } else {
         throw this.error('Unexpected static method key type.');
       }
-      this.overwrite(this.key.outerStart, replaceEnd, 'static ');
+
+      let replaceStart = this.key.outerStart;
+      let replacement = 'static ';
+
+      if(this.isGeneratorMethod() && this.shouldCorrectStaticGeneratorMethod()) {
+        replacement = replacement + '*';
+        replaceStart = replaceStart - 1;
+      }
+
+      this.overwrite(replaceStart, replaceEnd, replacement);
     }
   }
 
@@ -168,5 +177,9 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   isMethod(): boolean {
     return this.expression instanceof ManuallyBoundFunctionPatcher ||
       super.isMethod();
+  }
+
+  shouldCorrectStaticGeneratorMethod(): boolean {
+    return !!this.options.correctStaticGeneratorMethods;
   }
 }
