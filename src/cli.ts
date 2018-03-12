@@ -46,6 +46,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         process.exit(0);
         break;
 
+      case '--use-cs2':
+        baseOptions.useCS2 = true;
+        break;
+
       case '--modernize-js':
         modernizeJS = true;
         break;
@@ -246,6 +250,10 @@ function usage(): void {
   console.log('OPTIONS');
   console.log();
   console.log('  -h, --help               Display this help message.');
+  console.log('  --use-cs2                Treat the input as CoffeeScript 2 code. CoffeeScript 2 has');
+  console.log('                           some small breaking changes and differences in behavior');
+  console.log('                           compared with CS1, so decaffeinate assumes CS1 by default');
+  console.log('                           and allows CS2 via this flag.');
   console.log('  --modernize-js           Treat the input as JavaScript and only run the');
   console.log('                           JavaScript-to-JavaScript transforms, modifying the file(s)');
   console.log('                           in-place.');

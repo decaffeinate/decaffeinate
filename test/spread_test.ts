@@ -1,20 +1,36 @@
-import check from './support/check';
+import {checkCS1, checkCS2} from './support/check';
 import validate from './support/validate';
 
 describe('spread', () => {
   it('handles simple function calls', () => {
-    check(`
+    checkCS1(`
       a(b...)
     `, `
       a(...Array.from(b || []));
     `);
   });
 
+  it('handles simple function calls in CS2', () => {
+    checkCS2(`
+      a(b...)
+    `, `
+      a(...b);
+    `);
+  });
+
   it('handles advanced function calls', () => {
-    check(`
+    checkCS1(`
       a(1, 2, makeArray(arguments...)...)
     `, `
       a(1, 2, ...Array.from(makeArray(...arguments)));
+    `);
+  });
+
+  it('handles advanced function calls in CS2', () => {
+    checkCS2(`
+      a(1, 2, makeArray(arguments...)...)
+    `, `
+      a(1, 2, ...makeArray(...arguments));
     `);
   });
 
@@ -34,18 +50,34 @@ describe('spread', () => {
   });
 
   it('handles simple array literals', () => {
-    check(`
+    checkCS1(`
       [b...]
     `, `
       [...Array.from(b)];
     `);
   });
 
+  it('handles simple array literals in CS2', () => {
+    checkCS2(`
+      [b...]
+    `, `
+      [...b];
+    `);
+  });
+
   it('handles advanced array literals', () => {
-    check(`
+    checkCS1(`
       [1, 2, makeArray(arguments...)...]
     `, `
       [1, 2, ...Array.from(makeArray(...arguments))];
+    `);
+  });
+
+  it('handles advanced array literals in CS2', () => {
+    checkCS2(`
+      [1, 2, makeArray(arguments...)...]
+    `, `
+      [1, 2, ...makeArray(...arguments)];
     `);
   });
 
@@ -54,5 +86,13 @@ describe('spread', () => {
       obj = {length: 2, 0: 'a', 1: 'b'}
       setResult([1, 2, obj...])
     `, [1, 2, 'a', 'b']);
+  });
+
+  it('handles array spread with the operator on the LHS', () => {
+    checkCS2(`
+      a = [...b, c]
+    `, `
+      const a = [...b, c];
+    `);
   });
 });
