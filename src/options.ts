@@ -17,6 +17,7 @@ export type Options = {
   looseComparisonNegation?: boolean,
   disableBabelConstructorWorkaround?: boolean,
   disallowInvalidConstructors?: boolean,
+  bindMethodsAfterSuperCall?: boolean,
 };
 
 export const DEFAULT_OPTIONS: Options = {
@@ -38,4 +39,5 @@ export const DEFAULT_OPTIONS: Options = {
   looseComparisonNegation: false,
   disableBabelConstructorWorkaround: false,
   disallowInvalidConstructors: false,
+  bindMethodsAfterSuperCall: false,
 };

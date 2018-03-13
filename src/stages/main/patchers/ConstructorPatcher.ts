@@ -93,10 +93,12 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
       return null;
     }
 
-    // Any bindings would ideally go before the super call, so if there are any,
-    // we'll need this before super.
-    if (this.getBindings().length > 0) {
-      return 'Cannot automatically convert a subclass that uses bound methods.';
+    if(!this.options.bindMethodsAfterSuperCall) {
+      // Any bindings would ideally go before the super call, so if there are any,
+      // we'll need this before super.
+      if (this.getBindings().length > 0) {
+        return 'Cannot automatically convert a subclass that uses bound methods.';
+      }
     }
 
     let superIndex = this.getIndexOfSuperStatement();
