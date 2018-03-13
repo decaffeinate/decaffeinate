@@ -18,6 +18,7 @@ export type Options = {
   disableBabelConstructorWorkaround?: boolean,
   disallowInvalidConstructors?: boolean,
   bindMethodsAfterSuperCall?: boolean,
+  correctStaticGeneratorMethods?: boolean,
 };
 
 export const DEFAULT_OPTIONS: Options = {
@@ -40,4 +41,5 @@ export const DEFAULT_OPTIONS: Options = {
   disableBabelConstructorWorkaround: false,
   disallowInvalidConstructors: false,
   bindMethodsAfterSuperCall: false,
+  correctStaticGeneratorMethods: false,
 };

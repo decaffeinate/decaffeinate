@@ -99,6 +99,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.bindMethodsAfterSuperCall = true;
         break;
 
+      case '--correct-static-generator-methods':
+        baseOptions.correctStaticGeneratorMethods = true;
+        break;
+
       case '--loose':
         baseOptions.looseDefaultParams = true;
         baseOptions.looseForExpressions = true;
