@@ -4,7 +4,7 @@ import { join } from 'path';
 import getLatestVersion from './getLatestVersion';
 
 let commit = true;
-let force = false;
+// let force = false;
 
 for (let i = 2; i < process.argv.length; i++) {
   switch (process.argv[i]) {
@@ -14,7 +14,7 @@ for (let i = 2; i < process.argv.length; i++) {
 
     case '--force':
     case '-f':
-      force = true;
+      // force = true;
       break;
 
     default:

@@ -30,7 +30,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
       let boundMethods = this.boundInstanceMethods();
       if (boundMethods.length > 0) {
         let isSubclass = this.getClassPatcher().isSubclass();
-        if (isSubclass && !this.shouldAllowInvalidConstructors()) {
+        if (isSubclass && !this.shouldAllowInvalidConstructors() && !this.shouldBindMethodsAfterSuperCall()) {
           throw this.error(getInvalidConstructorErrorMessage(
             'Cannot automatically convert a subclass that uses bound methods.'
           ));
@@ -51,12 +51,19 @@ export default class ClassBlockPatcher extends BlockPatcher {
         } else {
           constructor += `constructor() {\n`;
         }
-        boundMethods.forEach(method => {
-          constructor += `${methodBodyIndent}${getBindingCodeForMethod(method)};\n`;
-        });
+
+        const bindMethods = () => {
+          boundMethods.forEach(method => {
+            constructor += `${methodBodyIndent}${getBindingCodeForMethod(method)};\n`;
+          });
+        };
+
+        if(!this.shouldBindMethodsAfterSuperCall()) { bindMethods(); }
         if (isSubclass) {
           constructor += `${methodBodyIndent}super(...args)\n`;
         }
+        if(this.shouldBindMethodsAfterSuperCall()) { bindMethods(); }
+
         constructor += `${methodIndent}}\n\n${methodIndent}`;
         this.prependLeft(insertionPoint, constructor);
       }
@@ -67,6 +74,10 @@ export default class ClassBlockPatcher extends BlockPatcher {
     return !this.options.disallowInvalidConstructors;
   }
 
+  shouldBindMethodsAfterSuperCall(): boolean {
+    return !!this.options.bindMethodsAfterSuperCall;
+  }
+
   shouldEnableBabelWorkaround(): boolean {
     let shouldEnable = !this.options.disableBabelConstructorWorkaround;
     if (shouldEnable) {
@@ -74,7 +85,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
     }
     return shouldEnable;
   }
-  
+
   getClassPatcher(): ClassPatcher {
     if (!(this.parent instanceof ClassPatcher)) {
       throw this.error('Expected class block parent to be a class.');
