@@ -12,11 +12,12 @@
     "lint": "tslint --config tslint.json --project tsconfig.json --type-check",
     "lint-fix": "tslint --config tslint.json --project tsconfig.json --type-check --fix",
     "pretest": "yarn run build",
-    "test": "mocha 'test/**/*.ts'",
-    "prebuild": "rimraf dist && mkdirp dist && npm run lint",
+    "test": "npm run lint && mocha 'test/**/*.ts'",
+    "prebuild": "rimraf dist && mkdirp dist",
     "build": "script/build",
     "prepublish": "yarn run build",
-    "update-website": "ts-node ./script/update-website.ts"
+    "update-website": "ts-node ./script/update-website.ts",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
