@@ -53,7 +53,7 @@ Here are some popular open source CoffeeScript projects and their current status
 when run through decaffeinate. Each project has a decaffeinate-specific fork
 that is re-created from the original repo once per day.
 
-Project                                                  | Lines of CoffeeScript | Conversion status                 | Test status                 
+Project                                                  | Lines of CoffeeScript | Conversion status                 | Test status
 -------------------------------------------------------- |:---------------------:|:---------------------------------:|:---------------------------:
 [chroma.js]                                              | 3.3K                  | ![chromajs-conversion-status]     | ![chromajs-test-status]
 [hubot][hubot] [\[1\]](#converted-note)                  | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
@@ -166,6 +166,9 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
   workaround code to allow `this` before `super` in constructors.
 * `--disallow-invalid-constructors`: Give an error when constructors use `this`
   before `super` or omit the `super` call in a subclass.
+* `--bind-methods-after-super-call`: Bind methods after `super` constructor call to avoid
+  the invalid constructor error (see `--disallow-invalid-constructors`)
+* `--correct-static-generator-methods`: provides a correct syntax on converting a static generator method.
 
 For more usage details, see the output of `decaffeinate --help`.
 
