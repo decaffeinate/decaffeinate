@@ -1,13 +1,14 @@
-import { Base } from 'decaffeinate-coffeescript2/lib/coffeescript/nodes';
+import { Base as CS1Base } from 'decaffeinate-coffeescript/lib/coffee-script/nodes';
+import { Base as CS2Base } from 'decaffeinate-coffeescript2/lib/coffeescript/nodes';
 import CodeContext from './CodeContext';
 import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData';
 
-export default function formatCoffeeScriptAst(program: Base, context: CodeContext): string {
+export default function formatCoffeeScriptAst(program: CS1Base | CS2Base, context: CodeContext): string {
   let resultLines = formatAstNodeLines(program, context);
   return resultLines.map(line => line + '\n').join('');
 }
 
-function formatAstNodeLines(node: Base, context: CodeContext): Array<string> {
+function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Array<string> {
   let propLines = [];
   let blacklistedProps = ['locationData'];
   // Show the non-node children first.
@@ -66,5 +67,5 @@ function shouldTraverse(value: any): boolean {
   if (Array.isArray(value)) {
     return value.length === 0 || shouldTraverse(value[0]);
   }
-  return value instanceof Base;
+  return value instanceof CS1Base || value instanceof CS2Base;
 }

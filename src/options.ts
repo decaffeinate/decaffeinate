@@ -10,6 +10,7 @@ export type Options = {
   looseJSModules?: boolean,
   safeImportFunctionIdentifiers?: Array<string>,
   preferLet?: boolean,
+  loose?: boolean,
   looseDefaultParams?: boolean,
   looseForExpressions?: boolean,
   looseForOf?: boolean,
@@ -31,6 +32,7 @@ export const DEFAULT_OPTIONS: Options = {
   looseJSModules: false,
   safeImportFunctionIdentifiers: [],
   preferLet: false,
+  loose: false,
   looseDefaultParams: false,
   looseForExpressions: false,
   looseForOf: false,
@@ -39,3 +41,18 @@ export const DEFAULT_OPTIONS: Options = {
   disableBabelConstructorWorkaround: false,
   disallowInvalidConstructors: false,
 };
+
+export function resolveOptions(options: Options): Options {
+  if (options.loose) {
+    options = {
+      ...options,
+      looseDefaultParams: true,
+      looseForExpressions: true,
+      looseForOf: true,
+      looseIncludes: true,
+      looseComparisonNegation: true,
+      looseJSModules: true,
+    };
+  }
+  return {...DEFAULT_OPTIONS, ...options};
+}
