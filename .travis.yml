@@ -24,6 +24,6 @@ jobs:
       deploy:
         provider: script
         skip_cleanup: true
-        script: 'yarn install && yarn build && npx semantic-release'
+        script: 'yarn install && yarn build && npx semantic-release && yarn update-website'
         on:
           branch: master
