@@ -9,7 +9,7 @@ JavaScript with decaffeinate.
 
 ## Installation and usage
 
-```
+```sh
 # via yarn
 $ yarn global add decaffeinate
 # via npm
