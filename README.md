@@ -99,6 +99,7 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 [coffeelint]: https://github.com/decaffeinate-examples/coffeelint
 [vimium]: https://github.com/decaffeinate-examples/vimium
 [coffeescript]: https://github.com/decaffeinate-examples/coffeescript
+[coffeescript2]: https://github.com/decaffeinate-examples/coffeescript2
 [atom]: https://github.com/decaffeinate-examples/atom
 [atom-org]: https://github.com/decaffeinate-examples/atom-org
 [codecombat]: https://github.com/decaffeinate-examples/codecombat
