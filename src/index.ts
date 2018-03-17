@@ -1,6 +1,7 @@
 import lex from 'coffee-lex';
-import { nodes as getCoffeeNodes, tokens as getCoffeeTokens } from 'decaffeinate-coffeescript2';
-import {parse as decaffeinateParse} from 'decaffeinate-parser';
+import { nodes as getCoffee1Nodes, tokens as getCoffee1Tokens } from 'decaffeinate-coffeescript';
+import { nodes as getCoffee2Nodes, tokens as getCoffee2Tokens } from 'decaffeinate-coffeescript2';
+import { parse as decaffeinateParse } from 'decaffeinate-parser';
 import AddVariableDeclarationsStage from './stages/add-variable-declarations/index';
 import EsnextStage from './stages/esnext/index';
 import LiterateStage from './stages/literate/index';
@@ -20,7 +21,7 @@ import removeUnicodeBOMIfNecessary from './utils/removeUnicodeBOMIfNecessary';
 import resolveToPatchError from './utils/resolveToPatchError';
 
 export { default as run } from './cli';
-import { DEFAULT_OPTIONS, Options } from './options';
+import { resolveOptions, Options } from './options';
 import notNull from './utils/notNull';
 export { PatchError };
 
@@ -44,7 +45,7 @@ type Stage = {
  */
 export function convert(source: string, options: Options = {}): ConversionResult {
   source = removeUnicodeBOMIfNecessary(source);
-  options = Object.assign({}, DEFAULT_OPTIONS, options);
+  options = resolveOptions(options);
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
 
@@ -80,7 +81,7 @@ export function convert(source: string, options: Options = {}): ConversionResult
 
 export function modernizeJS(source: string, options: Options = {}): ConversionResult {
   source = removeUnicodeBOMIfNecessary(source);
-  options = Object.assign({}, DEFAULT_OPTIONS, options);
+  options = resolveOptions(options);
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
   let stages = [
@@ -119,12 +120,14 @@ function runStage(stage: Stage, content: string, options: Options): StageResult 
 function convertCustomStage(source: string, stageName: string, useCS2: boolean): ConversionResult {
   let context = new CodeContext(source);
   if (stageName === 'coffeescript-lexer') {
+    let tokens = useCS2 ? getCoffee2Tokens(source) : getCoffee1Tokens(source);
     return {
-      code: formatCoffeeScriptLexerTokens(getCoffeeTokens(source), context),
+      code: formatCoffeeScriptLexerTokens(tokens, context),
     };
   } else if (stageName === 'coffeescript-parser') {
+    let nodes = useCS2 ? getCoffee2Nodes(source) : getCoffee1Nodes(source);
     return {
-      code: formatCoffeeScriptAst(getCoffeeNodes(source), context),
+      code: formatCoffeeScriptAst(nodes, context),
     };
   } else if (stageName === 'coffee-lex') {
     return {

@@ -96,12 +96,7 @@ function parseArguments(args: Array<string>): CLIOptions {
         break;
 
       case '--loose':
-        baseOptions.looseDefaultParams = true;
-        baseOptions.looseForExpressions = true;
-        baseOptions.looseForOf = true;
-        baseOptions.looseIncludes = true;
-        baseOptions.looseComparisonNegation = true;
-        baseOptions.looseJSModules = true;
+        baseOptions.loose = true;
         break;
 
       case '--loose-default-params':
