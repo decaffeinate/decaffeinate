@@ -45,25 +45,26 @@ to ask questions, or you can file an issue on the [issues] page:
 ## Status
 
 **Complete.** The project is stable enough for production use, and has been used
-to convert tens of thousands of lines of production code. The conversion process
-has been extensively tested and there are few or no known correctness bugs,
-although no guarantees are made.
+to convert hundreds of thousands (probably millions) of lines of production
+code. The conversion process has been extensively tested and there are few or no
+known correctness bugs, although no guarantees are made.
 
 Here are some popular open source CoffeeScript projects and their current status
 when run through decaffeinate. Each project has a decaffeinate-specific fork
 that is re-created from the original repo once per day.
 
-Project                                                  | Lines of CoffeeScript | Conversion status                 | Test status                 
--------------------------------------------------------- |:---------------------:|:---------------------------------:|:---------------------------:
-[chroma.js]                                              | 3.3K                  | ![chromajs-conversion-status]     | ![chromajs-test-status]
-[hubot][hubot] [\[1\]](#converted-note)                  | 3.7K                  | ![hubot-conversion-status]        | ![hubot-test-status]
-[autoprefixer][autoprefixer] [\[1\]](#converted-note)    | 4.8K                  | ![autoprefixer-conversion-status] | ![autoprefixer-test-status]
-[coffeelint]                                             | 8.8K                  | ![coffeelint-conversion-status]   | ![coffeelint-test-status]
-[vimium][vimium] [\[2\]](#correctness-note)              | 11K                   | ![vimium-conversion-status]       | ![vimium-test-status]
-[coffeescript][coffeescript] [\[2\]](#correctness-note)  | 17K                   | ![coffeescript-conversion-status] | ![coffeescript-test-status]
-[atom][atom] [\[1\]](#converted-note)                    | 51K                   | ![atom-conversion-status]         | ![atom-test-status]
-[atom-org]                                               | 170K                  | ![atom-org-conversion-status]     | ![atom-org-test-status]
-[codecombat]                                             | 230K                  | ![codecombat-conversion-status]   | ![codecombat-test-status]
+Project                                                   | Lines of CoffeeScript | Conversion status                  | Test status
+--------------------------------------------------------  |:---------------------:|:---------------------------------: |:---------------------------:
+[chroma.js]                                               | 3.3K                  | ![chromajs-conversion-status]      | ![chromajs-test-status]
+[hubot][hubot] [\[1\]](#converted-note)                   | 3.7K                  | ![hubot-conversion-status]         | ![hubot-test-status]
+[autoprefixer][autoprefixer] [\[1\]](#converted-note)     | 4.8K                  | ![autoprefixer-conversion-status]  | ![autoprefixer-test-status]
+[coffeelint]                                              | 8.8K                  | ![coffeelint-conversion-status]    | ![coffeelint-test-status]
+[vimium][vimium] [\[2\]](#correctness-note)               | 11K                   | ![vimium-conversion-status]        | ![vimium-test-status]
+[coffeescript][coffeescript] [\[2\]](#correctness-note)   | 17K                   | ![coffeescript-conversion-status]  | ![coffeescript-test-status]
+[coffeescript2][coffeescript2] [\[2\]](#correctness-note) | 17K                   | ![coffeescript2-conversion-status] | ![coffeescript2-test-status]
+[atom][atom] [\[1\]](#converted-note)                     | 51K                   | ![atom-conversion-status]          | ![atom-test-status]
+[atom-org]                                                | 170K                  | ![atom-org-conversion-status]      | ![atom-org-test-status]
+[codecombat]                                              | 230K                  | ![codecombat-conversion-status]    | ![codecombat-test-status]
 
 **Project builder status:** [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate-example-builder.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate-example-builder)
 
@@ -73,7 +74,7 @@ Project                                                  | Lines of CoffeeScript
    switch to JS. Atom has mostly moved to JavaScript using decaffeinate, so this
    build runs on an earlier revision that was primarily CoffeeScript.
 2. <a id='correctness-note'></a>Some CoffeeScript tests are disabled because
-   they are difficult to fix and test cases that do not seem to come up in
+   they are difficult to fix and test situations that do not seem to come up in
    real-world code. The Vimium test suite has also been modified slightly to
    work around a correctness issue. See
    [How decaffeinate approaches correctness][correctness-issues] for full details.
@@ -82,9 +83,12 @@ To contribute to this list, send a pull request to the [decaffeinate-examples]
 project.
 
 In addition, decaffeinate has been used on private codebases within various
-companies, such as Square, Benchling, and Bugsnag. See this
-[blog post from Bugsnag][bugsnag-blog-post] to read about their experiences
-using decaffeinate.
+companies, such as Square, Benchling, Bugsnag, and DataFox.
+
+Some blog posts on using decaffeinate:
+* [From 200K lines of CoffeeScript to zero: making decaffeinate super-stable][benchling-blog-post]
+* [Converting a large React Codebase from Coffeescript to ES6][bugsnag-blog-post]
+* [Decaffeinating a Large CoffeeScript Codebase Without Losing Sleep][datafox-blog-post]
 
 If you run into crashes or correctness issues, or you have suggestions on how
 decaffeinate could be improved, feel free to file an issue on the [issues] page.
@@ -113,6 +117,8 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 [vimium-test-status]: https://decaffeinate-examples.github.io/vimium/test-status.svg
 [coffeescript-conversion-status]: https://decaffeinate-examples.github.io/coffeescript/conversion-status.svg
 [coffeescript-test-status]: https://decaffeinate-examples.github.io/coffeescript/test-status.svg
+[coffeescript2-conversion-status]: https://decaffeinate-examples.github.io/coffeescript2/conversion-status.svg
+[coffeescript2-test-status]: https://decaffeinate-examples.github.io/coffeescript2/test-status.svg
 [atom-conversion-status]: https://decaffeinate-examples.github.io/atom/conversion-status.svg
 [atom-test-status]: https://decaffeinate-examples.github.io/atom/test-status.svg
 [atom-org-conversion-status]: https://decaffeinate-examples.github.io/atom-org/conversion-status.svg
@@ -120,7 +126,9 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 [codecombat-conversion-status]: https://decaffeinate-examples.github.io/codecombat/conversion-status.svg
 [codecombat-test-status]: https://decaffeinate-examples.github.io/codecombat/test-status.svg
 
+[benchling-blog-post]: https://benchling.engineering/from-200k-lines-of-coffeescript-to-zero-making-decaffeinate-super-stable-4de0ca68d9bc
 [bugsnag-blog-post]: https://blog.bugsnag.com/converting-a-large-react-codebase-from-coffeescript-to-es6/
+[datafox-blog-post]: https://eng.datafox.com/javascript/2017/07/18/decaffeinating-large-coffeescript-codebase/
 
 ## Goals
 
@@ -132,11 +140,19 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 * Provide helpful error messages when it encounters an unsupported language
   construct.
 
-## Options
+## Common options
 
 * `--use-cs2`: Treat the input as CoffeeScript 2 code. CoffeeScript 2 has some
   small breaking changes and differences in behavior compared with CS1, so
   decaffeinate assumes CS1 by default and allows CS2 via this flag.
+* `--use-js-modules`: Convert `require` and `module.exports` to `import` and
+  `export`. Note that this may result in incorrect import statements because
+  decaffeinate does not know the export style used by the other file. To
+  generate correct imports, use [bulk-decaffeinate][bulk-decaffeinate] and
+  enable the `useJSModules` option.
+
+## Other options
+
 * `--modernize-js`: Treat the input as JavaScript and only run the
   JavaScript-to-JavaScript transforms, modifying the file(s) in-place.
 * `--literate`: Treat the input file as Literate CoffeeScript.
@@ -147,9 +163,6 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 * `--use-optional-chaining`: Use the upcoming
   [optional chaining](https://github.com/tc39/proposal-optional-chaining) syntax
   for operators like `?.`.
-* `--use-js-modules`: Convert `require` and `module.exports` to `import` and
-  `export`.
-* `--loose-js-modules`: Allow named exports when converting to JS modules.
 * `--safe-import-function-identifiers`: Comma-separated list of function names
   that may safely be in the `import`/`require` section of the file. All other
   function calls will disqualify later `require`s from being converted to
@@ -162,6 +175,7 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 * `--loose-for-of`: Do not wrap JS `for...of` loop targets in `Array.from`.
 * `--loose-includes`: Do not wrap in `Array.from` when converting `in` to `includes`.
 * `--loose-comparison-negation`: Allow unsafe simplifications like `!(a > b)` to `a <= b`.
+* `--loose-js-modules`: Allow named exports when converting to JS modules.
 * `--disable-babel-constructor-workaround`: Never include the Babel/TypeScript
   workaround code to allow `this` before `super` in constructors.
 * `--disallow-invalid-constructors`: Give an error when constructors use `this`
