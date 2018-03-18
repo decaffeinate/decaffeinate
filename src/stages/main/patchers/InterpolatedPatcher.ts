@@ -76,7 +76,7 @@ export default class InterpolatedPatcher extends NodePatcher {
       let tokens = this.getProgramSourceTokens().slice(
         quasi.contentStartTokenIndex, notNull(quasi.contentEndTokenIndex.next())).toArray();
       for (let token of tokens) {
-        if (token.type === SourceType.STRING_PADDING) {
+        if (token.type === SourceType.STRING_PADDING || token.type === SourceType.HEREGEXP_COMMENT) {
           let paddingCode = this.slice(token.start, token.end);
           let numNewlines = (paddingCode.match(/\n/g) || []).length;
           this.overwrite(token.start, token.end, '\\\n'.repeat(numNewlines));

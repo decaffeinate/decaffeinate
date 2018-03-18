@@ -1,4 +1,4 @@
-import check, {checkCS1} from './support/check';
+import check, {checkCS1, checkCS2} from './support/check';
 import validate from './support/validate';
 
 describe('regular expressions', () => {
@@ -57,6 +57,20 @@ describe('regular expressions', () => {
     `, `
       new RegExp(\`\\
       foo\${abc}d\\
+      \${bar}\\
+      \`, 'g');
+    `);
+  });
+
+  it('handles interpolations within comments in heregexes in CS2', () => {
+    checkCS2(`
+      ///
+        foo  # hello #{abc}d
+        #{bar}
+      ///g
+    `, `
+      new RegExp(\`\\
+      foo\\
       \${bar}\\
       \`, 'g');
     `);
