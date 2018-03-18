@@ -172,6 +172,9 @@ export default class ForInPatcher extends ForPatcher {
     if (this.body.containsYield() || (this.filter && this.filter.containsYield())) {
       return false;
     }
+    if (this.body.containsAwait() || (this.filter && this.filter.containsAwait())) {
+      return false;
+    }
     return true;
   }
 

@@ -4,9 +4,13 @@ import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';
 import PassthroughPatcher from './../../patchers/PassthroughPatcher';
 import ArrayInitialiserPatcher from './patchers/ArrayInitialiserPatcher';
 import AssignOpPatcher from './patchers/AssignOpPatcher';
+import AsyncFunctionPatcher from './patchers/AsyncFunctionPatcher';
+import AwaitPatcher from './patchers/AwaitPatcher';
+import AwaitReturnPatcher from './patchers/AwaitReturnPatcher';
 import BinaryOpPatcher from './patchers/BinaryOpPatcher';
 import BlockPatcher from './patchers/BlockPatcher';
 import BoolPatcher from './patchers/BoolPatcher';
+import BoundAsyncFunctionPatcher from './patchers/BoundAsyncFunctionPatcher';
 import BoundFunctionPatcher from './patchers/BoundFunctionPatcher';
 import BoundGeneratorFunctionPatcher from './patchers/BoundGeneratorFunctionPatcher';
 import BreakPatcher from './patchers/BreakPatcher';
@@ -154,6 +158,12 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'YieldReturn':
         return YieldReturnPatcher;
 
+      case 'Await':
+        return AwaitPatcher;
+
+      case 'AwaitReturn':
+        return AwaitReturnPatcher;
+
       case 'GeneratorFunction':
         return GeneratorFunctionPatcher;
 
@@ -165,6 +175,12 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'BoundGeneratorFunction':
         return BoundGeneratorFunctionPatcher;
+
+      case 'AsyncFunction':
+        return AsyncFunctionPatcher;
+
+      case 'BoundAsyncFunction':
+        return BoundAsyncFunctionPatcher;
 
       case 'Bool':
         return BoolPatcher;
