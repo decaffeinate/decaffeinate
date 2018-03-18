@@ -12,7 +12,7 @@ import { mergeSuggestions, prependSuggestionComment, Suggestion } from './sugges
 import CodeContext from './utils/CodeContext';
 import convertNewlines from './utils/convertNewlines';
 import detectNewlineStr from './utils/detectNewlineStr';
-import formatCoffeeLexAst from './utils/formatCoffeeLexTokens';
+import formatCoffeeLexTokens from './utils/formatCoffeeLexTokens';
 import formatCoffeeScriptAst from './utils/formatCoffeeScriptAst';
 import formatCoffeeScriptLexerTokens from './utils/formatCoffeeScriptLexerTokens';
 import formatDecaffeinateParserAst from './utils/formatDecaffeinateParserAst';
@@ -131,7 +131,7 @@ function convertCustomStage(source: string, stageName: string, useCS2: boolean):
     };
   } else if (stageName === 'coffee-lex') {
     return {
-      code: formatCoffeeLexAst(lex(source), context),
+      code: formatCoffeeLexTokens(lex(source, {useCS2}), context),
     };
   } else if (stageName === 'decaffeinate-parser') {
     return {
