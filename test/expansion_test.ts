@@ -454,4 +454,19 @@ describe('expansion', () => {
       [a, , b] = Array.from([1, , 3]);
     `);
   });
+
+  it('does not convert nested object rest operations to JS', () => {
+    checkCS2(`
+      {...{...a}} = b
+    `, `
+      const {...a} = __objectWithoutKeys__(b, []);
+      function __objectWithoutKeys__(object, keys) {
+        const result = {...object};
+        for (const k of keys) {
+          delete result[keys];
+        }
+        return result;
+      }
+    `);
+  });
 });
