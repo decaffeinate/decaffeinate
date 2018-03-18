@@ -445,4 +445,13 @@ describe('expansion', () => {
       const {a, ...r} = arr[arr.length - 1];
     `);
   });
+
+  it('allows array elisions', () => {
+    checkCS2(`
+      [a, , b] = [1, , 3]
+    `, `
+      let a, b;
+      [a, , b] = Array.from([1, , 3]);
+    `);
+  });
 });

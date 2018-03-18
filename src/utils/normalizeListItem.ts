@@ -4,7 +4,7 @@
  * syntax in the normalize stage.
  */
 import { SourceType } from 'coffee-lex';
-import { Block } from 'decaffeinate-parser/dist/nodes';
+import {Block, Elision} from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../patchers/NodePatcher';
 import containsDescendant from './containsDescendant';
 import notNull from './notNull';
@@ -17,7 +17,7 @@ export default function normalizeListItem(
   // when combined with other normalize stage transformations. So just
   // remove the redundant comma.
   let lastToken = listItemPatcher.lastToken();
-  if (lastToken.type === SourceType.COMMA) {
+  if (lastToken.type === SourceType.COMMA && !(listItemPatcher.node instanceof Elision)) {
     patcher.remove(lastToken.start, lastToken.end);
   }
   // CoffeeScript allows semicolon-separated lists, so just change them to

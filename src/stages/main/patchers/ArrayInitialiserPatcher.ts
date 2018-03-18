@@ -1,6 +1,7 @@
 import { SourceType } from 'coffee-lex';
 import { PatcherContext } from '../../../patchers/types';
 import NodePatcher from './../../../patchers/NodePatcher';
+import ElisionPatcher from './ElisionPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
 
 export default class ArrayInitialiserPatcher extends NodePatcher {
@@ -30,7 +31,9 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
         return;
       }
 
-      let needsComma = !isLast && !member.hasSourceTokenAfter(SourceType.COMMA);
+      let needsComma = !isLast &&
+        !member.hasSourceTokenAfter(SourceType.COMMA) &&
+        !(member instanceof ElisionPatcher);
       member.patch();
       if (needsComma) {
         this.insert(member.outerEnd, ',');
