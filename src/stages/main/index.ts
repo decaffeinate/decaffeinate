@@ -21,6 +21,7 @@ import CompoundAssignOpPatcher from './patchers/CompoundAssignOpPatcher';
 import ConditionalPatcher from './patchers/ConditionalPatcher';
 import ConstructorPatcher from './patchers/ConstructorPatcher';
 import ContinuePatcher from './patchers/ContinuePatcher';
+import CSXElementPatcher from './patchers/CSXElementPatcher';
 import DefaultParamPatcher from './patchers/DefaultParamPatcher';
 import DoOpPatcher from './patchers/DoOpPatcher';
 import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher';
@@ -369,6 +370,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'ExtendsOp':
         return ExtendsOpPatcher;
+
+      case 'CSXElement':
+        return CSXElementPatcher;
 
       case 'ImportDeclaration':
       case 'ExportBindingsDeclaration':

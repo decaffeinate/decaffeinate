@@ -4,17 +4,11 @@ import { join } from 'path';
 import getLatestVersion from './getLatestVersion';
 
 let commit = true;
-let force = false;
 
 for (let i = 2; i < process.argv.length; i++) {
   switch (process.argv[i]) {
     case '--no-commit':
       commit = false;
-      break;
-
-    case '--force':
-    case '-f':
-      force = true;
       break;
 
     default:

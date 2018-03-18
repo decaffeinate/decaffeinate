@@ -1,6 +1,7 @@
 import { SourceType } from 'coffee-lex';
 
 import SourceToken from 'coffee-lex/dist/SourceToken';
+import {CSXElement} from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import normalizeListItem from '../../../utils/normalizeListItem';
 import NodePatcher from './../../../patchers/NodePatcher';
@@ -54,6 +55,11 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * close-paren properly-indented on its own line.
    */
   insertImplicitCloseParen(): void {
+    if (this.fn.node instanceof CSXElement && !this.fn.isSurroundedByParentheses()) {
+      // Strangely, `<div /> arg` is allowed but `<div />(arg)` is not, so change to (<div />)(arg).
+      this.fn.surroundInParens();
+    }
+
     let argListCode = this.slice(
       this.args[0].contentStart, this.args[this.args.length - 1].contentEnd);
     let isArgListMultiline = argListCode.indexOf('\n') !== -1;
