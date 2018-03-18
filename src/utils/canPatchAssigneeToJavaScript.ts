@@ -53,9 +53,11 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
     }
     return node.members.every((member, i) => {
       let isInFinalPosition = i === node.members.length - 1;
-      if (isInFinalPosition &&
+      if (
+        isInFinalPosition &&
         (member instanceof Spread || member instanceof Rest) &&
-        canPatchAssigneeToJavaScript(member.expression)) {
+        member.expression instanceof Identifier
+      ) {
         return true;
       }
       return canPatchAssigneeToJavaScript(member, false);
