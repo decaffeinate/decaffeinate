@@ -45,7 +45,7 @@
     "coffee-lex": "^9.1.0",
     "decaffeinate-coffeescript": "1.12.7-patch.2",
     "decaffeinate-coffeescript2": "2.2.1-patch.4",
-    "decaffeinate-parser": "^22.5.0",
+    "decaffeinate-parser": "^22.5.1",
     "detect-indent": "^4.0.0",
     "esnext": "^3.2.0",
     "lines-and-columns": "^1.1.5",

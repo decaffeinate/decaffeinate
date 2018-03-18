@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS2} from './support/check';
 
 describe('objects', () => {
   it('adds parentheses around implicit bare object literals', () => {
@@ -555,6 +555,18 @@ describe('objects', () => {
         friend: 3
       }
       );
+    `);
+  });
+
+  it('allows complex CS2 computed property keys', () => {
+    checkCS2(`
+      o = {
+        [a b]: c
+      }
+    `, `
+      const o = {
+        [a(b)]: c
+      };
     `);
   });
 });
