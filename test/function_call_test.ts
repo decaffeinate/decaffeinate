@@ -761,4 +761,12 @@ describe('function calls', () => {
       );
     `);
   });
+
+  it('properly handles empty function expressions surrounded by parens', () => {
+    check(`
+      middleware.execute {}, (->), (->)
+    `, `
+      middleware.execute({}, (function() {}), (function() {}));
+    `);
+  });
 });

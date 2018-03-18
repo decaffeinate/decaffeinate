@@ -90,9 +90,10 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   patchAsStatement({leftBrace=true, rightBrace=true}: PatchOptions = {}): void {
-    if (this.isSurroundedByParentheses()) {
-      this.remove(this.outerStart, this.innerStart);
-      this.remove(this.innerEnd, this.outerEnd);
+    // Blocks can be surrounded by parens in CS but not JS, so just remove any parens if they're
+    // there. The range of the block will always include the parens themselves.
+    if (this.statements.length > 0) {
+      this.removeInitialAndFinalParens();
     }
 
     if (leftBrace) {
@@ -137,6 +138,31 @@ export default class BlockPatcher extends SharedBlockPatcher {
         this.insert(this.innerEnd, ' }');
       } else {
         this.appendLineAfter('}', -1);
+      }
+    }
+  }
+
+  private removeInitialAndFinalParens(): void {
+    let firstChild = this.statements[0];
+    for (
+      let tokenIndex: SourceTokenListIndex | null = this.contentStartTokenIndex;
+      tokenIndex !== null && tokenIndex.isBefore(firstChild.outerStartTokenIndex);
+      tokenIndex = tokenIndex.next()
+    ) {
+      let token = this.sourceTokenAtIndex(tokenIndex);
+      if (token && token.type === SourceType.LPAREN) {
+        this.remove(token.start, token.end);
+      }
+    }
+    let lastChild = this.statements[this.statements.length - 1];
+    for (
+      let tokenIndex: SourceTokenListIndex | null = this.contentEndTokenIndex;
+      tokenIndex !== null && tokenIndex.isAfter(lastChild.outerEndTokenIndex);
+      tokenIndex = tokenIndex.previous()
+    ) {
+      let token = this.sourceTokenAtIndex(tokenIndex);
+      if (token && token.type === SourceType.RPAREN) {
+        this.remove(token.start, token.end);
       }
     }
   }
