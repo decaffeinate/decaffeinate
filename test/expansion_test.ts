@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS2} from './support/check';
 import validate from './support/validate';
 
 describe('expansion', () => {
@@ -417,5 +417,32 @@ describe('expansion', () => {
       [a, b..., c, d] = [1, 2]
       setResult([a, b, c, d])
     `, [1, [], 2, undefined]);
+  });
+
+  it('handles nested rest after an array expansion ', () => {
+    checkCS2(`
+      [...,{a, r..., b = c}] = arr
+    `, `
+      const obj = arr[arr.length - 1],
+        { a } = obj,
+        r = __objectWithoutKeys__(obj, ['a', 'b']),
+        val = obj.b,
+        b = val != null ? val : c;
+      function __objectWithoutKeys__(object, keys) {
+        const result = {...object};
+        for (const k of keys) {
+          delete result[keys];
+        }
+        return result;
+      }
+    `);
+  });
+
+  it('emits JS object rest when possible ', () => {
+    checkCS2(`
+      [...,{a, r...}] = arr
+    `, `
+      const {a, ...r} = arr[arr.length - 1];
+    `);
   });
 });

@@ -51,7 +51,15 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
     if (node.members.length === 0) {
       return false;
     }
-    return node.members.every(node => canPatchAssigneeToJavaScript(node, false));
+    return node.members.every((member, i) => {
+      let isInFinalPosition = i === node.members.length - 1;
+      if (isInFinalPosition &&
+        (member instanceof Spread || member instanceof Rest) &&
+        canPatchAssigneeToJavaScript(member.expression)) {
+        return true;
+      }
+      return canPatchAssigneeToJavaScript(member, false);
+    });
   }
   if (node instanceof ObjectInitialiserMember) {
     return canPatchAssigneeToJavaScript(node.expression || node.key, false);
