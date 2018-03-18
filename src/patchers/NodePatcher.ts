@@ -59,6 +59,7 @@ export default class NodePatcher {
   adjustedIndentLevel: number = 0;
   _assignee: boolean = false;
   _containsYield: boolean = false;
+  _containsAwait: boolean = false;
   _deferredSuffix: string = '';
   _expression: boolean = false;
   _hadUnparenthesizedNegation: boolean = false;
@@ -1358,6 +1359,8 @@ export default class NodePatcher {
     this.addSuggestion(AVOID_IIFES);
     if (this.containsYield()) {
       this.insert(this.innerStart, 'yield* (function*() {');
+    } else if (this.containsAwait()) {
+      this.insert(this.innerStart, 'await (async () => {');
     } else {
       this.insert(this.innerStart, '(() => {');
     }
@@ -1368,6 +1371,8 @@ export default class NodePatcher {
       } else {
         this.insert(this.innerEnd, '}).call(this)');
       }
+    } else if (this.containsAwait()) {
+      this.insert(this.innerEnd, '})()');
     } else {
       this.insert(this.innerEnd, '})()');
     }
@@ -1389,5 +1394,16 @@ export default class NodePatcher {
    */
   containsYield(): boolean {
     return this._containsYield;
+  }
+
+  awaits(): void {
+    this._containsAwait = true;
+    if (this.parent && !isFunction(this.parent.node)) {
+      this.parent.awaits();
+    }
+  }
+
+  containsAwait(): boolean {
+    return this._containsAwait;
   }
 }
