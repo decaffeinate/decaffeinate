@@ -20,6 +20,7 @@ import ContinuePatcher from './patchers/ContinuePatcher';
 import DefaultParamPatcher from './patchers/DefaultParamPatcher';
 import DoOpPatcher from './patchers/DoOpPatcher';
 import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher';
+import ElisionPatcher from './patchers/ElisionPatcher';
 import EqualityPatcher from './patchers/EqualityPatcher';
 import ExistsOpCompoundAssignOpPatcher from './patchers/ExistsOpCompoundAssignOpPatcher';
 import ExistsOpPatcher from './patchers/ExistsOpPatcher';
@@ -272,6 +273,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'Expansion':
         return ExpansionPatcher;
+
+      case 'Elision':
+        return ElisionPatcher;
 
       case 'Rest':
         return RestPatcher;

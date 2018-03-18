@@ -13,6 +13,7 @@ import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
 import DoOpPatcher from './DoOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
+import ElisionPatcher from './ElisionPatcher';
 import ExpansionPatcher from './ExpansionPatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 import FunctionPatcher from './FunctionPatcher';
@@ -185,6 +186,9 @@ export default class AssignOpPatcher extends NodePatcher {
       }
     } else if (patcher instanceof ExpansionPatcher) {
       // Expansions don't produce assignments.
+      return [];
+    } else if (patcher instanceof ElisionPatcher) {
+      // Elisions don't produce assignments.
       return [];
     } else if (patcher instanceof SpreadPatcher) {
       // Calling code seeing a spread patcher should provide an expression for

@@ -8,7 +8,7 @@
  * JS falls back to the default if the value only if the value is undefined.
  */
 import {
-  ArrayInitialiser, DynamicMemberAccessOp, Expansion, Identifier,
+  ArrayInitialiser, DynamicMemberAccessOp, Elision, Expansion, Identifier,
   MemberAccessOp, Node, ObjectInitialiser, ObjectInitialiserMember,
   ProtoMemberAccessOp, Rest, SoakedDynamicMemberAccessOp, SoakedMemberAccessOp,
   SoakedProtoMemberAccessOp, Spread
@@ -18,7 +18,7 @@ export default function canPatchAssigneeToJavaScript(node: Node, isTopLevel: boo
   if (node instanceof Identifier || node instanceof MemberAccessOp ||
       node instanceof SoakedMemberAccessOp || node instanceof ProtoMemberAccessOp ||
       node instanceof DynamicMemberAccessOp || node instanceof SoakedDynamicMemberAccessOp ||
-      node instanceof SoakedProtoMemberAccessOp) {
+      node instanceof SoakedProtoMemberAccessOp || node instanceof Elision) {
     return true;
   }
   if (node instanceof ArrayInitialiser) {
