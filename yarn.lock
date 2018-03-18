@@ -798,9 +798,9 @@ decaffeinate-coffeescript@1.12.7-patch.2:
   version "1.12.7-patch.2"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.2.tgz#c0a453395e0194bcf0dce8d81dbf7170c5a1d578"
 
-decaffeinate-parser@^22.5.0:
-  version "22.5.0"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.0.tgz#2b4fa0174f2fc32ed967be75e58f927153acf000"
+decaffeinate-parser@^22.5.1:
+  version "22.5.1"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.1.tgz#a6c294b1a97f14ed6631ba3e2d7341c210e104c7"
   dependencies:
     babylon "^6.18.0"
     coffee-lex "^9.1.0"

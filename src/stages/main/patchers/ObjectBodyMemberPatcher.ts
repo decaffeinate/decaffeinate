@@ -1,3 +1,4 @@
+import {ObjectInitialiserMember} from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import NodePatcher from './../../../patchers/NodePatcher';
 import BoundFunctionPatcher from './BoundFunctionPatcher';
@@ -64,6 +65,11 @@ export default abstract class ObjectBodyMemberPatcher extends NodePatcher {
   }
 
   patchKey(): void {
+    if (this.node instanceof ObjectInitialiserMember && this.node.isComputed) {
+      // Explicit CS2 computed keys are already in the right syntax and just need to be patched.
+      this.key.patch();
+      return;
+    }
     let computedKeyPatcher = this.getComputedKeyPatcher();
     if (computedKeyPatcher !== null) {
       // Since we're replacing an expression like `"#{foo}"` with just `foo`,
