@@ -7,6 +7,7 @@ import {
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
 import containsSuperCall from '../../../utils/containsSuperCall';
 import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
+import getObjectAssigneeKeys from '../../../utils/getObjectAssigneeKeys';
 import NodePatcher from './../../../patchers/NodePatcher';
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import ConditionalPatcher from './ConditionalPatcher';
@@ -26,6 +27,15 @@ import StringPatcher from './StringPatcher';
 import ThisPatcher from './ThisPatcher';
 
 const MULTI_ASSIGN_SINGLE_LINE_MAX_LENGTH = 100;
+
+const OBJECT_WITHOUT_KEYS_HELPER =
+  `function __objectWithoutKeys__(object, keys) {
+  const result = {...object};
+  for (const k of keys) {
+    delete result[keys];
+  }
+  return result;
+}`;
 
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;
@@ -230,8 +240,13 @@ export default class AssignOpPatcher extends NodePatcher {
           // Assignments like {a = b} = c end up as an assign op.
           let valueCode = `${ref}${this.accessFieldForObjectDestructure(member.assignee)}`;
           assignments.push(...this.generateAssignments(member, valueCode, false));
+        } else if (member instanceof SpreadPatcher) {
+          let helper = this.registerHelper('__objectWithoutKeys__', OBJECT_WITHOUT_KEYS_HELPER);
+          let omittedKeysCode = getObjectAssigneeKeys(patcher).map(key => `'${key}'`).join(', ');
+          assignments.push(...this.generateAssignments(member, `${helper}(${ref}, [${omittedKeysCode}])`, false));
         } else {
-          throw this.error(`Unexpected object initializer member: ${patcher.node.type}`);
+          // tslint:disable-next-line no-any
+          throw this.error(`Unexpected object initializer member: ${(member as any).node.type}`);
         }
       }
       return assignments;

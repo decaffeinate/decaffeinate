@@ -6,6 +6,7 @@ import { isSemanticToken } from '../../../utils/types';
 import NodePatcher from './../../../patchers/NodePatcher';
 import AssignOpPatcher from './AssignOpPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
+import SpreadPatcher from './SpreadPatcher';
 
 export type OpenCurlyInfo = {
   curlyBraceInsertionPosition: number,
@@ -17,7 +18,7 @@ export type OpenCurlyInfo = {
  * Handles object literals.
  */
 export default class ObjectInitialiserPatcher extends NodePatcher {
-  members: Array<ObjectInitialiserMemberPatcher | AssignOpPatcher>;
+  members: Array<ObjectInitialiserMemberPatcher | AssignOpPatcher | SpreadPatcher>;
 
   constructor(patcherContext: PatcherContext, members: Array<ObjectInitialiserMemberPatcher | AssignOpPatcher>) {
     super(patcherContext);
