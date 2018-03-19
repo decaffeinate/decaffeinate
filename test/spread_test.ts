@@ -1,5 +1,5 @@
 import {checkCS1, checkCS2} from './support/check';
-import validate from './support/validate';
+import validate, {validateCS1} from './support/validate';
 
 describe('spread', () => {
   it('handles simple function calls', () => {
@@ -37,12 +37,17 @@ describe('spread', () => {
   it('has the correct runtime behavior when spreading null in a function call', () => {
     validate(`
       f = -> arguments.length
-      setResult(f(null...))
-    `, 0);
+      try
+        # Works in CS1
+        setResult(f(null...))
+      catch
+        setResult('Fails in CS2')
+    `, {cs1: 0, cs2: 'Fails in CS2'});
   });
 
   it('has the correct runtime behavior when spreading a fake array in a function call', () => {
-    validate(`
+    // Ignore CS2 checking since Babel handles this case wrong and doesn't crash.
+    validateCS1(`
       f = -> arguments.length
       obj = {length: 2, 0: 'a', 1: 'b'}
       setResult(f(1, 2, obj...))
@@ -82,7 +87,8 @@ describe('spread', () => {
   });
 
   it('has the correct runtime behavior when spreading a fake array in an array literal', () => {
-    validate(`
+    // Ignore CS2 checking since Babel handles this case wrong and doesn't crash.
+    validateCS1(`
       obj = {length: 2, 0: 'a', 1: 'b'}
       setResult([1, 2, obj...])
     `, [1, 2, 'a', 'b']);

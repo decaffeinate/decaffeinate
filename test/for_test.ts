@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS1, checkCS2} from './support/check';
 import validate from './support/validate';
 
 describe('for loops', () => {
@@ -1273,12 +1273,22 @@ describe('for loops', () => {
   });
 
   it('handles a complex assignee in a postfix loop', () => {
-    check(`
+    checkCS1(`
       x = (a for [a = 1] in b)
     `, `
       const x = ((() => {
         const result = [];
         for (let value of Array.from(b)) {     const val = value[0], a = val != null ? val : 1; result.push(a);
+        }
+        return result;
+      })());
+    `);
+    checkCS2(`
+      x = (a for [a = 1] in b)
+    `, `
+      const x = ((() => {
+        const result = [];
+        for ([a = 1] of Array.from(b)) {     result.push(a);
         }
         return result;
       })());

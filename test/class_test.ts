@@ -1,6 +1,6 @@
 import assertError from './support/assertError';
-import check, {checkCS1} from './support/check';
-import validate from './support/validate';
+import check, {checkCS1, checkCS2} from './support/check';
+import validate, {validateCS1} from './support/validate';
 
 describe('classes', () => {
   it('converts named classes without bodies', () => {
@@ -115,7 +115,7 @@ describe('classes', () => {
 
   describe('assign properties from method parameters', () => {
     it('constructor without function body', () => {
-      check(`
+      checkCS1(`
         class A
           constructor: ([@a = 1], {test: @b = 2}, @c) ->
       `, `
@@ -129,6 +129,18 @@ describe('classes', () => {
               val1 = obj.test,
               this.b = val1 != null ? val1 : 2,
               this.c = args[2];
+          }
+        }
+      `);
+      checkCS2(`
+        class A
+          constructor: ([@a = 1], {test: @b = 2}, @c) ->
+      `, `
+        class A {
+          constructor([a = 1], {test: b = 2}, c) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
           }
         }
       `);
@@ -1193,7 +1205,7 @@ describe('classes', () => {
   });
 
   it('has correct behavior with a standalone prototype super call', () => {
-    validate(`
+    validateCS1(`
       class A
         c: -> 3
       class B extends A
@@ -1204,7 +1216,7 @@ describe('classes', () => {
   });
 
   it('forwards function arguments on empty super, even if the arguments are for an inner function', () => {
-    validate(`
+    validateCS1(`
       class A
         c: (x) -> x + 5
       class B extends A
@@ -1717,7 +1729,7 @@ describe('classes', () => {
   });
 
   it('behaves correctly for dynamic prototype method assignments', () => {
-    validate(`
+    validateCS1(`
       class Base
         f: -> 1
         g: -> 2
@@ -1849,7 +1861,7 @@ describe('classes', () => {
   });
 
   it('behaves properly with conditionally assigned static methods with super', () => {
-    validate(`
+    validateCS1(`
       class A
         @a = -> 3
       class B extends A
@@ -1860,7 +1872,7 @@ describe('classes', () => {
   });
 
   it('behaves properly with conditionally assigned static methods with a dynamic name with super', () => {
-    validate(`
+    validateCS1(`
       class A
         @a = -> 3
       m = 'a'

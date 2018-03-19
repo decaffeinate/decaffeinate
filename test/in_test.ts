@@ -208,7 +208,7 @@ describe('in operator', () => {
       arr = []
       arr.push('first') in [arr.push('second')]
       setResult(arr)
-    `, ['first', 'second'], { requireNode6: true });
+    `, ['first', 'second']);
   });
 
   it('handles an impure soak LHS', () => {

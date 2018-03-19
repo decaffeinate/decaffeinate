@@ -84,7 +84,7 @@ export default class ForPatcher extends NodePatcher {
     if (!this.valAssignee) {
       throw this.error('Expected to find a valAssignee.');
     }
-    if (canPatchAssigneeToJavaScript(this.valAssignee.node)) {
+    if (canPatchAssigneeToJavaScript(this.valAssignee.node, this.options)) {
       this.valAssignee.patch();
       return null;
     } else {

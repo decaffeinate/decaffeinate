@@ -1,4 +1,4 @@
-import check, {checkCS1} from './support/check';
+import check, {checkCS1, checkCS2} from './support/check';
 
 describe('function calls', () => {
   it('inserts commas after arguments if they are not there', () => {
@@ -722,12 +722,18 @@ describe('function calls', () => {
     `);
   });
 
-  it('wraps parens around comma-separated simple in an argument position', () => {
-    check(`
+  it('wraps parens around comma-separated simple assignments in an argument position', () => {
+    checkCS1(`
       a([b] = c)
     `, `
       let b;
       a(([b] = Array.from(c), c));
+    `);
+    checkCS2(`
+      a([b] = c)
+    `, `
+      let b;
+      a(([b] = c));
     `);
   });
 
