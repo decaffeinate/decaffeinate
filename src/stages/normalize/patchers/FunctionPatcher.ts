@@ -214,7 +214,7 @@ export default class FunctionPatcher extends NodePatcher {
       // We have separate code to handle relatively simple default params that
       // results in better code, so use that.
       if (parameter instanceof DefaultParamPatcher &&
-          canPatchAssigneeToJavaScript(parameter.param.node)) {
+          canPatchAssigneeToJavaScript(parameter.param.node, this.options)) {
         continue;
       }
 
@@ -226,8 +226,8 @@ export default class FunctionPatcher extends NodePatcher {
         continue;
       }
 
-      if (parameter instanceof ArrayInitialiserPatcher ||
-          !canPatchAssigneeToJavaScript(parameter.node)) {
+      if ((!this.options.useCS2 && parameter instanceof ArrayInitialiserPatcher) ||
+          !canPatchAssigneeToJavaScript(parameter.node, this.options)) {
         return i;
       }
     }

@@ -1,5 +1,6 @@
 import * as babel from 'babel-core';
-import { compile } from 'decaffeinate-coffeescript';
+import { compile as cs1Compile } from 'decaffeinate-coffeescript';
+import { compile as cs2Compile } from 'decaffeinate-coffeescript2';
 import * as vm from 'vm';
 import { convert } from '../../src/index';
 import { Options } from '../../src/options';
@@ -7,7 +8,6 @@ import PatchError from '../../src/utils/PatchError';
 import assertDeepEqual from './assertDeepEqual';
 
 export type ValidateOptions = {
-  requireNode6?: boolean,
   options?: Options,
   // If we generate syntax not supported by node, don't try running the
   // resulting JS there directly.
@@ -33,12 +33,36 @@ export type ValidateOptions = {
  */
 export default function validate(
     // tslint:disable-next-line:no-any
-    source: string, expectedOutput?: any,
-    {requireNode6 = false, options = {}, skipNodeCheck = false}: ValidateOptions = {}
+    source: string, expectedOutput?: any | {cs1: any, cs2: any},
+    {options = {}, skipNodeCheck = false}: ValidateOptions = {}
   ): void {
-  if (requireNode6 && !isAtLeastNode6()) {
-    return;
-  }
+  let expectedCS1 = expectedOutput && expectedOutput.hasOwnProperty('cs1') ? expectedOutput.cs1 : expectedOutput;
+  let expectedCS2 = expectedOutput && expectedOutput.hasOwnProperty('cs2') ? expectedOutput.cs2 : expectedOutput;
+  runValidateCase(source, expectedCS1, {options: {...options, useCS2: false}, skipNodeCheck});
+  runValidateCase(source, expectedCS2, {options: {...options, useCS2: true}, skipNodeCheck});
+}
+
+export function validateCS1(
+  // tslint:disable-next-line:no-any
+  source: string, expectedOutput?: any,
+  {options = {}, skipNodeCheck = false}: ValidateOptions = {}
+): void {
+  runValidateCase(source, expectedOutput, {options: {...options, useCS2: false}, skipNodeCheck});
+}
+
+export function validateCS2(
+  // tslint:disable-next-line:no-any
+  source: string, expectedOutput?: any,
+  {options = {}, skipNodeCheck = false}: ValidateOptions = {}
+): void {
+  runValidateCase(source, expectedOutput, {options: {...options, useCS2: true}, skipNodeCheck});
+}
+
+function runValidateCase(
+  // tslint:disable-next-line:no-any
+  source: string, expectedOutput?: any,
+  {options = {}, skipNodeCheck = false}: ValidateOptions = {}
+): void {
   try {
     runValidation(source, expectedOutput, options, skipNodeCheck);
   } catch (err) {
@@ -69,6 +93,7 @@ function runCodeAndExtract(source: string): any {
 }
 
 function runValidation(source: string, expectedOutput: {}, options: Options, skipNodeCheck: boolean): void {
+  let compile = options.useCS2 ? cs2Compile : cs1Compile;
   let coffeeES5 = compile(source, { bare: true }) as string;
   let decaffeinateES6 = convert(source, options).code;
   let decaffeinateES5 = babel.transform(decaffeinateES6, {
@@ -101,7 +126,7 @@ ${err.message}`;
   }
 
   // Make sure babel and V8 behave the same if we're on node >= 6.
-  if (!skipNodeCheck && isAtLeastNode6()) {
+  if (!skipNodeCheck) {
     let nodeOutput = runCodeAndExtract(decaffeinateES6);
     assertDeepEqual(decaffeinateOutput, nodeOutput, 'babel and node output were different.');
   }
@@ -109,8 +134,4 @@ ${err.message}`;
   if (expectedOutput !== undefined) {
     assertDeepEqual(decaffeinateOutput, expectedOutput, 'decaffeinate and expected output were different.');
   }
-}
-
-function isAtLeastNode6(): boolean {
-  return Number(process.version.slice(1).split('.')[0]) >= 6;
 }

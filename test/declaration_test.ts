@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS1, checkCS2} from './support/check';
 
 describe('declarations', () => {
   it('adds inline declarations for assignments as statements', () => {
@@ -87,7 +87,8 @@ describe('declarations', () => {
   });
 
   it('adds variable declarations for destructuring array assignment', () => {
-    check(`[a] = b`, `const [a] = Array.from(b);`);
+    checkCS1(`[a] = b`, `const [a] = Array.from(b);`);
+    checkCS2(`[a] = b`, `const [a] = b;`);
   });
 
   it('adds variable declarations for destructuring object assignment', () => {
@@ -95,12 +96,19 @@ describe('declarations', () => {
   });
 
   it('does not add variable declarations for destructuring array assignment with previously declared bindings', () => {
-    check(`
+    checkCS1(`
       a = 1
       [a] = b
     `, `
       let a = 1;
       [a] = Array.from(b);
+    `);
+    checkCS2(`
+      a = 1
+      [a] = b
+    `, `
+      let a = 1;
+      [a] = b;
     `);
   });
 
@@ -115,13 +123,21 @@ describe('declarations', () => {
   });
 
   it('does not add inline variable declarations when the destructuring is mixed', () => {
-    check(`
+    checkCS1(`
       a = 1
       [a, b] = c
     `, `
       let b;
       let a = 1;
       [a, b] = Array.from(c);
+    `);
+    checkCS2(`
+      a = 1
+      [a, b] = c
+    `, `
+      let b;
+      let a = 1;
+      [a, b] = c;
     `);
   });
 

@@ -1,5 +1,5 @@
-import check, {checkCS2} from './support/check';
-import validate from './support/validate';
+import check, {checkCS1, checkCS2} from './support/check';
+import validate, {validateCS1} from './support/validate';
 
 describe('expansion', () => {
   it('allows getting the last elements of an array', () => {
@@ -33,15 +33,20 @@ describe('expansion', () => {
   });
 
   it('does not generate special assignment code when the rest is at the end', () => {
-    check(`
+    checkCS1(`
       [a, b, c...] = arr
     `, `
       const [a, b, ...c] = Array.from(arr);
     `);
+    checkCS2(`
+      [a, b, c...] = arr
+    `, `
+      const [a, b, ...c] = arr;
+    `);
   });
 
   it('allows getting the last elements of a parameter list', () => {
-    check(`
+    checkCS1(`
       (..., a, b) ->
     `, `
       (function(...args) {
@@ -51,7 +56,7 @@ describe('expansion', () => {
   });
 
   it('allows default params for expansion params', () => {
-    check(`
+    checkCS1(`
       (..., a = 1) ->
     `, `
       (function(...args) {
@@ -61,7 +66,7 @@ describe('expansion', () => {
   });
 
   it('allows this assignment for expansion params', () => {
-    check(`
+    checkCS1(`
       (..., @a) ->
     `, `
       (function(...args) {
@@ -71,7 +76,7 @@ describe('expansion', () => {
   });
 
   it('does not create name conflicts in the expansion param case', () => {
-    check(`
+    checkCS1(`
       a = 1
       (..., @a) ->
         console.log a
@@ -99,10 +104,15 @@ describe('expansion', () => {
   });
 
   it('is removed at the end of an array', () => {
-    check(`
+    checkCS1(`
       [a, b, ...] = arr
     `, `
       const [a, b] = Array.from(arr);
+    `);
+    checkCS2(`
+      [a, b, ...] = arr
+    `, `
+      const [a, b] = arr;
     `);
   });
 
@@ -123,7 +133,7 @@ describe('expansion', () => {
   });
 
   it('allows getting the first and last elements of an array', () => {
-    check(`
+    checkCS1(`
       [a, b, ..., c, d] = arr
     `, `
       const a = arr[0], b = arr[1], c = arr[arr.length - 2], d = arr[arr.length - 1];
@@ -131,7 +141,7 @@ describe('expansion', () => {
   });
 
   it('allows getting the first and last elements of a parameter list', () => {
-    check(`
+    checkCS1(`
       (a, b, ..., c, d) ->
     `, `
       (function(...args) {
@@ -154,7 +164,7 @@ describe('expansion', () => {
   });
 
   it('allows getting the first and last elements of a parameter list in a bound function', () => {
-    check(`
+    checkCS1(`
       (a, b, ..., c, d) =>
     `, `
       (...args) => {
@@ -164,7 +174,7 @@ describe('expansion', () => {
   });
 
   it('handles an expansion node in a parameter array destructure', () => {
-    check(`
+    checkCS1(`
       (a, [..., b], c) ->
         d
     `, `
@@ -176,15 +186,20 @@ describe('expansion', () => {
   });
 
   it('handles a complex single argument', () => {
-    check(`
+    checkCS1(`
       fn = ([a,b]) -> {a:a,b:b}
     `, `
       const fn = function(...args) { const [a,b] = Array.from(args[0]); return {a,b}; };
     `);
+    checkCS2(`
+      fn = ([a,b]) -> {a:a,b:b}
+    `, `
+      const fn = ([a,b]) => ({a,b});
+    `);
   });
 
   it('handles a complex parameter list with varying indentation', () => {
-    check(`
+    checkCS1(`
       f = (a, b, ..., {
         c,
         d,
@@ -204,7 +219,7 @@ describe('expansion', () => {
   });
 
   it('allows getting elements from an unsafe-to-repeat list', () => {
-    check(`
+    checkCS1(`
       [a, b, ..., c, d] = getArray()
     `, `
       const array = getArray(),
@@ -230,7 +245,7 @@ describe('expansion', () => {
   });
 
   it('handles expansions and object destructures', () => {
-    check(`
+    checkCS1(`
       [..., {a, b}] = arr
     `, `
       const {a, b} = arr[arr.length - 1];
@@ -238,7 +253,7 @@ describe('expansion', () => {
   });
 
   it('handles expansions and object destructures with renaming', () => {
-    check(`
+    checkCS1(`
       [..., {a: b, c: d}] = arr
     `, `
       const {a: b, c: d} = arr[arr.length - 1];
@@ -246,7 +261,7 @@ describe('expansion', () => {
   });
 
   it('handles nested expansions', () => {
-    check(`
+    checkCS1(`
       [..., [..., a]] = arr
     `, `
       const array = arr[arr.length - 1], a = array[array.length - 1];
@@ -254,7 +269,7 @@ describe('expansion', () => {
   });
 
   it('handles a deeply-nested non-repeatable expression', () => {
-    check(`
+    checkCS1(`
       [..., [..., a[b()]]] = arr
     `, `
       let array;
@@ -263,7 +278,7 @@ describe('expansion', () => {
   });
 
   it('handles an array destructure within a rest destructure', () => {
-    check(`
+    checkCS1(`
       [a, [b]..., c] = arr
     `, `
       const a = arr[0],
@@ -274,7 +289,7 @@ describe('expansion', () => {
   });
 
   it('handles an expansion and a default param', () => {
-    check(`
+    checkCS1(`
       [..., a = 1] = arr
     `, `
       const val = arr[arr.length - 1], a = val != null ? val : 1;
@@ -282,32 +297,48 @@ describe('expansion', () => {
   });
 
   it('handles a this-assign with default in an object destructure', () => {
-    check(`
+    checkCS1(`
       {@a = b} = c
     `, `
       let val;
       val = c.a, this.a = val != null ? val : b;
     `);
+    checkCS2(`
+      {@a = b} = c
+    `, `
+      ({a: this.a = b} = c);
+    `);
   });
 
   it('handles a default destructure assign', () => {
-    check(`
+    checkCS1(`
       {a = 1} = {}
     `, `
       const obj = {}, val = obj.a, a = val != null ? val : 1;
     `);
+    checkCS2(`
+      {a = 1} = {}
+    `, `
+      ({a = 1} = {});
+    `);
   });
 
   it('handles a string key with a default assignment', () => {
-    check(`
+    checkCS1(`
       {"#{a b}": c = d} = e
     `, `
       const val = e[\`\${a(b)}\`], c = val != null ? val : d;
     `);
+    checkCS2(`
+      {"#{a b}": c = d} = e
+    `, `
+      ({[a(b)]: c = d} = e);
+    `);
   });
 
   it('has the right semantics for nested rest destructures', () => {
-    validate(`
+    // CS2 appears to be buggy in this case, at least 2.2.1 is.
+    validateCS1(`
       arr = [1, 2, 3, 4, 5, 6]
       [a, [b, c..., d]..., e] = arr
       setResult(a + b + d + e + c.length)
@@ -317,17 +348,23 @@ describe('expansion', () => {
   it('properly destructures array-like objects', () => {
     validate(`
       arr = {length: 1, 0: 'Hello'}
-      [value] = arr
-      setResult(value)
-    `, 'Hello');
+      try
+        [value] = arr
+        setResult(value)
+      catch
+        setResult('Fails in CS2')
+    `, {cs1: 'Hello', cs2: 'Fails in CS2'});
   });
 
   it('properly destructures nested array-like objects', () => {
     validate(`
       arr = {length: 1, 0: 'World'}
-      [[value]] = [arr]
-      setResult(value)
-    `, 'World');
+      try
+        [[value]] = [arr]
+        setResult(value)
+      catch
+        setResult('Fails in CS2')
+    `, {cs1: 'World', cs2: 'Fails in CS2'});
   });
 
   it('properly destructures array-like objects with an expansion destructure', () => {
@@ -376,13 +413,16 @@ describe('expansion', () => {
 
   it('does not generate crashing code when doing a destructure on undefined', () => {
     validate(`
-      {} = undefined
-      setResult(true)
-    `, true);
+      try
+        {} = undefined
+        setResult(true)
+      catch
+        setResult('Fails in CS2')
+    `, {cs1: true, cs2: 'Fails in CS2'});
   });
 
   it('handles an object default within an array rest', () => {
-    check(`
+    checkCS1(`
       [{a = 1}...] = b
     `, `
       const obj = b.slice(0, b.length - 0), val = obj.a, a = val != null ? val : 1;
@@ -390,7 +430,8 @@ describe('expansion', () => {
   });
 
   it('handles expansion params with not enough values specified', () => {
-    validate(`
+    // https://github.com/decaffeinate/decaffeinate/issues/1283
+    validateCS1(`
       f = (a, ..., b, c, d) ->
         return [a, b, c, d]
       setResult(f(1, 2))
@@ -398,7 +439,8 @@ describe('expansion', () => {
   });
 
   it('handles an expansion destructure with not enough values specified', () => {
-    validate(`
+    // https://github.com/decaffeinate/decaffeinate/issues/1283
+    validateCS1(`
       [a, ..., b, c, d] = [1, 2]
       setResult([a, b, c, d])
     `, [1, undefined, 1, 2]);
@@ -427,7 +469,7 @@ describe('expansion', () => {
         { a } = obj,
         r = __objectWithoutKeys__(obj, ['a', 'b']),
         val = obj.b,
-        b = val != null ? val : c;
+        b = val !== undefined ? val : c;
       function __objectWithoutKeys__(object, keys) {
         const result = {...object};
         for (const k of keys) {
@@ -451,7 +493,7 @@ describe('expansion', () => {
       [a, , b] = [1, , 3]
     `, `
       let a, b;
-      [a, , b] = Array.from([1, , 3]);
+      [a, , b] = [1, , 3];
     `);
   });
 

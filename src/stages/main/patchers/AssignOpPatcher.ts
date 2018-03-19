@@ -60,8 +60,14 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchAsExpression(): void {
+    if (this.parent instanceof ObjectInitialiserPatcher) {
+      this.patchAsObjectDestructureWithDefault();
+      return;
+    }
+
     this.markProtoAssignmentRepeatableIfNecessary();
-    let shouldAddParens = this.negated ||
+    let shouldAddParens = !this.isAssignee() && (
+      this.negated ||
       (this.willResultInSeqExpression() &&
         this.parent instanceof FunctionApplicationPatcher) ||
       (!this.isSurroundedByParentheses() &&
@@ -71,7 +77,8 @@ export default class AssignOpPatcher extends NodePatcher {
             this.parent.condition === this &&
             !this.parent.willPatchAsTernary())) &&
         !this.implicitlyReturns()
-      );
+      )
+    );
     if (this.negated) {
       this.insert(this.innerStart, '!');
     }
@@ -79,7 +86,7 @@ export default class AssignOpPatcher extends NodePatcher {
       this.insert(this.innerStart, '(');
     }
 
-    if (canPatchAssigneeToJavaScript(this.assignee.node)) {
+    if (canPatchAssigneeToJavaScript(this.assignee.node, this.options)) {
       this.patchSimpleAssignment();
     } else {
       this.addSuggestion(SIMPLIFY_COMPLEX_ASSIGNMENTS);
@@ -110,7 +117,7 @@ export default class AssignOpPatcher extends NodePatcher {
 
   patchAsStatement(): void {
     this.markProtoAssignmentRepeatableIfNecessary();
-    if (canPatchAssigneeToJavaScript(this.assignee.node)) {
+    if (canPatchAssigneeToJavaScript(this.assignee.node, this.options)) {
       let shouldAddParens = this.assignee.statementShouldAddParens();
       if (shouldAddParens) {
         this.insert(this.contentStart, '(');
@@ -127,14 +134,27 @@ export default class AssignOpPatcher extends NodePatcher {
     }
   }
 
+  private patchAsObjectDestructureWithDefault(): void {
+    if (this.assignee instanceof MemberAccessOpPatcher && this.assignee.expression instanceof ThisPatcher) {
+      // `{ @a = b }` → `{ a: @a = bb }`
+      //                  ^^^^
+      this.insert(
+        this.assignee.outerStart,
+        `${this.assignee.getMemberName()}: `
+      );
+    }
+    this.assignee.patch();
+    this.expression.patch();
+  }
+
   willResultInSeqExpression(): boolean {
     return this.willPatchAsExpression() &&
-      (!canPatchAssigneeToJavaScript(this.assignee.node) ||
+      (!canPatchAssigneeToJavaScript(this.assignee.node, this.options) ||
         this.assignee instanceof ArrayInitialiserPatcher);
   }
 
   patchSimpleAssignment(): void {
-    let needsArrayFrom = this.assignee instanceof ArrayInitialiserPatcher;
+    let needsArrayFrom = this.shouldUseArrayFrom() && this.assignee instanceof ArrayInitialiserPatcher;
     this.assignee.patch();
     if (needsArrayFrom) {
       this.addSuggestion(REMOVE_ARRAY_FROM);
@@ -176,9 +196,9 @@ export default class AssignOpPatcher extends NodePatcher {
    *   sometimes generate an extra assignment to make it repeatable.
    */
   generateAssignments(patcher: NodePatcher, ref: string, refIsRepeatable: boolean): Array<string> {
-    if (canPatchAssigneeToJavaScript(patcher.node)) {
+    if (canPatchAssigneeToJavaScript(patcher.node, this.options)) {
       let assigneeCode = patcher.patchAndGetCode();
-      if (patcher instanceof ArrayInitialiserPatcher) {
+      if (this.shouldUseArrayFrom() && patcher instanceof ArrayInitialiserPatcher) {
         this.addSuggestion(REMOVE_ARRAY_FROM);
         return [`${assigneeCode} = Array.from(${ref})`];
       } else {
@@ -266,8 +286,9 @@ export default class AssignOpPatcher extends NodePatcher {
         ];
       }
       let defaultCode = patcher.expression.patchAndGetCode();
+      let comparison = this.options.useCS2 ? '!== undefined' : '!= null';
       return this.generateAssignments(
-        patcher.assignee, `${ref} != null ? ${ref} : ${defaultCode}`, false);
+        patcher.assignee, `${ref} ${comparison} ? ${ref} : ${defaultCode}`, false);
     } else {
       throw this.error(`Invalid assignee type: ${patcher.node.type}`);
     }
@@ -310,5 +331,9 @@ export default class AssignOpPatcher extends NodePatcher {
         forceRepeat: true,
       });
     }
+  }
+
+  shouldUseArrayFrom(): boolean {
+    return !this.options.useCS2;
   }
 }
