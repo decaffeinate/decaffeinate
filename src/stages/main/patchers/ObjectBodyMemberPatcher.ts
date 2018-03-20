@@ -1,6 +1,8 @@
 import {ObjectInitialiserMember} from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import NodePatcher from './../../../patchers/NodePatcher';
+import AsyncFunctionPatcher from './AsyncFunctionPatcher';
+import BoundAsyncFunctionPatcher from './BoundAsyncFunctionPatcher';
 import BoundFunctionPatcher from './BoundFunctionPatcher';
 import BoundGeneratorFunctionPatcher from './BoundGeneratorFunctionPatcher';
 import FunctionPatcher from './FunctionPatcher';
@@ -44,6 +46,9 @@ export default abstract class ObjectBodyMemberPatcher extends NodePatcher {
   patchAsMethod(): void {
     if (!this.expression) {
       throw this.error('Expected expression to be non-null in method case.');
+    }
+    if (this.isAsyncMethod()) {
+      this.insert(this.key.outerStart, 'async ');
     }
     if (this.isGeneratorMethod()) {
       this.insert(this.key.outerStart, '*');
@@ -149,5 +154,10 @@ export default abstract class ObjectBodyMemberPatcher extends NodePatcher {
   isGeneratorMethod(): boolean {
     return this.expression instanceof GeneratorFunctionPatcher ||
       this.expression instanceof BoundGeneratorFunctionPatcher;
+  }
+
+  isAsyncMethod(): boolean {
+    return this.expression instanceof AsyncFunctionPatcher ||
+      this.expression instanceof BoundAsyncFunctionPatcher;
   }
 }
