@@ -50,4 +50,33 @@ describe('await', () => {
       };
     `);
   });
+
+  it('handles await within an object method', () => {
+    checkCS2(`
+      o = {
+        f: ->
+          await 3
+      }
+    `, `
+      const o = {
+        async f() {
+          return await 3;
+        }
+      };
+    `);
+  });
+
+  it('handles await within a class method', () => {
+    checkCS2(`
+      class C
+        f: ->
+          await 3
+    `, `
+      class C {
+        async f() {
+          return await 3;
+        }
+      }
+    `);
+  });
 });
