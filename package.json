@@ -64,7 +64,7 @@
     "@types/babel-core": "^6.7.14",
     "@types/babylon": "^6.16.1",
     "@types/fs-extra": "^5.0.0",
-    "@types/mocha": "^2.2.43",
+    "@types/mocha": "^5.0.0",
     "@types/mz": "^0.0.32",
     "@types/node": "^9.3.0",
     "babel-core": "^7.0.0-beta.3",
