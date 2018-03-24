@@ -1935,4 +1935,21 @@ describe('classes', () => {
       }
     `);
   });
+
+  it('handles anonymous classes with inline bodies', () => {
+    check(`
+      class then a = 1
+    `, `
+      (function() {
+        let a = undefined;
+        const Cls = class {
+          static initClass() {
+            a = 1;
+          }
+        };
+        Cls.initClass();
+        return Cls;
+      })();
+    `);
+  });
 });

@@ -153,7 +153,7 @@ export default class ClassPatcher extends NodePatcher {
     } else if (this.nameAssignee) {
       searchStart = this.nameAssignee.outerEnd;
     } else {
-      searchStart = this.contentStart;
+      searchStart = this.firstToken().end;
     }
     let searchEnd;
     if (this.body) {
