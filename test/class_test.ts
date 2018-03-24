@@ -1907,4 +1907,32 @@ describe('classes', () => {
       
     `, {shouldStripIndent: false});
   });
+
+  it('handles static generator methods', () => {
+    check(`
+      class A
+        @b: ->
+          yield 1
+    `, `
+      class A {
+        static *b() {
+          return yield 1;
+        }
+      }
+    `);
+  });
+
+  it('handles static async methods', () => {
+    checkCS2(`
+      class A
+        @b: ->
+          await 1
+    `, `
+      class A {
+        static async b() {
+          return await 1;
+        }
+      }
+    `);
+  });
 });
