@@ -101,4 +101,12 @@ describe('spread', () => {
       const a = [...b, c];
     `);
   });
+
+  it('handles postfix conditionals in spread operators', () => {
+    checkCS2(`
+      [a if b...]
+    `, `
+      [...(b ? a : undefined)];
+    `);
+  });
 });
