@@ -511,4 +511,12 @@ describe('expansion', () => {
       }
     `);
   });
+
+  it('allows array elisions in complex assignments', () => {
+    checkCS2(`
+      [a,,...,b] = arr
+    `, `
+      const a = arr[0], b = arr[arr.length - 1];
+    `);
+  });
 });

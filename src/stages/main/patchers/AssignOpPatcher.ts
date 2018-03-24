@@ -196,7 +196,13 @@ export default class AssignOpPatcher extends NodePatcher {
    *   sometimes generate an extra assignment to make it repeatable.
    */
   generateAssignments(patcher: NodePatcher, ref: string, refIsRepeatable: boolean): Array<string> {
-    if (canPatchAssigneeToJavaScript(patcher.node, this.options)) {
+    if (patcher instanceof ExpansionPatcher) {
+      // Expansions don't produce assignments.
+      return [];
+    } else if (patcher instanceof ElisionPatcher) {
+      // Elisions don't produce assignments.
+      return [];
+    } else if (canPatchAssigneeToJavaScript(patcher.node, this.options)) {
       let assigneeCode = patcher.patchAndGetCode();
       if (this.shouldUseArrayFrom() && patcher instanceof ArrayInitialiserPatcher) {
         this.addSuggestion(REMOVE_ARRAY_FROM);
@@ -204,12 +210,6 @@ export default class AssignOpPatcher extends NodePatcher {
       } else {
         return [`${assigneeCode} = ${ref}`];
       }
-    } else if (patcher instanceof ExpansionPatcher) {
-      // Expansions don't produce assignments.
-      return [];
-    } else if (patcher instanceof ElisionPatcher) {
-      // Elisions don't produce assignments.
-      return [];
     } else if (patcher instanceof SpreadPatcher) {
       // Calling code seeing a spread patcher should provide an expression for
       // the resolved array.
