@@ -31,10 +31,13 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
 
   patchAsExpression(): void {
     this.markKeyRepeatableIfNecessary();
+    if (this.isStaticMethod()) {
+      this.insert(this.key.outerStart, 'static ');
+    }
     super.patchAsExpression();
     if (this.isStaticMethod()) {
-      // `this.a: ->` → `static a: ->`
-      //  ^^^^^          ^^^^^^^
+      // `static this.a: ->` → `static a: ->`
+      //         ^^^^^
       let replaceEnd;
       if (this.key instanceof MemberAccessOpPatcher) {
         replaceEnd = this.key.getMemberNameSourceToken().start;
@@ -43,7 +46,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
       } else {
         throw this.error('Unexpected static method key type.');
       }
-      this.overwrite(this.key.outerStart, replaceEnd, 'static ');
+      this.remove(this.key.outerStart, replaceEnd);
     }
   }
 
