@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, {checkCS2} from './support/check';
 
 describe('while', () => {
   it('surrounds its condition with parentheses', () => {
@@ -473,6 +473,51 @@ describe('while', () => {
         return result;
       })();
       c;
+    `);
+  });
+
+  it('handles postfix while as a value in an implicit object literal', () => {
+    checkCS2(`
+      o =
+        a:
+          b: c while d
+          e: f
+    `, `
+      const o = {
+        a: {
+          b: ((() => {
+            const result = [];
+            while (d) {
+              result.push(c);
+            }
+            return result;
+          })()),
+          e: f
+        }
+      };
+    `);
+  });
+
+  it('handles postfix while as a value in an explicit object literal', () => {
+    checkCS2(`
+      o =
+        a: {
+          b: c while d
+          e: f
+        }
+    `, `
+      const o = {
+        a: {
+          b: (() => {
+            const result = [];
+            while (d) {
+              result.push(c);
+            }
+            return result;
+          })(),
+          e: f
+        }
+      };
     `);
   });
 });

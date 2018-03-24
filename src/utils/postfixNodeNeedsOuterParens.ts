@@ -1,6 +1,7 @@
 import { SourceType } from 'coffee-lex';
 import {Spread} from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../patchers/NodePatcher';
+import ObjectInitialiserPatcher from '../stages/normalize/patchers/ObjectInitialiserPatcher';
 
 /**
  * Determine if the given postfix if/while/for needs to have parens wrapped
@@ -12,9 +13,21 @@ import NodePatcher from '../patchers/NodePatcher';
  * otherwise there are precedence issues.
  */
 export default function postfixNodeNeedsOuterParens(patcher: NodePatcher): boolean {
-  if (patcher.parent && patcher.parent.node instanceof Spread) {
-    return true;
+  let parent = patcher.parent;
+  if (parent) {
+    if (parent.node instanceof Spread) {
+      return true;
+    }
+    let grandparent = parent.parent;
+    if (
+      grandparent &&
+      grandparent instanceof ObjectInitialiserPatcher &&
+      grandparent.isImplicitObjectInitializer()
+    ) {
+      return true;
+    }
   }
+
   let nextToken = patcher.nextSemanticToken();
   if (nextToken) {
     return nextToken.type === SourceType.COMMA || nextToken.type === SourceType.SEMICOLON;

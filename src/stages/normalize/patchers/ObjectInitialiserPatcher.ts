@@ -1,3 +1,4 @@
+import SourceType from 'coffee-lex/dist/SourceType';
 import { PatcherContext } from '../../../patchers/types';
 import normalizeListItem from '../../../utils/normalizeListItem';
 import NodePatcher from './../../../patchers/NodePatcher';
@@ -18,5 +19,9 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
       member.patch();
       normalizeListItem(this, member, this.members[i + 1]);
     }
+  }
+
+  isImplicitObjectInitializer(): boolean {
+    return this.firstToken().type !== SourceType.LBRACE;
   }
 }
