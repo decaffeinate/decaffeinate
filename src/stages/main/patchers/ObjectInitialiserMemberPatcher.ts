@@ -1,3 +1,5 @@
+import SourceType from 'coffee-lex/dist/SourceType';
+import {Identifier, ObjectInitialiserMember} from 'decaffeinate-parser/dist/nodes';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
 import StringPatcher from './StringPatcher';
@@ -7,6 +9,8 @@ import ThisPatcher from './ThisPatcher';
  * Handles object properties.
  */
 export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatcher {
+  node: ObjectInitialiserMember;
+
   setAssignee(): void {
     if (this.expression === null) {
       this.key.setAssignee();
@@ -18,8 +22,9 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
 
   patchAsProperty(): void {
     if (this.expression === null) {
+      let shouldExpand = !(this.key.node instanceof Identifier) || this.node.isComputed;
       this.patchAsShorthand({
-        expand: this.key.node.type !== 'Identifier'
+        expand: shouldExpand,
       });
     } else {
       super.patchAsProperty();
@@ -46,9 +51,9 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
         `${key.getMemberName()}: `
       );
     } else if (expand) {
-      let isComputed = key instanceof StringPatcher && key.shouldBecomeTemplateLiteral();
+      let needsBrackets = key instanceof StringPatcher && key.shouldBecomeTemplateLiteral();
 
-      if (isComputed) {
+      if (needsBrackets) {
         // `{ `a = ${1 + 1}` }` → `{ [`a = ${1 + 1}` }`
         //                           ^
         this.insert(key.outerStart, '[');
@@ -56,13 +61,25 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
 
       let valueCode = key.patchRepeatable();
 
-      if (isComputed) {
+      if (needsBrackets) {
         this.insert(key.outerEnd, ']');
+      }
+
+      let keyEnd;
+      if (this.node.isComputed) {
+        let closeBracketToken = key.outerEndTokenIndex.next();
+        let tokenAfterLast = closeBracketToken ? this.sourceTokenAtIndex(closeBracketToken) : null;
+        if (!tokenAfterLast || tokenAfterLast.type !== SourceType.RBRACKET) {
+          throw this.error('Expected close-bracket after computed property.');
+        }
+        keyEnd = tokenAfterLast.end;
+      } else {
+        keyEnd = key.outerEnd;
       }
 
       // `{ a } → { a: a }`
       //             ^^^
-      this.insert(key.outerEnd, `: ${valueCode}`);
+      this.insert(keyEnd, `: ${valueCode}`);
     }
   }
 }
