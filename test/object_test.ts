@@ -569,4 +569,29 @@ describe('objects', () => {
       };
     `);
   });
+
+  it('allows simple shorthand computed property keys', () => {
+    checkCS2(`
+      o = {
+        [a]
+      }
+    `, `
+      const o = {
+        [a]: a
+      };
+    `);
+  });
+
+  it('allows complex shorthand computed property keys', () => {
+    checkCS2(`
+      o = {
+        [a b]
+      }
+    `, `
+      let ref;
+      const o = {
+        [ref = a(b)]: ref
+      };
+    `);
+  });
 });
