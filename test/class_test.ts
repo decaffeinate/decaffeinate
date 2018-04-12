@@ -1953,19 +1953,19 @@ describe('classes', () => {
     `);
   });
 
-  it('produce a proper hack to trick Babel and into TypeScript that would be OK with UglifyJS -- and continues to produce results as would be expected', () => {
-      validateCS1(`
-      class A
-        constructor: ->
-          @value ?= 1
-          @value += 1
-      
-      class B extends A
-        constructor: ->
-          @value = 3
-          super
-      b = new B()
-      setResult(b.value)
-    `, 4, {options: {disableBabelConstructorWorkaround: false}, skipNodeCheck: true});
+  it('it produces a Babel/TS constructor hack that allows this before super in a constructor and produces correct values', () => {
+    validateCS1(`
+    class A
+      constructor: ->
+        @value ?= 1
+        @value += 1
+    
+    class B extends A
+      constructor: ->
+        @value = 3
+        super
+    b = new B()
+    setResult(b.value)
+  `, 4, {options: {}, skipNodeCheck: true});
   });
 });
