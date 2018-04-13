@@ -361,8 +361,8 @@ describe('classes', () => {
             {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
-              let thisFn = (() => { this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              let thisFn = (() => { return this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.a = 2;
@@ -383,8 +383,8 @@ describe('classes', () => {
             {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
-              let thisFn = (() => { this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              let thisFn = (() => { return this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.a = 2;
@@ -404,8 +404,8 @@ describe('classes', () => {
             {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
-              let thisFn = (() => { this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              let thisFn = (() => { return this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.foo = this.foo.bind(this);
@@ -434,8 +434,8 @@ describe('classes', () => {
             {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
-              let thisFn = (() => { this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              let thisFn = (() => { return this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.foo = this.foo.bind(this);
@@ -463,8 +463,8 @@ describe('classes', () => {
             {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
-              let thisFn = (() => { this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              let thisFn = (() => { return this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.foo = this.foo.bind(this);
@@ -505,8 +505,8 @@ describe('classes', () => {
             {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
-              let thisFn = (() => { this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+              let thisFn = (() => { return this; }).toString();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             if (c == null) { c = {}; }
@@ -1951,5 +1951,21 @@ describe('classes', () => {
         return Cls;
       })();
     `);
+  });
+
+  it('it produces a Babel/TS constructor hack that allows this before super in a constructor and produces correct values', () => {
+    validateCS1(`
+    class A
+      constructor: ->
+        @value ?= 1
+        @value += 1
+    
+    class B extends A
+      constructor: ->
+        @value = 3
+        super
+    b = new B()
+    setResult(b.value)
+  `, 4, {options: {}, skipNodeCheck: true});
   });
 });
