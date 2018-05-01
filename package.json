@@ -68,7 +68,7 @@
     "@types/mz": "^0.0.32",
     "@types/node": "^9.3.0",
     "babel-core": "^7.0.0-beta.3",
-    "fs-extra": "^5.0.0",
+    "fs-extra": "^6.0.0",
     "mkdirp": "^0.5.1",
     "mocha": "^5.0.0",
     "mversion": "^1.10.1",
