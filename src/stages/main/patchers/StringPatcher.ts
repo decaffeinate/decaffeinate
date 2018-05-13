@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import {PatchOptions} from '../../../patchers/types';
+import { PatchOptions } from '../../../patchers/types';
 
 import InterpolatedPatcher from './InterpolatedPatcher';
 
@@ -8,7 +8,7 @@ import InterpolatedPatcher from './InterpolatedPatcher';
  * interpolations and whether or not they are multiline.
  */
 export default class StringPatcher extends InterpolatedPatcher {
-  patchAsExpression({forceTemplateLiteral}: PatchOptions = {}): void {
+  patchAsExpression({ forceTemplateLiteral }: PatchOptions = {}): void {
     let shouldBecomeTemplateLiteral = forceTemplateLiteral || this.shouldBecomeTemplateLiteral();
 
     let escapeStrings = [];
@@ -21,9 +21,9 @@ export default class StringPatcher extends InterpolatedPatcher {
       this.overwrite(openQuoteToken.start, openQuoteToken.end, '`');
       this.overwrite(closeQuoteToken.start, closeQuoteToken.end, '`');
     } else if (openQuoteToken.type === SourceType.TSSTRING_START) {
-      escapeStrings.push('\'');
-      this.overwrite(openQuoteToken.start, openQuoteToken.end, '\'');
-      this.overwrite(closeQuoteToken.start, closeQuoteToken.end, '\'');
+      escapeStrings.push("'");
+      this.overwrite(openQuoteToken.start, openQuoteToken.end, "'");
+      this.overwrite(closeQuoteToken.start, closeQuoteToken.end, "'");
     } else if (openQuoteToken.type === SourceType.TDSTRING_START) {
       escapeStrings.push('"');
       this.overwrite(openQuoteToken.start, openQuoteToken.end, '"');

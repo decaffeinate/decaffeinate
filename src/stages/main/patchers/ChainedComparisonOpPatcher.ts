@@ -26,10 +26,9 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
     }
   }
 
-  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
+  patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
     let negateEntireExpression = this.shouldNegateEntireExpression();
-    let addParens = negateEntireExpression ||
-      (needsParens && !this.isSurroundedByParentheses());
+    let addParens = negateEntireExpression || (needsParens && !this.isSurroundedByParentheses());
     if (negateEntireExpression) {
       this.insert(this.contentStart, '!');
     }
@@ -62,10 +61,7 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
     for (let operand of middle) {
       // `a < b < c` → `a < b && b < c`
       //                     ^^^^^
-      this.insert(
-        operand.outerEnd,
-        ` ${logicalOperator} ${operand.getRepeatCode()}`
-      );
+      this.insert(operand.outerEnd, ` ${logicalOperator} ${operand.getRepeatCode()}`);
     }
 
     if (addParens) {
@@ -79,9 +75,11 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
    * intelligently negate the subexpressions accounting for unsafe negations.
    */
   shouldNegateEntireExpression(): boolean {
-    return this.negated &&
+    return (
+      this.negated &&
       this.node.operators.some(operator => isCompareOpNegationUnsafe(operator.operator)) &&
-      !this.options.looseComparisonNegation;
+      !this.options.looseComparisonNegation
+    );
   }
 
   /**

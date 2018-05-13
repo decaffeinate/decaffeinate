@@ -8,8 +8,10 @@ import notNull from './notNull';
 export default function getEnclosingScopeBlock(patcher: NodePatcher): BlockPatcher {
   let currentPatcher: NodePatcher | null = patcher;
   while (currentPatcher) {
-    if (currentPatcher instanceof BlockPatcher &&
-      notNull(currentPatcher.parent).node === patcher.getScope().containerNode) {
+    if (
+      currentPatcher instanceof BlockPatcher &&
+      notNull(currentPatcher.parent).node === patcher.getScope().containerNode
+    ) {
       return currentPatcher;
     }
     currentPatcher = currentPatcher.parent;

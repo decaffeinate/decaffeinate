@@ -38,8 +38,7 @@ export default class MemberAccessOpPatcher extends PassthroughPatcher {
       // Don't consider this node if we're on the right side of a default param
       // (e.g. `(foo = @bar) ->`) or if we're on the left side of an object
       // destructure (e.g. the logical `a` key in `({@a}) ->`).
-      if (patcher.parent instanceof DefaultParamPatcher &&
-          patcher.parent.value === patcher) {
+      if (patcher.parent instanceof DefaultParamPatcher && patcher.parent.value === patcher) {
         break;
       }
       patcher = patcher.parent;

@@ -11,8 +11,7 @@ import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import SoakedDynamicMemberAccessOpPatcher from './SoakedDynamicMemberAccessOpPatcher';
 import SoakedMemberAccessOpPatcher from './SoakedMemberAccessOpPatcher';
 
-const GUARD_FUNC_HELPER =
-  `function __guardFunc__(func, transform) {
+const GUARD_FUNC_HELPER = `function __guardFunc__(func, transform) {
   return typeof func === 'function' ? transform(func) : undefined;
 }`;
 
@@ -35,8 +34,7 @@ const GUARD_FUNC_HELPER =
  *   this avoids the need to have two slightly different functions to handle
  *   this case which is already fairly obscure.
  */
-const GUARD_METHOD_HELPER =
-  `function __guardMethod__(obj, methodName, transform) {
+const GUARD_METHOD_HELPER = `function __guardMethod__(obj, methodName, transform) {
   if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
     return transform(obj, methodName);
   } else {
@@ -99,8 +97,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
         soakContainer.appendDeferredSuffix(')');
       }
     } else {
-      soakContainer.insert(
-        soakContainer.contentStart, `if (${conditionCode}) {\n${soakContainer.getIndent(1)}`);
+      soakContainer.insert(soakContainer.contentStart, `if (${conditionCode}) {\n${soakContainer.getIndent(1)}`);
       soakContainer.appendDeferredSuffix(`\n${soakContainer.getIndent()}}`);
     }
   }
@@ -129,8 +126,11 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     }
     // Since memberName is always a valid identifier, we can put it in a string
     // literal without worrying about escaping.
-    this.overwrite(fn.expression.outerEnd, callStartToken.end,
-      `, '${memberName}', ${varName} => ${prefix}${varName}.${memberName}(`);
+    this.overwrite(
+      fn.expression.outerEnd,
+      callStartToken.end,
+      `, '${memberName}', ${varName} => ${prefix}${varName}.${memberName}(`
+    );
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
     soakContainer.appendDeferredSuffix(')');
   }
@@ -139,7 +139,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
    * Change a[b]?() to __guardMethod__(a, b, (o, m) => o[m]())
    */
   patchDynamicMethodCall(fn: DynamicMemberAccessOpPatcher): void {
-    let {expression, indexingExpr} = fn;
+    let { expression, indexingExpr } = fn;
 
     this.registerHelper('__guardMethod__', GUARD_METHOD_HELPER);
     this.addSuggestion(REMOVE_GUARD);
@@ -156,8 +156,11 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
       this.remove(soakContainer.contentStart, this.fn.outerStart);
     }
     this.overwrite(expression.outerEnd, indexingExpr.outerStart, `, `);
-    this.overwrite(indexingExpr.outerEnd, callStartToken.end,
-      `, (${objVarName}, ${methodVarName}) => ${prefix}${objVarName}[${methodVarName}](`);
+    this.overwrite(
+      indexingExpr.outerEnd,
+      callStartToken.end,
+      `, (${objVarName}, ${methodVarName}) => ${prefix}${objVarName}[${methodVarName}](`
+    );
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
     soakContainer.appendDeferredSuffix(')');
   }

@@ -31,9 +31,9 @@ export default class ClassBlockPatcher extends BlockPatcher {
       if (boundMethods.length > 0) {
         let isSubclass = this.getClassPatcher().isSubclass();
         if (isSubclass && !this.shouldAllowInvalidConstructors()) {
-          throw this.error(getInvalidConstructorErrorMessage(
-            'Cannot automatically convert a subclass that uses bound methods.'
-          ));
+          throw this.error(
+            getInvalidConstructorErrorMessage('Cannot automatically convert a subclass that uses bound methods.')
+          );
         }
 
         let { source } = this.context;
@@ -74,7 +74,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
     }
     return shouldEnable;
   }
-  
+
   getClassPatcher(): ClassPatcher {
     if (!(this.parent instanceof ClassPatcher)) {
       throw this.error('Expected class block parent to be a class.');
@@ -87,9 +87,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   hasConstructor(): boolean {
-    return this.statements.some(
-      statement => statement instanceof ConstructorPatcher
-    );
+    return this.statements.some(statement => statement instanceof ConstructorPatcher);
   }
 
   boundInstanceMethods(): Array<ClassAssignOpPatcher> {

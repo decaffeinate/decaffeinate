@@ -5,7 +5,7 @@ export default class YieldFromPatcher extends YieldPatcher {
   /**
    * 'yield' 'from' EXPRESSION
    */
-  patchAsExpression({needsParens = true}: PatchOptions = {}): void {
+  patchAsExpression({ needsParens = true }: PatchOptions = {}): void {
     let firstToken = this.firstToken();
     this.overwrite(firstToken.start, firstToken.end, 'yield*');
     super.patchAsExpression({ needsParens });

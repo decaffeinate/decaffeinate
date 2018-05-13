@@ -12,7 +12,9 @@ describe('formatCoffeeLexTokens', () => {
     `);
     let tokenList = lex(source);
     let formattedTokens = formatCoffeeLexTokens(tokenList, new CodeContext(source));
-    strictEqual(formattedTokens, stripSharedIndent(`
+    strictEqual(
+      formattedTokens,
+      stripSharedIndent(`
       [1:1(0)-1:2(1)]: IDENTIFIER
       [1:3(2)-1:4(3)]: OPERATOR
       [1:5(4)-1:8(7)]: FOR
@@ -23,6 +25,7 @@ describe('formatCoffeeLexTokens', () => {
       [2:3(17)-2:4(18)]: IDENTIFIER
       [2:4(18)-2:5(19)]: CALL_START
       [2:5(19)-2:6(20)]: CALL_END
-    `) + '\n');
+    `) + '\n'
+    );
   });
 });

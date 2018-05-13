@@ -2,9 +2,8 @@ import { PatchOptions } from '../../../patchers/types';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class FloorDivideOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
-    let shouldAddParens = this.negated ||
-      (needsParens && !this.isSurroundedByParentheses());
+  patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
+    let shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
       this.insert(this.contentStart, '!');
     }

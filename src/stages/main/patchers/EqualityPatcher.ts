@@ -13,11 +13,7 @@ export default class EqualityPatcher extends BinaryOpPatcher {
 
   patchOperator(): void {
     let compareToken = this.getCompareToken();
-    this.overwrite(
-      compareToken.start,
-      compareToken.end,
-      this.getCompareOperator()
-    );
+    this.overwrite(compareToken.start, compareToken.end, this.getCompareOperator());
   }
 
   getCompareOperator(): string {
@@ -38,11 +34,7 @@ export default class EqualityPatcher extends BinaryOpPatcher {
     );
 
     if (!compareTokenIndex) {
-      throw this.error(
-        'expected OPERATOR token but none was found',
-        left.outerEnd,
-        right.outerStart
-      );
+      throw this.error('expected OPERATOR token but none was found', left.outerEnd, right.outerStart);
     }
 
     return notNull(this.sourceTokenAtIndex(compareTokenIndex));
@@ -54,8 +46,10 @@ export default class EqualityPatcher extends BinaryOpPatcher {
    * to the superclass default behavior of just adding ! to the front.
    */
   negate(): void {
-    if (isCompareOpNegationUnsafe(this.sourceOfToken(this.getCompareToken())) &&
-        !this.options.looseComparisonNegation) {
+    if (
+      isCompareOpNegationUnsafe(this.sourceOfToken(this.getCompareToken())) &&
+      !this.options.looseComparisonNegation
+    ) {
       return super.negate();
     }
     this.negated = !this.negated;

@@ -1,23 +1,23 @@
 export type Options = {
-  filename?: string,
-  useCS2?: boolean,
-  runToStage?: string | null,
-  literate?: boolean,
-  disableSuggestionComment?: boolean,
-  useOptionalChaining?: boolean,
-  noArrayIncludes?: boolean,
-  useJSModules?: boolean,
-  looseJSModules?: boolean,
-  safeImportFunctionIdentifiers?: Array<string>,
-  preferLet?: boolean,
-  loose?: boolean,
-  looseDefaultParams?: boolean,
-  looseForExpressions?: boolean,
-  looseForOf?: boolean,
-  looseIncludes?: boolean,
-  looseComparisonNegation?: boolean,
-  disableBabelConstructorWorkaround?: boolean,
-  disallowInvalidConstructors?: boolean,
+  filename?: string;
+  useCS2?: boolean;
+  runToStage?: string | null;
+  literate?: boolean;
+  disableSuggestionComment?: boolean;
+  useOptionalChaining?: boolean;
+  noArrayIncludes?: boolean;
+  useJSModules?: boolean;
+  looseJSModules?: boolean;
+  safeImportFunctionIdentifiers?: Array<string>;
+  preferLet?: boolean;
+  loose?: boolean;
+  looseDefaultParams?: boolean;
+  looseForExpressions?: boolean;
+  looseForOf?: boolean;
+  looseIncludes?: boolean;
+  looseComparisonNegation?: boolean;
+  disableBabelConstructorWorkaround?: boolean;
+  disallowInvalidConstructors?: boolean;
 };
 
 export const DEFAULT_OPTIONS: Options = {
@@ -39,7 +39,7 @@ export const DEFAULT_OPTIONS: Options = {
   looseIncludes: false,
   looseComparisonNegation: false,
   disableBabelConstructorWorkaround: false,
-  disallowInvalidConstructors: false,
+  disallowInvalidConstructors: false
 };
 
 export function resolveOptions(options: Options): Options {
@@ -51,8 +51,8 @@ export function resolveOptions(options: Options): Options {
       looseForOf: true,
       looseIncludes: true,
       looseComparisonNegation: true,
-      looseJSModules: true,
+      looseJSModules: true
     };
   }
-  return {...DEFAULT_OPTIONS, ...options};
+  return { ...DEFAULT_OPTIONS, ...options };
 }

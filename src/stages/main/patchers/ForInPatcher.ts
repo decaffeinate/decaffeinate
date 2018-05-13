@@ -1,13 +1,8 @@
 import { traverse } from 'decaffeinate-parser';
-import {
-  Float, Int, Number, UnaryNegateOp
-} from 'decaffeinate-parser/dist/nodes';
+import { Float, Int, Number, UnaryNegateOp } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
-import {
-  REMOVE_ARRAY_FROM,
-  SIMPLIFY_DYNAMIC_RANGE_LOOPS
-} from '../../../suggestions';
+import { REMOVE_ARRAY_FROM, SIMPLIFY_DYNAMIC_RANGE_LOOPS } from '../../../suggestions';
 import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
 import countVariableUsages from '../../../utils/countVariableUsages';
 import notNull from '../../../utils/notNull';
@@ -40,9 +35,14 @@ export default class ForInPatcher extends ForPatcher {
   _step: Step | null = null;
 
   constructor(
-      patcherContext: PatcherContext, keyAssignee: NodePatcher | null,
-      valAssignee: NodePatcher | null, target: NodePatcher,
-      step: NodePatcher | null, filter: NodePatcher | null, body: BlockPatcher) {
+    patcherContext: PatcherContext,
+    keyAssignee: NodePatcher | null,
+    valAssignee: NodePatcher | null,
+    target: NodePatcher,
+    step: NodePatcher | null,
+    filter: NodePatcher | null,
+    body: BlockPatcher
+  ) {
     super(patcherContext, keyAssignee, valAssignee, target, filter, body);
     this.step = step;
   }
@@ -86,10 +86,7 @@ export default class ForInPatcher extends ForPatcher {
     let mapInsertPoint;
     if (this.filter !== null) {
       // b when c d  ->  b.filter((a) => c d
-      this.overwrite(
-        this.target.outerEnd, this.filter.outerStart,
-        `.filter((${assigneeCode}) => `
-      );
+      this.overwrite(this.target.outerEnd, this.filter.outerStart, `.filter((${assigneeCode}) => `);
       this.filter.patch();
       // b.filter((a) => c d  ->  b.filter((a) => c).map((a) => d
       this.insert(this.filter.outerEnd, `)`);
@@ -115,11 +112,9 @@ export default class ForInPatcher extends ForPatcher {
   isMapBodyNoOp(): boolean {
     if (this.valAssignee instanceof IdentifierPatcher) {
       let varName = this.valAssignee.node.data;
-      if (this.body instanceof BlockPatcher &&
-          this.body.statements.length === 1) {
+      if (this.body instanceof BlockPatcher && this.body.statements.length === 1) {
         let statement = this.body.statements[0];
-        if (statement instanceof IdentifierPatcher &&
-            statement.node.data === varName) {
+        if (statement instanceof IdentifierPatcher && statement.node.data === varName) {
           return true;
         }
       }
@@ -132,8 +127,7 @@ export default class ForInPatcher extends ForPatcher {
       throw this.error('Expected non-null body.');
     }
     this.body.setRequiresExpression();
-    let bodyNeedsParens = blockStartsWithObjectInitialiser(this.body)
-      && !this.body.isSurroundedByParentheses();
+    let bodyNeedsParens = blockStartsWithObjectInitialiser(this.body) && !this.body.isSurroundedByParentheses();
     if (bodyNeedsParens) {
       let insertPoint = this.filter ? this.filter.outerEnd : this.target.outerEnd;
       // Handle both inline and multiline cases by either skipping the existing
@@ -232,11 +226,7 @@ export default class ForInPatcher extends ForPatcher {
    * Overridden by CS for...from to always patch as JS for...of.
    */
   shouldPatchAsForOf(): boolean {
-    return (
-      !this.shouldPatchAsInitTestUpdateLoop() &&
-      this.step === null &&
-      this.keyAssignee === null
-    );
+    return !this.shouldPatchAsInitTestUpdateLoop() && this.step === null && this.keyAssignee === null;
   }
 
   getValueBinding(): string {
@@ -338,18 +328,11 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   getLoopHeaderEnd(): number {
-    return Math.max(
-      this.step ? this.step.outerEnd : -1,
-      super.getLoopHeaderEnd()
-    );
+    return Math.max(this.step ? this.step.outerEnd : -1, super.getLoopHeaderEnd());
   }
 
   requiresExtractingTarget(): boolean {
-    return (
-      !this.shouldPatchAsInitTestUpdateLoop() &&
-      !this.target.isRepeatable() &&
-      !this.shouldPatchAsForOf()
-    );
+    return !this.shouldPatchAsInitTestUpdateLoop() && !this.target.isRepeatable() && !this.shouldPatchAsForOf();
   }
 
   targetBindingCandidate(): string {
@@ -529,9 +512,7 @@ export default class ForInPatcher extends ForPatcher {
     if (!(this.target instanceof RangePatcher)) {
       throw this.error('Expected target to be a range.');
     }
-    return !this.target.left.isRepeatable() &&
-      this.getIndexDirection() === UNKNOWN &&
-      this.getStep().isVirtual;
+    return !this.target.left.isRepeatable() && this.getIndexDirection() === UNKNOWN && this.getStep().isVirtual;
   }
 
   getStartCode(): string {
@@ -587,8 +568,8 @@ export default class ForInPatcher extends ForPatcher {
     if (step.isVirtual) {
       if (!this.shouldPatchAsInitTestUpdateLoop()) {
         throw new Error(
-          'Should not be getting asc code when the target is not a range and ' +
-          'the step is unspecified.');
+          'Should not be getting asc code when the target is not a range and ' + 'the step is unspecified.'
+        );
       }
       return `${this.getStartReference()} <= ${this.getEndReference()}`;
     } else {

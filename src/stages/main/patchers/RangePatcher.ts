@@ -4,8 +4,7 @@ import SourceToken from 'coffee-lex/dist/SourceToken';
 import { Int, Range } from 'decaffeinate-parser/dist/nodes';
 import BinaryOpPatcher from './BinaryOpPatcher';
 
-const RANGE_HELPER =
-`function __range__(left, right, inclusive) {
+const RANGE_HELPER = `function __range__(left, right, inclusive) {
   let range = [];
   let ascending = left < right;
   let end = !inclusive ? right : ascending ? right + 1 : right - 1;
@@ -93,7 +92,7 @@ export default class RangePatcher extends BinaryOpPatcher {
       return false;
     }
 
-    let [ first, last ] = range;
+    let [first, last] = range;
     return Math.abs(last - first) <= MAXIMUM_LITERAL_RANGE_ELEMENTS;
   }
 

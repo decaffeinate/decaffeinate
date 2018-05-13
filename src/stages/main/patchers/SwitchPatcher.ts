@@ -9,7 +9,12 @@ export default class SwitchPatcher extends NodePatcher {
   cases: Array<NodePatcher>;
   alternate: NodePatcher | null;
 
-  constructor(patcherContext: PatcherContext, expression: NodePatcher, cases: Array<NodePatcher>, alternate: NodePatcher | null) {
+  constructor(
+    patcherContext: PatcherContext,
+    expression: NodePatcher,
+    cases: Array<NodePatcher>,
+    alternate: NodePatcher | null
+  ) {
     super(patcherContext);
     this.expression = expression;
     this.cases = cases;
@@ -61,8 +66,7 @@ export default class SwitchPatcher extends NodePatcher {
     if (this.alternate) {
       this.alternate.patch({ leftBrace: false, rightBrace: false });
     } else if (this.getElseToken() === null && super.implicitlyReturns()) {
-      let emptyImplicitReturnCode =
-        this.implicitReturnPatcher().getEmptyImplicitReturnCode();
+      let emptyImplicitReturnCode = this.implicitReturnPatcher().getEmptyImplicitReturnCode();
       if (emptyImplicitReturnCode) {
         this.insert(this.contentEnd, `\n`);
         this.insert(this.contentEnd, `${this.getIndent(1)}default:\n`);
@@ -138,7 +142,9 @@ export default class SwitchPatcher extends NodePatcher {
     }
 
     let elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd, token => token.type === SourceType.ELSE
+      searchStart,
+      searchEnd,
+      token => token.type === SourceType.ELSE
     );
     if (!elseTokenIndex || elseTokenIndex.isBefore(this.contentStartTokenIndex)) {
       if (this.alternate) {
@@ -173,9 +179,6 @@ export default class SwitchPatcher extends NodePatcher {
       return false;
     }
 
-    return (
-      this.cases.every(switchCase => switchCase.allCodePathsPresent()) &&
-      this.alternate.allCodePathsPresent()
-    );
+    return this.cases.every(switchCase => switchCase.allCodePathsPresent()) && this.alternate.allCodePathsPresent();
   }
 }

@@ -10,8 +10,13 @@ import MagicString from 'magic-string';
  * whitespace.
  */
 export default function escape(
-    source: string, patcher: MagicString, skipPattern: RegExp,
-    escapeStrings: Array<string>, start: number, end: number): void {
+  source: string,
+  patcher: MagicString,
+  skipPattern: RegExp,
+  escapeStrings: Array<string>,
+  start: number,
+  end: number
+): void {
   for (let i = start; i < end; i++) {
     if (skipPattern.test(source.slice(i, end))) {
       i++;

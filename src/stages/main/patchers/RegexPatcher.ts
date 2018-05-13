@@ -1,7 +1,6 @@
-import {Regex} from 'decaffeinate-parser/dist/nodes';
+import { Regex } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../../../patchers/NodePatcher';
-import downgradeUnicodeCodePointEscapesInRange
-  from '../../../utils/downgradeUnicodeCodePointEscapesInRange';
+import downgradeUnicodeCodePointEscapesInRange from '../../../utils/downgradeUnicodeCodePointEscapesInRange';
 import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespaceInRange';
 
 export default class RegexPatcher extends NodePatcher {

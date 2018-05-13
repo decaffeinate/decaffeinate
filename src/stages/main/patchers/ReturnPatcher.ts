@@ -6,7 +6,7 @@ import SwitchPatcher from './SwitchPatcher';
 
 export default class ReturnPatcher extends NodePatcher {
   expression: NodePatcher | null;
-  
+
   constructor(patcherContext: PatcherContext, expression: NodePatcher | null) {
     super(patcherContext);
     this.expression = expression;
@@ -46,9 +46,9 @@ export default class ReturnPatcher extends NodePatcher {
     if (!this.expression) {
       throw this.error('Expected non-null expression.');
     }
-    return !this.expression.isSurroundedByParentheses() && (
-      this.expression instanceof ConditionalPatcher ||
-      this.expression instanceof SwitchPatcher
+    return (
+      !this.expression.isSurroundedByParentheses() &&
+      (this.expression instanceof ConditionalPatcher || this.expression instanceof SwitchPatcher)
     );
   }
 }

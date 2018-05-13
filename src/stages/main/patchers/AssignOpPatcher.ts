@@ -1,9 +1,5 @@
 import { PatcherContext } from '../../../patchers/types';
-import {
-  REMOVE_ARRAY_FROM,
-  SHORTEN_NULL_CHECKS,
-  SIMPLIFY_COMPLEX_ASSIGNMENTS,
-} from '../../../suggestions';
+import { REMOVE_ARRAY_FROM, SHORTEN_NULL_CHECKS, SIMPLIFY_COMPLEX_ASSIGNMENTS } from '../../../suggestions';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
 import containsSuperCall from '../../../utils/containsSuperCall';
 import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
@@ -29,8 +25,7 @@ import ThisPatcher from './ThisPatcher';
 
 const MULTI_ASSIGN_SINGLE_LINE_MAX_LENGTH = 100;
 
-const OBJECT_WITHOUT_KEYS_HELPER =
-  `function __objectWithoutKeys__(object, keys) {
+const OBJECT_WITHOUT_KEYS_HELPER = `function __objectWithoutKeys__(object, keys) {
   const result = {...object};
   for (const k of keys) {
     delete result[keys];
@@ -42,7 +37,7 @@ export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;
   expression: NodePatcher;
   negated: boolean = false;
-  
+
   constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: NodePatcher) {
     super(patcherContext);
     this.assignee = assignee;
@@ -66,19 +61,19 @@ export default class AssignOpPatcher extends NodePatcher {
     }
 
     this.markProtoAssignmentRepeatableIfNecessary();
-    let shouldAddParens = !this.isAssignee() && (
-      this.negated ||
-      (this.willResultInSeqExpression() &&
-        this.parent instanceof FunctionApplicationPatcher) ||
-      (!this.isSurroundedByParentheses() &&
-        !(this.parent instanceof ReturnPatcher ||
-          this.parent instanceof DoOpPatcher ||
-          (this.parent instanceof ConditionalPatcher &&
-            this.parent.condition === this &&
-            !this.parent.willPatchAsTernary())) &&
-        !this.implicitlyReturns()
-      )
-    );
+    let shouldAddParens =
+      !this.isAssignee() &&
+      (this.negated ||
+        (this.willResultInSeqExpression() && this.parent instanceof FunctionApplicationPatcher) ||
+        (!this.isSurroundedByParentheses() &&
+          !(
+            this.parent instanceof ReturnPatcher ||
+            this.parent instanceof DoOpPatcher ||
+            (this.parent instanceof ConditionalPatcher &&
+              this.parent.condition === this &&
+              !this.parent.willPatchAsTernary())
+          ) &&
+          !this.implicitlyReturns()));
     if (this.negated) {
       this.insert(this.innerStart, '!');
     }
@@ -102,9 +97,7 @@ export default class AssignOpPatcher extends NodePatcher {
         expressionCode = this.claimFreeBinding();
         assignments.push(`${expressionCode} = ${fullExpression}`);
       }
-      assignments.push(
-        ...this.generateAssignments(this.assignee, expressionCode, true)
-      );
+      assignments.push(...this.generateAssignments(this.assignee, expressionCode, true));
       assignments.push(`${expressionCode}`);
 
       this.overwrite(this.contentStart, this.contentEnd, assignments.join(', '));
@@ -129,7 +122,10 @@ export default class AssignOpPatcher extends NodePatcher {
     } else {
       this.addSuggestion(SIMPLIFY_COMPLEX_ASSIGNMENTS);
       let assignments = this.generateAssignments(
-        this.assignee, this.expression.patchAndGetCode(), this.expression.isRepeatable());
+        this.assignee,
+        this.expression.patchAndGetCode(),
+        this.expression.isRepeatable()
+      );
       this.overwriteWithAssignments(assignments);
     }
   }
@@ -138,19 +134,18 @@ export default class AssignOpPatcher extends NodePatcher {
     if (this.assignee instanceof MemberAccessOpPatcher && this.assignee.expression instanceof ThisPatcher) {
       // `{ @a = b }` → `{ a: @a = bb }`
       //                  ^^^^
-      this.insert(
-        this.assignee.outerStart,
-        `${this.assignee.getMemberName()}: `
-      );
+      this.insert(this.assignee.outerStart, `${this.assignee.getMemberName()}: `);
     }
     this.assignee.patch();
     this.expression.patch();
   }
 
   willResultInSeqExpression(): boolean {
-    return this.willPatchAsExpression() &&
+    return (
+      this.willPatchAsExpression() &&
       (!canPatchAssigneeToJavaScript(this.assignee.node, this.options) ||
-        this.assignee instanceof ArrayInitialiserPatcher);
+        this.assignee instanceof ArrayInitialiserPatcher)
+    );
   }
 
   patchSimpleAssignment(): void {
@@ -217,10 +212,7 @@ export default class AssignOpPatcher extends NodePatcher {
     } else if (patcher instanceof ArrayInitialiserPatcher) {
       if (!refIsRepeatable) {
         let arrReference = this.claimFreeBinding('array');
-        return [
-          `${arrReference} = ${ref}`,
-          ...this.generateAssignments(patcher, arrReference, true)
-        ];
+        return [`${arrReference} = ${ref}`, ...this.generateAssignments(patcher, arrReference, true)];
       }
 
       let assignees = patcher.members;
@@ -249,10 +241,7 @@ export default class AssignOpPatcher extends NodePatcher {
     } else if (patcher instanceof ObjectInitialiserPatcher) {
       if (!refIsRepeatable) {
         let objReference = this.claimFreeBinding('obj');
-        return [
-          `${objReference} = ${ref}`,
-          ...this.generateAssignments(patcher, objReference, true)
-        ];
+        return [`${objReference} = ${ref}`, ...this.generateAssignments(patcher, objReference, true)];
       }
 
       let assignments = [];
@@ -266,7 +255,9 @@ export default class AssignOpPatcher extends NodePatcher {
           assignments.push(...this.generateAssignments(member, valueCode, false));
         } else if (member instanceof SpreadPatcher) {
           let helper = this.registerHelper('__objectWithoutKeys__', OBJECT_WITHOUT_KEYS_HELPER);
-          let omittedKeysCode = getObjectAssigneeKeys(patcher).map(key => `'${key}'`).join(', ');
+          let omittedKeysCode = getObjectAssigneeKeys(patcher)
+            .map(key => `'${key}'`)
+            .join(', ');
           assignments.push(...this.generateAssignments(member, `${helper}(${ref}, [${omittedKeysCode}])`, false));
         } else {
           // tslint:disable-next-line no-any
@@ -280,15 +271,11 @@ export default class AssignOpPatcher extends NodePatcher {
       this.addSuggestion(SHORTEN_NULL_CHECKS);
       if (!refIsRepeatable) {
         let valReference = this.claimFreeBinding('val');
-        return [
-          `${valReference} = ${ref}`,
-          ...this.generateAssignments(patcher, valReference, true)
-        ];
+        return [`${valReference} = ${ref}`, ...this.generateAssignments(patcher, valReference, true)];
       }
       let defaultCode = patcher.expression.patchAndGetCode();
       let comparison = this.options.useCS2 ? '!== undefined' : '!= null';
-      return this.generateAssignments(
-        patcher.assignee, `${ref} ${comparison} ? ${ref} : ${defaultCode}`, false);
+      return this.generateAssignments(patcher.assignee, `${ref} ${comparison} ? ${ref} : ${defaultCode}`, false);
     } else {
       throw this.error(`Invalid assignee type: ${patcher.node.type}`);
     }
@@ -323,12 +310,12 @@ export default class AssignOpPatcher extends NodePatcher {
     classRefPatcher.setRequiresRepeatableExpression({
       parens: true,
       ref: 'cls',
-      forceRepeat: true,
+      forceRepeat: true
     });
     if (methodAccessPatcher instanceof DynamicMemberAccessOpPatcher) {
       methodAccessPatcher.indexingExpr.setRequiresRepeatableExpression({
         ref: 'method',
-        forceRepeat: true,
+        forceRepeat: true
       });
     }
   }

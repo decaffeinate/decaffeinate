@@ -20,13 +20,17 @@ function isDeepEqual(actual: any, expected: any): boolean {
     return false;
   }
   if (actual.constructor.name === 'Array' && expected.constructor.name === 'Array') {
-    return actual.length === expected.length &&
+    return (
+      actual.length === expected.length &&
       // tslint:disable-next-line:no-any
-      actual.every((val: any, i: number) => isDeepEqual(val, expected[i]));
+      actual.every((val: any, i: number) => isDeepEqual(val, expected[i]))
+    );
   }
   if (actual.constructor.name === 'Object' && expected.constructor.name === 'Object') {
-    return isDeepEqual(Object.keys(actual).sort(), Object.keys(expected).sort()) &&
-      Object.keys(actual).every(key => isDeepEqual(actual[key], expected[key]));
+    return (
+      isDeepEqual(Object.keys(actual).sort(), Object.keys(expected).sort()) &&
+      Object.keys(actual).every(key => isDeepEqual(actual[key], expected[key]))
+    );
   }
   return false;
 }

@@ -18,20 +18,26 @@ describe('changing prototype member access into normal member access', () => {
   });
 
   it('allows getting a repeatable version of the prototype object', () => {
-    check(`
+    check(
+      `
       a():: ?= b
-    `, `
+    `,
+      `
       let base;
       if ((base = a()).prototype == null) { base.prototype = b; }
-    `);
+    `
+    );
   });
 
   it('is able to be made repeatable', () => {
-    check(`
+    check(
+      `
       a()::b ?= c
-    `, `
+    `,
+      `
       let base;
       if ((base = a()).prototype.b == null) { base.prototype.b = c; }
-    `);
+    `
+    );
   });
 });

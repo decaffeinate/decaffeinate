@@ -14,7 +14,12 @@ export default class ClassPatcher extends NodePatcher {
   superclass: NodePatcher | null;
   body: ClassBlockPatcher | null;
 
-  constructor(patcherContext: PatcherContext, nameAssignee: NodePatcher | null, parent: NodePatcher | null, body: ClassBlockPatcher | null) {
+  constructor(
+    patcherContext: PatcherContext,
+    nameAssignee: NodePatcher | null,
+    parent: NodePatcher | null,
+    body: ClassBlockPatcher | null
+  ) {
     super(patcherContext);
     this.nameAssignee = nameAssignee;
     this.superclass = parent;
@@ -55,12 +60,11 @@ export default class ClassPatcher extends NodePatcher {
     }
   }
 
-  patchAsExpression({skipParens = false}: PatchOptions = {}): void {
-    let needsAssignment = this.nameAssignee &&
-      (this.isNamespaced() || this.isNameAlreadyDeclared() || this.willPatchAsExpression());
-    let needsParens = !skipParens && needsAssignment &&
-      this.willPatchAsExpression() &&
-      !this.isSurroundedByParentheses();
+  patchAsExpression({ skipParens = false }: PatchOptions = {}): void {
+    let needsAssignment =
+      this.nameAssignee && (this.isNamespaced() || this.isNameAlreadyDeclared() || this.willPatchAsExpression());
+    let needsParens =
+      !skipParens && needsAssignment && this.willPatchAsExpression() && !this.isSurroundedByParentheses();
     if (needsParens) {
       this.insert(this.contentStart, '(');
     }
@@ -89,7 +93,7 @@ export default class ClassPatcher extends NodePatcher {
     if (!this.body) {
       // `class A` → `class A {}`
       //                     ^^^
-      this.insert(this.innerEnd,' {}');
+      this.insert(this.innerEnd, ' {}');
     } else {
       // `class A` → `class A {`
       //                     ^^
@@ -121,7 +125,8 @@ export default class ClassPatcher extends NodePatcher {
     if (classSourceToken.type !== SourceType.CLASS) {
       throw this.error(
         `expected CLASS token but found ${SourceType[classSourceToken.type]}`,
-        classSourceToken.start, classSourceToken.end
+        classSourceToken.start,
+        classSourceToken.end
       );
     }
     return classSourceToken;
@@ -148,9 +153,7 @@ export default class ClassPatcher extends NodePatcher {
    */
   isNameAlreadyDeclared(): boolean {
     let name = this.getName();
-    return this.nameAssignee !== null &&
-      name !== null &&
-      this.getScope().getBinding(name) !== this.nameAssignee.node;
+    return this.nameAssignee !== null && name !== null && this.getScope().getBinding(name) !== this.nameAssignee.node;
   }
 
   /**

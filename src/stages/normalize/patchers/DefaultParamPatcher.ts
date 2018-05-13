@@ -44,8 +44,7 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
       }
       // Don't consider this node if we're on the right side of another default
       // param (e.g. `(foo = (bar=3) ->) ->`).
-      if (patcher.parent instanceof DefaultParamPatcher &&
-        patcher.parent.value === patcher) {
+      if (patcher.parent instanceof DefaultParamPatcher && patcher.parent.value === patcher) {
         break;
       }
       patcher = patcher.parent;
@@ -70,13 +69,14 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
     if (this.value.node.type === 'Null') {
       return false;
     }
-    if (this.parent instanceof FunctionPatcher &&
-        this.parent.parent instanceof DoOpPatcher) {
+    if (this.parent instanceof FunctionPatcher && this.parent.parent instanceof DoOpPatcher) {
       return false;
     }
-    if (this.parent instanceof FunctionPatcher &&
-        this.parent.parent instanceof AssignOpPatcher &&
-        this.parent.parent.parent instanceof DoOpPatcher) {
+    if (
+      this.parent instanceof FunctionPatcher &&
+      this.parent.parent instanceof AssignOpPatcher &&
+      this.parent.parent.parent instanceof DoOpPatcher
+    ) {
       return false;
     }
     return true;

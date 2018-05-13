@@ -1,7 +1,6 @@
 import NodePatcher from '../patchers/NodePatcher';
 
-const MOD_HELPER =
-  `function __mod__(a, b) {
+const MOD_HELPER = `function __mod__(a, b) {
   a = +a;
   b = +b;
   return (a % b + b) % b;

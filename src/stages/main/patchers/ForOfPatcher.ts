@@ -26,10 +26,7 @@ export default class ForOfPatcher extends ForPatcher {
 
     let shouldExtractTarget = this.requiresExtractingTarget();
     if (shouldExtractTarget) {
-      this.insert(
-        this.innerStart,
-        `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`
-      );
+      this.insert(this.innerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`);
     }
 
     let keyBinding = this.getIndexBinding();
@@ -62,8 +59,7 @@ export default class ForOfPatcher extends ForPatcher {
     if (this.node.isOwn) {
       this.addSuggestion(CLEAN_UP_FOR_OWN_LOOPS);
       if (shouldExtractTarget) {
-        this.overwrite(relationToken.end, this.target.outerEnd,
-          ` Object.keys(${targetReference} || {})) {`);
+        this.overwrite(relationToken.end, this.target.outerEnd, ` Object.keys(${targetReference} || {})) {`);
       } else {
         // `for (k of o` → `for (k of Object.keys(o`
         //                            ^^^^^^^^^^^^
@@ -75,8 +71,7 @@ export default class ForOfPatcher extends ForPatcher {
       }
     } else {
       if (shouldExtractTarget) {
-        this.overwrite(relationToken.start, this.target.outerEnd,
-          `in ${targetReference}) {`);
+        this.overwrite(relationToken.start, this.target.outerEnd, `in ${targetReference}) {`);
       } else {
         // `for (k of o` → `for (k in o`
         //         ^^              ^^
@@ -98,10 +93,7 @@ export default class ForOfPatcher extends ForPatcher {
 
   removeOwnTokenIfExists(): void {
     if (this.node.isOwn) {
-      let ownIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
-        this.contentStartTokenIndex,
-        SourceType.OWN
-      );
+      let ownIndex = this.indexOfSourceTokenAfterSourceTokenIndex(this.contentStartTokenIndex, SourceType.OWN);
       if (!ownIndex) {
         throw this.error('Expected to find own token in for-own.');
       }
@@ -126,4 +118,3 @@ export default class ForOfPatcher extends ForPatcher {
     return this.willPatchAsExpression();
   }
 }
-

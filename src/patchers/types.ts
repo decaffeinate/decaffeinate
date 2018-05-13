@@ -13,18 +13,18 @@ export type PatcherContext = {
 };
 
 export type RepeatableOptions = {
-  parens?: boolean,
-  ref?: string,
-  isForAssignment?: boolean,
-  forceRepeat?: boolean,
+  parens?: boolean;
+  ref?: string;
+  isForAssignment?: boolean;
+  forceRepeat?: boolean;
 };
 
 export type PatchOptions = {
-  needsParens?: boolean,
-  fnNeedsParens?: boolean,
-  skipParens?: boolean,
-  leftBrace?: boolean,
-  rightBrace?: boolean,
-  method?: boolean,
-  forceTemplateLiteral?: boolean,
+  needsParens?: boolean;
+  fnNeedsParens?: boolean;
+  skipParens?: boolean;
+  leftBrace?: boolean;
+  rightBrace?: boolean;
+  method?: boolean;
+  forceTemplateLiteral?: boolean;
 };

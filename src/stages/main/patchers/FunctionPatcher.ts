@@ -27,7 +27,7 @@ export default class FunctionPatcher extends NodePatcher {
     });
   }
 
-  patchAsExpression({method=false}: PatchOptions = {}): void {
+  patchAsExpression({ method = false }: PatchOptions = {}): void {
     this.patchFunctionStart({ method });
     this.parameters.forEach((parameter, i) => {
       let isLast = i === this.parameters.length - 1;
@@ -40,7 +40,7 @@ export default class FunctionPatcher extends NodePatcher {
     this.patchFunctionBody();
   }
 
-  patchFunctionStart({method=false}: {method: boolean}): void {
+  patchFunctionStart({ method = false }: { method: boolean }): void {
     let arrow = this.getArrowToken();
 
     if (!method) {
@@ -72,8 +72,7 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   isEndOfFunctionCall(): boolean {
-    return this.parent instanceof FunctionApplicationPatcher &&
-      this.parent.args[this.parent.args.length - 1] === this;
+    return this.parent instanceof FunctionApplicationPatcher && this.parent.args[this.parent.args.length - 1] === this;
   }
 
   /**
@@ -89,7 +88,8 @@ export default class FunctionPatcher extends NodePatcher {
       throw this.error('Expected non-null body.');
     }
     let closeParenIndex = notNull(this.parent).indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.contentEnd, notNull(this.parent).contentEnd,
+      this.contentEnd,
+      notNull(this.parent).contentEnd,
       token => token.type === SourceType.CALL_END || token.type === SourceType.RPAREN
     );
     if (!closeParenIndex) {
@@ -99,8 +99,7 @@ export default class FunctionPatcher extends NodePatcher {
     if (!closeParen) {
       throw this.error('Expected to find close paren after function call.');
     }
-    let shouldMoveCloseParen = !this.body.inline() &&
-      !this.slice(this.contentEnd, closeParen.start).includes('\n');
+    let shouldMoveCloseParen = !this.body.inline() && !this.slice(this.contentEnd, closeParen.start).includes('\n');
     if (shouldMoveCloseParen) {
       this.appendLineAfter('}', -1);
     } else {
@@ -111,12 +110,11 @@ export default class FunctionPatcher extends NodePatcher {
   getArrowToken(): SourceToken {
     let arrowIndex = this.contentStartTokenIndex;
     if (this.hasParamStart()) {
-      let parenRange = this.getProgramSourceTokens()
-        .rangeOfMatchingTokensContainingTokenIndex(
-          SourceType.LPAREN,
-          SourceType.RPAREN,
-          this.contentStartTokenIndex
-        );
+      let parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(
+        SourceType.LPAREN,
+        SourceType.RPAREN,
+        this.contentStartTokenIndex
+      );
       if (!parenRange) {
         throw this.error('Expected to find function paren range in function.');
       }
@@ -124,10 +122,7 @@ export default class FunctionPatcher extends NodePatcher {
       if (!rparenIndex) {
         throw this.error('Expected to find rparen index in function.');
       }
-      arrowIndex = notNull(this.indexOfSourceTokenAfterSourceTokenIndex(
-        rparenIndex,
-        SourceType.FUNCTION
-      ));
+      arrowIndex = notNull(this.indexOfSourceTokenAfterSourceTokenIndex(rparenIndex, SourceType.FUNCTION));
     }
     let arrow = this.sourceTokenAtIndex(arrowIndex);
     if (!arrow) {
@@ -136,10 +131,7 @@ export default class FunctionPatcher extends NodePatcher {
     let expectedArrowType = this.expectedArrowType();
     let actualArrowType = this.sourceOfToken(arrow);
     if (actualArrowType !== expectedArrowType) {
-      throw this.error(
-        `expected '${expectedArrowType}' but found ${actualArrowType}`,
-        arrow.start, arrow.end
-      );
+      throw this.error(`expected '${expectedArrowType}' but found ${actualArrowType}`, arrow.start, arrow.end);
     }
     return arrow;
   }

@@ -1,9 +1,7 @@
 import { SourceType } from 'coffee-lex';
 import SourceToken from 'coffee-lex/dist/SourceToken';
 import { MemberAccessOp } from 'decaffeinate-parser/dist/nodes';
-import {
-  PatcherContext, PatchOptions, RepeatableOptions
-} from '../../../patchers/types';
+import { PatcherContext, PatchOptions, RepeatableOptions } from '../../../patchers/types';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
 import IdentifierPatcher from './IdentifierPatcher';
@@ -48,7 +46,8 @@ export default class MemberAccessOpPatcher extends NodePatcher {
    * We can make member accesses repeatable by making the base expression
    * repeatable if it isn't already.
    */
-  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions = {}, patchOptions: PatchOptions = {}): string {  // eslint-disable-line no-unused-vars
+  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions = {}, patchOptions: PatchOptions = {}): string {
+    // eslint-disable-line no-unused-vars
     if (repeatableOptions.isForAssignment) {
       this.expression.setRequiresRepeatableExpression({ isForAssignment: true, parens: true, ref: 'base' });
       this.patchAsExpression();
@@ -65,7 +64,9 @@ export default class MemberAccessOpPatcher extends NodePatcher {
 
   getMemberOperatorSourceToken(): SourceToken | null {
     let dotIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.expression.outerEnd, this.outerEnd - 1, token => token.type === SourceType.DOT
+      this.expression.outerEnd,
+      this.outerEnd - 1,
+      token => token.type === SourceType.DOT
     );
 
     if (!dotIndex) {

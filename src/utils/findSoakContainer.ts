@@ -45,34 +45,39 @@ function canParentHandleSoak(patcher: NodePatcher): boolean {
   // is a special case and the `.c?(` will be patched. In this case, the `a?.b`
   // is what we should set as our soak container, since the method-style soak
   // implementation will "take over" from that point.
-  if ((patcher.parent instanceof MemberAccessOpPatcher
-        || patcher.parent instanceof DynamicMemberAccessOpPatcher)
-      && patcher.parent.parent !== null
-      && patcher.parent.parent instanceof SoakedFunctionApplicationPatcher
-      && patcher.parent.parent.fn === patcher.parent) {
+  if (
+    (patcher.parent instanceof MemberAccessOpPatcher || patcher.parent instanceof DynamicMemberAccessOpPatcher) &&
+    patcher.parent.parent !== null &&
+    patcher.parent.parent instanceof SoakedFunctionApplicationPatcher &&
+    patcher.parent.parent.fn === patcher.parent
+  ) {
     return false;
   }
-  if (patcher.parent instanceof MemberAccessOpPatcher
-      && !(patcher.parent instanceof SoakedMemberAccessOpPatcher)) {
+  if (patcher.parent instanceof MemberAccessOpPatcher && !(patcher.parent instanceof SoakedMemberAccessOpPatcher)) {
     return true;
   }
-  if (patcher.parent instanceof DynamicMemberAccessOpPatcher
-      && !(patcher.parent instanceof SoakedDynamicMemberAccessOpPatcher)
-      && patcher.parent.expression === patcher) {
+  if (
+    patcher.parent instanceof DynamicMemberAccessOpPatcher &&
+    !(patcher.parent instanceof SoakedDynamicMemberAccessOpPatcher) &&
+    patcher.parent.expression === patcher
+  ) {
     return true;
   }
-  if (patcher.parent instanceof FunctionApplicationPatcher
-      && !(patcher.parent instanceof SoakedFunctionApplicationPatcher)
-      && patcher.parent.fn === patcher) {
+  if (
+    patcher.parent instanceof FunctionApplicationPatcher &&
+    !(patcher.parent instanceof SoakedFunctionApplicationPatcher) &&
+    patcher.parent.fn === patcher
+  ) {
     return true;
   }
-  if (patcher.parent instanceof AssignOpPatcher
-      && patcher.parent.assignee === patcher) {
+  if (patcher.parent instanceof AssignOpPatcher && patcher.parent.assignee === patcher) {
     return true;
   }
-  if ([
-        'PostIncrementOp', 'PostDecrementOp', 'PreIncrementOp', 'PreDecrementOp', 'DeleteOp'
-      ].indexOf(patcher.parent.node.type) >= 0) {
+  if (
+    ['PostIncrementOp', 'PostDecrementOp', 'PreIncrementOp', 'PreDecrementOp', 'DeleteOp'].indexOf(
+      patcher.parent.node.type
+    ) >= 0
+  ) {
     return true;
   }
   return false;

@@ -48,7 +48,6 @@ export default class SwitchCasePatcher extends NodePatcher {
       this.insert(condition.outerEnd, ':');
     });
 
-
     // `case a: case b: case c: then d → `case a: case b: case c: d`
     //                          ^^^^^
     let thenToken = this.getThenToken();
@@ -64,11 +63,10 @@ export default class SwitchCasePatcher extends NodePatcher {
       this.consequent.patch({ leftBrace: false, rightBrace: false });
     }
 
-    let implicitReturnWillBreak = (
+    let implicitReturnWillBreak =
       this.implicitlyReturns() &&
       this.implicitReturnPatcher().implicitReturnWillBreak() &&
-      (!this.consequent || this.consequent.allCodePathsPresent())
-    );
+      (!this.consequent || this.consequent.allCodePathsPresent());
     let shouldAddBreak = !this.hasExistingBreak() && !implicitReturnWillBreak;
     if (shouldAddBreak) {
       if (thenToken) {
@@ -127,14 +125,12 @@ export default class SwitchCasePatcher extends NodePatcher {
       let left = this.conditions[i - 1];
       let right = this.conditions[i];
       let commaIndex = this.indexOfSourceTokenBetweenPatchersMatching(
-        left, right, token => token.type === SourceType.COMMA
+        left,
+        right,
+        token => token.type === SourceType.COMMA
       );
       if (!commaIndex) {
-        throw this.error(
-          `unable to find comma between 'when' conditions`,
-          left.contentEnd,
-          right.contentStart
-        );
+        throw this.error(`unable to find comma between 'when' conditions`, left.contentEnd, right.contentStart);
       }
       result.push(notNull(this.sourceTokenAtIndex(commaIndex)));
     }

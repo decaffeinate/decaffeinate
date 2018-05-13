@@ -17,12 +17,11 @@ export default class DecaffeinateContext {
     readonly coffeeAST: Block,
     readonly linesAndColumns: LinesAndColumns,
     private readonly parentMap: Map<Node, Node | null>,
-    private readonly scopeMap: Map<Node, Scope>,
-  ) {
-  }
+    private readonly scopeMap: Map<Node, Scope>
+  ) {}
 
   static create(source: string, useCS2: boolean): DecaffeinateContext {
-    let program = decaffeinateParse(source, {useCS2});
+    let program = decaffeinateParse(source, { useCS2 });
     return new DecaffeinateContext(
       program,
       source,

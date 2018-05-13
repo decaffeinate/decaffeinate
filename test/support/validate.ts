@@ -8,10 +8,10 @@ import PatchError from '../../src/utils/PatchError';
 import assertDeepEqual from './assertDeepEqual';
 
 export type ValidateOptions = {
-  options?: Options,
+  options?: Options;
   // If we generate syntax not supported by node, don't try running the
   // resulting JS there directly.
-  skipNodeCheck?: boolean,
+  skipNodeCheck?: boolean;
 };
 
 /**
@@ -32,36 +32,40 @@ export type ValidateOptions = {
  * 'o' variable must be equal to that value.
  */
 export default function validate(
-    // tslint:disable-next-line:no-any
-    source: string, expectedOutput?: any | {cs1: any, cs2: any},
-    {options = {}, skipNodeCheck = false}: ValidateOptions = {}
-  ): void {
+  source: string,
+  // tslint:disable-next-line:no-any
+  expectedOutput?: any | { cs1: any; cs2: any },
+  { options = {}, skipNodeCheck = false }: ValidateOptions = {}
+): void {
   let expectedCS1 = expectedOutput && expectedOutput.hasOwnProperty('cs1') ? expectedOutput.cs1 : expectedOutput;
   let expectedCS2 = expectedOutput && expectedOutput.hasOwnProperty('cs2') ? expectedOutput.cs2 : expectedOutput;
-  runValidateCase(source, expectedCS1, {options: {...options, useCS2: false}, skipNodeCheck});
-  runValidateCase(source, expectedCS2, {options: {...options, useCS2: true}, skipNodeCheck});
+  runValidateCase(source, expectedCS1, { options: { ...options, useCS2: false }, skipNodeCheck });
+  runValidateCase(source, expectedCS2, { options: { ...options, useCS2: true }, skipNodeCheck });
 }
 
 export function validateCS1(
+  source: string,
   // tslint:disable-next-line:no-any
-  source: string, expectedOutput?: any,
-  {options = {}, skipNodeCheck = false}: ValidateOptions = {}
+  expectedOutput?: any,
+  { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
-  runValidateCase(source, expectedOutput, {options: {...options, useCS2: false}, skipNodeCheck});
+  runValidateCase(source, expectedOutput, { options: { ...options, useCS2: false }, skipNodeCheck });
 }
 
 export function validateCS2(
+  source: string,
   // tslint:disable-next-line:no-any
-  source: string, expectedOutput?: any,
-  {options = {}, skipNodeCheck = false}: ValidateOptions = {}
+  expectedOutput?: any,
+  { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
-  runValidateCase(source, expectedOutput, {options: {...options, useCS2: true}, skipNodeCheck});
+  runValidateCase(source, expectedOutput, { options: { ...options, useCS2: true }, skipNodeCheck });
 }
 
 function runValidateCase(
+  source: string,
   // tslint:disable-next-line:no-any
-  source: string, expectedOutput?: any,
-  {options = {}, skipNodeCheck = false}: ValidateOptions = {}
+  expectedOutput?: any,
+  { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
   try {
     runValidation(source, expectedOutput, options, skipNodeCheck);
@@ -96,10 +100,11 @@ function runValidation(source: string, expectedOutput: {}, options: Options, ski
   let compile = options.useCS2 ? cs2Compile : cs1Compile;
   let coffeeES5 = compile(source, { bare: true }) as string;
   let decaffeinateES6 = convert(source, options).code;
-  let decaffeinateES5 = babel.transform(decaffeinateES6, {
-    presets: ['es2015'],
-    plugins: ['transform-optional-chaining'],
-  }).code || '';
+  let decaffeinateES5 =
+    babel.transform(decaffeinateES6, {
+      presets: ['es2015'],
+      plugins: ['transform-optional-chaining']
+    }).code || '';
 
   let coffeeOutput = runCodeAndExtract(coffeeES5);
   let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);

@@ -4,14 +4,16 @@
  * syntax in the normalize stage.
  */
 import { SourceType } from 'coffee-lex';
-import {Block, Elision} from 'decaffeinate-parser/dist/nodes';
+import { Block, Elision } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../patchers/NodePatcher';
 import containsDescendant from './containsDescendant';
 import notNull from './notNull';
 
 export default function normalizeListItem(
-    patcher: NodePatcher, listItemPatcher: NodePatcher,
-    nextListItemPatcher: NodePatcher | null): void {
+  patcher: NodePatcher,
+  listItemPatcher: NodePatcher,
+  nextListItemPatcher: NodePatcher | null
+): void {
   // If the last token of the arg is a comma, then the actual delimiter must
   // be a newline and the comma is unnecessary and can cause a syntax error
   // when combined with other normalize stage transformations. So just
@@ -23,8 +25,7 @@ export default function normalizeListItem(
   // CoffeeScript allows semicolon-separated lists, so just change them to
   // commas if we see them.
   let nextToken = listItemPatcher.nextSemanticToken();
-  if (nextToken && nextToken.type === SourceType.SEMICOLON &&
-      nextToken.end <= patcher.contentEnd) {
+  if (nextToken && nextToken.type === SourceType.SEMICOLON && nextToken.end <= patcher.contentEnd) {
     if (patcherEndsInStatement(listItemPatcher)) {
       patcher.remove(nextToken.start, nextToken.end);
     } else {
@@ -36,7 +37,8 @@ export default function normalizeListItem(
     // We have two adjacent items, so do some cleanups based on the tokens
     // between them (comma tokens, or technically semicolons are treated as
     // commas as well).
-    let commaTokens = patcher.getProgramSourceTokens()
+    let commaTokens = patcher
+      .getProgramSourceTokens()
       .slice(notNull(listItemPatcher.outerEndTokenIndex.next()), nextListItemPatcher.outerStartTokenIndex)
       .filter(token => token.type === SourceType.COMMA || token.type === SourceType.SEMICOLON)
       .toArray();
@@ -44,9 +46,11 @@ export default function normalizeListItem(
     // Sometimes other normalize steps can cause two adjacent list items to be
     // reinterpreted as a function call, so put a comma in between them to stop
     // that, but avoid other cases where adding a comma would cause a crash.
-    if (nextListItemPatcher.node.type === 'ObjectInitialiser' &&
-        !isNestedListItem(listItemPatcher) &&
-        commaTokens.length === 0) {
+    if (
+      nextListItemPatcher.node.type === 'ObjectInitialiser' &&
+      !isNestedListItem(listItemPatcher) &&
+      commaTokens.length === 0
+    ) {
       patcher.insert(listItemPatcher.outerEnd, ',');
     }
   }
@@ -58,18 +62,20 @@ export default function normalizeListItem(
  * so could cause a parser crash.
  */
 function isNestedListItem(patcher: NodePatcher): boolean {
-  return [
-    'BoundFunction',
-    'BoundGeneratorFunction',
-    'Conditional',
-    'ForIn',
-    'ForOf',
-    'Function',
-    'GeneratorFunction',
-    'Switch',
-    'Try',
-    'While',
-  ].indexOf(patcher.node.type) > -1;
+  return (
+    [
+      'BoundFunction',
+      'BoundGeneratorFunction',
+      'Conditional',
+      'ForIn',
+      'ForOf',
+      'Function',
+      'GeneratorFunction',
+      'Switch',
+      'Try',
+      'While'
+    ].indexOf(patcher.node.type) > -1
+  );
 }
 
 /**
@@ -79,7 +85,5 @@ function isNestedListItem(patcher: NodePatcher): boolean {
  * they're not included in the normal statement bounds.
  */
 function patcherEndsInStatement(patcher: NodePatcher): boolean {
-  return containsDescendant(patcher.node, child =>
-    child instanceof Block && child.end === patcher.contentEnd
-  );
+  return containsDescendant(patcher.node, child => child instanceof Block && child.end === patcher.contentEnd);
 }

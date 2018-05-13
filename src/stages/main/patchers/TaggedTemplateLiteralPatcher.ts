@@ -1,5 +1,5 @@
 import NodePatcher from '../../../patchers/NodePatcher';
-import {PatcherContext} from '../../../patchers/types';
+import { PatcherContext } from '../../../patchers/types';
 import StringPatcher from './StringPatcher';
 
 export default class TaggedTemplateLiteralPatcher extends NodePatcher {
@@ -14,6 +14,6 @@ export default class TaggedTemplateLiteralPatcher extends NodePatcher {
 
   patchAsExpression(): void {
     this.tag.patch();
-    this.template.patch({forceTemplateLiteral: true});
+    this.template.patch({ forceTemplateLiteral: true });
   }
 }

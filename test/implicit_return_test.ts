@@ -2,15 +2,18 @@ import check from './support/check';
 
 describe('implicit return', () => {
   it('is added for the last expression in a typical function', () => {
-    check(`
+    check(
+      `
       ->
         a = 1
-    `, `
+    `,
+      `
       (function() {
         let a;
         return a = 1;
       });
-    `);
+    `
+    );
   });
 
   it('is not added when one is already there', () => {
@@ -22,75 +25,93 @@ describe('implicit return', () => {
   });
 
   it('adds a return for the final expression in functions', () => {
-    check(`
+    check(
+      `
       ->
         1
         2
-    `, `
+    `,
+      `
       (function() {
         1;
         return 2;
       });
-    `);
+    `
+    );
   });
 
   it('is added for the last expression of a block-body bound function', () => {
-    check(`
+    check(
+      `
       =>
         1
-    `, `
+    `,
+      `
       () => {
         return 1;
       };
-    `);
+    `
+    );
   });
 
   it('is added for the last expression in a class method', () => {
-    check(`
+    check(
+      `
       class Foo
         a: ->
           1
-    `, `
+    `,
+      `
       class Foo {
         a() {
           return 1;
         }
       }
-    `);
+    `
+    );
   });
 
   it('is not added for the last expression in a class constructor method', () => {
-    check(`
+    check(
+      `
       class Foo
         constructor: ->
           @a = 1
-    `, `
+    `,
+      `
       class Foo {
         constructor() {
           this.a = 1;
         }
       }
-    `);
+    `
+    );
   });
 
   it('is not added for throws as the last statement', () => {
-    check(`
+    check(
+      `
       ->
         throw 1
-    `, `
+    `,
+      `
       (function() {
         throw 1;
       });
-    `);
+    `
+    );
 
     check(`-> throw 1`, `(function() { throw 1; });`);
   });
 
   it('adds it outside a conditional that turns into a ternary expression', () => {
-    check(`
+    check(
+      `
       -> if a then b else c
-    `, `
+    `,
+      `
       (function() { if (a) { return b; } else { return c; } });
-    `);
+    `
+    );
   });
 });

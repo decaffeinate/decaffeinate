@@ -35,14 +35,17 @@ describe('unary operators', () => {
   });
 
   it('transforms `not` to `!` when used in a condition', () => {
-    check(`
+    check(
+      `
       if not 0
         1
-    `, `
+    `,
+      `
       if (!0) {
         1;
       }
-    `);
+    `
+    );
   });
 
   it('preserves typeof operators', () => {
@@ -54,11 +57,14 @@ describe('unary operators', () => {
   });
 
   it('converts unary existential identifier checks of known bindings to non-strict null check', () => {
-    check(`
+    check(
+      `
       (a) -> a?
-    `, `
+    `,
+      `
       a => a != null;
-    `);
+    `
+    );
   });
 
   it('converts unary existential non-identifier to non-strict null check', () => {
@@ -77,49 +83,64 @@ describe('unary operators', () => {
   });
 
   it('converts unary existential operator and handles negation', () => {
-    check(`
+    check(
+      `
       unless a? and c
         b
-    `, `
+    `,
+      `
       if ((typeof a === 'undefined' || a === null) || !c) {
         b;
       }
-    `);
+    `
+    );
 
-    check(`
+    check(
+      `
       unless a.b?
         b
-    `, `
+    `,
+      `
       if (a.b == null) {
         b;
       }
-    `);
+    `
+    );
   });
 
   it('converts unary existential operator handling negation from a `not` prefix', () => {
-    check(`
+    check(
+      `
       (a) -> not a?
-    `, `
+    `,
+      `
       a => a == null;
-    `);
+    `
+    );
   });
 
   it('properly respects precedence with a unary operator in a conditional', () => {
-    check(`
+    check(
+      `
       unless typeof a.b?
         c
-    `, `
+    `,
+      `
       if (!typeof (a.b != null)) {
         c;
       }
-    `);
+    `
+    );
   });
 
   it('treats the increment operator as non-repeatable', () => {
-    validate(`
+    validate(
+      `
       n = 1
       (n++)?.toString()
       setResult(n)
-    `, 2);
+    `,
+      2
+    );
   });
 });

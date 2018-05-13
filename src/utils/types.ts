@@ -5,9 +5,12 @@ import { Node } from 'decaffeinate-parser/dist/nodes';
 /**
  * Determines whether a node represents a function, i.e. `->` or `=>`.
  */
-export function isFunction(node: Node, allowBound: boolean=true): boolean {
-  return node.type === 'Function' || node.type === 'GeneratorFunction' ||
-    (allowBound && (node.type === 'BoundFunction' || node.type === 'BoundGeneratorFunction'));
+export function isFunction(node: Node, allowBound: boolean = true): boolean {
+  return (
+    node.type === 'Function' ||
+    node.type === 'GeneratorFunction' ||
+    (allowBound && (node.type === 'BoundFunction' || node.type === 'BoundGeneratorFunction'))
+  );
 }
 
 const NON_SEMANTIC_SOURCE_TOKEN_TYPES = [SourceType.COMMENT, SourceType.HERECOMMENT, SourceType.NEWLINE];

@@ -9,9 +9,9 @@ import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 import SpreadPatcher from './SpreadPatcher';
 
 export type OpenCurlyInfo = {
-  curlyBraceInsertionPosition: number,
-  textToInsert: string,
-  shouldIndent: boolean,
+  curlyBraceInsertionPosition: number;
+  textToInsert: string;
+  shouldIndent: boolean;
 };
 
 /**
@@ -48,11 +48,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   patchAsExpression(): void {
     let implicitObject = this.isImplicitObject();
     if (implicitObject) {
-      let {
-        curlyBraceInsertionPosition,
-        textToInsert,
-        shouldIndent
-      } = this.getOpenCurlyInfo();
+      let { curlyBraceInsertionPosition, textToInsert, shouldIndent } = this.getOpenCurlyInfo();
       this.insert(curlyBraceInsertionPosition, textToInsert);
       if (shouldIndent) {
         this.indent();
@@ -77,8 +73,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
         textToInsert = `{\n${this.getIndent()}`;
         shouldIndent = true;
       } else {
-        let tokenIndexBeforeOuterStartTokenIndex: SourceTokenListIndex | null
-          = this.outerStartTokenIndex;
+        let tokenIndexBeforeOuterStartTokenIndex: SourceTokenListIndex | null = this.outerStartTokenIndex;
         if (!this.isSurroundedByParentheses()) {
           tokenIndexBeforeOuterStartTokenIndex = tokenIndexBeforeOuterStartTokenIndex.previous();
         }
@@ -93,11 +88,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
             curlyBraceInsertionPosition = precedingToken.end;
             let precedingTokenText = this.sourceOfToken(precedingToken);
             let lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
-            let needsSpace = (
-              lastCharOfToken === ':' ||
-              lastCharOfToken === '=' ||
-              lastCharOfToken === ','
-            );
+            let needsSpace = lastCharOfToken === ':' || lastCharOfToken === '=' || lastCharOfToken === ',';
             if (needsSpace) {
               textToInsert = ' {';
             }
@@ -154,8 +145,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   shouldExpandCurlyBraces(): boolean {
     return (
       this.isMultiline() ||
-      (this.parent instanceof ObjectInitialiserMemberPatcher &&
-        notNull(this.parent.parent).isMultiline())
+      (this.parent instanceof ObjectInitialiserMemberPatcher && notNull(this.parent.parent).isMultiline())
     );
   }
 

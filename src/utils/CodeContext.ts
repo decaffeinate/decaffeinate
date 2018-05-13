@@ -28,8 +28,7 @@ export default class CodeContext {
     if (!location) {
       return 'INVALID POSITION';
     }
-    let {line, column} = location;
+    let { line, column } = location;
     return `${line + 1}:${column + 1}(${index})`;
   }
-
 }

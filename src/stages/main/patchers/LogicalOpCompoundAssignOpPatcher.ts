@@ -2,9 +2,8 @@ import { PatchOptions } from '../../../patchers/types';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
-    let shouldAddParens = this.negated ||
-      (needsParens && !this.isSurroundedByParentheses());
+  patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
+    let shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
       this.insert(this.contentStart, '!');
     }
@@ -16,11 +15,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
 
     // `a &&= b` → `a && b`
     //    ^^^         ^^
-    this.overwrite(
-      operator.start,
-      operator.end,
-      this.isOrOp() ? `||` : `&&`
-    );
+    this.overwrite(operator.start, operator.end, this.isOrOp() ? `||` : `&&`);
 
     let assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
 
@@ -58,7 +53,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
     // `if (a &&= b` → `if (a) { a = b`
     //       ^^^^^           ^^^^^^^^
     this.overwrite(this.assignee.outerEnd, this.expression.outerStart, `) { ${assigneeAgain} = `);
-    
+
     this.expression.patch();
 
     // `if (a) { a = b` → `if (a) { a = b }`

@@ -38,7 +38,7 @@ export default class FunctionPatcher extends NodePatcher {
     let assignments = [];
     for (let [i, parameter] of this.parameters.entries()) {
       if (firstRestParamIndex === -1 || i < firstRestParamIndex) {
-        let {newAssignments, newBindings} = this.patchParameterAndGetAssignments(parameter);
+        let { newAssignments, newBindings } = this.patchParameterAndGetAssignments(parameter);
         assignments.push(...newAssignments);
         neededExplicitBindings.push(...newBindings);
       } else {
@@ -56,8 +56,10 @@ export default class FunctionPatcher extends NodePatcher {
     }
 
     if (firstRestParamIndex !== -1) {
-      if (firstRestParamIndex === this.parameters.length - 1 &&
-          this.parameters[this.parameters.length - 1] instanceof ExpansionPatcher) {
+      if (
+        firstRestParamIndex === this.parameters.length - 1 &&
+        this.parameters[this.parameters.length - 1] instanceof ExpansionPatcher
+      ) {
         // Just get rid of the ... at the end if it's there.
         if (firstRestParamIndex === 0) {
           this.remove(this.parameters[0].contentStart, this.parameters[0].contentEnd);
@@ -77,7 +79,7 @@ export default class FunctionPatcher extends NodePatcher {
         let paramCode = this.slice(restParamsStart, restParamsEnd);
         paramCode = this.fixGeneratedAssigneeWhitespace(paramCode);
         this.overwrite(restParamsStart, restParamsEnd, `${paramName}...`);
-        
+
         assignments.push(`[${paramCode}] = ${paramName}`);
         for (let i = firstRestParamIndex; i < this.parameters.length; i++) {
           neededExplicitBindings.push(...getAssigneeBindings(this.parameters[i].node));
@@ -88,8 +90,11 @@ export default class FunctionPatcher extends NodePatcher {
     let uniqueExplicitBindings = [...new Set(neededExplicitBindings)];
     // To avoid ugly code, limit the explicit `var` to cases where we're
     // actually shadowing an outer variable.
-    uniqueExplicitBindings = uniqueExplicitBindings.filter(
-      name => notNull(this.parent).getScope().hasBinding(name));
+    uniqueExplicitBindings = uniqueExplicitBindings.filter(name =>
+      notNull(this.parent)
+        .getScope()
+        .hasBinding(name)
+    );
     if (uniqueExplicitBindings.length > 0) {
       assignments.unshift(`\`var ${uniqueExplicitBindings.join(', ')};\``);
     }
@@ -118,7 +123,9 @@ export default class FunctionPatcher extends NodePatcher {
    * Also declare any variables that are assigned and need to be
    * function-scoped, so the outer code can insert `var` declarations.
    */
-  patchParameterAndGetAssignments(parameter: NodePatcher): {newAssignments: Array<string>, newBindings: Array<string>} {
+  patchParameterAndGetAssignments(
+    parameter: NodePatcher
+  ): { newAssignments: Array<string>; newBindings: Array<string> } {
     let thisAssignments: Array<string> = [];
     let defaultParamAssignments: Array<string> = [];
 
@@ -134,7 +141,11 @@ export default class FunctionPatcher extends NodePatcher {
       this.log(`Replacing parameter @${memberName} with ${varName}`);
       return varName;
     };
-    this.addDefaultParamAssignmentAtScopeHeader = (assigneeCode: string, initCode: string, assigneeNode: Node): string => {
+    this.addDefaultParamAssignmentAtScopeHeader = (
+      assigneeCode: string,
+      initCode: string,
+      assigneeNode: Node
+    ): string => {
       if (assigneeNode.type === 'Identifier' || assigneeNode.type === 'MemberAccessOp') {
         // Wrap in parens to avoid precedence issues for inline statements. The
         // parens will be removed later in normal situations.
@@ -159,7 +170,7 @@ export default class FunctionPatcher extends NodePatcher {
 
     return {
       newAssignments: [...defaultParamAssignments, ...thisAssignments],
-      newBindings,
+      newBindings
     };
   }
 
@@ -203,8 +214,7 @@ export default class FunctionPatcher extends NodePatcher {
     // array destructure, so set index 0. For example, in the param list
     // `(a, ..., b, c)`, `b` is set to the second-to-last arg, which might be the
     // same as `a`, so all args need to be included in the destructure.
-    if (this.parameters.some((param, i) =>
-        i < this.parameters.length - 1 && param instanceof ExpansionPatcher)) {
+    if (this.parameters.some((param, i) => i < this.parameters.length - 1 && param instanceof ExpansionPatcher)) {
       return 0;
     }
 
@@ -213,21 +223,27 @@ export default class FunctionPatcher extends NodePatcher {
 
       // We have separate code to handle relatively simple default params that
       // results in better code, so use that.
-      if (parameter instanceof DefaultParamPatcher &&
-          canPatchAssigneeToJavaScript(parameter.param.node, this.options)) {
+      if (
+        parameter instanceof DefaultParamPatcher &&
+        canPatchAssigneeToJavaScript(parameter.param.node, this.options)
+      ) {
         continue;
       }
 
       // A rest assignment at the very end can be converted correctly as long as
       // it does not expand the rest array in a complicated way.
-      if (i === this.parameters.length - 1 &&
+      if (
+        i === this.parameters.length - 1 &&
         parameter instanceof RestPatcher &&
-        parameter.expression instanceof IdentifierPatcher) {
+        parameter.expression instanceof IdentifierPatcher
+      ) {
         continue;
       }
 
-      if ((!this.options.useCS2 && parameter instanceof ArrayInitialiserPatcher) ||
-          !canPatchAssigneeToJavaScript(parameter.node, this.options)) {
+      if (
+        (!this.options.useCS2 && parameter instanceof ArrayInitialiserPatcher) ||
+        !canPatchAssigneeToJavaScript(parameter.node, this.options)
+      ) {
         return i;
       }
     }

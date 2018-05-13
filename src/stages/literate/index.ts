@@ -9,7 +9,7 @@ export default class LiterateStage {
   static run(content: string): StageResult {
     return {
       code: convertCodeFromLiterate(content),
-      suggestions: [],
+      suggestions: []
     };
   }
 }
@@ -40,8 +40,7 @@ function convertCodeFromLiterate(code: string): string {
     } else {
       // Remain a comment on an empty line, an unindented line, or if the last
       // line was nonempty.
-      if (lineIsEmpty(line) || !lineIsIndented(line) ||
-          (i > 0 && !lineIsEmpty(lines[i - 1]))) {
+      if (lineIsEmpty(line) || !lineIsIndented(line) || (i > 0 && !lineIsEmpty(lines[i - 1]))) {
         commentLines.push(line);
       } else {
         resultLines.push(...convertCommentLines(commentLines));

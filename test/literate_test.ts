@@ -2,7 +2,8 @@ import check from './support/check';
 
 describe('literate mode', () => {
   it('handles a simple case', () => {
-    check(`
+    check(
+      `
       This is a *thing*.
       It doesn't do much.
       
@@ -13,7 +14,8 @@ describe('literate mode', () => {
           otherThing = for foo in stuff
             if foo % 2 == 0
               foo + 1
-    `, `
+    `,
+      `
       // This is a *thing*.
       // It doesn't do much.
       const thing = 1;
@@ -30,54 +32,65 @@ describe('literate mode', () => {
         }
         return result;
       })();
-    `, {
-      options: {
-        literate: true,
+    `,
+      {
+        options: {
+          literate: true
+        }
       }
-    });
+    );
   });
 
   it('handles a file starting with code and ending with a comment', () => {
-    check(`
+    check(
+      `
           a = 1
           b = 2
           c = 3
       Those are the first three letters of the alphabet.
-    `, `
+    `,
+      `
       const a = 1;
       const b = 2;
       const c = 3;
       // Those are the first three letters of the alphabet.
-    `, {
-      options: {
-        literate: true,
+    `,
+      {
+        options: {
+          literate: true
+        }
       }
-    });
+    );
   });
 
   it('requires a blank line before moving to a code section', () => {
-    check(`
+    check(
+      `
       I can
         indent
           all that I want
             and it still will be in a comment.
       
           exceptNow = true
-    `, `
+    `,
+      `
       // I can
       //   indent
       //     all that I want
       //       and it still will be in a comment.
       const exceptNow = true;
-    `, {
-      options: {
-        literate: true,
+    `,
+      {
+        options: {
+          literate: true
+        }
       }
-    });
+    );
   });
 
   it('handles increasing indentation across distinct code sections', () => {
-    check(`
+    check(
+      `
       This is a
       multiline comment.
       
@@ -92,7 +105,8 @@ describe('literate mode', () => {
       multiline comment.      
       
               c
-    `, `
+    `,
+      `
       // This is a
       // multiline comment.
       if (a) {
@@ -106,46 +120,60 @@ describe('literate mode', () => {
           c;
         }
       }
-    `, {
-      options: {
-        literate: true,
+    `,
+      {
+        options: {
+          literate: true
+        }
       }
-    });
+    );
   });
 
   it('treats normal coffee files as non-literate', () => {
-    check(`
+    check(
+      `
       a = 1
-    `, `
+    `,
+      `
       const a = 1;
-    `, {
-      options: {
-        filename: 'foo.coffee',
+    `,
+      {
+        options: {
+          filename: 'foo.coffee'
+        }
       }
-    });
+    );
   });
 
   it('treats .coffee.md files as literate', () => {
-    check(`
+    check(
+      `
       a = 1
-    `, `
+    `,
+      `
       // a = 1
-    `, {
-      options: {
-        filename: 'foo.coffee.md',
+    `,
+      {
+        options: {
+          filename: 'foo.coffee.md'
+        }
       }
-    });
+    );
   });
 
   it('treats .litcoffee files as literate', () => {
-    check(`
+    check(
+      `
       a = 1
-    `, `
+    `,
+      `
       // a = 1
-    `, {
-      options: {
-        filename: 'foo.litcoffee',
+    `,
+      {
+        options: {
+          filename: 'foo.litcoffee'
+        }
       }
-    });
+    );
   });
 });

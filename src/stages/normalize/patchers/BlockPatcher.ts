@@ -33,8 +33,8 @@ export default class BlockPatcher extends SharedBlockPatcher {
           let charsToRemove = indentLength - blockIndentLength;
           if (charsToRemove < 0) {
             throw this.error(
-              'Unexpected statement at an earlier indentation level than an ' +
-              'earlier statement in the block.');
+              'Unexpected statement at an earlier indentation level than an ' + 'earlier statement in the block.'
+            );
           }
           if (charsToRemove > 0) {
             this.removePrecedingSpaceChars(statement.outerStart, charsToRemove);
@@ -86,8 +86,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
    */
   normalizeAfterStatement(statement: NodePatcher): void {
     let followingComma = statement.nextSemanticToken();
-    if (!followingComma || followingComma.type !== SourceType.COMMA ||
-        followingComma.start >= this.contentEnd) {
+    if (!followingComma || followingComma.type !== SourceType.COMMA || followingComma.start >= this.contentEnd) {
       return;
     }
     this.overwrite(followingComma.start, followingComma.end, ';');

@@ -3,10 +3,9 @@ import { SHORTEN_NULL_CHECKS } from '../../../suggestions';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
+  patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
-    let shouldAddParens = this.negated ||
-      (needsParens && !this.isSurroundedByParentheses());
+    let shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
       this.insert(this.contentStart, '!');
     }
@@ -22,10 +21,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
       // `typeof a ? b` → `typeof a !== 'undefined' && a !== null ? a ?= b`
       //                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      this.insert(
-        this.assignee.outerEnd,
-        ` !== 'undefined' && ${assigneeAgain} !== null ? ${assigneeAgain}`
-      );
+      this.insert(this.assignee.outerEnd, ` !== 'undefined' && ${assigneeAgain} !== null ? ${assigneeAgain}`);
     } else {
       assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
       // `a.b ?= b` → `a.b != null ? a.b ?= b`
@@ -62,10 +58,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
       // `if (typeof a ?= b` → `if (typeof a === 'undefined' || a === null) { ?= b`
       //                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      this.insert(
-        this.assignee.outerEnd,
-        ` === 'undefined' || ${assigneeAgain} === null) {`
-      );
+      this.insert(this.assignee.outerEnd, ` === 'undefined' || ${assigneeAgain} === null) {`);
     } else {
       // `a.b ?= b` → `if (a.b ?= b`
       //               ^^^^

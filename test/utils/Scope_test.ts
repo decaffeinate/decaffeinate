@@ -94,17 +94,13 @@ describe('Scope', () => {
   it('processes for-of loops by binding key and value assignees', () => {
     let scope = new Scope(containerNode);
     scope.processNode(statement('for key, {a, b, c: [d, e]} of object\n  key'));
-    ['key', 'a', 'b', 'd', 'e'].forEach(name =>
-        ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`)
-    );
+    ['key', 'a', 'b', 'd', 'e'].forEach(name => ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`));
   });
 
   it('processes for-in loops by binding value assignees', () => {
     let scope = new Scope(containerNode);
     scope.processNode(statement('for [a, {b, c}, d] in array\n  a'));
-    ['a', 'b', 'c', 'd'].forEach(name =>
-        ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`)
-    );
+    ['a', 'b', 'c', 'd'].forEach(name => ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`));
   });
 
   describe('claimFreeBinding', () => {

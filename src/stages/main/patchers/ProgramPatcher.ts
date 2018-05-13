@@ -129,11 +129,7 @@ export default class ProgramPatcher extends SharedProgramPatcher {
     let coffeeIndex = commentBody.indexOf('coffee');
 
     if (coffeeIndex >= 0) {
-      this.overwrite(
-        start + coffeeIndex,
-        start + coffeeIndex + 'coffee'.length,
-        'node'
-      );
+      this.overwrite(start + coffeeIndex, start + coffeeIndex + 'coffee'.length, 'node');
     }
   }
 
@@ -144,4 +140,3 @@ export default class ProgramPatcher extends SharedProgramPatcher {
     return true;
   }
 }
-

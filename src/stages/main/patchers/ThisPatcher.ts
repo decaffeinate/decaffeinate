@@ -19,10 +19,10 @@ export default class ThisPatcher extends NodePatcher {
 
   reportTopLevelThisIfNecessary(): void {
     let scope = this.getScope();
-    while (scope.parent &&
-        [
-          'Program', 'Function', 'GeneratorFunction', 'Class'
-        ].indexOf(scope.containerNode.type) === -1) {
+    while (
+      scope.parent &&
+      ['Program', 'Function', 'GeneratorFunction', 'Class'].indexOf(scope.containerNode.type) === -1
+    ) {
       scope = scope.parent;
     }
     if (scope.containerNode.type === 'Program') {

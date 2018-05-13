@@ -21,7 +21,7 @@ export default class SuperPatcher extends NodePatcher {
    * super calls in the normalize stage. Otherwise, the code will move into an
    * initClass method and super calls will refer to super.initClass.
    */
-  patchEarlySuperTransform({classCode, accessCode}: EarlySuperTransformInfo): void {
+  patchEarlySuperTransform({ classCode, accessCode }: EarlySuperTransformInfo): void {
     // Note that this code snippet works for static methods but not instance
     // methods. Expanded super calls for instance methods are handled in the
     // main stage.
@@ -52,7 +52,9 @@ export default class SuperPatcher extends NodePatcher {
 
   getFollowingOpenParenToken(): SourceToken {
     let openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
-      this.contentEndTokenIndex, SourceType.CALL_START);
+      this.contentEndTokenIndex,
+      SourceType.CALL_START
+    );
     if (!openParenTokenIndex) {
       throw this.error('Expected open-paren after super.');
     }

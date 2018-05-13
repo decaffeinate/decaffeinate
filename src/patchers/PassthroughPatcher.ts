@@ -3,7 +3,7 @@ import { PatcherContext } from './types';
 
 export default class PassthroughPatcher extends NodePatcher {
   children: Array<NodePatcher | Array<NodePatcher> | null>;
-  
+
   constructor(patcherContext: PatcherContext, ...children: Array<NodePatcher | Array<NodePatcher> | null>) {
     super(patcherContext);
     this.children = children;

@@ -26,9 +26,9 @@ export default class SharedBlockPatcher extends NodePatcher {
         token => token.type === SourceType.NEWLINE || token.type === SourceType.SEMICOLON,
         lastStatement.outerEndTokenIndex
       );
-      let insertionPoint = terminatorTokenIndex ?
-        notNull(this.sourceTokenAtIndex(terminatorTokenIndex)).start :
-        lastStatement.outerEnd;
+      let insertionPoint = terminatorTokenIndex
+        ? notNull(this.sourceTokenAtIndex(terminatorTokenIndex)).start
+        : lastStatement.outerEnd;
       insertionPoint = Math.min(insertionPoint, this.getBoundingPatcher().innerEnd);
       let indent = lastStatement.getIndent();
       statements.forEach(line => {

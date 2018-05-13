@@ -196,7 +196,7 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
 async function runWithStdio(options: CLIOptions): Promise<void> {
   return new Promise<void>(resolve => {
     let data = '';
-    process.stdin.on('data', chunk => data += chunk);
+    process.stdin.on('data', chunk => (data += chunk));
     process.stdin.on('end', () => {
       let resultCode = runWithCode('stdin', data, options);
       process.stdout.write(resultCode);
@@ -209,7 +209,7 @@ async function runWithStdio(options: CLIOptions): Promise<void> {
  * Run decaffeinate on the given code string and return the resulting code.
  */
 function runWithCode(name: string, code: string, options: CLIOptions): string {
-  let baseOptions = Object.assign({filename: name}, options.baseOptions);
+  let baseOptions = Object.assign({ filename: name }, options.baseOptions);
   try {
     if (options.modernizeJS) {
       return modernizeJS(code, baseOptions).code;

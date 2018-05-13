@@ -1,5 +1,7 @@
 import {
-  Node, SoakedDynamicMemberAccessOp, SoakedFunctionApplication,
+  Node,
+  SoakedDynamicMemberAccessOp,
+  SoakedFunctionApplication,
   SoakedMemberAccessOp
 } from 'decaffeinate-parser/dist/nodes';
 import containsDescendant from './containsDescendant';
@@ -8,9 +10,11 @@ import containsDescendant from './containsDescendant';
  * Determine if there are any soak operations within this subtree of the AST.
  */
 export default function nodeContainsSoakOperation(node: Node): boolean {
-  return containsDescendant(node, child =>
-    child instanceof SoakedDynamicMemberAccessOp ||
-    child instanceof SoakedFunctionApplication ||
-    child instanceof SoakedMemberAccessOp
+  return containsDescendant(
+    node,
+    child =>
+      child instanceof SoakedDynamicMemberAccessOp ||
+      child instanceof SoakedFunctionApplication ||
+      child instanceof SoakedMemberAccessOp
   );
 }

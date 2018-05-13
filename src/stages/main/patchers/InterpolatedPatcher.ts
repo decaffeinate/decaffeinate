@@ -2,8 +2,7 @@ import { SourceType } from 'coffee-lex';
 
 import SourceToken from 'coffee-lex/dist/SourceToken';
 import { PatcherContext } from '../../../patchers/types';
-import downgradeUnicodeCodePointEscapesInRange
-  from '../../../utils/downgradeUnicodeCodePointEscapesInRange';
+import downgradeUnicodeCodePointEscapesInRange from '../../../utils/downgradeUnicodeCodePointEscapesInRange';
 import escape from '../../../utils/escape';
 import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespaceInRange';
 import escapeZeroCharsInRange from '../../../utils/escapeZeroCharsInRange';
@@ -45,14 +44,15 @@ export default class InterpolatedPatcher extends NodePatcher {
 
   getInterpolationStartTokenAtIndex(index: number): SourceToken {
     let interpolationStartIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.quasis[index].contentEnd, this.contentEnd, token => token.type === SourceType.INTERPOLATION_START
+      this.quasis[index].contentEnd,
+      this.contentEnd,
+      token => token.type === SourceType.INTERPOLATION_START
     );
     if (!interpolationStartIndex) {
       throw this.error('Cannot find interpolation start for string interpolation.');
     }
     let interpolationStart = this.sourceTokenAtIndex(interpolationStartIndex);
-    if (!interpolationStart ||
-        this.slice(interpolationStart.start, interpolationStart.start + 1) !== '#') {
+    if (!interpolationStart || this.slice(interpolationStart.start, interpolationStart.start + 1) !== '#') {
       throw this.error("Cannot find '#' in interpolation start.");
     }
     return interpolationStart;
@@ -73,8 +73,9 @@ export default class InterpolatedPatcher extends NodePatcher {
    */
   processContents(): void {
     for (let quasi of this.quasis) {
-      let tokens = this.getProgramSourceTokens().slice(
-        quasi.contentStartTokenIndex, notNull(quasi.contentEndTokenIndex.next())).toArray();
+      let tokens = this.getProgramSourceTokens()
+        .slice(quasi.contentStartTokenIndex, notNull(quasi.contentEndTokenIndex.next()))
+        .toArray();
       for (let token of tokens) {
         if (token.type === SourceType.STRING_PADDING || token.type === SourceType.HEREGEXP_COMMENT) {
           let paddingCode = this.slice(token.start, token.end);
@@ -88,7 +89,7 @@ export default class InterpolatedPatcher extends NodePatcher {
             escapeZeroCharsInRange(token.start, token.end, this);
           }
           if (this.shouldDowngradeUnicodeCodePointEscapes()) {
-            downgradeUnicodeCodePointEscapesInRange(token.start, token.end, this, {needsExtraEscape: true});
+            downgradeUnicodeCodePointEscapesInRange(token.start, token.end, this, { needsExtraEscape: true });
           }
         }
       }
@@ -105,8 +106,9 @@ export default class InterpolatedPatcher extends NodePatcher {
 
   escapeQuasis(skipPattern: RegExp, escapeStrings: Array<string>): void {
     for (let quasi of this.quasis) {
-      let tokens = this.getProgramSourceTokens().slice(
-        quasi.contentStartTokenIndex, notNull(quasi.contentEndTokenIndex.next())).toArray();
+      let tokens = this.getProgramSourceTokens()
+        .slice(quasi.contentStartTokenIndex, notNull(quasi.contentEndTokenIndex.next()))
+        .toArray();
       for (let token of tokens) {
         if (token.type === SourceType.STRING_CONTENT) {
           escape(this.context.source, this.editor, skipPattern, escapeStrings, token.start, token.end);

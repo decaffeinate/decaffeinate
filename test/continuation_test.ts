@@ -2,22 +2,28 @@ import check from './support/check';
 
 describe('continuation', () => {
   it('is removed when continuing a binary operator', () => {
-    check(`
+    check(
+      `
       a \\
         + 1
-    `, `
+    `,
+      `
       a 
         + 1;
-    `);
+    `
+    );
   });
 
   it('is removed when continuing a function call', () => {
-    check(`
+    check(
+      `
       a \\
         b
-    `, `
+    `,
+      `
       a( 
         b);
-    `);
+    `
+    );
   });
 });

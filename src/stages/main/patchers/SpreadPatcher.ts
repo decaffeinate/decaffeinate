@@ -10,7 +10,7 @@ import FunctionApplicationPatcher from './FunctionApplicationPatcher';
  */
 export default class SpreadPatcher extends NodePatcher {
   expression: NodePatcher;
-  
+
   constructor(patcherContext: PatcherContext, expression: NodePatcher) {
     super(patcherContext);
     this.expression = expression;
@@ -52,9 +52,11 @@ export default class SpreadPatcher extends NodePatcher {
     if (needsArrayFrom) {
       // Replicate a bug in CoffeeScript where you're allowed to pass null or
       // undefined when the argument spread is the only argument.
-      if (this.parent instanceof FunctionApplicationPatcher &&
+      if (
+        this.parent instanceof FunctionApplicationPatcher &&
         this.parent.args.length === 1 &&
-        this.parent.args[0] === this) {
+        this.parent.args[0] === this
+      ) {
         this.insert(this.contentEnd, ' || []');
       }
       // `...Array.from(a` → `...Array.from(a)`
@@ -73,8 +75,7 @@ export default class SpreadPatcher extends NodePatcher {
       return false;
     }
     // Spreading over arguments is always safe.
-    if (this.expression.node instanceof Identifier &&
-        this.expression.node.data === 'arguments') {
+    if (this.expression.node instanceof Identifier && this.expression.node.data === 'arguments') {
       return false;
     }
     this.addSuggestion(REMOVE_ARRAY_FROM);

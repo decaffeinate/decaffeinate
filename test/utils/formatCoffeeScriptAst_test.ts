@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert';
-import {nodes as cs1Nodes} from 'decaffeinate-coffeescript';
-import {nodes as cs2Nodes} from 'decaffeinate-coffeescript2';
+import { nodes as cs1Nodes } from 'decaffeinate-coffeescript';
+import { nodes as cs2Nodes } from 'decaffeinate-coffeescript2';
 import CodeContext from '../../src/utils/CodeContext';
 import formatCoffeeScriptAst from '../../src/utils/formatCoffeeScriptAst';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
@@ -11,7 +11,9 @@ describe('formatCoffeeScriptAst', () => {
       x = a()
     `);
     let formattedTokens = formatCoffeeScriptAst(cs2Nodes(source), new CodeContext(source));
-    strictEqual(formattedTokens, stripSharedIndent(`
+    strictEqual(
+      formattedTokens,
+      stripSharedIndent(`
       Block [1:1(0)-1:8(7)] {
         expressions: [
           Assign [1:1(0)-1:8(7)] {
@@ -49,7 +51,8 @@ describe('formatCoffeeScriptAst', () => {
         ]
       }
 
-    `) + '\n');
+    `) + '\n'
+    );
   });
 
   it('properly formats switch statements', () => {
@@ -59,7 +62,9 @@ describe('formatCoffeeScriptAst', () => {
           2
     `);
     let formattedTokens = formatCoffeeScriptAst(cs2Nodes(source), new CodeContext(source));
-    strictEqual(formattedTokens, stripSharedIndent(`
+    strictEqual(
+      formattedTokens,
+      stripSharedIndent(`
       Block [1:1(0)-3:6(21)] {
         expressions: [
           Switch [1:1(0)-3:6(21)] {
@@ -90,7 +95,8 @@ describe('formatCoffeeScriptAst', () => {
           }
         ]
       }
-    `) + '\n');
+    `) + '\n'
+    );
   });
 
   it('properly formats CS1 code', () => {
@@ -98,7 +104,9 @@ describe('formatCoffeeScriptAst', () => {
       x = 1
     `);
     let formattedTokens = formatCoffeeScriptAst(cs1Nodes(source), new CodeContext(source));
-    strictEqual(formattedTokens, stripSharedIndent(`
+    strictEqual(
+      formattedTokens,
+      stripSharedIndent(`
       Block [1:1(0)-1:6(5)] {
         expressions: [
           Assign [1:1(0)-1:6(5)] {
@@ -122,6 +130,7 @@ describe('formatCoffeeScriptAst', () => {
           }
         ]
       }
-    `) + '\n');
+    `) + '\n'
+    );
   });
 });

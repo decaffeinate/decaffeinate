@@ -19,9 +19,12 @@ export default class TryPatcher extends NodePatcher {
   _errorBinding: string | null = null;
 
   constructor(
-      patcherContext: PatcherContext, body: BlockPatcher | null,
-      catchAssignee: NodePatcher | null, catchBody: BlockPatcher | null,
-      finallyBody: BlockPatcher | null) {
+    patcherContext: PatcherContext,
+    body: BlockPatcher | null,
+    catchAssignee: NodePatcher | null,
+    catchBody: BlockPatcher | null,
+    finallyBody: BlockPatcher | null
+  ) {
     super(patcherContext);
     this.body = body;
     this.catchAssignee = catchAssignee;
@@ -92,10 +95,7 @@ export default class TryPatcher extends NodePatcher {
     }
 
     if (catchToken) {
-      let afterCatchHeader =
-        this.catchAssignee ?
-          this.catchAssignee.outerEnd :
-          catchToken.end;
+      let afterCatchHeader = this.catchAssignee ? this.catchAssignee.outerEnd : catchToken.end;
 
       if (this.catchAssignee) {
         let addErrorParens = !this.catchAssignee.isSurroundedByParentheses();
@@ -221,7 +221,9 @@ export default class TryPatcher extends NodePatcher {
     }
 
     let catchTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd, token => token.type === SourceType.CATCH
+      searchStart,
+      searchEnd,
+      token => token.type === SourceType.CATCH
     );
     if (!catchTokenIndex) {
       return null;
@@ -259,7 +261,8 @@ export default class TryPatcher extends NodePatcher {
     }
 
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd,
+      searchStart,
+      searchEnd,
       token => token.type === SourceType.THEN
     );
   }
@@ -287,7 +290,9 @@ export default class TryPatcher extends NodePatcher {
     }
 
     let finallyTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd, token => token.type === SourceType.FINALLY
+      searchStart,
+      searchEnd,
+      token => token.type === SourceType.FINALLY
     );
     if (!finallyTokenIndex) {
       return null;

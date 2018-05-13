@@ -26,17 +26,17 @@ import notNull from './utils/notNull';
 export { PatchError };
 
 export type ConversionResult = {
-  code: string,
+  code: string;
 };
 
 export type StageResult = {
-  code: string,
-  suggestions: Array<Suggestion>,
+  code: string;
+  suggestions: Array<Suggestion>;
 };
 
 type Stage = {
-  name: string,
-  run: (content: string, options: Options) => StageResult,
+  name: string;
+  run: (content: string, options: Options) => StageResult;
 };
 
 /**
@@ -49,7 +49,8 @@ export function convert(source: string, options: Options = {}): ConversionResult
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
 
-  let literate = options.literate ||
+  let literate =
+    options.literate ||
     notNull(options.filename).endsWith('.litcoffee') ||
     notNull(options.filename).endsWith('.coffee.md');
   let stages = [
@@ -75,7 +76,7 @@ export function convert(source: string, options: Options = {}): ConversionResult
   }
   result.code = convertNewlines(result.code, originalNewlineStr);
   return {
-    code: result.code,
+    code: result.code
   };
 }
 
@@ -84,13 +85,11 @@ export function modernizeJS(source: string, options: Options = {}): ConversionRe
   options = resolveOptions(options);
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
-  let stages = [
-    EsnextStage
-  ];
+  let stages = [EsnextStage];
   let result = runStages(source, options, stages);
   result.code = convertNewlines(result.code, originalNewlineStr);
   return {
-    code: result.code,
+    code: result.code
   };
 }
 
@@ -122,20 +121,20 @@ function convertCustomStage(source: string, stageName: string, useCS2: boolean):
   if (stageName === 'coffeescript-lexer') {
     let tokens = useCS2 ? getCoffee2Tokens(source) : getCoffee1Tokens(source);
     return {
-      code: formatCoffeeScriptLexerTokens(tokens, context),
+      code: formatCoffeeScriptLexerTokens(tokens, context)
     };
   } else if (stageName === 'coffeescript-parser') {
     let nodes = useCS2 ? getCoffee2Nodes(source) : getCoffee1Nodes(source);
     return {
-      code: formatCoffeeScriptAst(nodes, context),
+      code: formatCoffeeScriptAst(nodes, context)
     };
   } else if (stageName === 'coffee-lex') {
     return {
-      code: formatCoffeeLexTokens(lex(source, {useCS2}), context),
+      code: formatCoffeeLexTokens(lex(source, { useCS2 }), context)
     };
   } else if (stageName === 'decaffeinate-parser') {
     return {
-      code: formatDecaffeinateParserAst(decaffeinateParse(source, {useCS2}), context),
+      code: formatDecaffeinateParserAst(decaffeinateParse(source, { useCS2 }), context)
     };
   } else {
     throw new Error(`Unrecognized stage name: ${stageName}`);

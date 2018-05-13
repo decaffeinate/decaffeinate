@@ -2,12 +2,7 @@ import LinesAndColumns from 'lines-and-columns';
 import printTable, { Column } from './printTable';
 
 export default class PatchError extends Error {
-  constructor(
-    readonly message: string,
-    readonly source: string,
-    readonly start: number,
-    readonly end: number,
-  ) {
+  constructor(readonly message: string, readonly source: string, readonly start: number, readonly end: number) {
     super(message);
   }
 
@@ -23,12 +18,7 @@ export default class PatchError extends Error {
    * @see http://stackoverflow.com/a/33837088/549363
    */
   static detect(error: Error): boolean {
-    return (
-      error instanceof Error &&
-      'source' in error &&
-      'start' in error &&
-      'end' in error
-    );
+    return error instanceof Error && 'source' in error && 'start' in error && 'end' in error;
   }
 
   static prettyPrint(error: PatchError): string {
@@ -60,13 +50,9 @@ export default class PatchError extends Error {
       let lineSource = trimRight(source.slice(startOfLine, endOfLine));
       if (startLoc.line !== endLoc.line) {
         if (line >= startLoc.line && line <= endLoc.line) {
-          rows.push(
-            [`>`, `${line + 1} |`, lineSource]
-          );
+          rows.push([`>`, `${line + 1} |`, lineSource]);
         } else {
-          rows.push(
-            [``, `${line + 1} |`, lineSource]
-          );
+          rows.push([``, `${line + 1} |`, lineSource]);
         }
       } else if (line === startLoc.line) {
         let highlightLength = Math.max(endLoc.column - startLoc.column, 1);
@@ -75,9 +61,7 @@ export default class PatchError extends Error {
           [``, `|`, ' '.repeat(startLoc.column) + '^'.repeat(highlightLength)]
         );
       } else {
-        rows.push(
-          [``, `${line + 1} |`, lineSource]
-        );
+        rows.push([``, `${line + 1} |`, lineSource]);
       }
     }
 

@@ -1,4 +1,4 @@
-import {ObjectInitialiserMember} from 'decaffeinate-parser/dist/nodes';
+import { ObjectInitialiserMember } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import NodePatcher from './../../../patchers/NodePatcher';
 import AsyncFunctionPatcher from './AsyncFunctionPatcher';
@@ -111,11 +111,13 @@ export default abstract class ObjectBodyMemberPatcher extends NodePatcher {
    * gets the patcher for that computed key node, if any.
    */
   getComputedKeyPatcher(): NodePatcher | null {
-    if (this.key instanceof StringPatcher &&
-        this.key.quasis.length === 2 &&
-        this.key.expressions.length === 1 &&
-        this.key.quasis[0].node.data === '' &&
-        this.key.quasis[1].node.data === '') {
+    if (
+      this.key instanceof StringPatcher &&
+      this.key.quasis.length === 2 &&
+      this.key.expressions.length === 1 &&
+      this.key.quasis[0].node.data === '' &&
+      this.key.quasis[1].node.data === ''
+    ) {
       return this.key.expressions[0];
     }
     return null;
@@ -139,9 +141,11 @@ export default abstract class ObjectBodyMemberPatcher extends NodePatcher {
    * @protected
    */
   isMethod(): boolean {
-    return this.expression instanceof FunctionPatcher &&
-        !(this.expression instanceof ManuallyBoundFunctionPatcher) &&
-        !(this.expression instanceof BoundFunctionPatcher);
+    return (
+      this.expression instanceof FunctionPatcher &&
+      !(this.expression instanceof ManuallyBoundFunctionPatcher) &&
+      !(this.expression instanceof BoundFunctionPatcher)
+    );
   }
 
   /**
@@ -152,12 +156,12 @@ export default abstract class ObjectBodyMemberPatcher extends NodePatcher {
    * @protected
    */
   isGeneratorMethod(): boolean {
-    return this.expression instanceof GeneratorFunctionPatcher ||
-      this.expression instanceof BoundGeneratorFunctionPatcher;
+    return (
+      this.expression instanceof GeneratorFunctionPatcher || this.expression instanceof BoundGeneratorFunctionPatcher
+    );
   }
 
   isAsyncMethod(): boolean {
-    return this.expression instanceof AsyncFunctionPatcher ||
-      this.expression instanceof BoundAsyncFunctionPatcher;
+    return this.expression instanceof AsyncFunctionPatcher || this.expression instanceof BoundAsyncFunctionPatcher;
   }
 }

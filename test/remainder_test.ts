@@ -6,18 +6,24 @@ describe('remainder', () => {
   });
 
   it('processes the left-hand expression', () => {
-    check(`
+    check(
+      `
       (a 0) % b
-    `, `
+    `,
+      `
       (a(0)) % b;
-    `);
+    `
+    );
   });
 
   it('processes its right-hand expression', () => {
-    check(`
+    check(
+      `
       a % (b 0)
-    `, `
+    `,
+      `
       a % (b(0));
-    `);
+    `
+    );
   });
 });

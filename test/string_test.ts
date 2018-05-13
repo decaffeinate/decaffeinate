@@ -55,111 +55,144 @@ describe('strings', () => {
   });
 
   it('works when the triple-quoted string is indented', () => {
-    check(`
+    check(
+      `
       a = """
            foo
            bar
           """
-    `, `
+    `,
+      `
       const a = \`\\
       foo
       bar\\
       \`;
-    `);
+    `
+    );
   });
 
   it('appends semicolons after the parentheses of a function call with a triple-double-quoted multi-line string as argument', () => {
-    check(`
+    check(
+      `
       a("""line1
       line2""")
-    `, `
+    `,
+      `
       a(\`line1
       line2\`);
-    `);
+    `
+    );
   });
 
   it('appends semicolons after the parentheses of a function call with a triple-single-quoted multi-line string as argument', () => {
-    check(`
+    check(
+      `
       a('''line1
       line2''')
-    `, `
+    `,
+      `
       a(\`line1
       line2\`);
-    `);
+    `
+    );
   });
 
   it('converts multi line string assignment', () => {
-    check(`
+    check(
+      `
       a = "this is a 
            multi line
            string"
-      `, `
+      `,
+      `
       const a = \`this is a \\
       multi line \\
       string\`;
-    `);
+    `
+    );
   });
 
   it('converts multi line string in function call', () => {
-    check(`
+    check(
+      `
       fn("this is a 
           multi line
           string")
-      `, `
+      `,
+      `
       fn(\`this is a \\
       multi line \\
       string\`);
-    `);
+    `
+    );
   });
 
   it('allows escaping newlines in double-quoted strings', () => {
-    check(`
+    check(
+      `
       a = "a\\
       b"
-      `, `
+      `,
+      `
       const a = \`a\\
       b\`;
-    `);
+    `
+    );
   });
 
   it('escapes \\u2028 within strings', () => {
-    check(`
+    check(
+      `
       '\u2028'
-      `, `
+      `,
+      `
       '\\u2028';
-    `);
+    `
+    );
   });
 
   it('escapes \\u2029 within strings', () => {
-    check(`
+    check(
+      `
       '\u2029'
-      `, `
+      `,
+      `
       '\\u2029';
-    `);
+    `
+    );
   });
 
   it('uses the existing escape character for escaped \\u2028', () => {
-    check(`
+    check(
+      `
       '\\\u2028'
-      `, `
+      `,
+      `
       '\\u2028';
-    `);
+    `
+    );
   });
 
   it('leaves an escaped backslash when an escaped backslash is followed by \\u2028', () => {
-    check(`
+    check(
+      `
       '\\\\\u2028'
-      `, `
+      `,
+      `
       '\\\\\\u2028';
-    `);
+    `
+    );
   });
 
   it('handles \\0 followed by a number', () => {
-    validate(`
+    validate(
+      `
       setResult('
         \\0\\
         1
       ')
-      `, '\x001');
+      `,
+      '\x001'
+    );
   });
 });

@@ -2,27 +2,33 @@ import check from './support/check';
 
 describe('semicolons', () => {
   it('are inserted after all the parentheses surrounding statements', () => {
-    check(`
+    check(
+      `
       ((->
         result)())
       a
-    `, `
+    `,
+      `
       (() => result)();
       a;
-    `);
+    `
+    );
   });
 
   it('are inserted after the closing function braces for a function expression', () => {
-    check(`
+    check(
+      `
       a = ->
         arguments # c
       d
-    `, `
+    `,
+      `
       const a = function() {
         return arguments; // c
       };
       d;
-    `);
+    `
+    );
   });
 
   it('adds them after call expressions as statements', () => {
@@ -50,65 +56,83 @@ describe('semicolons', () => {
   });
 
   it('does not add them after `if` statements', () => {
-    check(`
+    check(
+      `
       if a
         b
-    `, `
+    `,
+      `
       if (a) {
         b;
       }
-    `);
+    `
+    );
   });
 
   it('does not add them after `for` loops', () => {
-    check(`
+    check(
+      `
       for a in b
         a
-    `, `
+    `,
+      `
       for (let a of Array.from(b)) {
         a;
       }
-    `);
-    check(`
+    `
+    );
+    check(
+      `
       for a of b
         a
-    `, `
+    `,
+      `
       for (let a in b) {
         a;
       }
-    `);
+    `
+    );
   });
 
   it('does not add them after `while` loops', () => {
-    check(`
+    check(
+      `
       while a
         a
-    `, `
+    `,
+      `
       while (a) {
         a;
       }
-    `);
+    `
+    );
   });
 
   it('does not add them after `loop` loops', () => {
-    check(`
+    check(
+      `
       loop
         a
-    `, `
+    `,
+      `
       while (true) {
         a;
       }
-    `);
+    `
+    );
   });
 
   it('breaks what would otherwise be an unintended multi-line call', () => {
     // https://github.com/decaffeinate/decaffeinate/issues/65#issuecomment-182250564
-    check(`
+    check(
+      `
       x = 1
       -> 2
-    `, `
+    `,
+      `
       const x = 1;
       () => 2;
-    `);
+    `
+    );
   });
 });

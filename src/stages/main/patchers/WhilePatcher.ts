@@ -78,7 +78,6 @@ export default class WhilePatcher extends LoopPatcher {
           this.guard.outerStart,
           `${conditionNeedsParens ? ')' : ''} {\n${this.getOuterLoopBodyIndent()}if ${guardNeedsParens ? '(' : ''}`
         );
-
       }
       this.guard.patch({ needsParens: false });
 
@@ -102,8 +101,7 @@ export default class WhilePatcher extends LoopPatcher {
       }
     }
 
-    this.patchPossibleNewlineAfterLoopHeader(
-      this.guard ? this.guard.outerEnd : this.condition.outerEnd);
+    this.patchPossibleNewlineAfterLoopHeader(this.guard ? this.guard.outerEnd : this.condition.outerEnd);
     this.patchBody();
 
     if (this.guard) {
@@ -165,7 +163,9 @@ export default class WhilePatcher extends LoopPatcher {
 
     // `while a then …`
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd, token => token.type === SourceType.THEN
+      searchStart,
+      searchEnd,
+      token => token.type === SourceType.THEN
     );
   }
 

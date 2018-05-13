@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import {parse} from 'decaffeinate-parser';
+import { parse } from 'decaffeinate-parser';
 import CodeContext from '../../src/utils/CodeContext';
 import formatDecaffeinateParserAst from '../../src/utils/formatDecaffeinateParserAst';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
@@ -12,7 +12,9 @@ describe('formatDecaffeinateParserAst', () => {
         break
     `);
     let formattedTokens = formatDecaffeinateParserAst(parse(source), new CodeContext(source));
-    strictEqual(formattedTokens, stripSharedIndent(`
+    strictEqual(
+      formattedTokens,
+      stripSharedIndent(`
       Program [1:1(0)-3:8(22)] {
         body: Block [1:1(0)-3:8(22)] {
           inline: false
@@ -40,6 +42,7 @@ describe('formatDecaffeinateParserAst', () => {
           ]
         }
       }
-    `) + '\n');
+    `) + '\n'
+    );
   });
 });

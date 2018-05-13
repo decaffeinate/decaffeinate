@@ -1,4 +1,4 @@
-import check, {checkCS1} from './support/check';
+import check, { checkCS1 } from './support/check';
 
 describe('throw', () => {
   it('is preserved when used in a statement context', () => {
@@ -14,66 +14,87 @@ describe('throw', () => {
   });
 
   it('is not considered an implicitly-returnable value', () => {
-    check(`
+    check(
+      `
       ->
         if err
           throw 42
-    `, `
+    `,
+      `
       (function() {
         if (err) {
           throw 42;
         }
       });
-    `);
+    `
+    );
   });
 
   it('blocks parent conditionals from becoming ternary expressions in single-line functions', () => {
-    check(`
+    check(
+      `
       -> if a then throw b
-    `, `
+    `,
+      `
       (function() { if (a) { throw b; } });
-    `);
+    `
+    );
   });
 
   it('blocks parent conditionals with a `return` from becoming ternary expressions in single-line functions', () => {
-    check(`
+    check(
+      `
       -> if a then throw b else c
-    `, `
+    `,
+      `
       (function() { if (a) { throw b; } else { return c; } });
-    `);
+    `
+    );
   });
 
   it('blocks parent conditionals from becoming ternary expressions in single-line bound functions', () => {
-    check(`
+    check(
+      `
       => if a then throw b
-    `, `
+    `,
+      `
       () => { if (a) { throw b; } };
-    `);
+    `
+    );
   });
 
   it('allows multiline throw statements', () => {
-    checkCS1(`
+    checkCS1(
+      `
       throw
         a
-    `, `
+    `,
+      `
       throw a;
-    `);
+    `
+    );
   });
 
   it('allows multiline throw expressions', () => {
-    checkCS1(`
+    checkCS1(
+      `
       (throw
         a)
-    `, `
+    `,
+      `
       throw a;
-    `);
+    `
+    );
   });
 
   it('treats the throw target as an expression', () => {
-    check(`
+    check(
+      `
       throw(res.data?.error)
-    `, `
+    `,
+      `
       throw(res.data != null ? res.data.error : undefined);
-    `);
+    `
+    );
   });
 });

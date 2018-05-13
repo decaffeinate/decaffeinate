@@ -17,9 +17,13 @@ export default class ForPatcher extends NodePatcher {
   body: BlockPatcher;
 
   constructor(
-      patcherContext: PatcherContext, keyAssignee: NodePatcher | null,
-      valAssignee: NodePatcher | null, target: NodePatcher,
-      filter: NodePatcher | null, body: BlockPatcher) {
+    patcherContext: PatcherContext,
+    keyAssignee: NodePatcher | null,
+    valAssignee: NodePatcher | null,
+    target: NodePatcher,
+    filter: NodePatcher | null,
+    body: BlockPatcher
+  ) {
     super(patcherContext);
     this.keyAssignee = keyAssignee;
     this.valAssignee = valAssignee;
@@ -112,8 +116,7 @@ export default class ForPatcher extends NodePatcher {
     if (postfixExpressionRequiresParens(this.slice(this.target.contentStart, this.target.contentEnd))) {
       this.target.surroundInParens();
     }
-    if (this.filter &&
-      postfixExpressionRequiresParens(this.slice(this.filter.contentStart, this.filter.contentEnd))) {
+    if (this.filter && postfixExpressionRequiresParens(this.slice(this.filter.contentStart, this.filter.contentEnd))) {
       this.filter.surroundInParens();
     }
   }
@@ -125,7 +128,8 @@ export default class ForPatcher extends NodePatcher {
     if (this.isPostFor()) {
       let afterForToken = this.getFirstHeaderPatcher();
       let index = this.indexOfSourceTokenBetweenPatchersMatching(
-        this.body, afterForToken,
+        this.body,
+        afterForToken,
         token => token.type === SourceType.FOR
       );
       if (!index) {
@@ -150,7 +154,9 @@ export default class ForPatcher extends NodePatcher {
     let candidates = [this.keyAssignee, this.valAssignee, this.target];
     let result: NodePatcher | null = null;
     candidates.forEach(candidate => {
-      if (!candidate) { return; }
+      if (!candidate) {
+        return;
+      }
       if (result === null || candidate.contentStart < result.contentStart) {
         result = candidate;
       }

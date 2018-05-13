@@ -6,8 +6,7 @@ import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation'
 import ternaryNeedsParens from '../../../utils/ternaryNeedsParens';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 
-const GUARD_HELPER =
-  `function __guard__(value, transform) {
+const GUARD_HELPER = `function __guard__(value, transform) {
   return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
 }`;
 
@@ -75,8 +74,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
         soakContainer.appendDeferredSuffix(')');
       }
     } else {
-      soakContainer.insert(
-        soakContainer.contentStart,  `if (${conditionCode}) {\n${soakContainer.getIndent(1)}`);
+      soakContainer.insert(soakContainer.contentStart, `if (${conditionCode}) {\n${soakContainer.getIndent(1)}`);
       soakContainer.appendDeferredSuffix(`\n${soakContainer.getIndent()}}`);
     }
   }

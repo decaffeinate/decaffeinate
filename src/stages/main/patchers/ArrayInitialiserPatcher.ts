@@ -31,9 +31,7 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
         return;
       }
 
-      let needsComma = !isLast &&
-        !member.hasSourceTokenAfter(SourceType.COMMA) &&
-        !(member instanceof ElisionPatcher);
+      let needsComma = !isLast && !member.hasSourceTokenAfter(SourceType.COMMA) && !(member instanceof ElisionPatcher);
       member.patch();
       if (needsComma) {
         this.insert(member.outerEnd, ',');

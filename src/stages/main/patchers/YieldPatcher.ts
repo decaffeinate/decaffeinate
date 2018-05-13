@@ -6,12 +6,12 @@ import ReturnPatcher from './ReturnPatcher';
 
 export default class YieldPatcher extends NodePatcher {
   expression: NodePatcher | null;
-  
+
   constructor(patcherContext: PatcherContext, expression: NodePatcher | null) {
     super(patcherContext);
     this.expression = expression;
   }
-  
+
   initialize(): void {
     this.yields();
     if (this.expression) {
@@ -22,7 +22,7 @@ export default class YieldPatcher extends NodePatcher {
   /**
    * 'yield' EXPRESSION
    */
-  patchAsExpression({needsParens = true}: PatchOptions = {}): void {
+  patchAsExpression({ needsParens = true }: PatchOptions = {}): void {
     let surroundInParens = this.needsParens() && !this.isSurroundedByParentheses();
     if (surroundInParens) {
       this.insert(this.contentStart, '(');
@@ -39,6 +39,7 @@ export default class YieldPatcher extends NodePatcher {
     return !(
       this.parent instanceof BlockPatcher ||
       this.parent instanceof ReturnPatcher ||
-      (this.parent instanceof AssignOpPatcher && this.parent.expression === this));
+      (this.parent instanceof AssignOpPatcher && this.parent.expression === this)
+    );
   }
 }

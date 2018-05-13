@@ -26,5 +26,5 @@ export default [
   '  let thisFn = (() => { return this; }).toString();',
   "  let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();",
   '  eval(`${thisName} = this;`);',
-  '}',
+  '}'
 ];

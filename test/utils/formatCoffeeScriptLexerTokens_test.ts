@@ -11,7 +11,9 @@ describe('formatCoffeeScriptLexerTokens', () => {
         a()
     `);
     let formattedTokens = formatCoffeeScriptLexerTokens(tokens(source), new CodeContext(source));
-    strictEqual(formattedTokens, stripSharedIndent(`
+    strictEqual(
+      formattedTokens,
+      stripSharedIndent(`
       [1:1(0)-1:2(1)]: IDENTIFIER: "x"
       [1:3(2)-1:4(3)]: =: "="
       [1:5(4)-1:8(7)]: FOR: "for"
@@ -24,6 +26,7 @@ describe('formatCoffeeScriptLexerTokens', () => {
       [2:5(19)-2:6(20)]: CALL_END: ")"
       [2:5(19)-2:6(20)]: OUTDENT: 2
       [2:6(20)-2:6(20)]: TERMINATOR: "\\n"
-    `) + '\n');
+    `) + '\n'
+    );
   });
 });

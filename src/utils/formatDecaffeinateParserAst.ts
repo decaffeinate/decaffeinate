@@ -9,9 +9,16 @@ export default function formatDecaffeinateParserAst(program: Node, context: Code
 function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
   let propLines = [];
   let childPropNames = node.getChildNames();
-  let blacklistedProps = childPropNames.concat(
-    ['raw', 'line', 'column', 'type', 'parentNode', 'context', 'start', 'end']
-  );
+  let blacklistedProps = childPropNames.concat([
+    'raw',
+    'line',
+    'column',
+    'type',
+    'parentNode',
+    'context',
+    'start',
+    'end'
+  ]);
   for (let key of Object.keys(node)) {
     if (blacklistedProps.indexOf(key) !== -1) {
       continue;
@@ -44,9 +51,5 @@ function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
     }
   }
   let rangeStr = context.formatRange(node.start, node.end);
-  return [
-    `${node.type} ${rangeStr} {`,
-    ...propLines.map(s => '  ' + s),
-    '}',
-  ];
+  return [`${node.type} ${rangeStr} {`, ...propLines.map(s => '  ' + s), '}'];
 }

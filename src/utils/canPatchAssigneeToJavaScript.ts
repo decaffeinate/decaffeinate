@@ -8,20 +8,40 @@
  * JS falls back to the default if the value only if the value is undefined.
  */
 import {
-  ArrayInitialiser, AssignOp, DynamicMemberAccessOp, Elision, Expansion, Identifier,
-  MemberAccessOp, Node, ObjectInitialiser, ObjectInitialiserMember,
-  ProtoMemberAccessOp, Rest, SoakedDynamicMemberAccessOp, SoakedMemberAccessOp,
-  SoakedProtoMemberAccessOp, Spread
+  ArrayInitialiser,
+  AssignOp,
+  DynamicMemberAccessOp,
+  Elision,
+  Expansion,
+  Identifier,
+  MemberAccessOp,
+  Node,
+  ObjectInitialiser,
+  ObjectInitialiserMember,
+  ProtoMemberAccessOp,
+  Rest,
+  SoakedDynamicMemberAccessOp,
+  SoakedMemberAccessOp,
+  SoakedProtoMemberAccessOp,
+  Spread
 } from 'decaffeinate-parser/dist/nodes';
-import {Options} from '../options';
+import { Options } from '../options';
 
 export default function canPatchAssigneeToJavaScript(
-  node: Node, options: Options, isTopLevel: boolean = true
+  node: Node,
+  options: Options,
+  isTopLevel: boolean = true
 ): boolean {
-  if (node instanceof Identifier || node instanceof MemberAccessOp ||
-      node instanceof SoakedMemberAccessOp || node instanceof ProtoMemberAccessOp ||
-      node instanceof DynamicMemberAccessOp || node instanceof SoakedDynamicMemberAccessOp ||
-      node instanceof SoakedProtoMemberAccessOp || node instanceof Elision) {
+  if (
+    node instanceof Identifier ||
+    node instanceof MemberAccessOp ||
+    node instanceof SoakedMemberAccessOp ||
+    node instanceof ProtoMemberAccessOp ||
+    node instanceof DynamicMemberAccessOp ||
+    node instanceof SoakedDynamicMemberAccessOp ||
+    node instanceof SoakedProtoMemberAccessOp ||
+    node instanceof Elision
+  ) {
     return true;
   }
   if (node instanceof ArrayInitialiser) {
@@ -40,10 +60,12 @@ export default function canPatchAssigneeToJavaScript(
       if (isInFinalPosition && member instanceof Expansion) {
         return true;
       }
-      if (isInFinalPosition &&
-          (member instanceof Spread || member instanceof Rest) &&
-          !(member.expression instanceof ObjectInitialiser) &&
-          canPatchAssigneeToJavaScript(member.expression, options, false)) {
+      if (
+        isInFinalPosition &&
+        (member instanceof Spread || member instanceof Rest) &&
+        !(member.expression instanceof ObjectInitialiser) &&
+        canPatchAssigneeToJavaScript(member.expression, options, false)
+      ) {
         return true;
       }
       return canPatchAssigneeToJavaScript(member, options, false);
