@@ -1,12 +1,14 @@
-import check, {checkCS1} from './support/check';
+import check, { checkCS1 } from './support/check';
 
 describe('suggestions', () => {
   it('provides a suggestion for the babel constructor workaround', () => {
-    check(`
+    check(
+      `
       class A extends B
         c: =>
           d
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS001: Remove Babel/TypeScript constructor workaround
@@ -30,34 +32,42 @@ describe('suggestions', () => {
           return d;
         }
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('provides no suggestions for an ordinary file', () => {
-    check(`
+    check(
+      `
       x = 1
-    `, `
+    `,
+      `
       const x = 1;
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('only shows one of each suggestion', () => {
-    checkCS1(`
+    checkCS1(
+      `
       class A extends B
         constructor: (@c) ->
           super
       class E extends F
         constructor: (@g) ->
           super
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS001: Remove Babel/TypeScript constructor workaround
@@ -89,18 +99,22 @@ describe('suggestions', () => {
           super(...arguments);
         }
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests removing Array.from from for-of loops', () => {
-    check(`
+    check(
+      `
       for a in b
         c
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS101: Remove unnecessary use of Array.from
@@ -109,97 +123,121 @@ describe('suggestions', () => {
       for (let a of Array.from(b)) {
         c;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest removing Array.from from for-of loops over an array literal', () => {
-    check(`
+    check(
+      `
       for a in [1, 2, 3]
         b
-    `, `
+    `,
+      `
       for (let a of [1, 2, 3]) {
         b;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests removing Array.from from includes usages', () => {
-    check(`
+    check(
+      `
       a in b
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS101: Remove unnecessary use of Array.from
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
        */
       Array.from(b).includes(a);
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests cleaning up implicit returns', () => {
-    check(`
+    check(
+      `
       ->
         f()
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS102: Remove unnecessary code created because of implicit returns
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
        */
       () => f();
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest implicit returns when there is an explicit return', () => {
-    check(`
+    check(
+      `
       ->
         f()
         return
-    `, `
+    `,
+      `
       (function() {
         f();
       });
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest implicit return cleanup for inline functions', () => {
-    check(`
+    check(
+      `
       values = [1, 2, 3]
       values = values.map((val) -> val + 1)
-    `, `
+    `,
+      `
       let values = [1, 2, 3];
       values = values.map(val => val + 1);
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests removing guard on complex soak operations', () => {
-    check(`
+    check(
+      `
       a()?.b
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS103: Rewrite code to no longer use __guard__
@@ -209,17 +247,21 @@ describe('suggestions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest removing guard on simple soak operations', () => {
-    check(`
+    check(
+      `
       a?.b
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS207: Consider shorter variations of null checks
@@ -228,17 +270,21 @@ describe('suggestions', () => {
       if (typeof a !== 'undefined' && a !== null) {
         a.b;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests removing inline assignments', () => {
-    check(`
+    check(
+      `
       accounts[getAccountId()] //= splitFactor
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS104: Avoid inline assignments
@@ -246,59 +292,75 @@ describe('suggestions', () => {
        */
       let name;
       accounts[name = getAccountId()] = Math.floor(accounts[name] / splitFactor);
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests removing assignments when the expression is already repeatable', () => {
-    check(`
+    check(
+      `
       accounts[accountId] //= splitFactor
-    `, `
+    `,
+      `
       accounts[accountId] = Math.floor(accounts[accountId] / splitFactor);
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests simplifying complex assignments', () => {
-    check(`
+    check(
+      `
       {a: [b, ..., c]} = d
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS201: Simplify complex destructure assignments
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
        */
       const array = d.a, b = array[0], c = array[array.length - 1];
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest simplifying simple assignments', () => {
-    check(`
+    check(
+      `
       {a: {b: c}} = d
-    `, `
+    `,
+      `
       const {a: {b: c}} = d;
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests simplifying dynamic range loops', () => {
-    check(`
+    check(
+      `
       for a in [b..c]
         d
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS202: Simplify dynamic range loops
@@ -307,33 +369,41 @@ describe('suggestions', () => {
       for (let a = b, end = c, asc = b <= end; asc ? a <= end : a >= end; asc ? a++ : a--) {
         d;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest simplifying loops with a known direction', () => {
-    check(`
+    check(
+      `
       for a in [b..c] by 1
         d
-    `, `
+    `,
+      `
       for (let a = b, end = c; a <= end; a++) {
         d;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests cleaning up || {} in a for-own loop', () => {
-    check(`
+    check(
+      `
       for own a of b
         c
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS203: Remove \`|| {}\` from converted for-own loops
@@ -342,17 +412,21 @@ describe('suggestions', () => {
       for (let a of Object.keys(b || {})) {
         c;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests cleaning up order for complex `includes` usage', () => {
-    check(`
+    check(
+      `
       a() in b()
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS101: Remove unnecessary use of Array.from
@@ -362,37 +436,45 @@ describe('suggestions', () => {
        */
       let needle;
       (needle = a(), Array.from(b()).includes(needle));
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest cleaning up order for simple `includes` usage', () => {
-    check(`
+    check(
+      `
       a in b
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS101: Remove unnecessary use of Array.from
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
        */
       Array.from(b).includes(a);
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests avoiding IIFEs', () => {
-    check(`
+    check(
+      `
       x = try
         a
       catch b
         c
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS205: Consider reworking code to avoid use of IIFEs
@@ -403,21 +485,25 @@ describe('suggestions', () => {
       } catch (b) {
         return c;
       } })();
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest avoiding IIFEs when the return is pushed down', () => {
-    check(`
+    check(
+      `
       ->
         return if a
           b
         else
           c
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS102: Remove unnecessary code created because of implicit returns
@@ -430,18 +516,22 @@ describe('suggestions', () => {
           return c;
         }
       });
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests avoiding initClass when it is generated', () => {
-    check(`
+    check(
+      `
       class A
         b: c
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS206: Consider reworking classes to avoid initClass
@@ -453,33 +543,41 @@ describe('suggestions', () => {
         }
       }
       A.initClass();
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest avoiding initClass for normal classes', () => {
-    check(`
+    check(
+      `
       class A
         b: -> c
-    `, `
+    `,
+      `
       class A {
         b() { return c; }
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests shortening null checks for the binary existence operator', () => {
-    check(`
+    check(
+      `
       a = 1
       x = a ? b
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS207: Consider shorter variations of null checks
@@ -487,18 +585,22 @@ describe('suggestions', () => {
        */
       const a = 1;
       const x = a != null ? a : b;
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests shortening null checks for the unary existence operator', () => {
-    check(`
+    check(
+      `
       a = 1
       b = a?
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS207: Consider shorter variations of null checks
@@ -506,35 +608,43 @@ describe('suggestions', () => {
        */
       const a = 1;
       const b = (a != null);
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests removing top-level this', () => {
-    check(`
+    check(
+      `
       this
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS208: Avoid top-level this
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
        */
       this;
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests removing top-level this within a fat arrow function', () => {
-    check(`
+    check(
+      `
       =>
         return this
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS208: Avoid top-level this
@@ -543,48 +653,60 @@ describe('suggestions', () => {
       () => {
         return this;
       };
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not suggest removing top-level this within a normal function', () => {
-    check(`
+    check(
+      `
       ->
         return this
-    `, `
+    `,
+      `
       (function() {
         return this;
       });
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('does not consider a static method to use top-level this', () => {
-    check(`
+    check(
+      `
       class A
         @b: -> c
-    `, `
+    `,
+      `
       class A {
         static b() { return c; }
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('suggests removing top-level return', () => {
-    check(`
+    check(
+      `
       if foo
         return
-    `, `
+    `,
+      `
       /*
        * decaffeinate suggestions:
        * DS209: Avoid top-level return
@@ -593,18 +715,22 @@ describe('suggestions', () => {
       if (foo) {
         return;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 
   it('preserves a shebang line at the top of the file', () => {
-    check(`
+    check(
+      `
       #!/usr/bin/env coffee
       a?.b
-    `, `
+    `,
+      `
       #!/usr/bin/env node
       /*
        * decaffeinate suggestions:
@@ -614,10 +740,12 @@ describe('suggestions', () => {
       if (typeof a !== 'undefined' && a !== null) {
         a.b;
       }
-    `, {
-      options: {
-        disableSuggestionComment: false,
-      },
-    });
+    `,
+      {
+        options: {
+          disableSuggestionComment: false
+        }
+      }
+    );
   });
 });

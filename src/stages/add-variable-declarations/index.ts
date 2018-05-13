@@ -12,7 +12,7 @@ export default class AddVariableDeclarationsStage {
     addVariableDeclarations(content, editor);
     return {
       code: editor.toString(),
-      suggestions: [],
+      suggestions: []
     };
   }
 }

@@ -76,8 +76,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
   }
 
   shouldAddBabelWorkaround(): boolean {
-    let shouldEnable = !this.options.disableBabelConstructorWorkaround &&
-      this.getInvalidConstructorMessage() !== null;
+    let shouldEnable = !this.options.disableBabelConstructorWorkaround && this.getInvalidConstructorMessage() !== null;
     if (shouldEnable) {
       this.addSuggestion(REMOVE_BABEL_WORKAROUND);
     }
@@ -154,11 +153,9 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     }
     let statements = this.expression.body.statements;
     for (let i = 0; i < statements.length; i++) {
-      let usesThis = containsDescendant(
-        statements[i].node,
-        child => child instanceof This,
-        {shouldStopTraversal: child => child instanceof Class || isFunction(child)}
-      );
+      let usesThis = containsDescendant(statements[i].node, child => child instanceof This, {
+        shouldStopTraversal: child => child instanceof Class || isFunction(child)
+      });
       if (usesThis) {
         return i;
       }

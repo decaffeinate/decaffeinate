@@ -1,5 +1,10 @@
 import {
-  ArrayInitialiser, Identifier, Node, ObjectInitialiser, ObjectInitialiserMember, Spread
+  ArrayInitialiser,
+  Identifier,
+  Node,
+  ObjectInitialiser,
+  ObjectInitialiserMember,
+  Spread
 } from 'decaffeinate-parser/dist/nodes';
 import flatMap from './flatMap';
 
@@ -24,7 +29,8 @@ export default function leftHandIdentifiers(node: Node): Array<Identifier> {
         return leftHandIdentifiers(member.expression || member.key);
       } else if (member instanceof Spread) {
         return leftHandIdentifiers(member.expression);
-      } {
+      }
+      {
         return leftHandIdentifiers(member.assignee);
       }
     });

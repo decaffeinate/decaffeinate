@@ -37,7 +37,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    *
    *   'set? ' + (a != null);
    */
-  patchAsExpression({needsParens=true}: PatchOptions = {}): void {
+  patchAsExpression({ needsParens = true }: PatchOptions = {}): void {
     let addParens = needsParens && !this.isSurroundedByParentheses();
     if (addParens) {
       // `a?` → `(a?`
@@ -57,7 +57,10 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    */
   patchAsStatement(): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
-    let { node: { expression }, negated } = this;
+    let {
+      node: { expression },
+      negated
+    } = this;
     let needsTypeofCheck = this.needsTypeofCheck();
 
     this.expression.patch();
@@ -79,7 +82,6 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
           `typeof ${expression.raw} !== 'undefined' && ${expression.raw} !== null`
         );
       }
-
     } else {
       if (negated) {
         // `a.b?` → `a.b == null`

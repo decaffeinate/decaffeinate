@@ -1,4 +1,4 @@
-import check, {checkCS1, checkCS2} from './support/check';
+import check, { checkCS1, checkCS2 } from './support/check';
 
 describe('declarations', () => {
   it('adds inline declarations for assignments as statements', () => {
@@ -6,80 +6,101 @@ describe('declarations', () => {
   });
 
   it('adds separate declarations for assignments as expressions', () => {
-    check(`
+    check(
+      `
       a(b = 1)
-    `, `
+    `,
+      `
       let b;
       a(b = 1);
-    `);
+    `
+    );
   });
 
   it('does not add declarations for subsequent assignments to the same binding', () => {
-    check(`
+    check(
+      `
       a = 1
       a = 2
-    `, `
+    `,
+      `
       let a = 1;
       a = 2;
-    `);
+    `
+    );
   });
 
   it('does not add declarations for assignments to a declared binding', () => {
-    check(`
+    check(
+      `
       (a) ->
         a = 1
-    `, `
+    `,
+      `
       a => a = 1;
-    `);
+    `
+    );
   });
 
   it('adds separate declarations at the top of the current scope if they cannot be inline', () => {
-    check(`
+    check(
+      `
       ->
         a = 1
-    `, `
+    `,
+      `
       (function() {
         let a;
         return a = 1;
       });
-    `);
+    `
+    );
   });
 
   it('does not add declarations for assignments to a binding if the parent scope defines the binding', () => {
-    check(`
+    check(
+      `
       a = 1
       ->
         a = 2
-    `, `
+    `,
+      `
       let a = 1;
       () => a = 2;
-    `);
+    `
+    );
   });
 
   it('adds declarations at the top of the block in which they are defined', () => {
-    check(`
+    check(
+      `
       if a
         if b
           c = 1
-    `, `
+    `,
+      `
       if (a) {
         if (b) {
           const c = 1;
         }
       }
-    `);
+    `
+    );
   });
 
   it('does not add multiple declarations when the assignment happens at the top of a block', () => {
-    check(`
+    check(
+      `
       if a = 1
         b
-    `, `
+    `,
+      `
       let a;
       if (a = 1) {
         b;
       }
-    `);
+    `
+    );
   });
 
   it('does not add variable declarations when the LHS is a member expression', () => {
@@ -96,49 +117,64 @@ describe('declarations', () => {
   });
 
   it('does not add variable declarations for destructuring array assignment with previously declared bindings', () => {
-    checkCS1(`
+    checkCS1(
+      `
       a = 1
       [a] = b
-    `, `
+    `,
+      `
       let a = 1;
       [a] = Array.from(b);
-    `);
-    checkCS2(`
+    `
+    );
+    checkCS2(
+      `
       a = 1
       [a] = b
-    `, `
+    `,
+      `
       let a = 1;
       [a] = b;
-    `);
+    `
+    );
   });
 
   it('wraps object destructuring that is not part of a variable declaration in parentheses', () => {
-    check(`
+    check(
+      `
       a = 1
       {a} = b
-    `, `
+    `,
+      `
       let a = 1;
       ({a} = b);
-    `);
+    `
+    );
   });
 
   it('does not add inline variable declarations when the destructuring is mixed', () => {
-    checkCS1(`
+    checkCS1(
+      `
       a = 1
       [a, b] = c
-    `, `
+    `,
+      `
       let b;
       let a = 1;
       [a, b] = Array.from(c);
-    `);
-    checkCS2(`
+    `
+    );
+    checkCS2(
+      `
       a = 1
       [a, b] = c
-    `, `
+    `,
+      `
       let b;
       let a = 1;
       [a, b] = c;
-    `);
+    `
+    );
   });
 
   it('adds pre-declarations when the assignment is in an expression context', () => {
@@ -154,14 +190,17 @@ describe('declarations', () => {
   });
 
   it('adds pre-declarations and regular declarations together properly', () => {
-    check(`
+    check(
+      `
       a = 1
       b = c = 2
-    `, `
+    `,
+      `
       let c;
       const a = 1;
       const b = (c = 2);
-    `);
+    `
+    );
   });
 
   it('uses let rather than const if specified', () => {

@@ -36,20 +36,23 @@ export default class SuperPatcher extends NodePatcher {
       if (!accessCode) {
         throw this.error(
           'Cannot handle a super call in an inner function in a constructor. ' +
-          'Please either rewrite your CoffeeScript code to not use this ' +
-          'construct or file a bug to discuss ways that decaffeinate could ' +
-          'handle this case.');
+            'Please either rewrite your CoffeeScript code to not use this ' +
+            'construct or file a bug to discuss ways that decaffeinate could ' +
+            'handle this case.'
+        );
       }
       if (!classCode) {
-        throw this.error(
-          'Complex super calls within anonymous classes are not yet supported.');
+        throw this.error('Complex super calls within anonymous classes are not yet supported.');
       }
       let openParenToken = this.getFollowingOpenParenToken();
       // Note that this code snippet works for instance methods but not static
       // methods. Static methods that require the expanded call form like this
       // have already been converted in the normalize step.
-      this.overwrite(this.contentStart, openParenToken.end,
-        `${classCode}.prototype.__proto__${accessCode}.call(this, `);
+      this.overwrite(
+        this.contentStart,
+        openParenToken.end,
+        `${classCode}.prototype.__proto__${accessCode}.call(this, `
+      );
     }
   }
 
@@ -77,19 +80,17 @@ export default class SuperPatcher extends NodePatcher {
       }
       return {
         classCode: this.getEnclosingClassName(methodAssignment),
-        accessCode,
+        accessCode
       };
     } else if (methodAssignment instanceof ConstructorPatcher) {
       return {
         classCode: this.getEnclosingClassName(methodAssignment),
-        accessCode: null,
+        accessCode: null
       };
     } else {
       let methodInfo = this.getPrototypeAssignInfo(methodAssignment);
       if (!methodInfo) {
-        throw this.error(
-          'Expected a valid method assignment from getEnclosingMethodAssignment.'
-        );
+        throw this.error('Expected a valid method assignment from getEnclosingMethodAssignment.');
       }
       return methodInfo;
     }
@@ -118,16 +119,16 @@ export default class SuperPatcher extends NodePatcher {
   getEnclosingMethodAssignment(): NodePatcher {
     let { parent } = this;
     while (parent) {
-      if (parent instanceof ClassAssignOpPatcher ||
-          parent instanceof ConstructorPatcher ||
-          this.getPrototypeAssignInfo(parent) !== null) {
+      if (
+        parent instanceof ClassAssignOpPatcher ||
+        parent instanceof ConstructorPatcher ||
+        this.getPrototypeAssignInfo(parent) !== null
+      ) {
         return parent;
       }
       parent = parent.parent;
     }
-    throw this.error(
-      'super called in a context where we cannot determine the class and method name.'
-    );
+    throw this.error('super called in a context where we cannot determine the class and method name.');
   }
 
   /**
@@ -145,17 +146,17 @@ export default class SuperPatcher extends NodePatcher {
     if (methodAccessPatcher instanceof MemberAccessOpPatcher) {
       return {
         classCode: classRefPatcher.getRepeatCode(),
-        accessCode: `.${methodAccessPatcher.member.node.data}`,
+        accessCode: `.${methodAccessPatcher.member.node.data}`
       };
     } else if (methodAccessPatcher instanceof DynamicMemberAccessOpPatcher) {
       return {
         classCode: classRefPatcher.getRepeatCode(),
-        accessCode: `[${methodAccessPatcher.indexingExpr.getRepeatCode()}]`,
+        accessCode: `[${methodAccessPatcher.indexingExpr.getRepeatCode()}]`
       };
     } else {
       throw this.error(
-        'Expected the method access patcher to be either ' +
-        'MemberAccessOpPatcher or DynamicMemberAccessOpPatcher.');
+        'Expected the method access patcher to be either ' + 'MemberAccessOpPatcher or DynamicMemberAccessOpPatcher.'
+      );
     }
   }
 
@@ -174,8 +175,7 @@ export default class SuperPatcher extends NodePatcher {
    */
   canConvertToJsSuper(): boolean {
     let methodAssignment = this.getEnclosingMethodAssignment();
-    if (methodAssignment instanceof ConstructorPatcher ||
-        methodAssignment instanceof ClassAssignOpPatcher) {
+    if (methodAssignment instanceof ConstructorPatcher || methodAssignment instanceof ClassAssignOpPatcher) {
       return methodAssignment.expression === this.getEnclosingFunction();
     }
     return false;
@@ -200,7 +200,9 @@ export default class SuperPatcher extends NodePatcher {
    */
   getFollowingOpenParenToken(): SourceToken {
     let openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
-      this.contentEndTokenIndex, SourceType.CALL_START);
+      this.contentEndTokenIndex,
+      SourceType.CALL_START
+    );
     if (!openParenTokenIndex) {
       throw this.error('Expected open-paren after super.');
     }

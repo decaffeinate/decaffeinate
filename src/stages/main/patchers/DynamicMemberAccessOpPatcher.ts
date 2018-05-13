@@ -1,12 +1,10 @@
-import {
-  PatcherContext, PatchOptions, RepeatableOptions
-} from '../../../patchers/types';
+import { PatcherContext, PatchOptions, RepeatableOptions } from '../../../patchers/types';
 import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class DynamicMemberAccessOpPatcher extends NodePatcher {
   expression: NodePatcher;
   indexingExpr: NodePatcher;
-  
+
   constructor(patcherContext: PatcherContext, expression: NodePatcher, indexingExpr: NodePatcher) {
     super(patcherContext);
     this.expression = expression;

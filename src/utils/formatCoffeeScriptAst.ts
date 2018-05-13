@@ -58,7 +58,7 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
   return [
     `${node.constructor.name} ${formatCoffeeScriptLocationData(node.locationData, context)} {`,
     ...propLines.map(s => '  ' + s),
-    '}',
+    '}'
   ];
 }
 

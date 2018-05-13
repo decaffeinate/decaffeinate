@@ -8,7 +8,7 @@ import BinaryOpPatcher from './BinaryOpPatcher';
  */
 export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
   negated: boolean;
-  
+
   constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
     super(patcherContext, left, right);
     this.negated = (patcherContext.node as OfOp | InstanceofOp).isNot;

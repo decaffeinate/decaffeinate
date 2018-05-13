@@ -22,24 +22,30 @@ describe('instanceof', () => {
   });
 
   it('works with double-negated `instanceof`', () => {
-    check(`
+    check(
+      `
       unless a not instanceof b
         c
-    `, `
+    `,
+      `
       if (a instanceof b) {
         c;
       }
-    `);
+    `
+    );
   });
 
   it('works with instanceof that already has parens', () => {
-    check(`
+    check(
+      `
       if (a not instanceof b)
         c
-    `, `
+    `,
+      `
       if (!(a instanceof b)) {
         c;
       }
-    `);
+    `
+    );
   });
 });

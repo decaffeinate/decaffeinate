@@ -5,8 +5,7 @@ import { REMOVE_GUARD } from '../../../suggestions';
 import findSoakContainer from '../../../utils/findSoakContainer';
 import SlicePatcher from './SlicePatcher';
 
-const GUARD_HELPER =
-  `function __guard__(value, transform) {
+const GUARD_HELPER = `function __guard__(value, transform) {
   return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
 }`;
 

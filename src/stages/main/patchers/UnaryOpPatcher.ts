@@ -3,7 +3,7 @@ import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class UnaryOpPatcher extends NodePatcher {
   expression: NodePatcher;
-  
+
   constructor(patcherContext: PatcherContext, expression: NodePatcher) {
     super(patcherContext);
     this.expression = expression;

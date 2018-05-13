@@ -13,6 +13,8 @@ export default function blockStartsWithObjectInitialiser(patcher: NodePatcher): 
     return false;
   }
   let statement = patcher.statements[0];
-  return containsDescendant(statement.node, child =>
-    child instanceof ObjectInitialiser && child.start === statement.contentStart);
+  return containsDescendant(
+    statement.node,
+    child => child instanceof ObjectInitialiser && child.start === statement.contentStart
+  );
 }

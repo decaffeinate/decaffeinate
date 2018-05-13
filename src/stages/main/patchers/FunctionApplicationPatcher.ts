@@ -22,7 +22,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * Note that we don't need to worry about implicit function applications,
    * since the normalize stage would have already added parens.
    */
-  patchAsExpression({fnNeedsParens = false}: PatchOptions = {}): void {
+  patchAsExpression({ fnNeedsParens = false }: PatchOptions = {}): void {
     let { args, outerEndTokenIndex } = this;
 
     if (fnNeedsParens) {

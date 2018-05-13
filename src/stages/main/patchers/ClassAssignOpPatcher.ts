@@ -55,13 +55,12 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    * that we do, so mark it as repeatable now.
    */
   markKeyRepeatableIfNecessary(): void {
-    if (this.expression instanceof FunctionPatcher &&
-      containsSuperCall(this.expression.node)) {
+    if (this.expression instanceof FunctionPatcher && containsSuperCall(this.expression.node)) {
       if (this.isStaticMethod()) {
         if (this.key instanceof DynamicMemberAccessOpPatcher) {
           this.key.indexingExpr.setRequiresRepeatableExpression({
             ref: 'method',
-            forceRepeat: true,
+            forceRepeat: true
           });
         }
       } else {
@@ -71,7 +70,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
           // need to be defensive in that case. For other cases, like number
           // literals, we still mark as repeatable so later code can safely get
           // the repeat code.
-          forceRepeat: this.key instanceof StringPatcher && this.key.expressions.length > 0,
+          forceRepeat: this.key instanceof StringPatcher && this.key.expressions.length > 0
         });
       }
     }
@@ -125,8 +124,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    * @protected
    */
   isStaticMethod(): boolean {
-    if (!(this.key instanceof MemberAccessOpPatcher) &&
-      !(this.key instanceof DynamicMemberAccessOpPatcher)) {
+    if (!(this.key instanceof MemberAccessOpPatcher) && !(this.key instanceof DynamicMemberAccessOpPatcher)) {
       return false;
     }
 
@@ -157,8 +155,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     }
     return (
       !this.isStaticMethod() &&
-      (this.expression.node.type === 'BoundFunction' ||
-        this.expression.node.type === 'BoundGeneratorFunction')
+      (this.expression.node.type === 'BoundFunction' || this.expression.node.type === 'BoundGeneratorFunction')
     );
   }
 
@@ -169,7 +166,6 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
    * @protected
    */
   isMethod(): boolean {
-    return this.expression instanceof ManuallyBoundFunctionPatcher ||
-      super.isMethod();
+    return this.expression instanceof ManuallyBoundFunctionPatcher || super.isMethod();
   }
 }

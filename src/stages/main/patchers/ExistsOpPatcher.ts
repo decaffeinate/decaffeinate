@@ -36,11 +36,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
       let leftAgain = this.left.patchRepeatable({ parens: true, ref: 'left' });
       // `a.b ? c` → `a.b != null ? a.b : c`
       //     ^^^         ^^^^^^^^^^^^^^^^^
-      this.overwrite(
-        this.left.outerEnd,
-        this.right.outerStart,
-        ` != null ? ${leftAgain} : `
-      );
+      this.overwrite(this.left.outerEnd, this.right.outerStart, ` != null ? ${leftAgain} : `);
     }
     this.right.patch();
   }
@@ -61,20 +57,12 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
       this.insert(this.contentStart, `typeof `);
       // `if (typeof a ? b` → `if (typeof a === 'undefined' || a === null) { b`
       //              ^^^                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      this.overwrite(
-        this.left.outerEnd,
-        this.right.outerStart,
-        ` === 'undefined' || ${leftAgain} === null) { `
-      );
+      this.overwrite(this.left.outerEnd, this.right.outerStart, ` === 'undefined' || ${leftAgain} === null) { `);
     } else {
       this.left.patch();
       // `if (a.b ? b.c` → `if (a.b == null) { b.c`
       //         ^^^               ^^^^^^^^^^^^
-      this.overwrite(
-        this.left.outerEnd,
-        this.right.outerStart,
-        ` == null) { `
-      );
+      this.overwrite(this.left.outerEnd, this.right.outerStart, ` == null) { `);
     }
 
     this.right.patch();

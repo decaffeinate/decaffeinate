@@ -21,7 +21,8 @@ describe('decaffeinate', () => {
 describe('automatic conversions', () => {
   describe('inserting commas', () => {
     it('does not add commas after block comments', () => {
-      check(`
+      check(
+        `
         {
           a: b
           ###
@@ -29,7 +30,8 @@ describe('automatic conversions', () => {
           ###
           c: d
         }
-      `, `
+      `,
+        `
         ({
           a: b,
           /*
@@ -43,31 +45,37 @@ describe('automatic conversions', () => {
 
     describe('in objects', () => {
       it('inserts commas after properties if they are not there', () => {
-        check(`
+        check(
+          `
           {
             a: b
             c: d
           }
-        `, `
+        `,
+          `
           ({
             a: b,
             c: d
           });
-        `);
+        `
+        );
       });
 
       it('does not insert commas if there already is one', () => {
-        check(`
+        check(
+          `
           {
             a: b,
             c: d
           }
-        `, `
+        `,
+          `
           ({
             a: b,
             c: d
           });
-        `);
+        `
+        );
       });
 
       it('does not insert commas in single-line objects', () => {
@@ -75,59 +83,71 @@ describe('automatic conversions', () => {
       });
 
       it('inserts commas only for objects that end a line', () => {
-        check(`
+        check(
+          `
           {
             a: b, c: d
             e: f
             g: h
           }
-        `, `
+        `,
+          `
           ({
             a: b, c: d,
             e: f,
             g: h
           });
-        `);
+        `
+        );
       });
 
       it('inserts commas immediately after the element if followed by a comment', () => {
-        check(`
+        check(
+          `
           {
             a: b # hi!
             c: d
           }
-        `, `
+        `,
+          `
           ({
             a: b, // hi!
             c: d
           });
-        `);
+        `
+        );
       });
 
       it('inserts commas after shorthand properties', () => {
-        check(`
+        check(
+          `
           {
             a
             c
           }
-        `, `
+        `,
+          `
           ({
             a,
             c
           });
-        `);
+        `
+        );
       });
 
       it('inserts commas for braceless objects', () => {
-        check(`
+        check(
+          `
           a: b
           c: d
-        `, `
+        `,
+          `
           ({
             a: b,
             c: d
           });
-        `);
+        `
+        );
       });
     });
   });
@@ -142,16 +162,19 @@ describe('automatic conversions', () => {
     });
 
     it('does not add parentheses to objects that are implicit returns', () => {
-      check(`
+      check(
+        `
         ->
           a = 1
           {a}
-      `, `
+      `,
+        `
         (function() {
           const a = 1;
           return {a};
         });
-      `);
+      `
+      );
     });
 
     it('preserves statements on one line separated by a semicolon', () => {
@@ -159,13 +182,15 @@ describe('automatic conversions', () => {
     });
 
     it('handles object literals with function property values', () => {
-      check(`
+      check(
+        `
         a
           b: ->
             c
 
           d: 1
-      `, `
+      `,
+        `
         a({
           b() {
             return c;
@@ -173,18 +198,21 @@ describe('automatic conversions', () => {
 
           d: 1
         });
-      `);
+      `
+      );
     });
 
     it('handles object literals with function property values followed by comments', () => {
-      check(`
+      check(
+        `
         a
           b: ->
             c
 
         # FOO
         d e
-      `, `
+      `,
+        `
         a({
           b() {
             return c;
@@ -193,16 +221,19 @@ describe('automatic conversions', () => {
 
         // FOO
         d(e);
-      `);
+      `
+      );
     });
   });
 });
 
 describe('runToStage', () => {
   it('allows displaying the decaffeinate-parser AST', () => {
-    check(`
+    check(
+      `
       @a b
-    `, `
+    `,
+      `
       Program [1:1(0)-1:5(4)] {
         body: Block [1:1(0)-1:5(4)] {
           inline: false
@@ -224,22 +255,28 @@ describe('runToStage', () => {
           ]
         }
       }
-    `, {
-      options: {
-        runToStage: 'decaffeinate-parser',
+    `,
+      {
+        options: {
+          runToStage: 'decaffeinate-parser'
+        }
       }
-    });
+    );
   });
 
   it('allows running to an intermediate stage', () => {
-    check(`
+    check(
+      `
       @a b
-    `, `
+    `,
+      `
       @a(b)
-    `, {
-      options: {
-        runToStage: 'NormalizeStage',
+    `,
+      {
+        options: {
+          runToStage: 'NormalizeStage'
+        }
       }
-    });
+    );
   });
 });

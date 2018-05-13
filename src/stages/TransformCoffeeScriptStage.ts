@@ -23,7 +23,7 @@ export default class TransformCoffeeScriptStage {
     patcher.patch();
     return {
       code: editor.toString(),
-      suggestions: stage.suggestions,
+      suggestions: stage.suggestions
     };
   }
 
@@ -32,16 +32,17 @@ export default class TransformCoffeeScriptStage {
   suggestions: Array<Suggestion> = [];
 
   constructor(
-      readonly ast: Node,
-      readonly context: DecaffeinateContext,
-      readonly editor: MagicString,
-      readonly options: Options) {
-  }
+    readonly ast: Node,
+    readonly context: DecaffeinateContext,
+    readonly editor: MagicString,
+    readonly options: Options
+  ) {}
 
   /**
    * This should be overridden in subclasses.
    */
-  patcherConstructorForNode(_node: Node): PatcherClass | null { // eslint-disable-line no-unused-vars
+  patcherConstructorForNode(_node: Node): PatcherClass | null {
+    // eslint-disable-line no-unused-vars
     return null;
   }
 
@@ -67,9 +68,7 @@ export default class TransformCoffeeScriptStage {
       if (!child) {
         return null;
       } else if (Array.isArray(child)) {
-        return child.map(item =>
-          item ? this.patcherForNode(item, constructor, name) : null
-        );
+        return child.map(item => (item ? this.patcherForNode(item, constructor, name) : null));
       } else {
         return this.patcherForNode(child, constructor, name);
       }
@@ -80,7 +79,9 @@ export default class TransformCoffeeScriptStage {
       context: this.context,
       editor: this.editor,
       options: this.options,
-      addSuggestion: (suggestion: Suggestion) => { this.suggestions.push(suggestion); },
+      addSuggestion: (suggestion: Suggestion) => {
+        this.suggestions.push(suggestion);
+      }
     };
     let patcher = new constructor(patcherContext, ...children);
     this.patchers.push(patcher);
@@ -103,8 +104,7 @@ export default class TransformCoffeeScriptStage {
     if (constructor === null) {
       let props = node.getChildNames();
       throw new PatchError(
-        `no patcher available for node type: ${node.type}` +
-        `${props.length ? ` (props: ${props.join(', ')})` : ''}`,
+        `no patcher available for node type: ${node.type}` + `${props.length ? ` (props: ${props.join(', ')})` : ''}`,
         this.context.source,
         node.start,
         node.end

@@ -3,10 +3,7 @@ import SourceToken from 'coffee-lex/dist/SourceToken';
 import { InOp } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
-import {
-  FIX_INCLUDES_EVALUATION_ORDER,
-  REMOVE_ARRAY_FROM
-} from '../../../suggestions';
+import { FIX_INCLUDES_EVALUATION_ORDER, REMOVE_ARRAY_FROM } from '../../../suggestions';
 import ArrayInitialiserPatcher from './ArrayInitialiserPatcher';
 import BinaryOpPatcher from './BinaryOpPatcher';
 import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
@@ -131,12 +128,14 @@ export default class InOpPatcher extends BinaryOpPatcher {
     // In typical cases, when converting `a in b` to `b.includes(a)`, parens
     // won't be necessary around the `b`, but to be safe, only skip the parens
     // in a specific set of known-good cases.
-    return !(this.right instanceof IdentifierPatcher) &&
+    return (
+      !(this.right instanceof IdentifierPatcher) &&
       !(this.right instanceof MemberAccessOpPatcher) &&
       !(this.right instanceof DynamicMemberAccessOpPatcher) &&
       !(this.right instanceof FunctionApplicationPatcher) &&
       !(this.right instanceof ArrayInitialiserPatcher) &&
-      !(this.right instanceof StringPatcher);
+      !(this.right instanceof StringPatcher)
+    );
   }
 
   patchAsIndexLookup(): void {

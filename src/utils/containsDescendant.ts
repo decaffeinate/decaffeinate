@@ -4,10 +4,10 @@ import { Node } from 'decaffeinate-parser/dist/nodes';
 export default function containsDescendant(
   node: Node,
   predicate: (node: Node) => boolean,
-  {shouldStopTraversal = () => false}: {shouldStopTraversal?: (node: Node) => boolean} = {}
+  { shouldStopTraversal = () => false }: { shouldStopTraversal?: (node: Node) => boolean } = {}
 ): boolean {
   let found = false;
-  traverse(node, (childNode) => {
+  traverse(node, childNode => {
     if (found) {
       return false;
     }

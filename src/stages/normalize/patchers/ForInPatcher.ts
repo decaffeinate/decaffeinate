@@ -6,11 +6,16 @@ import ForPatcher from './ForPatcher';
 
 export default class ForInPatcher extends ForPatcher {
   step: NodePatcher | null;
-  
+
   constructor(
-      patcherContext: PatcherContext, keyAssignee: NodePatcher | null,
-      valAssignee: NodePatcher | null, target: NodePatcher, step: NodePatcher | null,
-      filter: NodePatcher | null, body: BlockPatcher) {
+    patcherContext: PatcherContext,
+    keyAssignee: NodePatcher | null,
+    valAssignee: NodePatcher | null,
+    target: NodePatcher,
+    step: NodePatcher | null,
+    filter: NodePatcher | null,
+    body: BlockPatcher
+  ) {
     super(patcherContext, keyAssignee, valAssignee, target, filter, body);
     this.step = step;
   }

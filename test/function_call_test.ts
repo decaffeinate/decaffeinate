@@ -1,18 +1,21 @@
-import check, {checkCS1, checkCS2} from './support/check';
+import check, { checkCS1, checkCS2 } from './support/check';
 
 describe('function calls', () => {
   it('inserts commas after arguments if they are not there', () => {
-    check(`
+    check(
+      `
       a(
         1
         2
       )
-    `, `
+    `,
+      `
       a(
         1,
         2
       );
-    `);
+    `
+    );
   });
 
   it('does not insert commas in single-line calls', () => {
@@ -20,105 +23,132 @@ describe('function calls', () => {
   });
 
   it('inserts commas only for arguments that end a line', () => {
-    check(`
+    check(
+      `
       a(
         1, 2
         3, 4)
-    `, `
+    `,
+      `
       a(
         1, 2,
         3, 4);
-    `);
+    `
+    );
   });
 
   it('inserts commas immediately after the element if followed by a comment', () => {
-    check(`
+    check(
+      `
       a(
         1 # hi
         2
       )
-    `, `
+    `,
+      `
       a(
         1, // hi
         2
       );
-    `);
+    `
+    );
   });
 
   it('inserts commas on the same line when the property value is an interpolated string', () => {
-    check(`
+    check(
+      `
       a
         b: "#{c}"
         d: e
-    `, `
+    `,
+      `
       a({
         b: \`\${c}\`,
         d: e
       });
-    `);
+    `
+    );
   });
 
   it('works when the first argument is parenthesized', () => {
-    check(`
+    check(
+      `
       f (1+1),2+2
-    `, `
+    `,
+      `
       f((1+1),2+2);
-    `);
+    `
+    );
   });
 
   it('works when the last argument is parenthesized', () => {
-    check(`
+    check(
+      `
       f 1+1,(2+2)
-    `, `
+    `,
+      `
       f(1+1,(2+2));
-    `);
+    `
+    );
   });
 
   it('works with `new` when the first argument is parenthesized', () => {
-    check(`
+    check(
+      `
       a= new c ([b()])
-    `, `
+    `,
+      `
       const a= new c(([b()]));
-    `);
+    `
+    );
   });
 
   it('places parentheses in calls with multi-line function arguments after the closing brace', () => {
-    check(`
+    check(
+      `
       promise.then ->
         a()
         b # c
       d
-    `, `
+    `,
+      `
       promise.then(function() {
         a();
         return b;
       }); // c
       d;
-    `);
+    `
+    );
   });
 
   it('places parentheses in calls with single line that short hand into fat arrow function', () => {
-    check(`
+    check(
+      `
       promise.then (a)->
         b
       c
-    `, `
+    `,
+      `
       promise.then(a=> b);
       c;
-    `);
+    `
+    );
   });
 
   it.skip('preserves comments in functions that will become arrow functions', () => {
-    check(`
+    check(
+      `
       promise.then (a) ->
         b # c
       d
-    `, `
+    `,
+      `
       promise.then(a =>
         b // c
       );
       d;
-    `);
+    `
+    );
   });
 
   it('replaces the space between the callee and the first argument for first arg on same line', () => {
@@ -135,27 +165,33 @@ describe('function calls', () => {
   });
 
   it('works with a multi-line callee', () => {
-    check(`
+    check(
+      `
       x = (->
         1
       )()
-    `, `
+    `,
+      `
       const x = (() => 1)();
-    `);
+    `
+    );
   });
 
   it('works with a callee enclosed in parentheses and including a comment', () => {
-    check(`
+    check(
+      `
       (
         # HEY
         foo
       ) 0
-    `, `
+    `,
+      `
       (
         // HEY
         foo
       )(0);
-    `);
+    `
+    );
   });
 
   it('adds parens for nested function calls', () => {
@@ -175,28 +211,34 @@ describe('function calls', () => {
   });
 
   it.skip('adds parens without messing up multi-line calls', () => {
-    check(`
+    check(
+      `
       a
         b: c
-    `, `
+    `,
+      `
       a({
         b: c
       });
-    `);
+    `
+    );
   });
 
   it.skip('adds parens to multi-line calls with the right indentation', () => {
-    check(`
+    check(
+      `
       ->
         a
           b: c
-    `, `
+    `,
+      `
       (function() {
         return a({
           b: c
         });
       });
-    `);
+    `
+    );
   });
 
   it('converts rest params in function calls', () => {
@@ -204,72 +246,94 @@ describe('function calls', () => {
   });
 
   it('works when the entire span of arguments is replaced', () => {
-    check(`
+    check(
+      `
       a yes
-    `, `
+    `,
+      `
       a(true);
-    `);
+    `
+    );
   });
 
   it('works with a call that returns a function that is immediately called', () => {
-    check(`
+    check(
+      `
       a()()
-    `, `
+    `,
+      `
       a()();
-    `);
+    `
+    );
   });
 
   it('deletes trailing comma after the last argument', () => {
-    check(`
+    check(
+      `
       x(1,)
-    `, `
+    `,
+      `
       x(1);
-    `);
+    `
+    );
   });
 
   it('places the closing braces for a multi-line function argument', () => {
-    check(`
+    check(
+      `
       a(() ->
         0)
-    `, `
+    `,
+      `
       a(() => 0);
-    `);
+    `
+    );
   });
 
   it('keeps commas immediately after function applications', () => {
-    check(`
+    check(
+      `
       a(b(c), d)
-    `, `
+    `,
+      `
       a(b(c), d);
-    `);
+    `
+    );
   });
 
   it('puts the close-paren in a nice place for implicit calls on objects', () => {
-    check(`
+    check(
+      `
       a {
       }
-    `, `
+    `,
+      `
       a({
       });
-    `);
+    `
+    );
   });
 
   it('handles implicit calls nested in another function call', () => {
-    check(`
+    check(
+      `
       a(
         b {
         }
       )
-    `, `
+    `,
+      `
       a(
         b({
         })
       );
-    `);
+    `
+    );
   });
 
   it('handles implicit calls across OUTDENT tokens', () => {
-    check(`
+    check(
+      `
       a {
         b: ->
           return c d,
@@ -277,7 +341,8 @@ describe('function calls', () => {
               f
       }
       g
-    `, `
+    `,
+      `
       a({
         b() {
           return c(d,
@@ -287,15 +352,18 @@ describe('function calls', () => {
         }
       });
       g;
-    `);
+    `
+    );
   });
 
   it('handles a multi-line callback as the second arg within a function body (#412)', () => {
-    check(`
+    check(
+      `
       _authenticate: (authKey, cb) ->
         @_getSession authKey, (err, {person, user, authKey, org} = {}) ->
             return cb null, {person, authKey, user, org}
-    `, `
+    `,
+      `
       ({
           _authenticate(authKey, cb) {
             return this._getSession(authKey, function(err, param) {
@@ -307,47 +375,59 @@ describe('function calls', () => {
         });
         }
       });
-    `);
+    `
+    );
   });
 
   it('handles a multi-line callback ending in an object as the second arg (#410)', () => {
-    check(`
+    check(
+      `
       @server.on 'sioDisconnect', =>
         @_statuses = {}
-    `, `
+    `,
+      `
       this.server.on('sioDisconnect', () => {
         return this._statuses = {};
       });
-    `);
+    `
+    );
   });
 
   it('handles a multi-line explicit return callback as the second arg (#405)', () => {
-    check(`
+    check(
+      `
       Teacher.hasClass classId, () ->
         return cb null, {}
-    `, `
+    `,
+      `
       Teacher.hasClass(classId, () => cb(null, {}));
-    `);
+    `
+    );
   });
 
   it('handles unit test style multi-line callbacks (#379)', () => {
-    check(`
+    check(
+      `
       it "should foo", ->
         expect( bar ).to.eql [1]
-    `, `
+    `,
+      `
       it("should foo", () => expect( bar ).to.eql([1]));
-    `);
+    `
+    );
   });
 
   it('handles nested multi-line callbacks with inconsistent spacing (#370)', () => {
-    checkCS1(`
+    checkCS1(
+      `
       define [
       ], () ->
       
         somefunc 'something', ['something', (ContactService) ->
       
         ]
-    `, `
+    `,
+      `
       define([
       ], () =>
       
@@ -355,62 +435,77 @@ describe('function calls', () => {
       
         ])
       );
-    `);
+    `
+    );
   });
 
   it('handles a multi-line callback within a map call (#276)', () => {
-    check(`
+    check(
+      `
       (a) ->
         (a not in b.map(a, (e) -> 
           e)
         )
-    `, `
+    `,
+      `
       (function(a) {
         let needle;
         return ((needle = a, !Array.from(b.map(a, e => e)).includes(needle))
         );
       });
-    `);
+    `
+    );
   });
 
   it('handles soaked implicit function calls', () => {
-    check(`
+    check(
+      `
       a? b
-    `, `
+    `,
+      `
       if (typeof a === 'function') {
         a(b);
       }
-    `);
+    `
+    );
   });
 
   it.skip('handles soaked implicit new expressions', () => {
-    check(`
+    check(
+      `
       new A? b
-    `, `
+    `,
+      `
       __guardFunc__(A, f => new f(b));
       function __guardFunc__(func, transform) {
         return typeof func === 'function' ? transform(func) : undefined;
       }
-    `);
+    `
+    );
   });
 
   it('handles implicit calls ending in a postfix conditional (#479)', () => {
-    check(`
+    check(
+      `
       baz () =>
         foo if bar
-    `, `
+    `,
+      `
       baz(() => {
         if (bar) { return foo; }
       });
-    `);
+    `
+    );
   });
 
   it('handles nested implicit calls ending in a postfix conditional (#459)', () => {
-    check(`
+    check(
+      `
       define [], ->
         something: ->
           $.on 'click', assignThis if someCondition
-    `, `
+    `,
+      `
       define([], () =>
         ({
           something() {
@@ -418,44 +513,55 @@ describe('function calls', () => {
           }
         })
       );
-    `);
+    `
+    );
   });
 
   it('handles single-line implicit calls ending in a postfix conditional (#419)', () => {
-    check(`
+    check(
+      `
       @someMethod => 'returnValue' if condition
-    `, `
+    `,
+      `
       this.someMethod(() => { if (condition) { return 'returnValue'; } });
-    `);
+    `
+    );
   });
 
   it('handles simple implicit calls ending in a postfix conditional (#378)', () => {
-    check(`
+    check(
+      `
       a => b if c
-    `, `
+    `,
+      `
       a(() => { if (c) { return b; } });
-    `);
+    `
+    );
   });
 
-
   it('handles implicit method calls with a postfix conditional (#334)', () => {
-    check(`
+    check(
+      `
       a.then () ->
         b if c
-    `, `
+    `,
+      `
       a.then(function() {
         if (c) { return b; }
       });
-    `);
+    `
+    );
   });
 
   it('handles an implicit call with nested function expressions', () => {
-    check(`
+    check(
+      `
       a b, ->
         c: () ->
           if d
             e
-    `, `
+    `,
+      `
       a(b, () =>
         ({
           c() {
@@ -465,126 +571,150 @@ describe('function calls', () => {
           }
         })
       );
-    `);
+    `
+    );
   });
 
   it('handles an implicit call before a close-paren with different indentation', () => {
-    check(`
+    check(
+      `
       (a ->
         null
         )
-    `, `
+    `,
+      `
       a(() => null);
-    `);
+    `
+    );
   });
 
   it('handles an implicit call before a call end with different indentation', () => {
-    check(`
+    check(
+      `
       a(b, c ->
         null
         )
-    `, `
+    `,
+      `
       a(b, c(() => null));
-    `);
+    `
+    );
   });
 
   it('handles an implicit call at the end of an argument list of a multiline function call', () => {
-    check(`
+    check(
+      `
       x(
         if a
           b c
         if d
           e f
       )
-    `, `
+    `,
+      `
       x(
         a ?
           b(c) : undefined,
         d ?
           e(f) : undefined
       );
-    `);
+    `
+    );
   });
 
   it('handles an implicit call followed by an unnecessary comma in an array literal', () => {
-    check(`
+    check(
+      `
       [
         if a
           b c,
         if d
           e f
       ]
-    `, `
+    `,
+      `
       [
         a ?
           b(c) : undefined,
         d ?
           e(f) : undefined
       ];
-    `);
+    `
+    );
   });
 
   it('handles an implicit call followed by an unnecessary comma in a function call', () => {
-    check(`
+    check(
+      `
       x(
         if a
           b c,
         if d
           e f
       )
-    `, `
+    `,
+      `
       x(
         a ?
           b(c) : undefined,
         d ?
           e(f) : undefined
       );
-    `);
+    `
+    );
   });
 
   it('handles an implicit call followed by an unnecessary comma in an object literal', () => {
-    check(`
+    check(
+      `
       {
         x: if a
           b c,
         y: if d
           e f
       }
-    `, `
+    `,
+      `
       ({
         x: a ?
           b(c) : undefined,
         y: d ?
           e(f) : undefined
       });
-    `);
+    `
+    );
   });
 
   it('properly places implicit parens for multiline method calls', () => {
-    check(`
+    check(
+      `
       a
         .b(c, ->
           d
             .e f
         )
-    `, `
+    `,
+      `
       a
         .b(c, () =>
           d
             .e(f)
         );
-    `);
+    `
+    );
   });
 
   it('maintains CALL_END location for a nested dynamic member access', () => {
-    check(`
+    check(
+      `
       a ->
         for b in c
           if d
             e[f]
       
       g
-    `, `
+    `,
+      `
       a(() =>
         (() => {
           const result = [];
@@ -599,18 +729,21 @@ describe('function calls', () => {
         })());
       
       g;
-    `);
+    `
+    );
   });
 
   it('maintains CALL_END location around a nested conditional', () => {
-    check(`
+    check(
+      `
       a(->
         for b in c
           if d
             e)
       
       f
-    `, `
+    `,
+      `
       a(() =>
         (() => {
           const result = [];
@@ -625,129 +758,161 @@ describe('function calls', () => {
         })());
       
       f;
-    `);
+    `
+    );
   });
 
   it('allows semicolon delimiters between arguments', () => {
-    check(`
+    check(
+      `
       a(b, c; d, e;)
-    `, `
+    `,
+      `
       a(b, c, d, e);
-    `);
+    `
+    );
   });
 
   it('allows a trailing comma for an object in a function arg', () => {
-    check(`
+    check(
+      `
       a
         b: c,
       , d
-    `, `
+    `,
+      `
       a(
         {b: c}
       , d);
-    `);
+    `
+    );
   });
 
   it('properly inserts implicit parens within a block (#727)', () => {
-    check(`
+    check(
+      `
       launchMissile(->
         setTimeout (->
           launch()
         ), 5000
       )
-    `, `
+    `,
+      `
       launchMissile(() =>
         setTimeout((() => launch()), 5000)
       );
-    `);
+    `
+    );
   });
 
   it('properly inserts implicit parens in a nested call within a block', () => {
-    check(`
+    check(
+      `
       launchMissile(->
         1 + setTimeout (->
           launch()
         ), 5000
       )
-    `, `
+    `,
+      `
       launchMissile(() =>
         1 + setTimeout((() => launch()), 5000)
       );
-    `);
+    `
+    );
   });
 
   it('handles a function call on a multiline string surrounded by parens', () => {
-    check(`
+    check(
+      `
       a
       (
         a '
         '
       )
-    `, `
+    `,
+      `
       a;
       
         a(\`\\
       \`)
       ;
-    `);
+    `
+    );
   });
 
   it('handles a multiline implicit call followed by CALL_END', () => {
-    check(`
+    check(
+      `
       a(
         b c,
         d
       )
-    `, `
+    `,
+      `
       a(
         b(c,
         d)
       );
-    `);
+    `
+    );
   });
 
   it('handles a multiline implicit call with an object literal', () => {
-    check(`
+    check(
+      `
       a(
         b -> c {
         },
           d
       )
-    `, `
+    `,
+      `
       a(
         b(() => c({
         },
           d) )
       );
-    `);
+    `
+    );
   });
 
   it('wraps parens around comma-separated simple assignments in an argument position', () => {
-    checkCS1(`
+    checkCS1(
+      `
       a([b] = c)
-    `, `
+    `,
+      `
       let b;
       a(([b] = Array.from(c), c));
-    `);
-    checkCS2(`
+    `
+    );
+    checkCS2(
+      `
       a([b] = c)
-    `, `
+    `,
+      `
       let b;
       a(([b] = c));
-    `);
+    `
+    );
   });
 
   it('wraps parens around comma-separated complex assignments in an argument position', () => {
-    check(`
+    check(
+      `
       a([b, ..., c] = d)
-    `, `
+    `,
+      `
       let b, c;
       a((b = d[0], c = d[d.length - 1], d));
-    `);
+    `
+    );
   });
 
   it('properly handles a semicolon-terminated function followed by a comma', () => {
-    check(`
+    check(
+      `
       fn1((done) ->
         fn2('string', (object) ->
           ;
@@ -756,7 +921,8 @@ describe('function calls', () => {
           done(err)
         )
       )
-    `, `
+    `,
+      `
       fn1(done =>
         fn2('string', function(object) {
           }
@@ -765,14 +931,18 @@ describe('function calls', () => {
           return done(err);
         })
       );
-    `);
+    `
+    );
   });
 
   it('properly handles empty function expressions surrounded by parens', () => {
-    check(`
+    check(
+      `
       middleware.execute {}, (->), (->)
-    `, `
+    `,
+      `
       middleware.execute({}, (function() {}), (function() {}));
-    `);
+    `
+    );
   });
 });

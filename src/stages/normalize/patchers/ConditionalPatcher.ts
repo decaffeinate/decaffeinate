@@ -21,7 +21,12 @@ export default class ConditionalPatcher extends NodePatcher {
   consequent: NodePatcher | null;
   alternate: NodePatcher | null;
 
-  constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: NodePatcher, alternate: NodePatcher | null) {
+  constructor(
+    patcherContext: PatcherContext,
+    condition: NodePatcher,
+    consequent: NodePatcher,
+    alternate: NodePatcher | null
+  ) {
     super(patcherContext);
     this.condition = condition;
     this.consequent = consequent;
@@ -51,8 +56,10 @@ export default class ConditionalPatcher extends NodePatcher {
       throw this.error('Expected non-null consequent for post-if.');
     }
     this.condition.patch();
-    if (postfixExpressionRequiresParens(this.slice(this.condition.contentStart, this.condition.contentEnd)) &&
-        !this.condition.isSurroundedByParentheses()) {
+    if (
+      postfixExpressionRequiresParens(this.slice(this.condition.contentStart, this.condition.contentEnd)) &&
+      !this.condition.isSurroundedByParentheses()
+    ) {
       this.condition.surroundInParens();
     }
 
@@ -76,8 +83,7 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   isPostIf(): boolean {
-    return this.consequent !== null
-      && this.condition.contentStart > this.consequent.contentStart;
+    return this.consequent !== null && this.condition.contentStart > this.consequent.contentStart;
   }
 
   getIfTokenIndex(): SourceTokenListIndex {

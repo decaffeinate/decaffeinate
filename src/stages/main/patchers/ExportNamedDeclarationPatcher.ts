@@ -1,5 +1,5 @@
 import NodePatcher from '../../../patchers/NodePatcher';
-import {PatcherContext} from '../../../patchers/types';
+import { PatcherContext } from '../../../patchers/types';
 import AssignOpPatcher from './AssignOpPatcher';
 
 export default class ExportNamedDeclarationPatcher extends NodePatcher {

@@ -2,38 +2,67 @@
 // https://github.com/jashkenas/coffeescript/blob/master/src/lexer.coffee
 
 const JS_KEYWORDS = [
-  'true', 'false', 'null', 'this',
-  'new', 'delete', 'typeof', 'in', 'instanceof',
-  'return', 'throw', 'break', 'continue', 'debugger', 'yield',
-  'if', 'else', 'switch', 'for', 'while', 'do', 'try', 'catch', 'finally',
-  'class', 'extends', 'super',
-  'import', 'export', 'default',
+  'true',
+  'false',
+  'null',
+  'this',
+  'new',
+  'delete',
+  'typeof',
+  'in',
+  'instanceof',
+  'return',
+  'throw',
+  'break',
+  'continue',
+  'debugger',
+  'yield',
+  'if',
+  'else',
+  'switch',
+  'for',
+  'while',
+  'do',
+  'try',
+  'catch',
+  'finally',
+  'class',
+  'extends',
+  'super',
+  'import',
+  'export',
+  'default'
 ];
 
-const COFFEE_KEYWORDS = [
-  'undefined', 'Infinity', 'NaN',
-  'then', 'unless', 'until', 'loop', 'of', 'by', 'when',
-];
+const COFFEE_KEYWORDS = ['undefined', 'Infinity', 'NaN', 'then', 'unless', 'until', 'loop', 'of', 'by', 'when'];
 
-const COFFEE_ALIASES = [
-  'and', 'or', 'is', 'isnt', 'not', 'yes', 'no', 'on', 'off',
-];
+const COFFEE_ALIASES = ['and', 'or', 'is', 'isnt', 'not', 'yes', 'no', 'on', 'off'];
 
 const RESERVED = [
-  'case', 'default', 'function', 'var', 'void', 'with', 'const', 'let', 'enum',
-  'export', 'import', 'native', 'implements', 'interface', 'package', 'private',
-  'protected', 'public', 'static',
+  'case',
+  'default',
+  'function',
+  'var',
+  'void',
+  'with',
+  'const',
+  'let',
+  'enum',
+  'export',
+  'import',
+  'native',
+  'implements',
+  'interface',
+  'package',
+  'private',
+  'protected',
+  'public',
+  'static'
 ];
 
-const STRICT_PROSCRIBED = [
-  'arguments', 'eval',
-];
+const STRICT_PROSCRIBED = ['arguments', 'eval'];
 
-const JS_FORBIDDEN = new Set([
-  ...JS_KEYWORDS,
-  ...RESERVED,
-  ...STRICT_PROSCRIBED
-]);
+const JS_FORBIDDEN = new Set([...JS_KEYWORDS, ...RESERVED, ...STRICT_PROSCRIBED]);
 
 const RESERVED_WORDS = new Set([
   ...JS_KEYWORDS,
@@ -42,7 +71,7 @@ const RESERVED_WORDS = new Set([
   ...RESERVED,
   ...STRICT_PROSCRIBED,
   // Mentioned in https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Future_reserved_keywords
-  'await',
+  'await'
 ]);
 
 /**

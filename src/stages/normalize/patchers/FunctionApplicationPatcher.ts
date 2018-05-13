@@ -1,7 +1,7 @@
 import { SourceType } from 'coffee-lex';
 
 import SourceToken from 'coffee-lex/dist/SourceToken';
-import {CSXElement} from 'decaffeinate-parser/dist/nodes';
+import { CSXElement } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import normalizeListItem from '../../../utils/normalizeListItem';
 import NodePatcher from './../../../patchers/NodePatcher';
@@ -24,8 +24,9 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
     if (implicitCall) {
       let firstArg = args[0];
-      let firstArgIsOnNextLine = !firstArg ? false :
-        /\n/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
+      let firstArgIsOnNextLine = !firstArg
+        ? false
+        : /\n/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
       let funcEnd = this.getFuncEnd();
       if (firstArgIsOnNextLine) {
         this.insert(funcEnd, '(');
@@ -60,8 +61,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       this.fn.surroundInParens();
     }
 
-    let argListCode = this.slice(
-      this.args[0].contentStart, this.args[this.args.length - 1].contentEnd);
+    let argListCode = this.slice(this.args[0].contentStart, this.args[this.args.length - 1].contentEnd);
     let isArgListMultiline = argListCode.indexOf('\n') !== -1;
     let lastTokenType = this.lastToken().type;
     if (!isArgListMultiline || lastTokenType === SourceType.RBRACE || lastTokenType === SourceType.RBRACKET) {
@@ -127,8 +127,9 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     let maxInsertionPoint = this.getEditingBounds()[1];
     let enclosingIndentedPatcher: NodePatcher = this;
     while (
-        !enclosingIndentedPatcher.isFirstNodeInLine(enclosingIndentedPatcher.contentStart) &&
-        enclosingIndentedPatcher.parent) {
+      !enclosingIndentedPatcher.isFirstNodeInLine(enclosingIndentedPatcher.contentStart) &&
+      enclosingIndentedPatcher.parent
+    ) {
       enclosingIndentedPatcher = enclosingIndentedPatcher.parent;
     }
     return Math.min(maxInsertionPoint, enclosingIndentedPatcher.contentEnd);
@@ -149,8 +150,13 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     }
     let searchStart = this.fn.outerEnd;
     let searchEnd = this.args[0].outerStart;
-    return this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd, token => token.type === SourceType.CALL_START) === null;
+    return (
+      this.indexOfSourceTokenBetweenSourceIndicesMatching(
+        searchStart,
+        searchEnd,
+        token => token.type === SourceType.CALL_START
+      ) === null
+    );
   }
 
   /**
@@ -160,7 +166,9 @@ export default class FunctionApplicationPatcher extends NodePatcher {
   getFuncEnd(): number {
     if (this.node.type === 'SoakedFunctionApplication' || this.node.type === 'SoakedNewOp') {
       let questionMarkTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
-        this.fn.outerEndTokenIndex, SourceType.EXISTENCE);
+        this.fn.outerEndTokenIndex,
+        SourceType.EXISTENCE
+      );
       if (!questionMarkTokenIndex) {
         throw this.error('Expected to find question mark token index.');
       }

@@ -42,9 +42,8 @@ export default class BinaryOpPatcher extends NodePatcher {
   /**
    * LEFT OP RIGHT
    */
-  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
-    let addParens =
-      (needsParens && !this.isSurroundedByParentheses()) || this.binaryOpNegated;
+  patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
+    let addParens = (needsParens && !this.isSurroundedByParentheses()) || this.binaryOpNegated;
     if (this.binaryOpNegated) {
       this.insert(this.innerStart, '!');
     }

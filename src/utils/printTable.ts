@@ -1,21 +1,20 @@
 export type Column = {
-  id: string,
-  align: 'left' | 'right',
+  id: string;
+  align: 'left' | 'right';
 };
 
 export type Table = {
-  rows: Array<Array<string>>,
-  columns: Array<Column>,
+  rows: Array<Array<string>>;
+  columns: Array<Column>;
 };
 
-export default function printTable(table: Table, buffer: string=' '): string {
+export default function printTable(table: Table, buffer: string = ' '): string {
   let widths: Array<number> = [];
   table.rows.forEach(row => {
     row.forEach((cell, i) => {
       if (widths.length <= i) {
         widths[i] = cell.length;
-      }
-      else if (widths[i] < cell.length) {
+      } else if (widths[i] < cell.length) {
         widths[i] = cell.length;
       }
     });

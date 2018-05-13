@@ -16,16 +16,17 @@ export type PrototypeAssignPatchers = {
  * the enclosing function.
  */
 export default function extractPrototypeAssignPatchers(patcher: NodePatcher): PrototypeAssignPatchers | null {
-  if (!(patcher instanceof AssignOpPatcher) ||
-      !(patcher.expression instanceof FunctionPatcher) ||
-      !(patcher.assignee instanceof MemberAccessOpPatcher ||
-      patcher.assignee instanceof DynamicMemberAccessOpPatcher) ||
-      !(patcher.assignee.expression instanceof MemberAccessOpPatcher) ||
-      patcher.assignee.expression.member.node.data !== 'prototype') {
+  if (
+    !(patcher instanceof AssignOpPatcher) ||
+    !(patcher.expression instanceof FunctionPatcher) ||
+    !(patcher.assignee instanceof MemberAccessOpPatcher || patcher.assignee instanceof DynamicMemberAccessOpPatcher) ||
+    !(patcher.assignee.expression instanceof MemberAccessOpPatcher) ||
+    patcher.assignee.expression.member.node.data !== 'prototype'
+  ) {
     return null;
   }
   return {
     classRefPatcher: patcher.assignee.expression.expression,
-    methodAccessPatcher: patcher.assignee,
+    methodAccessPatcher: patcher.assignee
   };
 }

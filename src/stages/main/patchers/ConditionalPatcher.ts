@@ -15,7 +15,12 @@ export default class ConditionalPatcher extends NodePatcher {
 
   negated: boolean = false;
 
-  constructor(patcherContext: PatcherContext, condition: NodePatcher, consequent: BlockPatcher | null, alternate: BlockPatcher | null) {
+  constructor(
+    patcherContext: PatcherContext,
+    condition: NodePatcher,
+    consequent: BlockPatcher | null,
+    alternate: BlockPatcher | null
+  ) {
     super(patcherContext);
     this.condition = condition;
     this.consequent = consequent;
@@ -46,10 +51,7 @@ export default class ConditionalPatcher extends NodePatcher {
     if (!consequent || !alternate) {
       return false;
     }
-    return (
-      consequent.prefersToPatchAsExpression() &&
-      alternate.prefersToPatchAsExpression()
-    );
+    return consequent.prefersToPatchAsExpression() && alternate.prefersToPatchAsExpression();
   }
 
   setExpression(force: boolean = false): boolean {
@@ -72,11 +74,10 @@ export default class ConditionalPatcher extends NodePatcher {
 
   willPatchAsTernary(): boolean {
     return (
-      this.prefersToPatchAsExpression() || (
-        this.forcedToPatchAsExpression() &&
+      this.prefersToPatchAsExpression() ||
+      (this.forcedToPatchAsExpression() &&
         (!this.consequent || this.consequent.prefersToPatchAsExpression()) &&
-        (!this.alternate || this.alternate.prefersToPatchAsExpression())
-      )
+        (!this.alternate || this.alternate.prefersToPatchAsExpression()))
     );
   }
 
@@ -87,17 +88,12 @@ export default class ConditionalPatcher extends NodePatcher {
     return !this.willPatchAsTernary() && this.forcedToPatchAsExpression();
   }
 
-  patchAsExpression({needsParens}: PatchOptions = {}): void {
-    let addParens = this.negated ||
-      (needsParens && !this.isSurroundedByParentheses());
+  patchAsExpression({ needsParens }: PatchOptions = {}): void {
+    let addParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
 
     // `if a then b` → `a then b`
     //  ^^^
-    this.overwrite(
-      this.contentStart,
-      this.condition.outerStart,
-      `${this.negated ? '!' : ''}${addParens ? '(' : ''}`
-    );
+    this.overwrite(this.contentStart, this.condition.outerStart, `${this.negated ? '!' : ''}${addParens ? '(' : ''}`);
 
     if (this.node.isUnless) {
       this.condition.negate();
@@ -144,7 +140,9 @@ export default class ConditionalPatcher extends NodePatcher {
       // We might have just a semicolon as the consequent. In that case, it will be null in the AST
       // but we will need to remove it.
       let semicolonTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-        this.condition.outerEnd, elseToken.start, (token) => token.type === SourceType.SEMICOLON
+        this.condition.outerEnd,
+        elseToken.start,
+        token => token.type === SourceType.SEMICOLON
       );
       if (semicolonTokenIndex) {
         let semicolonToken = this.sourceTokenAtIndex(semicolonTokenIndex);
@@ -295,8 +293,7 @@ export default class ConditionalPatcher extends NodePatcher {
       let elseToken = notNull(this.sourceTokenAtIndex(elseTokenIndex));
       this.insert(elseToken.end, ' {}');
     } else if (super.implicitlyReturns()) {
-      let emptyImplicitReturnCode =
-        this.implicitReturnPatcher().getEmptyImplicitReturnCode();
+      let emptyImplicitReturnCode = this.implicitReturnPatcher().getEmptyImplicitReturnCode();
       if (emptyImplicitReturnCode) {
         this.insert(this.innerEnd, ' else {\n');
         this.insert(this.innerEnd, `${this.getIndent(1)}${emptyImplicitReturnCode}\n`);
@@ -343,9 +340,7 @@ export default class ConditionalPatcher extends NodePatcher {
     }
     let ifToken = notNull(this.sourceTokenAtIndex(ifTokenIndex));
     if (ifToken.type !== SourceType.IF) {
-      throw this.error(
-        `expected IF token at start of conditional, but got ${SourceType[ifToken.type]}`
-      );
+      throw this.error(`expected IF token at start of conditional, but got ${SourceType[ifToken.type]}`);
     }
     return ifTokenIndex;
   }
@@ -393,7 +388,9 @@ export default class ConditionalPatcher extends NodePatcher {
     }
 
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      this.condition.outerEnd, searchEnd, token => token.type === SourceType.THEN
+      this.condition.outerEnd,
+      searchEnd,
+      token => token.type === SourceType.THEN
     );
   }
 
@@ -406,9 +403,6 @@ export default class ConditionalPatcher extends NodePatcher {
       return false;
     }
 
-    return (
-      this.consequent.allCodePathsPresent() &&
-      this.alternate.allCodePathsPresent()
-    );
+    return this.consequent.allCodePathsPresent() && this.alternate.allCodePathsPresent();
   }
 }

@@ -2,16 +2,10 @@ import { SourceType } from 'coffee-lex';
 import SourceToken from 'coffee-lex/dist/SourceToken';
 import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
 import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
-import {
-  FunctionApplication, NewOp, Node, SoakedFunctionApplication
-} from 'decaffeinate-parser/dist/nodes';
+import { FunctionApplication, NewOp, Node, SoakedFunctionApplication } from 'decaffeinate-parser/dist/nodes';
 import MagicString from 'magic-string';
 import { Options } from '../options';
-import {
-  AVOID_IIFES,
-  AVOID_INLINE_ASSIGNMENTS,
-  CLEAN_UP_IMPLICIT_RETURNS, Suggestion
-} from '../suggestions';
+import { AVOID_IIFES, AVOID_INLINE_ASSIGNMENTS, CLEAN_UP_IMPLICIT_RETURNS, Suggestion } from '../suggestions';
 import adjustIndent from '../utils/adjustIndent';
 import { logger } from '../utils/debug';
 import DecaffeinateContext from '../utils/DecaffeinateContext';
@@ -29,7 +23,7 @@ export interface PatcherClass {
   // The "children" arg is some number of NodePatchers, but there doesn't seem
   // to be an easy way to have TypeScript understand that.
   // tslint:disable-next-line:no-any
-  new(context: PatcherContext, ...children: Array<any>): NodePatcher;
+  new (context: PatcherContext, ...children: Array<any>): NodePatcher;
   patcherClassForChildNode(node: Node, property: string): PatcherClass | null;
   patcherClassOverrideForNode(node: Node): PatcherClass | null;
 }
@@ -72,7 +66,7 @@ export default class NodePatcher {
   addThisAssignmentAtScopeHeader: AddThisAssignmentCallback | null = null;
   addDefaultParamAssignmentAtScopeHeader: AddDefaultParamCallback | null = null;
 
-  constructor({node, context, editor, options, addSuggestion}: PatcherContext) {
+  constructor({ node, context, editor, options, addSuggestion }: PatcherContext) {
     this.log = logger(this.constructor.name);
 
     this.node = node;
@@ -94,7 +88,8 @@ export default class NodePatcher {
   /**
    * Allow patcher classes that would patch a node to chose a different class.
    */
-  static patcherClassOverrideForNode(_node: Node): PatcherClass | null { // eslint-disable-line no-unused-vars
+  static patcherClassOverrideForNode(_node: Node): PatcherClass | null {
+    // eslint-disable-line no-unused-vars
     return null;
   }
 
@@ -146,10 +141,7 @@ export default class NodePatcher {
         isSemanticToken,
         outerStartTokenIndex.previous()
       );
-      let nextSurroundingTokenIndex = tokens.indexOfTokenMatchingPredicate(
-        isSemanticToken,
-        outerEndTokenIndex.next()
-      );
+      let nextSurroundingTokenIndex = tokens.indexOfTokenMatchingPredicate(isSemanticToken, outerEndTokenIndex.next());
 
       if (!previousSurroundingTokenIndex || !nextSurroundingTokenIndex) {
         break;
@@ -158,11 +150,17 @@ export default class NodePatcher {
       let previousSurroundingToken = tokens.tokenAtIndex(previousSurroundingTokenIndex);
       let nextSurroundingToken = tokens.tokenAtIndex(nextSurroundingTokenIndex);
 
-      if (!previousSurroundingToken || (previousSurroundingToken.type !== SourceType.LPAREN && previousSurroundingToken.type !== SourceType.CALL_START)) {
+      if (
+        !previousSurroundingToken ||
+        (previousSurroundingToken.type !== SourceType.LPAREN && previousSurroundingToken.type !== SourceType.CALL_START)
+      ) {
         break;
       }
 
-      if (!nextSurroundingToken || (nextSurroundingToken.type !== SourceType.RPAREN && nextSurroundingToken.type !== SourceType.CALL_END)) {
+      if (
+        !nextSurroundingToken ||
+        (nextSurroundingToken.type !== SourceType.RPAREN && nextSurroundingToken.type !== SourceType.CALL_END)
+      ) {
         break;
       }
 
@@ -265,8 +263,7 @@ export default class NodePatcher {
   patch(options: PatchOptions = {}): void {
     this.withPrettyErrors(() => {
       if (this._repeatableOptions !== null) {
-        this._repeatCode = this.patchAsRepeatableExpression(
-          this._repeatableOptions, options);
+        this._repeatCode = this.patchAsRepeatableExpression(this._repeatableOptions, options);
       } else if (this.forcedToPatchAsExpression()) {
         this.patchAsForcedExpression(options);
         this.commitDeferredSuffix();
@@ -319,7 +316,7 @@ export default class NodePatcher {
     while (beforeCode === null) {
       try {
         beforeCode = this.slice(sliceStart, this.contentStart);
-      } catch(e) {
+      } catch (e) {
         // Assume that this is because the index is an invalid start. It looks
         // like there isn't a robust way to detect this case exactly, so just
         // try a lower start for any error.
@@ -332,9 +329,7 @@ export default class NodePatcher {
     patchFn();
     let code = this.slice(sliceStart, this.contentEnd);
     let startIndex = 0;
-    while (startIndex < beforeCode.length &&
-        startIndex < code.length &&
-        beforeCode[startIndex] === code[startIndex]) {
+    while (startIndex < beforeCode.length && startIndex < code.length && beforeCode[startIndex] === code[startIndex]) {
       startIndex++;
     }
     return code.substr(startIndex);
@@ -348,12 +343,7 @@ export default class NodePatcher {
       body();
     } catch (err) {
       if (!PatcherError.detect(err)) {
-        throw this.error(
-          err.message,
-          this.contentStart,
-          this.contentEnd,
-          err
-        );
+        throw this.error(err.message, this.contentStart, this.contentEnd, err);
       } else {
         throw err;
       }
@@ -376,8 +366,7 @@ export default class NodePatcher {
    *
    * @protected
    */
-  patchAsRepeatableExpression(
-      repeatableOptions: RepeatableOptions = {}, patchOptions: PatchOptions = {}): string {
+  patchAsRepeatableExpression(repeatableOptions: RepeatableOptions = {}, patchOptions: PatchOptions = {}): string {
     if (this.isRepeatable() && !repeatableOptions.forceRepeat) {
       return this.captureCodeForPatchOperation(() => {
         this.patchAsForcedExpression(patchOptions);
@@ -436,9 +425,7 @@ export default class NodePatcher {
    */
   insert(index: number, content: string): void {
     if (typeof index !== 'number') {
-      throw new Error(
-        `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
-      );
+      throw new Error(`cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`);
     }
     this.log(
       'INSERT',
@@ -463,9 +450,7 @@ export default class NodePatcher {
    */
   prependLeft(index: number, content: string): void {
     if (typeof index !== 'number') {
-      throw new Error(
-        `cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`
-      );
+      throw new Error(`cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`);
     }
     this.log(
       'PREPEND LEFT',
@@ -492,9 +477,11 @@ export default class NodePatcher {
     // determine our bounds (we're allowed to patch from the previous
     // comma/paren to the next comma/paren), so loosen the restriction to the
     // entire function.
-    if (boundingPatcher.parent &&
-        (this.isNodeFunctionApplication(boundingPatcher.parent.node) ||
-        boundingPatcher.parent.node.type === 'ArrayInitialiser')) {
+    if (
+      boundingPatcher.parent &&
+      (this.isNodeFunctionApplication(boundingPatcher.parent.node) ||
+        boundingPatcher.parent.node.type === 'ArrayInitialiser')
+    ) {
       boundingPatcher = boundingPatcher.parent;
     }
     if (this.allowPatchingOuterBounds()) {
@@ -508,7 +495,7 @@ export default class NodePatcher {
    * @protected
    */
   isIndexEditable(index: number): boolean {
-    let [ start, end ] = this.getEditingBounds();
+    let [start, end] = this.getEditingBounds();
     return index >= start && index <= end;
   }
 
@@ -517,7 +504,7 @@ export default class NodePatcher {
    */
   assertEditableIndex(index: number): void {
     if (!this.isIndexEditable(index)) {
-      let [ start, end ] = this.getEditingBounds();
+      let [start, end] = this.getEditingBounds();
       throw this.error(
         `cannot edit index ${index} because it is not editable (i.e. outside [${start}, ${end}))`,
         start,
@@ -564,15 +551,14 @@ export default class NodePatcher {
    */
   overwrite(start: number, end: number, content: string): void {
     if (typeof start !== 'number' || typeof end !== 'number') {
-      throw new Error(
-        `cannot overwrite non-numeric range [${start}, ${end}) ` +
-        `with ${JSON.stringify(content)}`
-      );
+      throw new Error(`cannot overwrite non-numeric range [${start}, ${end}) ` + `with ${JSON.stringify(content)}`);
     }
     this.log(
-      'OVERWRITE', `[${start}, ${end})`,
+      'OVERWRITE',
+      `[${start}, ${end})`,
       JSON.stringify(this.context.source.slice(start, end)),
-      '→', JSON.stringify(content)
+      '→',
+      JSON.stringify(content)
     );
     this.editor.overwrite(start, end, content);
   }
@@ -582,14 +568,9 @@ export default class NodePatcher {
    */
   remove(start: number, end: number): void {
     if (typeof start !== 'number' || typeof end !== 'number') {
-      throw new Error(
-        `cannot remove non-numeric range [${start}, ${end})`
-      );
+      throw new Error(`cannot remove non-numeric range [${start}, ${end})`);
     }
-    this.log(
-      'REMOVE', `[${start}, ${end})`,
-      JSON.stringify(this.context.source.slice(start, end))
-    );
+    this.log('REMOVE', `[${start}, ${end})`, JSON.stringify(this.context.source.slice(start, end)));
     this.editor.remove(start, end);
   }
 
@@ -598,19 +579,17 @@ export default class NodePatcher {
    */
   move(start: number, end: number, index: number): void {
     if (typeof start !== 'number' || typeof end !== 'number') {
-      throw this.error(
-        `cannot remove non-numeric range [${start}, ${end})`
-      );
+      throw this.error(`cannot remove non-numeric range [${start}, ${end})`);
     }
     if (typeof index !== 'number') {
-      throw this.error(
-        `cannot move to non-numeric index: ${index}`
-      );
+      throw this.error(`cannot move to non-numeric index: ${index}`);
     }
     this.log(
-      'MOVE', `[${start}, ${end}) → ${index}`,
+      'MOVE',
+      `[${start}, ${end}) → ${index}`,
       JSON.stringify(this.context.source.slice(start, end)),
-      'BEFORE', JSON.stringify(this.context.source.slice(index, index + 8))
+      'BEFORE',
+      JSON.stringify(this.context.source.slice(index, index + 8))
     );
     this.editor.move(start, end, index);
   }
@@ -787,7 +766,8 @@ export default class NodePatcher {
   /**
    * Patch the end of an implicitly-returned descendant.
    */
-  patchImplicitReturnEnd(_patcher: NodePatcher): void { // eslint-disable-line no-unused-vars
+  patchImplicitReturnEnd(_patcher: NodePatcher): void {
+    // eslint-disable-line no-unused-vars
     // Nothing to do.
   }
 
@@ -876,7 +856,11 @@ export default class NodePatcher {
    * Gets the index of the token between left and right patchers that matches
    * a predicate function.
    */
-  indexOfSourceTokenBetweenPatchersMatching(left: NodePatcher, right: NodePatcher, predicate: (token: SourceToken) => boolean): SourceTokenListIndex | null {
+  indexOfSourceTokenBetweenPatchersMatching(
+    left: NodePatcher,
+    right: NodePatcher,
+    predicate: (token: SourceToken) => boolean
+  ): SourceTokenListIndex | null {
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(left.outerEnd, right.outerStart, predicate);
   }
 
@@ -884,21 +868,20 @@ export default class NodePatcher {
    * Gets the index of the token between source locations that matches a
    * predicate function.
    */
-  indexOfSourceTokenBetweenSourceIndicesMatching(left: number, right: number, predicate: (token: SourceToken) => boolean): SourceTokenListIndex | null {
+  indexOfSourceTokenBetweenSourceIndicesMatching(
+    left: number,
+    right: number,
+    predicate: (token: SourceToken) => boolean
+  ): SourceTokenListIndex | null {
     let tokenList = this.getProgramSourceTokens();
     return tokenList.indexOfTokenMatchingPredicate(
       token => {
-        return (
-          token.start >= left &&
-          token.start <= right &&
-          predicate(token)
-        );
+        return token.start >= left && token.start <= right && predicate(token);
       },
       tokenList.indexOfTokenNearSourceIndex(left),
       tokenList.indexOfTokenNearSourceIndex(right).next()
     );
   }
-
 
   /**
    * Gets the token at a particular index.
@@ -968,9 +951,12 @@ export default class NodePatcher {
    * Gets the index of a token after `contentStart` with the matching type, ignoring
    * non-semantic types by default.
    */
-  indexOfSourceTokenAfterSourceTokenIndex(start: SourceTokenListIndex, type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): SourceTokenListIndex | null {
-    let index = this.getProgramSourceTokens()
-      .indexOfTokenMatchingPredicate(predicate, start.next());
+  indexOfSourceTokenAfterSourceTokenIndex(
+    start: SourceTokenListIndex,
+    type: SourceType,
+    predicate: (token: SourceToken) => boolean = isSemanticToken
+  ): SourceTokenListIndex | null {
+    let index = this.getProgramSourceTokens().indexOfTokenMatchingPredicate(predicate, start.next());
     if (!index) {
       return null;
     }
@@ -984,7 +970,7 @@ export default class NodePatcher {
   /**
    * Determines whether this patcher's node is followed by a particular token.
    */
-  hasSourceTokenAfter(type: SourceType, predicate: (token: SourceToken) => boolean=isSemanticToken): boolean {
+  hasSourceTokenAfter(type: SourceType, predicate: (token: SourceToken) => boolean = isSemanticToken): boolean {
     return this.indexOfSourceTokenAfterSourceTokenIndex(this.outerEndTokenIndex, type, predicate) !== null;
   }
 
@@ -1020,12 +1006,11 @@ export default class NodePatcher {
       return false;
     }
 
-    let parenRange = this.getProgramSourceTokens()
-      .rangeOfMatchingTokensContainingTokenIndex(
-        leftTokenType,
-        rightTokenType,
-        this.outerStartTokenIndex
-      );
+    let parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(
+      leftTokenType,
+      rightTokenType,
+      this.outerStartTokenIndex
+    );
     if (!parenRange) {
       return false;
     }
@@ -1045,8 +1030,10 @@ export default class NodePatcher {
     if (this.isSurroundedByParentheses()) {
       return this;
     } else if (this.parent) {
-      if (this.isNodeFunctionApplication(this.parent.node) &&
-          this.parent.node.arguments.some(arg => arg === this.node)) {
+      if (
+        this.isNodeFunctionApplication(this.parent.node) &&
+        this.parent.node.arguments.some(arg => arg === this.node)
+      ) {
         return this;
       } else if (this.parent.node.type === 'ArrayInitialiser') {
         return this;
@@ -1060,9 +1047,7 @@ export default class NodePatcher {
   }
 
   isNodeFunctionApplication(node: Node): node is FunctionApplication | SoakedFunctionApplication | NewOp {
-    return node instanceof FunctionApplication ||
-      node instanceof SoakedFunctionApplication ||
-      node instanceof NewOp;
+    return node instanceof FunctionApplication || node instanceof SoakedFunctionApplication || node instanceof NewOp;
   }
 
   /**
@@ -1106,12 +1091,8 @@ export default class NodePatcher {
   /**
    * Gets the indent string for the line that starts this patcher's node.
    */
-  getIndent(offset: number=0): string {
-    return adjustIndent(
-      this.context.source,
-      this.contentStart,
-      this.getAdjustedIndentLevel() + offset
-    );
+  getIndent(offset: number = 0): string {
+    return adjustIndent(this.context.source, this.contentStart, this.getAdjustedIndentLevel() + offset);
   }
 
   /**
@@ -1131,10 +1112,7 @@ export default class NodePatcher {
    * Get the amount the adjusted indent level differs from the original level.
    */
   getAdjustedIndentLevel(): number {
-    return (
-      this.adjustedIndentLevel +
-      (this.parent ? this.parent.getAdjustedIndentLevel() : 0)
-    );
+    return this.adjustedIndentLevel + (this.parent ? this.parent.getAdjustedIndentLevel() : 0);
   }
 
   /**
@@ -1153,7 +1131,7 @@ export default class NodePatcher {
    * that strings inserted before child nodes appear after the indent, not
    * before.
    */
-  indent(offset: number=1, {skipFirstLine=false}: {skipFirstLine?: boolean}={}): void {
+  indent(offset: number = 1, { skipFirstLine = false }: { skipFirstLine?: boolean } = {}): void {
     if (offset === 0) {
       return;
     }
@@ -1201,7 +1179,8 @@ export default class NodePatcher {
               // indentation wrong means ugly JS code that's still correct.
               this.log(
                 'Warning: Ignoring an unindent operation because the line ' +
-                'did not start with the proper indentation.');
+                  'did not start with the proper indentation.'
+              );
             }
             hasIndentedThisLine = true;
           }
@@ -1238,7 +1217,7 @@ export default class NodePatcher {
   /**
    * Appends the given content on a new line after the end of the current line.
    */
-  appendLineAfter(content: string, indentOffset: number=0): void {
+  appendLineAfter(content: string, indentOffset: number = 0): void {
     let boundingPatcher = this.getBoundingPatcher();
     let endOfLine = this.getEndOfLine();
     let nextToken = this.nextSemanticToken();
@@ -1252,9 +1231,16 @@ export default class NodePatcher {
   /**
    * Generate an error referring to a particular section of the source.
    */
-  error(message: string, start: number = this.contentStart, end: number = this.contentEnd, error: Error | null = null): PatcherError {
+  error(
+    message: string,
+    start: number = this.contentStart,
+    end: number = this.contentEnd,
+    error: Error | null = null
+  ): PatcherError {
     let patcherError = new PatcherError(message, this.context.source, start, end);
-    if (error) { patcherError.stack = error.stack; }
+    if (error) {
+      patcherError.stack = error.stack;
+    }
     return patcherError;
   }
 
@@ -1341,7 +1327,10 @@ export default class NodePatcher {
   /**
    * Gets the first "interesting token" in the indexed range (default range is `this` + parent)
    */
-  getFirstSemanticToken(from: number=this.contentStart, to: number = notNull(this.parent).contentEnd): SourceToken | null {
+  getFirstSemanticToken(
+    from: number = this.contentStart,
+    to: number = notNull(this.parent).contentEnd
+  ): SourceToken | null {
     let nextSemanticIdx = this.indexOfSourceTokenBetweenSourceIndicesMatching(from, to, isSemanticToken);
     return nextSemanticIdx && this.sourceTokenAtIndex(nextSemanticIdx);
   }

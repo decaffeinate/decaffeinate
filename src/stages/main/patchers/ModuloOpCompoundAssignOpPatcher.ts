@@ -3,11 +3,10 @@ import registerModHelper from '../../../utils/registerModHelper';
 import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class ModuloOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
-  patchAsExpression({needsParens = false}: PatchOptions = {}): void {
+  patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
     let helper = registerModHelper(this);
 
-    let shouldAddParens = this.negated ||
-      (needsParens && !this.isSurroundedByParentheses());
+    let shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
       this.insert(this.contentStart, '!');
     }

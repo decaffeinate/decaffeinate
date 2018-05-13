@@ -1,5 +1,5 @@
 import SourceType from 'coffee-lex/dist/SourceType';
-import {Identifier, ObjectInitialiserMember} from 'decaffeinate-parser/dist/nodes';
+import { Identifier, ObjectInitialiserMember } from 'decaffeinate-parser/dist/nodes';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
 import StringPatcher from './StringPatcher';
@@ -24,7 +24,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
     if (this.expression === null) {
       let shouldExpand = !(this.key.node instanceof Identifier) || this.node.isComputed;
       this.patchAsShorthand({
-        expand: shouldExpand,
+        expand: shouldExpand
       });
     } else {
       super.patchAsProperty();
@@ -34,22 +34,17 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
   /**
    * @private
    */
-  patchAsShorthand({expand=false}: {expand: boolean}): void {
+  patchAsShorthand({ expand = false }: { expand: boolean }): void {
     let { key } = this;
     if (key instanceof MemberAccessOpPatcher) {
       key.patch();
       // e.g. `{ @name }`
       if (!(key.expression instanceof ThisPatcher)) {
-        throw this.error(
-          `expected property key member access on 'this', e.g. '@name'`
-        );
+        throw this.error(`expected property key member access on 'this', e.g. '@name'`);
       }
       // `{ @name }` → `{ name: @name }`
       //                  ^^^^^^
-      this.insert(
-        key.outerStart,
-        `${key.getMemberName()}: `
-      );
+      this.insert(key.outerStart, `${key.getMemberName()}: `);
     } else if (expand) {
       let needsBrackets = key instanceof StringPatcher && key.shouldBecomeTemplateLiteral();
 

@@ -46,150 +46,204 @@ describe('slice', () => {
   });
 
   it('treats the left side as an expression', () => {
-    check(`
+    check(
+      `
       a = (b for c in d when e)[...2]
-    `, `
+    `,
+      `
       const a = (Array.from(d).filter((c) => e).map((c) => b)).slice(0, 2);
-    `);
+    `
+    );
   });
 
   it('properly handles string bounds in an inclusive range', () => {
-    validate(`
+    validate(
+      `
       a = [1, 2, 3, 4, 5]
       start = '1'
       end = '3'
       setResult(a[start..end])
-    `, [2, 3, 4]);
+    `,
+      [2, 3, 4]
+    );
   });
 
   it('does not generate a preincrement operator when adding `+` to an inclusive end', () => {
-    check(`
+    check(
+      `
       a[start..+end]
-    `, `
+    `,
+      `
       a.slice(start, + +end + 1 || undefined);
-    `);
+    `
+    );
   });
 
   it('handles an exclusive splice with both bounds specified', () => {
-    check(`
+    check(
+      `
       a[b...c] = d
-    `, `
+    `,
+      `
       a.splice(b, c - b, ...[].concat(d));
-    `);
+    `
+    );
   });
 
   it('handles an inclusive splice with both bounds specified', () => {
-    check(`
+    check(
+      `
       a[b..c] = d
-    `, `
+    `,
+      `
       a.splice(b, c - b + 1, ...[].concat(d));
-    `);
+    `
+    );
   });
 
   it('handles an exclusive splice with the first bound specified', () => {
-    check(`
+    check(
+      `
       a[b...] = c
-    `, `
+    `,
+      `
       a.splice(b, 9e9, ...[].concat(c));
-    `);
+    `
+    );
   });
 
   it('handles an inclusive splice with the first bound specified', () => {
-    check(`
+    check(
+      `
       a[b..] = c
-    `, `
+    `,
+      `
       a.splice(b, 9e9, ...[].concat(c));
-    `);
+    `
+    );
   });
 
   it('handles an exclusive splice with the last bound specified', () => {
-    check(`
+    check(
+      `
       a[...b] = c
-    `, `
+    `,
+      `
       a.splice(0, b, ...[].concat(c));
-    `);
+    `
+    );
   });
 
   it('handles an inclusive splice with the last bound specified', () => {
-    check(`
+    check(
+      `
       a[..b] = c
-    `, `
+    `,
+      `
       a.splice(0, b + 1, ...[].concat(c));
-    `);
+    `
+    );
   });
 
   it('handles an exclusive splice over an unbounded range', () => {
-    check(`
+    check(
+      `
       a[...] = b
-    `, `
+    `,
+      `
       a.splice(0, 9e9, ...[].concat(b));
-    `);
+    `
+    );
   });
 
   it('handles an inclusive splice over an unbounded range', () => {
-    check(`
+    check(
+      `
       a[..] = b
-    `, `
+    `,
+      `
       a.splice(0, 9e9, ...[].concat(b));
-    `);
+    `
+    );
   });
 
   it('does not extract the RHS if it is not necessary', () => {
-    check(`
+    check(
+      `
       a[b..c] = d()
-    `, `
+    `,
+      `
       a.splice(b, c - b + 1, ...[].concat(d()));
-    `);
+    `
+    );
   });
 
   it('extracts the array into a variable if necessary', () => {
-    check(`
+    check(
+      `
       =>
         return a[b...c] = d()
-    `, `
+    `,
+      `
       () => {
         let ref;
         return ref = d(), a.splice(b, c - b, ...[].concat(ref)), ref;
       };
-    `);
+    `
+    );
   });
 
   it('allows overwriting with an array', () => {
-    validate(`
+    validate(
+      `
       arr = ['a', 'b', 'c', 'd']
       arr[1...3] = ['Hello', 'World']
       setResult(arr)
-    `, ['a', 'Hello', 'World', 'd']);
+    `,
+      ['a', 'Hello', 'World', 'd']
+    );
   });
 
   it('allows overwriting with an individual element', () => {
-    validate(`
+    validate(
+      `
       arr = ['a', 'b', 'c', 'd']
       arr[1...3] = 'Hello';
       setResult(arr)
-    `, ['a', 'Hello', 'd']);
+    `,
+      ['a', 'Hello', 'd']
+    );
   });
 
   it('respects precedence on slice ranges', () => {
-    check(`
+    check(
+      `
       a[b..c or d]
-    `, `
+    `,
+      `
       a.slice(b, +(c || d) + 1 || undefined);
-    `);
+    `
+    );
   });
 
   it('respects precedence on splice ranges', () => {
-    check(`
+    check(
+      `
       a[b..c or d] = e
-    `, `
+    `,
+      `
       a.splice(b, (c || d) - b + 1, ...[].concat(e));
-    `);
+    `
+    );
   });
 
   it('behaves properly when there is a logical operator in a slice range', () => {
-    validate(`
+    validate(
+      `
       a = [1..4]
       setResult(a[..2 or 3])
-    `, [1, 2, 3]);
+    `,
+      [1, 2, 3]
+    );
   });
 });

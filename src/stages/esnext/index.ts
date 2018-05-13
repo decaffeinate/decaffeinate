@@ -17,11 +17,11 @@ export default class EsnextStage {
     let { code } = convert(content, {
       plugins,
       'declarations.block-scope': {
-        disableConst({node, parent}: NodePath<VariableDeclaration>): boolean {
+        disableConst({ node, parent }: NodePath<VariableDeclaration>): boolean {
           if (options.preferLet) {
             return (
               // Only use `const` for top-level variables…
-              parent && parent.type !== 'Program' ||
+              (parent && parent.type !== 'Program') ||
               // … as the only variable in its declaration …
               node.declarations.length !== 1 ||
               // … without any sort of destructuring …
@@ -32,16 +32,16 @@ export default class EsnextStage {
           } else {
             return false;
           }
-        },
+        }
       },
       'modules.commonjs': {
         forceDefaultExport: !options.looseJSModules,
-        safeFunctionIdentifiers: options.safeImportFunctionIdentifiers,
-      },
+        safeFunctionIdentifiers: options.safeImportFunctionIdentifiers
+      }
     });
     return {
       code,
-      suggestions: [],
+      suggestions: []
     };
   }
 }

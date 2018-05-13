@@ -58,16 +58,16 @@ export default class DoOpPatcher extends NodePatcher {
    * should change default params to arguments to the do call.
    */
   hasDoFunction(): boolean {
-    return this.expression instanceof FunctionPatcher ||
-      (this.expression instanceof AssignOpPatcher &&
-        this.expression.expression instanceof FunctionPatcher);
+    return (
+      this.expression instanceof FunctionPatcher ||
+      (this.expression instanceof AssignOpPatcher && this.expression.expression instanceof FunctionPatcher)
+    );
   }
 
   getDoFunction(): FunctionPatcher {
     if (this.expression instanceof FunctionPatcher) {
       return this.expression;
-    } else if (this.expression instanceof AssignOpPatcher &&
-        this.expression.expression instanceof FunctionPatcher) {
+    } else if (this.expression instanceof AssignOpPatcher && this.expression.expression instanceof FunctionPatcher) {
       return this.expression.expression;
     } else {
       throw this.error('Should only call getDoFunction if hasDoFunction is true.');

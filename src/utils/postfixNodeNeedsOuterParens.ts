@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import {Spread} from 'decaffeinate-parser/dist/nodes';
+import { Spread } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../patchers/NodePatcher';
 import ObjectInitialiserPatcher from '../stages/normalize/patchers/ObjectInitialiserPatcher';
 
@@ -19,11 +19,7 @@ export default function postfixNodeNeedsOuterParens(patcher: NodePatcher): boole
       return true;
     }
     let grandparent = parent.parent;
-    if (
-      grandparent &&
-      grandparent instanceof ObjectInitialiserPatcher &&
-      grandparent.isImplicitObjectInitializer()
-    ) {
+    if (grandparent && grandparent instanceof ObjectInitialiserPatcher && grandparent.isImplicitObjectInitializer()) {
       return true;
     }
   }

@@ -2,134 +2,173 @@ import check from './support/check';
 
 describe('imports', () => {
   it('converts commonjs code to JS modules with named exports when specified', () => {
-    check(`
+    check(
+      `
       x = require('x');
       module.exports.y = 3;
-    `, `
+    `,
+      `
       import x from 'x';
       export let y = 3;
-    `, {
-      options: {
-        useJSModules: true,
-        looseJSModules: true,
-      },
-    });
+    `,
+      {
+        options: {
+          useJSModules: true,
+          looseJSModules: true
+        }
+      }
+    );
   });
 
   it('keeps commonjs by default', () => {
-    check(`
+    check(
+      `
       x = require('x');
       module.exports.y = 3;
-    `, `
+    `,
+      `
       const x = require('x');
       module.exports.y = 3;
-    `);
+    `
+    );
   });
 
   it('properly passes down function identifiers', () => {
-    check(`
+    check(
+      `
       x = require('x');
       foo()
       y = require('y');
       bar()
       z = require('z');
-    `, `
+    `,
+      `
       import x from 'x';
       foo();
       import y from 'y';
       bar();
       const z = require('z');
-    `, {
-      options: {
-        useJSModules: true,
-        safeImportFunctionIdentifiers: ['foo'],
-      },
-    });
+    `,
+      {
+        options: {
+          useJSModules: true,
+          safeImportFunctionIdentifiers: ['foo']
+        }
+      }
+    );
   });
 
   it('forces a default export by default', () => {
-    check(`
+    check(
+      `
       exports.a = b;
       exports.c = d;
-    `, `
+    `,
+      `
       let defaultExport = {};
       defaultExport.a = b;
       defaultExport.c = d;
       export default defaultExport;
-    `, {
-      options: {
-        useJSModules: true,
-      },
-    });
+    `,
+      {
+        options: {
+          useJSModules: true
+        }
+      }
+    );
   });
 
   it('handles ES module default import', () => {
-    check(`
+    check(
+      `
       import a from 'b'
-    `, `
+    `,
+      `
       import a from 'b';
-    `);
+    `
+    );
   });
 
   it('handles ES module namespace import', () => {
-    check(`
+    check(
+      `
       import * as a from 'b'
-    `, `
+    `,
+      `
       import * as a from 'b';
-    `);
+    `
+    );
   });
 
   it('handles ES module aliased named import', () => {
-    check(`
+    check(
+      `
       import {a as b, c} from 'd'
-    `, `
+    `,
+      `
       import {a as b, c} from 'd';
-    `);
+    `
+    );
   });
 
   it('handles ES module export binding list', () => {
-    check(`
+    check(
+      `
       export {a as b, c}
-    `, `
+    `,
+      `
       export {a as b, c};
-    `);
+    `
+    );
   });
 
   it('handles ES module default export', () => {
-    check(`
+    check(
+      `
       export default a b
-    `, `
+    `,
+      `
       export default a(b);
-    `);
+    `
+    );
   });
 
   it('handles ES module star export', () => {
-    check(`
+    check(
+      `
       export * from 'a'
-    `, `
+    `,
+      `
       export * from 'a';
-    `);
+    `
+    );
   });
 
   it('handles ES module assignment named export', () => {
-    check(`
+    check(
+      `
       export a = 1
-    `, `
+    `,
+      `
       export var a = 1;
-    `);
+    `
+    );
   });
 
   it('handles ES module class named export', () => {
-    check(`
+    check(
+      `
       export class A
         b: ->
           c
-    `, `
+    `,
+      `
       export class A {
         b() {
           return c;
         }
       }
-    `);
+    `
+    );
   });
 });

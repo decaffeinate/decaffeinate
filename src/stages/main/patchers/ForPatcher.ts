@@ -21,9 +21,13 @@ export default abstract class ForPatcher extends LoopPatcher {
   _targetReference: string | null = null;
 
   constructor(
-      patcherContext: PatcherContext, keyAssignee: NodePatcher | null,
-      valAssignee: NodePatcher | null, target: NodePatcher,
-      filter: NodePatcher | null, body: BlockPatcher) {
+    patcherContext: PatcherContext,
+    keyAssignee: NodePatcher | null,
+    valAssignee: NodePatcher | null,
+    target: NodePatcher,
+    filter: NodePatcher | null,
+    body: BlockPatcher
+  ) {
     super(patcherContext, body);
     this.keyAssignee = keyAssignee;
     this.valAssignee = valAssignee;
@@ -117,7 +121,8 @@ export default abstract class ForPatcher extends LoopPatcher {
       throw this.error('Expected to find a good starting point to search for relation token.');
     }
     let tokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, this.target.outerStart,
+      searchStart,
+      this.target.outerStart,
       // "of" and "in" are relation tokens, but "from" is a plain identifier.
       token => token.type === SourceType.RELATION || token.type === SourceType.IDENTIFIER
     );
@@ -185,7 +190,9 @@ export default abstract class ForPatcher extends LoopPatcher {
       }
     }
     let index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
-      searchStart, searchEnd, token => token.type === SourceType.THEN
+      searchStart,
+      searchEnd,
+      token => token.type === SourceType.THEN
     );
     if (index) {
       let thenToken = notNull(this.sourceTokenAtIndex(index));
@@ -205,10 +212,7 @@ export default abstract class ForPatcher extends LoopPatcher {
    * elements.
    */
   getLoopHeaderEnd(): number {
-    return Math.max(
-      this.filter ? this.filter.outerEnd : -1,
-      this.target.outerEnd,
-    );
+    return Math.max(this.filter ? this.filter.outerEnd : -1, this.target.outerEnd);
   }
 
   getTargetCode(): string {

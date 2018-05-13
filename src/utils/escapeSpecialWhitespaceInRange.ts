@@ -1,10 +1,8 @@
-
 import NodePatcher from '../patchers/NodePatcher';
 
 function isAlreadyEscaped(i: number, start: number, patcher: NodePatcher): boolean {
   let numLeadingBackslashes = 0;
-  while (i - numLeadingBackslashes - 1 >= start &&
-      patcher.context.source[i - numLeadingBackslashes - 1] === '\\') {
+  while (i - numLeadingBackslashes - 1 >= start && patcher.context.source[i - numLeadingBackslashes - 1] === '\\') {
     numLeadingBackslashes++;
   }
   return numLeadingBackslashes % 2 === 1;

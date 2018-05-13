@@ -11,9 +11,12 @@ export default class TryPatcher extends NodePatcher {
   finallyBody: BlockPatcher | null;
 
   constructor(
-      patcherContext: PatcherContext, body: BlockPatcher | null,
-      catchAssignee: NodePatcher | null, catchBody: BlockPatcher | null,
-      finallyBody: BlockPatcher | null) {
+    patcherContext: PatcherContext,
+    body: BlockPatcher | null,
+    catchAssignee: NodePatcher | null,
+    catchBody: BlockPatcher | null,
+    finallyBody: BlockPatcher | null
+  ) {
     super(patcherContext);
     this.body = body;
     this.catchAssignee = catchAssignee;
@@ -73,9 +76,7 @@ export default class TryPatcher extends NodePatcher {
       return true;
     }
     let varName = this.catchAssignee.node.data;
-    let exceptionVarUsages = this.catchBody
-      ? countVariableUsages(this.catchBody.node, varName) + 1
-      : 1;
+    let exceptionVarUsages = this.catchBody ? countVariableUsages(this.catchBody.node, varName) + 1 : 1;
     let totalVarUsages = countVariableUsages(this.getScope().containerNode, varName);
     return totalVarUsages > exceptionVarUsages;
   }

@@ -16,11 +16,7 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
 
   patchOperator(): void {
     let operatorToken = this.getOperatorToken();
-    this.overwrite(
-      operatorToken.start,
-      operatorToken.end,
-      this.getOperator()
-    );
+    this.overwrite(operatorToken.start, operatorToken.end, this.getOperator());
   }
 
   /**
@@ -30,10 +26,7 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
    */
   getOperator(): string {
     let operatorToken = this.getOperatorToken();
-    let operator = this.context.source.slice(
-      operatorToken.start,
-      operatorToken.end
-    );
+    let operator = this.context.source.slice(operatorToken.start, operatorToken.end);
     if (operator === 'and') {
       operator = '&&';
     } else if (operator === 'or') {

@@ -3,50 +3,59 @@ import validate from './support/validate';
 
 describe('switch', () => {
   it('works with a single case', () => {
-    check(`
+    check(
+      `
       switch a
         when b
           c
-    `, `
+    `,
+      `
       switch (a) {
         case b:
           c;
           break;
       }
-    `);
+    `
+    );
   });
 
   it('works when there is a comment after the expression', () => {
-    check(`
+    check(
+      `
       switch a # yolo
         when b
           c
-    `, `
+    `,
+      `
       switch (a) { // yolo
         case b:
           c;
           break;
       }
-    `);
+    `
+    );
   });
 
-
   it('works when the expression is already surrounded by parens', () => {
-    check(`
+    check(
+      `
       switch (a?)
         when b
           c
-    `, `
+    `,
+      `
       switch (typeof a !== 'undefined' && a !== null) {
         case b:
           c;
           break;
       }
-    `);
+    `
+    );
   });
 
   it('only inserts break statements when needed', () => {
-    check(`
+    check(
+      `
       switch a
         when b
           c
@@ -54,7 +63,8 @@ describe('switch', () => {
         when d
           e
           break
-    `, `
+    `,
+      `
       switch (a) {
         case b:
           c;
@@ -63,17 +73,20 @@ describe('switch', () => {
           e;
           break;
       }
-    `);
+    `
+    );
   });
 
   it('works with multiple cases', () => {
-    check(`
+    check(
+      `
       switch a
         when b
           c
         when d
           e
-    `, `
+    `,
+      `
       switch (a) {
         case b:
           c;
@@ -82,42 +95,51 @@ describe('switch', () => {
           e;
           break;
       }
-    `);
+    `
+    );
   });
 
   it('works with multiple conditions per case', () => {
-    check(`
+    check(
+      `
       switch a
         when b, c
           d
-    `, `
+    `,
+      `
       switch (a) {
         case b: case c:
           d;
           break;
       }
-    `);
+    `
+    );
   });
 
   it('works with cases and consequents on the same line', () => {
-    check(`
+    check(
+      `
       switch a
         when b then c
-    `, `
+    `,
+      `
       switch (a) {
         case b: c; break;
       }
-    `);
+    `
+    );
   });
 
   it('works with a default case', () => {
-    check(`
+    check(
+      `
       switch a
         when b
           c
         else
           d
-    `, `
+    `,
+      `
       switch (a) {
         case b:
           c;
@@ -125,29 +147,35 @@ describe('switch', () => {
         default:
           d;
       }
-    `);
+    `
+    );
   });
 
   it('works with a single-line default case', () => {
-    check(`
+    check(
+      `
       switch a
         when b then c
         else d
-    `, `
+    `,
+      `
       switch (a) {
         case b: c; break;
         default: d;
       }
-    `);
+    `
+    );
   });
 
   it('works with an indented switch', () => {
-    check(`
+    check(
+      `
       if true
         switch a
           when b
             c
-    `, `
+    `,
+      `
       if (true) {
         switch (a) {
           case b:
@@ -155,11 +183,13 @@ describe('switch', () => {
             break;
         }
       }
-    `);
+    `
+    );
   });
 
   it('works with implicit returns', () => {
-    check(`
+    check(
+      `
       ->
         switch a
           when b then c
@@ -167,7 +197,8 @@ describe('switch', () => {
             e
             f
           else g
-    `, `
+    `,
+      `
       (function() {
         switch (a) {
           case b: return c;
@@ -177,17 +208,20 @@ describe('switch', () => {
           default: return g;
         }
       });
-    `);
+    `
+    );
   });
 
   it('works with implicit returns with the default case on another line', () => {
-    check(`
+    check(
+      `
       ->
         switch a
           when b then c
           else
             d
-    `, `
+    `,
+      `
       (function() {
         switch (a) {
           case b: return c;
@@ -195,17 +229,20 @@ describe('switch', () => {
             return d;
         }
       });
-    `);
+    `
+    );
   });
 
   it('writes the closing curly brace inside a function closing brace', () => {
-    check(`
+    check(
+      `
       a = ->
         switch b
           when c
             d
       e
-    `, `
+    `,
+      `
       const a = function() {
         switch (b) {
           case c:
@@ -213,18 +250,21 @@ describe('switch', () => {
         }
       };
       e;
-    `);
+    `
+    );
   });
 
   it('converts a switch without an expression properly', () => {
-    check(`
+    check(
+      `
       switch
         when score < 60 then 'F'
         when score < 70 then 'D'
         when score < 80 then 'C'
         when score < 90 then 'B'
         else 'A'
-    `, `
+    `,
+      `
       switch (false) {
         case score >= 60: 'F'; break;
         case score >= 70: 'D'; break;
@@ -232,21 +272,25 @@ describe('switch', () => {
         case score >= 90: 'B'; break;
         default: 'A';
       }
-    `, {
-      options: {
-        looseComparisonNegation: true,
+    `,
+      {
+        options: {
+          looseComparisonNegation: true
+        }
       }
-    });
+    );
   });
 
   it('converts a switch without an expression with function call cases', () => {
-    check(`
+    check(
+      `
       switch
         when a()
           'B'
         when c()
           'D'
-    `, `
+    `,
+      `
       switch (false) {
         case !a():
           'B';
@@ -255,39 +299,47 @@ describe('switch', () => {
           'D';
           break;
       }
-    `);
+    `
+    );
   });
 
   it('works with `switch` used as an expression', () => {
-    check(`
+    check(
+      `
       a = switch b
         when c then d
         when f
           return g
         else e
-    `, `
+    `,
+      `
       const a = (() => { switch (b) {
         case c: return d;
         case f:
           return g;
         default: return e;
       } })();
-    `);
+    `
+    );
   });
 
   it('works with `switch` used as an expression surrounded by parens', () => {
-    check(`
+    check(
+      `
       a(switch b
         when c then d)
-    `, `
+    `,
+      `
       a((() => { switch (b) {
         case c: return d;
       } })());
-    `);
+    `
+    );
   });
 
   it('works with the switch from the CoffeeScript demo page', () => {
-    check(`
+    check(
+      `
     switch day
       when "Mon" then go work
       when "Tue" then go relax
@@ -298,7 +350,8 @@ describe('switch', () => {
           go dancing
       when "Sun" then go church
       else go work
-    `, `
+    `,
+      `
       switch (day) {
         case "Mon": go(work); break;
         case "Tue": go(relax); break;
@@ -312,30 +365,36 @@ describe('switch', () => {
         case "Sun": go(church); break;
         default: go(work);
       }
-    `);
+    `
+    );
   });
 
   it('works with switch expressions returning an object literal', () => {
-    check(`
+    check(
+      `
       a b, switch c
         when d
           {}
-    `, `
+    `,
+      `
       a(b, (() => { switch (c) {
         case d:
           return {};
       } })());
-    `);
+    `
+    );
   });
 
   it('works with empty switch cases', () => {
-    check(`
+    check(
+      `
     switch a
       when b then
         # Do nothing
       when c then
         # Do nothing
-    `, `
+    `,
+      `
       switch (a) {
         case b:
           break;
@@ -344,17 +403,20 @@ describe('switch', () => {
           break;
       }
           // Do nothing
-    `);
+    `
+    );
   });
 
   it('handles a switch as an argument to a function call', () => {
-    check(`
+    check(
+      `
       a switch b
         when c
           d
         when e
           f
-    `, `
+    `,
+      `
       a((() => { switch (b) {
         case c:
           return d;
@@ -362,11 +424,13 @@ describe('switch', () => {
           return f;
       
       } })());
-    `);
+    `
+    );
   });
 
   it('inserts break statements properly in cases containing returns', () => {
-    check(`
+    check(
+      `
       ->
         switch a
           when b
@@ -375,7 +439,8 @@ describe('switch', () => {
           when e
             if f
               return g
-    `, `
+    `,
+      `
       (function() {
         switch (a) {
           case b:
@@ -390,18 +455,21 @@ describe('switch', () => {
             break;
         }
       });
-    `);
+    `
+    );
   });
 
   it('handles switch expressions within simple for expressions', () => {
-    check(`
+    check(
+      `
       x = for a in b
         switch a
           when 'c'
             d
           else
             e
-    `, `
+    `,
+      `
       const x = (() => {
         const result = [];
         for (let a of Array.from(b)) {
@@ -415,11 +483,13 @@ describe('switch', () => {
         }
         return result;
       })();
-    `);
+    `
+    );
   });
 
   it('handles switch expressions within complex for expressions', () => {
-    check(`
+    check(
+      `
       x = for a in b by 1
         y = switch a
           when 'c'
@@ -427,7 +497,8 @@ describe('switch', () => {
           else
             e
         y
-    `, `
+    `,
+      `
       const x = (() => {
         const result = [];
         for (let i = 0; i < b.length; i++) {
@@ -442,18 +513,21 @@ describe('switch', () => {
         }
         return result;
       })();
-    `);
+    `
+    );
   });
 
   it('handles a switch case with a while loop with a break', () => {
-    check(`
+    check(
+      `
       switch a
         when 'b'
           while false
             break
         when 'c'
           console.log 'Got here'
-    `, `
+    `,
+      `
       switch (a) {
         case 'b':
           while (false) {
@@ -464,32 +538,38 @@ describe('switch', () => {
           console.log('Got here');
           break;
       }
-    `);
+    `
+    );
   });
 
   it('sets the switch condition to be an expression', () => {
-    check(`
+    check(
+      `
       a = 1
       switch (a ?= b)
         when c
           d
-    `, `
+    `,
+      `
       let a = 1;
       switch (a != null ? a : (a = b)) {
         case c:
           d;
           break;
       }
-    `);
+    `
+    );
   });
 
   it('allows an IIFE-style switch inside a generator', () => {
-    check(`
+    check(
+      `
       ->
         x = switch yield 1
           when 2
             3
-    `, `
+    `,
+      `
       (function*() {
         let x;
         return x = yield* (function*() { switch ((yield 1)) {
@@ -497,16 +577,19 @@ describe('switch', () => {
             return 3;
         } }).call(this);
       });
-    `);
+    `
+    );
   });
 
   it('properly handles an expression-style switch in an implicit return context', () => {
-    check(`
+    check(
+      `
       ->
         x = (switch a
            when b
              c)
-    `, `
+    `,
+      `
       (function() {
         let x;
         return x = ((() => { switch (a) {
@@ -514,60 +597,72 @@ describe('switch', () => {
              return c;
         } })());
       });
-    `);
+    `
+    );
   });
 
   it('handles parenthesized break in a switch statement', () => {
-    check(`
+    check(
+      `
       x = switch a
         when b
           (break)
-    `, `
+    `,
+      `
       const x = (() => { switch (a) {
         case b:
           break;
       } })();
-    `);
+    `
+    );
   });
 
   it('handles break within switch in an implicit return context', () => {
-    check(`
+    check(
+      `
       ->
         switch a
           when b
             break
-    `, `
+    `,
+      `
       (function() {
         switch (a) {
           case b:
             break;
         }
       });
-    `);
+    `
+    );
   });
 
   it('handles a parenthesized switch case', () => {
-    check(`
+    check(
+      `
       switch a
         when (b)
           c
-    `, `
+    `,
+      `
       switch (a) {
         case (b):
           c;
           break;
       }
-    `);
+    `
+    );
   });
 
   it('allows falling through in a returned switch', () => {
-    check(`
+    check(
+      `
       ->
         return switch a
           when b
             c
         d
-    `, `
+    `,
+      `
       (function() {
         switch (a) {
           case b:
@@ -575,39 +670,48 @@ describe('switch', () => {
         }
         return d;
       });
-    `);
+    `
+    );
   });
 
   it('gives the correct result when returning an incomplete switch', () => {
-    validate(`
+    validate(
+      `
       f = ->
         return switch 1
           when 2
             3
         4
       setResult(f())
-    `, 4);
+    `,
+      4
+    );
   });
 
   it('gives the correct result when returning a parenthesized incomplete switch', () => {
-    validate(`
+    validate(
+      `
       f = ->
         return (switch 1
           when 2
             3)
         4
       setResult('' + f())
-    `, 'undefined');
+    `,
+      'undefined'
+    );
   });
 
   it('handles an IIFE switch with an assignment followed by access', () => {
-    check(`
+    check(
+      `
       a =
         switch b
           when c
             d = e
       d
-    `, `
+    `,
+      `
       let d;
       const a =
         (() => { switch (b) {
@@ -615,6 +719,7 @@ describe('switch', () => {
             return d = e;
         } })();
       d;
-    `);
+    `
+    );
   });
 });

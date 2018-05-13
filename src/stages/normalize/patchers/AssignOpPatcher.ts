@@ -9,8 +9,8 @@ import FunctionPatcher from './FunctionPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 
 export type EarlySuperTransformInfo = {
-  classCode: string,
-  accessCode: string,
+  classCode: string;
+  accessCode: string;
 };
 
 export default class AssignOpPatcher extends NodePatcher {
@@ -39,10 +39,11 @@ export default class AssignOpPatcher extends NodePatcher {
 
   isDynamicallyCreatedClassAssignment(): boolean {
     let classParent = this.getClassParent();
-    return classParent !== null &&
+    return (
+      classParent !== null &&
       classParent.isClassAssignment(this.node) &&
-      !(classParent.isClassMethod(this) &&
-        notNull(classParent.body).statements.indexOf(this) > -1);
+      !(classParent.isClassMethod(this) && notNull(classParent.body).statements.indexOf(this) > -1)
+    );
   }
 
   patchClassAssignmentPrefix(): void {
@@ -88,9 +89,11 @@ export default class AssignOpPatcher extends NodePatcher {
     if (!this.isDynamicallyCreatedClassAssignment()) {
       return false;
     }
-    return this.node.type !== 'ClassProtoAssignOp' &&
+    return (
+      this.node.type !== 'ClassProtoAssignOp' &&
       this.expression instanceof FunctionPatcher &&
-      containsSuperCall(this.expression.node);
+      containsSuperCall(this.expression.node)
+    );
   }
 
   prepareEarlySuperTransform(): void {
@@ -99,17 +102,17 @@ export default class AssignOpPatcher extends NodePatcher {
         this.assignee.expression.setRequiresRepeatableExpression({
           parens: true,
           ref: 'cls',
-          forceRepeat: true,
+          forceRepeat: true
         });
       } else if (this.assignee instanceof DynamicMemberAccessOpPatcher) {
         this.assignee.expression.setRequiresRepeatableExpression({
           parens: true,
           ref: 'cls',
-          forceRepeat: true,
+          forceRepeat: true
         });
         this.assignee.indexingExpr.setRequiresRepeatableExpression({
           ref: 'method',
-          forceRepeat: true,
+          forceRepeat: true
         });
       } else {
         throw this.error('Unexpected assignee type for early super transform.');
@@ -122,12 +125,12 @@ export default class AssignOpPatcher extends NodePatcher {
       if (this.assignee instanceof MemberAccessOpPatcher) {
         return {
           classCode: this.assignee.expression.getRepeatCode(),
-          accessCode: `.${this.assignee.member.node.data}`,
+          accessCode: `.${this.assignee.member.node.data}`
         };
       } else if (this.assignee instanceof DynamicMemberAccessOpPatcher) {
         return {
           classCode: this.assignee.expression.getRepeatCode(),
-          accessCode: `[${this.assignee.indexingExpr.getRepeatCode()}]`,
+          accessCode: `[${this.assignee.indexingExpr.getRepeatCode()}]`
         };
       } else {
         throw this.error('Unexpected assignee type for early super transform.');

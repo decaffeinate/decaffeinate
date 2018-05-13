@@ -22,12 +22,15 @@ describe('resolveToPatchError', () => {
       if (!patchError) {
         throw new Error('Expected non-null error.');
       }
-      strictEqual(PatchError.prettyPrint(patchError), stripSharedIndent(`
+      strictEqual(
+        PatchError.prettyPrint(patchError),
+        stripSharedIndent(`
         testStage failed to parse: Unexpected token, expected ; (2:3)
           1 | let x = 3;
         > 2 | f())
             |    ^
-          3 | console.log('test');`) + '\n');
+          3 | console.log('test');`) + '\n'
+      );
     }
   });
 
@@ -44,12 +47,15 @@ describe('resolveToPatchError', () => {
       if (!patchError) {
         throw new Error('Expected non-null error.');
       }
-      strictEqual(PatchError.prettyPrint(patchError), stripSharedIndent(`
+      strictEqual(
+        PatchError.prettyPrint(patchError),
+        stripSharedIndent(`
         testStage failed to parse: unexpected indentation
           1 | x = 3
         > 2 |   f()
             | ^^
-          3 | console.log 'test'`) + '\n');
+          3 | console.log 'test'`) + '\n'
+      );
     }
   });
 
@@ -70,18 +76,20 @@ describe('resolveToPatchError', () => {
       if (!patchError) {
         throw new Error('Expected non-null error.');
       }
-      strictEqual(PatchError.prettyPrint(patchError), stripSharedIndent(`
+      strictEqual(
+        PatchError.prettyPrint(patchError),
+        stripSharedIndent(`
         esnext failed to parse: Unexpected token (3:0)
           1 | var x = 3;
           2 | if (
         > 3 | }
-            | ^`) + '\n');
+            | ^`) + '\n'
+      );
     }
   });
 
   it('returns null for other errors', () => {
-    let patchError = resolveToPatchError(
-      new Error('a normal error'), 'test content', 'test stage name');
+    let patchError = resolveToPatchError(new Error('a normal error'), 'test content', 'test stage name');
     strictEqual(patchError, null);
   });
 });

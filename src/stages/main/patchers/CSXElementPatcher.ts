@@ -1,6 +1,6 @@
 import SourceType from 'coffee-lex/dist/SourceType';
 import NodePatcher from '../../../patchers/NodePatcher';
-import {PatcherContext} from '../../../patchers/types';
+import { PatcherContext } from '../../../patchers/types';
 import StringPatcher from './StringPatcher';
 
 export default class CSXElementPatcher extends NodePatcher {

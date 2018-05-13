@@ -16,7 +16,12 @@ export default class SlicePatcher extends NodePatcher {
   /**
    * `node` is of type `Slice`.
    */
-  constructor(patcherContext: PatcherContext, expression: NodePatcher, left: NodePatcher | null, right: NodePatcher | null) {
+  constructor(
+    patcherContext: PatcherContext,
+    expression: NodePatcher,
+    left: NodePatcher | null,
+    right: NodePatcher | null
+  ) {
     super(patcherContext);
     this.expression = expression;
     this.left = left;
@@ -59,16 +64,9 @@ export default class SlicePatcher extends NodePatcher {
     if (right) {
       if (this.isInclusive()) {
         if (right.node.raw === '-1') {
-          this.remove(
-            slice.start,
-            right.outerEnd
-          );
+          this.remove(slice.start, right.outerEnd);
         } else if (right.node instanceof Int) {
-          this.overwrite(
-            slice.start,
-            right.outerEnd,
-            `, ${right.node.data + 1}`
-          );
+          this.overwrite(slice.start, right.outerEnd, `, ${right.node.data + 1}`);
         } else {
           // `a.slice(0..1]` → `a.slice(0, +1]`
           //           ^^                ^^^

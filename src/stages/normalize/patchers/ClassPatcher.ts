@@ -8,22 +8,27 @@ import IdentifierPatcher from './IdentifierPatcher';
 import ProgramPatcher from './ProgramPatcher';
 
 import {
-  AssignOp, BaseAssignOp, BaseFunction, ClassProtoAssignOp,
-  DynamicMemberAccessOp, Identifier,
-  MemberAccessOp, Node,
+  AssignOp,
+  BaseAssignOp,
+  BaseFunction,
+  ClassProtoAssignOp,
+  DynamicMemberAccessOp,
+  Identifier,
+  MemberAccessOp,
+  Node,
   This
 } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import { AVOID_INITCLASS } from '../../../suggestions';
 
 export type NonMethodInfo = {
-  patcher: NodePatcher,
-  deleteStart: number,
+  patcher: NodePatcher;
+  deleteStart: number;
 };
 
 export type CustomConstructorInfo = {
-  ctorName: string,
-  expressionCode: string,
+  ctorName: string;
+  expressionCode: string;
 };
 
 export default class ClassPatcher extends NodePatcher {
@@ -32,8 +37,11 @@ export default class ClassPatcher extends NodePatcher {
   body: BlockPatcher | null;
 
   constructor(
-      patcherContext: PatcherContext, nameAssignee: NodePatcher | null,
-      parent: NodePatcher | null, body: BlockPatcher | null) {
+    patcherContext: PatcherContext,
+    nameAssignee: NodePatcher | null,
+    parent: NodePatcher | null,
+    body: BlockPatcher | null
+  ) {
     super(patcherContext);
     this.nameAssignee = nameAssignee;
     this.superclass = parent;
@@ -54,7 +62,7 @@ export default class ClassPatcher extends NodePatcher {
     // Indentation needs to happen before child patching in case we have child
     // classes or other nested indentation situations.
     if (this.needsIndent()) {
-      this.indent(1, {skipFirstLine: true});
+      this.indent(1, { skipFirstLine: true });
     }
     // We also need to remove `then` early so it doesn't remove other inserted
     // code.
@@ -102,8 +110,7 @@ export default class ClassPatcher extends NodePatcher {
       needsTmpName = true;
     }
 
-    let assignmentNames = this.generateInitClassMethod(
-      nonMethodPatchers, customConstructorInfo, insertPoint);
+    let assignmentNames = this.generateInitClassMethod(nonMethodPatchers, customConstructorInfo, insertPoint);
     this.insert(this.outerEnd, `\n${indent}${classRef}.initClass()`);
     if (shouldUseIIFE) {
       this.insert(this.outerEnd, `\n${indent}return ${classRef}`);
@@ -181,8 +188,7 @@ export default class ClassPatcher extends NodePatcher {
     // implicit return position.
     if (this.parent instanceof BlockPatcher) {
       let { statements } = this.parent;
-      if (!(this.parent.parent instanceof ProgramPatcher) &&
-          this === statements[statements.length - 1]) {
+      if (!(this.parent.parent instanceof ProgramPatcher) && this === statements[statements.length - 1]) {
         return true;
       }
       return false;
@@ -215,7 +221,7 @@ export default class ClassPatcher extends NodePatcher {
       if (!this.isClassMethod(patcher)) {
         nonMethodPatchers.push({
           patcher,
-          deleteStart,
+          deleteStart
         });
       }
       deleteStart = patcher.outerEnd;
@@ -231,8 +237,7 @@ export default class ClassPatcher extends NodePatcher {
     if (this.isClassAssignment(node)) {
       // Bound static methods must be moved to initClass so they are properly
       // bound.
-      if (node instanceof AssignOp &&
-          ['BoundFunction', 'BoundGeneratorFunction'].indexOf(node.expression.type) >= 0) {
+      if (node instanceof AssignOp && ['BoundFunction', 'BoundGeneratorFunction'].indexOf(node.expression.type) >= 0) {
         return false;
       }
       if (node.expression instanceof BaseFunction) {
@@ -247,15 +252,14 @@ export default class ClassPatcher extends NodePatcher {
       return true;
     }
     if (node instanceof AssignOp) {
-      let {assignee} = node;
+      let { assignee } = node;
       if (assignee instanceof MemberAccessOp || assignee instanceof DynamicMemberAccessOp) {
         if (assignee.expression instanceof This) {
           return true;
         }
         if (this.nameAssignee && this.nameAssignee instanceof IdentifierPatcher) {
           let className = this.nameAssignee.node.data;
-          if (assignee.expression instanceof Identifier &&
-              assignee.expression.data === className) {
+          if (assignee.expression instanceof Identifier && assignee.expression.data === className) {
             return true;
           }
         }
@@ -269,8 +273,7 @@ export default class ClassPatcher extends NodePatcher {
       throw this.error('Expected non-null body.');
     }
     for (let patcher of this.body.statements) {
-      if (patcher instanceof ConstructorPatcher &&
-          !(patcher.expression instanceof FunctionPatcher)) {
+      if (patcher instanceof ConstructorPatcher && !(patcher.expression instanceof FunctionPatcher)) {
         return true;
       }
     }
@@ -292,8 +295,7 @@ export default class ClassPatcher extends NodePatcher {
     for (let patcher of this.body.statements) {
       if (patcher instanceof ConstructorPatcher) {
         if (!(patcher.expression instanceof FunctionPatcher)) {
-          let expressionCode = this.slice(
-            patcher.expression.contentStart, patcher.expression.contentEnd);
+          let expressionCode = this.slice(patcher.expression.contentStart, patcher.expression.contentEnd);
           let ctorName;
           if (this.nameAssignee instanceof IdentifierPatcher) {
             let className = this.nameAssignee.node.data;
@@ -313,7 +315,7 @@ export default class ClassPatcher extends NodePatcher {
 
           return {
             ctorName,
-            expressionCode,
+            expressionCode
           };
         }
       }
@@ -330,15 +332,15 @@ export default class ClassPatcher extends NodePatcher {
    * class.
    */
   generateInitClassMethod(
-      nonMethodPatchers: Array<NonMethodInfo>,
-      customConstructorInfo: CustomConstructorInfo | null,
-      insertPoint: number
+    nonMethodPatchers: Array<NonMethodInfo>,
+    customConstructorInfo: CustomConstructorInfo | null,
+    insertPoint: number
   ): Array<string> {
     let bodyIndent = this.getBodyIndent();
     let indentString = this.getProgramIndentString();
     this.insert(insertPoint, `\n${bodyIndent}@initClass: ->`);
     let assignmentNames = [];
-    for (let {patcher, deleteStart} of nonMethodPatchers) {
+    for (let { patcher, deleteStart } of nonMethodPatchers) {
       let assignmentName = this.getAssignmentName(patcher);
       if (assignmentName) {
         assignmentNames.push(assignmentName);
@@ -350,10 +352,7 @@ export default class ClassPatcher extends NodePatcher {
     }
     if (customConstructorInfo) {
       let { ctorName, expressionCode } = customConstructorInfo;
-      this.insert(
-        insertPoint,
-        `\n${bodyIndent}${indentString}${ctorName} = ${expressionCode}`
-      );
+      this.insert(insertPoint, `\n${bodyIndent}${indentString}${ctorName} = ${expressionCode}`);
       assignmentNames.push(ctorName);
     }
 
@@ -362,7 +361,7 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   hasAnyAssignments(nonMethodPatchers: Array<NonMethodInfo>): boolean {
-    for (let {patcher} of nonMethodPatchers) {
+    for (let { patcher } of nonMethodPatchers) {
       if (this.getAssignmentName(patcher)) {
         return true;
       }
@@ -391,12 +390,10 @@ export default class ClassPatcher extends NodePatcher {
    * covers the common case of a single variable being defined.
    */
   getAssignmentName(statementPatcher: NodePatcher): string | null {
-    if (statementPatcher.node instanceof AssignOp &&
-        statementPatcher.node.assignee instanceof Identifier) {
+    if (statementPatcher.node instanceof AssignOp && statementPatcher.node.assignee instanceof Identifier) {
       return statementPatcher.node.assignee.data;
     }
-    if (statementPatcher instanceof ClassPatcher &&
-        statementPatcher.nameAssignee instanceof IdentifierPatcher) {
+    if (statementPatcher instanceof ClassPatcher && statementPatcher.nameAssignee instanceof IdentifierPatcher) {
       return statementPatcher.nameAssignee.node.data;
     }
     return null;

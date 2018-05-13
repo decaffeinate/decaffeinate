@@ -4,9 +4,9 @@
  * should do the same.
  */
 export default function removeUnicodeBOMIfNecessary(source: string): string {
-    if (source[0] === '\uFEFF') {
-        return source.slice(1);
-    } else {
-        return source;
-    }
+  if (source[0] === '\uFEFF') {
+    return source.slice(1);
+  } else {
+    return source;
+  }
 }

@@ -13,8 +13,9 @@ export default class JavaScriptPatcher extends NodePatcher {
     // For any normal surrounding parens, CoffeeScript's rule is to remove them,
     // which allows things like comment-only inline JS. Function call parens
     // should not be removed, though.
-    let shouldRemoveSurroundingParens =
-      !(this.parent instanceof FunctionApplicationPatcher && this === this.parent.args[0]);
+    let shouldRemoveSurroundingParens = !(
+      this.parent instanceof FunctionApplicationPatcher && this === this.parent.args[0]
+    );
 
     if (shouldRemoveSurroundingParens) {
       this.remove(this.outerStart, this.contentStart);

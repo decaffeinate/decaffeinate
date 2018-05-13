@@ -47,8 +47,10 @@ export default class BlockPatcher extends SharedBlockPatcher {
         fakeScope.processNode(child);
       });
       for (let name of fakeScope.getOwnNames()) {
-        if (countVariableUsages(this.node, name) > countVariableUsages(iifePatcher.node, name) &&
-            this._explicitDeclarationsToAdd.indexOf(name) === -1) {
+        if (
+          countVariableUsages(this.node, name) > countVariableUsages(iifePatcher.node, name) &&
+          this._explicitDeclarationsToAdd.indexOf(name) === -1
+        ) {
           this._explicitDeclarationsToAdd.push(name);
         }
       }
@@ -56,13 +58,16 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   canPatchAsExpression(): boolean {
-    return this._explicitDeclarationsToAdd.length === 0 &&
-      this.statements.every(statement => statement.canPatchAsExpression());
+    return (
+      this._explicitDeclarationsToAdd.length === 0 &&
+      this.statements.every(statement => statement.canPatchAsExpression())
+    );
   }
 
   prefersToPatchAsExpression(): boolean {
-    return this.statements.length === 0 ||
-      (this.statements.length === 1 &&  this.statements[0].prefersToPatchAsExpression());
+    return (
+      this.statements.length === 0 || (this.statements.length === 1 && this.statements[0].prefersToPatchAsExpression())
+    );
   }
 
   setExpression(force: boolean = false): boolean {
@@ -89,7 +94,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
     this.shouldPatchInline = shouldPatchInline;
   }
 
-  patchAsStatement({leftBrace=true, rightBrace=true}: PatchOptions = {}): void {
+  patchAsStatement({ leftBrace = true, rightBrace = true }: PatchOptions = {}): void {
     // Blocks can be surrounded by parens in CS but not JS, so just remove any parens if they're
     // there. The range of the block will always include the parens themselves.
     if (this.statements.length > 0) {
@@ -105,30 +110,28 @@ export default class BlockPatcher extends SharedBlockPatcher {
     }
 
     let constructor: NodePatcher | null = null;
-    this.statements.forEach(
-      (statement, i, statements) => {
-        if (i === statements.length - 1 && this.parent instanceof FunctionPatcher) {
-          if (statement instanceof ReturnPatcher && !statement.expression) {
-            this.removeFinalEmptyReturn(statement);
-            return;
-          }
-        }
-        // If we see a constructor (which only happens when this is a class
-        // block), defer it until the end. Its patching may need other class
-        // keys to already be patched so that it can generate method binding
-        // statements within the constructor.
-        // Check against the 'Constructor' node type instead of doing
-        // `instanceof` to avoid a circular import issue.
-        if (statement.node.type === 'Constructor') {
-          if (constructor) {
-            throw this.error('Unexpectedly found two constructors in the same block.');
-          }
-          constructor = statement;
-        } else {
-          this.patchInnerStatement(statement);
+    this.statements.forEach((statement, i, statements) => {
+      if (i === statements.length - 1 && this.parent instanceof FunctionPatcher) {
+        if (statement instanceof ReturnPatcher && !statement.expression) {
+          this.removeFinalEmptyReturn(statement);
+          return;
         }
       }
-    );
+      // If we see a constructor (which only happens when this is a class
+      // block), defer it until the end. Its patching may need other class
+      // keys to already be patched so that it can generate method binding
+      // statements within the constructor.
+      // Check against the 'Constructor' node type instead of doing
+      // `instanceof` to avoid a circular import issue.
+      if (statement.node.type === 'Constructor') {
+        if (constructor) {
+          throw this.error('Unexpectedly found two constructors in the same block.');
+        }
+        constructor = statement;
+      } else {
+        this.patchInnerStatement(statement);
+      }
+    });
     if (constructor) {
       this.patchInnerStatement(constructor);
     }
@@ -168,20 +171,14 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   patchInnerStatement(statement: NodePatcher): void {
-    let hasImplicitReturn = (
-      statement.implicitlyReturns() &&
-      !statement.explicitlyReturns()
-    );
+    let hasImplicitReturn = statement.implicitlyReturns() && !statement.explicitlyReturns();
 
-    if (statement.isSurroundedByParentheses() &&
-        !statement.statementNeedsParens() &&
-        !hasImplicitReturn) {
+    if (statement.isSurroundedByParentheses() && !statement.statementNeedsParens() && !hasImplicitReturn) {
       this.remove(statement.outerStart, statement.innerStart);
       this.remove(statement.innerEnd, statement.outerEnd);
     }
 
-    let implicitReturnPatcher = hasImplicitReturn ?
-      this.implicitReturnPatcher() : null;
+    let implicitReturnPatcher = hasImplicitReturn ? this.implicitReturnPatcher() : null;
     if (implicitReturnPatcher) {
       implicitReturnPatcher.patchImplicitReturnStart(statement);
     }
@@ -206,8 +203,11 @@ export default class BlockPatcher extends SharedBlockPatcher {
     let previousToken = previousTokenIndex && this.sourceTokenAtIndex(previousTokenIndex);
     let nextToken = nextTokenIndex && this.sourceTokenAtIndex(nextTokenIndex);
 
-    if (previousToken && previousToken.type === SourceType.NEWLINE &&
-        (!nextToken || nextToken.type === SourceType.NEWLINE)) {
+    if (
+      previousToken &&
+      previousToken.type === SourceType.NEWLINE &&
+      (!nextToken || nextToken.type === SourceType.NEWLINE)
+    ) {
       this.remove(previousToken.start, statement.outerEnd);
     } else if (previousToken && previousToken.type === SourceType.SEMICOLON) {
       this.remove(previousToken.start, statement.outerEnd);
@@ -217,8 +217,8 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   patchAsExpression({
-    leftBrace=this.statements.length > 1,
-    rightBrace=this.statements.length > 1
+    leftBrace = this.statements.length > 1,
+    rightBrace = this.statements.length > 1
   }: PatchOptions = {}): void {
     if (leftBrace) {
       this.insert(this.innerStart, '(');
@@ -226,24 +226,19 @@ export default class BlockPatcher extends SharedBlockPatcher {
     if (this.statements.length === 0) {
       this.insert(this.contentStart, 'undefined');
     } else {
-      this.statements.forEach(
-        (statement, i, statements) => {
-          statement.setRequiresExpression();
-          statement.patch();
-          if (i !== statements.length - 1) {
-            let semicolonTokenIndex = this.getSemicolonSourceTokenIndexBetween(
-              statement,
-              statements[i + 1]
-            );
-            if (semicolonTokenIndex) {
-              let semicolonToken = notNull(this.sourceTokenAtIndex(semicolonTokenIndex));
-              this.overwrite(semicolonToken.start, semicolonToken.end, ',');
-            } else {
-              this.insert(statement.outerEnd, ',');
-            }
+      this.statements.forEach((statement, i, statements) => {
+        statement.setRequiresExpression();
+        statement.patch();
+        if (i !== statements.length - 1) {
+          let semicolonTokenIndex = this.getSemicolonSourceTokenIndexBetween(statement, statements[i + 1]);
+          if (semicolonTokenIndex) {
+            let semicolonToken = notNull(this.sourceTokenAtIndex(semicolonTokenIndex));
+            this.overwrite(semicolonToken.start, semicolonToken.end, ',');
+          } else {
+            this.insert(statement.outerEnd, ',');
           }
         }
-      );
+      });
     }
     let lastToken = this.lastToken();
     if (lastToken.type === SourceType.SEMICOLON) {
@@ -258,11 +253,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * @private
    */
   getSemicolonSourceTokenIndexBetween(left: NodePatcher, right: NodePatcher): SourceTokenListIndex | null {
-    return this.indexOfSourceTokenBetweenPatchersMatching(
-      left,
-      right,
-      token => token.type === SourceType.SEMICOLON
-    );
+    return this.indexOfSourceTokenBetweenPatchersMatching(left, right, token => token.type === SourceType.SEMICOLON);
   }
 
   /**

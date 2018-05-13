@@ -18,7 +18,7 @@ export default class WhilePatcher extends NodePatcher {
   condition: NodePatcher;
   guard: NodePatcher | null;
   body: NodePatcher | null;
-  
+
   constructor(patcherContext: PatcherContext, condition: NodePatcher, guard: NodePatcher | null, body: NodePatcher) {
     super(patcherContext);
     this.condition = condition;
@@ -54,17 +54,11 @@ export default class WhilePatcher extends NodePatcher {
     if (this.body === null) {
       throw this.error('Expected non-null body.');
     }
-    let patchedCondition = this.slice(
-      this.condition.outerStart,
-      this.condition.outerEnd
-    );
+    let patchedCondition = this.slice(this.condition.outerStart, this.condition.outerEnd);
     if (postfixExpressionRequiresParens(patchedCondition) && !this.condition.isSurroundedByParentheses()) {
       patchedCondition = `(${patchedCondition})`;
     }
-    let patchedBody = this.slice(
-      this.body.outerStart,
-      this.body.outerEnd
-    );
+    let patchedBody = this.slice(this.body.outerStart, this.body.outerEnd);
     let patchedGuard = null;
     if (this.guard) {
       patchedGuard = this.slice(this.guard.outerStart, this.guard.outerEnd);
@@ -73,15 +67,13 @@ export default class WhilePatcher extends NodePatcher {
       }
     }
     let whileToken = this.node.isUntil ? 'until' : 'while';
-    let newContent = `${whileToken} ${patchedCondition} ${patchedGuard ? `when ${patchedGuard} ` : ''}then ${patchedBody}`;
+    let newContent = `${whileToken} ${patchedCondition} ${
+      patchedGuard ? `when ${patchedGuard} ` : ''
+    }then ${patchedBody}`;
     if (postfixNodeNeedsOuterParens(this)) {
       newContent = `(${newContent})`;
     }
-    this.overwrite(
-      this.contentStart,
-      this.contentEnd,
-      newContent
-    );
+    this.overwrite(this.contentStart, this.contentEnd, newContent);
   }
 
   /**

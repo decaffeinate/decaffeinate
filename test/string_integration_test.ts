@@ -24,25 +24,24 @@ function generateThreeLineTests(strings: Array<string>): Array<string> {
 
 function runAssignmentTest(quote: string, string: string): void {
   validate(
-`testVariable = "test variable"
-setResult(${quote}${string}${quote})`);
+    `testVariable = "test variable"
+setResult(${quote}${string}${quote})`
+  );
 }
 
 function runFunctionTest(quote: string, string: string): void {
   validate(
-`runTest = () ->
+    `runTest = () ->
   testVariable = "test variable"
   return ${quote}${string}${quote}
-setResult(runTest())`);
+setResult(runTest())`
+  );
 }
 
 describe('string integration', function(): void {
   this.timeout(180000);
-  let strings = ['', '   ', 'word', '   leading indent', 'trailing indent   ',
-                 '    leading and trailing indent    '];
-  let quotes = [
-    ['\'', 'single quote (\')'],
-    ['"', 'double quote (")']];
+  let strings = ['', '   ', 'word', '   leading indent', 'trailing indent   ', '    leading and trailing indent    '];
+  let quotes = [["'", "single quote (')"], ['"', 'double quote (")']];
 
   let twoLineTests = generateTwoLineTests(strings);
   let threeLineTests = generateThreeLineTests(strings);
