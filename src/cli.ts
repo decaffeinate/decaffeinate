@@ -1,7 +1,7 @@
 /* eslint-disable no-process-exit */
 
-import { readdir, readFile, stat, writeFile } from 'mz/fs';
-import { basename, dirname, extname, join } from 'path';
+import { exists, mkdir, readdir, readFile, stat, writeFile } from 'mz/fs';
+import { basename, dirname, extname, join, normalize } from 'path';
 import { convert, modernizeJS } from './index';
 import { Options } from './options';
 import PatchError from './utils/PatchError';
@@ -24,12 +24,14 @@ interface CLIOptions {
   paths: Array<string>;
   baseOptions: Options;
   modernizeJS: boolean;
+  output: string;
 }
 
 function parseArguments(args: Array<string>): CLIOptions {
   let paths = [];
   let baseOptions: Options = {};
   let modernizeJS = false;
+  let output = '';
 
   for (let i = 0; i < args.length; i++) {
     let arg = args[i];
@@ -115,6 +117,11 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.looseIncludes = true;
         break;
 
+      case '--output':
+        output = args[i + 1];
+        i++;
+        break;
+
       case '--loose-comparison-negation':
         baseOptions.looseComparisonNegation = true;
         break;
@@ -144,7 +151,7 @@ function parseArguments(args: Array<string>): CLIOptions {
     }
   }
 
-  return { paths, baseOptions, modernizeJS };
+  return { paths, baseOptions, modernizeJS, output };
 }
 
 /**
@@ -181,7 +188,10 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
 
   async function processFile(path: string): Promise<void> {
     let extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
-    let outputPath = join(dirname(path), basename(path, extension)) + '.js';
+    if (options.output && !(await exists(options.output))) {
+      await mkdir(normalize(options.output));
+    }
+    let outputPath = join(options.output, dirname(path), basename(path, extension)) + '.js';
     console.log(`${path} → ${outputPath}`);
     let data = await readFile(path, 'utf8');
     let resultCode = runWithCode(path, data, options);
@@ -252,6 +262,7 @@ function usage(): void {
   console.log('  --modernize-js           Treat the input as JavaScript and only run the');
   console.log('                           JavaScript-to-JavaScript transforms, modifying the file(s)');
   console.log('                           in-place.');
+  console.log('  --output                 set the output directory for compiled JavaScript');
   console.log('  --literate               Treat the input file as Literate CoffeeScript.');
   console.log('  --disable-suggestion-comment');
   console.log('                           Do not include a comment with followup suggestions at the');
