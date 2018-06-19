@@ -24,14 +24,14 @@ interface CLIOptions {
   paths: Array<string>;
   baseOptions: Options;
   modernizeJS: boolean;
-  output: string;
+  output?: string | undefined;
 }
 
 function parseArguments(args: Array<string>): CLIOptions {
   let paths = [];
   let baseOptions: Options = {};
   let modernizeJS = false;
-  let output = '';
+  let output;
 
   for (let i = 0; i < args.length; i++) {
     let arg = args[i];
@@ -188,14 +188,15 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
 
   async function processFile(path: string): Promise<void> {
     let extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
-    if (options.output && !(await exists(options.output))) {
-      await mkdir(normalize(options.output));
+    const outputPath = options.output ? join(options.output, dirname(path)) : dirname(path);
+    if (options.output && !(await exists(outputPath))) {
+      await mkdir(normalize(outputPath));
     }
-    let outputPath = join(options.output, dirname(path), basename(path, extension)) + '.js';
-    console.log(`${path} → ${outputPath}`);
+    let outputFile = join(outputPath, basename(path, extension)) + '.js';
+    console.log(`${path} → ${outputFile}`);
     let data = await readFile(path, 'utf8');
     let resultCode = runWithCode(path, data, options);
-    await writeFile(outputPath, resultCode);
+    await writeFile(outputFile, resultCode);
   }
 
   for (let path of paths) {
