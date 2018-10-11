@@ -74,7 +74,7 @@ describe('decaffeinate CLI', () => {
       '--literate',
       `
       This is a literate file.
-      
+
           literate = true
     `,
       `
@@ -340,7 +340,7 @@ describe('decaffeinate CLI', () => {
             // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.lastIndexOf(';')).trim();
             eval(\`$\{thisName} = this;\`);
           }
           this.a = 1;
@@ -372,7 +372,7 @@ describe('decaffeinate CLI', () => {
             // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.lastIndexOf(';')).trim();
             eval(\`$\{thisName} = this;\`);
           }
           this.a = 1;
@@ -434,14 +434,14 @@ describe('decaffeinate CLI', () => {
     `,
       `
       stdin: Cannot automatically convert a subclass with a constructor that uses \`this\` before \`super\`.
-  
+
       JavaScript requires all subclass constructors to call \`super\` and to do so
       before the first use of \`this\`, so the following cases cannot be converted
       automatically:
       * Constructors in subclasses that use \`this\` before \`super\`.
       * Constructors in subclasses that omit the \`super\` call.
       * Subclasses that use \`=>\` method syntax to automatically bind methods.
-      
+
       To convert these cases to JavaScript anyway, remove the option
       --disallow-invalid-constructors when running decaffeinate.
         1 | class A extends B
@@ -566,7 +566,7 @@ describe('decaffeinate CLI', () => {
       'test_fixtures/level1',
       '',
       `
-      test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js 
+      test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js
     `
     );
     let contents = readFileSync('./test_fixtures/level1/level2/file.js').toString();

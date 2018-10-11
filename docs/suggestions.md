@@ -82,7 +82,7 @@ class FriendlyPerson extends Person {
       // Hack: trick babel into allowing this before super.
       if (false) { super(); }
       let thisFn = (() => { this; }).toString();
-      let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
+      let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.lastIndexOf(';')).trim();
       eval(`${thisName} = this;`);
     }
     this.handleGreeting = this.handleGreeting.bind(this);

@@ -217,7 +217,7 @@ describe('classes', () => {
           constructor() {
             this.method = this.method.bind(this);
           }
-        
+
           method(a) {
             this.a = a;
           }
@@ -428,7 +428,7 @@ describe('classes', () => {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.lastIndexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.a = 2;
@@ -453,7 +453,7 @@ describe('classes', () => {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.lastIndexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.a = 2;
@@ -477,13 +477,13 @@ describe('classes', () => {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.lastIndexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.foo = this.foo.bind(this);
             super(...args);
           }
-        
+
           foo() {
             return null;
           }
@@ -499,7 +499,7 @@ describe('classes', () => {
           constructor: ->
             super
             @x = 3
-        
+
           foo: =>
             null
       `,
@@ -510,14 +510,14 @@ describe('classes', () => {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.lastIndexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.foo = this.foo.bind(this);
             super(...arguments);
             this.x = 3;
           }
-        
+
           foo() {
             return null;
           }
@@ -531,7 +531,7 @@ describe('classes', () => {
         `
         class A extends B
           constructor: ->
-        
+
           foo: =>
             null
       `,
@@ -542,12 +542,12 @@ describe('classes', () => {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.lastIndexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             this.foo = this.foo.bind(this);
           }
-        
+
           foo() {
             return null;
           }
@@ -590,7 +590,7 @@ describe('classes', () => {
               // Hack: trick Babel/TypeScript into allowing this before super.
               if (false) { super(); }
               let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+              let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.lastIndexOf(';')).trim();
               eval(\`\${thisName} = this;\`);
             }
             if (c == null) { c = {}; }
@@ -1185,7 +1185,7 @@ describe('classes', () => {
       class X extends Y
         constructor: ->
           super
-      
+
         add: =>
     `,
       `
@@ -1194,7 +1194,7 @@ describe('classes', () => {
           this.add = this.add.bind(this);
           super(...arguments);
         }
-      
+
         add() {}
       }
     `,
@@ -1211,7 +1211,7 @@ describe('classes', () => {
       `
       class X
         constructor: ->
-      
+
         add: =>
     `,
       `
@@ -1219,7 +1219,7 @@ describe('classes', () => {
         constructor() {
           this.add = this.add.bind(this);
         }
-      
+
         add() {}
       }
     `
@@ -1231,7 +1231,7 @@ describe('classes', () => {
       `
       class X
         constructor: (a, b) ->
-      
+
         add: =>
     `,
       `
@@ -1239,7 +1239,7 @@ describe('classes', () => {
         constructor(a, b) {
           this.add = this.add.bind(this);
         }
-      
+
         add() {}
       }
     `
@@ -1256,7 +1256,7 @@ describe('classes', () => {
           super
           if c
             d
-      
+
         add: =>
     `,
       `
@@ -1271,7 +1271,7 @@ describe('classes', () => {
             d;
           }
         }
-      
+
         add() {}
       }
     `,
@@ -1288,13 +1288,13 @@ describe('classes', () => {
       `
       class X
         constructor: ->a
-      
+
         add: =>
     `,
       `
       class X {
         constructor() { this.add = this.add.bind(this);   a; }
-      
+
         add() {}
       }
     `
@@ -1563,14 +1563,14 @@ describe('classes', () => {
       `
       define (require) ->
         'use strict'
-        
+
         class MainLayout extends BaseView
           container: 'body'
     `,
       `
       define(function(require) {
         'use strict';
-        
+
         let MainLayout;
         return MainLayout = (function() {
           MainLayout = class MainLayout extends BaseView {
@@ -1761,7 +1761,7 @@ describe('classes', () => {
         constructor() {
           this[b] = this[b].bind(this);
         }
-      
+
         [b]() { return c; }
       }
     `
@@ -1779,7 +1779,7 @@ describe('classes', () => {
         constructor() {
           this[\`\${b}foo\`] = this[\`\${b}foo\`].bind(this);
         }
-      
+
         [\`\${b}foo\`]() { return c; }
       }
     `
@@ -1792,7 +1792,7 @@ describe('classes', () => {
       class A
         constructor: ->
           console.log 'got here'
-      
+
         "#{b}": => c
     `,
       `
@@ -1801,7 +1801,7 @@ describe('classes', () => {
           this[b] = this[b].bind(this);
           console.log('got here');
         }
-      
+
         [b]() { return c; }
       }
     `
@@ -1814,7 +1814,7 @@ describe('classes', () => {
       class A
         constructor: ->
           console.log 'got here'
-      
+
         "#{b}foo": => c
     `,
       `
@@ -1823,7 +1823,7 @@ describe('classes', () => {
           this[\`\${b}foo\`] = this[\`\${b}foo\`].bind(this);
           console.log('got here');
         }
-      
+
         [\`\${b}foo\`]() { return c; }
       }
     `
@@ -1911,7 +1911,7 @@ describe('classes', () => {
         const Cls = (class extends RDBConstant {
           static initClass() {
             this.prototype.tt = protoTermType.MONDAY; this.prototype.st = 'monday';
-            
+
           }
         });
         Cls.initClass();
@@ -1978,7 +1978,7 @@ describe('classes', () => {
         @b = =>
           @c
         @c = 5
-      
+
       b = A.b
       setResult(b())
     `,
@@ -2240,8 +2240,8 @@ describe('classes', () => {
       A = class B
         c: d
         e: ->
-          f 
-      
+          f
+
     `,
       `
       let B;
@@ -2255,9 +2255,9 @@ describe('classes', () => {
           }
         };
         B.initClass();
-        return B; 
+        return B;
       })());
-      
+
     `,
       { shouldStripIndent: false }
     );
@@ -2324,7 +2324,7 @@ describe('classes', () => {
       constructor: ->
         @value ?= 1
         @value += 1
-    
+
     class B extends A
       constructor: ->
         @value = 3
