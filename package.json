@@ -79,7 +79,7 @@
     "ts-node": "^6.0.3",
     "tslint": "^5.5.0",
     "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^20.0.0"
+    "typescript-eslint-parser": "^21.0.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
