@@ -20,9 +20,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
 
   patchAsExpression(): void {
     if (!this._shouldSkipSoakPatch) {
-      if (this.shouldPatchAsOptionalChaining()) {
-        this.patchAsOptionalChaining();
-      } else if (this.shouldPatchAsConditional()) {
+      if (this.shouldPatchAsConditional()) {
         this.patchAsConditional();
       } else {
         this.patchAsGuardCall();
@@ -33,20 +31,8 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
     }
   }
 
-  shouldPatchAsOptionalChaining(): boolean {
-    return this.options.useOptionalChaining === true && !this.expression.mayBeUnboundReference();
-  }
-
   shouldPatchAsConditional(): boolean {
     return this.expression.isRepeatable() && !nodeContainsSoakOperation(this.expression.node);
-  }
-
-  patchAsOptionalChaining(): void {
-    this.expression.patch();
-    // `a?[b]` → `a?.[b]`
-    //              ^
-    this.overwrite(this.expression.outerEnd, this.indexingExpr.outerStart, '?.[');
-    this.indexingExpr.patch();
   }
 
   patchAsConditional(): void {

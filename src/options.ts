@@ -4,7 +4,6 @@ export type Options = {
   runToStage?: string | null;
   literate?: boolean;
   disableSuggestionComment?: boolean;
-  useOptionalChaining?: boolean;
   noArrayIncludes?: boolean;
   useJSModules?: boolean;
   looseJSModules?: boolean;
@@ -26,7 +25,6 @@ export const DEFAULT_OPTIONS: Options = {
   runToStage: null,
   literate: false,
   disableSuggestionComment: false,
-  useOptionalChaining: false,
   noArrayIncludes: false,
   useJSModules: false,
   looseJSModules: false,

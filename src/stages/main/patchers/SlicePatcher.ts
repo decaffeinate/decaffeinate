@@ -38,10 +38,6 @@ export default class SlicePatcher extends NodePatcher {
     }
   }
 
-  shouldPatchAsOptionalChaining(): boolean {
-    return false;
-  }
-
   /**
    * EXPRESSION '[' LEFT? ( .. | ... ) RIGHT? ']'
    */
@@ -50,8 +46,7 @@ export default class SlicePatcher extends NodePatcher {
     let indexStart = this.getIndexStartSourceToken();
     // `a[0..1]` → `a.slice(0..1]`
     //   ^           ^^^^^^^
-    let dot = this.shouldPatchAsOptionalChaining() ? '?.' : '.';
-    this.overwrite(this.expression.outerEnd, indexStart.end, `${dot}slice(`);
+    this.overwrite(this.expression.outerEnd, indexStart.end, '.slice(');
     if (this.left) {
       this.left.patch();
     } else if (this.right) {
@@ -123,8 +118,7 @@ export default class SlicePatcher extends NodePatcher {
     let indexStart = this.getIndexStartSourceToken();
     // `a[b..c]` → `a.splice(b..c]`
     //   ^           ^^^^^^^^
-    let dot = this.shouldPatchAsOptionalChaining() ? '?.' : '.';
-    this.overwrite(this.expression.outerEnd, indexStart.end, `${dot}splice(`);
+    this.overwrite(this.expression.outerEnd, indexStart.end, '.splice(');
     let leftCode;
     if (this.left) {
       leftCode = this.left.patchRepeatable();

@@ -28,7 +28,7 @@ export type ValidateOptions = {
  * In addition, on node >= 6, we run the ES6 code directly to make sure it gives
  * the same result, to avoid behavior differences with babel.
  *
- * Optionally, expectedOutput can be specified. If it is, the the result of the
+ * Optionally, expectedOutput can be specified. If it is, then the result of the
  * 'o' variable must be equal to that value.
  */
 export default function validate(

@@ -67,7 +67,7 @@ function parseArguments(args: Array<string>): CLIOptions {
         break;
 
       case '--use-optional-chaining':
-        baseOptions.useOptionalChaining = true;
+        console.warn(`NOTE: ${arg} is disabled and has no effect`);
         break;
 
       case '--use-js-modules':
@@ -258,6 +258,7 @@ function usage(): void {
   console.log('                           top of the output file.');
   console.log('  --no-array-includes      Do not use Array.prototype.includes in generated code.');
   console.log('  --use-optional-chaining  Use the upcoming optional chaining syntax for operators like `?.`.');
+  console.log('                           NOTE: this is disabled and has no effect.');
   console.log('  --use-js-modules         Convert require and module.exports to import and export.');
   console.log('  --loose-js-modules       Allow named exports when converting to JS modules.');
   console.log('  --safe-import-function-identifiers');
