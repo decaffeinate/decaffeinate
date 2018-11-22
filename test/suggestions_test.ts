@@ -21,7 +21,7 @@ describe('suggestions', () => {
             // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
             eval(\`$\{thisName} = this;\`);
           }
           this.c = this.c.bind(this);
@@ -79,7 +79,7 @@ describe('suggestions', () => {
             // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
             eval(\`$\{thisName} = this;\`);
           }
           this.c = c;
@@ -92,7 +92,7 @@ describe('suggestions', () => {
             // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
             eval(\`$\{thisName} = this;\`);
           }
           this.g = g;
