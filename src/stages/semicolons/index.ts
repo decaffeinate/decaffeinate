@@ -1,24 +1,20 @@
-import { Insertion, Removal } from 'ast-processor-babylon-config-types';
-const buildConfig = require('ast-processor-babylon-config');
-const asi = require('automatic-semicolon-insertion');
-import { parse, PluginName } from 'babylon';
+import { parse, ParserPlugin } from '@babel/parser';
+import asi from 'automatic-semicolon-insertion';
 import MagicString from 'magic-string';
 import { StageResult } from '../../index';
 import { logger } from '../../utils/debug';
 
-const BABYLON_PLUGINS: Array<PluginName> = [
+const BABYLON_PLUGINS: Array<ParserPlugin> = [
   'flow',
   'jsx',
   'asyncGenerators',
-  'classConstructorCall',
   'classProperties',
-  'decorators',
+  ['decorators', { decoratorsBeforeExport: true }] as any, // tslint:disable-line no-any
   'doExpressions',
-  'exportExtensions',
   'functionBind',
   'functionSent',
   'objectRestSpread',
-  'optionalChaining' as any // tslint:disable-line no-any
+  'optionalChaining'
 ];
 
 export default class SemicolonsStage {
@@ -32,13 +28,12 @@ export default class SemicolonsStage {
       plugins: BABYLON_PLUGINS,
       allowReturnOutsideFunction: true,
       tokens: true
-    } as any); // tslint:disable-line no-any
-    let config = buildConfig(content, ast);
+    });
 
-    asi(config);
+    const { insertions, removals } = asi(content, ast);
 
-    config.insertions.forEach(({ index, content }: Insertion) => editor.appendLeft(index, content));
-    config.removals.forEach(({ start, end }: Removal) => editor.remove(start, end));
+    insertions.forEach(({ index, content }) => editor.appendLeft(index, content));
+    removals.forEach(({ start, end }) => editor.remove(start, end));
 
     return {
       code: editor.toString(),
