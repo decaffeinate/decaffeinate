@@ -36,16 +36,15 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@babel/parser": "^7.1.6",
     "add-variable-declarations": "^3.1.0",
-    "ast-processor-babylon-config": "^1.0.0",
-    "automatic-semicolon-insertion": "^1.0.2",
+    "automatic-semicolon-insertion": "^2.0.1",
     "babel-plugin-transform-optional-chaining": "^7.0.0-beta.3",
     "babel-preset-es2015": "^7.0.0-beta.3",
-    "babylon": "7.0.0-beta.34",
     "coffee-lex": "^9.1.0",
     "decaffeinate-coffeescript": "1.12.7-patch.2",
     "decaffeinate-coffeescript2": "2.2.1-patch.4",
-    "decaffeinate-parser": "^22.5.2",
+    "decaffeinate-parser": "^22.5.3",
     "detect-indent": "^4.0.0",
     "esnext": "^3.3.1",
     "lines-and-columns": "^1.1.5",
@@ -61,8 +60,8 @@
     "dist"
   ],
   "devDependencies": {
+    "@babel/types": "^7.1.6",
     "@types/babel-core": "^6.7.14",
-    "@types/babylon": "^6.16.1",
     "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^5.0.0",
     "@types/mz": "^0.0.32",
@@ -76,10 +75,10 @@
     "mversion": "^1.10.1",
     "prettier": "^1.12.1",
     "rimraf": "^2.5.4",
-    "ts-node": "^6.0.3",
-    "tslint": "^5.5.0",
-    "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^21.0.0"
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.6",
+    "typescript-eslint-parser": "^21.0.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
