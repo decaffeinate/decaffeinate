@@ -163,7 +163,7 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
   code.
 * `--use-optional-chaining`: Use the upcoming
   [optional chaining](https://github.com/tc39/proposal-optional-chaining) syntax
-  for operators like `?.`.
+  for operators like `?.` [**NOTE:** this is disabled and has no effect].
 * `--safe-import-function-identifiers`: Comma-separated list of function names
   that may safely be in the `import`/`require` section of the file. All other
   function calls will disqualify later `require`s from being converted to
