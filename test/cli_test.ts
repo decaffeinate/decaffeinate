@@ -340,7 +340,7 @@ describe('decaffeinate CLI', () => {
             // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
             eval(\`$\{thisName} = this;\`);
           }
           this.a = 1;
@@ -372,7 +372,7 @@ describe('decaffeinate CLI', () => {
             // Hack: trick Babel/TypeScript into allowing this before super.
             if (false) { super(); }
             let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.slice(thisFn.indexOf('return') + 6 + 1, thisFn.indexOf(';')).trim();
+            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
             eval(\`$\{thisName} = this;\`);
           }
           this.a = 1;

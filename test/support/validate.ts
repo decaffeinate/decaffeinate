@@ -1,4 +1,4 @@
-import * as babel from 'babel-core';
+import * as babel from '@babel/core';
 import { compile as cs1Compile } from 'decaffeinate-coffeescript';
 import { compile as cs2Compile } from 'decaffeinate-coffeescript2';
 import * as vm from 'vm';
@@ -101,10 +101,9 @@ function runValidation(source: string, expectedOutput: {}, options: Options, ski
   let coffeeES5 = compile(source, { bare: true }) as string;
   let decaffeinateES6 = convert(source, options).code;
   let decaffeinateES5 =
-    babel.transform(decaffeinateES6, {
-      presets: ['es2015'],
-      plugins: ['transform-optional-chaining']
-    }).code || '';
+    babel.transformSync(decaffeinateES6, {
+      presets: ['@babel/preset-env']
+    })!.code || '';
 
   let coffeeOutput = runCodeAndExtract(coffeeES5);
   let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
