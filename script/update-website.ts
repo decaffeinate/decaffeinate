@@ -36,7 +36,7 @@ async function configureGithubRemote(name: string, project: string): Promise<voi
   console.log(`Adding remote ${name}…`);
   await run('git', ['remote', 'add', '-f', name, url]);
   await run('git', ['config', 'user.name', 'Brian Donovan']);
-  await run('git', ['config', 'user.email', 'me@brian-donovan.com']);
+  await run('git', ['config', 'user.email', '1938+eventualbuddha@users.noreply.github.com']);
 }
 
 async function run(command: string, args: Array<string>): Promise<{ stdout: string, stderr: string }> {
