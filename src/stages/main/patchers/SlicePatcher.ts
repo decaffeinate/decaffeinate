@@ -185,13 +185,16 @@ export default class SlicePatcher extends NodePatcher {
   getSliceSourceToken(): SourceToken {
     let tokens = this.context.sourceTokens;
     let { source } = this.context;
-    let index = tokens.indexOfTokenMatchingPredicate(token => {
-      if (token.type !== SourceType.RANGE) {
-        return false;
-      }
-      let operator = source.slice(token.start, token.end);
-      return operator === '...' || operator === '..';
-    }, this.left ? this.left.outerEndTokenIndex : this.expression.outerEndTokenIndex);
+    let index = tokens.indexOfTokenMatchingPredicate(
+      token => {
+        if (token.type !== SourceType.RANGE) {
+          return false;
+        }
+        let operator = source.slice(token.start, token.end);
+        return operator === '...' || operator === '..';
+      },
+      this.left ? this.left.outerEndTokenIndex : this.expression.outerEndTokenIndex
+    );
     if (!index || index.isAfter(this.contentEndTokenIndex)) {
       throw this.error(`could not find '..' or '...' in slice`);
     }
