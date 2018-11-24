@@ -853,10 +853,6 @@ cli-width@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-2.2.0.tgz#ff19ede8a9a5e579324147b0c11f0fbcbabed639"
 
-coffee-lex@^9.1.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-9.1.0.tgz#1fce57576ddcec6243ec43b7e276ac1da81aaca2"
-
 coffee-lex@^9.1.2:
   version "9.1.2"
   resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-9.1.2.tgz#1657c8ddcff86c509d255b2ac598f13db4bdefe3"
@@ -926,6 +922,7 @@ decaffeinate-coffeescript@1.12.7-patch.2:
 decaffeinate-parser@^22.5.5:
   version "22.5.5"
   resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.5.tgz#73aca31bbccbc36f3d37b7f4ab15276b013a22a1"
+  integrity sha512-RoqsgFgdKEHvC/NZswnCn6erraDX+XqrDYcna535GfYs+aUHSAvSPpsT6b3pzNUAJ1rN9bBnOU/VhXupTue3LQ==
   dependencies:
     "@babel/parser" "^7.1.6"
     coffee-lex "^9.1.2"
