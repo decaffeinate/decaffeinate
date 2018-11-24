@@ -36,7 +36,7 @@ export default function downgradeUnicodeCodePointEscapesInRange(
         patcher.overwrite(i, codePointEnd + 1, toUnicodeEscape(codePoint));
       } else {
         let high = Math.floor((codePoint - 0x10000) / 0x400) + 0xd800;
-        let low = (codePoint - 0x10000) % 0x400 + 0xdc00;
+        let low = ((codePoint - 0x10000) % 0x400) + 0xdc00;
         patcher.overwrite(
           i,
           codePointEnd + 1,
