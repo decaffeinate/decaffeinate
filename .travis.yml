@@ -11,7 +11,8 @@ before_script:
 after_script:
   - greenkeeper-lockfile-upload
 node_js:
-  - '9'
+  - '11'
+  - '10'
   - '8'
   - '6'
 branches:
