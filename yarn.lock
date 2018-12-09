@@ -853,9 +853,10 @@ cli-width@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-2.2.0.tgz#ff19ede8a9a5e579324147b0c11f0fbcbabed639"
 
-coffee-lex@^9.1.2:
-  version "9.1.2"
-  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-9.1.2.tgz#1657c8ddcff86c509d255b2ac598f13db4bdefe3"
+coffee-lex@^9.1.3:
+  version "9.1.3"
+  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-9.1.3.tgz#a0194fb2ba1df8de91715dadb7eb9c0831698374"
+  integrity sha512-YH5vqZTYO5udP/8x0XlC17cNhshMx3GZXX9U3T+IfhhPcxuVg2oiYeZA90e54/0PV9F4sRiR2MIvhTXtEabmeg==
 
 color-convert@^1.0.0:
   version "1.9.0"
@@ -919,13 +920,13 @@ decaffeinate-coffeescript@1.12.7-patch.2:
   version "1.12.7-patch.2"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.2.tgz#c0a453395e0194bcf0dce8d81dbf7170c5a1d578"
 
-decaffeinate-parser@^22.5.5:
-  version "22.5.5"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.5.tgz#73aca31bbccbc36f3d37b7f4ab15276b013a22a1"
-  integrity sha512-RoqsgFgdKEHvC/NZswnCn6erraDX+XqrDYcna535GfYs+aUHSAvSPpsT6b3pzNUAJ1rN9bBnOU/VhXupTue3LQ==
+decaffeinate-parser@^22.5.6:
+  version "22.5.6"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.6.tgz#2ed78c6aad6061f3f97a8700ca779c747b8dbe64"
+  integrity sha512-RpKcak9HCs4kPacS6mbUrZi7bRVoylSKsSB4gTNmKH6T0K+G2wXqoo2xhb0W1b2IPHuiGEz4SBT3iBC237SZpg==
   dependencies:
     "@babel/parser" "^7.1.6"
-    coffee-lex "^9.1.2"
+    coffee-lex "^9.1.3"
     decaffeinate-coffeescript "1.12.7-patch.2"
     decaffeinate-coffeescript2 "2.2.1-patch.4"
     json-stable-stringify "^1.0.1"
