@@ -12,7 +12,7 @@ export default function getLatestVersion(packageName: string): Promise<string> {
     get(format(url), response => {
       let body = '';
       response.setEncoding('utf8');
-      response.on('data', chunk => body += chunk);
+      response.on('data', chunk => (body += chunk));
       response.on('end', () => {
         if (response.statusCode !== 200) {
           reject(new Error(`unable to get latest version (code=${response.statusCode}): ${body}`));

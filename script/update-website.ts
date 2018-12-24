@@ -39,8 +39,8 @@ async function configureGithubRemote(name: string, project: string): Promise<voi
   await run('git', ['config', 'user.email', '1938+eventualbuddha@users.noreply.github.com']);
 }
 
-async function run(command: string, args: Array<string>): Promise<{ stdout: string, stderr: string }> {
-  let [ stdout, stderr ] = await execFile(command, args);
+async function run(command: string, args: Array<string>): Promise<{ stdout: string; stderr: string }> {
+  let [stdout, stderr] = await execFile(command, args);
   return { stdout, stderr };
 }
 
@@ -80,12 +80,7 @@ async function updateWebsite(): Promise<void> {
     console.log(`Already using decaffeinate v${latestVersion}, skipping install.`);
   } else {
     console.log(`${currentVersion} != ${latestVersion}, installing decaffeinate v${latestVersion}…`);
-    let args = [
-      'add',
-      '--dev',
-      '--exact',
-      `decaffeinate@${latestVersion}`
-    ];
+    let args = ['add', '--dev', '--exact', `decaffeinate@${latestVersion}`];
 
     if (decaffeinateRegistry) {
       args.unshift('--registry', decaffeinateRegistry);
@@ -109,8 +104,7 @@ async function updateWebsite(): Promise<void> {
   await run('git', ['reset', '--hard', currentRef]);
 }
 
-updateWebsite()
-  .catch(err => {
-    console.error(err.stack);
-    process.exit(1);
-  });
+updateWebsite().catch(err => {
+  console.error(err.stack);
+  process.exit(1);
+});
