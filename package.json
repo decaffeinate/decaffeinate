@@ -76,7 +76,7 @@
     "mocha": "^5.2.0",
     "prettier": "^1.15.3",
     "rimraf": "^2.6.2",
-    "ts-node": "^7.0.1",
+    "ts-node": "^8.0.2",
     "tslint": "^5.11.0",
     "typescript": "^3.1.6",
     "typescript-eslint-parser": "^22.0.0"
