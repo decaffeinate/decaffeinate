@@ -111,6 +111,17 @@ describe('imports', () => {
     );
   });
 
+  it('handles ES import without specifiers', () => {
+    check(
+      `
+      import 'd'
+    `,
+      `
+      import 'd';
+    `
+    );
+  });
+
   it('handles ES module export binding list', () => {
     check(
       `

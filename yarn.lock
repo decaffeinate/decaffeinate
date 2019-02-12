@@ -1050,34 +1050,25 @@ debug@^4.0.1, debug@^4.1.0:
   dependencies:
     ms "^2.1.1"
 
-decaffeinate-coffeescript2@2.2.1-patch.4:
-  version "2.2.1-patch.4"
-  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript2/-/decaffeinate-coffeescript2-2.2.1-patch.4.tgz#901e67350d985b4c7994f84b2325f72bf6a6a865"
-
 decaffeinate-coffeescript2@2.2.1-patch.5:
   version "2.2.1-patch.5"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript2/-/decaffeinate-coffeescript2-2.2.1-patch.5.tgz#016ff1e967812d42bbfe270faa63b77681d2d7df"
   integrity sha512-VlI2TQNRj9U/wifgs2kB+LzzfhMkrJAW7RlLWY8yZSafM3O2HaTHzpZE4mDRfEnioAaD/SV/FCuCQ73vCJnrVw==
-
-decaffeinate-coffeescript@1.12.7-patch.2:
-  version "1.12.7-patch.2"
-  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.2.tgz#c0a453395e0194bcf0dce8d81dbf7170c5a1d578"
 
 decaffeinate-coffeescript@1.12.7-patch.3:
   version "1.12.7-patch.3"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.3.tgz#ae261022a35dc42dd9a0bc2c241717d5a23f8e67"
   integrity sha512-4NshbupYgQsVm/jOosp/nen1MWi43i1/z0I+F1JQQ8sNpS6SvvJWYwMayfuYkE/c/5mK3ISWu2H9OyPZYwtMLg==
 
-decaffeinate-parser@^22.5.6:
-  version "22.5.6"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.6.tgz#2ed78c6aad6061f3f97a8700ca779c747b8dbe64"
-  integrity sha512-RpKcak9HCs4kPacS6mbUrZi7bRVoylSKsSB4gTNmKH6T0K+G2wXqoo2xhb0W1b2IPHuiGEz4SBT3iBC237SZpg==
+decaffeinate-parser@^22.5.10:
+  version "22.5.10"
+  resolved "https://registry.npmjs.org/decaffeinate-parser/-/decaffeinate-parser-22.5.10.tgz#0047b8bf3d95a3088d7f8306993aa329832de691"
+  integrity sha512-n/CEhLf6OTIizz9x2stKoXmca+aXYYepC/gJ+KABB5f4VPHLRv9XML3VDj6cw4GvtRVxojdAhdNkpGJx/pEbKw==
   dependencies:
     "@babel/parser" "^7.1.6"
     coffee-lex "^9.1.3"
-    decaffeinate-coffeescript "1.12.7-patch.2"
-    decaffeinate-coffeescript2 "2.2.1-patch.4"
-    json-stable-stringify "^1.0.1"
+    decaffeinate-coffeescript "1.12.7-patch.3"
+    decaffeinate-coffeescript2 "2.2.1-patch.5"
     lines-and-columns "^1.1.6"
 
 decamelize@^1.2.0:
@@ -1558,12 +1549,6 @@ json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
 
-json-stable-stringify@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/json-stable-stringify/-/json-stable-stringify-1.0.1.tgz#9a759d39c5f2ff503fd5300646ed445f88c4f9af"
-  dependencies:
-    jsonify "~0.0.0"
-
 json5@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.1.0.tgz#e7a0c62c48285c628d20a10b85c89bb807c32850"
@@ -1575,10 +1560,6 @@ jsonfile@^4.0.0:
   resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-4.0.0.tgz#8771aae0799b64076b76640fca058f9c10e33ecb"
   optionalDependencies:
     graceful-fs "^4.1.6"
-
-jsonify@~0.0.0:
-  version "0.0.0"
-  resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
 
 lcid@^2.0.0:
   version "2.0.0"
