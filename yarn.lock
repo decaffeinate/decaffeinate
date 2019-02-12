@@ -1058,6 +1058,11 @@ decaffeinate-coffeescript@1.12.7-patch.2:
   version "1.12.7-patch.2"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.2.tgz#c0a453395e0194bcf0dce8d81dbf7170c5a1d578"
 
+decaffeinate-coffeescript@1.12.7-patch.3:
+  version "1.12.7-patch.3"
+  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.3.tgz#ae261022a35dc42dd9a0bc2c241717d5a23f8e67"
+  integrity sha512-4NshbupYgQsVm/jOosp/nen1MWi43i1/z0I+F1JQQ8sNpS6SvvJWYwMayfuYkE/c/5mK3ISWu2H9OyPZYwtMLg==
+
 decaffeinate-parser@^22.5.6:
   version "22.5.6"
   resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.6.tgz#2ed78c6aad6061f3f97a8700ca779c747b8dbe64"
