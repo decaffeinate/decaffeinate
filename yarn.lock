@@ -1056,7 +1056,7 @@ decaffeinate-coffeescript2@2.2.1-patch.4:
 
 decaffeinate-coffeescript2@2.2.1-patch.5:
   version "2.2.1-patch.5"
-  resolved "https://registry.npmjs.org/decaffeinate-coffeescript2/-/decaffeinate-coffeescript2-2.2.1-patch.5.tgz#016ff1e967812d42bbfe270faa63b77681d2d7df"
+  resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript2/-/decaffeinate-coffeescript2-2.2.1-patch.5.tgz#016ff1e967812d42bbfe270faa63b77681d2d7df"
   integrity sha512-VlI2TQNRj9U/wifgs2kB+LzzfhMkrJAW7RlLWY8yZSafM3O2HaTHzpZE4mDRfEnioAaD/SV/FCuCQ73vCJnrVw==
 
 decaffeinate-coffeescript@1.12.7-patch.2:
