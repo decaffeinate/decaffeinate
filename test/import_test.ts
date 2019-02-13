@@ -189,6 +189,17 @@ describe('imports', () => {
     );
   });
 
+  it('handles ES module export default from source', () => {
+    check(
+      `
+      export { default } from 'a'
+      `,
+      `
+      export { default } from 'a';
+      `
+    );
+  });
+
   it('handles ES module assignment named export', () => {
     check(
       `

@@ -1060,10 +1060,10 @@ decaffeinate-coffeescript@1.12.7-patch.3:
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.3.tgz#ae261022a35dc42dd9a0bc2c241717d5a23f8e67"
   integrity sha512-4NshbupYgQsVm/jOosp/nen1MWi43i1/z0I+F1JQQ8sNpS6SvvJWYwMayfuYkE/c/5mK3ISWu2H9OyPZYwtMLg==
 
-decaffeinate-parser@^22.5.10:
-  version "22.5.10"
-  resolved "https://registry.npmjs.org/decaffeinate-parser/-/decaffeinate-parser-22.5.10.tgz#0047b8bf3d95a3088d7f8306993aa329832de691"
-  integrity sha512-n/CEhLf6OTIizz9x2stKoXmca+aXYYepC/gJ+KABB5f4VPHLRv9XML3VDj6cw4GvtRVxojdAhdNkpGJx/pEbKw==
+decaffeinate-parser@^22.5.11:
+  version "22.5.11"
+  resolved "https://registry.npmjs.org/decaffeinate-parser/-/decaffeinate-parser-22.5.11.tgz#eb31b7da659643114781939008310b9a32012ac5"
+  integrity sha512-zbTwxOmKQRAgs7aa4KM3kFqjOWI1ycMXRvlGB6tvczQvacZ3OglRno/PobudgyzGc9gRg9Kpx0Xn2nqx17YkFg==
   dependencies:
     "@babel/parser" "^7.1.6"
     coffee-lex "^9.1.3"
