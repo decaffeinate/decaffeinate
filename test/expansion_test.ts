@@ -420,7 +420,7 @@ describe('expansion', () => {
       {a = 1} = {}
     `,
       `
-      ({a = 1} = {});
+      const {a = 1} = {};
     `
     );
   });
@@ -439,7 +439,7 @@ describe('expansion', () => {
       {"#{a b}": c = d} = e
     `,
       `
-      ({[a(b)]: c = d} = e);
+      const {[a(b)]: c = d} = e;
     `
     );
   });

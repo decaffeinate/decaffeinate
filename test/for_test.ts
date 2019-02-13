@@ -1597,7 +1597,7 @@ describe('for loops', () => {
       `
       const x = ((() => {
         const result = [];
-        for ([a = 1] of Array.from(b)) {     result.push(a);
+        for (let [a = 1] of Array.from(b)) {     result.push(a);
         }
         return result;
       })());
