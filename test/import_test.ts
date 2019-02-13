@@ -122,6 +122,23 @@ describe('imports', () => {
     );
   });
 
+  it('handles ES import with specifiers on multiple lines without separators', () => {
+    check(
+      `
+      import {
+        a
+        b
+      } from 'c'
+    `,
+      `
+      import {
+        a,
+        b
+      } from 'c';
+    `
+    );
+  });
+
   it('handles ES module export binding list', () => {
     check(
       `
@@ -129,6 +146,23 @@ describe('imports', () => {
     `,
       `
       export {a as b, c};
+    `
+    );
+  });
+
+  it('handles ES module export binding list on multiple lines without separators', () => {
+    check(
+      `
+      export {
+        a as b
+        c
+      }
+    `,
+      `
+      export {
+        a as b,
+        c
+      };
     `
     );
   });
