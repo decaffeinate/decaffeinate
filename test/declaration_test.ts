@@ -152,6 +152,17 @@ describe('declarations', () => {
     );
   });
 
+  it('adds inline variable declarations when destructuring includes a default value assignment pattern (#1361)', () => {
+    checkCS2(
+      `
+      { data = {}, status, statusText } = e.response || {}
+      `,
+      `
+      const { data = {}, status, statusText } = e.response || {};
+      `
+    );
+  });
+
   it('does not add inline variable declarations when the destructuring is mixed', () => {
     checkCS1(
       `

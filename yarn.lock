@@ -766,9 +766,10 @@ acorn@^6.0.2:
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.0.4.tgz#77377e7353b72ec5104550aa2d2097a2fd40b754"
 
-add-variable-declarations@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/add-variable-declarations/-/add-variable-declarations-4.0.0.tgz#1715147801f4bc641bb1781cd2653a94b565e618"
+add-variable-declarations@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/add-variable-declarations/-/add-variable-declarations-4.0.2.tgz#6373f51ab0f69154823b1e4042a9330934f54743"
+  integrity sha512-FdVP9n5ri5eIIKs21Y14Hexze1FT87gJdOwR9YA8O0vJdaGcCzw1va8EEwRJf0+pxAeCx2MRiTjnaNJSGkIi1w==
   dependencies:
     "@babel/parser" "^7.1.6"
     "@babel/traverse" "^7.1.6"
