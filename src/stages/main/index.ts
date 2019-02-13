@@ -31,6 +31,9 @@ import ExistsOpCompoundAssignOpPatcher from './patchers/ExistsOpCompoundAssignOp
 import ExistsOpPatcher from './patchers/ExistsOpPatcher';
 import ExpansionPatcher from './patchers/ExpansionPatcher';
 import ExpOpPatcher from './patchers/ExpOpPatcher';
+import ExportAllDeclarationPatcher from './patchers/ExportAllDeclarationPatcher';
+import ExportBindingsDeclarationPatcher from './patchers/ExportBindingsDeclarationPatcher';
+import ExportDefaultDeclarationPatcher from './patchers/ExportDefaultDeclarationPatcher';
 import ExportNamedDeclarationPatcher from './patchers/ExportNamedDeclarationPatcher';
 import ExtendsOpPatcher from './patchers/ExtendsOpPatcher';
 import FloorDivideOpCompoundAssignOpPatcher from './patchers/FloorDivideOpCompoundAssignOpPatcher';
@@ -43,6 +46,7 @@ import FunctionPatcher from './patchers/FunctionPatcher';
 import GeneratorFunctionPatcher from './patchers/GeneratorFunctionPatcher';
 import HeregexPatcher from './patchers/HeregexPatcher';
 import IdentifierPatcher from './patchers/IdentifierPatcher';
+import ImportDeclarationPatcher from './patchers/ImportDeclarationPatcher';
 import IncrementDecrementPatcher from './patchers/IncrementDecrementPatcher';
 import InOpPatcher from './patchers/InOpPatcher';
 import InstanceofOpPatcher from './patchers/InstanceofOpPatcher';
@@ -51,6 +55,7 @@ import LogicalNotOpPatcher from './patchers/LogicalNotOpPatcher';
 import LogicalOpCompoundAssignOpPatcher from './patchers/LogicalOpCompoundAssignOpPatcher';
 import LogicalOpPatcher from './patchers/LogicalOpPatcher';
 import MemberAccessOpPatcher from './patchers/MemberAccessOpPatcher';
+import ModuleSpecifierPatcher from './patchers/ModuleSpecifierPatcher';
 import ModuloOpCompoundAssignOpPatcher from './patchers/ModuloOpCompoundAssignOpPatcher';
 import ModuloOpPatcher from './patchers/ModuloOpPatcher';
 import NewOpPatcher from './patchers/NewOpPatcher';
@@ -374,13 +379,20 @@ export default class MainStage extends TransformCoffeeScriptStage {
       case 'CSXElement':
         return CSXElementPatcher;
 
-      case 'ImportDeclaration':
       case 'ExportBindingsDeclaration':
+        return ExportBindingsDeclarationPatcher;
+
       case 'ExportDefaultDeclaration':
+        return ExportDefaultDeclarationPatcher;
+
       case 'ExportAllDeclaration':
+        return ExportAllDeclarationPatcher;
+
       case 'ModuleSpecifier':
-        // Most import/export syntax is exactly the same in CS and JS.
-        return PassthroughPatcher;
+        return ModuleSpecifierPatcher;
+
+      case 'ImportDeclaration':
+        return ImportDeclarationPatcher;
 
       case 'ExportNamedDeclaration':
         return ExportNamedDeclarationPatcher;
