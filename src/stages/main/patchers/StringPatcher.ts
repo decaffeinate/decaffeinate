@@ -1,6 +1,9 @@
 import { SourceType } from 'coffee-lex';
 import { PatchOptions } from '../../../patchers/types';
 
+import ExportAllDeclarationPatcher from './ExportAllDeclarationPatcher';
+import ExportBindingsDeclarationPatcher from './ExportBindingsDeclarationPatcher';
+import ImportDeclarationPatcher from './ImportDeclarationPatcher';
 import InterpolatedPatcher from './InterpolatedPatcher';
 
 /**
@@ -38,6 +41,16 @@ export default class StringPatcher extends InterpolatedPatcher {
   }
 
   shouldBecomeTemplateLiteral(): boolean {
+    if (
+      (this.parent instanceof ImportDeclarationPatcher ||
+        this.parent instanceof ExportAllDeclarationPatcher ||
+        this.parent instanceof ExportBindingsDeclarationPatcher) &&
+      this.parent.source === this
+    ) {
+      // Import sources should never be template literals.
+      return false;
+    }
+
     return this.expressions.length > 0 || this.node.raw.indexOf('\n') > -1;
   }
 }
