@@ -227,4 +227,25 @@ describe('imports', () => {
     `
     );
   });
+
+  it('does not convert an import source to a template literal (#1368)', () => {
+    check(
+      `
+      import """stupid file name
+      """
+      export * from """another stupid file name
+      """
+      export { a } from """a third stupid file name
+      """
+      `,
+      `
+      import "stupid file name\\
+      ";
+      export * from "another stupid file name\\
+      ";
+      export { a } from "a third stupid file name\\
+      ";
+      `
+    );
+  });
 });
