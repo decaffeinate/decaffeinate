@@ -1,0 +1,74 @@
+aliases:
+  restore_cache_step: &restore_cache_step
+    restore_cache:
+      key: dependency-cache-{{ checksum "yarn.lock" }}
+  save_cache_step: &save_cache_step
+    save_cache:
+      key: dependency-cache-{{ checksum "yarn.lock" }}
+      paths:
+        - ./node_modules
+  install_dependencies_step: &install_dependencies_step
+    run:
+      name: install-dependencies
+      command: yarn install
+
+  unit_test: &unit_test
+    steps:
+      - checkout
+      - *restore_cache_step
+      - *install_dependencies_step
+      - *save_cache_step
+      - run:
+          name: tests
+          command: 'yarn test'
+      - run:
+          name: lint
+          command: 'yarn lint'
+
+version: 2
+jobs:
+  node-v6-latest:
+    docker:
+      - image: circleci/node:6
+    <<: *unit_test
+  node-v8-latest:
+    docker:
+      - image: circleci/node:8
+    <<: *unit_test
+  node-v10-latest:
+    docker:
+      - image: circleci/node:10
+    <<: *unit_test
+  node-v11-latest:
+    docker:
+      - image: circleci/node:11
+    <<: *unit_test
+  deploy:
+    docker:
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - *restore_cache_step
+      - *install_dependencies_step
+      - *save_cache_step
+      - run:
+          name: Publish package
+          command: 'yarn install && yarn build && npx semantic-release && yarn update-website'
+
+workflows:
+  version: 2
+  test-deploy:
+    jobs:
+      - node-v6-latest
+      - node-v8-latest
+      - node-v10-latest
+      - node-v11-latest
+      - deploy:
+          requires:
+            - node-v6-latest
+            - node-v8-latest
+            - node-v10-latest
+            - node-v11-latest
+          filters:
+            branches:
+              only: master
