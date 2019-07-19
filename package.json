@@ -51,7 +51,7 @@
     "tslib": "^1.9.3"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "files": [
     "bin",
