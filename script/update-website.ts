@@ -24,7 +24,7 @@ async function pkg(): Promise<{}> {
 }
 
 async function configureGithubRemote(name: string, project: string): Promise<void> {
-  let githubToken = process.env['GH_TOKEN'];
+  let githubToken = process.env['GH_TOKEN'] || process.env['GITHUB_TOKEN'];
   let url = githubToken ? `https://${githubToken}@github.com/${project}.git` : `https://github.com/${project}.git`;
 
   try {
