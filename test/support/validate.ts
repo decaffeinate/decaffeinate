@@ -7,12 +7,12 @@ import { Options } from '../../src/options';
 import PatchError from '../../src/utils/PatchError';
 import assertDeepEqual from './assertDeepEqual';
 
-export type ValidateOptions = {
+export interface ValidateOptions {
   options?: Options;
   // If we generate syntax not supported by node, don't try running the
   // resulting JS there directly.
   skipNodeCheck?: boolean;
-};
+}
 
 /**
  * validate takes coffee-script as input with code that calls the setResult
@@ -33,7 +33,7 @@ export type ValidateOptions = {
  */
 export default function validate(
   source: string,
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expectedOutput?: any | { cs1: any; cs2: any },
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
@@ -45,7 +45,7 @@ export default function validate(
 
 export function validateCS1(
   source: string,
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expectedOutput?: any,
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
@@ -54,7 +54,7 @@ export function validateCS1(
 
 export function validateCS2(
   source: string,
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expectedOutput?: any,
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
@@ -63,7 +63,7 @@ export function validateCS2(
 
 function runValidateCase(
   source: string,
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expectedOutput?: any,
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
@@ -77,12 +77,12 @@ function runValidateCase(
   }
 }
 
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function runCodeAndExtract(source: string): any {
   let result = null;
   let numCalls = 0;
   let sandbox = {
-    // tslint:disable-next-line:no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setResult(r: any): void {
       result = r;
       numCalls++;
@@ -100,10 +100,10 @@ function runValidation(source: string, expectedOutput: {}, options: Options, ski
   let compile = options.useCS2 ? cs2Compile : cs1Compile;
   let coffeeES5 = compile(source, { bare: true }) as string;
   let decaffeinateES6 = convert(source, options).code;
-  let decaffeinateES5 =
-    babel.transformSync(decaffeinateES6, {
-      presets: ['@babel/preset-env']
-    })!.code || '';
+  let transformed = babel.transformSync(decaffeinateES6, {
+    presets: ['@babel/preset-env']
+  });
+  let decaffeinateES5 = (transformed && transformed.code) || '';
 
   let coffeeOutput = runCodeAndExtract(coffeeES5);
   let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);

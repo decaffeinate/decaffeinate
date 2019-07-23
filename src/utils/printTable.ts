@@ -1,12 +1,12 @@
-export type Column = {
+export interface Column {
   id: string;
   align: 'left' | 'right';
-};
+}
 
-export type Table = {
+export interface Table {
   rows: Array<Array<string>>;
   columns: Array<Column>;
-};
+}
 
 export default function printTable(table: Table, buffer: string = ' '): string {
   let widths: Array<number> = [];

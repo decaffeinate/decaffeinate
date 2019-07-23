@@ -22,7 +22,9 @@ import flatMap from './flatMap';
 import isReservedWord from './isReservedWord';
 import leftHandIdentifiers from './leftHandIdentifiers';
 
-type Bindings = { [key: string]: Node };
+interface Bindings {
+  [key: string]: Node;
+}
 
 /**
  * Represents a CoffeeScript scope and its bindings.

@@ -691,7 +691,7 @@ export class Step {
   constructor(patcher: NodePatcher | null) {
     let negated = false;
     let root = patcher;
-    let apply = (patcher: NodePatcher) => {
+    let apply = (patcher: NodePatcher): void => {
       if (patcher.node instanceof UnaryNegateOp && patcher instanceof UnaryMathOpPatcher) {
         negated = !negated;
         apply(patcher.expression);

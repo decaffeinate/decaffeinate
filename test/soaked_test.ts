@@ -1,7 +1,7 @@
 import check from './support/check';
 import validate from './support/validate';
 
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function validateSoak(source: string, expectedOutput: any): void {
   validate(source, expectedOutput);
 }

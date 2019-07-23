@@ -25,19 +25,19 @@ import { resolveOptions, Options } from './options';
 import notNull from './utils/notNull';
 export { PatchError };
 
-export type ConversionResult = {
+export interface ConversionResult {
   code: string;
-};
+}
 
-export type StageResult = {
+export interface StageResult {
   code: string;
   suggestions: Array<Suggestion>;
-};
+}
 
-type Stage = {
+interface Stage {
   name: string;
   run: (content: string, options: Options) => StageResult;
-};
+}
 
 /**
  * Convert CoffeeScript source code into modern JavaScript preserving comments

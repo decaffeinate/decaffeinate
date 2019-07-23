@@ -4,10 +4,10 @@ import { Options } from '../../src/options';
 import PatchError from '../../src/utils/PatchError';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
-export type Extra = {
+export interface Extra {
   options?: Options;
   shouldStripIndent?: boolean;
-};
+}
 
 export default function check(
   source: string,

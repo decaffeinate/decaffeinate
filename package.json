@@ -9,13 +9,13 @@
     "decaffeinate": "./bin/decaffeinate"
   },
   "scripts": {
-    "lint": "eslint --ext .ts src script test && tslint --config tslint.json --project tsconfig.json",
-    "lint-fix": "eslint --fix --ext .ts src script test && tslint --config tslint.json --project tsconfig.json --fix",
-    "pretest": "yarn run build",
+    "lint": "eslint --report-unused-disable-directives --ext .ts src script test",
+    "lint-fix": "yarn lint --fix",
+    "pretest": "yarn build",
     "test": "mocha 'test/**/*.ts'",
     "prebuild": "rimraf dist && mkdirp dist && yarn lint",
     "build": "script/build",
-    "prepublish": "yarn run build",
+    "prepublish": "yarn build",
     "update-website": "ts-node ./script/update-website.ts"
   },
   "repository": {
@@ -69,7 +69,10 @@
     "@types/mocha": "^5.2.7",
     "@types/mz": "^0.0.32",
     "@types/node": "^12.6.8",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
     "eslint": "^5.13.0",
+    "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "fs-extra": "^8.1.0",
     "mkdirp": "^0.5.1",

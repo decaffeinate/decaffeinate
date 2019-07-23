@@ -21,15 +21,15 @@ import {
 import { PatcherContext } from '../../../patchers/types';
 import { AVOID_INITCLASS } from '../../../suggestions';
 
-export type NonMethodInfo = {
+export interface NonMethodInfo {
   patcher: NodePatcher;
   deleteStart: number;
-};
+}
 
-export type CustomConstructorInfo = {
+export interface CustomConstructorInfo {
   ctorName: string;
   expressionCode: string;
-};
+}
 
 export default class ClassPatcher extends NodePatcher {
   nameAssignee: NodePatcher | null;

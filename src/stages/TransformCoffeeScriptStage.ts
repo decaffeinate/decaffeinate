@@ -41,8 +41,8 @@ export default class TransformCoffeeScriptStage {
   /**
    * This should be overridden in subclasses.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   patcherConstructorForNode(_node: Node): PatcherClass | null {
-    // eslint-disable-line no-unused-vars
     return null;
   }
 

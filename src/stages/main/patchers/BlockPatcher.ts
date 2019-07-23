@@ -15,6 +15,7 @@ import ReturnPatcher from './ReturnPatcher';
  * such child must call markIIFEPatcherDescendant on this patcher in the
  * initialize step.
  */
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface IIFEPatcher extends NodePatcher {
   willPatchAsIIFE(): boolean;
 }

@@ -47,7 +47,6 @@ export default class MemberAccessOpPatcher extends NodePatcher {
    * repeatable if it isn't already.
    */
   patchAsRepeatableExpression(repeatableOptions: RepeatableOptions = {}, patchOptions: PatchOptions = {}): string {
-    // eslint-disable-line no-unused-vars
     if (repeatableOptions.isForAssignment) {
       this.expression.setRequiresRepeatableExpression({ isForAssignment: true, parens: true, ref: 'base' });
       this.patchAsExpression();

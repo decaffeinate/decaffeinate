@@ -1,4 +1,4 @@
-export type Options = {
+export interface Options {
   filename?: string;
   useCS2?: boolean;
   runToStage?: string | null;
@@ -17,7 +17,7 @@ export type Options = {
   looseComparisonNegation?: boolean;
   disableBabelConstructorWorkaround?: boolean;
   disallowInvalidConstructors?: boolean;
-};
+}
 
 export const DEFAULT_OPTIONS: Options = {
   filename: 'input.coffee',

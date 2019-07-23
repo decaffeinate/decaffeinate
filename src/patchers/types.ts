@@ -4,22 +4,22 @@ import { Options } from '../options';
 import { Suggestion } from '../suggestions';
 import DecaffeinateContext from '../utils/DecaffeinateContext';
 
-export type PatcherContext = {
+export interface PatcherContext {
   node: Node;
   context: DecaffeinateContext;
   editor: MagicString;
   options: Options;
   addSuggestion: (suggestion: Suggestion) => void;
-};
+}
 
-export type RepeatableOptions = {
+export interface RepeatableOptions {
   parens?: boolean;
   ref?: string;
   isForAssignment?: boolean;
   forceRepeat?: boolean;
-};
+}
 
-export type PatchOptions = {
+export interface PatchOptions {
   needsParens?: boolean;
   fnNeedsParens?: boolean;
   skipParens?: boolean;
@@ -27,4 +27,4 @@ export type PatchOptions = {
   rightBrace?: boolean;
   method?: boolean;
   forceTemplateLiteral?: boolean;
-};
+}
