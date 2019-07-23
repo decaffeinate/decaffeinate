@@ -62,7 +62,7 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
   ];
 }
 
-// tslint:disable-next-line no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function shouldTraverse(value: any): boolean {
   if (Array.isArray(value)) {
     return value.length === 0 || shouldTraverse(value[0]);

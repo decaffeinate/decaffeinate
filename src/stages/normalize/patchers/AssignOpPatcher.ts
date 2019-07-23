@@ -8,10 +8,10 @@ import DynamicMemberAccessOpPatcher from './DynamicMemberAccessOpPatcher';
 import FunctionPatcher from './FunctionPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 
-export type EarlySuperTransformInfo = {
+export interface EarlySuperTransformInfo {
   classCode: string;
   accessCode: string;
-};
+}
 
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;

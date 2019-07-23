@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const detectIndent = require('detect-indent');
 
 const DEFAULT_INDENT = '  ';

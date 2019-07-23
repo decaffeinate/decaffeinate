@@ -8,11 +8,11 @@ import AssignOpPatcher from './AssignOpPatcher';
 import ObjectInitialiserMemberPatcher from './ObjectInitialiserMemberPatcher';
 import SpreadPatcher from './SpreadPatcher';
 
-export type OpenCurlyInfo = {
+export interface OpenCurlyInfo {
   curlyBraceInsertionPosition: number;
   textToInsert: string;
   shouldIndent: boolean;
-};
+}
 
 /**
  * Handles object literals.

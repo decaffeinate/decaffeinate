@@ -1,10 +1,12 @@
-/* eslint-disable no-process-exit */
+/* eslint-disable no-console */
 
 import { readdir, readFile, stat, writeFile } from 'mz/fs';
 import { basename, dirname, extname, join } from 'path';
 import { convert, modernizeJS } from './index';
 import { Options } from './options';
 import PatchError from './utils/PatchError';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require('../package');
 
 /**

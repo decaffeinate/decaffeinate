@@ -12,11 +12,11 @@ import FunctionPatcher from './FunctionPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 
-export type MethodInfo = {
+export interface MethodInfo {
   classCode: string | null;
   // Code to access the method from the prototype. If null, this is a constructor.
   accessCode: string | null;
-};
+}
 
 /**
  * Transform CS super to JS super. For constructors, we can keep the form

@@ -22,7 +22,7 @@ export type AddDefaultParamCallback = (assigneeCode: string, initCode: string, a
 export interface PatcherClass {
   // The "children" arg is some number of NodePatchers, but there doesn't seem
   // to be an easy way to have TypeScript understand that.
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   new (context: PatcherContext, ...children: Array<any>): NodePatcher;
   patcherClassForChildNode(node: Node, property: string): PatcherClass | null;
   patcherClassOverrideForNode(node: Node): PatcherClass | null;
@@ -81,6 +81,7 @@ export default class NodePatcher {
   /**
    * Allow patcher classes to override the class used to patch their children.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static patcherClassForChildNode(_node: Node, _property: string): PatcherClass | null {
     return null;
   }
@@ -88,8 +89,8 @@ export default class NodePatcher {
   /**
    * Allow patcher classes that would patch a node to chose a different class.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static patcherClassOverrideForNode(_node: Node): PatcherClass | null {
-    // eslint-disable-line no-unused-vars
     return null;
   }
 
@@ -393,6 +394,7 @@ export default class NodePatcher {
   /**
    * Override this to patch the node as an expression.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   patchAsExpression(_options: PatchOptions = {}): void {
     throw this.error(`'patchAsExpression' must be overridden in subclasses`);
   }
@@ -766,8 +768,8 @@ export default class NodePatcher {
   /**
    * Patch the end of an implicitly-returned descendant.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   patchImplicitReturnEnd(_patcher: NodePatcher): void {
-    // eslint-disable-line no-unused-vars
     // Nothing to do.
   }
 

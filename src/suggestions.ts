@@ -1,7 +1,7 @@
-export type Suggestion = {
+export interface Suggestion {
   suggestionCode: string;
   message: string;
-};
+}
 
 export const REMOVE_BABEL_WORKAROUND = {
   suggestionCode: 'DS001',

@@ -4,11 +4,11 @@ import DynamicMemberAccessOpPatcher from '../stages/main/patchers/DynamicMemberA
 import FunctionPatcher from '../stages/main/patchers/FunctionPatcher';
 import MemberAccessOpPatcher from '../stages/main/patchers/MemberAccessOpPatcher';
 
-export type PrototypeAssignPatchers = {
+export interface PrototypeAssignPatchers {
   classRefPatcher: NodePatcher;
   // Either a MemberAccessOpPatcher or a DynamicMemberAccessOpPatcher.
   methodAccessPatcher: NodePatcher;
-};
+}
 
 /**
  * Given a main stage patcher, determine if it assigns a function to a class

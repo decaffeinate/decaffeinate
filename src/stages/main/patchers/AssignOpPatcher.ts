@@ -260,7 +260,7 @@ export default class AssignOpPatcher extends NodePatcher {
             .join(', ');
           assignments.push(...this.generateAssignments(member, `${helper}(${ref}, [${omittedKeysCode}])`, false));
         } else {
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           throw this.error(`Unexpected object initializer member: ${(member as any).node.type}`);
         }
       }
