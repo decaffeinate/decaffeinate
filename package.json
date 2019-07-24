@@ -38,7 +38,7 @@
   "dependencies": {
     "@babel/parser": "^7.1.6",
     "add-variable-declarations": "^4.0.6",
-    "automatic-semicolon-insertion": "^2.0.2",
+    "automatic-semicolon-insertion": "^2.0.4",
     "coffee-lex": "^9.1.4",
     "decaffeinate-coffeescript": "1.12.7-patch.3",
     "decaffeinate-coffeescript2": "2.2.1-patch.5",
