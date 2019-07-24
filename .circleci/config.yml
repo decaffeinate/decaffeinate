@@ -20,7 +20,7 @@ aliases:
       - *save_cache_step
       - run:
           name: tests
-          command: 'yarn test'
+          command: 'yarn jest --ci'
       - run:
           name: lint
           command: 'yarn lint'

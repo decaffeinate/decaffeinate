@@ -109,17 +109,4 @@ describe('comments', () => {
     `
     );
   });
-
-  it.skip('preserves trailing comments in arrow function bodies', () => {
-    check(
-      `
-      a ->
-        b
-        ### c ###
-    `,
-      `
-      a(() => b /* c */);
-    `
-    );
-  });
 });

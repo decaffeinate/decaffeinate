@@ -212,18 +212,6 @@ describe('soaked expressions', () => {
       );
     });
 
-    // Skip for now because the optional chaining implementation doesn't handle
-    // this case.
-    it.skip('skips soaked function invocations on non-functions', () => {
-      validateSoak(
-        `
-        f = 3
-        setResult('' + f?())
-      `,
-        'undefined'
-      );
-    });
-
     it('properly sets this in soaked method calls', () => {
       validateSoak(
         `
