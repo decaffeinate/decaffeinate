@@ -3,7 +3,7 @@ import { parse } from 'decaffeinate-parser';
 import { AssignOp, Identifier, Node } from 'decaffeinate-parser/dist/nodes';
 import Scope from '../../src/utils/Scope';
 
-describe('Scope', () => {
+describe('scope', () => {
   const A = new Identifier(0, 0, 0, 1, 'x', 'x');
   const A2 = new Identifier(0, 0, 0, 1, 'y', 'y');
   const containerNode = new Identifier(0, 0, 0, 1, 'z', 'z');
