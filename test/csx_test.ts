@@ -914,7 +914,7 @@ describe('csx', () => {
     );
   });
 
-  it('JSX fragments: empty fragment', () => {
+  it('jSX fragments: empty fragment', () => {
     checkCS2(
       `
       <></>
@@ -925,7 +925,7 @@ describe('csx', () => {
     );
   });
 
-  it('JSX fragments: fragment with text nodes', () => {
+  it('jSX fragments: fragment with text nodes', () => {
     checkCS2(
       `
       <>
@@ -948,7 +948,7 @@ describe('csx', () => {
     );
   });
 
-  it('JSX fragments: fragment with component nodes', () => {
+  it('jSX fragments: fragment with component nodes', () => {
     checkCS2(
       `
      Component = (props) =>

@@ -135,22 +135,6 @@ describe('function calls', () => {
     );
   });
 
-  it.skip('preserves comments in functions that will become arrow functions', () => {
-    check(
-      `
-      promise.then (a) ->
-        b # c
-      d
-    `,
-      `
-      promise.then(a =>
-        b // c
-      );
-      d;
-    `
-    );
-  });
-
   it('replaces the space between the callee and the first argument for first arg on same line', () => {
     check(`a 1, 2`, `a(1, 2);`);
   });
@@ -208,37 +192,6 @@ describe('function calls', () => {
 
   it('adds parens after the brackets on a computed member expression', () => {
     check(`a b[c]`, `a(b[c]);`);
-  });
-
-  it.skip('adds parens without messing up multi-line calls', () => {
-    check(
-      `
-      a
-        b: c
-    `,
-      `
-      a({
-        b: c
-      });
-    `
-    );
-  });
-
-  it.skip('adds parens to multi-line calls with the right indentation', () => {
-    check(
-      `
-      ->
-        a
-          b: c
-    `,
-      `
-      (function() {
-        return a({
-          b: c
-        });
-      });
-    `
-    );
   });
 
   it('converts rest params in function calls', () => {
@@ -465,20 +418,6 @@ describe('function calls', () => {
       `
       if (typeof a === 'function') {
         a(b);
-      }
-    `
-    );
-  });
-
-  it.skip('handles soaked implicit new expressions', () => {
-    check(
-      `
-      new A? b
-    `,
-      `
-      __guardFunc__(A, f => new f(b));
-      function __guardFunc__(func, transform) {
-        return typeof func === 'function' ? transform(func) : undefined;
       }
     `
     );

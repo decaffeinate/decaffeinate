@@ -2,19 +2,19 @@ import { strictEqual } from 'assert';
 import getIndent from '../../src/utils/getIndent';
 
 describe('getIndent', () => {
-  context('with an empty source string', () => {
+  describe('with an empty source string', () => {
     it('returns an empty string', () => {
       strictEqual(getIndent('', 0), '');
     });
   });
 
-  context('with a single-line source string without an indent', () => {
+  describe('with a single-line source string without an indent', () => {
     it('return zero', () => {
       strictEqual(getIndent('abc', 0), '');
     });
   });
 
-  context('with a single-line source string with an indent', () => {
+  describe('with a single-line source string with an indent', () => {
     it('returns the leading spaces', () => {
       strictEqual(getIndent('  abc', 0), '  ');
     });
@@ -24,7 +24,7 @@ describe('getIndent', () => {
     });
   });
 
-  context('with a multi-line source string', () => {
+  describe('with a multi-line source string', () => {
     it('returns the indent for the line containing offset', () => {
       let i;
       let source = '->\n  abc';

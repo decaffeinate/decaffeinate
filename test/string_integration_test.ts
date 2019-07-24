@@ -39,7 +39,7 @@ setResult(runTest())`
 }
 
 describe('string integration', function(): void {
-  this.timeout(180000);
+  let timeout = 180000;
   let strings = ['', '   ', 'word', '   leading indent', 'trailing indent   ', '    leading and trailing indent    '];
   let quotes = [["'", "single quote (')"], ['"', 'double quote (")']];
 
@@ -48,28 +48,44 @@ describe('string integration', function(): void {
 
   for (let quoteTest of quotes) {
     let [quote, quoteName] = quoteTest;
-    it(quoteName + ' two line assignment test (' + twoLineTests.length + ' permutations)', () => {
-      for (let string of twoLineTests) {
-        runAssignmentTest(quote, string);
-      }
-    });
+    it(
+      quoteName + ' two line assignment test (' + twoLineTests.length + ' permutations)',
+      () => {
+        for (let string of twoLineTests) {
+          runAssignmentTest(quote, string);
+        }
+      },
+      timeout
+    );
 
-    it(quoteName + ' two line function test (' + twoLineTests.length + ' permutations)', () => {
-      for (let string of twoLineTests) {
-        runFunctionTest(quote, string);
-      }
-    });
+    it(
+      quoteName + ' two line function test (' + twoLineTests.length + ' permutations)',
+      () => {
+        for (let string of twoLineTests) {
+          runFunctionTest(quote, string);
+        }
+      },
+      timeout
+    );
 
-    it(quoteName + ' three line assignment test (' + threeLineTests.length + ' permutations)', () => {
-      for (let string of threeLineTests) {
-        runAssignmentTest(quote, string);
-      }
-    });
+    it(
+      quoteName + ' three line assignment test (' + threeLineTests.length + ' permutations)',
+      () => {
+        for (let string of threeLineTests) {
+          runAssignmentTest(quote, string);
+        }
+      },
+      timeout
+    );
 
-    it(quoteName + ' three line function test (' + threeLineTests.length + ' permutations)', () => {
-      for (let string of threeLineTests) {
-        runFunctionTest(quote, string);
-      }
-    });
+    it(
+      quoteName + ' three line function test (' + threeLineTests.length + ' permutations)',
+      () => {
+        for (let string of threeLineTests) {
+          runFunctionTest(quote, string);
+        }
+      },
+      timeout
+    );
   }
 });
