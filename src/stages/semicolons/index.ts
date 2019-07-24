@@ -9,7 +9,7 @@ const BABYLON_PLUGINS: Array<ParserPlugin> = [
   'jsx',
   'asyncGenerators',
   'classProperties',
-  ['decorators', { decoratorsBeforeExport: true }] as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  ['decorators', { decoratorsBeforeExport: true }],
   'doExpressions',
   'functionBind',
   'functionSent',
