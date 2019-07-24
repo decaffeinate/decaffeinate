@@ -1,4 +1,4 @@
-# decaffeinate [![Build Status](https://travis-ci.org/decaffeinate/decaffeinate.svg?branch=master)](https://travis-ci.org/decaffeinate/decaffeinate) [![npm](https://img.shields.io/npm/v/decaffeinate.svg)](https://www.npmjs.com/package/decaffeinate) [![Greenkeeper badge](https://badges.greenkeeper.io/decaffeinate/decaffeinate.svg)](https://greenkeeper.io/) [![Join the chat at https://gitter.im/decaffeinate](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/decaffeinate/Lobby)
+# decaffeinate [![npm](https://img.shields.io/npm/v/decaffeinate.svg)](https://www.npmjs.com/package/decaffeinate) [![Join the chat at https://gitter.im/decaffeinate](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/decaffeinate/Lobby)
 
 
 Goodbye CoffeeScript, hello JavaScript!
