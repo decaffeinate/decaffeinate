@@ -53,6 +53,19 @@ describe('member access', () => {
     );
   });
 
+  it('allows dot-on-this-line-property-on-next-line style member access with keyword property (decaffeinate/coffee-lex#245)', () => {
+    check(
+      `
+      a.
+        on(1, 2)
+    `,
+      `
+      a.
+        on(1, 2);
+    `
+    );
+  });
+
   it('allows chained dot-on-the-next-line style member access as a callee', () => {
     check(
       `
