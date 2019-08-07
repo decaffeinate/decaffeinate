@@ -52,5 +52,8 @@ export function resolveOptions(options: Options): Options {
       looseJSModules: true
     };
   }
+  if (options.runToStage === 'EsnextStage') {
+    options = { ...options, runToStage: 'ResugarStage' };
+  }
   return { ...DEFAULT_OPTIONS, ...options };
 }
