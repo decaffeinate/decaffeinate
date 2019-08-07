@@ -116,7 +116,7 @@ describe('decaffeinate CLI', () => {
       exports.b = 2
     `,
       `
-      let defaultExport = {};
+      const defaultExport = {};
       defaultExport.a = 1;
       defaultExport.b = 2;
       export default defaultExport;
@@ -132,7 +132,7 @@ describe('decaffeinate CLI', () => {
       exports.b = 2
     `,
       `
-      let defaultExport = {};
+      const defaultExport = {};
       defaultExport.a = 1;
       defaultExport.b = 2;
       export default defaultExport;

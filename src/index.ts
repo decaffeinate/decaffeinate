@@ -3,7 +3,7 @@ import { nodes as getCoffee1Nodes, tokens as getCoffee1Tokens } from 'decaffeina
 import { nodes as getCoffee2Nodes, tokens as getCoffee2Tokens } from 'decaffeinate-coffeescript2';
 import { parse as decaffeinateParse } from 'decaffeinate-parser';
 import AddVariableDeclarationsStage from './stages/add-variable-declarations/index';
-import EsnextStage from './stages/esnext/index';
+import ResugarStage from './stages/resugar/index';
 import LiterateStage from './stages/literate/index';
 import MainStage from './stages/main/index';
 import NormalizeStage from './stages/normalize/index';
@@ -59,7 +59,7 @@ export function convert(source: string, options: Options = {}): ConversionResult
     MainStage,
     AddVariableDeclarationsStage,
     SemicolonsStage,
-    EsnextStage
+    ResugarStage
   ];
   let runToStage = options.runToStage;
   if (runToStage !== null && runToStage !== undefined) {
@@ -85,7 +85,7 @@ export function modernizeJS(source: string, options: Options = {}): ConversionRe
   options = resolveOptions(options);
   let originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
-  let stages = [EsnextStage];
+  let stages = [ResugarStage];
   let result = runStages(source, options, stages);
   result.code = convertNewlines(result.code, originalNewlineStr);
   return {

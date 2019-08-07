@@ -19,10 +19,7 @@ describe('expansion', () => {
       [a..., b, c] = arr
     `,
       `
-      const adjustedLength = Math.max(arr.length, 2),
-        a = arr.slice(0, adjustedLength - 2),
-        b = arr[adjustedLength - 2],
-        c = arr[adjustedLength - 1];
+      const adjustedLength = Math.max(arr.length, 2), a = arr.slice(0, adjustedLength - 2), b = arr[adjustedLength - 2], c = arr[adjustedLength - 1];
     `
     );
   });
@@ -33,10 +30,7 @@ describe('expansion', () => {
       [a, b..., c] = arr
     `,
       `
-      const a = arr[0],
-        adjustedLength = Math.max(arr.length, 2),
-        b = arr.slice(1, adjustedLength - 1),
-        c = arr[adjustedLength - 1];
+      const a = arr[0], adjustedLength = Math.max(arr.length, 2), b = arr.slice(1, adjustedLength - 1), c = arr[adjustedLength - 1];
     `
     );
   });
@@ -124,10 +118,7 @@ describe('expansion', () => {
     `,
       `
       (function(...args) {
-        const adjustedLength = Math.max(args.length, 2),
-          a = args.slice(0, adjustedLength - 2),
-          b = args[adjustedLength - 2],
-          c = args[adjustedLength - 1];
+        const adjustedLength = Math.max(args.length, 2), a = args.slice(0, adjustedLength - 2), b = args[adjustedLength - 2], c = args[adjustedLength - 1];
       });
     `
     );
@@ -205,10 +196,7 @@ describe('expansion', () => {
     `,
       `
       (function(a, b, ...rest) {
-        const adjustedLength = Math.max(rest.length, 2),
-          c = rest.slice(0, adjustedLength - 2),
-          d = rest[adjustedLength - 2],
-          e = rest[adjustedLength - 1];
+        const adjustedLength = Math.max(rest.length, 2), c = rest.slice(0, adjustedLength - 2), d = rest[adjustedLength - 2], e = rest[adjustedLength - 1];
       });
     `
     );
@@ -256,7 +244,10 @@ describe('expansion', () => {
       fn = ([a,b]) -> {a:a,b:b}
     `,
       `
-      const fn = ([a,b]) => ({a,b});
+      const fn = ([a,b]) => ({
+        a,
+        b
+      });
     `
     );
   });
@@ -273,11 +264,13 @@ describe('expansion', () => {
     `,
       `
       var f = function(...args) {
-        const a = args[0], b = args[1], {
-          c,
-          d,
-          e,
-        } = args[args.length - 1];
+        const a = args[0],
+              b = args[1],
+              {
+                c,
+                d,
+                e,
+              } = args[args.length - 1];
         return f;
       };
     `
@@ -290,11 +283,7 @@ describe('expansion', () => {
       [a, b, ..., c, d] = getArray()
     `,
       `
-      const array = getArray(),
-        a = array[0],
-        b = array[1],
-        c = array[array.length - 2],
-        d = array[array.length - 1];
+      const array = getArray(), a = array[0], b = array[1], c = array[array.length - 2], d = array[array.length - 1];
     `
     );
   });
@@ -305,13 +294,7 @@ describe('expansion', () => {
       [a, b, c..., d, e] = getArray()
     `,
       `
-      const array = getArray(),
-        a = array[0],
-        b = array[1],
-        adjustedLength = Math.max(array.length, 4),
-        c = array.slice(2, adjustedLength - 2),
-        d = array[adjustedLength - 2],
-        e = array[adjustedLength - 1];
+      const array = getArray(), a = array[0], b = array[1], adjustedLength = Math.max(array.length, 4), c = array.slice(2, adjustedLength - 2), d = array[adjustedLength - 2], e = array[adjustedLength - 1];
     `
     );
   });
@@ -367,10 +350,7 @@ describe('expansion', () => {
       [a, [b]..., c] = arr
     `,
       `
-      const a = arr[0],
-        adjustedLength = Math.max(arr.length, 2),
-        [b] = Array.from(arr.slice(1, adjustedLength - 1)),
-        c = arr[adjustedLength - 1];
+      const a = arr[0], adjustedLength = Math.max(arr.length, 2), [b] = Array.from(arr.slice(1, adjustedLength - 1)), c = arr[adjustedLength - 1];
     `
     );
   });
@@ -621,10 +601,12 @@ describe('expansion', () => {
     `,
       `
       const obj = arr[arr.length - 1],
-        { a } = obj,
-        r = __objectWithoutKeys__(obj, ['a', 'b']),
-        val = obj.b,
-        b = val !== undefined ? val : c;
+            {
+              a
+            } = obj,
+            r = __objectWithoutKeys__(obj, ['a', 'b']),
+            val = obj.b,
+            b = val !== undefined ? val : c;
       function __objectWithoutKeys__(object, keys) {
         const result = {...object};
         for (const k of keys) {

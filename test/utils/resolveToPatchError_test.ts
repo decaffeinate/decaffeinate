@@ -1,6 +1,5 @@
 import addVariableDeclarations from 'add-variable-declarations';
 import { ok, strictEqual } from 'assert';
-import { convert } from 'esnext';
 import MagicString from 'magic-string';
 
 import DecaffeinateContext from '../../src/utils/DecaffeinateContext';
@@ -55,35 +54,6 @@ describe('resolveToPatchError', () => {
         > 2 |   f()
             | ^^
           3 | console.log 'test'`) + '\n'
-      );
-    }
-  });
-
-  it('handles syntax errors seen by esnext', () => {
-    let content = stripSharedIndent(`
-        var x = 3;
-        if (
-        }
-    `);
-    try {
-      convert(content);
-      ok(false, 'Expected an exception to be thrown.');
-    } catch (e) {
-      // It's hard to exercise an actual intermediate failure in esnext, so just
-      // simulate one based on a normal initial syntax error.
-      e.source = content;
-      let patchError = resolveToPatchError(e, 'This should be ignored', 'esnext');
-      if (!patchError) {
-        throw new Error('Expected non-null error.');
-      }
-      strictEqual(
-        PatchError.prettyPrint(patchError),
-        stripSharedIndent(`
-        esnext failed to parse: Unexpected token (3:0)
-          1 | var x = 3;
-          2 | if (
-        > 3 | }
-            | ^`) + '\n'
       );
     }
   });

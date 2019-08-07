@@ -65,7 +65,7 @@ describe('imports', () => {
       exports.c = d;
     `,
       `
-      let defaultExport = {};
+      const defaultExport = {};
       defaultExport.a = b;
       defaultExport.c = d;
       export default defaultExport;

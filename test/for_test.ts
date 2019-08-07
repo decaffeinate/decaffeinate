@@ -827,7 +827,7 @@ describe('for loops', () => {
         c for a in b
     `,
       `
-      () => Array.from(b).map((a) => c);
+      (() => Array.from(b).map((a) => c));
     `
     );
   });
@@ -1056,19 +1056,17 @@ describe('for loops', () => {
       stuff
     `,
       `
-      () =>
-        (() => {
-          const result = [];
-          for (let a of Array.from(b)) {
-            if (a) {
-              result.push(b);
-            } else {
-              result.push(undefined);
-            }
+      (() => (() => {
+        const result = [];
+        for (let a of Array.from(b)) {
+          if (a) {
+            result.push(b);
+          } else {
+            result.push(undefined);
           }
-          return result;
-        })()
-      ;
+        }
+        return result;
+      })());
       
       // this is here to make the real end of "a" be much later
       stuff;
@@ -1237,10 +1235,8 @@ describe('for loops', () => {
           -> return a
     `,
       `
-      () =>
-        Array.from(b).map((a) =>
-          () => a)
-      ;
+      (() => Array.from(b).map((a) =>
+        () => a));
     `
     );
   });
@@ -1275,7 +1271,7 @@ describe('for loops', () => {
       )()
     `,
       `
-      for (let a of Array.from(b)) { (() => console.log('foo'))(); }
+      for (let a of Array.from(b)) { ((() => console.log('foo')))(); }
     `
     );
   });
@@ -1288,7 +1284,7 @@ describe('for loops', () => {
       )()
     `,
       `
-      for (let i = 0; i < b.length; i++) { const a = b[i]; (() => console.log('foo'))(); }
+      for (let i = 0; i < b.length; i++) { const a = b[i]; ((() => console.log('foo')))(); }
     `
     );
   });
@@ -1628,7 +1624,7 @@ describe('for loops', () => {
         d
     `,
       `
-      for (let step = (() => d)(), asc = step > 0, i = asc ? 0 : c.length - 1; asc ? i < c.length : i >= 0; i += step) { const b = c[i]; a; }
+      for (let step = ((() => d))(), asc = step > 0, i = asc ? 0 : c.length - 1; asc ? i < c.length : i >= 0; i += step) { const b = c[i]; a; }
     `
     );
   });
@@ -1645,21 +1641,19 @@ describe('for loops', () => {
 
     `,
       `
-      () =>
-        (() => {
-          const result = [];
-          for (let i = 0; i < b.length; i++) {
-            const a = b[i];
-            result.push(function() {
-              c;
-              return function*() {
-                return yield d;
-              };
-            });
-          }
-          return result;
-        })()
-      ;
+      (() => (() => {
+        const result = [];
+        for (let i = 0; i < b.length; i++) {
+          const a = b[i];
+          result.push(function() {
+            c;
+            return function*() {
+              return yield d;
+            };
+          });
+        }
+        return result;
+      })());
     `
     );
   });
@@ -1765,21 +1759,19 @@ describe('for loops', () => {
           robot.load scriptsPath
     `,
       `
-      const loadScripts = () =>
-        (() => {
-          const result = [];
-          for (let path of Array.from(Options.scripts)) {
-            var scriptsPath;
-            if (path[0] === '/') {
-              scriptsPath = path;
-            } else {
-              scriptsPath = Path.resolve(".", path);
-            }
-            result.push(robot.load(scriptsPath));
+      const loadScripts = () => (() => {
+        const result = [];
+        for (let path of Array.from(Options.scripts)) {
+          var scriptsPath;
+          if (path[0] === '/') {
+            scriptsPath = path;
+          } else {
+            scriptsPath = Path.resolve(".", path);
           }
-          return result;
-        })()
-      ;
+          result.push(robot.load(scriptsPath));
+        }
+        return result;
+      })();
     `
     );
   });
@@ -2183,7 +2175,7 @@ describe('for loops', () => {
       -> a for a in b when a > 0
     `,
       `
-      () => Array.from(b).filter((a) => a > 0);
+      (() => Array.from(b).filter((a) => a > 0));
     `
     );
   });
@@ -2194,7 +2186,7 @@ describe('for loops', () => {
       -> a for a in b
     `,
       `
-      () => Array.from(b);
+      (() => Array.from(b));
     `
     );
   });

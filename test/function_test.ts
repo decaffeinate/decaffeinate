@@ -509,8 +509,7 @@ describe('functions', () => {
         return baz
     `,
       `
-      (foo,
-      bar) => baz;
+      ((foo, bar) => baz);
     `
     ));
 
@@ -566,10 +565,7 @@ describe('functions', () => {
       )
     `,
       `
-      () =>
-        a(() =>
-          b(() => c))
-      ;
+      (() => a(() => b(() => c)));
     `
     ));
 
@@ -610,7 +606,7 @@ describe('functions', () => {
       )
     `,
       `
-      () => true;
+      (() => true);
     `
     ));
 

@@ -37,7 +37,7 @@ describe('declarations', () => {
         a = 1
     `,
       `
-      a => a = 1;
+      (a => a = 1);
     `
     );
   });
@@ -66,7 +66,7 @@ describe('declarations', () => {
     `,
       `
       let a = 1;
-      () => a = 2;
+      (() => a = 2);
     `
     );
   });

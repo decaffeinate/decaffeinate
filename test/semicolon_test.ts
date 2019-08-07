@@ -9,7 +9,7 @@ describe('semicolons', () => {
       a
     `,
       `
-      (() => result)();
+      ((() => result))();
       a;
     `
     );
@@ -131,7 +131,7 @@ describe('semicolons', () => {
     `,
       `
       const x = 1;
-      () => 2;
+      (() => 2);
     `
     );
   });

@@ -128,7 +128,7 @@ describe('`new` operator', () => {
       new do -> ->
     `,
       `
-      new ((() => function() {})());
+      new (((() => (function() {})))());
     `
     );
   });

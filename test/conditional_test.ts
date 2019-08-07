@@ -291,17 +291,15 @@ describe('conditionals', () => {
           a - d)
     `,
       `
-      () =>
-        z((() => {
-          if (a) {
-          const c = a;
-          return a + c;
-        } else {
-          const d = a;
-          return a - d;
-        }
-        })())
-      ;
+      (() => z((() => {
+        if (a) {
+        const c = a;
+        return a + c;
+      } else {
+        const d = a;
+        return a - d;
+      }
+      })()));
     `
     );
   });
@@ -706,7 +704,7 @@ describe('conditionals', () => {
         b
     `,
       `
-      if ((() => b)()) { a; }
+      if (((() => b))()) { a; }
     `
     );
   });
@@ -988,8 +986,7 @@ describe('conditionals', () => {
         ;
     `,
       `
-      const x = a ? undefined : undefined
-        ;
+      const x = a ? undefined : undefined;
     `
     );
   });

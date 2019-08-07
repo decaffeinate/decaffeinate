@@ -17,11 +17,7 @@ export default function resolveToPatchError(err: any, content: string, stageName
     if (pos === content.length) {
       pos--;
     }
-    // In most cases, we can use the source code we already have, but for
-    // esnext, the code might be an intermediate code state, so use that from
-    // the exception if possible.
-    let source = err.source || content;
-    return makePatchError(pos, pos + 1, source);
+    return makePatchError(pos, pos + 1, content);
   } else if (err.syntaxError) {
     // Handle CoffeeScript parse errors.
     let { location } = err.syntaxError;
