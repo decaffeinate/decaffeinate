@@ -7,7 +7,7 @@ describe('sequences', () => {
       -> return (a; b)
     `,
       `
-      () => (a, b);
+      (() => (a, b));
     `
     );
   });
@@ -18,7 +18,7 @@ describe('sequences', () => {
       -> return (a; b; c)
     `,
       `
-      () => (a, b, c);
+      (() => (a, b, c));
     `
     );
   });

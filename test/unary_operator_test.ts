@@ -62,7 +62,7 @@ describe('unary operators', () => {
       (a) -> a?
     `,
       `
-      a => a != null;
+      (a => a != null);
     `
     );
   });
@@ -114,7 +114,7 @@ describe('unary operators', () => {
       (a) -> not a?
     `,
       `
-      a => a == null;
+      (a => a == null);
     `
     );
   });

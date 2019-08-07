@@ -156,7 +156,7 @@ describe('default params', () => {
         console.log a
     `,
       `
-      (a = null) => console.log(a);
+      ((a = null) => console.log(a));
     `
     );
   });

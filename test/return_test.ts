@@ -30,7 +30,7 @@ describe('return', () => {
       -> return (if true then null)
     `,
       `
-      () => true ? null : undefined;
+      (() => true ? null : undefined);
     `
     ));
 

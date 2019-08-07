@@ -234,15 +234,13 @@ describe('while', () => {
           -> return a
     `,
       `
-      () =>
-        (() => {
-          const result = [];
-          while (true) {
-            result.push(() => a);
-          }
-          return result;
-        })()
-      ;
+      (() => (() => {
+        const result = [];
+        while (true) {
+          result.push(() => a);
+        }
+        return result;
+      })());
     `
     );
   });
@@ -253,7 +251,7 @@ describe('while', () => {
       while a then ((a) -> a)(1)
     `,
       `
-      while (a) { (a => a)(1); }
+      while (a) { ((a => a))(1); }
     `
     );
   });
@@ -466,7 +464,7 @@ describe('while', () => {
         b
     `,
       `
-      while ((() => b)()) { a; }
+      while (((() => b))()) { a; }
     `
     );
   });

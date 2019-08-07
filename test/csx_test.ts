@@ -338,8 +338,7 @@ describe('csx', () => {
       let name;
       <Person
         name={
-          (name = formatName(user.name)),
-          <NameComponent name={name.toUppercase()} />
+          (name = formatName(user.name), <NameComponent name={name.toUppercase()} />)
         }
       >
         blah blah blah

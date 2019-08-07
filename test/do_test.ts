@@ -7,7 +7,7 @@ describe('`do`', () => {
   });
 
   it('creates an IIFE returning the last value', () => {
-    check(`one = do -> 1`, `const one = (() => 1)();`);
+    check(`one = do -> 1`, `const one = ((() => 1))();`);
   });
 
   it('creates an IIFE with bound functions', () => {
@@ -15,19 +15,19 @@ describe('`do`', () => {
   });
 
   it('creates an IIFE with shadowed arguments', () => {
-    check(`do (i) -> i`, `(i => i)(i);`);
+    check(`do (i) -> i`, `((i => i))(i);`);
   });
 
   it('creates an IIFE with explicit bindings', () => {
-    check(`do (i=1) -> i`, `(i => i)(1);`);
+    check(`do (i=1) -> i`, `((i => i))(1);`);
   });
 
   it('creates an IIFE with object destructuring', () => {
-    check(`do ({i}) -> i`, `(({i}) => i)({i});`);
+    check(`do ({i}) -> i`, `((({i}) => i))({i});`);
   });
 
   it('creates an IIFE with array destructuring', () => {
-    check(`do ([a]) -> a`, `(([a]) => a)([a]);`);
+    check(`do ([a]) -> a`, `((([a]) => a))([a]);`);
   });
 
   it('create a multi-line IIFE', () => {
@@ -146,7 +146,7 @@ describe('`do`', () => {
       
     `,
       `
-      (() => b)();
+      ((() => b))();
       
     `,
       { shouldStripIndent: false }

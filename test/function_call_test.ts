@@ -129,7 +129,7 @@ describe('function calls', () => {
       c
     `,
       `
-      promise.then(a=> b);
+      promise.then(a => b);
       c;
     `
     );
@@ -172,7 +172,7 @@ describe('function calls', () => {
       )()
     `,
       `
-      const x = (() => 1)();
+      const x = ((() => 1))();
     `
     );
   });
@@ -242,7 +242,7 @@ describe('function calls', () => {
   });
 
   it('converts rest params in function calls', () => {
-    check(`(a,b...)->b[0]`, `(a,...b)=> b[0];`);
+    check(`(a,b...)->b[0]`, `((a, ...b) => b[0]);`);
   });
 
   it('works when the entire span of arguments is replaced', () => {
@@ -429,12 +429,9 @@ describe('function calls', () => {
     `,
       `
       define([
-      ], () =>
-      
-        somefunc('something', ['something', function(ContactService) {}
-      
-        ])
-      );
+      ], () => somefunc('something', ['something', function(ContactService) {}
+
+      ]));
     `
     );
   });
@@ -450,8 +447,7 @@ describe('function calls', () => {
       `
       (function(a) {
         let needle;
-        return ((needle = a, !Array.from(b.map(a, e => e)).includes(needle))
-        );
+        return needle = a, !Array.from(b.map(a, e => e)).includes(needle);
       });
     `
     );
@@ -506,13 +502,11 @@ describe('function calls', () => {
           $.on 'click', assignThis if someCondition
     `,
       `
-      define([], () =>
-        ({
-          something() {
-            if (someCondition) { return $.on('click', assignThis); }
-          }
-        })
-      );
+      define([], () => ({
+        something() {
+          if (someCondition) { return $.on('click', assignThis); }
+        }
+      }));
     `
     );
   });
@@ -562,15 +556,13 @@ describe('function calls', () => {
             e
     `,
       `
-      a(b, () =>
-        ({
-          c() {
-            if (d) {
-              return e;
-            }
+      a(b, () => ({
+        c() {
+          if (d) {
+            return e;
           }
-        })
-      );
+        }
+      }));
     `
     );
   });
@@ -696,10 +688,8 @@ describe('function calls', () => {
     `,
       `
       a
-        .b(c, () =>
-          d
-            .e(f)
-        );
+        .b(c, () => d
+        .e(f));
     `
     );
   });
@@ -715,18 +705,17 @@ describe('function calls', () => {
       g
     `,
       `
-      a(() =>
-        (() => {
-          const result = [];
-          for (let b of Array.from(c)) {
-            if (d) {
-              result.push(e[f]);
-            } else {
-              result.push(undefined);
-            }
+      a(() => (() => {
+        const result = [];
+        for (let b of Array.from(c)) {
+          if (d) {
+            result.push(e[f]);
+          } else {
+            result.push(undefined);
           }
-          return result;
-        })());
+        }
+        return result;
+      })());
       
       g;
     `
@@ -744,19 +733,18 @@ describe('function calls', () => {
       f
     `,
       `
-      a(() =>
-        (() => {
-          const result = [];
-          for (let b of Array.from(c)) {
-            if (d) {
-              result.push(e);
-            } else {
-              result.push(undefined);
-            }
+      a(() => (() => {
+        const result = [];
+        for (let b of Array.from(c)) {
+          if (d) {
+            result.push(e);
+          } else {
+            result.push(undefined);
           }
-          return result;
-        })());
-      
+        }
+        return result;
+      })());
+    
       f;
     `
     );
@@ -798,9 +786,7 @@ describe('function calls', () => {
       )
     `,
       `
-      launchMissile(() =>
-        setTimeout((() => launch()), 5000)
-      );
+      launchMissile(() => setTimeout((() => launch()), 5000));
     `
     );
   });
@@ -815,9 +801,7 @@ describe('function calls', () => {
       )
     `,
       `
-      launchMissile(() =>
-        1 + setTimeout((() => launch()), 5000)
-      );
+      launchMissile(() => 1 + setTimeout((() => launch()), 5000));
     `
     );
   });
@@ -871,7 +855,7 @@ describe('function calls', () => {
       a(
         b(() => c({
         },
-          d) )
+          d))
       );
     `
     );
@@ -923,14 +907,12 @@ describe('function calls', () => {
       )
     `,
       `
-      fn1(done =>
-        fn2('string', function(object) {
-          }
-        , function(err, data) {
-          const p = data;
-          return done(err);
-        })
-      );
+      fn1(done => fn2('string', function(object) {
+        }
+      , function(err, data) {
+        const p = data;
+        return done(err);
+      }));
     `
     );
   });

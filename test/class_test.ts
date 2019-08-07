@@ -43,9 +43,6 @@ describe('classes', () => {
       }
     `
     );
-    // FIXME: Ideally the semi-colon would be directly after the closing curly.
-    // This is due to an edge case that esnext chose not to address in its
-    // `functions.arrow` plugin.
     check(
       `
       ->
@@ -54,13 +51,11 @@ describe('classes', () => {
             1
     `,
       `
-      () =>
-        class {
-          a() {
-            return 1;
-          }
+      (() => (class {
+        a() {
+          return 1;
         }
-      ;
+      }));
     `
     );
   });

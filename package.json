@@ -36,7 +36,15 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/parser": "^7.1.6",
+    "@codemod/core": "^1.0.0",
+    "@codemod/parser": "^1.0.0",
+    "@resugar/codemod-declarations-block-scope": "^1.0.2",
+    "@resugar/codemod-functions-arrow": "^1.0.2",
+    "@resugar/codemod-modules-commonjs": "^1.0.4",
+    "@resugar/codemod-objects-concise": "^1.0.1",
+    "@resugar/codemod-objects-destructuring": "^1.0.1",
+    "@resugar/codemod-objects-shorthand": "^1.0.1",
+    "@resugar/codemod-strings-template": "^1.0.1",
     "add-variable-declarations": "^4.0.6",
     "automatic-semicolon-insertion": "^2.0.4",
     "coffee-lex": "^9.1.4",
@@ -44,7 +52,6 @@
     "decaffeinate-coffeescript2": "2.2.1-patch.5",
     "decaffeinate-parser": "^22.5.12",
     "detect-indent": "^4.0.0",
-    "esnext": "^3.3.1",
     "lines-and-columns": "^1.1.6",
     "magic-string": "^0.25.1",
     "mz": "^2.7.0",
@@ -60,7 +67,8 @@
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
-    "@babel/types": "^7.3.2",
+    "@babel/traverse": "^7.5.5",
+    "@babel/types": "^7.5.5",
     "@types/babel__core": "^7.0.4",
     "@types/babel__generator": "^7.0.1",
     "@types/babel__template": "^7.0.1",
@@ -92,5 +100,8 @@
       "magic-string",
       "detect-indent"
     ]
+  },
+  "resolutions": {
+    "**/@resugar/helper-comments": "^1.0.2"
   }
 }

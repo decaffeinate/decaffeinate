@@ -1,21 +1,8 @@
-import { parse, ParserPlugin } from '@babel/parser';
+import { parse } from '@codemod/parser';
 import asi from 'automatic-semicolon-insertion';
 import MagicString from 'magic-string';
 import { StageResult } from '../../index';
 import { logger } from '../../utils/debug';
-
-const BABYLON_PLUGINS: Array<ParserPlugin> = [
-  'flow',
-  'jsx',
-  'asyncGenerators',
-  'classProperties',
-  ['decorators', { decoratorsBeforeExport: true }] as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-  'doExpressions',
-  'functionBind',
-  'functionSent',
-  'objectRestSpread',
-  'optionalChaining'
-];
 
 export default class SemicolonsStage {
   static run(content: string): StageResult {
@@ -24,9 +11,6 @@ export default class SemicolonsStage {
 
     let editor = new MagicString(content);
     let ast = parse(content, {
-      sourceType: 'module',
-      plugins: BABYLON_PLUGINS,
-      allowReturnOutsideFunction: true,
       tokens: true
     });
 

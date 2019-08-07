@@ -10,7 +10,7 @@ describe('string interpolation', () => {
   });
 
   it('can return interpolated strings', () => {
-    check('-> "#{a}"', '() => `${a}`;');
+    check('-> "#{a}"', '(() => `${a}`);');
   });
 
   it('ensures backticks are escaped', () => {

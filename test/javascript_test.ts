@@ -11,7 +11,7 @@ describe('embedded JavaScript', () => {
   });
 
   it('allows passing JSX through', () => {
-    check('-> `<MyComponent />`', '() => <MyComponent />;');
+    check('-> `<MyComponent />`', '(() => <MyComponent />);');
   });
 
   it('handles comment-only inline JS surrounded by parens', () => {
