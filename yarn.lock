@@ -690,9 +690,9 @@
     resolve "^1.12.0"
 
 "@codemod/parser@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.0.1.tgz#6f52ac964834a08775419e44b76440a4d6b422ee"
-  integrity sha512-5FNjeWCknk5i+wXSKYtau6yt/N81CvHLU/7YDKH+bLsrCsArLu9Jt9nRDs+L2fpWziYm/IFdHDpCQld2Kft6NQ==
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.0.3.tgz#e832fcb565f3855800f7d0b6235ae13aaf48894b"
+  integrity sha512-R9GvW0mtPPVKhsmi40UbCPpsdWyeShlk+oWFP0WSjELfLljF5NMlm6JERcdy0OY6I4pxLTWHqZ/AWZD0uyL01A==
   dependencies:
     "@babel/parser" "^7.5.5"
 
