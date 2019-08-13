@@ -10,7 +10,7 @@ module.exports = {
   },
   plugins: ['prettier', '@typescript-eslint/eslint-plugin'],
   rules: {
-    '@typescript-eslint/array-type': ['error', 'generic'],
+    '@typescript-eslint/array-type': ['error', { default: 'generic' }],
     '@typescript-eslint/explicit-member-accessibility': 'off',
     '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
     '@typescript-eslint/no-parameter-properties': 'off',
