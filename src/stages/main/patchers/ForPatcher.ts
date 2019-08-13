@@ -57,7 +57,7 @@ export default abstract class ForPatcher extends LoopPatcher {
    */
   getIIFEAssignments(): Array<string> {
     if (this.willPatchAsIIFE()) {
-      let iifeAssignments = [];
+      const iifeAssignments = [];
       if (this.keyAssignee) {
         iifeAssignments.push(...getAssigneeBindings(this.keyAssignee.node));
       }
@@ -71,7 +71,7 @@ export default abstract class ForPatcher extends LoopPatcher {
   }
 
   getFilterCode(): string | null {
-    let filter = this.filter;
+    const filter = this.filter;
     if (!filter) {
       return null;
     }
@@ -120,7 +120,7 @@ export default abstract class ForPatcher extends LoopPatcher {
     if (searchStart === -1) {
       throw this.error('Expected to find a good starting point to search for relation token.');
     }
-    let tokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const tokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       this.target.outerStart,
       // "of" and "in" are relation tokens, but "from" is a plain identifier.
@@ -146,7 +146,7 @@ export default abstract class ForPatcher extends LoopPatcher {
    * @protected
    */
   computeIndexBinding(): string {
-    let keyAssignee = this.keyAssignee;
+    const keyAssignee = this.keyAssignee;
     if (keyAssignee) {
       if (keyAssignee instanceof MemberAccessOpPatcher) {
         return `this.${keyAssignee.member.node.data}`;
@@ -177,27 +177,27 @@ export default abstract class ForPatcher extends LoopPatcher {
    * @protected
    */
   removeThenToken(): void {
-    let searchStart = this.getLoopHeaderEnd();
+    const searchStart = this.getLoopHeaderEnd();
     let searchEnd;
     if (this.body) {
       searchEnd = this.body.outerStart;
     } else {
-      let nextToken = this.nextSemanticToken();
+      const nextToken = this.nextSemanticToken();
       if (nextToken) {
         searchEnd = nextToken.end;
       } else {
         searchEnd = this.contentEnd;
       }
     }
-    let index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
       token => token.type === SourceType.THEN
     );
     if (index) {
-      let thenToken = notNull(this.sourceTokenAtIndex(index));
-      let nextIndex = index.next();
-      let nextToken = nextIndex && this.sourceTokenAtIndex(nextIndex);
+      const thenToken = notNull(this.sourceTokenAtIndex(index));
+      const nextIndex = index.next();
+      const nextToken = nextIndex && this.sourceTokenAtIndex(nextIndex);
       if (nextToken) {
         this.remove(thenToken.start, nextToken.start);
       } else {

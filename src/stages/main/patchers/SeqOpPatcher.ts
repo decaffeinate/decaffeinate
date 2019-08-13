@@ -11,7 +11,7 @@ export default class SeqOpPatcher extends NodePatcher {
   left: NodePatcher;
   right: NodePatcher;
 
-  negated: boolean = false;
+  negated = false;
 
   constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
     super(patcherContext);
@@ -35,7 +35,7 @@ export default class SeqOpPatcher extends NodePatcher {
     }
     this.left.patch();
 
-    let token = this.getOperatorToken();
+    const token = this.getOperatorToken();
 
     if (token.type === SourceType.SEMICOLON) {
       // `a; b` → `a, b`
@@ -60,7 +60,7 @@ export default class SeqOpPatcher extends NodePatcher {
   }
 
   getOperatorToken(): SourceToken {
-    let operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+    const operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.left,
       this.right,
       token => token.type === SourceType.SEMICOLON || token.type === SourceType.NEWLINE

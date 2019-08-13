@@ -68,7 +68,7 @@ export default class ClassPatcher extends NodePatcher {
     // code.
     this.removeThenTokenIfNecessary();
 
-    let indent = this.getIndent();
+    const indent = this.getIndent();
 
     if (this.nameAssignee) {
       this.nameAssignee.patch();
@@ -85,11 +85,11 @@ export default class ClassPatcher extends NodePatcher {
     }
 
     this.addSuggestion(AVOID_INITCLASS);
-    let insertPoint = this.getInitClassInsertPoint();
-    let nonMethodPatchers = this.getNonMethodPatchers();
-    let customConstructorInfo = this.extractCustomConstructorInfo();
+    const insertPoint = this.getInitClassInsertPoint();
+    const nonMethodPatchers = this.getNonMethodPatchers();
+    const customConstructorInfo = this.extractCustomConstructorInfo();
 
-    let shouldUseIIFE = this.shouldUseIIFE();
+    const shouldUseIIFE = this.shouldUseIIFE();
 
     if (shouldUseIIFE) {
       // If the class declaration might introduce a variable, we need to make
@@ -110,13 +110,13 @@ export default class ClassPatcher extends NodePatcher {
       needsTmpName = true;
     }
 
-    let assignmentNames = this.generateInitClassMethod(nonMethodPatchers, customConstructorInfo, insertPoint);
+    const assignmentNames = this.generateInitClassMethod(nonMethodPatchers, customConstructorInfo, insertPoint);
     this.insert(this.outerEnd, `\n${indent}${classRef}.initClass()`);
     if (shouldUseIIFE) {
       this.insert(this.outerEnd, `\n${indent}return ${classRef}`);
     }
 
-    for (let assignmentName of assignmentNames) {
+    for (const assignmentName of assignmentNames) {
       this.insert(this.outerStart, `${assignmentName} = undefined\n${indent}`);
     }
     if (needsTmpName) {
@@ -145,7 +145,7 @@ export default class ClassPatcher extends NodePatcher {
       return false;
     }
 
-    let nonMethodPatchers = this.getNonMethodPatchers();
+    const nonMethodPatchers = this.getNonMethodPatchers();
 
     if (nonMethodPatchers.length === 0 && !this.needsCustomConstructor()) {
       return false;
@@ -168,7 +168,7 @@ export default class ClassPatcher extends NodePatcher {
     } else {
       searchEnd = this.contentEnd;
     }
-    let index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
       token => token.type === SourceType.THEN
@@ -179,7 +179,7 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   shouldUseIIFE(): boolean {
-    let nonMethodPatchers = this.getNonMethodPatchers();
+    const nonMethodPatchers = this.getNonMethodPatchers();
     if (this.hasAnyAssignments(nonMethodPatchers)) {
       return true;
     }
@@ -187,7 +187,7 @@ export default class ClassPatcher extends NodePatcher {
     // we know that a statement can be added after us and we're not in an
     // implicit return position.
     if (this.parent instanceof BlockPatcher) {
-      let { statements } = this.parent;
+      const { statements } = this.parent;
       if (!(this.parent.parent instanceof ProgramPatcher) && this === statements[statements.length - 1]) {
         return true;
       }
@@ -215,9 +215,9 @@ export default class ClassPatcher extends NodePatcher {
     if (!this.body) {
       throw this.error('Expected non-null body.');
     }
-    let nonMethodPatchers = [];
+    const nonMethodPatchers = [];
     let deleteStart = this.getInitClassInsertPoint();
-    for (let patcher of this.body.statements) {
+    for (const patcher of this.body.statements) {
       if (!this.isClassMethod(patcher)) {
         nonMethodPatchers.push({
           patcher,
@@ -233,7 +233,7 @@ export default class ClassPatcher extends NodePatcher {
     if (patcher instanceof ConstructorPatcher) {
       return true;
     }
-    let node = patcher.node;
+    const node = patcher.node;
     if (this.isClassAssignment(node)) {
       // Bound static methods must be moved to initClass so they are properly
       // bound.
@@ -252,13 +252,13 @@ export default class ClassPatcher extends NodePatcher {
       return true;
     }
     if (node instanceof AssignOp) {
-      let { assignee } = node;
+      const { assignee } = node;
       if (assignee instanceof MemberAccessOp || assignee instanceof DynamicMemberAccessOp) {
         if (assignee.expression instanceof This) {
           return true;
         }
         if (this.nameAssignee && this.nameAssignee instanceof IdentifierPatcher) {
-          let className = this.nameAssignee.node.data;
+          const className = this.nameAssignee.node.data;
           if (assignee.expression instanceof Identifier && assignee.expression.data === className) {
             return true;
           }
@@ -272,7 +272,7 @@ export default class ClassPatcher extends NodePatcher {
     if (!this.body) {
       throw this.error('Expected non-null body.');
     }
-    for (let patcher of this.body.statements) {
+    for (const patcher of this.body.statements) {
       if (patcher instanceof ConstructorPatcher && !(patcher.expression instanceof FunctionPatcher)) {
         return true;
       }
@@ -292,20 +292,20 @@ export default class ClassPatcher extends NodePatcher {
     if (!this.body) {
       throw this.error('Expected non-null body.');
     }
-    for (let patcher of this.body.statements) {
+    for (const patcher of this.body.statements) {
       if (patcher instanceof ConstructorPatcher) {
         if (!(patcher.expression instanceof FunctionPatcher)) {
-          let expressionCode = this.slice(patcher.expression.contentStart, patcher.expression.contentEnd);
+          const expressionCode = this.slice(patcher.expression.contentStart, patcher.expression.contentEnd);
           let ctorName;
           if (this.nameAssignee instanceof IdentifierPatcher) {
-            let className = this.nameAssignee.node.data;
+            const className = this.nameAssignee.node.data;
             ctorName = this.claimFreeBinding(`create${className}`);
           } else {
             ctorName = this.claimFreeBinding('createInstance');
           }
 
-          let bodyIndent = this.getBodyIndent();
-          let indentString = this.getProgramIndentString();
+          const bodyIndent = this.getBodyIndent();
+          const indentString = this.getProgramIndentString();
 
           this.overwrite(
             patcher.expression.outerStart,
@@ -336,12 +336,12 @@ export default class ClassPatcher extends NodePatcher {
     customConstructorInfo: CustomConstructorInfo | null,
     insertPoint: number
   ): Array<string> {
-    let bodyIndent = this.getBodyIndent();
-    let indentString = this.getProgramIndentString();
+    const bodyIndent = this.getBodyIndent();
+    const indentString = this.getProgramIndentString();
     this.insert(insertPoint, `\n${bodyIndent}@initClass: ->`);
-    let assignmentNames = [];
-    for (let { patcher, deleteStart } of nonMethodPatchers) {
-      let assignmentName = this.getAssignmentName(patcher);
+    const assignmentNames = [];
+    for (const { patcher, deleteStart } of nonMethodPatchers) {
+      const assignmentName = this.getAssignmentName(patcher);
       if (assignmentName) {
         assignmentNames.push(assignmentName);
       }
@@ -351,7 +351,7 @@ export default class ClassPatcher extends NodePatcher {
       this.remove(deleteStart, patcher.outerEnd);
     }
     if (customConstructorInfo) {
-      let { ctorName, expressionCode } = customConstructorInfo;
+      const { ctorName, expressionCode } = customConstructorInfo;
       this.insert(insertPoint, `\n${bodyIndent}${indentString}${ctorName} = ${expressionCode}`);
       assignmentNames.push(ctorName);
     }
@@ -361,7 +361,7 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   hasAnyAssignments(nonMethodPatchers: Array<NonMethodInfo>): boolean {
-    for (let { patcher } of nonMethodPatchers) {
+    for (const { patcher } of nonMethodPatchers) {
       if (this.getAssignmentName(patcher)) {
         return true;
       }
@@ -373,7 +373,7 @@ export default class ClassPatcher extends NodePatcher {
     if (!this.body) {
       throw this.error('Expected non-null body.');
     }
-    let bodyNodeIndent = this.body.getIndent();
+    const bodyNodeIndent = this.body.getIndent();
     // If the body is inline, generate code at one indent level up instead of
     // at the class indentation level.
     if (bodyNodeIndent === this.getIndent()) {

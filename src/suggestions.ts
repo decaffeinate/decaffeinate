@@ -74,8 +74,8 @@ export const AVOID_TOP_LEVEL_RETURN = {
 };
 
 export function mergeSuggestions(suggestions: Array<Suggestion>): Array<Suggestion> {
-  let suggestionsByCode = {};
-  for (let suggestion of suggestions) {
+  const suggestionsByCode = {};
+  for (const suggestion of suggestions) {
     suggestionsByCode[suggestion.suggestionCode] = suggestion;
   }
   return Object.keys(suggestionsByCode)
@@ -87,7 +87,7 @@ export function prependSuggestionComment(code: string, suggestions: Array<Sugges
   if (suggestions.length === 0) {
     return code;
   }
-  let commentLines = [
+  const commentLines = [
     '/*',
     ' * decaffeinate suggestions:',
     ...suggestions.map(({ suggestionCode, message }) => ` * ${suggestionCode}: ${message}`),
@@ -95,7 +95,7 @@ export function prependSuggestionComment(code: string, suggestions: Array<Sugges
     ' */'
   ];
 
-  let codeLines = code.split('\n');
+  const codeLines = code.split('\n');
   if (codeLines[0].startsWith('#!')) {
     return [codeLines[0], ...commentLines, ...codeLines.slice(1)].join('\n');
   } else {

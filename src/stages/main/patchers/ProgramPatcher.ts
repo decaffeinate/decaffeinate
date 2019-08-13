@@ -39,7 +39,7 @@ export default class ProgramPatcher extends SharedProgramPatcher {
    * @private
    */
   patchComments(): void {
-    let { source } = this.context;
+    const { source } = this.context;
     this.getProgramSourceTokens().forEach(token => {
       if (token.type === SourceType.COMMENT) {
         if (token.start === 0 && source[1] === '!') {
@@ -59,16 +59,16 @@ export default class ProgramPatcher extends SharedProgramPatcher {
    * @private
    */
   patchBlockComment(comment: SourceToken): void {
-    let { start, end } = comment;
+    const { start, end } = comment;
     this.overwrite(start, start + BLOCK_COMMENT_DELIMITER.length, '/*');
 
     let atStartOfLine = false;
     let lastStartOfLine = null;
     let lineUpAsterisks = true;
     let isMultiline = false;
-    let { source } = this.context;
-    let expectedIndent = getIndent(source, start);
-    let leadingHashIndexes = [];
+    const { source } = this.context;
+    const expectedIndent = getIndent(source, start);
+    const leadingHashIndexes = [];
 
     for (let index = start + BLOCK_COMMENT_DELIMITER.length; index < end - BLOCK_COMMENT_DELIMITER.length; index++) {
       switch (source[index]) {
@@ -114,7 +114,7 @@ export default class ProgramPatcher extends SharedProgramPatcher {
    * @private
    */
   patchLineComment(comment: SourceToken): void {
-    let { start } = comment;
+    const { start } = comment;
     this.overwrite(start, start + '#'.length, '//');
   }
 
@@ -124,9 +124,9 @@ export default class ProgramPatcher extends SharedProgramPatcher {
    * @private
    */
   patchShebangComment(comment: SourceToken): void {
-    let { start, end } = comment;
-    let commentBody = this.slice(start, end);
-    let coffeeIndex = commentBody.indexOf('coffee');
+    const { start, end } = comment;
+    const commentBody = this.slice(start, end);
+    const coffeeIndex = commentBody.indexOf('coffee');
 
     if (coffeeIndex >= 0) {
       this.overwrite(start + coffeeIndex, start + coffeeIndex + 'coffee'.length, 'node');

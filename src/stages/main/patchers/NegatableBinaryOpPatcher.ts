@@ -26,7 +26,7 @@ export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
    * LEFT 'not'? OP RIGHT
    */
   patchAsExpression(): void {
-    let { negated } = this;
+    const { negated } = this;
     if (negated) {
       // `a not instanceof b` → `!(a not instanceof b`
       //                         ^^
@@ -44,7 +44,7 @@ export default class NegatableBinaryOpPatcher extends BinaryOpPatcher {
 
     // `!(a not instanceof b)` → `!(a instanceof b)`
     //      ^^^^^^^^^^^^^^            ^^^^^^^^^^
-    let token = this.getOperatorToken();
+    const token = this.getOperatorToken();
     this.overwrite(token.start, token.end, this.javaScriptOperator());
   }
 

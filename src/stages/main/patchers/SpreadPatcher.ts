@@ -31,8 +31,8 @@ export default class SpreadPatcher extends NodePatcher {
    * requires iterables.
    */
   patchAsExpression(): void {
-    let needsArrayFrom = this.needsArrayFrom();
-    let isEllipsisOnLHS = this.firstToken().type === SourceType.RANGE;
+    const needsArrayFrom = this.needsArrayFrom();
+    const isEllipsisOnLHS = this.firstToken().type === SourceType.RANGE;
 
     if (!isEllipsisOnLHS) {
       // `a...` → `...Array.from(a...`

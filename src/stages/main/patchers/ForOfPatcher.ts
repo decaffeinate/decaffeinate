@@ -14,7 +14,7 @@ export default class ForOfPatcher extends ForPatcher {
       this.body.setIndent(this.getLoopBodyIndent());
     }
 
-    let { keyAssignee } = this;
+    const { keyAssignee } = this;
 
     // Save the filter code and remove if it it's there.
     this.getFilterCode();
@@ -24,26 +24,26 @@ export default class ForOfPatcher extends ForPatcher {
 
     this.removeOwnTokenIfExists();
 
-    let shouldExtractTarget = this.requiresExtractingTarget();
+    const shouldExtractTarget = this.requiresExtractingTarget();
     if (shouldExtractTarget) {
       this.insert(this.innerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`);
     }
 
-    let keyBinding = this.getIndexBinding();
+    const keyBinding = this.getIndexBinding();
     this.insert(keyAssignee.outerStart, '(');
 
     // Overwrite key assignee in case it was something like @key.
     this.overwrite(this.keyAssignee.contentStart, this.keyAssignee.contentEnd, keyBinding);
 
     // Patch the target. Also get a reference in case we need it.
-    let targetReference = this.getTargetReference();
+    const targetReference = this.getTargetReference();
 
-    let { valAssignee } = this;
+    const { valAssignee } = this;
 
     let valueAssignment = null;
     if (valAssignee) {
       valAssignee.patch();
-      let valAssigneeString = this.slice(valAssignee.contentStart, valAssignee.contentEnd);
+      const valAssigneeString = this.slice(valAssignee.contentStart, valAssignee.contentEnd);
       // `for (k, v of o` → `for (k of o`
       //        ^^^
       this.remove(keyAssignee.outerEnd, valAssignee.outerEnd);
@@ -55,7 +55,7 @@ export default class ForOfPatcher extends ForPatcher {
       }
     }
 
-    let relationToken = this.getRelationToken();
+    const relationToken = this.getRelationToken();
     if (this.node.isOwn) {
       this.addSuggestion(CLEAN_UP_FOR_OWN_LOOPS);
       if (shouldExtractTarget) {
@@ -93,11 +93,11 @@ export default class ForOfPatcher extends ForPatcher {
 
   removeOwnTokenIfExists(): void {
     if (this.node.isOwn) {
-      let ownIndex = this.indexOfSourceTokenAfterSourceTokenIndex(this.contentStartTokenIndex, SourceType.OWN);
+      const ownIndex = this.indexOfSourceTokenAfterSourceTokenIndex(this.contentStartTokenIndex, SourceType.OWN);
       if (!ownIndex) {
         throw this.error('Expected to find own token in for-own.');
       }
-      let ownToken = notNull(this.sourceTokenAtIndex(ownIndex));
+      const ownToken = notNull(this.sourceTokenAtIndex(ownIndex));
       this.remove(ownToken.start, this.keyAssignee.outerStart);
     }
   }

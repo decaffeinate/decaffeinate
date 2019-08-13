@@ -12,7 +12,7 @@ export default function blockStartsWithObjectInitialiser(patcher: NodePatcher): 
   if (!(patcher instanceof BlockPatcher) || patcher.statements.length !== 1) {
     return false;
   }
-  let statement = patcher.statements[0];
+  const statement = patcher.statements[0];
   return containsDescendant(
     statement.node,
     child => child instanceof ObjectInitialiser && child.start === statement.contentStart

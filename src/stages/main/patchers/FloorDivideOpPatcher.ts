@@ -5,7 +5,7 @@ export default class FloorDivideOpPatcher extends BinaryOpPatcher {
    * LEFT '//' RIGHT
    */
   patchAsExpression(): void {
-    let operator = this.getOperatorToken();
+    const operator = this.getOperatorToken();
 
     // `a // b` → `Math.floor(a // b`
     //             ^^^^^^^^^^^

@@ -17,17 +17,17 @@ export default class FunctionApplicationPatcher extends NodePatcher {
   }
 
   patchAsExpression(): void {
-    let implicitCall = this.isImplicitCall();
-    let { args } = this;
+    const implicitCall = this.isImplicitCall();
+    const { args } = this;
 
     this.fn.patch();
 
     if (implicitCall) {
-      let firstArg = args[0];
-      let firstArgIsOnNextLine = !firstArg
+      const firstArg = args[0];
+      const firstArgIsOnNextLine = !firstArg
         ? false
         : /\n/.test(this.context.source.slice(this.fn.outerEnd, firstArg.outerStart));
-      let funcEnd = this.getFuncEnd();
+      const funcEnd = this.getFuncEnd();
       if (firstArgIsOnNextLine) {
         this.insert(funcEnd, '(');
       } else {
@@ -35,7 +35,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       }
     }
 
-    for (let [i, arg] of args.entries()) {
+    for (const [i, arg] of args.entries()) {
       arg.patch();
       normalizeListItem(this, arg, args[i + 1]);
     }
@@ -61,15 +61,15 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       this.fn.surroundInParens();
     }
 
-    let argListCode = this.slice(this.args[0].contentStart, this.args[this.args.length - 1].contentEnd);
-    let isArgListMultiline = argListCode.indexOf('\n') !== -1;
-    let lastTokenType = this.lastToken().type;
+    const argListCode = this.slice(this.args[0].contentStart, this.args[this.args.length - 1].contentEnd);
+    const isArgListMultiline = argListCode.indexOf('\n') !== -1;
+    const lastTokenType = this.lastToken().type;
     if (!isArgListMultiline || lastTokenType === SourceType.RBRACE || lastTokenType === SourceType.RBRACKET) {
       this.insert(this.contentEnd, ')');
       return;
     }
 
-    let followingCloseParen = this.getFollowingCloseParenIfExists();
+    const followingCloseParen = this.getFollowingCloseParenIfExists();
     if (followingCloseParen) {
       // In some cases, (e.g. within function args) our bounds are extended to
       // allow us to patch the close-paren all the way up to the start of the
@@ -78,14 +78,14 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       return;
     }
 
-    let { args } = this;
-    let lastArg = args[args.length - 1];
+    const { args } = this;
+    const lastArg = args[args.length - 1];
     if (lastArg.isMultiline()) {
       // The CoffeeScript compiler will sometimes reject `.` that is starting a
       // new line following a `)` token. Also, in some cases, it will complain
       // about an indentation error if the `)` is too far indented. So handle
       // this case by moving the `.` to be right after the new `)`.
-      let nextSemanticToken = this.getFirstSemanticToken(this.contentEnd);
+      const nextSemanticToken = this.getFirstSemanticToken(this.contentEnd);
       if (nextSemanticToken && nextSemanticToken.type === SourceType.DOT) {
         this.overwrite(this.outerEnd, nextSemanticToken.start, ')');
       } else {
@@ -101,7 +101,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     let tokenIndex = this.contentEndTokenIndex;
     let token;
     do {
-      let nextTokenIndex = tokenIndex.next();
+      const nextTokenIndex = tokenIndex.next();
       if (nextTokenIndex === null) {
         return null;
       }
@@ -124,8 +124,8 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * indentation level of our statement.
    */
   getMaxCloseParenInsertPoint(): number {
-    let maxInsertionPoint = this.getEditingBounds()[1];
-    let enclosingIndentedPatcher: NodePatcher = this;
+    const maxInsertionPoint = this.getEditingBounds()[1];
+    let enclosingIndentedPatcher = this as NodePatcher;
     while (
       !enclosingIndentedPatcher.isFirstNodeInLine(enclosingIndentedPatcher.contentStart) &&
       enclosingIndentedPatcher.parent
@@ -148,8 +148,8 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     if (this.args.length === 0) {
       return false;
     }
-    let searchStart = this.fn.outerEnd;
-    let searchEnd = this.args[0].outerStart;
+    const searchStart = this.fn.outerEnd;
+    const searchEnd = this.args[0].outerStart;
     return (
       this.indexOfSourceTokenBetweenSourceIndicesMatching(
         searchStart,
@@ -165,14 +165,14 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    */
   getFuncEnd(): number {
     if (this.node.type === 'SoakedFunctionApplication' || this.node.type === 'SoakedNewOp') {
-      let questionMarkTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+      const questionMarkTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         this.fn.outerEndTokenIndex,
         SourceType.EXISTENCE
       );
       if (!questionMarkTokenIndex) {
         throw this.error('Expected to find question mark token index.');
       }
-      let questionMarkToken = this.sourceTokenAtIndex(questionMarkTokenIndex);
+      const questionMarkToken = this.sourceTokenAtIndex(questionMarkTokenIndex);
       if (!questionMarkToken) {
         throw this.error('Expected to find question mark token.');
       }

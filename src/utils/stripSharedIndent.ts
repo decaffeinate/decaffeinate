@@ -6,7 +6,7 @@ import getIndent from './getIndent';
  */
 export default function stripSharedIndent(source: string): string {
   let lines = source.split('\n');
-  let commonIndent = getCommonIndent(lines);
+  const commonIndent = getCommonIndent(lines);
   lines = lines.map(line => {
     if (line.startsWith(commonIndent)) {
       return line.substr(commonIndent.length);
@@ -27,8 +27,8 @@ export default function stripSharedIndent(source: string): string {
 
 function getCommonIndent(lines: Array<string>): string {
   let commonIndent: string | null = null;
-  for (let line of lines) {
-    let indent = getIndent(line, 0);
+  for (const line of lines) {
+    const indent = getIndent(line, 0);
     if (indent === line) {
       continue;
     }

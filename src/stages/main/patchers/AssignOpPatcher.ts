@@ -36,7 +36,7 @@ const OBJECT_WITHOUT_KEYS_HELPER = `function __objectWithoutKeys__(object, keys)
 export default class AssignOpPatcher extends NodePatcher {
   assignee: NodePatcher;
   expression: NodePatcher;
-  negated: boolean = false;
+  negated = false;
 
   constructor(patcherContext: PatcherContext, assignee: NodePatcher, expression: NodePatcher) {
     super(patcherContext);
@@ -61,7 +61,7 @@ export default class AssignOpPatcher extends NodePatcher {
     }
 
     this.markProtoAssignmentRepeatableIfNecessary();
-    let shouldAddParens =
+    const shouldAddParens =
       !this.isAssignee() &&
       (this.negated ||
         (this.willResultInSeqExpression() && this.parent instanceof FunctionApplicationPatcher) ||
@@ -85,7 +85,7 @@ export default class AssignOpPatcher extends NodePatcher {
       this.patchSimpleAssignment();
     } else {
       this.addSuggestion(SIMPLIFY_COMPLEX_ASSIGNMENTS);
-      let assignments = [];
+      const assignments = [];
 
       // In an expression context, the result should always be the value of the
       // RHS, so we need to make it repeatable if it's not.
@@ -93,7 +93,7 @@ export default class AssignOpPatcher extends NodePatcher {
       if (this.expression.isRepeatable()) {
         expressionCode = this.expression.patchAndGetCode();
       } else {
-        let fullExpression = this.expression.patchAndGetCode();
+        const fullExpression = this.expression.patchAndGetCode();
         expressionCode = this.claimFreeBinding();
         assignments.push(`${expressionCode} = ${fullExpression}`);
       }
@@ -111,7 +111,7 @@ export default class AssignOpPatcher extends NodePatcher {
   patchAsStatement(): void {
     this.markProtoAssignmentRepeatableIfNecessary();
     if (canPatchAssigneeToJavaScript(this.assignee.node, this.options)) {
-      let shouldAddParens = this.assignee.statementShouldAddParens();
+      const shouldAddParens = this.assignee.statementShouldAddParens();
       if (shouldAddParens) {
         this.insert(this.contentStart, '(');
       }
@@ -121,7 +121,7 @@ export default class AssignOpPatcher extends NodePatcher {
       }
     } else {
       this.addSuggestion(SIMPLIFY_COMPLEX_ASSIGNMENTS);
-      let assignments = this.generateAssignments(
+      const assignments = this.generateAssignments(
         this.assignee,
         this.expression.patchAndGetCode(),
         this.expression.isRepeatable()
@@ -149,7 +149,7 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchSimpleAssignment(): void {
-    let needsArrayFrom = this.shouldUseArrayFrom() && this.assignee instanceof ArrayInitialiserPatcher;
+    const needsArrayFrom = this.shouldUseArrayFrom() && this.assignee instanceof ArrayInitialiserPatcher;
     this.assignee.patch();
     if (needsArrayFrom) {
       this.addSuggestion(REMOVE_ARRAY_FROM);
@@ -158,7 +158,7 @@ export default class AssignOpPatcher extends NodePatcher {
 
     if (needsArrayFrom) {
       if (this.willPatchAsExpression()) {
-        let expressionRepeatCode = this.expression.patchRepeatable();
+        const expressionRepeatCode = this.expression.patchRepeatable();
         this.insert(this.expression.outerEnd, `), ${expressionRepeatCode}`);
       } else {
         this.expression.patch();
@@ -198,7 +198,7 @@ export default class AssignOpPatcher extends NodePatcher {
       // Elisions don't produce assignments.
       return [];
     } else if (canPatchAssigneeToJavaScript(patcher.node, this.options)) {
-      let assigneeCode = patcher.patchAndGetCode();
+      const assigneeCode = patcher.patchAndGetCode();
       if (this.shouldUseArrayFrom() && patcher instanceof ArrayInitialiserPatcher) {
         this.addSuggestion(REMOVE_ARRAY_FROM);
         return [`${assigneeCode} = Array.from(${ref})`];
@@ -211,15 +211,15 @@ export default class AssignOpPatcher extends NodePatcher {
       return this.generateAssignments(patcher.expression, ref, refIsRepeatable);
     } else if (patcher instanceof ArrayInitialiserPatcher) {
       if (!refIsRepeatable) {
-        let arrReference = this.claimFreeBinding('array');
+        const arrReference = this.claimFreeBinding('array');
         return [`${arrReference} = ${ref}`, ...this.generateAssignments(patcher, arrReference, true)];
       }
 
-      let assignees = patcher.members;
+      const assignees = patcher.members;
       let hasSeenExpansion = false;
       let lengthCode = null;
-      let assignments = [];
-      for (let [i, assignee] of assignees.entries()) {
+      const assignments = [];
+      for (const [i, assignee] of assignees.entries()) {
         let valueCode;
         if (assignee instanceof ExpansionPatcher || assignee instanceof SpreadPatcher) {
           hasSeenExpansion = true;
@@ -240,22 +240,22 @@ export default class AssignOpPatcher extends NodePatcher {
       return assignments;
     } else if (patcher instanceof ObjectInitialiserPatcher) {
       if (!refIsRepeatable) {
-        let objReference = this.claimFreeBinding('obj');
+        const objReference = this.claimFreeBinding('obj');
         return [`${objReference} = ${ref}`, ...this.generateAssignments(patcher, objReference, true)];
       }
 
-      let assignments = [];
-      for (let member of patcher.members) {
+      const assignments = [];
+      for (const member of patcher.members) {
         if (member instanceof ObjectInitialiserMemberPatcher) {
-          let valueCode = `${ref}${this.accessFieldForObjectDestructure(member.key)}`;
+          const valueCode = `${ref}${this.accessFieldForObjectDestructure(member.key)}`;
           assignments.push(...this.generateAssignments(member.expression || member.key, valueCode, false));
         } else if (member instanceof AssignOpPatcher) {
           // Assignments like {a = b} = c end up as an assign op.
-          let valueCode = `${ref}${this.accessFieldForObjectDestructure(member.assignee)}`;
+          const valueCode = `${ref}${this.accessFieldForObjectDestructure(member.assignee)}`;
           assignments.push(...this.generateAssignments(member, valueCode, false));
         } else if (member instanceof SpreadPatcher) {
-          let helper = this.registerHelper('__objectWithoutKeys__', OBJECT_WITHOUT_KEYS_HELPER);
-          let omittedKeysCode = getObjectAssigneeKeys(patcher)
+          const helper = this.registerHelper('__objectWithoutKeys__', OBJECT_WITHOUT_KEYS_HELPER);
+          const omittedKeysCode = getObjectAssigneeKeys(patcher)
             .map(key => `'${key}'`)
             .join(', ');
           assignments.push(...this.generateAssignments(member, `${helper}(${ref}, [${omittedKeysCode}])`, false));
@@ -270,11 +270,11 @@ export default class AssignOpPatcher extends NodePatcher {
     } else if (patcher instanceof AssignOpPatcher) {
       this.addSuggestion(SHORTEN_NULL_CHECKS);
       if (!refIsRepeatable) {
-        let valReference = this.claimFreeBinding('val');
+        const valReference = this.claimFreeBinding('val');
         return [`${valReference} = ${ref}`, ...this.generateAssignments(patcher, valReference, true)];
       }
-      let defaultCode = patcher.expression.patchAndGetCode();
-      let comparison = this.options.useCS2 ? '!== undefined' : '!= null';
+      const defaultCode = patcher.expression.patchAndGetCode();
+      const comparison = this.options.useCS2 ? '!== undefined' : '!= null';
       return this.generateAssignments(patcher.assignee, `${ref} ${comparison} ? ${ref} : ${defaultCode}`, false);
     } else {
       throw this.error(`Invalid assignee type: ${patcher.node.type}`);
@@ -302,11 +302,11 @@ export default class AssignOpPatcher extends NodePatcher {
     if (!(this.expression instanceof FunctionPatcher && containsSuperCall(this.expression.node))) {
       return;
     }
-    let prototypeAssignPatchers = extractPrototypeAssignPatchers(this);
+    const prototypeAssignPatchers = extractPrototypeAssignPatchers(this);
     if (!prototypeAssignPatchers) {
       return;
     }
-    let { classRefPatcher, methodAccessPatcher } = prototypeAssignPatchers;
+    const { classRefPatcher, methodAccessPatcher } = prototypeAssignPatchers;
     classRefPatcher.setRequiresRepeatableExpression({
       parens: true,
       ref: 'cls',

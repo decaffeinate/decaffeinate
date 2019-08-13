@@ -58,7 +58,7 @@ export default class WhilePatcher extends NodePatcher {
     if (postfixExpressionRequiresParens(patchedCondition) && !this.condition.isSurroundedByParentheses()) {
       patchedCondition = `(${patchedCondition})`;
     }
-    let patchedBody = this.slice(this.body.outerStart, this.body.outerEnd);
+    const patchedBody = this.slice(this.body.outerStart, this.body.outerEnd);
     let patchedGuard = null;
     if (this.guard) {
       patchedGuard = this.slice(this.guard.outerStart, this.guard.outerEnd);
@@ -66,7 +66,7 @@ export default class WhilePatcher extends NodePatcher {
         patchedGuard = `(${patchedGuard})`;
       }
     }
-    let whileToken = this.node.isUntil ? 'until' : 'while';
+    const whileToken = this.node.isUntil ? 'until' : 'while';
     let newContent = `${whileToken} ${patchedCondition} ${
       patchedGuard ? `when ${patchedGuard} ` : ''
     }then ${patchedBody}`;

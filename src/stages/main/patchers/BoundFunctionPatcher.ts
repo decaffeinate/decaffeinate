@@ -38,12 +38,12 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
   }
 
   patchFunctionStart(): void {
-    let arrow = this.getArrowToken();
+    const arrow = this.getArrowToken();
 
     if (!this.hasParamStart()) {
       this.insert(this.contentStart, '() ');
     } else if (!this.parameterListNeedsParentheses()) {
-      let [param] = this.parameters;
+      const [param] = this.parameters;
       if (param.isSurroundedByParentheses()) {
         this.remove(param.outerStart, param.contentStart);
         this.remove(param.contentEnd, param.outerEnd);
@@ -56,13 +56,13 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
   }
 
   parameterListNeedsParentheses(): boolean {
-    let parameters = this.parameters;
+    const parameters = this.parameters;
 
     if (parameters.length !== 1) {
       return true;
     }
 
-    let [param] = parameters;
+    const [param] = parameters;
     return !(param instanceof IdentifierPatcher);
   }
 
@@ -76,7 +76,7 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
           this.body.patch({ leftBrace: false });
         }
       } else {
-        let needsParens = blockStartsWithObjectInitialiser(this.body) && !this.body.isSurroundedByParentheses();
+        const needsParens = blockStartsWithObjectInitialiser(this.body) && !this.body.isSurroundedByParentheses();
         if (needsParens) {
           this.insert(this.body.innerStart, '(');
         }

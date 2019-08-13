@@ -9,15 +9,15 @@ import BinaryOpPatcher from './BinaryOpPatcher';
  * Handles equality and inequality comparisons.
  */
 export default class EqualityPatcher extends BinaryOpPatcher {
-  negated: boolean = false;
+  negated = false;
 
   patchOperator(): void {
-    let compareToken = this.getCompareToken();
+    const compareToken = this.getCompareToken();
     this.overwrite(compareToken.start, compareToken.end, this.getCompareOperator());
   }
 
   getCompareOperator(): string {
-    let token = this.getCompareToken();
+    const token = this.getCompareToken();
 
     return getCompareOperator(this.sourceOfToken(token), this.negated);
   }
@@ -26,8 +26,8 @@ export default class EqualityPatcher extends BinaryOpPatcher {
    * @private
    */
   getCompareToken(): SourceToken {
-    let { left, right } = this;
-    let compareTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+    const { left, right } = this;
+    const compareTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       left,
       right,
       token => token.type === SourceType.OPERATOR

@@ -6,11 +6,11 @@ import { logger } from '../../utils/debug';
 
 export default class SemicolonsStage {
   static run(content: string): StageResult {
-    let log = logger(this.name);
+    const log = logger(this.name);
     log(content);
 
-    let editor = new MagicString(content);
-    let ast = parse(content, {
+    const editor = new MagicString(content);
+    const ast = parse(content, {
       tokens: true
     });
 

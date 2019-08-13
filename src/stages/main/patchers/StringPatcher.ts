@@ -12,11 +12,11 @@ import InterpolatedPatcher from './InterpolatedPatcher';
  */
 export default class StringPatcher extends InterpolatedPatcher {
   patchAsExpression({ forceTemplateLiteral }: PatchOptions = {}): void {
-    let shouldBecomeTemplateLiteral = forceTemplateLiteral || this.shouldBecomeTemplateLiteral();
+    const shouldBecomeTemplateLiteral = forceTemplateLiteral || this.shouldBecomeTemplateLiteral();
 
-    let escapeStrings = [];
-    let openQuoteToken = this.firstToken();
-    let closeQuoteToken = this.lastToken();
+    const escapeStrings = [];
+    const openQuoteToken = this.firstToken();
+    const closeQuoteToken = this.lastToken();
 
     if (shouldBecomeTemplateLiteral) {
       escapeStrings.push('`');

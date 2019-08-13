@@ -23,14 +23,14 @@ export default class LiterateStage {
  * while also forming the result into nice-looking comment blocks.
  */
 function convertCodeFromLiterate(code: string): string {
-  let lines = code.split('\n');
-  let resultLines = [];
+  const lines = code.split('\n');
+  const resultLines = [];
 
   // null if we're in a code section; otherwise the comment lines so far for the
   // current comment.
   let commentLines = null;
   for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
+    const line = lines[i];
     if (commentLines === null) {
       if (lineIsEmpty(line) || lineIsIndented(line)) {
         resultLines.push(removeIndentation(line));
@@ -82,7 +82,7 @@ function lineIsIndented(line: string): boolean {
 }
 
 function removeIndentation(line: string): string {
-  for (let indent of VALID_INDENTATIONS) {
+  for (const indent of VALID_INDENTATIONS) {
     if (line.startsWith(indent)) {
       return line.slice(indent.length);
     }

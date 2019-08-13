@@ -19,10 +19,10 @@ export default class SharedBlockPatcher extends NodePatcher {
    * Insert statements somewhere in this block.
    */
   insertStatementsAtIndex(statements: Array<string>, index: number): void {
-    let separator = this.inline() ? '; ' : ';\n';
+    const separator = this.inline() ? '; ' : ';\n';
     if (index === this.statements.length) {
-      let lastStatement = this.statements[this.statements.length - 1];
-      let terminatorTokenIndex = this.context.sourceTokens.indexOfTokenMatchingPredicate(
+      const lastStatement = this.statements[this.statements.length - 1];
+      const terminatorTokenIndex = this.context.sourceTokens.indexOfTokenMatchingPredicate(
         token => token.type === SourceType.NEWLINE || token.type === SourceType.SEMICOLON,
         lastStatement.outerEndTokenIndex
       );
@@ -30,17 +30,17 @@ export default class SharedBlockPatcher extends NodePatcher {
         ? notNull(this.sourceTokenAtIndex(terminatorTokenIndex)).start
         : lastStatement.outerEnd;
       insertionPoint = Math.min(insertionPoint, this.getBoundingPatcher().innerEnd);
-      let indent = lastStatement.getIndent();
+      const indent = lastStatement.getIndent();
       statements.forEach(line => {
-        let sep = line.trim().startsWith('//') ? '\n' : separator;
+        const sep = line.trim().startsWith('//') ? '\n' : separator;
         this.insert(insertionPoint, `${sep}${indent}${line}`);
       });
     } else {
-      let statementToInsertBefore = this.statements[index];
-      let insertionPoint = statementToInsertBefore.outerStart;
-      let indent = statementToInsertBefore.getIndent();
+      const statementToInsertBefore = this.statements[index];
+      const insertionPoint = statementToInsertBefore.outerStart;
+      const indent = statementToInsertBefore.getIndent();
       statements.forEach(line => {
-        let sep = line.trim().startsWith('//') ? '\n' : separator;
+        const sep = line.trim().startsWith('//') ? '\n' : separator;
         this.insert(insertionPoint, `${line}${sep}${indent}`);
       });
     }

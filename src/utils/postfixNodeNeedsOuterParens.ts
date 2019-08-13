@@ -13,18 +13,18 @@ import ObjectInitialiserPatcher from '../stages/normalize/patchers/ObjectInitial
  * otherwise there are precedence issues.
  */
 export default function postfixNodeNeedsOuterParens(patcher: NodePatcher): boolean {
-  let parent = patcher.parent;
+  const parent = patcher.parent;
   if (parent) {
     if (parent.node instanceof Spread) {
       return true;
     }
-    let grandparent = parent.parent;
+    const grandparent = parent.parent;
     if (grandparent && grandparent instanceof ObjectInitialiserPatcher && grandparent.isImplicitObjectInitializer()) {
       return true;
     }
   }
 
-  let nextToken = patcher.nextSemanticToken();
+  const nextToken = patcher.nextSemanticToken();
   if (nextToken) {
     return nextToken.type === SourceType.COMMA || nextToken.type === SourceType.SEMICOLON;
   }

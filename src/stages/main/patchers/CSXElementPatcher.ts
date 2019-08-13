@@ -43,11 +43,11 @@ export default class CSXElementPatcher extends NodePatcher {
    * Patch a property that is definitely a string and may or may not already be surrounded by braces.
    */
   patchStringProperty(property: NodePatcher): void {
-    let prevIndex = property.contentStartTokenIndex.previous();
+    const prevIndex = property.contentStartTokenIndex.previous();
     if (!prevIndex) {
       throw this.error('Expected index before string property.');
     }
-    let prevToken = this.sourceTokenAtIndex(prevIndex);
+    const prevToken = this.sourceTokenAtIndex(prevIndex);
     if (
       prevToken &&
       prevToken.type === SourceType.OPERATOR &&

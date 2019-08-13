@@ -50,17 +50,17 @@ export default class NodePatcher {
   outerStartTokenIndex: SourceTokenListIndex;
   outerEndTokenIndex: SourceTokenListIndex;
 
-  adjustedIndentLevel: number = 0;
-  _assignee: boolean = false;
-  _containsYield: boolean = false;
-  _containsAwait: boolean = false;
-  _deferredSuffix: string = '';
-  _expression: boolean = false;
-  _hadUnparenthesizedNegation: boolean = false;
-  _implicitlyReturns: boolean = false;
+  adjustedIndentLevel = 0;
+  _assignee = false;
+  _containsYield = false;
+  _containsAwait = false;
+  _deferredSuffix = '';
+  _expression = false;
+  _hadUnparenthesizedNegation = false;
+  _implicitlyReturns = false;
   _repeatableOptions: RepeatableOptions | null = null;
   _repeatCode: string | null = null;
-  _returns: boolean = false;
+  _returns = false;
 
   // Temporary callbacks that can be added for inter-node communication.
   addThisAssignmentAtScopeHeader: AddThisAssignmentCallback | null = null;
@@ -98,7 +98,7 @@ export default class NodePatcher {
    * @private
    */
   setupLocationInformation(): void {
-    let { node, context } = this;
+    const { node, context } = this;
 
     /**
      * `contentStart` and `contentEnd` is the exclusive range within the original source that
@@ -115,9 +115,9 @@ export default class NodePatcher {
       this.trimContentRange();
     }
 
-    let tokens = context.sourceTokens;
-    let firstSourceTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
-    let lastSourceTokenIndex = tokens.indexOfTokenEndingAtSourceIndex(this.contentEnd);
+    const tokens = context.sourceTokens;
+    const firstSourceTokenIndex = tokens.indexOfTokenStartingAtSourceIndex(this.contentStart);
+    const lastSourceTokenIndex = tokens.indexOfTokenEndingAtSourceIndex(this.contentEnd);
 
     if (!firstSourceTokenIndex || !lastSourceTokenIndex) {
       if (node.type === 'Program') {
@@ -138,18 +138,21 @@ export default class NodePatcher {
     let innerEndTokenIndex = lastSourceTokenIndex;
 
     for (;;) {
-      let previousSurroundingTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
+      const previousSurroundingTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
         isSemanticToken,
         outerStartTokenIndex.previous()
       );
-      let nextSurroundingTokenIndex = tokens.indexOfTokenMatchingPredicate(isSemanticToken, outerEndTokenIndex.next());
+      const nextSurroundingTokenIndex = tokens.indexOfTokenMatchingPredicate(
+        isSemanticToken,
+        outerEndTokenIndex.next()
+      );
 
       if (!previousSurroundingTokenIndex || !nextSurroundingTokenIndex) {
         break;
       }
 
-      let previousSurroundingToken = tokens.tokenAtIndex(previousSurroundingTokenIndex);
-      let nextSurroundingToken = tokens.tokenAtIndex(nextSurroundingTokenIndex);
+      const previousSurroundingToken = tokens.tokenAtIndex(previousSurroundingTokenIndex);
+      const nextSurroundingToken = tokens.tokenAtIndex(nextSurroundingTokenIndex);
 
       if (
         !previousSurroundingToken ||
@@ -220,10 +223,10 @@ export default class NodePatcher {
    * or disable it.
    */
   trimContentRange(): void {
-    let context = this.context;
+    const context = this.context;
 
     for (;;) {
-      let startChar = context.source[this.contentStart];
+      const startChar = context.source[this.contentStart];
 
       if (startChar === ' ' || startChar === '\t') {
         this.contentStart++;
@@ -233,7 +236,7 @@ export default class NodePatcher {
     }
 
     for (;;) {
-      let lastChar = context.source[this.contentEnd - 1];
+      const lastChar = context.source[this.contentEnd - 1];
 
       if (lastChar === ' ' || lastChar === '\t') {
         this.contentEnd--;
@@ -254,7 +257,9 @@ export default class NodePatcher {
    * Called when the patcher tree is complete so we can do any processing that
    * requires communication with other patchers.
    */
-  initialize(): void {}
+  initialize(): void {
+    // intentionally left empty
+  }
 
   /**
    * Calls methods on `editor` to transform the source code represented by
@@ -328,7 +333,7 @@ export default class NodePatcher {
       }
     }
     patchFn();
-    let code = this.slice(sliceStart, this.contentEnd);
+    const code = this.slice(sliceStart, this.contentEnd);
     let startIndex = 0;
     while (startIndex < beforeCode.length && startIndex < code.length && beforeCode[startIndex] === code[startIndex]) {
       startIndex++;
@@ -380,7 +385,7 @@ export default class NodePatcher {
       if (repeatableOptions.parens) {
         this.insert(this.innerStart, '(');
       }
-      let ref = this.claimFreeBinding(repeatableOptions.ref);
+      const ref = this.claimFreeBinding(repeatableOptions.ref);
       this.insert(this.innerStart, `${ref} = `);
       this.patchAsForcedExpression(patchOptions);
       this.commitDeferredSuffix();
@@ -403,7 +408,7 @@ export default class NodePatcher {
    * Override this to patch the node as a statement.
    */
   patchAsStatement(options: PatchOptions = {}): void {
-    let addParens = this.statementShouldAddParens();
+    const addParens = this.statementShouldAddParens();
     if (addParens) {
       this.insert(this.outerStart, '(');
     }
@@ -497,7 +502,7 @@ export default class NodePatcher {
    * @protected
    */
   isIndexEditable(index: number): boolean {
-    let [start, end] = this.getEditingBounds();
+    const [start, end] = this.getEditingBounds();
     return index >= start && index <= end;
   }
 
@@ -506,7 +511,7 @@ export default class NodePatcher {
    */
   assertEditableIndex(index: number): void {
     if (!this.isIndexEditable(index)) {
-      let [start, end] = this.getEditingBounds();
+      const [start, end] = this.getEditingBounds();
       throw this.error(
         `cannot edit index ${index} because it is not editable (i.e. outside [${start}, ${end}))`,
         start,
@@ -631,7 +636,7 @@ export default class NodePatcher {
   /**
    * Tells us to try to patch as an expression, returning whether it can.
    */
-  setExpression(force: boolean = false): boolean {
+  setExpression(force = false): boolean {
     if (force) {
       if (!this.canPatchAsExpression()) {
         throw this.error(`cannot represent ${this.node.type} as an expression`);
@@ -875,7 +880,7 @@ export default class NodePatcher {
     right: number,
     predicate: (token: SourceToken) => boolean
   ): SourceTokenListIndex | null {
-    let tokenList = this.getProgramSourceTokens();
+    const tokenList = this.getProgramSourceTokens();
     return tokenList.indexOfTokenMatchingPredicate(
       token => {
         return token.start >= left && token.start <= right && predicate(token);
@@ -903,7 +908,7 @@ export default class NodePatcher {
    * Gets the first token in the content of this node.
    */
   firstToken(): SourceToken {
-    let token = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+    const token = this.sourceTokenAtIndex(this.contentStartTokenIndex);
     if (!token) {
       throw this.error('Expected to find a first token for node.');
     }
@@ -914,7 +919,7 @@ export default class NodePatcher {
    * Gets the last token in the content of this node.
    */
   lastToken(): SourceToken {
-    let token = this.sourceTokenAtIndex(this.contentEndTokenIndex);
+    const token = this.sourceTokenAtIndex(this.contentEndTokenIndex);
     if (!token) {
       throw this.error('Expected to find a last token for node.');
     }
@@ -958,11 +963,11 @@ export default class NodePatcher {
     type: SourceType,
     predicate: (token: SourceToken) => boolean = isSemanticToken
   ): SourceTokenListIndex | null {
-    let index = this.getProgramSourceTokens().indexOfTokenMatchingPredicate(predicate, start.next());
+    const index = this.getProgramSourceTokens().indexOfTokenMatchingPredicate(predicate, start.next());
     if (!index) {
       return null;
     }
-    let token = this.sourceTokenAtIndex(index);
+    const token = this.sourceTokenAtIndex(index);
     if (!token || token.type !== type) {
       return null;
     }
@@ -989,8 +994,8 @@ export default class NodePatcher {
       return false;
     }
 
-    let beforeToken = this.sourceTokenAtIndex(this.outerStartTokenIndex);
-    let afterToken = this.sourceTokenAtIndex(this.outerEndTokenIndex);
+    const beforeToken = this.sourceTokenAtIndex(this.outerStartTokenIndex);
+    const afterToken = this.sourceTokenAtIndex(this.outerEndTokenIndex);
 
     if (!beforeToken || !afterToken) {
       return false;
@@ -1008,7 +1013,7 @@ export default class NodePatcher {
       return false;
     }
 
-    let parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(
+    const parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(
       leftTokenType,
       rightTokenType,
       this.outerStartTokenIndex
@@ -1016,8 +1021,8 @@ export default class NodePatcher {
     if (!parenRange) {
       return false;
     }
-    let rparenIndex = parenRange[1].previous();
-    let rparen = this.sourceTokenAtIndex(notNull(rparenIndex));
+    const rparenIndex = parenRange[1].previous();
+    const rparen = this.sourceTokenAtIndex(notNull(rparenIndex));
     return rparen === afterToken;
   }
 
@@ -1093,7 +1098,7 @@ export default class NodePatcher {
   /**
    * Gets the indent string for the line that starts this patcher's node.
    */
-  getIndent(offset: number = 0): string {
+  getIndent(offset = 0): string {
     return adjustIndent(this.context.source, this.contentStart, this.getAdjustedIndentLevel() + offset);
   }
 
@@ -1103,10 +1108,10 @@ export default class NodePatcher {
    * calls to getIndent will return this value.
    */
   setIndent(indentStr: string): void {
-    let currentIndent = this.getIndent();
-    let indentLength = this.getProgramIndentString().length;
-    let currentIndentLevel = currentIndent.length / indentLength;
-    let desiredIndentLevel = indentStr.length / indentLength;
+    const currentIndent = this.getIndent();
+    const indentLength = this.getProgramIndentString().length;
+    const currentIndentLevel = currentIndent.length / indentLength;
+    const desiredIndentLevel = indentStr.length / indentLength;
     this.indent(desiredIndentLevel - currentIndentLevel);
   }
 
@@ -1133,17 +1138,17 @@ export default class NodePatcher {
    * that strings inserted before child nodes appear after the indent, not
    * before.
    */
-  indent(offset: number = 1, { skipFirstLine = false }: { skipFirstLine?: boolean } = {}): void {
+  indent(offset = 1, { skipFirstLine = false }: { skipFirstLine?: boolean } = {}): void {
     if (offset === 0) {
       return;
     }
 
     this.adjustedIndentLevel += offset;
-    let indentString = this.getProgramIndentString();
-    let indentToChange = indentString.repeat(Math.abs(offset));
+    const indentString = this.getProgramIndentString();
+    const indentToChange = indentString.repeat(Math.abs(offset));
     let start = this.outerStart;
-    let end = this.outerEnd;
-    let { source } = this.context;
+    const end = this.outerEnd;
+    const { source } = this.context;
 
     // See if there are already non-whitespace characters before the start. If
     // so, skip the start to the next line, since we don't want to put
@@ -1192,7 +1197,7 @@ export default class NodePatcher {
   }
 
   isFirstNodeInLine(startingPoint: number = this.outerStart): boolean {
-    let { source } = this.context;
+    const { source } = this.context;
     for (let i = startingPoint - 1; i >= 0 && source[i] !== '\n'; i--) {
       if (source[i] !== '\t' && source[i] !== ' ') {
         return false;
@@ -1207,7 +1212,7 @@ export default class NodePatcher {
    * @private
    */
   getEndOfLine(): number {
-    let { source } = this.context;
+    const { source } = this.context;
     for (let i = this.outerEnd - '\n'.length; i < source.length; i++) {
       if (source[i] === '\n') {
         return i;
@@ -1219,10 +1224,10 @@ export default class NodePatcher {
   /**
    * Appends the given content on a new line after the end of the current line.
    */
-  appendLineAfter(content: string, indentOffset: number = 0): void {
-    let boundingPatcher = this.getBoundingPatcher();
-    let endOfLine = this.getEndOfLine();
-    let nextToken = this.nextSemanticToken();
+  appendLineAfter(content: string, indentOffset = 0): void {
+    const boundingPatcher = this.getBoundingPatcher();
+    const endOfLine = this.getEndOfLine();
+    const nextToken = this.nextSemanticToken();
     let insertPoint = Math.min(Math.min(endOfLine, boundingPatcher.innerEnd));
     if (nextToken) {
       insertPoint = Math.min(insertPoint, nextToken.start);
@@ -1239,7 +1244,7 @@ export default class NodePatcher {
     end: number = this.contentEnd,
     error: Error | null = null
   ): PatcherError {
-    let patcherError = new PatcherError(message, this.context.source, start, end);
+    const patcherError = new PatcherError(message, this.context.source, start, end);
     if (error) {
       patcherError.stack = error.stack;
     }
@@ -1333,7 +1338,7 @@ export default class NodePatcher {
     from: number = this.contentStart,
     to: number = notNull(this.parent).contentEnd
   ): SourceToken | null {
-    let nextSemanticIdx = this.indexOfSourceTokenBetweenSourceIndicesMatching(from, to, isSemanticToken);
+    const nextSemanticIdx = this.indexOfSourceTokenBetweenSourceIndicesMatching(from, to, isSemanticToken);
     return nextSemanticIdx && this.sourceTokenAtIndex(nextSemanticIdx);
   }
 

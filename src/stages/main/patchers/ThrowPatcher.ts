@@ -35,7 +35,7 @@ export default class ThrowPatcher extends NodePatcher {
    * in an arrow function IIFE.
    */
   patchAsExpression(): void {
-    let hasParens = this.isSurroundedByParentheses();
+    const hasParens = this.isSurroundedByParentheses();
     if (!hasParens) {
       // `throw err` → `(throw err`
       //                ^
@@ -59,11 +59,11 @@ export default class ThrowPatcher extends NodePatcher {
   }
 
   patchAsStatement(): void {
-    let throwToken = notNull(this.sourceTokenAtIndex(this.contentStartTokenIndex));
+    const throwToken = notNull(this.sourceTokenAtIndex(this.contentStartTokenIndex));
     if (throwToken.type !== SourceType.THROW) {
       throw this.error('Expected to find throw token at the start of throw statement.');
     }
-    let spacing = this.slice(throwToken.end, this.expression.outerStart);
+    const spacing = this.slice(throwToken.end, this.expression.outerStart);
     if (spacing.indexOf('\n') !== -1) {
       this.overwrite(throwToken.end, this.expression.outerStart, ' ');
     }

@@ -7,8 +7,8 @@ export default class HeregexPatcher extends InterpolatedPatcher {
   node: Heregex;
 
   patchAsExpression(): void {
-    let openToken = this.firstToken();
-    let closeToken = this.lastToken();
+    const openToken = this.firstToken();
+    const closeToken = this.lastToken();
 
     this.overwrite(openToken.start, openToken.end, 'new RegExp(`');
     if (closeToken.end - closeToken.start > CLOSE_TOKEN_BASE_LENGTH) {

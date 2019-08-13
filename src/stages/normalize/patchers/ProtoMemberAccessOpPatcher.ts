@@ -16,7 +16,7 @@ export default class ProtoMemberAccessOpPatcher extends NodePatcher {
     this.expression.patch();
     // `a::b` → `a.prototype.b`
     //   ^^       ^^^^^^^^^^
-    let protoToken = this.getProtoToken();
+    const protoToken = this.getProtoToken();
     if (this.parent instanceof MemberAccessOpPatcher) {
       this.overwrite(protoToken.start, protoToken.end, '.prototype.');
     } else {
@@ -25,14 +25,14 @@ export default class ProtoMemberAccessOpPatcher extends NodePatcher {
   }
 
   getProtoToken(): SourceToken {
-    let protoIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const protoIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.expression.outerEnd,
       this.contentEnd,
       token => token.type === SourceType.PROTO
     );
 
     if (protoIndex) {
-      let protoToken = this.sourceTokenAtIndex(protoIndex);
+      const protoToken = this.sourceTokenAtIndex(protoIndex);
 
       if (protoToken) {
         return protoToken;

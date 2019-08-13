@@ -29,23 +29,23 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     this.checkForConstructorErrors();
 
     if (this.expression.body) {
-      let linesToInsert = this.getLinesToInsert();
+      const linesToInsert = this.getLinesToInsert();
       this.expression.body.insertStatementsAtIndex(linesToInsert, 0);
       super.patch(options);
     } else {
       super.patch(options);
-      let linesToInsert = this.getLinesToInsert();
+      const linesToInsert = this.getLinesToInsert();
       if (linesToInsert.length > 0) {
         // As a special case, if there's no function body but we still want to
         // generate bindings, overwrite the function body with the desired
         // contents, since it's sort of hard to insert contents in the middle of
         // the generated {}.
-        let indent = this.getIndent();
-        let bodyIndent = this.getIndent(1);
-        let arrowToken = this.expression.getArrowToken();
+        const indent = this.getIndent();
+        const bodyIndent = this.getIndent(1);
+        const arrowToken = this.expression.getArrowToken();
 
-        let fullLines = linesToInsert.map(line => `${bodyIndent}${line}\n`);
-        let bodyCode = `{\n${fullLines.join('')}${indent}}`;
+        const fullLines = linesToInsert.map(line => `${bodyIndent}${line}\n`);
+        const bodyCode = `{\n${fullLines.join('')}${indent}}`;
         this.overwrite(arrowToken.start, this.expression.outerEnd, bodyCode);
       }
     }
@@ -69,14 +69,15 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
       return;
     }
 
-    let errorMessage = this.getInvalidConstructorMessage();
+    const errorMessage = this.getInvalidConstructorMessage();
     if (errorMessage) {
       throw this.error(getInvalidConstructorErrorMessage(errorMessage));
     }
   }
 
   shouldAddBabelWorkaround(): boolean {
-    let shouldEnable = !this.options.disableBabelConstructorWorkaround && this.getInvalidConstructorMessage() !== null;
+    const shouldEnable =
+      !this.options.disableBabelConstructorWorkaround && this.getInvalidConstructorMessage() !== null;
     if (shouldEnable) {
       this.addSuggestion(REMOVE_BABEL_WORKAROUND);
     }
@@ -98,8 +99,8 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
       return 'Cannot automatically convert a subclass that uses bound methods.';
     }
 
-    let superIndex = this.getIndexOfSuperStatement();
-    let thisIndex = this.getIndexOfFirstThisStatement();
+    const superIndex = this.getIndexOfSuperStatement();
+    const thisIndex = this.getIndexOfFirstThisStatement();
 
     if (superIndex === -1) {
       return 'Cannot automatically convert a subclass with a constructor that does not call super.';
@@ -112,15 +113,15 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
 
   getBindings(): Array<string> {
     if (!this._bindings) {
-      let boundMethods = this.getEnclosingClassBlockPatcher().boundInstanceMethods();
-      let bindings = boundMethods.map(getBindingCodeForMethod);
+      const boundMethods = this.getEnclosingClassBlockPatcher().boundInstanceMethods();
+      const bindings = boundMethods.map(getBindingCodeForMethod);
       this._bindings = bindings;
     }
     return this._bindings;
   }
 
   getEnclosingClassPatcher(): ClassPatcher {
-    let enclosingClassBlock = this.getEnclosingClassBlockPatcher();
+    const enclosingClassBlock = this.getEnclosingClassBlockPatcher();
     if (!(enclosingClassBlock.parent instanceof ClassPatcher)) {
       throw this.error('Expected grandparent of ConstructorPatcher to be ClassPatcher.');
     }
@@ -138,7 +139,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     if (!this.expression.body) {
       return -1;
     }
-    let statements = this.expression.body.statements;
+    const statements = this.expression.body.statements;
     for (let i = 0; i < statements.length; i++) {
       if (containsSuperCall(statements[i].node)) {
         return i;
@@ -151,9 +152,9 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     if (!this.expression.body) {
       return -1;
     }
-    let statements = this.expression.body.statements;
+    const statements = this.expression.body.statements;
     for (let i = 0; i < statements.length; i++) {
-      let usesThis = containsDescendant(statements[i].node, child => child instanceof This, {
+      const usesThis = containsDescendant(statements[i].node, child => child instanceof This, {
         shouldStopTraversal: child => child instanceof Class || isFunction(child)
       });
       if (usesThis) {

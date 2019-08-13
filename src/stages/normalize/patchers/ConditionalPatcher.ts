@@ -63,14 +63,14 @@ export default class ConditionalPatcher extends NodePatcher {
       this.condition.surroundInParens();
     }
 
-    let ifTokenIndex = this.getIfTokenIndex();
-    let ifToken = this.sourceTokenAtIndex(ifTokenIndex);
+    const ifTokenIndex = this.getIfTokenIndex();
+    const ifToken = this.sourceTokenAtIndex(ifTokenIndex);
     if (!ifToken) {
       throw this.error('Unable to find `if` token.');
     }
 
-    let needsParens = postfixNodeNeedsOuterParens(this);
-    let ifAndConditionCode = this.slice(ifToken.start, this.condition.outerEnd);
+    const needsParens = postfixNodeNeedsOuterParens(this);
+    const ifAndConditionCode = this.slice(ifToken.start, this.condition.outerEnd);
     if (needsParens) {
       this.insert(this.consequent.outerStart, '(');
     }
@@ -87,11 +87,11 @@ export default class ConditionalPatcher extends NodePatcher {
   }
 
   getIfTokenIndex(): SourceTokenListIndex {
-    let start = this.contentStartTokenIndex;
+    const start = this.contentStartTokenIndex;
     let index = this.condition.outerStartTokenIndex;
 
     while (index !== start) {
-      let token = this.sourceTokenAtIndex(index);
+      const token = this.sourceTokenAtIndex(index);
       if (token && token.type === SourceType.IF) {
         break;
       }

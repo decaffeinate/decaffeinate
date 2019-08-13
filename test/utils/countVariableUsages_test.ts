@@ -4,7 +4,7 @@ import countVariableUsages from '../../src/utils/countVariableUsages';
 
 describe('countVariableUsages', () => {
   it('does simple counting within a program', () => {
-    let ast = parse(`
+    const ast = parse(`
       x = 1
       for x in y
         console.log x

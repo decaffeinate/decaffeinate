@@ -22,7 +22,7 @@ export default class ExtendsOpPatcher extends BinaryOpPatcher {
    * CHILD extends PARENT
    */
   patchAsExpression(): void {
-    let helper = this.registerHelper('__extends__', EXTENDS_HELPER);
+    const helper = this.registerHelper('__extends__', EXTENDS_HELPER);
     this.insert(this.left.outerStart, `${helper}(`);
     this.left.patch();
     this.overwrite(this.left.outerEnd, this.right.outerStart, ', ');

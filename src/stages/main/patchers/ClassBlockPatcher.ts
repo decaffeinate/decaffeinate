@@ -20,31 +20,31 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   patch(options: PatchOptions = {}): void {
-    for (let boundMethod of this.boundInstanceMethods()) {
+    for (const boundMethod of this.boundInstanceMethods()) {
       boundMethod.key.setRequiresRepeatableExpression();
     }
 
     super.patch(options);
 
     if (!this.hasConstructor()) {
-      let boundMethods = this.boundInstanceMethods();
+      const boundMethods = this.boundInstanceMethods();
       if (boundMethods.length > 0) {
-        let isSubclass = this.getClassPatcher().isSubclass();
+        const isSubclass = this.getClassPatcher().isSubclass();
         if (isSubclass && !this.shouldAllowInvalidConstructors()) {
           throw this.error(
             getInvalidConstructorErrorMessage('Cannot automatically convert a subclass that uses bound methods.')
           );
         }
 
-        let { source } = this.context;
-        let insertionPoint = this.statements[0].outerStart;
-        let methodIndent = adjustIndent(source, insertionPoint, 0);
-        let methodBodyIndent = adjustIndent(source, insertionPoint, 1);
+        const { source } = this.context;
+        const insertionPoint = this.statements[0].outerStart;
+        const methodIndent = adjustIndent(source, insertionPoint, 0);
+        const methodBodyIndent = adjustIndent(source, insertionPoint, 1);
         let constructor = '';
         if (isSubclass) {
           constructor += `constructor(...args) {\n`;
           if (this.shouldEnableBabelWorkaround()) {
-            for (let line of babelConstructorWorkaroundLines) {
+            for (const line of babelConstructorWorkaroundLines) {
               constructor += `${methodBodyIndent}${line}\n`;
             }
           }
@@ -68,7 +68,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   shouldEnableBabelWorkaround(): boolean {
-    let shouldEnable = !this.options.disableBabelConstructorWorkaround;
+    const shouldEnable = !this.options.disableBabelConstructorWorkaround;
     if (shouldEnable) {
       this.addSuggestion(REMOVE_BABEL_WORKAROUND);
     }
@@ -91,8 +91,8 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   boundInstanceMethods(): Array<ClassAssignOpPatcher> {
-    let boundMethods = [];
-    for (let statement of this.statements) {
+    const boundMethods = [];
+    for (const statement of this.statements) {
       if (statement instanceof ClassAssignOpPatcher && statement.isBoundInstanceMethod()) {
         boundMethods.push(statement);
       }

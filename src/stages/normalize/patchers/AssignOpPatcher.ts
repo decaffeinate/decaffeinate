@@ -25,7 +25,7 @@ export default class AssignOpPatcher extends NodePatcher {
 
   patchAsExpression(): void {
     this.prepareEarlySuperTransform();
-    let isDynamicallyCreatedClassAssignment = this.isDynamicallyCreatedClassAssignment();
+    const isDynamicallyCreatedClassAssignment = this.isDynamicallyCreatedClassAssignment();
     if (isDynamicallyCreatedClassAssignment) {
       this.patchClassAssignmentPrefix();
     }
@@ -38,7 +38,7 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   isDynamicallyCreatedClassAssignment(): boolean {
-    let classParent = this.getClassParent();
+    const classParent = this.getClassParent();
     return (
       classParent !== null &&
       classParent.isClassAssignment(this.node) &&
@@ -53,13 +53,13 @@ export default class AssignOpPatcher extends NodePatcher {
   }
 
   patchClassAssignmentOperator(): void {
-    let colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+    const colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
       token => token.type === SourceType.COLON
     );
     if (colonIndex) {
-      let colonToken = notNull(this.sourceTokenAtIndex(colonIndex));
+      const colonToken = notNull(this.sourceTokenAtIndex(colonIndex));
       this.overwrite(colonToken.start, colonToken.end, ' =');
     }
   }
@@ -68,7 +68,7 @@ export default class AssignOpPatcher extends NodePatcher {
    * If we are within a class body (not a method), return that class.
    */
   getClassParent(): ClassPatcher | null {
-    let parent: NodePatcher | null = this;
+    let parent = this as NodePatcher | null;
     while (parent) {
       if (parent instanceof FunctionPatcher) {
         return null;
@@ -144,13 +144,13 @@ export default class AssignOpPatcher extends NodePatcher {
    * reason, and it doesn't do anything, so just get rid of it.
    */
   removeUnnecessaryThenToken(): void {
-    let thenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+    const thenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
       token => token.type === SourceType.THEN
     );
     if (thenIndex) {
-      let thenToken = notNull(this.sourceTokenAtIndex(thenIndex));
+      const thenToken = notNull(this.sourceTokenAtIndex(thenIndex));
       if (this.slice(thenToken.start - 1, thenToken.start) === ' ') {
         this.remove(thenToken.start - 1, thenToken.end);
       } else {

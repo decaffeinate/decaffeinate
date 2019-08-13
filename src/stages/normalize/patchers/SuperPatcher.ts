@@ -8,7 +8,7 @@ import ClassPatcher from './ClassPatcher';
 
 export default class SuperPatcher extends NodePatcher {
   patchAsExpression(): void {
-    let earlyTransformInfo = this.getEarlyTransformInfo();
+    const earlyTransformInfo = this.getEarlyTransformInfo();
     if (earlyTransformInfo) {
       this.patchEarlySuperTransform(earlyTransformInfo);
     } else if (this.node.type === 'BareSuperFunctionApplication') {
@@ -25,11 +25,11 @@ export default class SuperPatcher extends NodePatcher {
     // Note that this code snippet works for static methods but not instance
     // methods. Expanded super calls for instance methods are handled in the
     // main stage.
-    let replacement = `${classCode}.__proto__${accessCode}.call(this, `;
+    const replacement = `${classCode}.__proto__${accessCode}.call(this, `;
     if (this.node.type === 'BareSuperFunctionApplication') {
       this.overwrite(this.contentStart, this.contentEnd, `${replacement}arguments...)`);
     } else {
-      let followingOpenParen = this.getFollowingOpenParenToken();
+      const followingOpenParen = this.getFollowingOpenParenToken();
       this.overwrite(this.contentStart, followingOpenParen.end, replacement);
     }
   }
@@ -38,7 +38,7 @@ export default class SuperPatcher extends NodePatcher {
     let parent = this.parent;
     while (parent) {
       if (parent instanceof AssignOpPatcher) {
-        let earlyTransformInfo = parent.getEarlySuperTransformInfo();
+        const earlyTransformInfo = parent.getEarlySuperTransformInfo();
         if (earlyTransformInfo) {
           return earlyTransformInfo;
         }
@@ -51,7 +51,7 @@ export default class SuperPatcher extends NodePatcher {
   }
 
   getFollowingOpenParenToken(): SourceToken {
-    let openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+    const openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
       this.contentEndTokenIndex,
       SourceType.CALL_START
     );

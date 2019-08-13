@@ -23,7 +23,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
    * since the normalize stage would have already added parens.
    */
   patchAsExpression({ fnNeedsParens = false }: PatchOptions = {}): void {
-    let { args, outerEndTokenIndex } = this;
+    const { args, outerEndTokenIndex } = this;
 
     if (fnNeedsParens) {
       this.insert(this.fn.outerStart, '(');
@@ -35,7 +35,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
     args.forEach((arg, i) => {
       arg.patch();
-      let isLast = i === args.length - 1;
+      const isLast = i === args.length - 1;
       let commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         arg.outerEndTokenIndex,
         SourceType.COMMA,
@@ -45,7 +45,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       if (commaTokenIndex && commaTokenIndex.compare(outerEndTokenIndex) <= 0) {
         commaTokenIndex = null;
       }
-      let commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
+      const commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
       if (isLast && commaToken) {
         this.remove(arg.outerEnd, commaToken.end);
       } else if (!isLast && !commaToken) {

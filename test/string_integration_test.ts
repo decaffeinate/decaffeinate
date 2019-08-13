@@ -1,9 +1,9 @@
 import validate from './support/validate';
 
 function generateTwoLineTests(strings: Array<string>): Array<string> {
-  let output = [];
-  for (let line1 of strings) {
-    for (let line2 of strings) {
+  const output = [];
+  for (const line1 of strings) {
+    for (const line2 of strings) {
       output.push(line1 + '\n' + line2);
     }
   }
@@ -11,10 +11,10 @@ function generateTwoLineTests(strings: Array<string>): Array<string> {
 }
 
 function generateThreeLineTests(strings: Array<string>): Array<string> {
-  let output = [];
-  for (let line1 of strings) {
-    for (let line2 of strings) {
-      for (let line3 of strings) {
+  const output = [];
+  for (const line1 of strings) {
+    for (const line2 of strings) {
+      for (const line3 of strings) {
         output.push(`${line1}\n${line2}\n${line3}`);
       }
     }
@@ -40,34 +40,34 @@ setResult(runTest())`
 
 describe('string integration', function(): void {
   this.timeout(180000);
-  let strings = ['', '   ', 'word', '   leading indent', 'trailing indent   ', '    leading and trailing indent    '];
-  let quotes = [["'", "single quote (')"], ['"', 'double quote (")']];
+  const strings = ['', '   ', 'word', '   leading indent', 'trailing indent   ', '    leading and trailing indent    '];
+  const quotes = [["'", "single quote (')"], ['"', 'double quote (")']];
 
-  let twoLineTests = generateTwoLineTests(strings);
-  let threeLineTests = generateThreeLineTests(strings);
+  const twoLineTests = generateTwoLineTests(strings);
+  const threeLineTests = generateThreeLineTests(strings);
 
-  for (let quoteTest of quotes) {
-    let [quote, quoteName] = quoteTest;
+  for (const quoteTest of quotes) {
+    const [quote, quoteName] = quoteTest;
     it(quoteName + ' two line assignment test (' + twoLineTests.length + ' permutations)', () => {
-      for (let string of twoLineTests) {
+      for (const string of twoLineTests) {
         runAssignmentTest(quote, string);
       }
     });
 
     it(quoteName + ' two line function test (' + twoLineTests.length + ' permutations)', () => {
-      for (let string of twoLineTests) {
+      for (const string of twoLineTests) {
         runFunctionTest(quote, string);
       }
     });
 
     it(quoteName + ' three line assignment test (' + threeLineTests.length + ' permutations)', () => {
-      for (let string of threeLineTests) {
+      for (const string of threeLineTests) {
         runAssignmentTest(quote, string);
       }
     });
 
     it(quoteName + ' three line function test (' + threeLineTests.length + ' permutations)', () => {
-      for (let string of threeLineTests) {
+      for (const string of threeLineTests) {
         runFunctionTest(quote, string);
       }
     });

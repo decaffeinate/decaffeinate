@@ -22,7 +22,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
 
   patchAsProperty(): void {
     if (this.expression === null) {
-      let shouldExpand = !(this.key.node instanceof Identifier) || this.node.isComputed;
+      const shouldExpand = !(this.key.node instanceof Identifier) || this.node.isComputed;
       this.patchAsShorthand({
         expand: shouldExpand
       });
@@ -35,7 +35,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
    * @private
    */
   patchAsShorthand({ expand = false }: { expand: boolean }): void {
-    let { key } = this;
+    const { key } = this;
     if (key instanceof MemberAccessOpPatcher) {
       key.patch();
       // e.g. `{ @name }`
@@ -46,7 +46,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
       //                  ^^^^^^
       this.insert(key.outerStart, `${key.getMemberName()}: `);
     } else if (expand) {
-      let needsBrackets = key instanceof StringPatcher && key.shouldBecomeTemplateLiteral();
+      const needsBrackets = key instanceof StringPatcher && key.shouldBecomeTemplateLiteral();
 
       if (needsBrackets) {
         // `{ `a = ${1 + 1}` }` → `{ [`a = ${1 + 1}` }`
@@ -54,7 +54,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
         this.insert(key.outerStart, '[');
       }
 
-      let valueCode = key.patchRepeatable();
+      const valueCode = key.patchRepeatable();
 
       if (needsBrackets) {
         this.insert(key.outerEnd, ']');
@@ -62,8 +62,8 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
 
       let keyEnd;
       if (this.node.isComputed) {
-        let closeBracketToken = key.outerEndTokenIndex.next();
-        let tokenAfterLast = closeBracketToken ? this.sourceTokenAtIndex(closeBracketToken) : null;
+        const closeBracketToken = key.outerEndTokenIndex.next();
+        const tokenAfterLast = closeBracketToken ? this.sourceTokenAtIndex(closeBracketToken) : null;
         if (!tokenAfterLast || tokenAfterLast.type !== SourceType.RBRACKET) {
           throw this.error('Expected close-bracket after computed property.');
         }

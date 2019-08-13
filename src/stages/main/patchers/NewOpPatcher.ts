@@ -7,7 +7,7 @@ import MemberAccessOpPatcher from './MemberAccessOpPatcher';
  */
 export default class NewOpPatcher extends FunctionApplicationPatcher {
   patchAsExpression(): void {
-    let fnNeedsParens =
+    const fnNeedsParens =
       !this.fn.isSurroundedByParentheses() &&
       !(this.fn instanceof IdentifierPatcher) &&
       !(this.fn instanceof MemberAccessOpPatcher);

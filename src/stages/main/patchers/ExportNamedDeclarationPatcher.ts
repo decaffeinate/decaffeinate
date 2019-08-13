@@ -16,7 +16,7 @@ export default class ExportNamedDeclarationPatcher extends NodePatcher {
     if (this.expression instanceof AssignOpPatcher) {
       // The assign op has bad location data (starts at the start of the export), so instead use
       // tokens to determine the insert position.
-      let exportToken = this.firstToken();
+      const exportToken = this.firstToken();
       this.insert(exportToken.end, ' var');
     }
     this.expression.patch();

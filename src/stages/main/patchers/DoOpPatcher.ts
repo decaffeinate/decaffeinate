@@ -21,12 +21,12 @@ export default class DoOpPatcher extends NodePatcher {
   }
 
   patchAsExpression(): void {
-    let doTokenIndex = this.getDoTokenIndex();
-    let doToken = notNull(this.sourceTokenAtIndex(doTokenIndex));
-    let nextToken = notNull(this.sourceTokenAtIndex(notNull(doTokenIndex.next())));
+    const doTokenIndex = this.getDoTokenIndex();
+    const doToken = notNull(this.sourceTokenAtIndex(doTokenIndex));
+    const nextToken = notNull(this.sourceTokenAtIndex(notNull(doTokenIndex.next())));
     this.remove(doToken.start, nextToken.start);
 
-    let addParens = !(this.expression instanceof IdentifierPatcher);
+    const addParens = !(this.expression instanceof IdentifierPatcher);
     if (addParens) {
       this.insert(this.contentStart, '(');
     }
@@ -37,12 +37,12 @@ export default class DoOpPatcher extends NodePatcher {
       this.insert(this.innerEnd, ')');
     }
 
-    let args: Array<string> = [];
+    const args: Array<string> = [];
     if (this.hasDoFunction()) {
-      let func = this.getDoFunction();
+      const func = this.getDoFunction();
       func.parameters.forEach(param => {
         if (param instanceof DefaultParamPatcher) {
-          let valueSource = param.value.getPatchedSource();
+          const valueSource = param.value.getPatchedSource();
           this.remove(param.param.outerEnd, param.value.outerEnd);
           args.push(valueSource);
         } else {
@@ -78,8 +78,8 @@ export default class DoOpPatcher extends NodePatcher {
    * @private
    */
   getDoTokenIndex(): SourceTokenListIndex {
-    let index = this.contentStartTokenIndex;
-    let token = this.sourceTokenAtIndex(index);
+    const index = this.contentStartTokenIndex;
+    const token = this.sourceTokenAtIndex(index);
     if (!token || token.type !== SourceType.DO) {
       throw this.error(`expected 'do' at start of expression`);
     }

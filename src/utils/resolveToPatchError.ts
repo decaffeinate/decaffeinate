@@ -8,7 +8,7 @@ import PatchError from './PatchError';
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function resolveToPatchError(err: any, content: string, stageName: string): PatchError | null {
-  let makePatchError = (start: number, end: number, source: string): PatchError =>
+  const makePatchError = (start: number, end: number, source: string): PatchError =>
     new PatchError(`${stageName} failed to parse: ${err.message}`, source, start, end);
 
   if (err.pos) {
@@ -20,9 +20,9 @@ export default function resolveToPatchError(err: any, content: string, stageName
     return makePatchError(pos, pos + 1, content);
   } else if (err.syntaxError) {
     // Handle CoffeeScript parse errors.
-    let { location } = err.syntaxError;
-    let lineMap = new LinesAndColumns(content);
-    let firstIndex = lineMap.indexForLocation({ line: location.first_line, column: location.first_column });
+    const { location } = err.syntaxError;
+    const lineMap = new LinesAndColumns(content);
+    const firstIndex = lineMap.indexForLocation({ line: location.first_line, column: location.first_column });
     let lastIndex = lineMap.indexForLocation({ line: location.last_line, column: location.last_column });
     if (firstIndex !== null) {
       if (lastIndex === null) {

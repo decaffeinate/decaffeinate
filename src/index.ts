@@ -46,10 +46,10 @@ interface Stage {
 export function convert(source: string, options: Options = {}): ConversionResult {
   source = removeUnicodeBOMIfNecessary(source);
   options = resolveOptions(options);
-  let originalNewlineStr = detectNewlineStr(source);
+  const originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
 
-  let literate =
+  const literate =
     options.literate ||
     notNull(options.filename).endsWith('.litcoffee') ||
     notNull(options.filename).endsWith('.coffee.md');
@@ -61,16 +61,16 @@ export function convert(source: string, options: Options = {}): ConversionResult
     SemicolonsStage,
     ResugarStage
   ];
-  let runToStage = options.runToStage;
+  const runToStage = options.runToStage;
   if (runToStage !== null && runToStage !== undefined) {
-    let stageIndex = stages.findIndex(stage => stage.name === runToStage);
+    const stageIndex = stages.findIndex(stage => stage.name === runToStage);
     if (stageIndex !== -1) {
       stages = stages.slice(0, stageIndex + 1);
     } else {
       return convertCustomStage(source, runToStage, Boolean(options.useCS2));
     }
   }
-  let result = runStages(source, options, stages);
+  const result = runStages(source, options, stages);
   if (!options.disableSuggestionComment) {
     result.code = prependSuggestionComment(result.code, result.suggestions);
   }
@@ -83,10 +83,10 @@ export function convert(source: string, options: Options = {}): ConversionResult
 export function modernizeJS(source: string, options: Options = {}): ConversionResult {
   source = removeUnicodeBOMIfNecessary(source);
   options = resolveOptions(options);
-  let originalNewlineStr = detectNewlineStr(source);
+  const originalNewlineStr = detectNewlineStr(source);
   source = convertNewlines(source, '\n');
-  let stages = [ResugarStage];
-  let result = runStages(source, options, stages);
+  const stages = [ResugarStage];
+  const result = runStages(source, options, stages);
   result.code = convertNewlines(result.code, originalNewlineStr);
   return {
     code: result.code
@@ -95,9 +95,9 @@ export function modernizeJS(source: string, options: Options = {}): ConversionRe
 
 function runStages(initialContent: string, options: Options, stages: Array<Stage>): StageResult {
   let content = initialContent;
-  let suggestions: Array<Suggestion> = [];
+  const suggestions: Array<Suggestion> = [];
   stages.forEach(stage => {
-    let { code, suggestions: stageSuggestions } = runStage(stage, content, options);
+    const { code, suggestions: stageSuggestions } = runStage(stage, content, options);
     content = code;
     suggestions.push(...stageSuggestions);
   });
@@ -108,7 +108,7 @@ function runStage(stage: Stage, content: string, options: Options): StageResult 
   try {
     return stage.run(content, options);
   } catch (err) {
-    let patchError = resolveToPatchError(err, content, stage.name);
+    const patchError = resolveToPatchError(err, content, stage.name);
     if (patchError !== null) {
       throw patchError;
     }
@@ -117,14 +117,14 @@ function runStage(stage: Stage, content: string, options: Options): StageResult 
 }
 
 function convertCustomStage(source: string, stageName: string, useCS2: boolean): ConversionResult {
-  let context = new CodeContext(source);
+  const context = new CodeContext(source);
   if (stageName === 'coffeescript-lexer') {
-    let tokens = useCS2 ? getCoffee2Tokens(source) : getCoffee1Tokens(source);
+    const tokens = useCS2 ? getCoffee2Tokens(source) : getCoffee1Tokens(source);
     return {
       code: formatCoffeeScriptLexerTokens(tokens, context)
     };
   } else if (stageName === 'coffeescript-parser') {
-    let nodes = useCS2 ? getCoffee2Nodes(source) : getCoffee1Nodes(source);
+    const nodes = useCS2 ? getCoffee2Nodes(source) : getCoffee1Nodes(source);
     return {
       code: formatCoffeeScriptAst(nodes, context)
     };

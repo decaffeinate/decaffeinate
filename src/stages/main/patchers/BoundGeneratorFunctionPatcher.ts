@@ -3,7 +3,7 @@ import ManuallyBoundFunctionPatcher from './ManuallyBoundFunctionPatcher';
 
 export default class BoundGeneratorFunctionPatcher extends ManuallyBoundFunctionPatcher {
   patchFunctionStart({ method = false }: PatchOptions = {}): void {
-    let arrow = this.getArrowToken();
+    const arrow = this.getArrowToken();
 
     if (!method) {
       this.insert(this.contentStart, 'function*');

@@ -5,7 +5,7 @@ import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
-    let shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
+    const shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
       this.insert(this.contentStart, '!');
     }
@@ -29,7 +29,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       this.insert(this.assignee.outerEnd, ` != null ? ${assigneeAgain}`);
     }
 
-    let operator = this.getOperatorToken();
+    const operator = this.getOperatorToken();
     // `a.b != null ? a.b ?= b` → `a.b != null ? a.b : (a.b = b`
     //                    ^^                         ^^^^^^^^
     this.overwrite(operator.start, operator.end, `: (${assigneeAgain} =`);
@@ -69,7 +69,7 @@ export default class ExistsOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       this.insert(this.assignee.outerEnd, ` == null) {`);
     }
 
-    let operator = this.getOperatorToken();
+    const operator = this.getOperatorToken();
     // `if (a.b == null) { ?= b` → `if (a.b == null) { a.b = b`
     //                     ^^                          ^^^^^
     this.overwrite(operator.start, operator.end, `${assigneeAgain} =`);

@@ -86,7 +86,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
     // `a() in b` → `(needle = a(), in b`
     //               ^^^^^^^^^^^^^^^
     this.insert(this.contentStart, '(');
-    let leftRef = this.left.patchRepeatable({ ref: 'needle', forceRepeat: true });
+    const leftRef = this.left.patchRepeatable({ ref: 'needle', forceRepeat: true });
     this.insert(this.left.outerEnd, `, `);
 
     // `(needle = a(), in b` → `(needle = a(), b`
@@ -98,8 +98,8 @@ export default class InOpPatcher extends BinaryOpPatcher {
     if (this.negated) {
       this.insert(this.right.outerStart, '!');
     }
-    let wrapInArrayFrom = this.shouldWrapInArrayFrom();
-    let rhsNeedsParens = wrapInArrayFrom || this.rhsNeedsParens();
+    const wrapInArrayFrom = this.shouldWrapInArrayFrom();
+    const rhsNeedsParens = wrapInArrayFrom || this.rhsNeedsParens();
     if (wrapInArrayFrom) {
       this.insert(this.right.outerStart, 'Array.from');
     }
@@ -117,7 +117,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
     if (this.options.looseIncludes) {
       return false;
     }
-    let shouldWrap = !(this.right instanceof ArrayInitialiserPatcher);
+    const shouldWrap = !(this.right instanceof ArrayInitialiserPatcher);
     if (shouldWrap) {
       this.addSuggestion(REMOVE_ARRAY_FROM);
     }
@@ -139,7 +139,7 @@ export default class InOpPatcher extends BinaryOpPatcher {
   }
 
   patchAsIndexLookup(): void {
-    let helper = this.registerHelper('__in__', IN_HELPER);
+    const helper = this.registerHelper('__in__', IN_HELPER);
 
     if (this.negated) {
       // `a in b` → `!a in b`

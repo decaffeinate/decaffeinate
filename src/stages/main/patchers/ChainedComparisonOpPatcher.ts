@@ -10,7 +10,7 @@ import NodePatcher from './../../../patchers/NodePatcher';
 export default class ChainedComparisonOpPatcher extends NodePatcher {
   node: ChainedComparisonOp;
   operands: Array<NodePatcher>;
-  negated: boolean = false;
+  negated = false;
 
   /**
    * `node` should have type `ChainedComparisonOp`.
@@ -21,14 +21,14 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
   }
 
   initialize(): void {
-    for (let operand of this.operands) {
+    for (const operand of this.operands) {
       operand.setRequiresExpression();
     }
   }
 
   patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
-    let negateEntireExpression = this.shouldNegateEntireExpression();
-    let addParens = negateEntireExpression || (needsParens && !this.isSurroundedByParentheses());
+    const negateEntireExpression = this.shouldNegateEntireExpression();
+    const addParens = negateEntireExpression || (needsParens && !this.isSurroundedByParentheses());
     if (negateEntireExpression) {
       this.insert(this.contentStart, '!');
     }
@@ -36,21 +36,21 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
       this.insert(this.contentStart, '(');
     }
 
-    let middle = this.getMiddleOperands();
-    let negated = !negateEntireExpression && this.negated;
-    let logicalOperator = negated ? '||' : '&&';
+    const middle = this.getMiddleOperands();
+    const negated = !negateEntireExpression && this.negated;
+    const logicalOperator = negated ? '||' : '&&';
 
-    for (let operand of middle) {
+    for (const operand of middle) {
       operand.setRequiresRepeatableExpression({ parens: true, ref: 'middle' });
     }
 
-    for (let [i, operand] of this.operands.entries()) {
+    for (const [i, operand] of this.operands.entries()) {
       operand.patch();
 
-      let operator = this.node.operators[i];
+      const operator = this.node.operators[i];
 
       if (operator) {
-        let replacement = getCompareOperator(operator.operator, negated);
+        const replacement = getCompareOperator(operator.operator, negated);
 
         if (operator.operator !== replacement) {
           this.overwrite(operator.token.start, operator.token.end, replacement);
@@ -58,7 +58,7 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
       }
     }
 
-    for (let operand of middle) {
+    for (const operand of middle) {
       // `a < b < c` → `a < b && b < c`
       //                     ^^^^^
       this.insert(operand.outerEnd, ` ${logicalOperator} ${operand.getRepeatCode()}`);

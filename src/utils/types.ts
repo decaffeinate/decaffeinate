@@ -5,7 +5,7 @@ import { Node } from 'decaffeinate-parser/dist/nodes';
 /**
  * Determines whether a node represents a function, i.e. `->` or `=>`.
  */
-export function isFunction(node: Node, allowBound: boolean = true): boolean {
+export function isFunction(node: Node, allowBound = true): boolean {
   return (
     node.type === 'Function' ||
     node.type === 'GeneratorFunction' ||

@@ -27,7 +27,7 @@ export interface MethodInfo {
  */
 export default class SuperPatcher extends NodePatcher {
   patchAsExpression(): void {
-    let { classCode, accessCode } = this.getEnclosingMethodInfo();
+    const { classCode, accessCode } = this.getEnclosingMethodInfo();
     if (this.canConvertToJsSuper()) {
       if (accessCode) {
         this.insert(this.contentEnd, accessCode);
@@ -44,7 +44,7 @@ export default class SuperPatcher extends NodePatcher {
       if (!classCode) {
         throw this.error('Complex super calls within anonymous classes are not yet supported.');
       }
-      let openParenToken = this.getFollowingOpenParenToken();
+      const openParenToken = this.getFollowingOpenParenToken();
       // Note that this code snippet works for instance methods but not static
       // methods. Static methods that require the expanded call form like this
       // have already been converted in the normalize step.
@@ -60,7 +60,7 @@ export default class SuperPatcher extends NodePatcher {
    * @private
    */
   getEnclosingMethodInfo(): MethodInfo {
-    let methodAssignment = this.getEnclosingMethodAssignment();
+    const methodAssignment = this.getEnclosingMethodAssignment();
     if (methodAssignment instanceof ClassAssignOpPatcher) {
       let accessCode;
       if (methodAssignment.isStaticMethod()) {
@@ -88,7 +88,7 @@ export default class SuperPatcher extends NodePatcher {
         accessCode: null
       };
     } else {
-      let methodInfo = this.getPrototypeAssignInfo(methodAssignment);
+      const methodInfo = this.getPrototypeAssignInfo(methodAssignment);
       if (!methodInfo) {
         throw this.error('Expected a valid method assignment from getEnclosingMethodAssignment.');
       }
@@ -138,11 +138,11 @@ export default class SuperPatcher extends NodePatcher {
    * @private
    */
   getPrototypeAssignInfo(patcher: NodePatcher): MethodInfo | null {
-    let prototypeAssignPatchers = extractPrototypeAssignPatchers(patcher);
+    const prototypeAssignPatchers = extractPrototypeAssignPatchers(patcher);
     if (!prototypeAssignPatchers) {
       return null;
     }
-    let { classRefPatcher, methodAccessPatcher } = prototypeAssignPatchers;
+    const { classRefPatcher, methodAccessPatcher } = prototypeAssignPatchers;
     if (methodAccessPatcher instanceof MemberAccessOpPatcher) {
       return {
         classCode: classRefPatcher.getRepeatCode(),
@@ -174,7 +174,7 @@ export default class SuperPatcher extends NodePatcher {
    * @private
    */
   canConvertToJsSuper(): boolean {
-    let methodAssignment = this.getEnclosingMethodAssignment();
+    const methodAssignment = this.getEnclosingMethodAssignment();
     if (methodAssignment instanceof ConstructorPatcher || methodAssignment instanceof ClassAssignOpPatcher) {
       return methodAssignment.expression === this.getEnclosingFunction();
     }
@@ -199,7 +199,7 @@ export default class SuperPatcher extends NodePatcher {
    * @private
    */
   getFollowingOpenParenToken(): SourceToken {
-    let openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+    const openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
       this.contentEndTokenIndex,
       SourceType.CALL_START
     );

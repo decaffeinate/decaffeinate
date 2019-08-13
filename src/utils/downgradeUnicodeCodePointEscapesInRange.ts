@@ -30,13 +30,13 @@ export default function downgradeUnicodeCodePointEscapesInRange(
         codePointEnd++;
       }
       // Logic taken from unicodeCodePointToUnicodeEscapes in CoffeeScript's lexer.coffee.
-      let codePointText = source.slice(i + 3, codePointEnd);
-      let codePoint = parseInt(codePointText, 16);
+      const codePointText = source.slice(i + 3, codePointEnd);
+      const codePoint = parseInt(codePointText, 16);
       if (codePoint < 0x10000) {
         patcher.overwrite(i, codePointEnd + 1, toUnicodeEscape(codePoint));
       } else {
-        let high = Math.floor((codePoint - 0x10000) / 0x400) + 0xd800;
-        let low = ((codePoint - 0x10000) % 0x400) + 0xdc00;
+        const high = Math.floor((codePoint - 0x10000) / 0x400) + 0xd800;
+        const low = ((codePoint - 0x10000) % 0x400) + 0xdc00;
         patcher.overwrite(
           i,
           codePointEnd + 1,
@@ -49,6 +49,6 @@ export default function downgradeUnicodeCodePointEscapesInRange(
 }
 
 function toUnicodeEscape(val: number): string {
-  let str = val.toString(16);
+  const str = val.toString(16);
   return `\\u${'0'.repeat(4 - str.length)}${str}`;
 }

@@ -4,16 +4,16 @@ import CodeContext from './CodeContext';
 import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData';
 
 export default function formatCoffeeScriptAst(program: CS1Base | CS2Base, context: CodeContext): string {
-  let resultLines = formatAstNodeLines(program, context);
+  const resultLines = formatAstNodeLines(program, context);
   return resultLines.map(line => line + '\n').join('');
 }
 
 function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Array<string> {
-  let propLines = [];
-  let blacklistedProps = ['locationData'];
+  const propLines = [];
+  const blacklistedProps = ['locationData'];
   // Show the non-node children first.
-  for (let key of Object.keys(node)) {
-    let value = node[key];
+  for (const key of Object.keys(node)) {
+    const value = node[key];
     if (shouldTraverse(value) || blacklistedProps.indexOf(key) !== -1) {
       continue;
     }
@@ -27,8 +27,8 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
   }
 
   // Then show the node children.
-  for (let key of Object.keys(node)) {
-    let value = node[key];
+  for (const key of Object.keys(node)) {
+    const value = node[key];
     if (!shouldTraverse(value)) {
       continue;
     }
@@ -37,10 +37,10 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
       propLines.push(`${key}: []`);
     } else if (Array.isArray(value)) {
       propLines.push(`${key}: [`);
-      for (let child of value) {
+      for (const child of value) {
         if (Array.isArray(child)) {
           propLines.push(`  [`);
-          for (let grandchild of child) {
+          for (const grandchild of child) {
             propLines.push(...formatAstNodeLines(grandchild, context).map(s => '    ' + s));
           }
           propLines.push(`  ]`);
@@ -50,7 +50,7 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
       }
       propLines.push(`]`);
     } else {
-      let childLines = formatAstNodeLines(value, context);
+      const childLines = formatAstNodeLines(value, context);
       childLines[0] = `${key}: ${childLines[0]}`;
       propLines.push(...childLines);
     }

@@ -28,7 +28,7 @@ export default class TryPatcher extends NodePatcher {
     if (this.body) {
       this.body.patch();
     }
-    let bodyPrefixLine = this.patchCatchAssignee();
+    const bodyPrefixLine = this.patchCatchAssignee();
     if (bodyPrefixLine !== null && this.catchAssignee) {
       if (this.catchBody) {
         this.catchBody.insertLineBefore(bodyPrefixLine);
@@ -49,8 +49,8 @@ export default class TryPatcher extends NodePatcher {
       return null;
     }
     if (this.needsExpressionExtracted()) {
-      let assigneeName = this.claimFreeBinding('error');
-      let assigneeCode = this.catchAssignee.patchAndGetCode();
+      const assigneeName = this.claimFreeBinding('error');
+      const assigneeCode = this.catchAssignee.patchAndGetCode();
       this.overwrite(this.catchAssignee.contentStart, this.catchAssignee.contentEnd, assigneeName);
       return `${assigneeCode} = ${assigneeName}`;
     } else {
@@ -75,9 +75,9 @@ export default class TryPatcher extends NodePatcher {
     if (!(this.catchAssignee instanceof IdentifierPatcher)) {
       return true;
     }
-    let varName = this.catchAssignee.node.data;
-    let exceptionVarUsages = this.catchBody ? countVariableUsages(this.catchBody.node, varName) + 1 : 1;
-    let totalVarUsages = countVariableUsages(this.getScope().containerNode, varName);
+    const varName = this.catchAssignee.node.data;
+    const exceptionVarUsages = this.catchBody ? countVariableUsages(this.catchBody.node, varName) + 1 : 1;
+    const totalVarUsages = countVariableUsages(this.getScope().containerNode, varName);
     return totalVarUsages > exceptionVarUsages;
   }
 }

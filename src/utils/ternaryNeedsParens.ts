@@ -21,7 +21,7 @@ export default function ternaryNeedsParens(patcher: NodePatcher): boolean {
   if (patcher.hadUnparenthesizedNegation()) {
     return true;
   }
-  let { parent } = patcher;
+  const { parent } = patcher;
   return !(
     patcher.isSurroundedByParentheses() ||
     (parent instanceof FunctionApplicationPatcher && patcher !== parent.fn) ||

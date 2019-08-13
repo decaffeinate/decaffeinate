@@ -6,7 +6,7 @@ import AssignOpPatcher from './AssignOpPatcher';
 
 export default class CompoundAssignOpPatcher extends AssignOpPatcher {
   getOperatorToken(): SourceToken {
-    let operatorIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+    const operatorIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
       token => token.type === SourceType.OPERATOR

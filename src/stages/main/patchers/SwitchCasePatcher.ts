@@ -24,11 +24,11 @@ export default class SwitchCasePatcher extends NodePatcher {
   }
 
   patchAsStatement(): void {
-    let lastCondition = this.conditions[this.conditions.length - 1];
+    const lastCondition = this.conditions[this.conditions.length - 1];
 
     // `when a, b, c then d` → `a, b, c then d`
     //  ^^^^^
-    let whenToken = this.getWhenToken();
+    const whenToken = this.getWhenToken();
     this.remove(whenToken.start, this.conditions[0].outerStart);
 
     // `a, b, c then d` → `a b c then d`
@@ -50,7 +50,7 @@ export default class SwitchCasePatcher extends NodePatcher {
 
     // `case a: case b: case c: then d → `case a: case b: case c: d`
     //                          ^^^^^
-    let thenToken = this.getThenToken();
+    const thenToken = this.getThenToken();
     if (thenToken) {
       if (this.consequent !== null) {
         this.remove(thenToken.start, this.consequent.outerStart);
@@ -63,11 +63,11 @@ export default class SwitchCasePatcher extends NodePatcher {
       this.consequent.patch({ leftBrace: false, rightBrace: false });
     }
 
-    let implicitReturnWillBreak =
+    const implicitReturnWillBreak =
       this.implicitlyReturns() &&
       this.implicitReturnPatcher().implicitReturnWillBreak() &&
       (!this.consequent || this.consequent.allCodePathsPresent());
-    let shouldAddBreak = !this.hasExistingBreak() && !implicitReturnWillBreak;
+    const shouldAddBreak = !this.hasExistingBreak() && !implicitReturnWillBreak;
     if (shouldAddBreak) {
       if (thenToken) {
         // `case a: case b: case c: then d → `case a: case b: case c: d break`
@@ -106,7 +106,7 @@ export default class SwitchCasePatcher extends NodePatcher {
    * @private
    */
   getWhenToken(): SourceToken {
-    let whenToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+    const whenToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
     if (!whenToken) {
       throw this.error(`bad token index for start of 'when'`);
     }
@@ -120,11 +120,11 @@ export default class SwitchCasePatcher extends NodePatcher {
    * @private
    */
   getCommaTokens(): Array<SourceToken> {
-    let result: Array<SourceToken> = [];
+    const result: Array<SourceToken> = [];
     for (let i = 1; i < this.conditions.length; i++) {
-      let left = this.conditions[i - 1];
-      let right = this.conditions[i];
-      let commaIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+      const left = this.conditions[i - 1];
+      const right = this.conditions[i];
+      const commaIndex = this.indexOfSourceTokenBetweenPatchersMatching(
         left,
         right,
         token => token.type === SourceType.COMMA
@@ -144,7 +144,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     if (!(this.consequent instanceof BlockPatcher)) {
       return false;
     }
-    let lastStatement = this.consequent.statements[this.consequent.statements.length - 1];
+    const lastStatement = this.consequent.statements[this.consequent.statements.length - 1];
     return lastStatement && lastStatement instanceof BreakPatcher;
   }
 
@@ -154,7 +154,7 @@ export default class SwitchCasePatcher extends NodePatcher {
    * @private
    */
   getThenToken(): SourceToken | null {
-    let thenTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const thenTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.conditions[0].outerEnd,
       this.consequent !== null ? this.consequent.outerStart : this.contentEnd,
       token => token.type === SourceType.THEN
@@ -164,7 +164,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     }
     // In some cases, the node bounds are wrong and the `then` is after our
     // current node, so just use that.
-    let nextToken = this.nextSemanticToken();
+    const nextToken = this.nextSemanticToken();
     if (nextToken && nextToken.type === SourceType.THEN) {
       return nextToken;
     }

@@ -12,10 +12,10 @@ import BinaryOpPatcher from './BinaryOpPatcher';
  * [1]: https://en.wikipedia.org/wiki/De_Morgan%27s_laws
  */
 export default class LogicalOpPatcher extends BinaryOpPatcher {
-  negated: boolean = false;
+  negated = false;
 
   patchOperator(): void {
-    let operatorToken = this.getOperatorToken();
+    const operatorToken = this.getOperatorToken();
     this.overwrite(operatorToken.start, operatorToken.end, this.getOperator());
   }
 
@@ -25,7 +25,7 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
    * @private
    */
   getOperator(): string {
-    let operatorToken = this.getOperatorToken();
+    const operatorToken = this.getOperatorToken();
     let operator = this.context.source.slice(operatorToken.start, operatorToken.end);
     if (operator === 'and') {
       operator = '&&';

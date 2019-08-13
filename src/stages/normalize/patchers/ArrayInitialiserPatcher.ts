@@ -11,7 +11,7 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
   }
 
   patchAsExpression(): void {
-    for (let [i, member] of this.members.entries()) {
+    for (const [i, member] of this.members.entries()) {
       member.patch();
       normalizeListItem(this, member, this.members[i + 1]);
     }

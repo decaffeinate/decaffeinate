@@ -17,14 +17,14 @@ export default function getAssigneeBindings(node: Node): Array<string> {
   if (node instanceof Identifier) {
     return [node.data];
   } else if (node instanceof ArrayInitialiser) {
-    let bindings = [];
-    for (let member of node.members) {
+    const bindings = [];
+    for (const member of node.members) {
       bindings.push(...getAssigneeBindings(member));
     }
     return bindings;
   } else if (node instanceof ObjectInitialiser) {
-    let bindings = [];
-    for (let member of node.members) {
+    const bindings = [];
+    for (const member of node.members) {
       bindings.push(...getAssigneeBindings(member));
     }
     return bindings;

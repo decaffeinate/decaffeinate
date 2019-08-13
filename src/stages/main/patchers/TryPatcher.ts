@@ -57,10 +57,10 @@ export default class TryPatcher extends NodePatcher {
    * 'try' BODY ( 'catch' ASSIGNEE? CATCH-BODY? )? ( 'finally' FINALLY-BODY )?
    */
   patchAsStatement(): void {
-    let tryToken = this.getTryToken();
-    let catchToken = this.getCatchToken();
-    let thenTokenIndex = this.getThenTokenIndex();
-    let finallyToken = this.getFinallyToken();
+    const tryToken = this.getTryToken();
+    const catchToken = this.getCatchToken();
+    const thenTokenIndex = this.getThenTokenIndex();
+    const finallyToken = this.getFinallyToken();
 
     // `try a` → `try { a`
     //               ^^
@@ -83,8 +83,8 @@ export default class TryPatcher extends NodePatcher {
     }
 
     if (thenTokenIndex) {
-      let thenToken = notNull(this.sourceTokenAtIndex(thenTokenIndex));
-      let nextToken = this.sourceTokenAtIndex(notNull(thenTokenIndex.next()));
+      const thenToken = notNull(this.sourceTokenAtIndex(thenTokenIndex));
+      const nextToken = this.sourceTokenAtIndex(notNull(thenTokenIndex.next()));
       // `try { a; } catch err then b` → `try { a; } catch err b`
       //                       ^^^^^
       if (nextToken) {
@@ -95,10 +95,10 @@ export default class TryPatcher extends NodePatcher {
     }
 
     if (catchToken) {
-      let afterCatchHeader = this.catchAssignee ? this.catchAssignee.outerEnd : catchToken.end;
+      const afterCatchHeader = this.catchAssignee ? this.catchAssignee.outerEnd : catchToken.end;
 
       if (this.catchAssignee) {
-        let addErrorParens = !this.catchAssignee.isSurroundedByParentheses();
+        const addErrorParens = !this.catchAssignee.isSurroundedByParentheses();
         if (addErrorParens) {
           // `try { a; } catch err` → `try { a; } catch (err`
           //                                            ^
@@ -127,7 +127,7 @@ export default class TryPatcher extends NodePatcher {
     } else if (!finallyToken) {
       // `try { a; }` → `try { a; } catch (error) {}`
       //                           ^^^^^^^^^^^^^^^^^
-      let insertPos = this.body ? this.body.innerEnd : tryToken.end;
+      const insertPos = this.body ? this.body.innerEnd : tryToken.end;
       this.insert(insertPos, ` catch (${this.getErrorBinding()}) {}`);
     }
 
@@ -190,8 +190,8 @@ export default class TryPatcher extends NodePatcher {
    * @private
    */
   getTryToken(): SourceToken {
-    let tryTokenIndex = this.contentStartTokenIndex;
-    let tryToken = this.sourceTokenAtIndex(tryTokenIndex);
+    const tryTokenIndex = this.contentStartTokenIndex;
+    const tryToken = this.sourceTokenAtIndex(tryTokenIndex);
     if (!tryToken || tryToken.type !== SourceType.TRY) {
       throw this.error(`expected 'try' keyword at start of 'try' statement`);
     }
@@ -220,7 +220,7 @@ export default class TryPatcher extends NodePatcher {
       searchEnd = this.contentEnd;
     }
 
-    let catchTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const catchTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
       token => token.type === SourceType.CATCH
@@ -252,7 +252,7 @@ export default class TryPatcher extends NodePatcher {
     } else {
       // The CoffeeScript AST doesn't always include a "then" in the node range,
       // so look one more token past the end.
-      let nextToken = this.nextSemanticToken();
+      const nextToken = this.nextSemanticToken();
       if (nextToken) {
         searchEnd = nextToken.end;
       } else {
@@ -289,7 +289,7 @@ export default class TryPatcher extends NodePatcher {
       searchEnd = this.contentEnd;
     }
 
-    let finallyTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const finallyTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
       token => token.type === SourceType.FINALLY

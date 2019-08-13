@@ -63,17 +63,17 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
   }
 
   patchAsConditional(): void {
-    let soakContainer = findSoakContainer(this);
+    const soakContainer = findSoakContainer(this);
     this.fn.setRequiresRepeatableExpression();
     super.patchAsExpression();
-    let fnCode = this.fn.getRepeatCode();
+    const fnCode = this.fn.getRepeatCode();
 
-    let conditionCode = `typeof ${fnCode} === 'function'`;
+    const conditionCode = `typeof ${fnCode} === 'function'`;
 
-    let callStartToken = this.getCallStartToken();
+    const callStartToken = this.getCallStartToken();
     this.remove(this.fn.outerEnd, callStartToken.start);
     if (soakContainer.willPatchAsExpression()) {
-      let containerNeedsParens = ternaryNeedsParens(soakContainer);
+      const containerNeedsParens = ternaryNeedsParens(soakContainer);
       if (containerNeedsParens) {
         soakContainer.insert(soakContainer.contentStart, '(');
       }
@@ -92,7 +92,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
    * Change a.b?() to __guardMethod__(a, 'b', o => o.b())
    */
   patchMethodCall(fn: MemberAccessOpPatcher): void {
-    let memberName = fn.getMemberName();
+    const memberName = fn.getMemberName();
     if (fn.hasImplicitOperator()) {
       fn.setSkipImplicitDotCreation();
     }
@@ -103,10 +103,10 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
       fn.setShouldSkipSoakPatch();
     }
 
-    let callStartToken = this.getCallStartToken();
-    let soakContainer = findSoakContainer(this);
-    let varName = soakContainer.claimFreeBinding('o');
-    let prefix = this.slice(soakContainer.contentStart, this.fn.outerStart);
+    const callStartToken = this.getCallStartToken();
+    const soakContainer = findSoakContainer(this);
+    const varName = soakContainer.claimFreeBinding('o');
+    const prefix = this.slice(soakContainer.contentStart, this.fn.outerStart);
     if (prefix.length > 0) {
       this.remove(soakContainer.contentStart, this.fn.outerStart);
     }
@@ -125,7 +125,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
    * Change a[b]?() to __guardMethod__(a, b, (o, m) => o[m]())
    */
   patchDynamicMethodCall(fn: DynamicMemberAccessOpPatcher): void {
-    let { expression, indexingExpr } = fn;
+    const { expression, indexingExpr } = fn;
 
     this.registerHelper('__guardMethod__', GUARD_METHOD_HELPER);
     this.addSuggestion(REMOVE_GUARD);
@@ -133,11 +133,11 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
       fn.setShouldSkipSoakPatch();
     }
 
-    let callStartToken = this.getCallStartToken();
-    let soakContainer = findSoakContainer(this);
-    let objVarName = soakContainer.claimFreeBinding('o');
-    let methodVarName = soakContainer.claimFreeBinding('m');
-    let prefix = this.slice(soakContainer.contentStart, this.fn.outerStart);
+    const callStartToken = this.getCallStartToken();
+    const soakContainer = findSoakContainer(this);
+    const objVarName = soakContainer.claimFreeBinding('o');
+    const methodVarName = soakContainer.claimFreeBinding('m');
+    const prefix = this.slice(soakContainer.contentStart, this.fn.outerStart);
     if (prefix.length > 0) {
       this.remove(soakContainer.contentStart, this.fn.outerStart);
     }
@@ -154,10 +154,10 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
   patchNonMethodCall(): void {
     this.registerHelper('__guardFunc__', GUARD_FUNC_HELPER);
     this.addSuggestion(REMOVE_GUARD);
-    let callStartToken = this.getCallStartToken();
-    let soakContainer = findSoakContainer(this);
-    let varName = soakContainer.claimFreeBinding('f');
-    let prefix = this.slice(soakContainer.contentStart, this.fn.outerStart);
+    const callStartToken = this.getCallStartToken();
+    const soakContainer = findSoakContainer(this);
+    const varName = soakContainer.claimFreeBinding('f');
+    const prefix = this.slice(soakContainer.contentStart, this.fn.outerStart);
     if (prefix.length > 0) {
       this.remove(soakContainer.contentStart, this.fn.outerStart);
     }
@@ -167,8 +167,8 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
   }
 
   getCallStartToken(): SourceToken {
-    let tokens = this.context.sourceTokens;
-    let index = tokens.indexOfTokenMatchingPredicate(
+    const tokens = this.context.sourceTokens;
+    const index = tokens.indexOfTokenMatchingPredicate(
       token => token.type === SourceType.CALL_START,
       this.fn.outerEndTokenIndex
     );

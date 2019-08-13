@@ -21,7 +21,7 @@ export default class DecaffeinateContext {
   ) {}
 
   static create(source: string, useCS2: boolean): DecaffeinateContext {
-    let program = decaffeinateParse(source, { useCS2 });
+    const program = decaffeinateParse(source, { useCS2 });
     return new DecaffeinateContext(
       program,
       source,
@@ -34,7 +34,7 @@ export default class DecaffeinateContext {
   }
 
   getParent(node: Node): Node | null {
-    let result = this.parentMap.get(node);
+    const result = this.parentMap.get(node);
     if (result === undefined) {
       throw new Error('Unexpected parent lookup; node was not in the map.');
     }
@@ -42,7 +42,7 @@ export default class DecaffeinateContext {
   }
 
   getScope(node: Node): Scope {
-    let result = this.scopeMap.get(node);
+    const result = this.scopeMap.get(node);
     if (result === undefined) {
       throw new Error('Unexpected scope lookup; node was not in the map.');
     }
@@ -51,7 +51,7 @@ export default class DecaffeinateContext {
 }
 
 function computeParentMap(program: Program): Map<Node, Node | null> {
-  let resultMap: Map<Node, Node | null> = new Map();
+  const resultMap: Map<Node, Node | null> = new Map();
   traverse(program, (node, parent) => {
     resultMap.set(node, parent);
   });
@@ -59,7 +59,7 @@ function computeParentMap(program: Program): Map<Node, Node | null> {
 }
 
 function computeScopeMap(program: Program): Map<Node, Scope> {
-  let scopeMap: Map<Node, Scope> = new Map();
+  const scopeMap: Map<Node, Scope> = new Map();
   traverse(program, (node, parent) => {
     let scope;
     switch (node.type) {
@@ -72,7 +72,7 @@ function computeScopeMap(program: Program): Map<Node, Scope> {
       case 'GeneratorFunction':
       case 'BoundGeneratorFunction':
       case 'Class': {
-        let parentScope = parent && scopeMap.get(parent);
+        const parentScope = parent && scopeMap.get(parent);
         if (!parentScope) {
           throw new Error('Expected to find parent scope.');
         }
@@ -81,7 +81,7 @@ function computeScopeMap(program: Program): Map<Node, Scope> {
       }
 
       default: {
-        let parentScope = parent && scopeMap.get(parent);
+        const parentScope = parent && scopeMap.get(parent);
         if (!parentScope) {
           throw new Error('Expected to find parent scope.');
         }

@@ -21,7 +21,7 @@ export default class InterpolatedPatcher extends NodePatcher {
   }
 
   initialize(): void {
-    for (let expression of this.expressions) {
+    for (const expression of this.expressions) {
       if (expression) {
         expression.setRequiresExpression();
       }
@@ -30,20 +30,20 @@ export default class InterpolatedPatcher extends NodePatcher {
 
   patchInterpolations(): void {
     for (let i = 0; i < this.expressions.length; i++) {
-      let interpolationStart = this.getInterpolationStartTokenAtIndex(i);
-      let expression = this.expressions[i];
+      const interpolationStart = this.getInterpolationStartTokenAtIndex(i);
+      const expression = this.expressions[i];
       if (expression) {
         this.overwrite(interpolationStart.start, interpolationStart.start + 1, '$');
         expression.patch();
       } else {
-        let interpolationEndIndex = this.quasis[i + 1].contentStart;
+        const interpolationEndIndex = this.quasis[i + 1].contentStart;
         this.remove(interpolationStart.start, interpolationEndIndex);
       }
     }
   }
 
   getInterpolationStartTokenAtIndex(index: number): SourceToken {
-    let interpolationStartIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const interpolationStartIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.quasis[index].contentEnd,
       this.contentEnd,
       token => token.type === SourceType.INTERPOLATION_START
@@ -51,7 +51,7 @@ export default class InterpolatedPatcher extends NodePatcher {
     if (!interpolationStartIndex) {
       throw this.error('Cannot find interpolation start for string interpolation.');
     }
-    let interpolationStart = this.sourceTokenAtIndex(interpolationStartIndex);
+    const interpolationStart = this.sourceTokenAtIndex(interpolationStartIndex);
     if (!interpolationStart || this.slice(interpolationStart.start, interpolationStart.start + 1) !== '#') {
       throw this.error("Cannot find '#' in interpolation start.");
     }
@@ -72,14 +72,14 @@ export default class InterpolatedPatcher extends NodePatcher {
    * escape form.
    */
   processContents(): void {
-    for (let quasi of this.quasis) {
-      let tokens = this.getProgramSourceTokens()
+    for (const quasi of this.quasis) {
+      const tokens = this.getProgramSourceTokens()
         .slice(quasi.contentStartTokenIndex, notNull(quasi.contentEndTokenIndex.next()))
         .toArray();
-      for (let token of tokens) {
+      for (const token of tokens) {
         if (token.type === SourceType.STRING_PADDING || token.type === SourceType.HEREGEXP_COMMENT) {
-          let paddingCode = this.slice(token.start, token.end);
-          let numNewlines = (paddingCode.match(/\n/g) || []).length;
+          const paddingCode = this.slice(token.start, token.end);
+          const numNewlines = (paddingCode.match(/\n/g) || []).length;
           this.overwrite(token.start, token.end, '\\\n'.repeat(numNewlines));
         } else if (token.type === SourceType.STRING_LINE_SEPARATOR) {
           this.insert(token.start, ' \\');
@@ -105,11 +105,11 @@ export default class InterpolatedPatcher extends NodePatcher {
   }
 
   escapeQuasis(skipPattern: RegExp, escapeStrings: Array<string>): void {
-    for (let quasi of this.quasis) {
-      let tokens = this.getProgramSourceTokens()
+    for (const quasi of this.quasis) {
+      const tokens = this.getProgramSourceTokens()
         .slice(quasi.contentStartTokenIndex, notNull(quasi.contentEndTokenIndex.next()))
         .toArray();
-      for (let token of tokens) {
+      for (const token of tokens) {
         if (token.type === SourceType.STRING_CONTENT) {
           escape(this.context.source, this.editor, skipPattern, escapeStrings, token.start, token.end);
         }
