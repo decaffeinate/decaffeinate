@@ -18,13 +18,13 @@ export default function normalizeListItem(
   // be a newline and the comma is unnecessary and can cause a syntax error
   // when combined with other normalize stage transformations. So just
   // remove the redundant comma.
-  let lastToken = listItemPatcher.lastToken();
+  const lastToken = listItemPatcher.lastToken();
   if (lastToken.type === SourceType.COMMA && !(listItemPatcher.node instanceof Elision)) {
     patcher.remove(lastToken.start, lastToken.end);
   }
   // CoffeeScript allows semicolon-separated lists, so just change them to
   // commas if we see them.
-  let nextToken = listItemPatcher.nextSemanticToken();
+  const nextToken = listItemPatcher.nextSemanticToken();
   if (nextToken && nextToken.type === SourceType.SEMICOLON && nextToken.end <= patcher.contentEnd) {
     if (patcherEndsInStatement(listItemPatcher)) {
       patcher.remove(nextToken.start, nextToken.end);
@@ -37,7 +37,7 @@ export default function normalizeListItem(
     // We have two adjacent items, so do some cleanups based on the tokens
     // between them (comma tokens, or technically semicolons are treated as
     // commas as well).
-    let commaTokens = patcher
+    const commaTokens = patcher
       .getProgramSourceTokens()
       .slice(notNull(listItemPatcher.outerEndTokenIndex.next()), nextListItemPatcher.outerStartTokenIndex)
       .filter(token => token.type === SourceType.COMMA || token.type === SourceType.SEMICOLON)

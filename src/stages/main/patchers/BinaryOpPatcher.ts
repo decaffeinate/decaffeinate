@@ -9,7 +9,7 @@ export default class BinaryOpPatcher extends NodePatcher {
   right: NodePatcher;
   // Avoid conflicting with the `negated` flag in some subclasses that have
   // special behavior.
-  binaryOpNegated: boolean = false;
+  binaryOpNegated = false;
 
   constructor(patcherContext: PatcherContext, left: NodePatcher, right: NodePatcher) {
     super(patcherContext);
@@ -43,7 +43,7 @@ export default class BinaryOpPatcher extends NodePatcher {
    * LEFT OP RIGHT
    */
   patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
-    let addParens = (needsParens && !this.isSurroundedByParentheses()) || this.binaryOpNegated;
+    const addParens = (needsParens && !this.isSurroundedByParentheses()) || this.binaryOpNegated;
     if (this.binaryOpNegated) {
       this.insert(this.innerStart, '!');
     }
@@ -75,7 +75,7 @@ export default class BinaryOpPatcher extends NodePatcher {
   }
 
   getOperatorToken(): SourceToken {
-    let operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+    const operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.left,
       this.right,
       this.operatorTokenPredicate()

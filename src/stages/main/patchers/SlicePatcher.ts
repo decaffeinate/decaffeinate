@@ -43,7 +43,7 @@ export default class SlicePatcher extends NodePatcher {
    */
   patchAsExpression(): void {
     this.expression.patch();
-    let indexStart = this.getIndexStartSourceToken();
+    const indexStart = this.getIndexStartSourceToken();
     // `a[0..1]` → `a.slice(0..1]`
     //   ^           ^^^^^^^
     this.overwrite(this.expression.outerEnd, indexStart.end, '.slice(');
@@ -54,8 +54,8 @@ export default class SlicePatcher extends NodePatcher {
       //                           ^
       this.insert(indexStart.end, '0');
     }
-    let slice = this.getSliceSourceToken();
-    let right = this.right;
+    const slice = this.getSliceSourceToken();
+    const right = this.right;
     if (right) {
       if (this.isInclusive()) {
         if (right.node.raw === '-1') {
@@ -86,7 +86,7 @@ export default class SlicePatcher extends NodePatcher {
       //           ^^
       this.overwrite(slice.start, slice.end, '');
     }
-    let indexEnd = this.getIndexEndSourceToken();
+    const indexEnd = this.getIndexEndSourceToken();
     // `a.slice(0, 1]` → `a.slice(0, 1)`
     //              ^                 ^
     this.overwrite(indexEnd.start, indexEnd.end, ')');
@@ -98,7 +98,7 @@ export default class SlicePatcher extends NodePatcher {
    * patched as necessary.
    */
   getSpliceCode(expressionCode: string): string {
-    let spliceStart = this.captureCodeForPatchOperation(() => this.patchAsSpliceExpressionStart());
+    const spliceStart = this.captureCodeForPatchOperation(() => this.patchAsSpliceExpressionStart());
     return `${spliceStart}, ...[].concat(${expressionCode}))`;
   }
 
@@ -115,7 +115,7 @@ export default class SlicePatcher extends NodePatcher {
    */
   patchAsSpliceExpressionStart(): void {
     this.expression.patch();
-    let indexStart = this.getIndexStartSourceToken();
+    const indexStart = this.getIndexStartSourceToken();
     // `a[b..c]` → `a.splice(b..c]`
     //   ^           ^^^^^^^^
     this.overwrite(this.expression.outerEnd, indexStart.end, '.splice(');
@@ -128,8 +128,8 @@ export default class SlicePatcher extends NodePatcher {
       this.insert(indexStart.end, '0');
       leftCode = '0';
     }
-    let slice = this.getSliceSourceToken();
-    let right = this.right;
+    const slice = this.getSliceSourceToken();
+    const right = this.right;
     if (right) {
       // `a.splice(b..c]` → `a.splice(b, c]`
       //                               ^^
@@ -150,7 +150,7 @@ export default class SlicePatcher extends NodePatcher {
       //            ^^                ^^^^^
       this.overwrite(slice.start, slice.end, ', 9e9');
     }
-    let indexEnd = this.getIndexEndSourceToken();
+    const indexEnd = this.getIndexEndSourceToken();
     // `a.splice(b, c - b + 1]` → `a.splice(b, c - b + 1`
     //                       ^
     this.remove(indexEnd.start, indexEnd.end);
@@ -160,7 +160,7 @@ export default class SlicePatcher extends NodePatcher {
    * @private
    */
   isInclusive(): boolean {
-    let slice = this.getSliceSourceToken();
+    const slice = this.getSliceSourceToken();
     return slice.end - slice.start === '..'.length;
   }
 
@@ -168,8 +168,8 @@ export default class SlicePatcher extends NodePatcher {
    * @private
    */
   getIndexStartSourceToken(): SourceToken {
-    let tokens = this.context.sourceTokens;
-    let index = tokens.indexOfTokenMatchingPredicate(
+    const tokens = this.context.sourceTokens;
+    const index = tokens.indexOfTokenMatchingPredicate(
       token => token.type === SourceType.LBRACKET,
       this.expression.outerEndTokenIndex
     );
@@ -183,14 +183,14 @@ export default class SlicePatcher extends NodePatcher {
    * @private
    */
   getSliceSourceToken(): SourceToken {
-    let tokens = this.context.sourceTokens;
-    let { source } = this.context;
-    let index = tokens.indexOfTokenMatchingPredicate(
+    const tokens = this.context.sourceTokens;
+    const { source } = this.context;
+    const index = tokens.indexOfTokenMatchingPredicate(
       token => {
         if (token.type !== SourceType.RANGE) {
           return false;
         }
-        let operator = source.slice(token.start, token.end);
+        const operator = source.slice(token.start, token.end);
         return operator === '...' || operator === '..';
       },
       this.left ? this.left.outerEndTokenIndex : this.expression.outerEndTokenIndex
@@ -205,8 +205,8 @@ export default class SlicePatcher extends NodePatcher {
    * @private
    */
   getIndexEndSourceToken(): SourceToken {
-    let tokens = this.context.sourceTokens;
-    let index = tokens.lastIndexOfTokenMatchingPredicate(
+    const tokens = this.context.sourceTokens;
+    const index = tokens.lastIndexOfTokenMatchingPredicate(
       token => token.type === SourceType.RBRACKET,
       this.outerEndTokenIndex
     );

@@ -12,7 +12,7 @@ export default class ModuloOpPatcher extends BinaryOpPatcher {
   }
 
   patchAsExpression(): void {
-    let helper = registerModHelper(this);
+    const helper = registerModHelper(this);
 
     // `a %% b` → `__mod__(a %% b`
     //             ^^^^^^^^

@@ -6,12 +6,12 @@ import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('formatCoffeeLexTokens', () => {
   it('formats tokens for normal CoffeeScript code', () => {
-    let source = stripSharedIndent(`
+    const source = stripSharedIndent(`
       x = for a in b
         a()
     `);
-    let tokenList = lex(source);
-    let formattedTokens = formatCoffeeLexTokens(tokenList, new CodeContext(source));
+    const tokenList = lex(source);
+    const formattedTokens = formatCoffeeLexTokens(tokenList, new CodeContext(source));
     strictEqual(
       formattedTokens,
       stripSharedIndent(`

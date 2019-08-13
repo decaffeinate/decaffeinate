@@ -7,10 +7,10 @@ import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('formatCoffeeScriptAst', () => {
   it('formats an AST for normal CoffeeScript code', () => {
-    let source = stripSharedIndent(`
+    const source = stripSharedIndent(`
       x = a()
     `);
-    let formattedTokens = formatCoffeeScriptAst(cs2Nodes(source), new CodeContext(source));
+    const formattedTokens = formatCoffeeScriptAst(cs2Nodes(source), new CodeContext(source));
     strictEqual(
       formattedTokens,
       stripSharedIndent(`
@@ -56,12 +56,12 @@ describe('formatCoffeeScriptAst', () => {
   });
 
   it('properly formats switch statements', () => {
-    let source = stripSharedIndent(`
+    const source = stripSharedIndent(`
       switch
         when 1
           2
     `);
-    let formattedTokens = formatCoffeeScriptAst(cs2Nodes(source), new CodeContext(source));
+    const formattedTokens = formatCoffeeScriptAst(cs2Nodes(source), new CodeContext(source));
     strictEqual(
       formattedTokens,
       stripSharedIndent(`
@@ -100,10 +100,10 @@ describe('formatCoffeeScriptAst', () => {
   });
 
   it('properly formats CS1 code', () => {
-    let source = stripSharedIndent(`
+    const source = stripSharedIndent(`
       x = 1
     `);
-    let formattedTokens = formatCoffeeScriptAst(cs1Nodes(source), new CodeContext(source));
+    const formattedTokens = formatCoffeeScriptAst(cs1Nodes(source), new CodeContext(source));
     strictEqual(
       formattedTokens,
       stripSharedIndent(`

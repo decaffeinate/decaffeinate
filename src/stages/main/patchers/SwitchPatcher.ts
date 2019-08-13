@@ -56,7 +56,7 @@ export default class SwitchPatcher extends NodePatcher {
 
       // `switch` → `switch (false) {`
       //                   ^^^^^^^^^^
-      let switchToken = this.getSwitchToken();
+      const switchToken = this.getSwitchToken();
       this.insert(switchToken.end, ' (false) {');
     }
 
@@ -66,7 +66,7 @@ export default class SwitchPatcher extends NodePatcher {
     if (this.alternate) {
       this.alternate.patch({ leftBrace: false, rightBrace: false });
     } else if (this.getElseToken() === null && super.implicitlyReturns()) {
-      let emptyImplicitReturnCode = this.implicitReturnPatcher().getEmptyImplicitReturnCode();
+      const emptyImplicitReturnCode = this.implicitReturnPatcher().getEmptyImplicitReturnCode();
       if (emptyImplicitReturnCode) {
         this.insert(this.contentEnd, `\n`);
         this.insert(this.contentEnd, `${this.getIndent(1)}default:\n`);
@@ -117,7 +117,7 @@ export default class SwitchPatcher extends NodePatcher {
   overwriteElse(): void {
     // `else` → `default:`
     //           ^^^^^^^^
-    let elseToken = this.getElseToken();
+    const elseToken = this.getElseToken();
     if (elseToken) {
       this.overwrite(elseToken.start, elseToken.end, 'default:');
     }
@@ -141,7 +141,7 @@ export default class SwitchPatcher extends NodePatcher {
       searchEnd = this.contentEnd;
     }
 
-    let elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
       token => token.type === SourceType.ELSE
@@ -160,7 +160,7 @@ export default class SwitchPatcher extends NodePatcher {
    * @private
    */
   getSwitchToken(): SourceToken {
-    let switchToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+    const switchToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
     if (!switchToken) {
       throw this.error(`bad token index for start of 'switch'`);
     }

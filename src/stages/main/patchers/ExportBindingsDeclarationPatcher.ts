@@ -18,13 +18,13 @@ export default class ExportBindingsDeclarationPatcher extends NodePatcher {
     this.namedExports.forEach((namedExport, i) => {
       namedExport.patch();
 
-      let isLast = i === this.namedExports.length - 1;
-      let commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+      const isLast = i === this.namedExports.length - 1;
+      const commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         namedExport.outerEndTokenIndex,
         SourceType.COMMA,
         isSemanticToken
       );
-      let commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
+      const commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
       if (!isLast && !commaToken) {
         this.insert(namedExport.outerEnd, ',');
       }

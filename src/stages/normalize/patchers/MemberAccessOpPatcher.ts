@@ -22,14 +22,14 @@ export default class MemberAccessOpPatcher extends PassthroughPatcher {
 
   patch(): void {
     super.patch();
-    let callback = this.findAddThisAssignmentCallback();
+    const callback = this.findAddThisAssignmentCallback();
     if (callback) {
       this.overwrite(this.contentStart, this.contentEnd, callback(this.node.member.data));
     }
   }
 
   findAddThisAssignmentCallback(): AddThisAssignmentCallback | null {
-    let patcher: NodePatcher | null = this;
+    let patcher = this as NodePatcher | null;
 
     while (patcher) {
       if (patcher.addThisAssignmentAtScopeHeader) {

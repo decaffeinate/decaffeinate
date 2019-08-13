@@ -44,11 +44,11 @@ export default class WhilePatcher extends LoopPatcher {
 
     // `until a` → `while a`
     //  ^^^^^       ^^^^^
-    let whileToken = notNull(this.sourceTokenAtIndex(this.getWhileTokenIndex()));
+    const whileToken = notNull(this.sourceTokenAtIndex(this.getWhileTokenIndex()));
 
     this.overwrite(whileToken.start, whileToken.end, 'while');
 
-    let conditionNeedsParens = !this.condition.isSurroundedByParentheses();
+    const conditionNeedsParens = !this.condition.isSurroundedByParentheses();
     if (conditionNeedsParens) {
       // `while a` → `while (a`
       //                    ^
@@ -61,7 +61,7 @@ export default class WhilePatcher extends LoopPatcher {
     this.condition.patch({ needsParens: false });
 
     if (this.guard) {
-      let guardNeedsParens = !this.guard.isSurroundedByParentheses();
+      const guardNeedsParens = !this.guard.isSurroundedByParentheses();
       if (this.body && this.body.inline()) {
         // `while (a when b` → `while (a) { if (b`
         //          ^^^^^^              ^^^^^^^^
@@ -90,10 +90,10 @@ export default class WhilePatcher extends LoopPatcher {
       this.insert(this.condition.outerEnd, `${conditionNeedsParens ? ')' : ''} {`);
     }
 
-    let thenIndex = this.getThenTokenIndex();
+    const thenIndex = this.getThenTokenIndex();
     if (thenIndex) {
-      let thenToken = notNull(this.sourceTokenAtIndex(thenIndex));
-      let nextToken = this.sourceTokenAtIndex(notNull(thenIndex.next()));
+      const thenToken = notNull(this.sourceTokenAtIndex(thenIndex));
+      const nextToken = this.sourceTokenAtIndex(notNull(thenIndex.next()));
       if (nextToken) {
         this.remove(thenToken.start, nextToken.start);
       } else {
@@ -125,8 +125,8 @@ export default class WhilePatcher extends LoopPatcher {
    * @private
    */
   getWhileTokenIndex(): SourceTokenListIndex {
-    let whileTokenIndex = this.contentStartTokenIndex;
-    let whileToken = this.sourceTokenAtIndex(whileTokenIndex);
+    const whileTokenIndex = this.contentStartTokenIndex;
+    const whileToken = this.sourceTokenAtIndex(whileTokenIndex);
     if (!whileToken || whileToken.type !== SourceType.WHILE) {
       throw this.error(`could not get first token of 'while' loop`);
     }
@@ -137,7 +137,7 @@ export default class WhilePatcher extends LoopPatcher {
    * @private
    */
   getThenTokenIndex(): SourceTokenListIndex | null {
-    let whileTokenIndex = this.getWhileTokenIndex();
+    const whileTokenIndex = this.getWhileTokenIndex();
     if (!whileTokenIndex) {
       throw this.error(`could not get first token of 'while' loop`);
     }
@@ -153,7 +153,7 @@ export default class WhilePatcher extends LoopPatcher {
       searchEnd = this.body.outerStart;
     } else {
       // Look one more token since sometimes the `then` isn't included in the range.
-      let nextToken = this.nextSemanticToken();
+      const nextToken = this.nextSemanticToken();
       if (nextToken) {
         searchEnd = nextToken.end;
       } else {

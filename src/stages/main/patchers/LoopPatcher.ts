@@ -22,14 +22,14 @@ export default class LoopPatcher extends NodePatcher {
   patchAsExpression(): void {
     // We're only patched as an expression due to a parent instructing us to,
     // and the indent level is more logically the indent level of our parent.
-    let baseIndent = notNull(this.parent).getIndent(0);
-    let iifeBodyIndent = this.getLoopIndent();
+    const baseIndent = notNull(this.parent).getIndent(0);
+    const iifeBodyIndent = this.getLoopIndent();
     if (this.body !== null) {
       this.body.setShouldPatchInline(false);
       this.body.setImplicitlyReturns();
       this.body.setIndent(this.getLoopBodyIndent());
     }
-    let resultBinding = this.getResultArrayBinding();
+    const resultBinding = this.getResultArrayBinding();
     this.patchInIIFE(() => {
       this.insert(this.innerStart, `\n${iifeBodyIndent}${resultBinding} = [];\n${iifeBodyIndent}`);
       this.patchAsStatement();

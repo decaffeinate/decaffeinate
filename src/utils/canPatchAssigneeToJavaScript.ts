@@ -27,11 +27,7 @@ import {
 } from 'decaffeinate-parser/dist/nodes';
 import { Options } from '../options';
 
-export default function canPatchAssigneeToJavaScript(
-  node: Node,
-  options: Options,
-  isTopLevel: boolean = true
-): boolean {
+export default function canPatchAssigneeToJavaScript(node: Node, options: Options, isTopLevel = true): boolean {
   if (
     node instanceof Identifier ||
     node instanceof MemberAccessOp ||
@@ -56,7 +52,7 @@ export default function canPatchAssigneeToJavaScript(
       return false;
     }
     return node.members.every((member, i) => {
-      let isInFinalPosition = i === node.members.length - 1;
+      const isInFinalPosition = i === node.members.length - 1;
       if (isInFinalPosition && member instanceof Expansion) {
         return true;
       }
@@ -79,7 +75,7 @@ export default function canPatchAssigneeToJavaScript(
       return false;
     }
     return node.members.every((member, i) => {
-      let isInFinalPosition = i === node.members.length - 1;
+      const isInFinalPosition = i === node.members.length - 1;
       if (
         isInFinalPosition &&
         (member instanceof Spread || member instanceof Rest) &&

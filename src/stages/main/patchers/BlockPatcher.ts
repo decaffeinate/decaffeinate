@@ -37,17 +37,17 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * explicitly hoist any variables that could be affected.
    */
   initialize(): void {
-    for (let iifePatcher of this._iifePatcherDescendants) {
+    for (const iifePatcher of this._iifePatcherDescendants) {
       if (!iifePatcher.willPatchAsIIFE()) {
         continue;
       }
       // Use the scope code to find all assignments, including loop assignees,
       // destructuring, etc.
-      let fakeScope = new Scope(iifePatcher.node);
+      const fakeScope = new Scope(iifePatcher.node);
       traverse(iifePatcher.node, child => {
         fakeScope.processNode(child);
       });
-      for (let name of fakeScope.getOwnNames()) {
+      for (const name of fakeScope.getOwnNames()) {
         if (
           countVariableUsages(this.node, name) > countVariableUsages(iifePatcher.node, name) &&
           this._explicitDeclarationsToAdd.indexOf(name) === -1
@@ -71,8 +71,8 @@ export default class BlockPatcher extends SharedBlockPatcher {
     );
   }
 
-  setExpression(force: boolean = false): boolean {
-    let willPatchAsExpression = super.setExpression(force);
+  setExpression(force = false): boolean {
+    const willPatchAsExpression = super.setExpression(force);
     if (willPatchAsExpression && this.prefersToPatchAsExpression()) {
       this.statements.forEach(statement => statement.setExpression());
       return true;
@@ -147,24 +147,24 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   private removeInitialAndFinalParens(): void {
-    let firstChild = this.statements[0];
+    const firstChild = this.statements[0];
     for (
       let tokenIndex: SourceTokenListIndex | null = this.contentStartTokenIndex;
       tokenIndex !== null && tokenIndex.isBefore(firstChild.outerStartTokenIndex);
       tokenIndex = tokenIndex.next()
     ) {
-      let token = this.sourceTokenAtIndex(tokenIndex);
+      const token = this.sourceTokenAtIndex(tokenIndex);
       if (token && token.type === SourceType.LPAREN) {
         this.remove(token.start, token.end);
       }
     }
-    let lastChild = this.statements[this.statements.length - 1];
+    const lastChild = this.statements[this.statements.length - 1];
     for (
       let tokenIndex: SourceTokenListIndex | null = this.contentEndTokenIndex;
       tokenIndex !== null && tokenIndex.isAfter(lastChild.outerEndTokenIndex);
       tokenIndex = tokenIndex.previous()
     ) {
-      let token = this.sourceTokenAtIndex(tokenIndex);
+      const token = this.sourceTokenAtIndex(tokenIndex);
       if (token && token.type === SourceType.RPAREN) {
         this.remove(token.start, token.end);
       }
@@ -172,14 +172,14 @@ export default class BlockPatcher extends SharedBlockPatcher {
   }
 
   patchInnerStatement(statement: NodePatcher): void {
-    let hasImplicitReturn = statement.implicitlyReturns() && !statement.explicitlyReturns();
+    const hasImplicitReturn = statement.implicitlyReturns() && !statement.explicitlyReturns();
 
     if (statement.isSurroundedByParentheses() && !statement.statementNeedsParens() && !hasImplicitReturn) {
       this.remove(statement.outerStart, statement.innerStart);
       this.remove(statement.innerEnd, statement.outerEnd);
     }
 
-    let implicitReturnPatcher = hasImplicitReturn ? this.implicitReturnPatcher() : null;
+    const implicitReturnPatcher = hasImplicitReturn ? this.implicitReturnPatcher() : null;
     if (implicitReturnPatcher) {
       implicitReturnPatcher.patchImplicitReturnStart(statement);
     }
@@ -199,10 +199,10 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * a comment on the previous line.
    */
   removeFinalEmptyReturn(statement: NodePatcher): void {
-    let previousTokenIndex = statement.contentStartTokenIndex.previous();
-    let nextTokenIndex = statement.contentEndTokenIndex.next();
-    let previousToken = previousTokenIndex && this.sourceTokenAtIndex(previousTokenIndex);
-    let nextToken = nextTokenIndex && this.sourceTokenAtIndex(nextTokenIndex);
+    const previousTokenIndex = statement.contentStartTokenIndex.previous();
+    const nextTokenIndex = statement.contentEndTokenIndex.next();
+    const previousToken = previousTokenIndex && this.sourceTokenAtIndex(previousTokenIndex);
+    const nextToken = nextTokenIndex && this.sourceTokenAtIndex(nextTokenIndex);
 
     if (
       previousToken &&
@@ -231,9 +231,9 @@ export default class BlockPatcher extends SharedBlockPatcher {
         statement.setRequiresExpression();
         statement.patch();
         if (i !== statements.length - 1) {
-          let semicolonTokenIndex = this.getSemicolonSourceTokenIndexBetween(statement, statements[i + 1]);
+          const semicolonTokenIndex = this.getSemicolonSourceTokenIndexBetween(statement, statements[i + 1]);
           if (semicolonTokenIndex) {
-            let semicolonToken = notNull(this.sourceTokenAtIndex(semicolonTokenIndex));
+            const semicolonToken = notNull(this.sourceTokenAtIndex(semicolonTokenIndex));
             this.overwrite(semicolonToken.start, semicolonToken.end, ',');
           } else {
             this.insert(statement.outerEnd, ',');
@@ -241,7 +241,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
         }
       });
     }
-    let lastToken = this.lastToken();
+    const lastToken = this.lastToken();
     if (lastToken.type === SourceType.SEMICOLON) {
       this.remove(lastToken.start, lastToken.end);
     }

@@ -55,7 +55,7 @@ function maybeStripIndent(
 
 function checkOutput(source: string, expected: string, options: Options): void {
   try {
-    let converted = convert(source, {
+    const converted = convert(source, {
       disableSuggestionComment: true,
       ...options
     });

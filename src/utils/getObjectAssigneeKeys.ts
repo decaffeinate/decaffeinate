@@ -8,8 +8,8 @@ import ObjectInitialiserMemberPatcher from '../stages/main/patchers/ObjectInitia
 import ObjectInitialiserPatcher from '../stages/main/patchers/ObjectInitialiserPatcher';
 
 export default function getObjectAssigneeKeys(node: ObjectInitialiserPatcher): Array<string> {
-  let results: Array<string> = [];
-  for (let member of node.members) {
+  const results: Array<string> = [];
+  for (const member of node.members) {
     // We ignore non-identifier keys, since CoffeeScript doesn't seem to handle them properly.
     if (member instanceof ObjectInitialiserMemberPatcher && member.key instanceof IdentifierPatcher) {
       results.push(member.key.node.data);

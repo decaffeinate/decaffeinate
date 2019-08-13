@@ -4,9 +4,9 @@ import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class ModuloOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
-    let helper = registerModHelper(this);
+    const helper = registerModHelper(this);
 
-    let shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
+    const shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
       this.insert(this.contentStart, '!');
     }
@@ -14,7 +14,7 @@ export default class ModuloOpCompoundAssignOpPatcher extends CompoundAssignOpPat
       this.insert(this.contentStart, '(');
     }
 
-    let assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
+    const assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
 
     // `a %%= b` → `a %%= __mod__(a, b`
     //               ^^^^^^^^^^^^^^^^

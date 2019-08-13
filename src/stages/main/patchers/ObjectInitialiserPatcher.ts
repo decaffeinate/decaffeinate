@@ -36,7 +36,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
 
   setExpression(force: boolean): boolean {
     if (this.isImplicitObject()) {
-      let { curlyBraceInsertionPosition } = this.getOpenCurlyInfo();
+      const { curlyBraceInsertionPosition } = this.getOpenCurlyInfo();
       this.adjustBoundsToInclude(curlyBraceInsertionPosition);
     }
     return super.setExpression(force);
@@ -46,9 +46,9 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
    * Objects as expressions are very similar to their CoffeeScript equivalents.
    */
   patchAsExpression(): void {
-    let implicitObject = this.isImplicitObject();
+    const implicitObject = this.isImplicitObject();
     if (implicitObject) {
-      let { curlyBraceInsertionPosition, textToInsert, shouldIndent } = this.getOpenCurlyInfo();
+      const { curlyBraceInsertionPosition, textToInsert, shouldIndent } = this.getOpenCurlyInfo();
       this.insert(curlyBraceInsertionPosition, textToInsert);
       if (shouldIndent) {
         this.indent();
@@ -79,16 +79,16 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
         }
 
         if (tokenIndexBeforeOuterStartTokenIndex) {
-          let precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
+          const precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
             isSemanticToken,
             tokenIndexBeforeOuterStartTokenIndex
           );
           if (precedingTokenIndex) {
-            let precedingToken = notNull(this.sourceTokenAtIndex(precedingTokenIndex));
+            const precedingToken = notNull(this.sourceTokenAtIndex(precedingTokenIndex));
             curlyBraceInsertionPosition = precedingToken.end;
-            let precedingTokenText = this.sourceOfToken(precedingToken);
-            let lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
-            let needsSpace = lastCharOfToken === ':' || lastCharOfToken === '=' || lastCharOfToken === ',';
+            const precedingTokenText = this.sourceOfToken(precedingToken);
+            const lastCharOfToken = precedingTokenText[precedingTokenText.length - 1];
+            const needsSpace = lastCharOfToken === ':' || lastCharOfToken === '=' || lastCharOfToken === ',';
             if (needsSpace) {
               textToInsert = ' {';
             }
@@ -113,8 +113,8 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
    * statement `a` with a single expression statement, being the literal 0.
    */
   patchAsStatement(): void {
-    let needsParentheses = !this.isSurroundedByParentheses();
-    let implicitObject = this.isImplicitObject();
+    const needsParentheses = !this.isSurroundedByParentheses();
+    const implicitObject = this.isImplicitObject();
     if (needsParentheses) {
       this.insert(this.contentStart, '(');
     }
@@ -170,8 +170,8 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
    *   { a: b }  # false
    */
   isImplicitObject(): boolean {
-    let tokens = this.context.sourceTokens;
-    let indexOfFirstToken = notNull(tokens.indexOfTokenStartingAtSourceIndex(this.contentStart));
+    const tokens = this.context.sourceTokens;
+    const indexOfFirstToken = notNull(tokens.indexOfTokenStartingAtSourceIndex(this.contentStart));
     return notNull(tokens.tokenAtIndex(indexOfFirstToken)).type !== SourceType.LBRACE;
   }
 

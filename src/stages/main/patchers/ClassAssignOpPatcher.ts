@@ -97,7 +97,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     }
     // `name: null` → `name = null`
     //      ^^             ^^^
-    let colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
+    const colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.key,
       this.expression,
       token => token.type === SourceType.COLON
@@ -105,7 +105,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     if (!colonIndex) {
       throw this.error('expected a colon between the key and expression of a class property');
     }
-    let colonToken = notNull(this.sourceTokenAtIndex(colonIndex));
+    const colonToken = notNull(this.sourceTokenAtIndex(colonIndex));
     this.overwrite(colonToken.start, colonToken.end, ' =');
     this.patchExpression();
   }
@@ -128,12 +128,12 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
       return false;
     }
 
-    let memberObject = this.key.expression;
+    const memberObject = this.key.expression;
     if (memberObject instanceof ThisPatcher) {
       return true;
     }
 
-    let className = this.getEnclosingClassPatcher().nameAssignee;
+    const className = this.getEnclosingClassPatcher().nameAssignee;
     return (
       className instanceof IdentifierPatcher &&
       memberObject instanceof IdentifierPatcher &&
@@ -142,7 +142,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
   }
 
   getEnclosingClassPatcher(): ClassPatcher {
-    let enclosingClassPatcher = notNull(this.parent).parent;
+    const enclosingClassPatcher = notNull(this.parent).parent;
     if (!(enclosingClassPatcher instanceof ClassPatcher)) {
       throw this.error("Expected parent's parent to be a class.");
     }

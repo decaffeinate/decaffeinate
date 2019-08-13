@@ -6,12 +6,12 @@ import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('formatDecaffeinateParserAst', () => {
   it('formats an AST for normal CoffeeScript code', () => {
-    let source = stripSharedIndent(`
+    const source = stripSharedIndent(`
       loop
         x = a()
         break
     `);
-    let formattedTokens = formatDecaffeinateParserAst(parse(source), new CodeContext(source));
+    const formattedTokens = formatDecaffeinateParserAst(parse(source), new CodeContext(source));
     strictEqual(
       formattedTokens,
       stripSharedIndent(`

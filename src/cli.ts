@@ -13,7 +13,7 @@ const pkg = require('../package');
  * Run the script with the user-supplied arguments.
  */
 export default async function run(args: Array<string>): Promise<void> {
-  let options = parseArguments(args);
+  const options = parseArguments(args);
 
   if (options.paths.length) {
     await runWithPaths(options.paths, options);
@@ -29,12 +29,12 @@ interface CLIOptions {
 }
 
 function parseArguments(args: Array<string>): CLIOptions {
-  let paths = [];
-  let baseOptions: Options = {};
+  const paths = [];
+  const baseOptions: Options = {};
   let modernizeJS = false;
 
   for (let i = 0; i < args.length; i++) {
-    let arg = args[i];
+    const arg = args[i];
     switch (arg) {
       case '-h':
       case '--help':
@@ -154,7 +154,7 @@ function parseArguments(args: Array<string>): CLIOptions {
  */
 async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<void> {
   async function processPath(path: string): Promise<void> {
-    let info = await stat(path);
+    const info = await stat(path);
     if (info.isDirectory()) {
       await processDirectory(path);
     } else {
@@ -163,11 +163,11 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
   }
 
   async function processDirectory(path: string): Promise<void> {
-    let children = await readdir(path);
+    const children = await readdir(path);
 
-    for (let child of children) {
-      let childPath = join(path, child);
-      let childStat = await stat(childPath);
+    for (const child of children) {
+      const childPath = join(path, child);
+      const childStat = await stat(childPath);
 
       if (childStat.isDirectory()) {
         await processDirectory(childPath);
@@ -182,15 +182,15 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
   }
 
   async function processFile(path: string): Promise<void> {
-    let extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
-    let outputPath = join(dirname(path), basename(path, extension)) + '.js';
+    const extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
+    const outputPath = join(dirname(path), basename(path, extension)) + '.js';
     console.log(`${path} → ${outputPath}`);
-    let data = await readFile(path, 'utf8');
-    let resultCode = runWithCode(path, data, options);
+    const data = await readFile(path, 'utf8');
+    const resultCode = runWithCode(path, data, options);
     await writeFile(outputPath, resultCode);
   }
 
-  for (let path of paths) {
+  for (const path of paths) {
     await processPath(path);
   }
 }
@@ -200,7 +200,7 @@ async function runWithStdio(options: CLIOptions): Promise<void> {
     let data = '';
     process.stdin.on('data', chunk => (data += chunk));
     process.stdin.on('end', () => {
-      let resultCode = runWithCode('stdin', data, options);
+      const resultCode = runWithCode('stdin', data, options);
       process.stdout.write(resultCode);
       resolve();
     });
@@ -211,7 +211,7 @@ async function runWithStdio(options: CLIOptions): Promise<void> {
  * Run decaffeinate on the given code string and return the resulting code.
  */
 function runWithCode(name: string, code: string, options: CLIOptions): string {
-  let baseOptions = Object.assign({ filename: name }, options.baseOptions);
+  const baseOptions = Object.assign({ filename: name }, options.baseOptions);
   try {
     if (options.modernizeJS) {
       return modernizeJS(code, baseOptions).code;
@@ -238,7 +238,7 @@ function version(): void {
  * Print usage help.
  */
 function usage(): void {
-  let exe = basename(process.argv[1]);
+  const exe = basename(process.argv[1]);
   console.log('%s [OPTIONS] PATH [PATH …]', exe);
   console.log('%s [OPTIONS] < INPUT', exe);
   console.log();

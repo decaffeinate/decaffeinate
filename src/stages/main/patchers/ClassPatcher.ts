@@ -43,8 +43,8 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   patchAsStatement(): void {
-    let hasParens = this.isSurroundedByParentheses();
-    let anonymous = this.isAnonymous();
+    const hasParens = this.isSurroundedByParentheses();
+    const anonymous = this.isAnonymous();
     if (anonymous && !hasParens) {
       // `class` → `(class`
       //            ^
@@ -61,19 +61,19 @@ export default class ClassPatcher extends NodePatcher {
   }
 
   patchAsExpression({ skipParens = false }: PatchOptions = {}): void {
-    let needsAssignment =
+    const needsAssignment =
       this.nameAssignee && (this.isNamespaced() || this.isNameAlreadyDeclared() || this.willPatchAsExpression());
-    let needsParens =
+    const needsParens =
       !skipParens && needsAssignment && this.willPatchAsExpression() && !this.isSurroundedByParentheses();
     if (needsParens) {
       this.insert(this.contentStart, '(');
     }
     if (needsAssignment && this.nameAssignee) {
-      let classToken = this.getClassToken();
+      const classToken = this.getClassToken();
       // `class A.B` → `A.B`
       //  ^^^^^^
       this.remove(classToken.start, this.nameAssignee.outerStart);
-      let name = this.getName();
+      const name = this.getName();
       if (name) {
         // `A.B` → `A.B = class B`
         //             ^^^^^^^^^^
@@ -120,8 +120,8 @@ export default class ClassPatcher extends NodePatcher {
    * @private
    */
   getClassToken(): SourceToken {
-    let tokens = this.context.sourceTokens;
-    let classSourceToken = notNull(tokens.tokenAtIndex(this.contentStartTokenIndex));
+    const tokens = this.context.sourceTokens;
+    const classSourceToken = notNull(tokens.tokenAtIndex(this.contentStartTokenIndex));
     if (classSourceToken.type !== SourceType.CLASS) {
       throw this.error(
         `expected CLASS token but found ${SourceType[classSourceToken.type]}`,
@@ -152,7 +152,7 @@ export default class ClassPatcher extends NodePatcher {
    * declaration.
    */
   isNameAlreadyDeclared(): boolean {
-    let name = this.getName();
+    const name = this.getName();
     return this.nameAssignee !== null && name !== null && this.getScope().getBinding(name) !== this.nameAssignee.node;
   }
 
@@ -160,7 +160,7 @@ export default class ClassPatcher extends NodePatcher {
    * @private
    */
   getName(): string | null {
-    let { nameAssignee } = this;
+    const { nameAssignee } = this;
     let name;
     if (nameAssignee instanceof IdentifierPatcher) {
       name = nameAssignee.node.data;

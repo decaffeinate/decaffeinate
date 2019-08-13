@@ -9,7 +9,7 @@ import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
   body: BlockPatcher | null;
-  _implicitReturnsDisabled: boolean = false;
+  _implicitReturnsDisabled = false;
 
   constructor(patcherContext: PatcherContext, parameters: Array<NodePatcher>, body: BlockPatcher | null) {
     super(patcherContext);
@@ -30,8 +30,8 @@ export default class FunctionPatcher extends NodePatcher {
   patchAsExpression({ method = false }: PatchOptions = {}): void {
     this.patchFunctionStart({ method });
     this.parameters.forEach((parameter, i) => {
-      let isLast = i === this.parameters.length - 1;
-      let needsComma = !isLast && !parameter.hasSourceTokenAfter(SourceType.COMMA);
+      const isLast = i === this.parameters.length - 1;
+      const needsComma = !isLast && !parameter.hasSourceTokenAfter(SourceType.COMMA);
       parameter.patch();
       if (needsComma) {
         this.insert(parameter.outerEnd, ',');
@@ -41,7 +41,7 @@ export default class FunctionPatcher extends NodePatcher {
   }
 
   patchFunctionStart({ method = false }: { method: boolean }): void {
-    let arrow = this.getArrowToken();
+    const arrow = this.getArrowToken();
 
     if (!method) {
       this.insert(this.contentStart, 'function');
@@ -87,7 +87,7 @@ export default class FunctionPatcher extends NodePatcher {
     if (!this.body) {
       throw this.error('Expected non-null body.');
     }
-    let closeParenIndex = notNull(this.parent).indexOfSourceTokenBetweenSourceIndicesMatching(
+    const closeParenIndex = notNull(this.parent).indexOfSourceTokenBetweenSourceIndicesMatching(
       this.contentEnd,
       notNull(this.parent).contentEnd,
       token => token.type === SourceType.CALL_END || token.type === SourceType.RPAREN
@@ -95,11 +95,11 @@ export default class FunctionPatcher extends NodePatcher {
     if (!closeParenIndex) {
       throw this.error('Expected to find close paren index after function call.');
     }
-    let closeParen = this.sourceTokenAtIndex(closeParenIndex);
+    const closeParen = this.sourceTokenAtIndex(closeParenIndex);
     if (!closeParen) {
       throw this.error('Expected to find close paren after function call.');
     }
-    let shouldMoveCloseParen = !this.body.inline() && !this.slice(this.contentEnd, closeParen.start).includes('\n');
+    const shouldMoveCloseParen = !this.body.inline() && !this.slice(this.contentEnd, closeParen.start).includes('\n');
     if (shouldMoveCloseParen) {
       this.appendLineAfter('}', -1);
     } else {
@@ -110,7 +110,7 @@ export default class FunctionPatcher extends NodePatcher {
   getArrowToken(): SourceToken {
     let arrowIndex = this.contentStartTokenIndex;
     if (this.hasParamStart()) {
-      let parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(
+      const parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(
         SourceType.LPAREN,
         SourceType.RPAREN,
         this.contentStartTokenIndex
@@ -118,18 +118,18 @@ export default class FunctionPatcher extends NodePatcher {
       if (!parenRange) {
         throw this.error('Expected to find function paren range in function.');
       }
-      let rparenIndex = parenRange[1].previous();
+      const rparenIndex = parenRange[1].previous();
       if (!rparenIndex) {
         throw this.error('Expected to find rparen index in function.');
       }
       arrowIndex = notNull(this.indexOfSourceTokenAfterSourceTokenIndex(rparenIndex, SourceType.FUNCTION));
     }
-    let arrow = this.sourceTokenAtIndex(arrowIndex);
+    const arrow = this.sourceTokenAtIndex(arrowIndex);
     if (!arrow) {
       throw this.error('Expected to find arrow token in function.');
     }
-    let expectedArrowType = this.expectedArrowType();
-    let actualArrowType = this.sourceOfToken(arrow);
+    const expectedArrowType = this.expectedArrowType();
+    const actualArrowType = this.sourceOfToken(arrow);
     if (actualArrowType !== expectedArrowType) {
       throw this.error(`expected '${expectedArrowType}' but found ${actualArrowType}`, arrow.start, arrow.end);
     }

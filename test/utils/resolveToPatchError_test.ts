@@ -9,7 +9,7 @@ import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('resolveToPatchError', () => {
   it('handles syntax errors in JavaScript code', () => {
-    let content = stripSharedIndent(`
+    const content = stripSharedIndent(`
         let x = 3;
         f())
         console.log('test');`);
@@ -17,7 +17,7 @@ describe('resolveToPatchError', () => {
       addVariableDeclarations(content, new MagicString(content));
       ok(false, 'Expected an exception to be thrown.');
     } catch (e) {
-      let patchError = resolveToPatchError(e, content, 'testStage');
+      const patchError = resolveToPatchError(e, content, 'testStage');
       if (!patchError) {
         throw new Error('Expected non-null error.');
       }
@@ -34,7 +34,7 @@ describe('resolveToPatchError', () => {
   });
 
   it('handles syntax errors in CoffeeScript code', () => {
-    let content = stripSharedIndent(`
+    const content = stripSharedIndent(`
         x = 3
           f()
         console.log 'test'`);
@@ -42,7 +42,7 @@ describe('resolveToPatchError', () => {
       DecaffeinateContext.create(content, false);
       ok(false, 'Expected an exception to be thrown.');
     } catch (e) {
-      let patchError = resolveToPatchError(e, content, 'testStage');
+      const patchError = resolveToPatchError(e, content, 'testStage');
       if (!patchError) {
         throw new Error('Expected non-null error.');
       }
@@ -59,7 +59,7 @@ describe('resolveToPatchError', () => {
   });
 
   it('returns null for other errors', () => {
-    let patchError = resolveToPatchError(new Error('a normal error'), 'test content', 'test stage name');
+    const patchError = resolveToPatchError(new Error('a normal error'), 'test content', 'test stage name');
     strictEqual(patchError, null);
   });
 });

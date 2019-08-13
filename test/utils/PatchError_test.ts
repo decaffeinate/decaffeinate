@@ -4,8 +4,8 @@ import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
 describe('PatchError', () => {
   it('handles files not ending in newlines', () => {
-    let error = new PatchError('Sample error', 'abcdefg', 2, 4);
-    let expected =
+    const error = new PatchError('Sample error', 'abcdefg', 2, 4);
+    const expected =
       stripSharedIndent(`
       Sample error
       > 1 | abcdefg
@@ -15,8 +15,8 @@ describe('PatchError', () => {
   });
 
   it('does not crash on an out-of-order range', () => {
-    let error = new PatchError('Sample error', 'abcdefg', 4, 2);
-    let expected =
+    const error = new PatchError('Sample error', 'abcdefg', 4, 2);
+    const expected =
       stripSharedIndent(`
       Sample error
       > 1 | abcdefg

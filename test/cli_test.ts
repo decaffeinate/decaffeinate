@@ -13,7 +13,7 @@ function runCli(argStr: string, stdin: string, expectedStdout: string): void {
     expectedStdout = stripSharedIndent(expectedStdout);
   }
 
-  let stdout = execSync('./bin/decaffeinate ' + argStr, {
+  const stdout = execSync('./bin/decaffeinate ' + argStr, {
     input: stdin
   }).toString();
   equal(stdout.trim(), expectedStdout.trim());
@@ -528,7 +528,7 @@ describe('decaffeinate CLI', () => {
       test_fixtures/F.tmp.js → test_fixtures/F.tmp.js
     `
     );
-    let contents = readFileSync('./test_fixtures/F.tmp.js').toString();
+    const contents = readFileSync('./test_fixtures/F.tmp.js').toString();
     equal(
       stripSharedIndent(contents),
       stripSharedIndent(`
@@ -551,7 +551,7 @@ describe('decaffeinate CLI', () => {
       test_fixtures/searchDir/F.js → test_fixtures/searchDir/F.js
     `
     );
-    let contents = readFileSync('./test_fixtures/searchDir/F.js').toString();
+    const contents = readFileSync('./test_fixtures/searchDir/F.js').toString();
     equal(
       stripSharedIndent(contents),
       stripSharedIndent(`
@@ -569,7 +569,7 @@ describe('decaffeinate CLI', () => {
       test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js 
     `
     );
-    let contents = readFileSync('./test_fixtures/level1/level2/file.js').toString();
+    const contents = readFileSync('./test_fixtures/level1/level2/file.js').toString();
     equal(
       stripSharedIndent(contents),
       stripSharedIndent(`

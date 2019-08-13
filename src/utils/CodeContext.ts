@@ -24,11 +24,11 @@ export default class CodeContext {
     if (index > this.source.length) {
       index = this.source.length;
     }
-    let location = this.linesAndColumns.locationForIndex(index);
+    const location = this.linesAndColumns.locationForIndex(index);
     if (!location) {
       return 'INVALID POSITION';
     }
-    let { line, column } = location;
+    const { line, column } = location;
     return `${line + 1}:${column + 1}(${index})`;
   }
 }

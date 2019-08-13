@@ -24,8 +24,8 @@ export default class LoopPatcher extends NodePatcher {
   }
 
   patchAsExpression(): void {
-    let loop = this.firstToken();
-    let next = this.sourceTokenAtIndex(notNull(this.contentStartTokenIndex.next()));
+    const loop = this.firstToken();
+    const next = this.sourceTokenAtIndex(notNull(this.contentStartTokenIndex.next()));
     if (!next) {
       throw this.error('Expected to find a next token.');
     }

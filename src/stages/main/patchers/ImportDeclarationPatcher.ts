@@ -31,13 +31,13 @@ export default class ImportDeclarationPatcher extends NodePatcher {
     if (namedImports) {
       namedImports.forEach((namedImport, i) => {
         namedImport.patch();
-        let isLast = i === namedImports.length - 1;
-        let commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
+        const isLast = i === namedImports.length - 1;
+        const commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
           namedImport.outerEndTokenIndex,
           SourceType.COMMA,
           isSemanticToken
         );
-        let commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
+        const commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
         if (!isLast && !commaToken) {
           this.insert(namedImport.outerEnd, ',');
         }

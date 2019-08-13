@@ -62,15 +62,15 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   }
 
   getMemberOperatorSourceToken(): SourceToken | null {
-    let dotIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
+    const dotIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.expression.outerEnd,
       this.outerEnd - 1,
       token => token.type === SourceType.DOT
     );
 
     if (!dotIndex) {
-      let firstIndex = this.contentStartTokenIndex;
-      let firstToken = notNull(this.sourceTokenAtIndex(firstIndex));
+      const firstIndex = this.contentStartTokenIndex;
+      const firstToken = notNull(this.sourceTokenAtIndex(firstIndex));
       if (firstToken.type === SourceType.AT) {
         // e.g. `@a`, so it's okay that there's no dot
         return null;
@@ -92,8 +92,8 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   }
 
   getMemberNameSourceToken(): SourceToken {
-    let tokens = this.context.sourceTokens;
-    let index = tokens.lastIndexOfTokenMatchingPredicate(
+    const tokens = this.context.sourceTokens;
+    const index = tokens.lastIndexOfTokenMatchingPredicate(
       token => token.type === SourceType.IDENTIFIER,
       this.contentEndTokenIndex
     );

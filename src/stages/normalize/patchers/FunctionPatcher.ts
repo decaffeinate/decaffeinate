@@ -32,13 +32,13 @@ export default class FunctionPatcher extends NodePatcher {
       this.insert(this.body.contentStart, ' ');
     }
 
-    let neededExplicitBindings = [];
+    const neededExplicitBindings = [];
 
-    let firstRestParamIndex = this.getFirstRestParamIndex();
-    let assignments = [];
-    for (let [i, parameter] of this.parameters.entries()) {
+    const firstRestParamIndex = this.getFirstRestParamIndex();
+    const assignments = [];
+    for (const [i, parameter] of this.parameters.entries()) {
       if (firstRestParamIndex === -1 || i < firstRestParamIndex) {
-        let { newAssignments, newBindings } = this.patchParameterAndGetAssignments(parameter);
+        const { newAssignments, newBindings } = this.patchParameterAndGetAssignments(parameter);
         assignments.push(...newAssignments);
         neededExplicitBindings.push(...newBindings);
       } else {
@@ -48,7 +48,7 @@ export default class FunctionPatcher extends NodePatcher {
       if (i === this.parameters.length - 1) {
         // Parameter lists allow trailing semicolons but not trailing commas, so
         // just get rid of it as a special case if it's there.
-        let nextToken = parameter.nextSemanticToken();
+        const nextToken = parameter.nextSemanticToken();
         if (nextToken && nextToken.type === SourceType.SEMICOLON) {
           this.remove(nextToken.start, nextToken.end);
         }
@@ -72,10 +72,10 @@ export default class FunctionPatcher extends NodePatcher {
       } else {
         // Move expansion or intermediate rest params into an array destructure
         // on the first line.
-        let candidateName = firstRestParamIndex === 0 ? 'args' : 'rest';
-        let paramName = this.claimFreeBinding(candidateName);
-        let restParamsStart = this.parameters[firstRestParamIndex].contentStart;
-        let restParamsEnd = this.parameters[this.parameters.length - 1].contentEnd;
+        const candidateName = firstRestParamIndex === 0 ? 'args' : 'rest';
+        const paramName = this.claimFreeBinding(candidateName);
+        const restParamsStart = this.parameters[firstRestParamIndex].contentStart;
+        const restParamsEnd = this.parameters[this.parameters.length - 1].contentEnd;
         let paramCode = this.slice(restParamsStart, restParamsEnd);
         paramCode = this.fixGeneratedAssigneeWhitespace(paramCode);
         this.overwrite(restParamsStart, restParamsEnd, `${paramName}...`);
@@ -102,7 +102,7 @@ export default class FunctionPatcher extends NodePatcher {
     // If there were assignments from parameters insert them
     if (this.body) {
       // before the actual body
-      for (let assignment of assignments) {
+      for (const assignment of assignments) {
         this.body.insertLineBefore(assignment);
       }
       this.body.patch();
@@ -112,8 +112,8 @@ export default class FunctionPatcher extends NodePatcher {
       if (!(this.context.getParent(this.node) instanceof Constructor)) {
         assignments.push('return');
       }
-      let indent = this.getIndent(1);
-      let text = assignments.join(`\n${indent}`);
+      const indent = this.getIndent(1);
+      const text = assignments.join(`\n${indent}`);
       this.insert(this.contentEnd, `\n${indent}${text}`);
     }
   }
@@ -126,17 +126,17 @@ export default class FunctionPatcher extends NodePatcher {
   patchParameterAndGetAssignments(
     parameter: NodePatcher
   ): { newAssignments: Array<string>; newBindings: Array<string> } {
-    let thisAssignments: Array<string> = [];
-    let defaultParamAssignments: Array<string> = [];
+    const thisAssignments: Array<string> = [];
+    const defaultParamAssignments: Array<string> = [];
 
-    let newBindings: Array<string> = [];
+    const newBindings: Array<string> = [];
 
     // To avoid knowledge of all the details how assignments can be nested in nodes,
     // we add a callback to the function node before patching the parameters and remove it afterwards.
     // This is detected and used by the MemberAccessOpPatcher to claim a free binding for this parameter
     // (from the functions scope, not the body's scope)
     this.addThisAssignmentAtScopeHeader = (memberName: string): string => {
-      let varName = this.claimFreeBinding(memberName);
+      const varName = this.claimFreeBinding(memberName);
       thisAssignments.push(`@${memberName} = ${varName}`);
       this.log(`Replacing parameter @${memberName} with ${varName}`);
       return varName;
@@ -155,7 +155,7 @@ export default class FunctionPatcher extends NodePatcher {
         // Handle cases like `({a}={}) ->`, where we need to check for default
         // with the param as a normal variable, then include the destructure.
         assigneeCode = this.fixGeneratedAssigneeWhitespace(assigneeCode);
-        let paramName = this.claimFreeBinding('param');
+        const paramName = this.claimFreeBinding('param');
         defaultParamAssignments.push(`(${paramName} ?= ${initCode})`);
         defaultParamAssignments.push(`${assigneeCode} = ${paramName}`);
         newBindings.push(...getAssigneeBindings(assigneeNode));
@@ -184,12 +184,12 @@ export default class FunctionPatcher extends NodePatcher {
    * still the same.
    */
   fixGeneratedAssigneeWhitespace(assigneeCode: string): string {
-    let firstNewlineIndex = assigneeCode.indexOf('\n');
+    const firstNewlineIndex = assigneeCode.indexOf('\n');
     if (firstNewlineIndex < 0) {
       return assigneeCode;
     }
-    let indent = this.body ? this.body.getIndent(0) : this.getIndent(1);
-    let firstLine = assigneeCode.substr(0, firstNewlineIndex);
+    const indent = this.body ? this.body.getIndent(0) : this.getIndent(1);
+    const firstLine = assigneeCode.substr(0, firstNewlineIndex);
     let otherLines = assigneeCode.substr(firstNewlineIndex + 1);
     otherLines = stripSharedIndent(otherLines);
     otherLines = otherLines.replace(/\n/g, `\n${indent}`);
@@ -219,7 +219,7 @@ export default class FunctionPatcher extends NodePatcher {
     }
 
     for (let i = 0; i < this.parameters.length; i++) {
-      let parameter = this.parameters[i];
+      const parameter = this.parameters[i];
 
       // We have separate code to handle relatively simple default params that
       // results in better code, so use that.

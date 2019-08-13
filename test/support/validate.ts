@@ -37,8 +37,8 @@ export default function validate(
   expectedOutput?: any | { cs1: any; cs2: any },
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
-  let expectedCS1 = expectedOutput && expectedOutput.hasOwnProperty('cs1') ? expectedOutput.cs1 : expectedOutput;
-  let expectedCS2 = expectedOutput && expectedOutput.hasOwnProperty('cs2') ? expectedOutput.cs2 : expectedOutput;
+  const expectedCS1 = expectedOutput && expectedOutput.hasOwnProperty('cs1') ? expectedOutput.cs1 : expectedOutput;
+  const expectedCS2 = expectedOutput && expectedOutput.hasOwnProperty('cs2') ? expectedOutput.cs2 : expectedOutput;
   runValidateCase(source, expectedCS1, { options: { ...options, useCS2: false }, skipNodeCheck });
   runValidateCase(source, expectedCS2, { options: { ...options, useCS2: true }, skipNodeCheck });
 }
@@ -81,7 +81,7 @@ function runValidateCase(
 function runCodeAndExtract(source: string): any {
   let result = null;
   let numCalls = 0;
-  let sandbox = {
+  const sandbox = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setResult(r: any): void {
       result = r;
@@ -97,16 +97,16 @@ function runCodeAndExtract(source: string): any {
 }
 
 function runValidation(source: string, expectedOutput: {}, options: Options, skipNodeCheck: boolean): void {
-  let compile = options.useCS2 ? cs2Compile : cs1Compile;
-  let coffeeES5 = compile(source, { bare: true }) as string;
-  let decaffeinateES6 = convert(source, options).code;
-  let transformed = babel.transformSync(decaffeinateES6, {
+  const compile = options.useCS2 ? cs2Compile : cs1Compile;
+  const coffeeES5 = compile(source, { bare: true }) as string;
+  const decaffeinateES6 = convert(source, options).code;
+  const transformed = babel.transformSync(decaffeinateES6, {
     presets: ['@babel/preset-env']
   });
-  let decaffeinateES5 = (transformed && transformed.code) || '';
+  const decaffeinateES5 = (transformed && transformed.code) || '';
 
-  let coffeeOutput = runCodeAndExtract(coffeeES5);
-  let decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
+  const coffeeOutput = runCodeAndExtract(coffeeES5);
+  const decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
   try {
     assertDeepEqual(decaffeinateOutput, coffeeOutput, 'decaffeinate and coffee output were different.');
   } catch (err) {
@@ -131,7 +131,7 @@ ${err.message}`;
 
   // Make sure babel and V8 behave the same if we're on node >= 6.
   if (!skipNodeCheck) {
-    let nodeOutput = runCodeAndExtract(decaffeinateES6);
+    const nodeOutput = runCodeAndExtract(decaffeinateES6);
     assertDeepEqual(decaffeinateOutput, nodeOutput, 'babel and node output were different.');
   }
 

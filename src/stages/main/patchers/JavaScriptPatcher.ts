@@ -13,14 +13,14 @@ export default class JavaScriptPatcher extends NodePatcher {
     // For any normal surrounding parens, CoffeeScript's rule is to remove them,
     // which allows things like comment-only inline JS. Function call parens
     // should not be removed, though.
-    let shouldRemoveSurroundingParens = !(
+    const shouldRemoveSurroundingParens = !(
       this.parent instanceof FunctionApplicationPatcher && this === this.parent.args[0]
     );
 
     if (shouldRemoveSurroundingParens) {
       this.remove(this.outerStart, this.contentStart);
     }
-    let token = this.firstToken();
+    const token = this.firstToken();
     let tokenLength;
     if (token.type === SourceType.JS) {
       tokenLength = 1;
@@ -51,7 +51,7 @@ export default class JavaScriptPatcher extends NodePatcher {
         // number. CoffeeScript has the same special escaping behavior there as well, so replicate
         // that: 2 backslashes become 1, 4 become 2, etc. In all case, this behavior only happens
         // for a sequence of backslashes followed by a backtick.
-        let numBackslashesToKeep = Math.floor((i + 1 - startBackslash) / 2);
+        const numBackslashesToKeep = Math.floor((i + 1 - startBackslash) / 2);
         this.remove(startBackslash, i + 1 - numBackslashesToKeep);
       }
     }

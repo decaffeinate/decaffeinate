@@ -23,7 +23,7 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
 
   patchAsExpression(): void {
     this.members.forEach((member, i, members) => {
-      let isLast = i === members.length - 1;
+      const isLast = i === members.length - 1;
 
       // An expansion in a final position is a no-op, so just remove it.
       if (isLast && member instanceof ExpansionPatcher) {
@@ -31,7 +31,8 @@ export default class ArrayInitialiserPatcher extends NodePatcher {
         return;
       }
 
-      let needsComma = !isLast && !member.hasSourceTokenAfter(SourceType.COMMA) && !(member instanceof ElisionPatcher);
+      const needsComma =
+        !isLast && !member.hasSourceTokenAfter(SourceType.COMMA) && !(member instanceof ElisionPatcher);
       member.patch();
       if (needsComma) {
         this.insert(member.outerEnd, ',');

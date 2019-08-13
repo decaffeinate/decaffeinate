@@ -9,10 +9,10 @@ export default class ThisPatcher extends PassthroughPatcher {
    * make the result still syntactically valid.
    */
   patchAsRepeatableExpression(repeatableOptions: RepeatableOptions = {}, patchOptions: PatchOptions = {}): string {
-    let ref = super.patchAsRepeatableExpression(repeatableOptions, patchOptions);
-    let addedParens = (!this.isRepeatable() || repeatableOptions.forceRepeat) && repeatableOptions.parens;
+    const ref = super.patchAsRepeatableExpression(repeatableOptions, patchOptions);
+    const addedParens = (!this.isRepeatable() || repeatableOptions.forceRepeat) && repeatableOptions.parens;
     if (addedParens && this.parent instanceof MemberAccessOpPatcher) {
-      let nextToken = this.nextSemanticToken();
+      const nextToken = this.nextSemanticToken();
       if (!nextToken || nextToken.type !== SourceType.DOT) {
         this.insert(this.innerEnd, '.');
       }

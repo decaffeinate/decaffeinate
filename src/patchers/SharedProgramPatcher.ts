@@ -34,7 +34,7 @@ export default class ProgramPatcher extends NodePatcher {
   }
 
   patchHelpers(): void {
-    for (let helper of this.helpers.values()) {
+    for (const helper of this.helpers.values()) {
       this.editor.append(`\n${helper}`);
     }
   }

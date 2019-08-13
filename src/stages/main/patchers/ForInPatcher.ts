@@ -111,9 +111,9 @@ export default class ForInPatcher extends ForPatcher {
    */
   isMapBodyNoOp(): boolean {
     if (this.valAssignee instanceof IdentifierPatcher) {
-      let varName = this.valAssignee.node.data;
+      const varName = this.valAssignee.node.data;
       if (this.body instanceof BlockPatcher && this.body.statements.length === 1) {
-        let statement = this.body.statements[0];
+        const statement = this.body.statements[0];
         if (statement instanceof IdentifierPatcher && statement.node.data === varName) {
           return true;
         }
@@ -127,9 +127,9 @@ export default class ForInPatcher extends ForPatcher {
       throw this.error('Expected non-null body.');
     }
     this.body.setRequiresExpression();
-    let bodyNeedsParens = blockStartsWithObjectInitialiser(this.body) && !this.body.isSurroundedByParentheses();
+    const bodyNeedsParens = blockStartsWithObjectInitialiser(this.body) && !this.body.isSurroundedByParentheses();
     if (bodyNeedsParens) {
-      let insertPoint = this.filter ? this.filter.outerEnd : this.target.outerEnd;
+      const insertPoint = this.filter ? this.filter.outerEnd : this.target.outerEnd;
       // Handle both inline and multiline cases by either skipping the existing
       // space or adding one.
       if (this.slice(insertPoint, insertPoint + 1) === ' ') {
@@ -173,19 +173,19 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   canAssigneesBecomeParams(): boolean {
-    let assignees = [this.valAssignee, this.keyAssignee].filter(assignee => assignee);
-    for (let assignee of assignees) {
+    const assignees = [this.valAssignee, this.keyAssignee].filter(assignee => assignee);
+    for (const assignee of assignees) {
       if (!(assignee instanceof IdentifierPatcher)) {
         return false;
       }
-      let name = assignee.node.data;
+      const name = assignee.node.data;
       // Find the enclosing function or program node for the binding so we can
       // find all usages of this variable.
-      let assignmentNode = this.getScope().getBinding(name);
+      const assignmentNode = this.getScope().getBinding(name);
       if (!assignmentNode) {
         throw this.error('Expected loop assignee to have a binding in its scope.');
       }
-      let containerNode = this.context.getScope(assignmentNode).containerNode;
+      const containerNode = this.context.getScope(assignmentNode).containerNode;
       // If the number of usages in the enclosing function is more than the
       // number of usages in the loop, then there must be some external usages,
       // so we can't safely change this to a parameter.
@@ -257,8 +257,8 @@ export default class ForInPatcher extends ForPatcher {
     if (this.requiresExtractingTarget()) {
       this.insert(this.innerStart, `${this.getTargetReference()} = ${this.getTargetCode()}\n${this.getLoopIndent()}`);
     }
-    let firstHeaderPatcher = this.valAssignee || this.target;
-    let lastHeaderPatcher = this.getLastHeaderPatcher();
+    const firstHeaderPatcher = this.valAssignee || this.target;
+    const lastHeaderPatcher = this.getLastHeaderPatcher();
     this.overwrite(
       firstHeaderPatcher.outerStart,
       lastHeaderPatcher.outerEnd,
@@ -268,7 +268,7 @@ export default class ForInPatcher extends ForPatcher {
 
   getLastHeaderPatcher(): NodePatcher {
     let resultPatcher = null;
-    for (let patcher of [this.step, this.filter, this.target]) {
+    for (const patcher of [this.step, this.filter, this.target]) {
       if (patcher && (resultPatcher === null || patcher.contentEnd > resultPatcher.contentEnd)) {
         resultPatcher = patcher;
       }
@@ -305,13 +305,13 @@ export default class ForInPatcher extends ForPatcher {
     }
 
     if (this.valAssignee) {
-      let relationToken = this.getRelationToken();
+      const relationToken = this.getRelationToken();
       this.valAssignee.patch();
       this.insert(this.valAssignee.outerStart, '(');
       this.overwrite(relationToken.start, relationToken.end, 'of');
     } else {
       // Handle loops like `for [0..2]`
-      let valueBinding = this.getValueBinding();
+      const valueBinding = this.getValueBinding();
       this.insert(this.target.outerStart, `(let ${valueBinding} of `);
     }
 
@@ -362,7 +362,7 @@ export default class ForInPatcher extends ForPatcher {
     if (this.isThisAssignIndexBinding()) {
       return true;
     }
-    let userIndex = this.getIndexBinding();
+    const userIndex = this.getIndexBinding();
 
     // We need to extract this to a variable if there's an assignment within the
     // loop, but assignments outside the loop are fine, so we make a fake scope
@@ -372,7 +372,7 @@ export default class ForInPatcher extends ForPatcher {
     if (this.getScope().hasInnerClosureModification(userIndex)) {
       return true;
     }
-    let fakeScope = new Scope(this.node, null);
+    const fakeScope = new Scope(this.node, null);
     traverse(this.node, child => {
       fakeScope.processNode(child);
     });
@@ -380,9 +380,9 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   getInitCode(): string {
-    let step = this.getStep();
+    const step = this.getStep();
     if (this.shouldPatchAsInitTestUpdateLoop()) {
-      let assignments = [];
+      const assignments = [];
       if (this.shouldExtractStart()) {
         assignments.push(`${this.getStartReference()} = ${this.getStartCode()}`);
       }
@@ -401,10 +401,10 @@ export default class ForInPatcher extends ForPatcher {
       }
       return assignments.join(', ');
     } else {
-      let direction = this.getIndexDirection();
-      let descInit = `${this.getTargetReference()}.length - 1`;
+      const direction = this.getIndexDirection();
+      const descInit = `${this.getTargetReference()}.length - 1`;
 
-      let assignments = [];
+      const assignments = [];
       if (!step.isLiteral) {
         assignments.push(`${step.update} = ${step.init}`);
       }
@@ -424,16 +424,16 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   getTestCode(): string {
-    let direction = this.getIndexDirection();
+    const direction = this.getIndexDirection();
     if (this.shouldPatchAsInitTestUpdateLoop()) {
       if (!(this.target instanceof RangePatcher)) {
         throw this.error('Expected range patcher for target.');
       }
-      let inclusive = this.target.isInclusive();
-      let gt = inclusive ? '>=' : '>';
-      let lt = inclusive ? '<=' : '<';
-      let index = this.getInternalIndexBinding();
-      let end = this.getEndReference();
+      const inclusive = this.target.isInclusive();
+      const gt = inclusive ? '>=' : '>';
+      const lt = inclusive ? '<=' : '<';
+      const index = this.getInternalIndexBinding();
+      const end = this.getEndReference();
 
       if (direction === DOWN) {
         return `${index} ${gt} ${end}`;
@@ -443,8 +443,8 @@ export default class ForInPatcher extends ForPatcher {
         return `${this.getAscReference()} ? ${index} ${lt} ${end} : ${index} ${gt} ${end}`;
       }
     } else {
-      let downComparison = `${this.getInternalIndexBinding()} >= 0`;
-      let upComparison = `${this.getInternalIndexBinding()} < ${this.getTargetReference()}.length`;
+      const downComparison = `${this.getInternalIndexBinding()} >= 0`;
+      const upComparison = `${this.getInternalIndexBinding()} < ${this.getTargetReference()}.length`;
       if (direction === DOWN) {
         return downComparison;
       } else if (direction === UP) {
@@ -456,7 +456,7 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   getUpdateCode(): string {
-    let assignments = [this.getUpdateAssignment()];
+    const assignments = [this.getUpdateAssignment()];
     if (this.getInternalIndexBinding() !== this.getIndexBinding()) {
       assignments.push(`${this.getIndexBinding()} = ${this.getInternalIndexBinding()}`);
     }
@@ -464,8 +464,8 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   getUpdateAssignment(): string {
-    let index = this.getInternalIndexBinding();
-    let step = this.getStep();
+    const index = this.getInternalIndexBinding();
+    const step = this.getStep();
 
     // If step is a variable, we always just add it, since its value determines
     // whether we go forward or backward.
@@ -473,9 +473,9 @@ export default class ForInPatcher extends ForPatcher {
       return `${index} += ${step.update}`;
     }
 
-    let direction = this.getIndexDirection();
-    let incCode = step.number === 1 ? '++' : ` += ${step.update}`;
-    let decCode = step.number === 1 ? '--' : ` -= ${step.update}`;
+    const direction = this.getIndexDirection();
+    const incCode = step.number === 1 ? '++' : ` += ${step.update}`;
+    const decCode = step.number === 1 ? '--' : ` -= ${step.update}`;
 
     if (direction === DOWN) {
       return `${index}${decCode}`;
@@ -564,7 +564,7 @@ export default class ForInPatcher extends ForPatcher {
    * the event that it needs to be computed at runtime.
    */
   getAscCode(): string {
-    let step = this.getStep();
+    const step = this.getStep();
     if (step.isVirtual) {
       if (!this.shouldPatchAsInitTestUpdateLoop()) {
         throw new Error(
@@ -599,7 +599,7 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   shouldWrapMapExpressionTargetInArrayFrom(): boolean {
-    let shouldWrap = !this.options.looseForExpressions && !this.isTargetAlreadyArray();
+    const shouldWrap = !this.options.looseForExpressions && !this.isTargetAlreadyArray();
     if (shouldWrap) {
       this.addSuggestion(REMOVE_ARRAY_FROM);
     }
@@ -610,7 +610,7 @@ export default class ForInPatcher extends ForPatcher {
    * Overridden by ForFromPatcher to always return false.
    */
   shouldWrapForOfStatementTargetInArrayFrom(): boolean {
-    let shouldWrap = !this.options.looseForOf && !this.isTargetAlreadyArray();
+    const shouldWrap = !this.options.looseForOf && !this.isTargetAlreadyArray();
     if (shouldWrap) {
       this.addSuggestion(REMOVE_ARRAY_FROM);
     }
@@ -638,7 +638,7 @@ export default class ForInPatcher extends ForPatcher {
    * UNKNOWN means that we cannot statically determine the direction.
    */
   getIndexDirection(): IndexDirection {
-    let step = this.getStep();
+    const step = this.getStep();
     if (this.shouldPatchAsInitTestUpdateLoop()) {
       if (!(this.target instanceof RangePatcher)) {
         throw this.error('Expected target to be a range.');
@@ -649,8 +649,8 @@ export default class ForInPatcher extends ForPatcher {
         if (!(this.target.left.node instanceof Number) || !(this.target.right.node instanceof Number)) {
           throw this.error('Expected numbers for the left and right of the range.');
         }
-        let left = this.target.left.node.data;
-        let right = this.target.right.node.data;
+        const left = this.target.left.node.data;
+        const right = this.target.right.node.data;
         return left > right ? DOWN : UP;
       } else {
         this.addSuggestion(SIMPLIFY_DYNAMIC_RANGE_LOOPS);
@@ -691,7 +691,7 @@ export class Step {
   constructor(patcher: NodePatcher | null) {
     let negated = false;
     let root = patcher;
-    let apply = (patcher: NodePatcher): void => {
+    const apply = (patcher: NodePatcher): void => {
       if (patcher.node instanceof UnaryNegateOp && patcher instanceof UnaryMathOpPatcher) {
         negated = !negated;
         apply(patcher.expression);

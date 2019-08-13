@@ -19,13 +19,13 @@ for (let i = 2; i < process.argv.length; i++) {
 }
 
 async function pkg(): Promise<{}> {
-  let content = await readFile(join(__dirname, '../package.json'), { encoding: 'utf8' });
+  const content = await readFile(join(__dirname, '../package.json'), { encoding: 'utf8' });
   return JSON.parse(content);
 }
 
 async function configureGithubRemote(name: string, project: string): Promise<void> {
-  let githubToken = process.env['GH_TOKEN'] || process.env['GITHUB_TOKEN'];
-  let url = githubToken ? `https://${githubToken}@github.com/${project}.git` : `https://github.com/${project}.git`;
+  const githubToken = process.env['GH_TOKEN'] || process.env['GITHUB_TOKEN'];
+  const url = githubToken ? `https://${githubToken}@github.com/${project}.git` : `https://github.com/${project}.git`;
 
   try {
     await run('git', ['remote', 'remove', 'website']);
@@ -40,12 +40,12 @@ async function configureGithubRemote(name: string, project: string): Promise<voi
 }
 
 async function run(command: string, args: Array<string>): Promise<{ stdout: string; stderr: string }> {
-  let [stdout, stderr] = await execFile(command, args);
+  const [stdout, stderr] = await execFile(command, args);
   return { stdout, stderr };
 }
 
 async function gitRevParse(ref: string): Promise<string> {
-  let { stdout } = await run('git', ['rev-parse', ref]);
+  const { stdout } = await run('git', ['rev-parse', ref]);
   return stdout.trim();
 }
 
@@ -64,23 +64,23 @@ async function hasChanges(): Promise<boolean> {
 async function updateWebsite(): Promise<void> {
   await configureGithubRemote('website', 'decaffeinate/decaffeinate-project.org');
 
-  let latestVersion = await getLatestVersion((await pkg())['name']);
-  let currentRef = await gitRevParse('HEAD');
-  let decaffeinatePackage = await pkg();
-  let decaffeinateRegistry = decaffeinatePackage['publishConfig']['registry'];
+  const latestVersion = await getLatestVersion((await pkg())['name']);
+  const currentRef = await gitRevParse('HEAD');
+  const decaffeinatePackage = await pkg();
+  const decaffeinateRegistry = decaffeinatePackage['publishConfig']['registry'];
 
   console.log('Setting up website repo…');
   await run('git', ['fetch', '-f', 'website', 'master:website-master']);
   await run('git', ['reset', '--hard', 'website-master']);
 
-  let websitePackage = await pkg();
-  let currentVersion = websitePackage['devDependencies']['decaffeinate'];
+  const websitePackage = await pkg();
+  const currentVersion = websitePackage['devDependencies']['decaffeinate'];
 
   if (currentVersion === latestVersion) {
     console.log(`Already using decaffeinate v${latestVersion}, skipping install.`);
   } else {
     console.log(`${currentVersion} != ${latestVersion}, installing decaffeinate v${latestVersion}…`);
-    let args = ['add', '--dev', '--exact', `decaffeinate@${latestVersion}`];
+    const args = ['add', '--dev', '--exact', `decaffeinate@${latestVersion}`];
 
     if (decaffeinateRegistry) {
       args.unshift('--registry', decaffeinateRegistry);

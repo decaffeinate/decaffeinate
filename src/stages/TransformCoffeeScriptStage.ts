@@ -13,13 +13,13 @@ export type ChildType = NodePatcher | Array<NodePatcher | null> | null;
 
 export default class TransformCoffeeScriptStage {
   static run(content: string, options: Options): StageResult {
-    let log = logger(this.name);
+    const log = logger(this.name);
     log(content);
 
-    let context = DecaffeinateContext.create(content, Boolean(options.useCS2));
-    let editor = new MagicString(content);
-    let stage = new this(context.programNode, context, editor, options);
-    let patcher = stage.build();
+    const context = DecaffeinateContext.create(content, Boolean(options.useCS2));
+    const editor = new MagicString(content);
+    const stage = new this(context.programNode, context, editor, options);
+    const patcher = stage.build();
     patcher.patch();
     return {
       code: editor.toString(),
@@ -57,14 +57,14 @@ export default class TransformCoffeeScriptStage {
     let constructor = this._patcherConstructorForNode(node);
 
     if (parent) {
-      let override = parent.patcherClassForChildNode(node, notNull(property));
+      const override = parent.patcherClassForChildNode(node, notNull(property));
       if (override) {
         constructor = override;
       }
     }
 
-    let children: Array<ChildType> = node.getChildNames().map(name => {
-      let child = node[name];
+    const children: Array<ChildType> = node.getChildNames().map(name => {
+      const child = node[name];
       if (!child) {
         return null;
       } else if (Array.isArray(child)) {
@@ -74,7 +74,7 @@ export default class TransformCoffeeScriptStage {
       }
     });
 
-    let patcherContext = {
+    const patcherContext = {
       node,
       context: this.context,
       editor: this.editor,
@@ -83,7 +83,7 @@ export default class TransformCoffeeScriptStage {
         this.suggestions.push(suggestion);
       }
     };
-    let patcher = new constructor(patcherContext, ...children);
+    const patcher = new constructor(patcherContext, ...children);
     this.patchers.push(patcher);
     this.associateParent(patcher, children);
 
@@ -99,10 +99,10 @@ export default class TransformCoffeeScriptStage {
   }
 
   _patcherConstructorForNode(node: Node): PatcherClass {
-    let constructor = this.patcherConstructorForNode(node);
+    const constructor = this.patcherConstructorForNode(node);
 
     if (constructor === null) {
-      let props = node.getChildNames();
+      const props = node.getChildNames();
       throw new PatchError(
         `no patcher available for node type: ${node.type}` + `${props.length ? ` (props: ${props.join(', ')})` : ''}`,
         this.context.source,

@@ -14,9 +14,9 @@ export default class SoakedSlicePatcher extends SlicePatcher {
     this.registerHelper('__guard__', GUARD_HELPER);
     this.addSuggestion(REMOVE_GUARD);
 
-    let soakContainer = findSoakContainer(this);
-    let varName = soakContainer.claimFreeBinding('x');
-    let prefix = this.slice(soakContainer.contentStart, this.contentStart);
+    const soakContainer = findSoakContainer(this);
+    const varName = soakContainer.claimFreeBinding('x');
+    const prefix = this.slice(soakContainer.contentStart, this.contentStart);
 
     if (prefix.length > 0) {
       this.remove(soakContainer.contentStart, this.contentStart);
@@ -34,10 +34,10 @@ export default class SoakedSlicePatcher extends SlicePatcher {
    * For a soaked splice operation, we are the soak container.
    */
   getSpliceCode(expressionCode: string): string {
-    let spliceStart = this.captureCodeForPatchOperation(() => {
+    const spliceStart = this.captureCodeForPatchOperation(() => {
       this.registerHelper('__guard__', GUARD_HELPER);
       this.addSuggestion(REMOVE_GUARD);
-      let varName = this.claimFreeBinding('x');
+      const varName = this.claimFreeBinding('x');
       this.insert(this.expression.outerEnd, `, ${varName} => ${varName}`);
       this.patchAsSpliceExpressionStart();
     });

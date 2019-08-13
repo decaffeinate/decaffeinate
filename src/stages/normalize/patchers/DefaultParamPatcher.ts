@@ -24,11 +24,11 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
     // special.
     super.patch();
     if (this.shouldExtractToConditionalAssign()) {
-      let callback = this.findAddDefaultParamAssignmentCallback();
+      const callback = this.findAddDefaultParamAssignmentCallback();
       if (callback) {
-        let paramCode = this.slice(this.param.contentStart, this.param.contentEnd);
-        let valueCode = this.slice(this.value.contentStart, this.value.contentEnd);
-        let newParamCode = callback(paramCode, valueCode, this.param.node);
+        const paramCode = this.slice(this.param.contentStart, this.param.contentEnd);
+        const valueCode = this.slice(this.value.contentStart, this.value.contentEnd);
+        const newParamCode = callback(paramCode, valueCode, this.param.node);
         this.overwrite(this.param.contentStart, this.param.contentEnd, newParamCode);
         this.remove(this.param.outerEnd, this.value.outerEnd);
       }
@@ -36,7 +36,7 @@ export default class DefaultParamPatcher extends PassthroughPatcher {
   }
 
   findAddDefaultParamAssignmentCallback(): AddDefaultParamCallback | null {
-    let patcher: NodePatcher | null = this;
+    let patcher = this as NodePatcher | null;
 
     while (patcher) {
       if (patcher.addDefaultParamAssignmentAtScopeHeader) {

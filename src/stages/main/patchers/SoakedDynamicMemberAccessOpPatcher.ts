@@ -37,8 +37,8 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
 
   patchAsConditional(): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
-    let soakContainer = findSoakContainer(this);
-    let expressionCode = this.expression.patchRepeatable();
+    const soakContainer = findSoakContainer(this);
+    const expressionCode = this.expression.patchRepeatable();
 
     let conditionCode;
     if (this.expression.mayBeUnboundReference()) {
@@ -50,7 +50,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
     this.overwrite(this.expression.outerEnd, this.indexingExpr.outerStart, '[');
     this.indexingExpr.patch();
     if (soakContainer.willPatchAsExpression()) {
-      let containerNeedsParens = ternaryNeedsParens(soakContainer);
+      const containerNeedsParens = ternaryNeedsParens(soakContainer);
       if (containerNeedsParens) {
         soakContainer.insert(soakContainer.contentStart, '(');
       }
@@ -68,9 +68,9 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
   patchAsGuardCall(): void {
     this.registerHelper('__guard__', GUARD_HELPER);
     this.addSuggestion(REMOVE_GUARD);
-    let soakContainer = findSoakContainer(this);
-    let varName = soakContainer.claimFreeBinding('x');
-    let prefix = this.slice(soakContainer.contentStart, this.contentStart);
+    const soakContainer = findSoakContainer(this);
+    const varName = soakContainer.claimFreeBinding('x');
+    const prefix = this.slice(soakContainer.contentStart, this.contentStart);
     if (prefix.length > 0) {
       this.remove(soakContainer.contentStart, this.contentStart);
     }

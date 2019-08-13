@@ -11,7 +11,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
 
   patchAsStatement(): void {
     if (this.node.inline) {
-      for (let statement of this.statements) {
+      for (const statement of this.statements) {
         statement.patch();
         this.normalizeAfterStatement(statement);
       }
@@ -24,13 +24,13 @@ export default class BlockPatcher extends SharedBlockPatcher {
     // we need to correct any inconsistent indentation in the normalize step so
     // that the result CoffeeScript will always be valid.
     let blockIndentLength = null;
-    for (let statement of this.statements) {
-      let indentLength = this.getIndentLength(statement);
+    for (const statement of this.statements) {
+      const indentLength = this.getIndentLength(statement);
       if (indentLength !== null) {
         if (blockIndentLength === null) {
           blockIndentLength = indentLength;
         } else {
-          let charsToRemove = indentLength - blockIndentLength;
+          const charsToRemove = indentLength - blockIndentLength;
           if (charsToRemove < 0) {
             throw this.error(
               'Unexpected statement at an earlier indentation level than an ' + 'earlier statement in the block.'
@@ -55,7 +55,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
   removePrecedingSpaceChars(index: number, numToRemove: number): void {
     let numRemaining = numToRemove;
     for (let i = index; numRemaining > 0 && i > 0; i--) {
-      let contents = this.slice(i - 1, i);
+      const contents = this.slice(i - 1, i);
       if (contents.includes('\n')) {
         throw this.error('Found start of line before removing enough indentation.');
       }
@@ -71,8 +71,8 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * return the length of that indentation. Otherwise, return null.
    */
   getIndentLength(statement: NodePatcher): number | null {
-    let startOfLine = getStartOfLine(this.context.source, statement.outerStart);
-    let indentText = this.context.source.slice(startOfLine, statement.outerStart);
+    const startOfLine = getStartOfLine(this.context.source, statement.outerStart);
+    const indentText = this.context.source.slice(startOfLine, statement.outerStart);
     if (/^[ \t]*$/.test(indentText)) {
       return indentText.length;
     } else {
@@ -85,7 +85,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * semicolons, so just change them to semicolons.
    */
   normalizeAfterStatement(statement: NodePatcher): void {
-    let followingComma = statement.nextSemanticToken();
+    const followingComma = statement.nextSemanticToken();
     if (!followingComma || followingComma.type !== SourceType.COMMA || followingComma.start >= this.contentEnd) {
       return;
     }

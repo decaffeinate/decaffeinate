@@ -23,7 +23,7 @@ export default class YieldPatcher extends NodePatcher {
    * 'yield' EXPRESSION
    */
   patchAsExpression({ needsParens = true }: PatchOptions = {}): void {
-    let surroundInParens = this.needsParens() && !this.isSurroundedByParentheses();
+    const surroundInParens = this.needsParens() && !this.isSurroundedByParentheses();
     if (surroundInParens) {
       this.insert(this.contentStart, '(');
     }

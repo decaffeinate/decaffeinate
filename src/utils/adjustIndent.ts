@@ -6,7 +6,7 @@ import getIndent from './getIndent';
  */
 export default function adjustIndent(source: string, offset: number, adjustment: number): string {
   let currentIndent = getIndent(source, offset);
-  let determinedIndent = determineIndent(source);
+  const determinedIndent = determineIndent(source);
 
   if (adjustment > 0) {
     while (adjustment--) {

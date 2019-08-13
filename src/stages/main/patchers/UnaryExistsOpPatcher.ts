@@ -8,7 +8,7 @@ import UnaryOpPatcher from './UnaryOpPatcher';
  */
 export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
   node: UnaryExistsOp;
-  negated: boolean = false;
+  negated = false;
 
   /**
    * The expression version of this sometimes needs parentheses, but we don't
@@ -38,7 +38,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    *   'set? ' + (a != null);
    */
   patchAsExpression({ needsParens = true }: PatchOptions = {}): void {
-    let addParens = needsParens && !this.isSurroundedByParentheses();
+    const addParens = needsParens && !this.isSurroundedByParentheses();
     if (addParens) {
       // `a?` → `(a?`
       //         ^
@@ -57,11 +57,11 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
    */
   patchAsStatement(): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
-    let {
+    const {
       node: { expression },
       negated
     } = this;
-    let needsTypeofCheck = this.needsTypeofCheck();
+    const needsTypeofCheck = this.needsTypeofCheck();
 
     this.expression.patch();
     if (needsTypeofCheck) {

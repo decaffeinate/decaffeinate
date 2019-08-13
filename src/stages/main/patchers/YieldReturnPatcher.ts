@@ -10,10 +10,10 @@ export default class YieldReturnPatcher extends ReturnPatcher {
   }
 
   patchAsStatement(): void {
-    let yieldTokenIndex = this.contentStartTokenIndex;
-    let returnTokenIndex = notNull(yieldTokenIndex.next());
-    let yieldToken = notNull(this.sourceTokenAtIndex(yieldTokenIndex));
-    let returnToken = notNull(this.sourceTokenAtIndex(returnTokenIndex));
+    const yieldTokenIndex = this.contentStartTokenIndex;
+    const returnTokenIndex = notNull(yieldTokenIndex.next());
+    const yieldToken = notNull(this.sourceTokenAtIndex(yieldTokenIndex));
+    const returnToken = notNull(this.sourceTokenAtIndex(returnTokenIndex));
     if (yieldToken.type !== SourceType.YIELD || returnToken.type !== SourceType.RETURN) {
       throw this.error('Unexpected token types for `yield return`.');
     }

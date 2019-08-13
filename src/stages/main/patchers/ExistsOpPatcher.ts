@@ -19,12 +19,12 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
    */
   patchAsExpression(): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
-    let needsTypeofCheck = this.left.mayBeUnboundReference();
+    const needsTypeofCheck = this.left.mayBeUnboundReference();
     if (needsTypeofCheck) {
       // `a ? b` → `typeof a ? b`
       //            ^^^^^^^
       this.insert(this.contentStart, `typeof `);
-      let leftAgain = this.left.patchRepeatable({ parens: true, ref: 'left' });
+      const leftAgain = this.left.patchRepeatable({ parens: true, ref: 'left' });
       // `typeof a ? b` → `typeof a !== 'undefined' && a !== null ? a : b`
       //          ^^^              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       this.overwrite(
@@ -33,7 +33,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
         ` !== 'undefined' && ${leftAgain} !== null ? ${leftAgain} : `
       );
     } else {
-      let leftAgain = this.left.patchRepeatable({ parens: true, ref: 'left' });
+      const leftAgain = this.left.patchRepeatable({ parens: true, ref: 'left' });
       // `a.b ? c` → `a.b != null ? a.b : c`
       //     ^^^         ^^^^^^^^^^^^^^^^^
       this.overwrite(this.left.outerEnd, this.right.outerStart, ` != null ? ${leftAgain} : `);
@@ -46,12 +46,12 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
    */
   patchAsStatement(): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
-    let needsTypeofCheck = this.left.mayBeUnboundReference();
+    const needsTypeofCheck = this.left.mayBeUnboundReference();
     // `a ? b` → `if (a ? b`
     //            ^^^
     this.insert(this.contentStart, `if (`);
     if (needsTypeofCheck) {
-      let leftAgain = this.left.patchRepeatable();
+      const leftAgain = this.left.patchRepeatable();
       // `if (a ? b` → `if (typeof a ? b`
       //                    ^^^^^^^
       this.insert(this.contentStart, `typeof `);

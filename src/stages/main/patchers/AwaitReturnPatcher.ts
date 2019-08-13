@@ -10,10 +10,10 @@ export default class AwaitReturnPatcher extends ReturnPatcher {
   }
 
   patchAsStatement(): void {
-    let awaitTokenIndex = this.contentStartTokenIndex;
-    let returnTokenIndex = notNull(awaitTokenIndex.next());
-    let awaitToken = notNull(this.sourceTokenAtIndex(awaitTokenIndex));
-    let returnToken = notNull(this.sourceTokenAtIndex(returnTokenIndex));
+    const awaitTokenIndex = this.contentStartTokenIndex;
+    const returnTokenIndex = notNull(awaitTokenIndex.next());
+    const awaitToken = notNull(this.sourceTokenAtIndex(awaitTokenIndex));
+    const returnToken = notNull(this.sourceTokenAtIndex(returnTokenIndex));
     if (awaitToken.type !== SourceType.IDENTIFIER || returnToken.type !== SourceType.RETURN) {
       throw this.error('Unexpected token types for `await return`.');
     }

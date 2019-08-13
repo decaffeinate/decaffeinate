@@ -72,7 +72,7 @@ export default class Scope {
    * Mark that the given name is explicitly declared, e.g. in a parameter.
    */
   declares(name: string, node: Node): void {
-    let key = this.key(name);
+    const key = this.key(name);
     this.bindings[key] = node;
   }
 
@@ -93,7 +93,7 @@ export default class Scope {
    * Mark that the given name is part of a modification, e.g. `+=` or `++`.
    */
   modifies(name: string): void {
-    let scope: Scope | null = this;
+    let scope = this as Scope | null;
     while (scope) {
       if (scope.hasOwnBinding(name)) {
         scope.modificationsAfterDeclaration[this.key(name)] = true;
@@ -110,7 +110,7 @@ export default class Scope {
     if (!name) {
       name = 'ref';
     }
-    let names = Array.isArray(name) ? name : [name];
+    const names = Array.isArray(name) ? name : [name];
     let binding = names.find(name => this.isBindingAvailable(name));
 
     if (!binding) {
@@ -183,7 +183,7 @@ export default class Scope {
   }
 
   toString(): string {
-    let parts = this.getOwnNames();
+    const parts = this.getOwnNames();
     if (this.parent) {
       parts.push(`parent = ${this.parent.toString()}`);
     }

@@ -49,10 +49,10 @@ export default class ForPatcher extends NodePatcher {
 
     if (this.isPostFor()) {
       this.surroundThenUsagesInParens();
-      let forToken = this.getForToken();
-      let forThroughEnd = this.slice(forToken.start, this.contentEnd);
+      const forToken = this.getForToken();
+      const forThroughEnd = this.slice(forToken.start, this.contentEnd);
 
-      let needsParens = postfixNodeNeedsOuterParens(this);
+      const needsParens = postfixNodeNeedsOuterParens(this);
       this.remove(this.body.outerEnd, this.contentEnd);
       if (needsParens) {
         this.insert(this.body.outerStart, '(');
@@ -92,8 +92,8 @@ export default class ForPatcher extends NodePatcher {
       this.valAssignee.patch();
       return null;
     } else {
-      let assigneeName = this.claimFreeBinding('value');
-      let assigneeCode = this.valAssignee.patchAndGetCode();
+      const assigneeName = this.claimFreeBinding('value');
+      const assigneeCode = this.valAssignee.patchAndGetCode();
       this.overwrite(this.valAssignee.contentStart, this.valAssignee.contentEnd, assigneeName);
       return `${assigneeCode} = ${assigneeName}`;
     }
@@ -126,8 +126,8 @@ export default class ForPatcher extends NodePatcher {
    */
   getForToken(): SourceToken {
     if (this.isPostFor()) {
-      let afterForToken = this.getFirstHeaderPatcher();
-      let index = this.indexOfSourceTokenBetweenPatchersMatching(
+      const afterForToken = this.getFirstHeaderPatcher();
+      const index = this.indexOfSourceTokenBetweenPatchersMatching(
         this.body,
         afterForToken,
         token => token.type === SourceType.FOR
@@ -137,7 +137,7 @@ export default class ForPatcher extends NodePatcher {
       }
       return notNull(this.sourceTokenAtIndex(index));
     } else {
-      let token = this.sourceTokenAtIndex(this.contentStartTokenIndex);
+      const token = this.sourceTokenAtIndex(this.contentStartTokenIndex);
 
       if (!token || token.type !== SourceType.FOR) {
         throw this.error(`expected 'for' at start of loop`);
@@ -151,7 +151,7 @@ export default class ForPatcher extends NodePatcher {
    * @private
    */
   getFirstHeaderPatcher(): NodePatcher {
-    let candidates = [this.keyAssignee, this.valAssignee, this.target];
+    const candidates = [this.keyAssignee, this.valAssignee, this.target];
     let result: NodePatcher | null = null;
     candidates.forEach(candidate => {
       if (!candidate) {

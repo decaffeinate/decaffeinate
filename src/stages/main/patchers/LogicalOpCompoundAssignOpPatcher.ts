@@ -3,7 +3,7 @@ import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
 
 export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
-    let shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
+    const shouldAddParens = this.negated || (needsParens && !this.isSurroundedByParentheses());
     if (this.negated) {
       this.insert(this.contentStart, '!');
     }
@@ -11,13 +11,13 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
       this.insert(this.contentStart, '(');
     }
 
-    let operator = this.getOperatorToken();
+    const operator = this.getOperatorToken();
 
     // `a &&= b` → `a && b`
     //    ^^^         ^^
     this.overwrite(operator.start, operator.end, this.isOrOp() ? `||` : `&&`);
 
-    let assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
+    const assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
 
     // `a && b` → `a && (a = b`
     //                  ^^^^^
@@ -48,7 +48,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
       this.assignee.negate();
     }
 
-    let assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
+    const assigneeAgain = this.assignee.patchRepeatable({ isForAssignment: true });
 
     // `if (a &&= b` → `if (a) { a = b`
     //       ^^^^^           ^^^^^^^^
@@ -65,8 +65,8 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
    * @private
    */
   isOrOp(): boolean {
-    let operator = this.getOperatorToken();
-    let op = this.sourceOfToken(operator);
+    const operator = this.getOperatorToken();
+    const op = this.sourceOfToken(operator);
     // There could be a space in the middle of the operator, like `or =` or
     // `|| =`, and "op" will just be the first token in that case. So just check
     // the start of the operator.
