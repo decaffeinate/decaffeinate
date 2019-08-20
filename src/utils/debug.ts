@@ -1,7 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function logger(name: string): (...args: Array<any>) => void {
+export function logger<A extends Array<unknown>>(name: string): (...args: A) => void {
   if (isLoggingEnabled(name)) {
-    // eslint-disable-next-line no-console
     return (...args) => console.log(name, ...args);
   } else {
     return () => {};
