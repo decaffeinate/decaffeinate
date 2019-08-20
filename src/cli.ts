@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { readdir, readFile, stat, writeFile } from 'mz/fs';
 import { basename, dirname, extname, join } from 'path';
 import { convert, modernizeJS } from './index';

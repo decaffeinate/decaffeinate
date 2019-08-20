@@ -37,8 +37,10 @@ export default function validate(
   expectedOutput?: any | { cs1: any; cs2: any },
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
-  const expectedCS1 = expectedOutput && expectedOutput.hasOwnProperty('cs1') ? expectedOutput.cs1 : expectedOutput;
-  const expectedCS2 = expectedOutput && expectedOutput.hasOwnProperty('cs2') ? expectedOutput.cs2 : expectedOutput;
+  const expectedCS1 =
+    expectedOutput && Object.prototype.hasOwnProperty.call(expectedOutput, 'cs1') ? expectedOutput.cs1 : expectedOutput;
+  const expectedCS2 =
+    expectedOutput && Object.prototype.hasOwnProperty.call(expectedOutput, 'cs2') ? expectedOutput.cs2 : expectedOutput;
   runValidateCase(source, expectedCS1, { options: { ...options, useCS2: false }, skipNodeCheck });
   runValidateCase(source, expectedCS2, { options: { ...options, useCS2: true }, skipNodeCheck });
 }

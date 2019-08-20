@@ -65,7 +65,7 @@ export default class Scope {
   }
 
   hasOwnBinding(name: string): boolean {
-    return this.bindings.hasOwnProperty(this.key(name));
+    return Object.prototype.hasOwnProperty.call(this.bindings, this.key(name));
   }
 
   /**
