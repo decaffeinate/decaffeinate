@@ -77,8 +77,8 @@
     "@types/mocha": "^5.2.7",
     "@types/mz": "^0.0.32",
     "@types/node": "^12.6.8",
-    "@typescript-eslint/eslint-plugin": "^2.0.0",
-    "@typescript-eslint/parser": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.1.0",
+    "@typescript-eslint/parser": "^2.1.0",
     "eslint": "^6.2.1",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
@@ -88,8 +88,7 @@
     "prettier": "^1.16.4",
     "rimraf": "^3.0.0",
     "ts-node": "^8.0.2",
-    "typescript": "^3.5.3",
-    "typescript-eslint-parser": "^22.0.0"
+    "typescript": "^3.5.3"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
