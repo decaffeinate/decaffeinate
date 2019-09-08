@@ -1,5 +1,6 @@
 import { SHORTEN_NULL_CHECKS } from '../../../suggestions';
 import BinaryOpPatcher from './BinaryOpPatcher';
+import { PatchOptions } from '../../../patchers/types';
 
 export default class ExistsOpPatcher extends BinaryOpPatcher {
   /**
@@ -17,8 +18,12 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
   /**
    * LEFT '?' RIGHT → `LEFT != null ? LEFT : RIGHT`
    */
-  patchAsExpression(): void {
+  patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
+    const addParens = needsParens && !this.isSurroundedByParentheses();
+    if (addParens) {
+      this.insert(this.contentStart, '(');
+    }
     const needsTypeofCheck = this.left.mayBeUnboundReference();
     if (needsTypeofCheck) {
       // `a ? b` → `typeof a ? b`
@@ -39,6 +44,9 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
       this.overwrite(this.left.outerEnd, this.right.outerStart, ` != null ? ${leftAgain} : `);
     }
     this.right.patch();
+    if (addParens) {
+      this.insert(this.contentEnd, ')');
+    }
   }
 
   /**
