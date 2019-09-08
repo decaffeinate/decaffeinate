@@ -77,10 +77,10 @@ export default class ForInPatcher extends ForPatcher {
 
     if (this.shouldWrapMapExpressionTargetInArrayFrom()) {
       this.insert(this.target.contentStart, 'Array.from(');
-    }
-    this.target.patch();
-    if (this.shouldWrapMapExpressionTargetInArrayFrom()) {
+      this.target.patch();
       this.insert(this.target.contentEnd, ')');
+    } else {
+      this.target.patch({ needsParens: true });
     }
 
     let mapInsertPoint;
