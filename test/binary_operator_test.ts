@@ -204,6 +204,17 @@ describe('binary operators', () => {
     );
   });
 
+  it('handles binary existence operator as a negated condition', () => {
+    check(
+      `
+      unless 1 ? 2 then 3
+      `,
+      `
+      if (!(1 != null ? 1 : 2)) { 3; }
+      `
+    );
+  });
+
   it.skip('deals gracefully with extra parens in simple binary existential operators', () => {
     check(`a ? (b)`, `if ((typeof a !== "undefined" && a !== null)) { a; } else { b; }`);
   });
