@@ -20,7 +20,10 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
    */
   patchAsExpression({ needsParens = false }: PatchOptions = {}): void {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
-    const addParens = needsParens && !this.isSurroundedByParentheses();
+    const addParens = (needsParens && !this.isSurroundedByParentheses()) || this.binaryOpNegated;
+    if (this.binaryOpNegated) {
+      this.insert(this.contentStart, '!');
+    }
     if (addParens) {
       this.insert(this.contentStart, '(');
     }
