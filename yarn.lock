@@ -996,10 +996,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.npmjs.org/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-coffee-lex@^9.1.4:
-  version "9.1.4"
-  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-9.1.4.tgz#148eb42963000a26f4136f7e3cbf2b018484cb8f"
-  integrity sha512-iNmef/3aLgXYEVaSWPFmZRr5Ydw9+bIJKe6Xgc68mN9ElfwJWzCoHbRboZV0b8is//MI+yxrBjzst3oqlC/NyQ==
+coffee-lex@^9.1.5:
+  version "9.1.5"
+  resolved "https://registry.yarnpkg.com/coffee-lex/-/coffee-lex-9.1.5.tgz#6f46f33df539de3c00831d47bbe115991336aa4e"
+  integrity sha512-94lUMjs1vhlV86vnbCCnnIYzR4oszuO4qJzKUuKOLidiksh/UyQFOzPusjmLJt6vy5CNB0d/KtaceqV84zr46g==
 
 color-convert@^1.9.0:
   version "1.9.1"
@@ -1061,13 +1061,13 @@ decaffeinate-coffeescript@1.12.7-patch.3:
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.3.tgz#ae261022a35dc42dd9a0bc2c241717d5a23f8e67"
   integrity sha512-4NshbupYgQsVm/jOosp/nen1MWi43i1/z0I+F1JQQ8sNpS6SvvJWYwMayfuYkE/c/5mK3ISWu2H9OyPZYwtMLg==
 
-decaffeinate-parser@^22.5.12:
-  version "22.5.12"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.12.tgz#dc9e709894227b2af33e2e23ec2d79d6978df6e3"
-  integrity sha512-uGO8AY16MlaY79ezbb5DBcP5wFvtDSJyOatrSFT5iAinQtqZH308B3+7qxD6vOxLGERde+pmPxkTsRokKYQNdg==
+decaffeinate-parser@^22.5.13:
+  version "22.5.13"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.13.tgz#dda097e4995f291175bde16aa53535086c9bd06b"
+  integrity sha512-VbcRCEu1gfjI4PaN0hj9PaEylklkcrJU7R+NsGLm4BD4kV0VoXgoC4kNzjeMhaAn0a90Xs7YVemmjd8AE6vHZA==
   dependencies:
     "@babel/parser" "^7.1.6"
-    coffee-lex "^9.1.4"
+    coffee-lex "^9.1.5"
     decaffeinate-coffeescript "1.12.7-patch.3"
     decaffeinate-coffeescript2 "2.2.1-patch.5"
     lines-and-columns "^1.1.6"
