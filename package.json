@@ -1,27 +1,7 @@
 {
   "name": "decaffeinate",
-  "description": "Move your CoffeeScript source to modern JavaScript.",
   "version": "0.0.0-development",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "bin": {
-    "decaffeinate": "./bin/decaffeinate"
-  },
-  "scripts": {
-    "lint": "eslint --report-unused-disable-directives --ext .ts src script test",
-    "lint-fix": "yarn lint --fix",
-    "pretest": "yarn build",
-    "test": "mocha 'test/**/*.ts'",
-    "prebuild": "rimraf dist && mkdirp dist && yarn lint",
-    "build": "script/build",
-    "prepublish": "yarn build",
-    "update-website": "ts-node ./script/update-website.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/decaffeinate/decaffeinate.git"
-  },
+  "description": "Move your CoffeeScript source to modern JavaScript.",
   "keywords": [
     "coffee",
     "coffee-script",
@@ -30,11 +10,50 @@
     "es6",
     "esnext"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decaffeinate/decaffeinate.git"
+  },
+  "license": "MIT",
   "author": "Brian Donovan",
   "contributors": [
     "Alan Pierce <alangpierce@gmail.com>"
   ],
-  "license": "MIT",
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "decaffeinate": "./bin/decaffeinate"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist && mkdirp dist && yarn lint",
+    "build": "script/build",
+    "lint": "eslint --report-unused-disable-directives --ext .ts src script test",
+    "lint-fix": "yarn lint --fix",
+    "prepublish": "yarn build",
+    "pretest": "yarn build",
+    "test": "mocha 'test/**/*.ts'",
+    "update-website": "ts-node ./script/update-website.ts"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js,md,json}": [
+      "prettier --write",
+      "git add"
+    ],
+    "package.json": [
+      "sort-package-json",
+      "git add"
+    ]
+  },
   "dependencies": {
     "@codemod/core": "^1.0.0",
     "@codemod/parser": "^1.0.0",
@@ -57,13 +76,6 @@
     "mz": "^2.7.0",
     "tslib": "^1.9.3"
   },
-  "engines": {
-    "node": ">=8"
-  },
-  "files": [
-    "bin",
-    "dist"
-  ],
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
@@ -83,12 +95,21 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "fs-extra": "^8.1.0",
+    "husky": "^3.0.5",
+    "lint-staged": "^9.2.5",
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.0",
     "prettier": "^1.16.4",
     "rimraf": "^3.0.0",
+    "sort-package-json": "^1.22.1",
     "ts-node": "^8.0.2",
     "typescript": "^3.5.3"
+  },
+  "resolutions": {
+    "**/@resugar/helper-comments": "^1.0.2"
+  },
+  "engines": {
+    "node": ">=8"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -99,8 +120,5 @@
       "magic-string",
       "detect-indent"
     ]
-  },
-  "resolutions": {
-    "**/@resugar/helper-comments": "^1.0.2"
   }
 }
