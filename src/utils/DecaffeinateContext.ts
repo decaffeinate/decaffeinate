@@ -71,6 +71,7 @@ function computeScopeMap(program: Program): Map<Node, Scope> {
       case 'BoundFunction':
       case 'GeneratorFunction':
       case 'BoundGeneratorFunction':
+      case 'AsyncFunction':
       case 'Class': {
         const parentScope = parent && scopeMap.get(parent);
         if (!parentScope) {
