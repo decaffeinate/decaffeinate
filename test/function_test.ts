@@ -1,4 +1,4 @@
-import check from './support/check';
+import check, { checkCS2 } from './support/check';
 import validate from './support/validate';
 
 describe('functions', () => {
@@ -717,4 +717,33 @@ describe('functions', () => {
     `,
       2
     ));
+
+  it.only('correctly hoists variable declarations for async functions', () => {
+    checkCS2(
+      `
+        class A
+          b: ->
+            await c
+            [for e in f
+              d]
+            e = 1
+        `,
+      `
+        class A {
+          async b() {
+            let e;
+            await c;
+            [(() => {
+              const result = [];
+              for (e of Array.from(f)) {
+                result.push(d);
+              }
+              return result;
+            })()];
+            return e = 1;
+          }
+        }
+        `
+    );
+  });
 });
