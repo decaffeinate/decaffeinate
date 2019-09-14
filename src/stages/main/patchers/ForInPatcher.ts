@@ -298,7 +298,7 @@ export default class ForInPatcher extends ForPatcher {
    * favor of cleaner code.
    */
   patchForOfLoop(): void {
-    // Save the filter code and remove if it it's there.
+    // Save the filter code and remove if it's there.
     this.getFilterCode();
     if (this.filter) {
       this.remove(this.target.outerEnd, this.filter.outerEnd);
