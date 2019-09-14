@@ -718,7 +718,7 @@ describe('functions', () => {
       2
     ));
 
-  it.only('correctly hoists variable declarations for async functions', () => {
+  it('correctly hoists variable declarations for async functions', () => {
     checkCS2(
       `
         class A

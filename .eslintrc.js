@@ -8,7 +8,7 @@ module.exports = {
     node: true,
     es6: true
   },
-  plugins: ['prettier', '@typescript-eslint/eslint-plugin'],
+  plugins: ['prettier', '@typescript-eslint/eslint-plugin', 'mocha'],
   rules: {
     '@typescript-eslint/array-type': ['error', { default: 'generic' }],
     '@typescript-eslint/explicit-member-accessibility': 'off',
@@ -24,6 +24,9 @@ module.exports = {
       files: 'test/**/*.{js,ts}',
       env: {
         mocha: true
+      },
+      rules: {
+        'mocha/no-exclusive-tests': 'error'
       }
     },
     {
