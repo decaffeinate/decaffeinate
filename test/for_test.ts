@@ -2379,4 +2379,23 @@ describe('for loops', () => {
       options: { loose: true }
     });
   });
+
+  it('does not count member access properties as variable uses (#1483)', () => {
+    checkCS2(
+      `
+      a.b
+      [
+        for b in c
+          d
+      ]
+      `,
+      `
+      a.b;
+      [
+        Array.from(c).map((b) =>
+          d)
+      ];
+      `
+    );
+  });
 });
