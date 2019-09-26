@@ -20,7 +20,8 @@ aliases:
       - *save_cache_step
       - run:
           name: tests
-          command: 'yarn jest --ci'
+          # Why `--maxWorkers`? https://vgpena.github.io/jest-circleci/
+          command: 'yarn jest --ci --maxWorkers=2'
       - run:
           name: lint
           command: 'yarn lint'
