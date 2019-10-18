@@ -876,9 +876,9 @@
     "@resugar/helper-comments" "^1.0.0"
 
 "@resugar/codemod-modules-commonjs@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@resugar/codemod-modules-commonjs/-/codemod-modules-commonjs-1.0.4.tgz#fd7176be9776ad33b5b35c18aef6430bfae38608"
-  integrity sha512-fB5cSPZQE4gzg6DMEEYLEcXn4OM7yBZOVb0ZxkDeTQrwcOdwpeXppEqqoEtgKn/LcazjKYz5ZA/gQ4G/bGdoUw==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@resugar/codemod-modules-commonjs/-/codemod-modules-commonjs-1.0.5.tgz#8b0f14f256ee2f090cd8274717a6423594fda73a"
+  integrity sha512-A1lBMZWNEUFpmSGgTRzEaRUOWxZ/aNjil2ekCfjiITRJ3UrvsSF7PIPgv5waKzsgimtiQ0Wm+fcqFko0itZ21A==
   dependencies:
     "@resugar/helper-comments" "^1.0.0"
 
