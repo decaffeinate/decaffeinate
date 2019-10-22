@@ -2312,7 +2312,7 @@ describe('classes', () => {
     );
   });
 
-  it('it produces a Babel/TS constructor hack that allows this before super in a constructor and produces correct values', () => {
+  it('produces a Babel/TS constructor hack that allows this before super in a constructor and produces correct values', () => {
     validateCS1(
       `
     class A
