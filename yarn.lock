@@ -1035,9 +1035,9 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@^12.6.8":
-  version "12.11.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.11.4.tgz#0677fde59021b19502cf830a91159c2e15b70e04"
-  integrity sha512-cleUgvdZp8NwbeI2AJNMv5VIsdZbO5tDxNgpNb9SOG3IdBFZliUIkMXDCPs05LNzxlrAA3eVfGoV8JFOv/BIig==
+  version "12.11.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.11.5.tgz#6c3c8dc84988aff11fd2a63d7b5fbf39eaaab7b1"
+  integrity sha512-LC8ALj/24PhByn39nr5jnTvpE7MujK8y7LQmV74kHYF5iQ0odCPkMH4IZNZw+cobKfSXqaC8GgegcbIsQpffdA==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
