@@ -215,7 +215,7 @@ describe('functions', () => {
         constructor() {
           this.x = this.x.bind(this);
         }
-      
+
         x() { return arguments[0] + this; }
       }
     `
@@ -337,7 +337,7 @@ describe('functions', () => {
     );
   });
 
-  it('correctly handles fat arrow object function values containing yield ', () => {
+  it('correctly handles fat arrow object function values containing yield', () => {
     check(
       `
       {
@@ -367,7 +367,7 @@ describe('functions', () => {
         constructor() {
           this.x = this.x.bind(this);
         }
-      
+
         *x() {
           return yield fn();
         }
@@ -677,7 +677,7 @@ describe('functions', () => {
       () =>
         a = 1
         return
-      
+
       () =>
         a = 2
         return
@@ -686,7 +686,7 @@ describe('functions', () => {
       () => {
         const a = 1;
       };
-      
+
       () => {
         const a = 2;
       };

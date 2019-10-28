@@ -594,7 +594,7 @@ describe('expansion', () => {
     );
   });
 
-  it('handles nested rest after an array expansion ', () => {
+  it('handles nested rest after an array expansion', () => {
     checkCS2(
       `
       [...,{a, r..., b = c}] = arr
@@ -618,7 +618,7 @@ describe('expansion', () => {
     );
   });
 
-  it('emits JS object rest when possible ', () => {
+  it('emits JS object rest when possible', () => {
     checkCS2(
       `
       [...,{a, r...}] = arr
