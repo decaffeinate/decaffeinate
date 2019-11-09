@@ -94,7 +94,8 @@ export default abstract class ObjectBodyMemberPatcher extends NodePatcher {
       const needsBrackets =
         !(this.key instanceof StringPatcher && !this.key.shouldBecomeTemplateLiteral()) &&
         !(this.key instanceof IdentifierPatcher) &&
-        (this.key.node.type !== 'Int' && this.key.node.type !== 'Float');
+        this.key.node.type !== 'Int' &&
+        this.key.node.type !== 'Float';
       if (needsBrackets) {
         this.insert(this.key.outerStart, '[');
       }
