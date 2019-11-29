@@ -4951,9 +4951,9 @@ sort-object-keys@^1.1.2:
   integrity sha1-06bEjcKsl+a8lDZ2luA/bQnTeVI=
 
 sort-package-json@^1.22.1:
-  version "1.24.0"
-  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.24.0.tgz#837d16b5ee2ddc5567e668c15854bbc8dd9780ca"
-  integrity sha512-yb3ay8kIP+XHDbJ6GT8zENBIZ4PQgf8sCO06gnasosZWm4Hy59q97MAgGvUzimqhQLcbRuAp2zjImqSeM+VUCQ==
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.26.0.tgz#a8de1dc5fc38aad81fcdbccc433ed27ce827a0f4"
+  integrity sha512-0t1aJq7U9vbR9rgyWNzcdGxSyuScbc2P5D7bnnJEzmkxTw/uu2gDnrU5oV9HUpRC4/jEMo8/dRRiX1GwitAcOg==
   dependencies:
     detect-indent "^6.0.0"
     glob "^7.1.6"
