@@ -2034,7 +2034,7 @@ eslint-config-prettier@^6.0.0:
   dependencies:
     get-stdin "^6.0.0"
 
-eslint-plugin-jest@^23.0.1:
+eslint-plugin-jest@^23.1.1:
   version "23.1.1"
   resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-23.1.1.tgz#1220ab53d5a4bf5c3c4cd07c0dabc6199d4064dd"
   integrity sha512-2oPxHKNh4j1zmJ6GaCBuGcb8FVZU7YjFUOJzGOPnl9ic7VA/MGAskArLJiRIlnFUmi1EUxY+UiATAy8dv8s5JA==
@@ -4414,10 +4414,10 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier@^1.19.0:
-  version "1.19.0"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.0.tgz#3bec4489d5eebcd52b95ddd2c22467b5c852fde1"
-  integrity sha512-GlAIjk6DjkNT6u/Bw5QCWrbzh9YlLKwwmJT//1YiCR3WDpZDnyss64aXHQZgF8VKeGlWnX6+tGsKSVxsZT/gtA==
+prettier@^1.16.4:
+  version "1.18.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.18.2.tgz#6823e7c5900017b4bd3acf46fe9ac4b4d7bda9ea"
+  integrity sha512-OeHeMc0JhFE9idD4ZdtNibzY0+TPHSpSSb9h8FqtP+YnoZZ1sl8Vc9b1sasjfymH3SonAF4QcA2+mzHPhMvIiw==
 
 pretty-format@^24.9.0:
   version "24.9.0"
