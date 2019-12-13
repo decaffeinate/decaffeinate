@@ -2,7 +2,9 @@ export function logger<A extends Array<unknown>>(name: string): (...args: A) => 
   if (isLoggingEnabled(name)) {
     return (...args) => console.log(name, ...args);
   } else {
-    return () => { /* logging disabled */ };
+    return () => {
+      /* logging disabled */
+    };
   }
 }
 
