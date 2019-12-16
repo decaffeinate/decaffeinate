@@ -675,16 +675,15 @@
     minimist "^1.2.0"
 
 "@codemod/core@^1.0.0":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@codemod/core/-/core-1.0.3.tgz#69e8768eee4c5684c9bed59c30d0c098bc1852b7"
-  integrity sha512-ZYuNITlr1d8a+bww6H42PdvR1hZodHmDhPTnbTyTGnkpP0v09pypxcq/oMO3btKMKdftMjr2f9xBordO3ZLDSw==
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@codemod/core/-/core-1.0.4.tgz#67fe42bf3245a347792baebf593543032b56f30f"
+  integrity sha512-rDMe64xAeCn0OdRM6XKxQniXqYbafB0KbUQ3YeSFpI7yBOvtMY5mYnlJv2Uc5w8lEyWIfN4El0hnEyDWR1u8Lw==
   dependencies:
     "@babel/core" "^7.6.4"
     "@babel/generator" "^7.6.4"
     "@codemod/parser" "^1.0.4"
     recast "^0.18.1"
     resolve "^1.12.0"
-    ts-jest "^24.0.2"
 
 "@codemod/parser@^1.0.0", "@codemod/parser@^1.0.3", "@codemod/parser@^1.0.4":
   version "1.0.5"
