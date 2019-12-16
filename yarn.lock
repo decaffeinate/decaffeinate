@@ -236,7 +236,7 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.4.3", "@babel/parser@^7.6.4", "@babel/parser@^7.7.4", "@babel/parser@^7.7.5":
+"@babel/parser@^7.1.0", "@babel/parser@^7.4.3", "@babel/parser@^7.7.4", "@babel/parser@^7.7.5":
   version "7.7.5"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.7.5.tgz#cbf45321619ac12d83363fcf9c94bb67fa646d71"
   integrity sha512-KNlOe9+/nk4i29g0VXgl8PEXIRms5xKLJeuZ6UptN0fHv+jDiriG+y94X6qAgWTR0h3KaoM1wK5G5h7MHFRSig==
@@ -687,11 +687,11 @@
     ts-jest "^24.0.2"
 
 "@codemod/parser@^1.0.0", "@codemod/parser@^1.0.3", "@codemod/parser@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.0.4.tgz#11aa1b8b89498fa4c3fd32cf7d54325e159563e0"
-  integrity sha512-CVZ4cfrOruc2daVEOV8p9YdDAoIsgrzwLXFLKX/YoKzamLxKWDXT1YMHxR95xYw+suJg6k0/VyuUCa5NGjKN/g==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.0.5.tgz#9d338d678c4e33eb0a95659d4c262950f925b859"
+  integrity sha512-fanpite+fSFxe9BrHtZ3daS9pA46RC35SGh9yX0VQnseXaY3NWC0jJEqQwpI6z6uc3XIghkKCz2eAtNvjeho9w==
   dependencies:
-    "@babel/parser" "^7.6.4"
+    "@babel/parser" "^7.7.5"
 
 "@jest/console@^24.7.1":
   version "24.7.1"
