@@ -2527,6 +2527,11 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
+git-hooks-list@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/git-hooks-list/-/git-hooks-list-1.0.1.tgz#769ed509303a05fc86ca5aad9c47843f62e99c4a"
+  integrity sha512-3XliYrVkz8HP9MqW7Zs2UUOwG8bPrURtsOEQECbGglEVG6KKuEF+h3FJBjIa6Tioo6BAk/iG/z4Xx2ZLvX2gng==
+
 glob-parent@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-5.0.0.tgz#1dc99f0f39b006d3e92c2c284068382f0c20e954"
@@ -4977,12 +4982,13 @@ sort-object-keys@^1.1.3:
   integrity sha512-855pvK+VkU7PaKYPc+Jjnmt4EzejQHyhhF33q31qG8x7maDzkeFhAAThdCYay11CISO+qAMwjOBP+fPZe0IPyg==
 
 sort-package-json@^1.22.1:
-  version "1.32.3"
-  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.32.3.tgz#cf2e5b4ae43a2316d20a27f49df6164f6f9831bc"
-  integrity sha512-uUgl00oJK/DvUrkpDe0QhfSg2Tq2cxQRZhWPVLo/aWlkDY1z/rDamJi9MonCH6M+uctA/3w4apjU5Ey8e4KfWQ==
+  version "1.34.0"
+  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.34.0.tgz#4c17611971d69f1af356228726fbfe0ada0d3eaf"
+  integrity sha512-MWqSDlmC8L/YZNvPeTRYJGJ0N/OxZfKzZKG1xwprqBhy3ophxjG8Ek32nNcnG5NgXm1jgMYpPXqy2H1fOQes7A==
   dependencies:
     detect-indent "^6.0.0"
     detect-newline "3.1.0"
+    git-hooks-list "1.0.1"
     globby "10.0.1"
     sort-object-keys "^1.1.3"
 
