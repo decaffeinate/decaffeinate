@@ -2578,10 +2578,10 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
-git-hooks-list@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/git-hooks-list/-/git-hooks-list-1.0.1.tgz#769ed509303a05fc86ca5aad9c47843f62e99c4a"
-  integrity sha512-3XliYrVkz8HP9MqW7Zs2UUOwG8bPrURtsOEQECbGglEVG6KKuEF+h3FJBjIa6Tioo6BAk/iG/z4Xx2ZLvX2gng==
+git-hooks-list@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/git-hooks-list/-/git-hooks-list-1.0.2.tgz#b023b76872f00d81b353efd1458fb4a165035575"
+  integrity sha512-C3c/FG6Pgh053+yK/CnNNYJo5mgCa3OeI+cPxPIl0tyMLm1mGfiV0NX0LrhnjVoX7dfkR78WyW2kvFVHvAlneg==
 
 glob-parent@^5.0.0:
   version "5.0.0"
@@ -5034,13 +5034,13 @@ sort-object-keys@^1.1.3:
   integrity sha512-855pvK+VkU7PaKYPc+Jjnmt4EzejQHyhhF33q31qG8x7maDzkeFhAAThdCYay11CISO+qAMwjOBP+fPZe0IPyg==
 
 sort-package-json@^1.22.1:
-  version "1.37.0"
-  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.37.0.tgz#67b49e2509b1289df2e0f46c45b644bc4168a456"
-  integrity sha512-FkN+6qU3nHlUiyuKeysJU5+rDnco2gMkE2PBOtZ/acsvy/B17E3ZXqPaB3YfJX9fUucb+HxAerYRJrKhqifYsA==
+  version "1.38.0"
+  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.38.0.tgz#ad61e10295ac8f93adc7c614570a3af998cf6e57"
+  integrity sha512-ASDxTAaZkxhTItTjuy5FOY2KLN75HqXp/84z9so75CIbWEYL3UzAu/HBmqmDfBl58B+5G8JqJFCRX1sBl2/dHg==
   dependencies:
     detect-indent "^6.0.0"
     detect-newline "3.1.0"
-    git-hooks-list "1.0.1"
+    git-hooks-list "1.0.2"
     globby "10.0.1"
     sort-object-keys "^1.1.3"
 
