@@ -5034,9 +5034,9 @@ sort-object-keys@^1.1.3:
   integrity sha512-855pvK+VkU7PaKYPc+Jjnmt4EzejQHyhhF33q31qG8x7maDzkeFhAAThdCYay11CISO+qAMwjOBP+fPZe0IPyg==
 
 sort-package-json@^1.22.1:
-  version "1.38.0"
-  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.38.0.tgz#ad61e10295ac8f93adc7c614570a3af998cf6e57"
-  integrity sha512-ASDxTAaZkxhTItTjuy5FOY2KLN75HqXp/84z9so75CIbWEYL3UzAu/HBmqmDfBl58B+5G8JqJFCRX1sBl2/dHg==
+  version "1.38.1"
+  resolved "https://registry.yarnpkg.com/sort-package-json/-/sort-package-json-1.38.1.tgz#72385d13987dea6f9d23d8aece50b7cecd463f9e"
+  integrity sha512-uDN/kZyck739MKvASHIy3cKwtIC7BbidsJY1wUQV2VlBwaUqfFTb3T2grABKsE9R+ifp3WjLcev4x+gB4CHakQ==
   dependencies:
     detect-indent "^6.0.0"
     detect-newline "3.1.0"
