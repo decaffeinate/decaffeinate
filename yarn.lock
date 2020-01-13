@@ -18,7 +18,7 @@
     invariant "^2.2.4"
     semver "^7.1.1"
 
-"@babel/core@^7.1.0", "@babel/core@^7.6.4", "@babel/core@^7.7.7":
+"@babel/core@^7.1.0", "@babel/core@^7.7.7", "@babel/core@^7.8.0":
   version "7.8.0"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.8.0.tgz#fd273d4faf69cc20ee3ccfd32d42df916bb4a15c"
   integrity sha512-3rqPi/bv/Xfu2YzHvBz4XqMI1fKVwnhntPA1/fjoECrSjrhbOCxlTrbVu5gUtr8zkxW+RpkDOa/HCW93gzS2Dw==
@@ -39,7 +39,7 @@
     semver "^5.4.1"
     source-map "^0.5.0"
 
-"@babel/generator@^7.4.0", "@babel/generator@^7.6.4", "@babel/generator@^7.8.0":
+"@babel/generator@^7.4.0", "@babel/generator@^7.8.0":
   version "7.8.0"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.8.0.tgz#40a1244677be58ffdc5cd01e22634cd1d5b29edf"
   integrity sha512-2Lp2e02CV2C7j/H4n4D9YvsvdhPVVg9GDIamr6Tu4tU35mL3mzOrzl1lZ8ZJtysfZXh+y+AGORc2rPS7yHxBUg==
@@ -724,12 +724,12 @@
     minimist "^1.2.0"
 
 "@codemod/core@^1.0.0":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@codemod/core/-/core-1.0.4.tgz#67fe42bf3245a347792baebf593543032b56f30f"
-  integrity sha512-rDMe64xAeCn0OdRM6XKxQniXqYbafB0KbUQ3YeSFpI7yBOvtMY5mYnlJv2Uc5w8lEyWIfN4El0hnEyDWR1u8Lw==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@codemod/core/-/core-1.0.5.tgz#fec0755f897ffa7b06b3c664beff425d2afbc11b"
+  integrity sha512-Pc8ts5YqtcDeBDmllWb84TuWLrn8QBtddpb/mwbxsPLSIL5xukiVzERx5c4GHH+67O5fejtLlb4PApr26sDXMQ==
   dependencies:
-    "@babel/core" "^7.6.4"
-    "@babel/generator" "^7.6.4"
+    "@babel/core" "^7.8.0"
+    "@babel/generator" "^7.8.0"
     "@codemod/parser" "^1.0.4"
     recast "^0.18.1"
     resolve "^1.12.0"
