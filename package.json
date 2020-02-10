@@ -90,7 +90,7 @@
     "@types/mz": "^2.7.0",
     "@types/node": "^13.1.1",
     "@typescript-eslint/eslint-plugin": "^2.13.0",
-    "@typescript-eslint/parser": "^2.1.0",
+    "@typescript-eslint/parser": "^2.19.1",
     "eslint": "^6.2.1",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-jest": "^23.0.1",
