@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@codemod/core": "^1.0.0",
-    "@codemod/parser": "^1.0.0",
+    "@codemod/parser": "^1.0.7",
     "@resugar/codemod-declarations-block-scope": "^1.0.2",
     "@resugar/codemod-functions-arrow": "^1.0.2",
     "@resugar/codemod-modules-commonjs": "^1.0.4",
