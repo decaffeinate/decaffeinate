@@ -16,6 +16,18 @@ describe('soaked expressions', () => {
         }
       `
       );
+      
+      check(
+        `
+        a = null
+        a?()
+      `,
+        `
+        const a = null;
+        a?.();
+      `,
+        { options: { optionalChaining: true } }
+      );
     });
 
     it('works with a function that is not safe to repeat', () => {
@@ -29,6 +41,16 @@ describe('soaked expressions', () => {
           return typeof func === 'function' ? transform(func) : undefined;
         }
       `
+      );
+
+      check(
+        `
+        a()?()
+      `,
+        `
+        a()?.();
+      `,
+        { options: { optionalChaining: true } }
       );
     });
 
@@ -44,6 +66,16 @@ describe('soaked expressions', () => {
         }
       `
       );
+
+      check(
+        `
+        a(b()?())
+      `,
+        `
+        a(b()?.());
+      `,
+        { options: { optionalChaining: true } }
+      );
     });
 
     it('preserves arguments', () => {
@@ -57,6 +89,16 @@ describe('soaked expressions', () => {
           return typeof func === 'function' ? transform(func) : undefined;
         }
       `
+      );
+
+      check(
+        `
+        a()?(1, 2, 3)
+      `,
+        `
+        a()?.(1, 2, 3);
+      `,
+        { options: { optionalChaining: true } }
       );
     });
 
