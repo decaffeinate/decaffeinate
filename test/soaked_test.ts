@@ -1,11 +1,6 @@
 import check from './support/check';
 import validate from './support/validate';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function validateSoak(source: string, expectedOutput: any): void {
-  validate(source, expectedOutput);
-}
-
 describe('soaked expressions', () => {
   describe('function application', () => {
     it('works with a basic function', () => {
@@ -173,7 +168,7 @@ describe('soaked expressions', () => {
     });
 
     it('does not crash when using a soaked member access on an undeclared variable', () => {
-      validateSoak(
+      validate(
         `
         a?.b
         setResult(true)
@@ -183,7 +178,7 @@ describe('soaked expressions', () => {
     });
 
     it('does not crash when using a soaked dynamic member access on an undeclared variable', () => {
-      validateSoak(
+      validate(
         `
         a?['b']
         setResult(true)
@@ -193,7 +188,7 @@ describe('soaked expressions', () => {
     });
 
     it('does not crash when using a soaked function invocation on an undeclared variable', () => {
-      validateSoak(
+      validate(
         `
         a?()
         setResult(true)
@@ -203,7 +198,7 @@ describe('soaked expressions', () => {
     });
 
     it('evaluates soaked function calls', () => {
-      validateSoak(
+      validate(
         `
         f = -> 3
         setResult(f?())
@@ -213,7 +208,7 @@ describe('soaked expressions', () => {
     });
 
     it('properly sets this in soaked method calls', () => {
-      validateSoak(
+      validate(
         `
         o = false
         a = {
@@ -229,7 +224,7 @@ describe('soaked expressions', () => {
     });
 
     it('properly sets `this` in shorthand-`this` soaked method calls', () => {
-      validateSoak(
+      validate(
         `
         o = false
         a = {
@@ -247,7 +242,7 @@ describe('soaked expressions', () => {
     });
 
     it('properly sets `this` in soaked dynamic method calls', () => {
-      validateSoak(
+      validate(
         `
         o = false
         a = {
@@ -623,7 +618,7 @@ describe('soaked expressions', () => {
     });
 
     it('correctly handles normal soaked access', () => {
-      validateSoak(
+      validate(
         `
         a = {b: 5}
         setResult(a?.b)
@@ -633,7 +628,7 @@ describe('soaked expressions', () => {
     });
 
     it('correctly handles missing soaked access', () => {
-      validateSoak(
+      validate(
         `
         a = {b: null}
         setResult('' + a.b?.c)
@@ -643,7 +638,7 @@ describe('soaked expressions', () => {
     });
 
     it('correctly handles dynamic soaked access', () => {
-      validateSoak(
+      validate(
         `
         a = {b: 5}
         setResult(a?['b'])
@@ -653,7 +648,7 @@ describe('soaked expressions', () => {
     });
 
     it('correctly handles missing dynamic soaked access', () => {
-      validateSoak(
+      validate(
         `
         a = {b: null}
         setResult('' + a.b?['c'])
@@ -663,7 +658,7 @@ describe('soaked expressions', () => {
     });
 
     it('stops evaluating the expression when hitting a soak failure', () => {
-      validateSoak(
+      validate(
         `
         a = {b: 5}
         setResult('' + a.d?.e.f())
@@ -673,7 +668,7 @@ describe('soaked expressions', () => {
     });
 
     it('skips assignment when a soak fails', () => {
-      validateSoak(
+      validate(
         `
         x = 1
         y = null
@@ -1030,7 +1025,7 @@ describe('soaked expressions', () => {
   });
 
   it('has the correct runtime behavior with a soak operation inside a ternary', () => {
-    validateSoak(
+    validate(
       `
       a = {b: 'should not return'}
       setResult(if a?.b then 'should return')
