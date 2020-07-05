@@ -16,7 +16,7 @@ describe('soaked expressions', () => {
         }
       `
       );
-      
+
       check(
         `
         a = null
