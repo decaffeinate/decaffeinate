@@ -1,67 +1,57 @@
 import check from './support/check';
 import validate from './support/validate';
 
+
 describe('soaked expressions', () => {
   describe('function application', () => {
     it('works with a basic function', () => {
-      check(
+      checkOptionalChaining(
         `
         a = null
         a?()
       `,
         `
         const a = null;
-        if (typeof a === 'function') {
-          a();
-        }
+        a?.();
       `
       );
     });
 
     it('works with a function that is not safe to repeat', () => {
-      check(
+      checkOptionalChaining(
         `
         a()?()
       `,
         `
-        __guardFunc__(a(), f => f());
-        function __guardFunc__(func, transform) {
-          return typeof func === 'function' ? transform(func) : undefined;
-        }
+        a()?.();
       `
       );
     });
 
     it('works in an expression context', () => {
-      check(
+      checkOptionalChaining(
         `
         a(b()?())
       `,
         `
-        a(__guardFunc__(b(), f => f()));
-        function __guardFunc__(func, transform) {
-          return typeof func === 'function' ? transform(func) : undefined;
-        }
+        a(b()?.());
       `
       );
     });
 
     it('preserves arguments', () => {
-      check(
+      checkOptionalChaining(
         `
         a()?(1, 2, 3)
       `,
         `
-        __guardFunc__(a(), f => f(1, 2, 3));
-        function __guardFunc__(func, transform) {
-          return typeof func === 'function' ? transform(func) : undefined;
-        }
+        a()?.(1, 2, 3);
       `
       );
     });
 
     it('handles nested soaked function calls', () => {
-      check(
+      checkOptionalChaining(
         `
         a = null
         a?(1)?(2)
@@ -77,7 +67,7 @@ describe('soaked expressions', () => {
     });
 
     it('works with repeatable member access as the function', () => {
-      check(
+      checkOptionalChaining(
         `
         a.b?()
       `,
@@ -90,7 +80,7 @@ describe('soaked expressions', () => {
     });
 
     it('works with non-repeatable member access as the function', () => {
-      check(
+      checkOptionalChaining(
         `
         a().b?()
       `,
@@ -108,7 +98,7 @@ describe('soaked expressions', () => {
     });
 
     it('works with repeatable dynamic member access as the function', () => {
-      check(
+      checkOptionalChaining(
         `
         a[b]?()
       `,
@@ -121,7 +111,7 @@ describe('soaked expressions', () => {
     });
 
     it('works with non-repeatable dynamic member access as the function', () => {
-      check(
+      checkOptionalChaining(
         `
         a()[b]?()
       `,
@@ -139,7 +129,7 @@ describe('soaked expressions', () => {
     });
 
     it('works with dynamic member access whose key is unsafe to repeat as the function', () => {
-      check(
+      checkOptionalChaining(
         `
         a[b()]?()
       `,
@@ -157,7 +147,7 @@ describe('soaked expressions', () => {
     });
 
     it('allows undeclared variables for soaked function calls in an expression context', () => {
-      check(
+      checkOptionalChaining(
         `
         a = b?()
       `,
@@ -260,7 +250,7 @@ describe('soaked expressions', () => {
 
   describe('soaked member access', () => {
     it('handles soaked member access assignment', () => {
-      check(
+      checkOptionalChaining(
         `
         canvasContext = null
         canvasContext?.font = $('body').css('font')
@@ -275,7 +265,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles soaked member access with conflicting variable names', () => {
-      check(
+      checkOptionalChaining(
         `
         x = 5
         a()?.b(x)
@@ -291,7 +281,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles soaked member access with assignment within an expression', () => {
-      check(
+      checkOptionalChaining(
         `
         b = null
         a(b?.c = d)
@@ -304,7 +294,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles soaked member access with a function call', () => {
-      check(
+      checkOptionalChaining(
         `
         a = null
         a?.b()
@@ -319,7 +309,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles soaked member access on the result of a function call', () => {
-      check(
+      checkOptionalChaining(
         `
         a.b()?.c
       `,
@@ -333,7 +323,7 @@ describe('soaked expressions', () => {
     });
 
     it('allows soaked member access to be used in an expression', () => {
-      check(
+      checkOptionalChaining(
         `
         b = null
         a(b?.c)
@@ -346,7 +336,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles dynamic member access', () => {
-      check(
+      checkOptionalChaining(
         `
         a = null
         a?[b]()
@@ -361,7 +351,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles soaked dynamic member access followed by normal dynamic member access', () => {
-      check(
+      checkOptionalChaining(
         `
         a = null
         a?[b].c[d]
@@ -376,7 +366,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles nested soaked dynamic member access', () => {
-      check(
+      checkOptionalChaining(
         `
         a = null
         a?[b].c?[d]
@@ -392,7 +382,7 @@ describe('soaked expressions', () => {
     });
 
     it('allows undeclared variables for soaked dynamic member accesses in an expression context', () => {
-      check(
+      checkOptionalChaining(
         `
         a = b?[c]
       `,
@@ -402,8 +392,8 @@ describe('soaked expressions', () => {
       );
     });
 
-    it('uses a shorter check for declared variables for soaked dynamic member accesses in an expression context', () => {
-      check(
+    it('uses a shorter checkOptionalChaining for declared variables for soaked dynamic member accesses in an expression context', () => {
+      checkOptionalChaining(
         `
         b = {}
         a = b?[c]
@@ -416,7 +406,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles soaked member access within a condition', () => {
-      check(
+      checkOptionalChaining(
         `
         a = null
         if a?.b then c
@@ -429,7 +419,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles nested soaked member access', () => {
-      check(
+      checkOptionalChaining(
         `
         a()?.b()?.c = 0;
       `,
@@ -443,7 +433,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles explicit parens around soaks', () => {
-      check(
+      checkOptionalChaining(
         `
         a = null
         (a?.b).c
@@ -456,7 +446,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps postfix ++ within soak expressions', () => {
-      check(
+      checkOptionalChaining(
         `
         a()?.b++
       `,
@@ -470,7 +460,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps postfix -- within soak expressions', () => {
-      check(
+      checkOptionalChaining(
         `
         a()?.b--
       `,
@@ -484,7 +474,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps prefix ++ within soak expressions', () => {
-      check(
+      checkOptionalChaining(
         `
         ++a()?.b
       `,
@@ -498,7 +488,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps prefix ++ within soaked dynamic accesses', () => {
-      check(
+      checkOptionalChaining(
         `
         ++a()?[b]
       `,
@@ -512,7 +502,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps prefix ++ within soaked dynamic accesses where the LHS is surrounded by parens', () => {
-      check(
+      checkOptionalChaining(
         `
         ++(a())?[b]
       `,
@@ -526,7 +516,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps prefix ++ within soaked function calls', () => {
-      check(
+      checkOptionalChaining(
         `
         ++a()?(b).c
       `,
@@ -540,7 +530,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps prefix ++ within soaked method calls', () => {
-      check(
+      checkOptionalChaining(
         `
         ++a().b?(c).d
       `,
@@ -558,7 +548,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps prefix ++ within soaked dynamic method calls', () => {
-      check(
+      checkOptionalChaining(
         `
         ++a()[b]?(c).d
       `,
@@ -576,7 +566,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps prefix -- within soak expressions', () => {
-      check(
+      checkOptionalChaining(
         `
         --a()?.b
       `,
@@ -590,7 +580,7 @@ describe('soaked expressions', () => {
     });
 
     it('keeps delete within soak expressions', () => {
-      check(
+      checkOptionalChaining(
         `
         delete a()?.b
       `,
@@ -604,7 +594,7 @@ describe('soaked expressions', () => {
     });
 
     it('handles soaked prototype access', () => {
-      check(
+      checkOptionalChaining(
         `
         a()?::b
       `,
@@ -683,7 +673,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked method call on a soaked member access', () => {
-    check(
+    checkOptionalChaining(
       `
       a = {}
       a?.b?()
@@ -703,7 +693,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked method call on a soaked dynamic member access', () => {
-    check(
+    checkOptionalChaining(
       `
       a = null
       a?[b]?()
@@ -723,7 +713,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a combination of soaked function calls and soaked member accesses', () => {
-    check(
+    checkOptionalChaining(
       `
       a = null
       a?(1)?.b?()?[c].d?()?.e = 1
@@ -746,7 +736,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly sets patching bounds for soaked function applications', () => {
-    check(
+    checkOptionalChaining(
       `
       f()?(a, 
         b: c
@@ -765,7 +755,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly transforms an `in` operator with a soak expression on the left', () => {
-    check(
+    checkOptionalChaining(
       `
       a = null
       a?.b in c
@@ -778,7 +768,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly transforms an `in` operator with a soak expression on the right', () => {
-    check(
+    checkOptionalChaining(
       `
       b = null
       a in b?.c
@@ -791,7 +781,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked access used with an existence operator', () => {
-    check(
+    checkOptionalChaining(
       `
       a = b()?.c ? d
     `,
@@ -806,7 +796,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked dynamic access used with an existence operator', () => {
-    check(
+    checkOptionalChaining(
       `
       a = b()?[c()] ? d
     `,
@@ -821,7 +811,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked access used with an existence assignment operator', () => {
-    check(
+    checkOptionalChaining(
       `
       a()?.b ?= c
     `,
@@ -836,7 +826,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked dynamic access used with an existence assignment operator', () => {
-    check(
+    checkOptionalChaining(
       `
       a()?[b()] ?= d
     `,
@@ -852,7 +842,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked access used with a logical assignment operator', () => {
-    check(
+    checkOptionalChaining(
       `
       a()?.b and= c
     `,
@@ -867,7 +857,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked dynamic access used with a logical assignment operator', () => {
-    check(
+    checkOptionalChaining(
       `
       a()?[b()] and= d
     `,
@@ -883,7 +873,7 @@ describe('soaked expressions', () => {
   });
 
   it('allows a repeated soak operation as a loop target', () => {
-    check(
+    checkOptionalChaining(
       `
       i + j for j, i in foo()?.bar ? [] 
     `,
@@ -899,7 +889,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a soaked dynamic access used with a logical assignment operator with a function RHS', () => {
-    check(
+    checkOptionalChaining(
       `
       a.b()?.c or= (it) -> it
     `,
@@ -914,7 +904,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a possibly undeclared variable in a statement context', () => {
-    check(
+    checkOptionalChaining(
       `
       ++a?.b[c()]
     `,
@@ -927,7 +917,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a simple identifier that has been declared in a statement context', () => {
-    check(
+    checkOptionalChaining(
       `
       a = f()
       ++a?.b[c()]
@@ -942,7 +932,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a possibly undeclared variable in an expression context', () => {
-    check(
+    checkOptionalChaining(
       `
       x = ++a?.b[c()]
     `,
@@ -953,7 +943,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a simple identifier that has been declared in an expression context', () => {
-    check(
+    checkOptionalChaining(
       `
       a = f()
       x = ++a?.b[c()]
@@ -966,7 +956,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly follows precedence with soak expressions', () => {
-    check(
+    checkOptionalChaining(
       `
       a = f()
       x = a?.b or []
@@ -979,7 +969,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly handles chained simple soak operations', () => {
-    check(
+    checkOptionalChaining(
       `
       a = f()
       if a?.b?.c?
@@ -998,7 +988,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly handles a soaked method call followed by a binary exists op', () => {
-    check(
+    checkOptionalChaining(
       `
       b = null
       a = b?.filter(-> c) ? null
@@ -1012,7 +1002,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly handles a soak operation inside a ternary', () => {
-    check(
+    checkOptionalChaining(
       `
       b = 0
       a = if b?.c then d else e
@@ -1035,7 +1025,7 @@ describe('soaked expressions', () => {
   });
 
   it('does not add parens around a soaked while condition', () => {
-    check(
+    checkOptionalChaining(
       `
       a = {}
       while a?.b
@@ -1051,7 +1041,7 @@ describe('soaked expressions', () => {
   });
 
   it('does not add parens around a soaked indexing expression', () => {
-    check(
+    checkOptionalChaining(
       `
       a = {}
       b = {}
@@ -1066,7 +1056,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly handles a soaked condition in an `unless` statement', () => {
-    check(
+    checkOptionalChaining(
       `
       a = null
       unless a?.b
@@ -1082,7 +1072,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly handles a soaked condition in an `until` statement', () => {
-    check(
+    checkOptionalChaining(
       `
       a = null
       until a?.b
@@ -1098,7 +1088,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly handles a soaked condition in an `unless` statement with an assignment', () => {
-    check(
+    checkOptionalChaining(
       `
       b = null
       unless a = b?.c
@@ -1115,7 +1105,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly patches the object key in a soaked dynamic member access', () => {
-    check(
+    checkOptionalChaining(
       `
       a = null
       a?[@b]
@@ -1130,7 +1120,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly places parens for expression-style soaked assignment', () => {
-    check(
+    checkOptionalChaining(
       `
       b = null
       a = b?.c = 1
@@ -1143,7 +1133,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles simple soaked new operations', () => {
-    check(
+    checkOptionalChaining(
       `
       A = null
       new A?(b)
@@ -1158,7 +1148,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles implicit soaked new operations', () => {
-    check(
+    checkOptionalChaining(
       `
       A = null
       new A? b
@@ -1173,7 +1163,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles complex soaked new operations', () => {
-    check(
+    checkOptionalChaining(
       `
       new A[b()]?(c)
     `,
@@ -1187,7 +1177,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles soaked slice operations', () => {
-    check(
+    checkOptionalChaining(
       `
       a = b?[c..d]
     `,
@@ -1201,7 +1191,7 @@ describe('soaked expressions', () => {
   });
 
   it('properly computes the soak container for soaked slice operations', () => {
-    check(
+    checkOptionalChaining(
       `
       a = b?[c..d].e
     `,
@@ -1215,7 +1205,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles soaked splice operations', () => {
-    check(
+    checkOptionalChaining(
       `
       a?[b..c] = d
     `,
@@ -1229,7 +1219,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles complex splice operations', () => {
-    check(
+    checkOptionalChaining(
       `
       [a, b()?[c..]] = d
     `,
@@ -1244,7 +1234,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a parenthesized soak operation within `unless`', () => {
-    check(
+    checkOptionalChaining(
       `
       a = {b: 1}
       unless (a?.b)
@@ -1260,7 +1250,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a nested parenthesized soak operation within `unless`', () => {
-    check(
+    checkOptionalChaining(
       `
       a = {b: 1}
       unless (a?.b.c)
@@ -1276,7 +1266,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a parenthesized soak operation within `until`', () => {
-    check(
+    checkOptionalChaining(
       `
       a = {b: 1}
       until (a?.b)
@@ -1292,7 +1282,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a parenthesized soak operation within a negated logical operator', () => {
-    check(
+    checkOptionalChaining(
       `
       a = {b: 1}
       unless c and (a?.b)
@@ -1308,7 +1298,7 @@ describe('soaked expressions', () => {
   });
 
   it('handles a parenthesized soak operation within a negated switch case', () => {
-    check(
+    checkOptionalChaining(
       `
       a = {b: 1}
       switch
