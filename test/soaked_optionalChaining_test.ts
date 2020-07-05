@@ -1,6 +1,9 @@
 import check from './support/check';
 import validate from './support/validate';
 
+function checkOptionalChaining(source: string, expected: string): void {
+  check(source, expected, { options: { optionalChaining: true } });
+}
 
 describe('soaked expressions', () => {
   describe('function application', () => {
