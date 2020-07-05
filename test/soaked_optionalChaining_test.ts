@@ -263,9 +263,7 @@ describe('soaked expressions', () => {
       `,
         `
         const canvasContext = null;
-        if (canvasContext != null) {
-          canvasContext.font = $('body').css('font');
-        }
+        canvasContext?.font = $('body').css('font');
       `
       );
     });
@@ -278,10 +276,7 @@ describe('soaked expressions', () => {
       `,
         `
         const x = 5;
-        __guard__(a(), x1 => x1.b(x));
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a()?.b(x);
       `
       );
     });
@@ -294,7 +289,7 @@ describe('soaked expressions', () => {
       `,
         `
         const b = null;
-        a(b != null ? b.c = d : undefined);
+        a(b?.c = d);
       `
       );
     });
@@ -307,9 +302,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        if (a != null) {
-          a.b();
-        }
+        a?.b();
       `
       );
     });
@@ -320,10 +313,7 @@ describe('soaked expressions', () => {
         a.b()?.c
       `,
         `
-        __guard__(a.b(), x => x.c);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a.b()?.c;
       `
       );
     });
@@ -336,7 +326,7 @@ describe('soaked expressions', () => {
       `,
         `
         const b = null;
-        a(b != null ? b.c : undefined);
+        a(b?.c);
       `
       );
     });
@@ -349,9 +339,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        if (a != null) {
-          a[b]();
-        }
+        a?[b]();
       `
       );
     });
@@ -364,9 +352,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        if (a != null) {
-          a[b].c[d];
-        }
+        a?[b].c[d];
       `
       );
     });
@@ -379,10 +365,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        __guard__(a != null ? a[b].c : undefined, x => x[d]);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a?[b].c?[d];
       `
       );
     });
@@ -393,7 +376,7 @@ describe('soaked expressions', () => {
         a = b?[c]
       `,
         `
-        const a = typeof b !== 'undefined' && b !== null ? b[c] : undefined;
+        const a = b?[c];
       `
       );
     });
@@ -406,7 +389,7 @@ describe('soaked expressions', () => {
       `,
         `
         const b = {};
-        const a = b != null ? b[c] : undefined;
+        const a = b?[c];
       `
       );
     });
@@ -419,7 +402,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        if (a != null ? a.b : undefined) { c; }
+        if (a?.b) { c; }
       `
       );
     });
@@ -430,10 +413,7 @@ describe('soaked expressions', () => {
         a()?.b()?.c = 0;
       `,
         `
-        __guard__(__guard__(a(), x1 => x1.b()), x => x.c = 0);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a()?.b()?.c = 0;
       `
       );
     });
@@ -446,7 +426,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        (a != null ? a.b : undefined).c;
+        (a?.b).c;
       `
       );
     });
@@ -457,10 +437,7 @@ describe('soaked expressions', () => {
         a()?.b++
       `,
         `
-        __guard__(a(), x => x.b++);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a()?.b++;
       `
       );
     });
@@ -471,10 +448,7 @@ describe('soaked expressions', () => {
         a()?.b--
       `,
         `
-        __guard__(a(), x => x.b--);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a()?.b--;
       `
       );
     });
@@ -485,10 +459,7 @@ describe('soaked expressions', () => {
         ++a()?.b
       `,
         `
-        __guard__(a(), x => ++x.b);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        ++a()?.b;
       `
       );
     });
@@ -499,10 +470,7 @@ describe('soaked expressions', () => {
         ++a()?[b]
       `,
         `
-        __guard__(a(), x => ++x[b]);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        ++a()?[b];
       `
       );
     });
@@ -513,10 +481,7 @@ describe('soaked expressions', () => {
         ++(a())?[b]
       `,
         `
-        __guard__((a()), x => ++x[b]);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        ++(a())?[b];
       `
       );
     });
@@ -577,10 +542,7 @@ describe('soaked expressions', () => {
         --a()?.b
       `,
         `
-        __guard__(a(), x => --x.b);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        --a()?.b;
       `
       );
     });
@@ -591,15 +553,13 @@ describe('soaked expressions', () => {
         delete a()?.b
       `,
         `
-        __guard__(a(), x => delete x.b);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        delete a()?.b;
       `
       );
     });
 
     it('handles soaked prototype access', () => {
+      // TODO
       checkOptionalChaining(
         `
         a()?::b
