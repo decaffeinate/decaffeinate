@@ -13,7 +13,7 @@ function runCli(argStr: string, stdin: string, expectedStdout: string): void {
     expectedStdout = stripSharedIndent(expectedStdout);
   }
 
-  const stdout = execSync('./bin/decaffeinate ' + argStr, {
+  const stdout = execSync(`node ./bin/decaffeinate ${argStr}`, {
     input: stdin
   }).toString();
   equal(stdout.trim(), expectedStdout.trim());
@@ -28,7 +28,7 @@ function runCliExpectError(argStr: string, stdin: string, expectedStderr: string
   }
 
   try {
-    execSync('./bin/decaffeinate ' + argStr, { input: stdin });
+    execSync(`node ./bin/decaffeinate ${argStr}`, { input: stdin });
     ok(false, 'Expected the CLI to fail.');
   } catch (e) {
     equal(e.output[2].toString().trim(), expectedStderr.trim());
