@@ -489,7 +489,7 @@ describe('decaffeinate CLI', () => {
       stripSharedIndent(`
       import path from 'path';
       const b = 1;
-    `)
+    `) // TODO generates an additional \U+00B7 char after `;` ·
     );
   });
 
@@ -513,7 +513,7 @@ describe('decaffeinate CLI', () => {
       stripSharedIndent(`
       import path from 'path';
       const b = 1;
-    `)
+    `) // TODO generates an additional \U+00B7 char after `;` ·
     );
   });
 
@@ -528,10 +528,10 @@ describe('decaffeinate CLI', () => {
     );
     const contents = readFileSync('./test_fixtures/level1/level2/file.js').toString();
     equal(
-      stripSharedIndent(contents),
+      contents,
       stripSharedIndent(`
       const a = 1;
-    `)
+    `) // TODO generates an additional \U+00B7 char after `;` ·
     );
   });
 });
