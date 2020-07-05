@@ -32,6 +32,7 @@
   "scripts": {
     "prebuild": "rimraf dist && mkdirp dist && yarn lint",
     "build": "script/build",
+    "bump": "ncu -u",
     "lint": "eslint --report-unused-disable-directives --ext .ts src script test",
     "lint-fix": "yarn lint --fix",
     "prepublish": "yarn build",
@@ -104,6 +105,7 @@
     "jest": "^25.1.0",
     "lint-staged": "^10.0.0",
     "mkdirp": "^1.0.2",
+    "npm-check-updates": "^7.0.1",
     "prettier": "^1.19.0",
     "rimraf": "^3.0.0",
     "sort-package-json": "^1.22.1",
