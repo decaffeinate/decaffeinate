@@ -176,8 +176,6 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 - `--loose-includes`: Do not wrap in `Array.from` when converting `in` to `includes`.
 - `--loose-comparison-negation`: Allow unsafe simplifications like `!(a > b)` to `a <= b`.
 - `--loose-js-modules`: Allow named exports when converting to JS modules.
-- `--disable-babel-constructor-workaround`: Never include the Babel/TypeScript
-  workaround code to allow `this` before `super` in constructors.
 - `--disallow-invalid-constructors`: Give an error when constructors use `this`
   before `super` or omit the `super` call in a subclass.
 

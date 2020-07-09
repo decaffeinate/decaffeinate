@@ -1,7 +1,7 @@
 import check, { checkCS1 } from './support/check';
 
 describe('suggestions', () => {
-  it('provides a suggestion for the babel constructor workaround', () => {
+  it('provides a suggestion for invalid constructors', () => {
     check(
       `
       class A extends B
@@ -11,19 +11,12 @@ describe('suggestions', () => {
       `
       /*
        * decaffeinate suggestions:
-       * DS001: Remove Babel/TypeScript constructor workaround
+       * DS002: Fix invalid constructor
        * DS102: Remove unnecessary code created because of implicit returns
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
        */
       class A extends B {
         constructor(...args) {
-          {
-            // Hack: trick Babel/TypeScript into allowing this before super.
-            if (false) { super(); }
-            let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-            eval(\`$\{thisName} = this;\`);
-          }
           this.c = this.c.bind(this);
           super(...args);
         }
@@ -70,31 +63,17 @@ describe('suggestions', () => {
       `
       /*
        * decaffeinate suggestions:
-       * DS001: Remove Babel/TypeScript constructor workaround
+       * DS002: Fix invalid constructor
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
        */
       class A extends B {
         constructor(c) {
-          {
-            // Hack: trick Babel/TypeScript into allowing this before super.
-            if (false) { super(); }
-            let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-            eval(\`$\{thisName} = this;\`);
-          }
           this.c = c;
           super(...arguments);
         }
       }
       class E extends F {
         constructor(g) {
-          {
-            // Hack: trick Babel/TypeScript into allowing this before super.
-            if (false) { super(); }
-            let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-            eval(\`$\{thisName} = this;\`);
-          }
           this.g = g;
           super(...arguments);
         }

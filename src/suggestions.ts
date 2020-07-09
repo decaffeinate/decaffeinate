@@ -3,9 +3,9 @@ export interface Suggestion {
   message: string;
 }
 
-export const REMOVE_BABEL_WORKAROUND = {
-  suggestionCode: 'DS001',
-  message: 'Remove Babel/TypeScript constructor workaround'
+export const FIX_INVALID_CONSTRUCTOR = {
+  suggestionCode: 'DS002',
+  message: 'Fix invalid constructor'
 };
 
 export const REMOVE_ARRAY_FROM = {

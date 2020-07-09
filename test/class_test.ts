@@ -87,12 +87,7 @@ describe('classes', () => {
       (class extends Parent {
         constructor() {}
       });
-    `,
-      {
-        options: {
-          disableBabelConstructorWorkaround: true
-        }
-      }
+    `
     );
   });
 
@@ -303,7 +298,7 @@ describe('classes', () => {
       );
     });
 
-    it('disables the babel workaround when using this before super in a constructor', () => {
+    it('passes invalid this-before-super uses through', () => {
       checkCS1(
         `
         class A extends B
@@ -318,16 +313,11 @@ describe('classes', () => {
             super(...arguments);
           }
         }
-      `,
-        {
-          options: {
-            disableBabelConstructorWorkaround: true
-          }
-        }
+      `
       );
     });
 
-    it('disables the babel workaround when a subclass constructor omits super', () => {
+    it('passes invalid no-super constructors through', () => {
       check(
         `
         class A extends B
@@ -340,12 +330,7 @@ describe('classes', () => {
             this.a = 2;
           }
         }
-      `,
-        {
-          options: {
-            disableBabelConstructorWorkaround: true
-          }
-        }
+      `
       );
     });
 
@@ -367,12 +352,7 @@ describe('classes', () => {
           return 1;
         }
       }
-    `,
-        {
-          options: {
-            disableBabelConstructorWorkaround: true
-          }
-        }
+    `
       );
     });
 
@@ -399,16 +379,11 @@ describe('classes', () => {
           this.b = 2;
         }
       }
-    `,
-        {
-          options: {
-            disableBabelConstructorWorkaround: true
-          }
-        }
+    `
       );
     });
 
-    it('generates workaround code when using this before super in a constructor', () => {
+    it('allows this before super', () => {
       checkCS1(
         `
         class A extends B
@@ -419,13 +394,6 @@ describe('classes', () => {
         `
         class A extends B {
           constructor() {
-            {
-              // Hack: trick Babel/TypeScript into allowing this before super.
-              if (false) { super(); }
-              let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-              eval(\`\${thisName} = this;\`);
-            }
             this.a = 2;
             super(...arguments);
           }
@@ -434,7 +402,7 @@ describe('classes', () => {
       );
     });
 
-    it('generates workaround code when a subclass constructor omits super', () => {
+    it('passes invalid code through when a subclass constructor omits super', () => {
       check(
         `
         class A extends B
@@ -444,13 +412,6 @@ describe('classes', () => {
         `
         class A extends B {
           constructor() {
-            {
-              // Hack: trick Babel/TypeScript into allowing this before super.
-              if (false) { super(); }
-              let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-              eval(\`\${thisName} = this;\`);
-            }
             this.a = 2;
           }
         }
@@ -458,36 +419,7 @@ describe('classes', () => {
       );
     });
 
-    it('generates workaround code when a subclass has a bound method and no constructor', () => {
-      check(
-        `
-        class A extends B
-          foo: =>
-            null
-      `,
-        `
-        class A extends B {
-          constructor(...args) {
-            {
-              // Hack: trick Babel/TypeScript into allowing this before super.
-              if (false) { super(); }
-              let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-              eval(\`\${thisName} = this;\`);
-            }
-            this.foo = this.foo.bind(this);
-            super(...args);
-          }
-        
-          foo() {
-            return null;
-          }
-        }
-      `
-      );
-    });
-
-    it('generates workaround code when a subclass has a bound method and a normal constructor', () => {
+    it('passes invalid code through when a subclass has a bound method and a normal constructor', () => {
       checkCS1(
         `
         class A extends B
@@ -501,13 +433,6 @@ describe('classes', () => {
         `
         class A extends B {
           constructor() {
-            {
-              // Hack: trick Babel/TypeScript into allowing this before super.
-              if (false) { super(); }
-              let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-              eval(\`\${thisName} = this;\`);
-            }
             this.foo = this.foo.bind(this);
             super(...arguments);
             this.x = 3;
@@ -521,7 +446,7 @@ describe('classes', () => {
       );
     });
 
-    it('generates workaround code when a subclass has a bound method and an empty constructor', () => {
+    it('passes invalid code through when a subclass has a bound method and an empty constructor', () => {
       check(
         `
         class A extends B
@@ -533,64 +458,11 @@ describe('classes', () => {
         `
         class A extends B {
           constructor() {
-            {
-              // Hack: trick Babel/TypeScript into allowing this before super.
-              if (false) { super(); }
-              let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-              eval(\`\${thisName} = this;\`);
-            }
             this.foo = this.foo.bind(this);
           }
         
           foo() {
             return null;
-          }
-        }
-      `
-      );
-    });
-
-    it('does not generate workaround code when the workaround is unnecessary', () => {
-      checkCS1(
-        `
-        class A extends B
-          constructor: ->
-            super
-            @x = 3
-      `,
-        `
-        class A extends B {
-          constructor() {
-            super(...arguments);
-            this.x = 3;
-          }
-        }
-      `
-      );
-    });
-
-    it('properly generates workaround code when constructors have default parameters', () => {
-      checkCS1(
-        `
-        class A extends B
-          constructor: (c={}) ->
-            @d = e
-            super
-      `,
-        `
-        class A extends B {
-          constructor(c) {
-            {
-              // Hack: trick Babel/TypeScript into allowing this before super.
-              if (false) { super(); }
-              let thisFn = (() => { return this; }).toString();
-              let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-              eval(\`\${thisName} = this;\`);
-            }
-            if (c == null) { c = {}; }
-            this.d = e;
-            super(...arguments);
           }
         }
       `
@@ -724,12 +596,7 @@ describe('classes', () => {
       class A extends B {
         constructor() {}
       }
-    `,
-      {
-        options: {
-          disableBabelConstructorWorkaround: true
-        }
-      }
+    `
     );
   });
 
@@ -744,12 +611,7 @@ describe('classes', () => {
       class A extends (B = class B extends C {}) {
         constructor() {}
       }
-    `,
-      {
-        options: {
-          disableBabelConstructorWorkaround: true
-        }
-      }
+    `
     );
   });
 
@@ -1192,12 +1054,7 @@ describe('classes', () => {
       
         add() {}
       }
-    `,
-      {
-        options: {
-          disableBabelConstructorWorkaround: true
-        }
-      }
+    `
     );
   });
 
@@ -1269,12 +1126,7 @@ describe('classes', () => {
       
         add() {}
       }
-    `,
-      {
-        options: {
-          disableBabelConstructorWorkaround: true
-        }
-      }
+    `
     );
   });
 
@@ -2312,8 +2164,8 @@ describe('classes', () => {
     );
   });
 
-  it('produces a Babel/TS constructor hack that allows this before super in a constructor and produces correct values', () => {
-    validateCS1(
+  it('does not allow constructors that reference this before super', () => {
+    assertError(
       `
     class A
       constructor: ->
@@ -2324,11 +2176,9 @@ describe('classes', () => {
       constructor: ->
         @value = 3
         super
-    b = new B()
-    setResult(b.value)
   `,
-      4,
-      { options: {}, skipNodeCheck: true }
+      'Cannot automatically convert a subclass with a constructor that uses `this` before `super`.',
+      { disallowInvalidConstructors: true }
     );
   });
 });

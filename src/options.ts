@@ -15,7 +15,6 @@ export interface Options {
   looseForOf?: boolean;
   looseIncludes?: boolean;
   looseComparisonNegation?: boolean;
-  disableBabelConstructorWorkaround?: boolean;
   disallowInvalidConstructors?: boolean;
 }
 
@@ -36,7 +35,6 @@ export const DEFAULT_OPTIONS: Options = {
   looseForOf: false,
   looseIncludes: false,
   looseComparisonNegation: false,
-  disableBabelConstructorWorkaround: false,
   disallowInvalidConstructors: false
 };
 

@@ -1,8 +1,7 @@
 import { Class, This } from 'decaffeinate-parser/dist/nodes';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
-import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
-import babelConstructorWorkaroundLines from '../../../utils/babelConstructorWorkaroundLines';
+import { FIX_INVALID_CONSTRUCTOR } from '../../../suggestions';
 import containsDescendant from '../../../utils/containsDescendant';
 import containsSuperCall from '../../../utils/containsSuperCall';
 import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
@@ -53,9 +52,6 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
 
   getLinesToInsert(): Array<string> {
     let lines: Array<string> = [];
-    if (this.shouldAddBabelWorkaround()) {
-      lines = lines.concat(babelConstructorWorkaroundLines);
-    }
     lines = lines.concat(this.getBindings());
     return lines;
   }
@@ -65,23 +61,15 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
    * call or uses `this` before `super`.
    */
   checkForConstructorErrors(): void {
-    if (!this.options.disallowInvalidConstructors) {
-      return;
-    }
-
     const errorMessage = this.getInvalidConstructorMessage();
-    if (errorMessage) {
-      throw this.error(getInvalidConstructorErrorMessage(errorMessage));
-    }
-  }
 
-  shouldAddBabelWorkaround(): boolean {
-    const shouldEnable =
-      !this.options.disableBabelConstructorWorkaround && this.getInvalidConstructorMessage() !== null;
-    if (shouldEnable) {
-      this.addSuggestion(REMOVE_BABEL_WORKAROUND);
+    if (errorMessage) {
+      if (!this.options.disallowInvalidConstructors) {
+        this.addSuggestion(FIX_INVALID_CONSTRUCTOR);
+      } else {
+        throw this.error(getInvalidConstructorErrorMessage(errorMessage));
+      }
     }
-    return shouldEnable;
   }
 
   /**
