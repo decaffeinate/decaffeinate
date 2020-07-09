@@ -88,7 +88,7 @@ function parseArguments(args: Array<string>): CLIOptions {
         break;
 
       case '--disable-babel-constructor-workaround':
-        baseOptions.disableBabelConstructorWorkaround = true;
+        console.warn(arg, 'no longer has any effect as it is the only supported behavior');
         break;
 
       case '--disallow-invalid-constructors':
@@ -131,7 +131,7 @@ function parseArguments(args: Array<string>): CLIOptions {
         break;
 
       case '--allow-invalid-constructors':
-        baseOptions.disableBabelConstructorWorkaround = true;
+        baseOptions.disallowInvalidConstructors = false;
         break;
 
       default:
@@ -273,9 +273,6 @@ function usage(): void {
   console.log('  --loose-includes         Do not wrap in Array.from when converting in to includes.');
   console.log('  --loose-comparison-negation');
   console.log('                           Allow unsafe simplifications like `!(a > b)` to `a <= b`.');
-  console.log('  --disable-babel-constructor-workaround');
-  console.log('                           Never include the Babel/TypeScript workaround code to allow');
-  console.log('                           this before super in constructors.');
   console.log('  --disallow-invalid-constructors');
   console.log('                           Give an error when constructors use this before super or');
   console.log('                           omit the super call in a subclass.');

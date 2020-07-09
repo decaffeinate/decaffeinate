@@ -8,11 +8,12 @@ about the JavaScript produced by decaffeinate and how to clean it up without
 introducing bugs.
 
 There are two ways to use this list:
-* After running decaffeinate, each resulting JavaScript file has a list of
+
+- After running decaffeinate, each resulting JavaScript file has a list of
   suggestion codes with cleanup suggestions relevant to that file. You can jump
   to the docs for these specific suggestions, since they will be most useful to
   you.
-* If you're trying to run decaffeinate on a large codebase, it's probably a good
+- If you're trying to run decaffeinate on a large codebase, it's probably a good
   idea to read all points in this list to get an understanding of what cleanup
   steps will be required.
 
@@ -26,7 +27,8 @@ Generated using https://tableofcontents.herokuapp.com/
 -->
 
 - [DS0XX: Highest priority](#ds0xx-highest-priority)
-  - [DS001: Remove Babel/TypeScript constructor workaround](#ds001-remove-babeltypescript-constructor-workaround)
+  - ~~[DS001: Remove Babel/TypeScript constructor workaround](#ds001-remove-babeltypescript-constructor-workaround)~~
+  - [DS002: Fix invalid constructor](#ds002-fix-invalid-constructor)
 - [DS1XX: Common cleanup tasks](#ds1xx-common-cleanup-tasks)
   - [DS101: Remove unnecessary use of `Array.from`](#ds101-remove-unnecessary-use-of-arrayfrom)
   - [DS102: Remove unnecessary code created because of implicit returns](#ds102-remove-unnecessary-code-created-because-of-implicit-returns)
@@ -51,7 +53,9 @@ Generated using https://tableofcontents.herokuapp.com/
 
 # DS0XX: Highest priority
 
-## DS001: Remove Babel/TypeScript constructor workaround
+## ~~DS001: Remove Babel/TypeScript constructor workaround~~
+
+> This workaround was removed, so this is here only for historical documentation purposes.
 
 ### Overview
 
@@ -67,6 +71,7 @@ so it's best seen as an ugly hack that you should remove as soon as you can.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 class FriendlyPerson extends Person
   handleGreeting: =>
@@ -75,13 +80,18 @@ class FriendlyPerson extends Person
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 class FriendlyPerson extends Person {
   constructor(...args) {
     {
       // Hack: trick babel into allowing this before super.
-      if (false) { super(); }
-      let thisFn = (() => { this; }).toString();
+      if (false) {
+        super();
+      }
+      let thisFn = (() => {
+        this;
+      }).toString();
       let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
       eval(`${thisName} = this;`);
     }
@@ -96,6 +106,7 @@ class FriendlyPerson extends Person {
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 class FriendlyPerson extends Person {
   constructor(...args) {
@@ -126,6 +137,70 @@ If you prefer, you can run decaffeinate with
 `--disable-babel-constructor-workaround` or `--disallow-invalid-constructors` to
 avoid generating the workaround code.
 
+## DS002: Fix invalid constructor
+
+### Overview
+
+CoffeeScript classes allow `this` to be used before `super` in a subclass
+constructor, while JavaScript classes do not. Decaffeinate used to produce code
+to work around this issue, but no longer does. **It's up to you to fix this or
+your code will not work**. Again, the code produced is _invalid_ and must be
+fixed.
+
+### Example
+
+#### CoffeeScript
+
+```coffee
+class FriendlyPerson extends Person
+  handleGreeting: =>
+    @respond('Hello!')
+    return
+```
+
+#### JavaScript after decaffeinate
+
+```js
+class FriendlyPerson extends Person {
+  constructor(...args) {
+    this.handleGreeting = this.handleGreeting.bind(this);
+    super(...args);
+  }
+
+  handleGreeting() {
+    this.respond('Hello!');
+  }
+}
+```
+
+#### Cleaner JavaScript (may not be equivalent)
+
+```js
+class FriendlyPerson extends Person {
+  constructor(...args) {
+    super(...args);
+    this.handleGreeting = this.handleGreeting.bind(this);
+  }
+
+  handleGreeting() {
+    this.respond('Hello!');
+  }
+}
+```
+
+### How to address
+
+In many cases, it is safe to simply move the `this` usage after the `super`
+call. If no `super` call was present, you should instead add a `super` call
+before all `this` usages. However, you should watch out for any work that is
+done during the super call and make sure that it is ok for the class fields to
+not be assigned yet. In some frameworks like Backbone, the `super` call does
+significant work, and you may need to rewrite some of your code to ensure that
+method bindings and field assignments are done before they are used.
+
+If you prefer, you can run decaffeinate with `--disallow-invalid-constructors` to
+avoid generating invalid code.
+
 # DS1XX: Common cleanup tasks
 
 ## DS101: Remove unnecessary use of `Array.from`
@@ -142,7 +217,7 @@ and JS `for-of` loops, destructuring, and array spread all require the target to
 be iterable. decaffeinate also produces code using array methods like `map`,
 `filter`, and `includes`.
 
-In *most* cases in real-world code, these array operations are done on regular
+In _most_ cases in real-world code, these array operations are done on regular
 JavaScript arrays (which are both array-like and iterable), but some values like
 strings, jQuery collections, FileList, and NodeList are array-like but are
 either not iterable or do not contain all array methods. To correctly handle
@@ -153,6 +228,7 @@ in many array operations to convert the value to an actual array if necessary.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 for lion in lions
   lion.roar()
@@ -163,6 +239,7 @@ eat(avocados...)
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 for (let lion of Array.from(lions)) {
   lion.roar();
@@ -175,6 +252,7 @@ eat(...Array.from(avocados || []));
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 for (let lion of lions) {
   lion.roar();
@@ -221,6 +299,7 @@ is actually used, so it always mimics CoffeeScript's behavior.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 greetFriends = (people) ->
   for person in people
@@ -229,6 +308,7 @@ greetFriends = (people) ->
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 let greetFriends = people =>
   (() => {
@@ -241,11 +321,11 @@ let greetFriends = people =>
       }
     }
     return result;
-  })()
-;
+  })();
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 function greetFriends(people) {
   for (const person of people) {
@@ -266,7 +346,7 @@ accidentally be relying on an unintentional implicit return value, so you should
 be careful to check all usages to make sure the return value is actually never
 used.
 
-Alternatively, you can try to add *explicit* returns to your code before running
+Alternatively, you can try to add _explicit_ returns to your code before running
 it through decaffeinate. If a function has `return` as its last statement, then
 decaffeinate will make the function return no value and remove the `return` from
 the JavaScript code since it isn't necessary. One way to detect and fix implicit
@@ -289,6 +369,7 @@ to implement the conditional evaluation behavior.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 cleanUp = (apartment) ->
   apartment?.getBathroom()?.shower.scrub()
@@ -296,16 +377,18 @@ cleanUp = (apartment) ->
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 let cleanUp = function(apartment) {
   __guard__(apartment != null ? apartment.getBathroom() : undefined, x => x.shower.scrub());
 };
 function __guard__(value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+  return typeof value !== 'undefined' && value !== null ? transform(value) : undefined;
 }
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 function cleanUp(apartment) {
   const bathroom = apartment && apartment.getBathroom();
@@ -327,14 +410,14 @@ string.
 In plain JavaScript, usually the cleanest approach is `&&`, sometimes combined
 with intermediate variables. Some external libraries also help:
 
-* [_.get](https://lodash.com/docs/4.17.4#get) from Lodash provides a similar
+- [\_.get](https://lodash.com/docs/4.17.4#get) from Lodash provides a similar
   (although less powerful) mechanism for safe nested access.
-* Facebook has an open source project called [idx](https://github.com/facebookincubator/idx)
+- Facebook has an open source project called [idx](https://github.com/facebookincubator/idx)
   that uses exceptions to implement safe nested access in plain JS and includes
   a Babel transform to translate the code to not use exceptions. See more
   information in the
   [announcement blog post](https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html).
-* There is a language proposal called
+- There is a language proposal called
   [Optional Chaining for JavaScript](https://github.com/tc39/proposal-optional-chaining)
   that adds a `?.` operator in JavaScript. As of this writing, the proposal is
   in relatively early stages, but has a
@@ -354,17 +437,20 @@ to read, and the variable name is auto-generated by decaffeinate.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 accounts[getAccountId()] //= splitFactor
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 let name;
-accounts[name = getAccountId()] = Math.floor(accounts[name] / splitFactor);
+accounts[(name = getAccountId())] = Math.floor(accounts[name] / splitFactor);
 ```
 
 #### Cleaner JavaScript
+
 ```js
 const accountId = getAccountId();
 accounts[accountId] = Math.floor(accounts[accountId] / splitFactor);
@@ -392,6 +478,7 @@ instead.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 guessPosition = (pos = 0) ->
   {grid = []} = board
@@ -402,10 +489,14 @@ guessPosition = (pos = 0) ->
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 let guessPosition = function(pos) {
-  if (pos == null) { pos = 0; }
-  let val = board.grid, grid = val != null ? val : [];
+  if (pos == null) {
+    pos = 0;
+  }
+  let val = board.grid,
+    grid = val != null ? val : [];
   if (grid[pos] === 'ship') {
     return 'You sunk my battleship.';
   } else {
@@ -415,9 +506,10 @@ let guessPosition = function(pos) {
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 function guessPosition(pos = 0) {
-  const {grid = []} = board;
+  const { grid = [] } = board;
   if (grid[pos] === 'ship') {
     return 'You sunk my battleship.';
   } else {
@@ -447,9 +539,10 @@ decaffeinate to automatically use default params in the generated code.
 Nested destructure operations can in some cases be converted safely to
 JavaScript as a destructure operation, but in some complex cases, JavaScript
 assignment syntax is incorrect or not flexible enough:
-* Array destructures.
-* Intermediate expansion/rest nodes (`...` in the middle of an array destructure).
-* Default values.
+
+- Array destructures.
+- Intermediate expansion/rest nodes (`...` in the middle of an array destructure).
+- Default values.
 
 In these cases, decaffeinate reimplements the more straightforward algorithm
 using repeated assignments.
@@ -457,11 +550,13 @@ using repeated assignments.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 {left: {right: {left: {left: {right: [firstValue, ..., lastValue]}}}}} = tree;
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 let obj = tree.left,
   obj1 = obj.right,
@@ -473,8 +568,17 @@ let obj = tree.left,
 ```
 
 #### Cleaner JavaScript
+
 ```js
-const {left: {right: {left: {left: {right: values}}}}} = tree;
+const {
+  left: {
+    right: {
+      left: {
+        left: { right: values }
+      }
+    }
+  }
+} = tree;
 const firstValue = values[0];
 const lastValue = values[values.length - 1];
 ```
@@ -498,19 +602,26 @@ much more verbose than they need to be.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 for guess in [firstGuess..lastGuess]
   makeGuess(guess)
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
-for (let guess = firstGuess, end = lastGuess, asc = firstGuess <= end; asc ? guess <= end : guess >= end; asc ? guess++ : guess--) {
+for (
+  let guess = firstGuess, end = lastGuess, asc = firstGuess <= end;
+  asc ? guess <= end : guess >= end;
+  asc ? guess++ : guess--
+) {
   makeGuess(guess);
 }
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 for (let guess = firstGuess; guess <= lastGuess; guess++) {
   makeGuess(guess);
@@ -536,12 +647,14 @@ decaffeinate inserts `|| {}` to handle that case.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 for own name of teamMembers
   console.log "Great work, #{name}!"
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 for (let name of Object.keys(teamMembers || {})) {
   console.log(`Great work, ${name}!`);
@@ -549,6 +662,7 @@ for (let name of Object.keys(teamMembers || {})) {
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 for (let name of Object.keys(teamMembers)) {
   console.log(`Great work, ${name}!`);
@@ -573,20 +687,23 @@ left-hand side to a variable that gets evaluated first.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 if getLime() in getCoconut()
   drinkThemBoth()
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 let needle;
-if ((needle = getLime(), Array.from(getCoconut()).includes(needle))) {
+if (((needle = getLime()), Array.from(getCoconut()).includes(needle))) {
   drinkThemBoth();
 }
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 if (getCoconut().includes(getLime())) {
   drinkThemBoth();
@@ -612,6 +729,7 @@ read.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 eat(switch desiredFlavor()
   when 'sweet'
@@ -623,18 +741,24 @@ eat(switch desiredFlavor()
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
-eat((() => { switch (desiredFlavor()) {
-  case 'sweet':
-    return 'ice cream';
-  case 'savory':
-    return 'grilled cheese';
-  default:
-    return 'water';
-} })());
+eat(
+  (() => {
+    switch (desiredFlavor()) {
+      case 'sweet':
+        return 'ice cream';
+      case 'savory':
+        return 'grilled cheese';
+      default:
+        return 'water';
+    }
+  })()
+);
 ```
 
 #### Cleaner JavaScript
+
 ```js
 switch (desiredFlavor()) {
   case 'sweet':
@@ -668,6 +792,7 @@ code.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 class Circle
   PI = 3.14159265358979
@@ -678,6 +803,7 @@ class Circle
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 var Circle = (function() {
   let PI = undefined;
@@ -699,6 +825,7 @@ var Circle = (function() {
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 const PI = 3.14159265358979;
 class Circle {
@@ -717,13 +844,14 @@ class Circle {
 ### How to address
 
 Many use cases of code within class bodies can be replaced by other mechanisms:
-* Constants used within the class can usually be pulled out as external
+
+- Constants used within the class can usually be pulled out as external
   constants.
-* Nested classes can be pulled out into multiple classes at the top level.
-* Prototype field assignments can often (but not always) be replaced by an
+- Nested classes can be pulled out into multiple classes at the top level.
+- Prototype field assignments can often (but not always) be replaced by an
   assignment in the constructor. Note that assigning in the constructor creates
-  a property *on the instance*, while assigning on the prototype creates a
-  single shared property *used by all instances*. The
+  a property _on the instance_, while assigning on the prototype creates a
+  single shared property _used by all instances_. The
   [class fields](https://github.com/tc39/proposal-class-fields) language
   proposal adds a new syntax equivalent to assigning within the constructor, so
   it's not exactly the same as CoffeeScript class fields, but behaves similarly.
@@ -742,12 +870,14 @@ often it is preferable to simply use the value as a boolean.
 ### Example
 
 #### CoffeeScript
+
 ```coffee
 if currentUser()?
   sendMessage(customMessage() ? 'Hello')
 ```
 
 #### JavaScript after decaffeinate
+
 ```js
 if (currentUser() != null) {
   let left;
@@ -756,6 +886,7 @@ if (currentUser() != null) {
 ```
 
 #### Cleaner JavaScript (may not be equivalent)
+
 ```js
 if (currentUser()) {
   sendMessage(customMessage() || 'Hello');
@@ -774,9 +905,10 @@ expected.
 ### Overview
 
 Top-level `this` in JavaScript can mean several things, depending on context:
-* In the browser, it refers to `window`.
-* In Node.js, it refers to `module.exports`.
-* In JS modules, it is never defined.
+
+- In the browser, it refers to `window`.
+- In Node.js, it refers to `module.exports`.
+- In JS modules, it is never defined.
 
 decaffeinate is unopinionated and produces JavaScript code that still uses
 `this` at the top level, but Babel converts all top-level `this` usages to

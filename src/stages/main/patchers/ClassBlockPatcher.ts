@@ -1,8 +1,6 @@
 import { Node } from 'decaffeinate-parser/dist/nodes';
 import { PatchOptions } from '../../../patchers/types';
-import { REMOVE_BABEL_WORKAROUND } from '../../../suggestions';
 import adjustIndent from '../../../utils/adjustIndent';
-import babelConstructorWorkaroundLines from '../../../utils/babelConstructorWorkaroundLines';
 import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';
 import getInvalidConstructorErrorMessage from '../../../utils/getInvalidConstructorErrorMessage';
 import { PatcherClass } from './../../../patchers/NodePatcher';
@@ -10,6 +8,7 @@ import BlockPatcher from './BlockPatcher';
 import ClassAssignOpPatcher from './ClassAssignOpPatcher';
 import ClassPatcher from './ClassPatcher';
 import ConstructorPatcher from './ConstructorPatcher';
+import { FIX_INVALID_CONSTRUCTOR } from '../../../suggestions';
 
 export default class ClassBlockPatcher extends BlockPatcher {
   static patcherClassForChildNode(node: Node, property: string): PatcherClass | null {
@@ -34,6 +33,8 @@ export default class ClassBlockPatcher extends BlockPatcher {
           throw this.error(
             getInvalidConstructorErrorMessage('Cannot automatically convert a subclass that uses bound methods.')
           );
+        } else if (isSubclass) {
+          this.addSuggestion(FIX_INVALID_CONSTRUCTOR);
         }
 
         const { source } = this.context;
@@ -43,11 +44,6 @@ export default class ClassBlockPatcher extends BlockPatcher {
         let constructor = '';
         if (isSubclass) {
           constructor += `constructor(...args) {\n`;
-          if (this.shouldEnableBabelWorkaround()) {
-            for (const line of babelConstructorWorkaroundLines) {
-              constructor += `${methodBodyIndent}${line}\n`;
-            }
-          }
         } else {
           constructor += `constructor() {\n`;
         }
@@ -65,14 +61,6 @@ export default class ClassBlockPatcher extends BlockPatcher {
 
   shouldAllowInvalidConstructors(): boolean {
     return !this.options.disallowInvalidConstructors;
-  }
-
-  shouldEnableBabelWorkaround(): boolean {
-    const shouldEnable = !this.options.disableBabelConstructorWorkaround;
-    if (shouldEnable) {
-      this.addSuggestion(REMOVE_BABEL_WORKAROUND);
-    }
-    return shouldEnable;
   }
 
   getClassPatcher(): ClassPatcher {

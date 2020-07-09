@@ -319,71 +319,7 @@ describe('decaffeinate CLI', () => {
     );
   });
 
-  it('adds the Babel constructor workaround by default', () => {
-    runCli(
-      '',
-      `
-      class A extends B
-        constructor: ->
-          @a = 1
-          super
-    `,
-      `
-      /*
-       * decaffeinate suggestions:
-       * DS001: Remove Babel/TypeScript constructor workaround
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
-       */
-      class A extends B {
-        constructor() {
-          {
-            // Hack: trick Babel/TypeScript into allowing this before super.
-            if (false) { super(); }
-            let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-            eval(\`$\{thisName} = this;\`);
-          }
-          this.a = 1;
-          super(...arguments);
-        }
-      }
-    `
-    );
-  });
-
-  it('treats the --enable-babel-constructor-workaround option as a no-op', () => {
-    runCli(
-      '--enable-babel-constructor-workaround',
-      `
-      class A extends B
-        constructor: ->
-          @a = 1
-          super
-    `,
-      `
-      /*
-       * decaffeinate suggestions:
-       * DS001: Remove Babel/TypeScript constructor workaround
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
-       */
-      class A extends B {
-        constructor() {
-          {
-            // Hack: trick Babel/TypeScript into allowing this before super.
-            if (false) { super(); }
-            let thisFn = (() => { return this; }).toString();
-            let thisName = thisFn.match(/return (?:_assertThisInitialized\\()*(\\w+)\\)*;/)[1];
-            eval(\`$\{thisName} = this;\`);
-          }
-          this.a = 1;
-          super(...arguments);
-        }
-      }
-    `
-    );
-  });
-
-  it('respects the --disable-babel-constructor-workaround option', () => {
+  it('treats the --disable-babel-constructor-workaround option as a no-op', () => {
     runCli(
       '--disable-babel-constructor-workaround',
       `
@@ -393,6 +329,11 @@ describe('decaffeinate CLI', () => {
           super
     `,
       `
+      /*
+       * decaffeinate suggestions:
+       * DS002: Fix invalid constructor
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       class A extends B {
         constructor() {
           this.a = 1;
@@ -403,7 +344,7 @@ describe('decaffeinate CLI', () => {
     );
   });
 
-  it('respects the --allow-invalid-constructors option as an alias for --disable-babel-constructor-workaround', () => {
+  it('respects the --allow-invalid-constructors option as a no-op', () => {
     runCli(
       '--allow-invalid-constructors',
       `
@@ -413,6 +354,11 @@ describe('decaffeinate CLI', () => {
           super
     `,
       `
+      /*
+       * decaffeinate suggestions:
+       * DS002: Fix invalid constructor
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
       class A extends B {
         constructor() {
           this.a = 1;

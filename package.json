@@ -19,16 +19,16 @@
   "contributors": [
     "Alan Pierce <alangpierce@gmail.com>"
   ],
-  "files": [
-    "bin",
-    "dist"
-  ],
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "bin": {
     "decaffeinate": "./bin/decaffeinate"
   },
+  "files": [
+    "bin",
+    "dist"
+  ],
   "scripts": {
     "prebuild": "rimraf dist && mkdirp dist && yarn lint",
     "build": "script/build",
@@ -54,9 +54,13 @@
       "git add"
     ]
   },
+  "resolutions": {
+    "**/@babel/types": "7.10.4",
+    "**/@resugar/helper-comments": "^1.0.2"
+  },
   "dependencies": {
-    "@codemod/core": "^1.0.0",
-    "@codemod/parser": "^1.0.0",
+    "@codemod/core": "^1.0.7",
+    "@codemod/parser": "^1.0.7",
     "@resugar/codemod-declarations-block-scope": "^1.0.2",
     "@resugar/codemod-functions-arrow": "^1.0.2",
     "@resugar/codemod-modules-commonjs": "^1.0.4",
@@ -64,7 +68,7 @@
     "@resugar/codemod-objects-destructuring": "^1.0.1",
     "@resugar/codemod-objects-shorthand": "^1.0.1",
     "@resugar/codemod-strings-template": "^1.0.1",
-    "add-variable-declarations": "^4.0.6",
+    "add-variable-declarations": "^4.0.7",
     "automatic-semicolon-insertion": "^2.0.5",
     "coffee-lex": "^9.1.5",
     "decaffeinate-coffeescript": "1.12.7-patch.3",
@@ -77,14 +81,14 @@
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.7",
-    "@babel/preset-env": "^7.7.7",
-    "@babel/traverse": "^7.7.4",
-    "@babel/types": "^7.7.4",
-    "@types/babel__core": "^7.1.3",
-    "@types/babel__generator": "^7.6.0",
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/traverse": "^7.10.4",
+    "@babel/types": "^7.10.4",
+    "@types/babel__core": "^7.1.9",
+    "@types/babel__generator": "^7.6.1",
     "@types/babel__template": "^7.0.2",
-    "@types/babel__traverse": "^7.0.7",
+    "@types/babel__traverse": "^7.0.12",
     "@types/fs-extra": "^8.0.0",
     "@types/jest": "^25.1.0",
     "@types/mz": "^2.7.0",
@@ -106,10 +110,6 @@
     "ts-jest": "^25.0.0",
     "ts-node": "^8.0.2",
     "typescript": "^3.5.3"
-  },
-  "resolutions": {
-    "**/@babel/types": "7.7.4",
-    "**/@resugar/helper-comments": "^1.0.2"
   },
   "engines": {
     "node": ">=8"
