@@ -46,7 +46,7 @@ export default class SlicePatcher extends NodePatcher {
     const indexStart = this.getIndexStartSourceToken();
     // `a[0..1]` → `a.slice(0..1]`
     //   ^           ^^^^^^^
-    this.overwrite(this.expression.outerEnd, indexStart.end, '.slice(');
+    this.overwrite(this.expression.outerEnd, indexStart.end, this.getSliceStartCode());
     if (this.left) {
       this.left.patch();
     } else if (this.right) {
@@ -89,7 +89,16 @@ export default class SlicePatcher extends NodePatcher {
     const indexEnd = this.getIndexEndSourceToken();
     // `a.slice(0, 1]` → `a.slice(0, 1)`
     //              ^                 ^
-    this.overwrite(indexEnd.start, indexEnd.end, ')');
+    this.overwrite(indexEnd.start, indexEnd.end, this.getSpliceEndCode());
+  }
+
+  getSliceStartCode(splice = false): string {
+    return splice ? '.splice(' : '.slice(';
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getSpliceEndCode(_splice = false): string {
+    return ')';
   }
 
   /**
@@ -118,7 +127,7 @@ export default class SlicePatcher extends NodePatcher {
     const indexStart = this.getIndexStartSourceToken();
     // `a[b..c]` → `a.splice(b..c]`
     //   ^           ^^^^^^^^
-    this.overwrite(this.expression.outerEnd, indexStart.end, '.splice(');
+    this.overwrite(this.expression.outerEnd, indexStart.end, this.getSliceStartCode(true));
     let leftCode;
     if (this.left) {
       leftCode = this.left.patchRepeatable();

@@ -281,7 +281,8 @@ function usage(): void {
   console.log('                           Give an error when constructors use this before super or');
   console.log('                           omit the super call in a subclass.');
   console.log('  --optional-chaining');
-  console.log('                           Do not transpile optional chaining');
+  console.log('                           Target JavaScript optional chaining. Note the semantics may not');
+  console.log('                           match exactly.');
   console.log();
   console.log('EXAMPLES');
   console.log();

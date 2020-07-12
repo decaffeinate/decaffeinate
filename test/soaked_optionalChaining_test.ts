@@ -1,5 +1,6 @@
 import check from './support/check';
 import validate from './support/validate';
+import assertError from './support/assertError';
 
 function checkOptionalChaining(source: string, expected: string): void {
   check(source, expected, { options: { optionalChaining: true } });
@@ -64,10 +65,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        __guardFunc__(typeof a === 'function' ? a(1) : undefined, f => f(2));
-        function __guardFunc__(func, transform) {
-          return typeof func === 'function' ? transform(func) : undefined;
-        }
+        a?.(1)?.(2);
       `
       );
     });
@@ -169,7 +167,8 @@ describe('soaked expressions', () => {
         a?.b
         setResult(true)
       `,
-        true
+        true,
+        { options: { optionalChaining: true } }
       );
     });
 
@@ -179,7 +178,8 @@ describe('soaked expressions', () => {
         a?['b']
         setResult(true)
       `,
-        true
+        true,
+        { options: { optionalChaining: true } }
       );
     });
 
@@ -189,7 +189,8 @@ describe('soaked expressions', () => {
         a?()
         setResult(true)
       `,
-        true
+        true,
+        { options: { optionalChaining: true } }
       );
     });
 
@@ -199,7 +200,8 @@ describe('soaked expressions', () => {
         f = -> 3
         setResult(f?())
       `,
-        3
+        3,
+        { options: { optionalChaining: true } }
       );
     });
 
@@ -215,7 +217,8 @@ describe('soaked expressions', () => {
         a.b?()
         setResult(o)
       `,
-        true
+        true,
+        { options: { optionalChaining: true } }
       );
     });
 
@@ -233,7 +236,8 @@ describe('soaked expressions', () => {
         a.b()
         setResult(o)
       `,
-        true
+        true,
+        { options: { optionalChaining: true } }
       );
     });
 
@@ -249,22 +253,21 @@ describe('soaked expressions', () => {
         a['b']?()
         setResult(o)
       `,
-        true
+        true,
+        { options: { optionalChaining: true } }
       );
     });
   });
 
   describe('soaked member access', () => {
     it('handles soaked member access assignment', () => {
-      checkOptionalChaining(
+      assertError(
         `
         canvasContext = null
         canvasContext?.font = $('body').css('font')
       `,
-        `
-        const canvasContext = null;
-        canvasContext?.font = $('body').css('font');
-      `
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
       );
     });
 
@@ -281,16 +284,14 @@ describe('soaked expressions', () => {
       );
     });
 
-    it('handles soaked member access with assignment within an expression', () => {
-      checkOptionalChaining(
+    it('disallows soaked member access with assignment within an expression', () => {
+      assertError(
         `
         b = null
         a(b?.c = d)
       `,
-        `
-        const b = null;
-        a(b?.c = d);
-      `
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
       );
     });
 
@@ -339,7 +340,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        a?[b]();
+        a?.[b]();
       `
       );
     });
@@ -352,7 +353,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        a?[b].c[d];
+        a?.[b].c[d];
       `
       );
     });
@@ -365,7 +366,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = null;
-        a?[b].c?[d];
+        a?.[b].c?.[d];
       `
       );
     });
@@ -376,12 +377,12 @@ describe('soaked expressions', () => {
         a = b?[c]
       `,
         `
-        const a = b?[c];
+        const a = b?.[c];
       `
       );
     });
 
-    it('uses a shorter checkOptionalChaining for declared variables for soaked dynamic member accesses in an expression context', () => {
+    it('uses a shorter check for declared variables for soaked dynamic member accesses in an expression context', () => {
       checkOptionalChaining(
         `
         b = {}
@@ -389,7 +390,7 @@ describe('soaked expressions', () => {
       `,
         `
         const b = {};
-        const a = b?[c];
+        const a = b?.[c];
       `
       );
     });
@@ -407,17 +408,6 @@ describe('soaked expressions', () => {
       );
     });
 
-    it('handles nested soaked member access', () => {
-      checkOptionalChaining(
-        `
-        a()?.b()?.c = 0;
-      `,
-        `
-        a()?.b()?.c = 0;
-      `
-      );
-    });
-
     it('handles explicit parens around soaks', () => {
       checkOptionalChaining(
         `
@@ -431,119 +421,89 @@ describe('soaked expressions', () => {
       );
     });
 
-    it('keeps postfix ++ within soak expressions', () => {
-      checkOptionalChaining(
+    it('fails when used with postfix operation', () => {
+      assertError(
         `
         a()?.b++
       `,
-        `
-        a()?.b++;
-      `
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
       );
-    });
 
-    it('keeps postfix -- within soak expressions', () => {
-      checkOptionalChaining(
+      assertError(
         `
         a()?.b--
       `,
-        `
-        a()?.b--;
-      `
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
       );
-    });
 
-    it('keeps prefix ++ within soak expressions', () => {
-      checkOptionalChaining(
+      assertError(
         `
         ++a()?.b
       `,
-        `
-        ++a()?.b;
-      `
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
       );
-    });
 
-    it('keeps prefix ++ within soaked dynamic accesses', () => {
-      checkOptionalChaining(
-        `
-        ++a()?[b]
-      `,
-        `
-        ++a()?[b];
-      `
-      );
-    });
-
-    it('keeps prefix ++ within soaked dynamic accesses where the LHS is surrounded by parens', () => {
-      checkOptionalChaining(
-        `
-        ++(a())?[b]
-      `,
-        `
-        ++(a())?[b];
-      `
-      );
-    });
-
-    it('keeps prefix ++ within soaked function calls', () => {
-      checkOptionalChaining(
-        `
-        ++a()?(b).c
-      `,
-        `
-        __guardFunc__(a(), f => ++f(b).c);
-        function __guardFunc__(func, transform) {
-          return typeof func === 'function' ? transform(func) : undefined;
-        }
-      `
-      );
-    });
-
-    it('keeps prefix ++ within soaked method calls', () => {
-      checkOptionalChaining(
-        `
-        ++a().b?(c).d
-      `,
-        `
-        __guardMethod__(a(), 'b', o => ++o.b(c).d);
-        function __guardMethod__(obj, methodName, transform) {
-          if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
-            return transform(obj, methodName);
-          } else {
-            return undefined;
-          }
-        }
-      `
-      );
-    });
-
-    it('keeps prefix ++ within soaked dynamic method calls', () => {
-      checkOptionalChaining(
-        `
-        ++a()[b]?(c).d
-      `,
-        `
-        __guardMethod__(a(), b, (o, m) => ++o[m](c).d);
-        function __guardMethod__(obj, methodName, transform) {
-          if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
-            return transform(obj, methodName);
-          } else {
-            return undefined;
-          }
-        }
-      `
-      );
-    });
-
-    it('keeps prefix -- within soak expressions', () => {
-      checkOptionalChaining(
+      assertError(
         `
         --a()?.b
       `,
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
+      );
+
+      assertError(
         `
-        --a()?.b;
-      `
+        ++(a())?[b]
+      `,
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
+      );
+
+      assertError(
+        `
+        --(a())?[b]
+      `,
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
+      );
+
+      assertError(
+        `
+        ++a()?(b).c
+      `,
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
+      );
+
+      assertError(
+        `
+        --a()?(b).c
+      `,
+        'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+        { optionalChaining: true }
+      );
+    });
+
+    it('allows assignment with an ancestor of a soak outside a function boundary', () => {
+      checkOptionalChaining(
+        `
+        (-> a?.b).c++
+        `,
+        `
+        ((() => a?.b)).c++;
+        `
+      );
+
+      checkOptionalChaining(
+        `
+        a[b?.c]++
+        `,
+        `
+        a[b?.c]++;
+        `
       );
     });
 
@@ -559,16 +519,12 @@ describe('soaked expressions', () => {
     });
 
     it('handles soaked prototype access', () => {
-      // TODO
       checkOptionalChaining(
         `
         a()?::b
       `,
         `
-        __guard__(a(), x => x.prototype.b);
-        function __guard__(value, transform) {
-          return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-        }
+        a()?.prototype.b;
       `
       );
     });
@@ -622,20 +578,6 @@ describe('soaked expressions', () => {
         'undefined'
       );
     });
-
-    it('skips assignment when a soak fails', () => {
-      validate(
-        `
-        x = 1
-        y = null
-        z = {}
-        y?.a = x++
-        z?.a = x++
-        setResult(x)
-      `,
-        2
-      );
-    });
   });
 
   it('handles a soaked method call on a soaked member access', () => {
@@ -646,14 +588,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = {};
-      __guardMethod__(a, 'b', o => o.b());
-      function __guardMethod__(obj, methodName, transform) {
-        if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
-          return transform(obj, methodName);
-        } else {
-          return undefined;
-        }
-      }
+      a?.b?.();
     `
     );
   });
@@ -666,14 +601,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = null;
-      __guardMethod__(a, b, (o, m) => o[m]());
-      function __guardMethod__(obj, methodName, transform) {
-        if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
-          return transform(obj, methodName);
-        } else {
-          return undefined;
-        }
-      }
+      a?.[b]?.();
     `
     );
   });
@@ -682,21 +610,11 @@ describe('soaked expressions', () => {
     checkOptionalChaining(
       `
       a = null
-      a?(1)?.b?()?[c].d?()?.e = 1
+      a?(1)?.b?()?[c].d?()?.e
     `,
       `
       const a = null;
-      __guard__(__guardMethod__(__guard__(__guardMethod__(typeof a === 'function' ? a(1) : undefined, 'b', o1 => o1.b()), x1 => x1[c]), 'd', o => o.d()), x => x.e = 1);
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
-      function __guardMethod__(obj, methodName, transform) {
-        if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
-          return transform(obj, methodName);
-        } else {
-          return undefined;
-        }
-      }
+      a?.(1)?.b?.()?.[c].d?.()?.e;
     `
     );
   });
@@ -704,18 +622,15 @@ describe('soaked expressions', () => {
   it('properly sets patching bounds for soaked function applications', () => {
     checkOptionalChaining(
       `
-      f()?(a, 
+      f()?(a,
         b: c
         d: e)
     `,
       `
-      __guardFunc__(f(), f => f(a, { 
+      f()?.(a, {
         b: c,
         d: e
-      }));
-      function __guardFunc__(func, transform) {
-        return typeof func === 'function' ? transform(func) : undefined;
-      }
+      });
     `
     );
   });
@@ -728,7 +643,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = null;
-      Array.from(c).includes(a != null ? a.b : undefined);
+      Array.from(c).includes(a?.b);
     `
     );
   });
@@ -741,7 +656,7 @@ describe('soaked expressions', () => {
     `,
       `
       const b = null;
-      Array.from(b != null ? b.c : undefined).includes(a);
+      Array.from(b?.c).includes(a);
     `
     );
   });
@@ -753,10 +668,7 @@ describe('soaked expressions', () => {
     `,
       `
       let left;
-      const a = (left = __guard__(b(), x => x.c)) != null ? left : d;
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
+      const a = (left = b()?.c) != null ? left : d;
     `
     );
   });
@@ -768,73 +680,50 @@ describe('soaked expressions', () => {
     `,
       `
       let left;
-      const a = (left = __guard__(b(), x => x[c()])) != null ? left : d;
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
+      const a = (left = b()?.[c()]) != null ? left : d;
     `
     );
   });
 
-  it('handles a soaked access used with an existence assignment operator', () => {
-    checkOptionalChaining(
+  it('fails with nullish coalescing assignment', () => {
+    assertError(
       `
       a()?.b ?= c
     `,
-      `
-      let base;
-      __guard__((base = a()), x => x.b != null ? base.b : (base.b = c));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
-    `
+      'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+      { optionalChaining: true }
     );
-  });
 
-  it('handles a soaked dynamic access used with an existence assignment operator', () => {
-    checkOptionalChaining(
+    assertError(
       `
       a()?[b()] ?= d
     `,
-      `
-      let name;
-      let base;
-      __guard__((base = a()), x => x[name = b()] != null ? base[name] : (base[name] = d));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
-    `
+      'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+      { optionalChaining: true }
     );
-  });
 
-  it('handles a soaked access used with a logical assignment operator', () => {
-    checkOptionalChaining(
+    assertError(
       `
       a()?.b and= c
     `,
-      `
-      let base;
-      __guard__((base = a()), x => x.b && (base.b = c));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
-    `
+      'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+      { optionalChaining: true }
     );
-  });
 
-  it('handles a soaked dynamic access used with a logical assignment operator', () => {
-    checkOptionalChaining(
+    assertError(
       `
       a()?[b()] and= d
     `,
+      'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+      { optionalChaining: true }
+    );
+
+    assertError(
       `
-      let name;
-      let base;
-      __guard__((base = a()), x => x[name = b()] && (base[name] = d));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
-    `
+      a.b()?.c or= (it) -> it
+    `,
+      'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+      { optionalChaining: true }
     );
   });
 
@@ -845,26 +734,8 @@ describe('soaked expressions', () => {
     `,
       `
       let left;
-      const iterable = (left = __guard__(foo(), x => x.bar)) != null ? left : [];
+      const iterable = (left = foo()?.bar) != null ? left : [];
       for (let i = 0; i < iterable.length; i++) { const j = iterable[i]; i + j; } 
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
-    `
-    );
-  });
-
-  it('handles a soaked dynamic access used with a logical assignment operator with a function RHS', () => {
-    checkOptionalChaining(
-      `
-      a.b()?.c or= (it) -> it
-    `,
-      `
-      let base;
-      __guard__((base = a.b()), x => x.c || (base.c = it => it));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
     `
     );
   });
@@ -872,12 +743,10 @@ describe('soaked expressions', () => {
   it('handles a possibly undeclared variable in a statement context', () => {
     checkOptionalChaining(
       `
-      ++a?.b[c()]
+      a?.b[c()]()
     `,
       `
-      if (typeof a !== 'undefined' && a !== null) {
-        ++a.b[c()];
-      }
+      a?.b[c()]();
     `
     );
   });
@@ -886,37 +755,11 @@ describe('soaked expressions', () => {
     checkOptionalChaining(
       `
       a = f()
-      ++a?.b[c()]
+      a?.b[c()]
     `,
       `
       const a = f();
-      if (a != null) {
-        ++a.b[c()];
-      }
-    `
-    );
-  });
-
-  it('handles a possibly undeclared variable in an expression context', () => {
-    checkOptionalChaining(
-      `
-      x = ++a?.b[c()]
-    `,
-      `
-      const x = typeof a !== 'undefined' && a !== null ? ++a.b[c()] : undefined;
-    `
-    );
-  });
-
-  it('handles a simple identifier that has been declared in an expression context', () => {
-    checkOptionalChaining(
-      `
-      a = f()
-      x = ++a?.b[c()]
-    `,
-      `
-      const a = f();
-      const x = a != null ? ++a.b[c()] : undefined;
+      a?.b[c()];
     `
     );
   });
@@ -929,7 +772,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = f();
-      const x = (a != null ? a.b : undefined) || [];
+      const x = a?.b || [];
     `
     );
   });
@@ -943,11 +786,8 @@ describe('soaked expressions', () => {
     `,
       `
       const a = f();
-      if (__guard__(a != null ? a.b : undefined, x => x.c) != null) {
+      if (a?.b?.c != null) {
         d;
-      }
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
     `
     );
@@ -962,7 +802,7 @@ describe('soaked expressions', () => {
       `
       let left;
       const b = null;
-      const a = (left = (b != null ? b.filter(() => c) : undefined)) != null ? left : null;
+      const a = (left = b?.filter(() => c)) != null ? left : null;
     `
     );
   });
@@ -975,7 +815,7 @@ describe('soaked expressions', () => {
     `,
       `
       const b = 0;
-      const a = (b != null ? b.c : undefined) ? d : e;
+      const a = b?.c ? d : e;
     `
     );
   });
@@ -986,7 +826,8 @@ describe('soaked expressions', () => {
       a = {b: 'should not return'}
       setResult(if a?.b then 'should return')
     `,
-      'should return'
+      'should return',
+      { options: { optionalChaining: true }, skipNodeCheck: true }
     );
   });
 
@@ -999,7 +840,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = {};
-      while (a != null ? a.b : undefined) {
+      while (a?.b) {
         break;
       }
     `
@@ -1016,7 +857,7 @@ describe('soaked expressions', () => {
       `
       const a = {};
       const b = {};
-      const d = a[b != null ? b.c : undefined];
+      const d = a[b?.c];
     `
     );
   });
@@ -1030,7 +871,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = null;
-      if (!(a != null ? a.b : undefined)) {
+      if (!a?.b) {
         c;
       }
     `
@@ -1046,7 +887,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = null;
-      while (!(a != null ? a.b : undefined)) {
+      while (!a?.b) {
         c;
       }
     `
@@ -1063,7 +904,7 @@ describe('soaked expressions', () => {
       `
       let a;
       const b = null;
-      if (!(a = b != null ? b.c : undefined)) {
+      if (!(a = b?.c)) {
         d;
       }
     `
@@ -1078,67 +919,47 @@ describe('soaked expressions', () => {
     `,
       `
       const a = null;
-      if (a != null) {
-        a[this.b];
-      }
+      a?.[this.b];
     `
     );
   });
 
   it('properly places parens for expression-style soaked assignment', () => {
-    checkOptionalChaining(
+    assertError(
       `
       b = null
       a = b?.c = 1
     `,
-      `
-      const b = null;
-      const a = (b != null ? b.c = 1 : undefined);
-    `
+      'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
+      { optionalChaining: true }
     );
   });
 
-  it('handles simple soaked new operations', () => {
-    checkOptionalChaining(
+  it('fails with soaked new operations', () => {
+    assertError(
       `
       A = null
       new A?(b)
     `,
-      `
-      const A = null;
-      if (typeof A === 'function') {
-        new A(b);
-      }
-    `
+      'JavaScript does not allow constructors with optional chaining. Run without --optional-chaining or edit the original source to manually invoke the constructor conditionally.',
+      { optionalChaining: true }
     );
-  });
 
-  it('handles implicit soaked new operations', () => {
-    checkOptionalChaining(
+    assertError(
       `
       A = null
       new A? b
     `,
-      `
-      const A = null;
-      if (typeof A === 'function') {
-        new A(b);
-      }
-    `
+      'JavaScript does not allow constructors with optional chaining. Run without --optional-chaining or edit the original source to manually invoke the constructor conditionally.',
+      { optionalChaining: true }
     );
-  });
 
-  it('handles complex soaked new operations', () => {
-    checkOptionalChaining(
+    assertError(
       `
       new A[b()]?(c)
     `,
-      `
-      __guardFunc__(A[b()], f => new f(c));
-      function __guardFunc__(func, transform) {
-        return typeof func === 'function' ? transform(func) : undefined;
-      }
-    `
+      'JavaScript does not allow constructors with optional chaining. Run without --optional-chaining or edit the original source to manually invoke the constructor conditionally.',
+      { optionalChaining: true }
     );
   });
 
@@ -1148,10 +969,7 @@ describe('soaked expressions', () => {
       a = b?[c..d]
     `,
       `
-      const a = __guard__(b, x => x.slice(c, +d + 1 || undefined));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
+      const a = b?.slice(c, +d + 1 || undefined);
     `
     );
   });
@@ -1162,10 +980,7 @@ describe('soaked expressions', () => {
       a = b?[c..d].e
     `,
       `
-      const a = __guard__(b, x => x.slice(c, +d + 1 || undefined).e);
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
+      const a = b?.slice(c, +d + 1 || undefined).e;
     `
     );
   });
@@ -1176,10 +991,7 @@ describe('soaked expressions', () => {
       a?[b..c] = d
     `,
       `
-      __guard__(a, x => x.splice(b, c - b + 1, ...[].concat(d)));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
+      a?.splice(b, c - b + 1, ...[].concat(d));
     `
     );
   });
@@ -1191,10 +1003,7 @@ describe('soaked expressions', () => {
     `,
       `
       let a;
-      a = d[0], __guard__(b(), x => x.splice(c, 9e9, ...[].concat(d[1])));
-      function __guard__(value, transform) {
-        return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-      }
+      a = d[0], b()?.splice(c, 9e9, ...[].concat(d[1]));
     `
     );
   });
@@ -1208,7 +1017,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = {b: 1};
-      if (!(a != null ? a.b : undefined)) {
+      if (!a?.b) {
         c;
       }
     `
@@ -1224,7 +1033,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = {b: 1};
-      if (!(a != null ? a.b.c : undefined)) {
+      if (!a?.b.c) {
         d;
       }
     `
@@ -1240,7 +1049,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = {b: 1};
-      while (!(a != null ? a.b : undefined)) {
+      while (!a?.b) {
         c;
       }
     `
@@ -1256,7 +1065,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = {b: 1};
-      if (!c || (!(a != null ? a.b : undefined))) {
+      if (!c || (!a?.b)) {
         d;
       }
     `
@@ -1274,7 +1083,7 @@ describe('soaked expressions', () => {
       `
       const a = {b: 1};
       switch (false) {
-        case (!(a != null ? a.b : undefined)):
+        case (!a?.b):
           c;
           break;
       }
