@@ -78,7 +78,7 @@
     "lines-and-columns": "^1.1.6",
     "magic-string": "^0.25.1",
     "mz": "^2.7.0",
-    "tslib": "^1.9.3"
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
