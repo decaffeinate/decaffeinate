@@ -122,13 +122,6 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
   }
 
   /**
-   * Change a.b?() to a.b?.()
-   */
-  // patchMethodCallOptionalChaining(fn: MemberAccessOpPatcher): void {
-  //   // TODO
-  // }
-
-  /**
    * Change a[b]?() to __guardMethod__(a, b, (o, m) => o[m]())
    */
   patchDynamicMethodCall(fn: DynamicMemberAccessOpPatcher): void {
@@ -157,13 +150,6 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
     soakContainer.appendDeferredSuffix(')');
   }
-
-  /**
-   * Change a[b]?() to a[b]?.()
-   */
-  // patchDynamicMethodCallOptionalChaining(fn: MemberAccessOpPatcher): void {
-  //   // TODO
-  // }
 
   patchNonMethodCall(): void {
     this.registerHelper('__guardFunc__', GUARD_FUNC_HELPER);

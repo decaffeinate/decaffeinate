@@ -15,7 +15,7 @@ export default class SoakedDynamicMemberAccessOpPatcher extends DynamicMemberAcc
 
   constructor(patcherContext: PatcherContext, expression: NodePatcher, indexingExpr: NodePatcher) {
     super(patcherContext, expression, indexingExpr);
-    this._shouldSkipSoakPatch = Boolean(this.options.optionalChaining);
+    this._shouldSkipSoakPatch = false;
   }
 
   patchAsExpression(): void {

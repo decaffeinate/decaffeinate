@@ -9,7 +9,7 @@ const GUARD_HELPER = `function __guard__(value, transform) {
 }`;
 
 export default class SoakedMemberAccessOpPatcher extends MemberAccessOpPatcher {
-  _shouldSkipSoakPatch = this.options.optionalChaining;
+  _shouldSkipSoakPatch = false;
 
   patchAsExpression(): void {
     if (!this._shouldSkipSoakPatch) {
