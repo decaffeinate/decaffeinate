@@ -16,6 +16,7 @@ export interface Options {
   looseIncludes?: boolean;
   looseComparisonNegation?: boolean;
   disallowInvalidConstructors?: boolean;
+  optionalChaining?: boolean;
 }
 
 export const DEFAULT_OPTIONS: Options = {

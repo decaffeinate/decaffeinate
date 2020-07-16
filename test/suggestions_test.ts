@@ -219,7 +219,7 @@ describe('suggestions', () => {
       `
       /*
        * decaffeinate suggestions:
-       * DS103: Rewrite code to no longer use __guard__
+       * DS103: Rewrite code to no longer use __guard__, or convert again using --optional-chaining
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
        */
       __guard__(a(), x => x.b);
@@ -230,6 +230,23 @@ describe('suggestions', () => {
       {
         options: {
           disableSuggestionComment: false
+        }
+      }
+    );
+  });
+
+  it('does not suggest removing __guard__ when using optional chaining', () => {
+    check(
+      `
+      a()?.b
+    `,
+      `
+      a()?.b;
+    `,
+      {
+        options: {
+          disableSuggestionComment: false,
+          optionalChaining: true
         }
       }
     );

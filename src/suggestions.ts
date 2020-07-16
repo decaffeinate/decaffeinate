@@ -20,7 +20,7 @@ export const CLEAN_UP_IMPLICIT_RETURNS = {
 
 export const REMOVE_GUARD = {
   suggestionCode: 'DS103',
-  message: 'Rewrite code to no longer use __guard__'
+  message: 'Rewrite code to no longer use __guard__, or convert again using --optional-chaining'
 };
 
 export const AVOID_INLINE_ASSIGNMENTS = {

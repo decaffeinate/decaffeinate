@@ -62,6 +62,11 @@ import NewOpPatcher from './patchers/NewOpPatcher';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher';
 import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
 import OfOpPatcher from './patchers/OfOpPatcher';
+import OptionalChainingSoakedDynamicMemberAccessOpPatcher from './patchers/OptionalChainingSoakedDynamicMemberAccessOpPatcher';
+import OptionalChainingSoakedFunctionApplicationPatcher from './patchers/OptionalChainingSoakedFunctionApplicationPatcher';
+import OptionalChainingSoakedMemberAccessOpPatcher from './patchers/OptionalChainingSoakedMemberAccessOpPatcher';
+import OptionalChainingSoakedNewOpPatcher from './patchers/OptionalChainingSoakedNewOpPatcher';
+import OptionalChainingSoakedSlicePatcher from './patchers/OptionalChainingSoakedSlicePatcher';
 import ProgramPatcher from './patchers/ProgramPatcher';
 import QuasiPatcher from './patchers/QuasiPatcher';
 import RangePatcher from './patchers/RangePatcher';
@@ -124,7 +129,11 @@ export default class MainStage extends TransformCoffeeScriptStage {
         return FunctionApplicationPatcher;
 
       case 'SoakedFunctionApplication':
-        return SoakedFunctionApplicationPatcher;
+        if (this.options.optionalChaining) {
+          return OptionalChainingSoakedFunctionApplicationPatcher;
+        } else {
+          return SoakedFunctionApplicationPatcher;
+        }
 
       case 'MemberAccessOp':
         return MemberAccessOpPatcher;
@@ -261,10 +270,18 @@ export default class MainStage extends TransformCoffeeScriptStage {
         return LogicalNotOpPatcher;
 
       case 'SoakedMemberAccessOp':
-        return SoakedMemberAccessOpPatcher;
+        if (this.options.optionalChaining) {
+          return OptionalChainingSoakedMemberAccessOpPatcher;
+        } else {
+          return SoakedMemberAccessOpPatcher;
+        }
 
       case 'SoakedDynamicMemberAccessOp':
-        return SoakedDynamicMemberAccessOpPatcher;
+        if (this.options.optionalChaining) {
+          return OptionalChainingSoakedDynamicMemberAccessOpPatcher;
+        } else {
+          return SoakedDynamicMemberAccessOpPatcher;
+        }
 
       case 'ForIn':
         return ForInPatcher;
@@ -282,7 +299,11 @@ export default class MainStage extends TransformCoffeeScriptStage {
         return NewOpPatcher;
 
       case 'SoakedNewOp':
-        return SoakedNewOpPatcher;
+        if (this.options.optionalChaining) {
+          return OptionalChainingSoakedNewOpPatcher;
+        } else {
+          return SoakedNewOpPatcher;
+        }
 
       case 'InOp':
         return InOpPatcher;
@@ -291,7 +312,11 @@ export default class MainStage extends TransformCoffeeScriptStage {
         return SlicePatcher;
 
       case 'SoakedSlice':
-        return SoakedSlicePatcher;
+        if (this.options.optionalChaining) {
+          return OptionalChainingSoakedSlicePatcher;
+        } else {
+          return SoakedSlicePatcher;
+        }
 
       case 'Expansion':
         return ExpansionPatcher;

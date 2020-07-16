@@ -1,4 +1,4 @@
-import { ok } from 'assert';
+import { strict as assert } from 'assert';
 import { convert } from '../../src/index';
 import { DEFAULT_OPTIONS, Options } from '../../src/options';
 import PatchError from '../../src/utils/PatchError';
@@ -15,10 +15,15 @@ export default function assertError(
 
   try {
     convert(source, options);
-    ok(false, 'Expected an error to be thrown');
+    assert.fail('Expected an error to be thrown');
   } catch (err) {
-    if (PatchError.detect(err) && err.message.includes(expectedErrorText)) {
-      return;
+    if (PatchError.detect(err)) {
+      const patchError = err as PatchError;
+      if (patchError.message.includes(expectedErrorText)) {
+        return;
+      }
+
+      assert.equal(patchError.message, expectedErrorText, `patch failed with code: ${patchError.source}`);
     }
     throw err;
   }
