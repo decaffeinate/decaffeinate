@@ -6,7 +6,7 @@ import { copySync } from 'fs-extra';
 import stripSharedIndent from '../src/utils/stripSharedIndent';
 import { toUnix } from './utils/toUnix';
 
-function runCli(argStr: string, stdin: string, expectedStdout: string, convertToUnix: boolean = false): void {
+function runCli(argStr: string, stdin: string, expectedStdout: string, convertToUnix = false): void {
   if (stdin[0] === '\n') {
     stdin = stripSharedIndent(stdin);
   }
