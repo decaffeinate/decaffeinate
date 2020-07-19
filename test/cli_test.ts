@@ -4,8 +4,9 @@ import { existsSync, readFileSync } from 'fs';
 import { copySync } from 'fs-extra';
 
 import stripSharedIndent from '../src/utils/stripSharedIndent';
+import { toUnix } from './utils/toUnix';
 
-function runCli(argStr: string, stdin: string, expectedStdout: string): void {
+function runCli(argStr: string, stdin: string, expectedStdout: string, convertToUnix = false): void {
   if (stdin[0] === '\n') {
     stdin = stripSharedIndent(stdin);
   }
@@ -13,10 +14,14 @@ function runCli(argStr: string, stdin: string, expectedStdout: string): void {
     expectedStdout = stripSharedIndent(expectedStdout);
   }
 
-  const stdout = execSync('./bin/decaffeinate ' + argStr, {
+  const stdout = execSync(`node ./bin/decaffeinate ${argStr}`, {
     input: stdin
   }).toString();
-  equal(stdout.trim(), expectedStdout.trim());
+  if (convertToUnix) {
+    equal(toUnix(stdout.trim()), expectedStdout.trim());
+  } else {
+    equal(stdout.trim(), expectedStdout.trim());
+  }
 }
 
 function runCliExpectError(argStr: string, stdin: string, expectedStderr: string): void {
@@ -28,7 +33,7 @@ function runCliExpectError(argStr: string, stdin: string, expectedStderr: string
   }
 
   try {
-    execSync('./bin/decaffeinate ' + argStr, { input: stdin });
+    execSync(`node ./bin/decaffeinate ${argStr}`, { input: stdin });
     ok(false, 'Expected the CLI to fail.');
   } catch (e) {
     equal(e.output[2].toString().trim(), expectedStderr.trim());
@@ -436,7 +441,8 @@ describe('decaffeinate CLI', () => {
       test_fixtures/B.coffee.md → test_fixtures/B.js
       test_fixtures/C.litcoffee → test_fixtures/C.js
       test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js
-    `
+    `,
+      true
     );
     ok(existsSync('test_fixtures/A.js'));
     ok(existsSync('test_fixtures/B.js'));
@@ -449,7 +455,8 @@ describe('decaffeinate CLI', () => {
       '',
       `
       ./test_fixtures/D.cjsx → test_fixtures/D.js
-    `
+    `,
+      true
     );
     ok(existsSync('test_fixtures/D.js'));
   });
@@ -460,7 +467,8 @@ describe('decaffeinate CLI', () => {
       '',
       `
       ./test_fixtures/E → test_fixtures/E.js
-    `
+    `,
+      true
     );
     ok(existsSync('test_fixtures/E.js'));
   });
@@ -472,7 +480,8 @@ describe('decaffeinate CLI', () => {
       '',
       `
       test_fixtures/F.tmp.js → test_fixtures/F.tmp.js
-    `
+    `,
+      true
     );
     const contents = readFileSync('./test_fixtures/F.tmp.js').toString();
     equal(
@@ -480,7 +489,7 @@ describe('decaffeinate CLI', () => {
       stripSharedIndent(`
       import path from 'path';
       const b = 1;
-    `)
+    `) // TODO generates an additional \U+00B7 char after `;` ·
     );
   });
 
@@ -495,7 +504,8 @@ describe('decaffeinate CLI', () => {
       '',
       `
       test_fixtures/searchDir/F.js → test_fixtures/searchDir/F.js
-    `
+    `,
+      true
     );
     const contents = readFileSync('./test_fixtures/searchDir/F.js').toString();
     equal(
@@ -503,7 +513,7 @@ describe('decaffeinate CLI', () => {
       stripSharedIndent(`
       import path from 'path';
       const b = 1;
-    `)
+    `) // TODO generates an additional \U+00B7 char after `;` ·
     );
   });
 
@@ -513,14 +523,15 @@ describe('decaffeinate CLI', () => {
       '',
       `
       test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js 
-    `
+    `,
+      true
     );
     const contents = readFileSync('./test_fixtures/level1/level2/file.js').toString();
     equal(
-      stripSharedIndent(contents),
+      contents,
       stripSharedIndent(`
       const a = 1;
-    `)
+    `) // TODO generates an additional \U+00B7 char after `;` ·
     );
   });
 });

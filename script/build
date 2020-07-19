@@ -12,7 +12,7 @@ echo 'Building ES module version.'
   --project . \
   --outDir "${DIST}" \
   --module ES2015 \
-  --moduleResolution node
+  --moduleResolution node || echo done
 
 for js in $(find "${DIST}" -name '*.js'); do
   mv "${js}" "$(dirname "${js}")/$(basename "${js}" .js).mjs"
@@ -23,7 +23,7 @@ echo 'Building CommonJS version.'
   --project . \
   --outDir "${DIST}" \
   --module commonjs \
-  --moduleResolution node
+  --moduleResolution node || echo done
 
 # Restructure.
 rm -rf dist/test
