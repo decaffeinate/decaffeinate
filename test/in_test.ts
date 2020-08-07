@@ -23,8 +23,8 @@ describe('in operator', () => {
     `,
       {
         options: {
-          looseIncludes: true
-        }
+          looseIncludes: true,
+        },
       }
     );
   });
@@ -303,8 +303,8 @@ describe('in operator', () => {
     `,
       {
         options: {
-          noArrayIncludes: true
-        }
+          noArrayIncludes: true,
+        },
       }
     );
   });

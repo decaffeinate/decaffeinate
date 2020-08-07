@@ -122,8 +122,8 @@ describe('for loops', () => {
     `,
       {
         options: {
-          looseForOf: true
-        }
+          looseForOf: true,
+        },
       }
     );
   });
@@ -742,8 +742,8 @@ describe('for loops', () => {
     `,
       {
         options: {
-          looseForExpressions: true
-        }
+          looseForExpressions: true,
+        },
       }
     );
   });
@@ -2376,7 +2376,7 @@ describe('for loops', () => {
 
   it('wraps loop targets in parentheses when required in loose mode', () => {
     check(`a(b for c in d ? e)`, `a((typeof d !== 'undefined' && d !== null ? d : e).map((c) => b));`, {
-      options: { loose: true }
+      options: { loose: true },
     });
   });
 

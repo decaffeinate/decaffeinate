@@ -10,7 +10,7 @@ export interface Table {
 
 export default function printTable(table: Table, buffer = ' '): string {
   const widths: Array<number> = [];
-  table.rows.forEach(row => {
+  table.rows.forEach((row) => {
     row.forEach((cell, i) => {
       if (widths.length <= i) {
         widths[i] = cell.length;
@@ -20,7 +20,7 @@ export default function printTable(table: Table, buffer = ' '): string {
     });
   });
   let output = '';
-  table.rows.forEach(row => {
+  table.rows.forEach((row) => {
     row.forEach((cell, i) => {
       const column = table.columns[i];
       if (column.align === 'left') {

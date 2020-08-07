@@ -256,7 +256,7 @@ export default class AssignOpPatcher extends NodePatcher {
         } else if (member instanceof SpreadPatcher) {
           const helper = this.registerHelper('__objectWithoutKeys__', OBJECT_WITHOUT_KEYS_HELPER);
           const omittedKeysCode = getObjectAssigneeKeys(patcher)
-            .map(key => `'${key}'`)
+            .map((key) => `'${key}'`)
             .join(', ');
           assignments.push(...this.generateAssignments(member, `${helper}(${ref}, [${omittedKeysCode}])`, false));
         } else {
@@ -310,12 +310,12 @@ export default class AssignOpPatcher extends NodePatcher {
     classRefPatcher.setRequiresRepeatableExpression({
       parens: true,
       ref: 'cls',
-      forceRepeat: true
+      forceRepeat: true,
     });
     if (methodAccessPatcher instanceof DynamicMemberAccessOpPatcher) {
       methodAccessPatcher.indexingExpr.setRequiresRepeatableExpression({
         ref: 'method',
-        forceRepeat: true
+        forceRepeat: true,
       });
     }
   }

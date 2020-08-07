@@ -7,5 +7,5 @@ export default function formatCoffeeScriptLexerTokens(tokens: Array<Token>, cont
     ([tag, value, locationData]) =>
       `${formatCoffeeScriptLocationData(locationData, context)}: ${tag}: ${JSON.stringify(value)}`
   );
-  return resultLines.map(line => line + '\n').join('');
+  return resultLines.map((line) => line + '\n').join('');
 }

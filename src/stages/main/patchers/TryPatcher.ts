@@ -223,7 +223,7 @@ export default class TryPatcher extends NodePatcher {
     const catchTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      token => token.type === SourceType.CATCH
+      (token) => token.type === SourceType.CATCH
     );
     if (!catchTokenIndex) {
       return null;
@@ -263,7 +263,7 @@ export default class TryPatcher extends NodePatcher {
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      token => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN
     );
   }
 
@@ -292,7 +292,7 @@ export default class TryPatcher extends NodePatcher {
     const finallyTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      token => token.type === SourceType.FINALLY
+      (token) => token.type === SourceType.FINALLY
     );
     if (!finallyTokenIndex) {
       return null;

@@ -40,7 +40,7 @@ export default class DoOpPatcher extends NodePatcher {
     const args: Array<string> = [];
     if (this.hasDoFunction()) {
       const func = this.getDoFunction();
-      func.parameters.forEach(param => {
+      func.parameters.forEach((param) => {
         if (param instanceof DefaultParamPatcher) {
           const valueSource = param.value.getPatchedSource();
           this.remove(param.param.outerEnd, param.value.outerEnd);

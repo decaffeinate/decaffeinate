@@ -10,7 +10,7 @@ import {
   ObjectInitialiser,
   ObjectInitialiserMember,
   Rest,
-  Spread
+  Spread,
 } from 'decaffeinate-parser/dist/nodes';
 
 export default function getAssigneeBindings(node: Node): Array<string> {

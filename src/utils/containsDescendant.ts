@@ -7,7 +7,7 @@ export default function containsDescendant(
   { shouldStopTraversal = () => false }: { shouldStopTraversal?: (node: Node) => boolean } = {}
 ): boolean {
   let found = false;
-  traverse(node, childNode => {
+  traverse(node, (childNode) => {
     if (found) {
       return false;
     }

@@ -32,7 +32,7 @@ export default class OptionalChainingSoakedDynamicMemberAccessOpPatcher extends 
     const bracketTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.expression,
       this.indexingExpr,
-      token => token.type === SourceType.LBRACKET
+      (token) => token.type === SourceType.LBRACKET
     );
 
     if (!bracketTokenIndex) {

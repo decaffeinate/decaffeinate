@@ -7,7 +7,7 @@ import NodePatcher from './../../../patchers/NodePatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 
 export default class MemberAccessOpPatcher extends NodePatcher {
-  node: MemberAccessOp;
+  node!: MemberAccessOp;
   expression: NodePatcher;
   member: IdentifierPatcher;
   _skipImplicitDotCreation: boolean;
@@ -65,7 +65,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     const dotIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.expression.outerEnd,
       this.outerEnd - 1,
-      token => token.type === SourceType.DOT
+      (token) => token.type === SourceType.DOT
     );
 
     if (!dotIndex) {
@@ -94,7 +94,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
   getMemberNameSourceToken(): SourceToken {
     const tokens = this.context.sourceTokens;
     const index = tokens.lastIndexOfTokenMatchingPredicate(
-      token => token.type === SourceType.IDENTIFIER,
+      (token) => token.type === SourceType.IDENTIFIER,
       this.contentEndTokenIndex
     );
     if (!index || index.isBefore(this.contentStartTokenIndex)) {

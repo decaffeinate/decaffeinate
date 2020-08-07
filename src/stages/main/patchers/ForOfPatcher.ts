@@ -6,8 +6,8 @@ import notNull from '../../../utils/notNull';
 import ForPatcher from './ForPatcher';
 
 export default class ForOfPatcher extends ForPatcher {
-  node: ForOf;
-  keyAssignee: NodePatcher;
+  node!: ForOf;
+  keyAssignee!: NodePatcher;
 
   patchAsStatement(): void {
     if (this.body && !this.body.inline()) {

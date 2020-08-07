@@ -34,21 +34,21 @@ export default class NodePatcher {
   editor: MagicString;
   options: Options;
   addSuggestion: (suggestion: Suggestion) => void;
-  log: (...args: Array<{}>) => void;
-  parent: NodePatcher | null;
+  log: (...args: Array<unknown>) => void;
+  parent!: NodePatcher | null;
 
-  contentStart: number;
-  contentEnd: number;
-  contentStartTokenIndex: SourceTokenListIndex;
-  contentEndTokenIndex: SourceTokenListIndex;
-  innerStart: number;
-  innerEnd: number;
-  innerStartTokenIndex: SourceTokenListIndex;
-  innerEndTokenIndex: SourceTokenListIndex;
-  outerStart: number;
-  outerEnd: number;
-  outerStartTokenIndex: SourceTokenListIndex;
-  outerEndTokenIndex: SourceTokenListIndex;
+  contentStart!: number;
+  contentEnd!: number;
+  contentStartTokenIndex!: SourceTokenListIndex;
+  contentEndTokenIndex!: SourceTokenListIndex;
+  innerStart!: number;
+  innerEnd!: number;
+  innerStartTokenIndex!: SourceTokenListIndex;
+  innerEndTokenIndex!: SourceTokenListIndex;
+  outerStart!: number;
+  outerEnd!: number;
+  outerStartTokenIndex!: SourceTokenListIndex;
+  outerEndTokenIndex!: SourceTokenListIndex;
 
   adjustedIndentLevel = 0;
   _assignee = false;
@@ -882,7 +882,7 @@ export default class NodePatcher {
   ): SourceTokenListIndex | null {
     const tokenList = this.getProgramSourceTokens();
     return tokenList.indexOfTokenMatchingPredicate(
-      token => {
+      (token) => {
         return token.start >= left && token.start <= right && predicate(token);
       },
       tokenList.indexOfTokenNearSourceIndex(left),
@@ -1039,7 +1039,7 @@ export default class NodePatcher {
     } else if (this.parent) {
       if (
         this.isNodeFunctionApplication(this.parent.node) &&
-        this.parent.node.arguments.some(arg => arg === this.node)
+        this.parent.node.arguments.some((arg) => arg === this.node)
       ) {
         return this;
       } else if (this.parent.node.type === 'ArrayInitialiser') {

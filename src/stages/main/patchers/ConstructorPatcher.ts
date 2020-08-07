@@ -13,7 +13,7 @@ import FunctionPatcher from './FunctionPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
 
 export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
-  expression: FunctionPatcher;
+  expression!: FunctionPatcher;
 
   _bindings: Array<string> | null = null;
 
@@ -43,7 +43,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
         const bodyIndent = this.getIndent(1);
         const arrowToken = this.expression.getArrowToken();
 
-        const fullLines = linesToInsert.map(line => `${bodyIndent}${line}\n`);
+        const fullLines = linesToInsert.map((line) => `${bodyIndent}${line}\n`);
         const bodyCode = `{\n${fullLines.join('')}${indent}}`;
         this.overwrite(arrowToken.start, this.expression.outerEnd, bodyCode);
       }
@@ -142,8 +142,8 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
     }
     const statements = this.expression.body.statements;
     for (let i = 0; i < statements.length; i++) {
-      const usesThis = containsDescendant(statements[i].node, child => child instanceof This, {
-        shouldStopTraversal: child => child instanceof Class || isFunction(child)
+      const usesThis = containsDescendant(statements[i].node, (child) => child instanceof This, {
+        shouldStopTraversal: (child) => child instanceof Class || isFunction(child),
       });
       if (usesThis) {
         return i;

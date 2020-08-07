@@ -3,7 +3,7 @@ import CodeContext from './CodeContext';
 
 export default function formatDecaffeinateParserAst(program: Node, context: CodeContext): string {
   const resultLines = formatAstNodeLines(program, context);
-  return resultLines.map(line => line + '\n').join('');
+  return resultLines.map((line) => line + '\n').join('');
 }
 
 function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
@@ -17,7 +17,7 @@ function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
     'parentNode',
     'context',
     'start',
-    'end'
+    'end',
   ]);
   for (const key of Object.keys(node)) {
     if (blacklistedProps.indexOf(key) !== -1) {
@@ -41,7 +41,7 @@ function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
     } else if (Array.isArray(value)) {
       propLines.push(`${childProp}: [`);
       for (const child of value) {
-        propLines.push(...formatAstNodeLines(child, context).map(s => '  ' + s));
+        propLines.push(...formatAstNodeLines(child, context).map((s) => '  ' + s));
       }
       propLines.push(`]`);
     } else {
@@ -51,5 +51,5 @@ function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
     }
   }
   const rangeStr = context.formatRange(node.start, node.end);
-  return [`${node.type} ${rangeStr} {`, ...propLines.map(s => '  ' + s), '}'];
+  return [`${node.type} ${rangeStr} {`, ...propLines.map((s) => '  ' + s), '}'];
 }

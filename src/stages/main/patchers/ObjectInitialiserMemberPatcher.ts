@@ -9,7 +9,7 @@ import ThisPatcher from './ThisPatcher';
  * Handles object properties.
  */
 export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatcher {
-  node: ObjectInitialiserMember;
+  node!: ObjectInitialiserMember;
 
   setAssignee(): void {
     if (this.expression === null) {
@@ -24,7 +24,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
     if (this.expression === null) {
       const shouldExpand = !(this.key.node instanceof Identifier) || this.node.isComputed;
       this.patchAsShorthand({
-        expand: shouldExpand
+        expand: shouldExpand,
       });
     } else {
       super.patchAsProperty();

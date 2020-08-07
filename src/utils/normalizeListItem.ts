@@ -40,7 +40,7 @@ export default function normalizeListItem(
     const commaTokens = patcher
       .getProgramSourceTokens()
       .slice(notNull(listItemPatcher.outerEndTokenIndex.next()), nextListItemPatcher.outerStartTokenIndex)
-      .filter(token => token.type === SourceType.COMMA || token.type === SourceType.SEMICOLON)
+      .filter((token) => token.type === SourceType.COMMA || token.type === SourceType.SEMICOLON)
       .toArray();
 
     // Sometimes other normalize steps can cause two adjacent list items to be
@@ -73,7 +73,7 @@ function isNestedListItem(patcher: NodePatcher): boolean {
       'GeneratorFunction',
       'Switch',
       'Try',
-      'While'
+      'While',
     ].indexOf(patcher.node.type) > -1
   );
 }
@@ -85,5 +85,5 @@ function isNestedListItem(patcher: NodePatcher): boolean {
  * they're not included in the normal statement bounds.
  */
 function patcherEndsInStatement(patcher: NodePatcher): boolean {
-  return containsDescendant(patcher.node, child => child instanceof Block && child.end === patcher.contentEnd);
+  return containsDescendant(patcher.node, (child) => child instanceof Block && child.end === patcher.contentEnd);
 }

@@ -8,7 +8,7 @@ import NodePatcher from './../../../patchers/NodePatcher';
 import BlockPatcher from './BlockPatcher';
 
 export default class ConditionalPatcher extends NodePatcher {
-  node: Conditional;
+  node!: Conditional;
   condition: NodePatcher;
   consequent: BlockPatcher | null;
   alternate: BlockPatcher | null;
@@ -142,7 +142,7 @@ export default class ConditionalPatcher extends NodePatcher {
       const semicolonTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
         this.condition.outerEnd,
         elseToken.start,
-        token => token.type === SourceType.SEMICOLON
+        (token) => token.type === SourceType.SEMICOLON
       );
       if (semicolonTokenIndex) {
         const semicolonToken = this.sourceTokenAtIndex(semicolonTokenIndex);
@@ -354,7 +354,7 @@ export default class ConditionalPatcher extends NodePatcher {
     const elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.consequent !== null ? this.consequent.outerEnd : this.condition.outerEnd,
       this.alternate !== null ? this.alternate.outerStart : this.outerEnd,
-      token => token.type === SourceType.ELSE
+      (token) => token.type === SourceType.ELSE
     );
     if (this.alternate !== null && !elseTokenIndex) {
       throw this.error(
@@ -390,7 +390,7 @@ export default class ConditionalPatcher extends NodePatcher {
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.condition.outerEnd,
       searchEnd,
-      token => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN
     );
   }
 

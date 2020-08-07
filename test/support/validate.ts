@@ -47,8 +47,7 @@ export default function validate(
 
 export function validateCS1(
   source: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  expectedOutput?: any,
+  expectedOutput?: unknown,
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
   runValidateCase(source, expectedOutput, { options: { ...options, useCS2: false }, skipNodeCheck });
@@ -56,8 +55,7 @@ export function validateCS1(
 
 export function validateCS2(
   source: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  expectedOutput?: any,
+  expectedOutput?: unknown,
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
   runValidateCase(source, expectedOutput, { options: { ...options, useCS2: true }, skipNodeCheck });
@@ -65,8 +63,7 @@ export function validateCS2(
 
 function runValidateCase(
   source: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  expectedOutput?: any,
+  expectedOutput?: unknown,
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
   try {
@@ -88,7 +85,7 @@ function runCodeAndExtract(source: string): any {
     setResult(r: any): void {
       result = r;
       numCalls++;
-    }
+    },
   };
   vm.createContext(sandbox);
   vm.runInContext(source, sandbox);
@@ -98,12 +95,12 @@ function runCodeAndExtract(source: string): any {
   return result;
 }
 
-function runValidation(source: string, expectedOutput: {}, options: Options, skipNodeCheck: boolean): void {
+function runValidation(source: string, expectedOutput: unknown, options: Options, skipNodeCheck: boolean): void {
   const compile = options.useCS2 ? cs2Compile : cs1Compile;
   const coffeeES5 = compile(source, { bare: true }) as string;
   const decaffeinateES6 = convert(source, options).code;
   const transformed = babel.transformSync(decaffeinateES6, {
-    presets: ['@babel/preset-env']
+    presets: ['@babel/preset-env'],
   });
   const decaffeinateES5 = (transformed && transformed.code) || '';
 

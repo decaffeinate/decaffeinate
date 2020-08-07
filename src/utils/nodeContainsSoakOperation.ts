@@ -2,7 +2,7 @@ import {
   Node,
   SoakedDynamicMemberAccessOp,
   SoakedFunctionApplication,
-  SoakedMemberAccessOp
+  SoakedMemberAccessOp,
 } from 'decaffeinate-parser/dist/nodes';
 import containsDescendant from './containsDescendant';
 
@@ -12,7 +12,7 @@ import containsDescendant from './containsDescendant';
 export default function nodeContainsSoakOperation(node: Node): boolean {
   return containsDescendant(
     node,
-    child =>
+    (child) =>
       child instanceof SoakedDynamicMemberAccessOp ||
       child instanceof SoakedFunctionApplication ||
       child instanceof SoakedMemberAccessOp

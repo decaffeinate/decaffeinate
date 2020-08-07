@@ -258,8 +258,8 @@ describe('runToStage', () => {
     `,
       {
         options: {
-          runToStage: 'decaffeinate-parser'
-        }
+          runToStage: 'decaffeinate-parser',
+        },
       }
     );
   });
@@ -274,8 +274,8 @@ describe('runToStage', () => {
     `,
       {
         options: {
-          runToStage: 'NormalizeStage'
-        }
+          runToStage: 'NormalizeStage',
+        },
       }
     );
   });

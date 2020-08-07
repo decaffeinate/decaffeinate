@@ -26,11 +26,11 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
   }
 
   initialize(): void {
-    this.members.forEach(member => member.setRequiresExpression());
+    this.members.forEach((member) => member.setRequiresExpression());
   }
 
   setAssignee(): void {
-    this.members.forEach(member => member.setAssignee());
+    this.members.forEach((member) => member.setAssignee());
     super.setAssignee();
   }
 

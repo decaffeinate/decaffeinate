@@ -275,8 +275,8 @@ describe('switch', () => {
     `,
       {
         options: {
-          looseComparisonNegation: true
-        }
+          looseComparisonNegation: true,
+        },
       }
     );
   });

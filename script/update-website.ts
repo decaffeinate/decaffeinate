@@ -2,6 +2,7 @@ import { execFile } from 'mz/child_process';
 import { readFile } from 'mz/fs';
 import { join } from 'path';
 import getLatestVersion from './getLatestVersion';
+import type Package from '../package.json';
 
 let commit = true;
 
@@ -18,7 +19,7 @@ for (let i = 2; i < process.argv.length; i++) {
   }
 }
 
-async function pkg(): Promise<{}> {
+async function pkg(): Promise<typeof Package> {
   const content = await readFile(join(__dirname, '../package.json'), { encoding: 'utf8' });
   return JSON.parse(content);
 }
@@ -64,7 +65,8 @@ async function hasChanges(): Promise<boolean> {
 async function updateWebsite(): Promise<void> {
   await configureGithubRemote('website', 'decaffeinate/decaffeinate-project.org');
 
-  const latestVersion = await getLatestVersion((await pkg())['name']);
+  const name = (await pkg()).name;
+  const latestVersion = await getLatestVersion(name);
   const currentRef = await gitRevParse('HEAD');
   const decaffeinatePackage = await pkg();
   const decaffeinateRegistry = decaffeinatePackage['publishConfig']['registry'];
@@ -104,7 +106,7 @@ async function updateWebsite(): Promise<void> {
   await run('git', ['reset', '--hard', currentRef]);
 }
 
-updateWebsite().catch(err => {
+updateWebsite().catch((err) => {
   console.error(err.stack);
   process.exit(1);
 });

@@ -90,11 +90,7 @@ export default class FunctionPatcher extends NodePatcher {
     let uniqueExplicitBindings = [...new Set(neededExplicitBindings)];
     // To avoid ugly code, limit the explicit `var` to cases where we're
     // actually shadowing an outer variable.
-    uniqueExplicitBindings = uniqueExplicitBindings.filter(name =>
-      notNull(this.parent)
-        .getScope()
-        .hasBinding(name)
-    );
+    uniqueExplicitBindings = uniqueExplicitBindings.filter((name) => notNull(this.parent).getScope().hasBinding(name));
     if (uniqueExplicitBindings.length > 0) {
       assignments.unshift(`\`var ${uniqueExplicitBindings.join(', ')};\``);
     }
@@ -170,7 +166,7 @@ export default class FunctionPatcher extends NodePatcher {
 
     return {
       newAssignments: [...defaultParamAssignments, ...thisAssignments],
-      newBindings
+      newBindings,
     };
   }
 

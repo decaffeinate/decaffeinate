@@ -154,7 +154,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       this.indexOfSourceTokenBetweenSourceIndicesMatching(
         searchStart,
         searchEnd,
-        token => token.type === SourceType.CALL_START
+        (token) => token.type === SourceType.CALL_START
       ) === null
     );
   }

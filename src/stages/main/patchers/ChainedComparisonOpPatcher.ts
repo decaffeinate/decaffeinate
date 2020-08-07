@@ -8,7 +8,7 @@ import NodePatcher from './../../../patchers/NodePatcher';
  * Handles constructs of the form `a < b < c < … < z`.
  */
 export default class ChainedComparisonOpPatcher extends NodePatcher {
-  node: ChainedComparisonOp;
+  node!: ChainedComparisonOp;
   operands: Array<NodePatcher>;
   negated = false;
 
@@ -77,7 +77,7 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
   shouldNegateEntireExpression(): boolean {
     return (
       this.negated &&
-      this.node.operators.some(operator => isCompareOpNegationUnsafe(operator.operator)) &&
+      this.node.operators.some((operator) => isCompareOpNegationUnsafe(operator.operator)) &&
       !this.options.looseComparisonNegation
     );
   }

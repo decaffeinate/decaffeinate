@@ -69,7 +69,7 @@ export default class PatchError extends Error {
     const columns: Array<Column> = [
       { id: 'marker', align: 'right' },
       { id: 'line', align: 'right' },
-      { id: 'source', align: 'left' }
+      { id: 'source', align: 'left' },
     ];
 
     return `${message}\n${printTable({ rows, columns })}`;

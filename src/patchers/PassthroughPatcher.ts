@@ -10,9 +10,9 @@ export default class PassthroughPatcher extends NodePatcher {
   }
 
   patchAsExpression(): void {
-    this.children.forEach(child => {
+    this.children.forEach((child) => {
       if (Array.isArray(child)) {
-        child.forEach(child => child && child.patch());
+        child.forEach((child) => child && child.patch());
       } else if (child) {
         child.patch();
       }

@@ -9,7 +9,7 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
     const operatorIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
-      token => token.type === SourceType.OPERATOR
+      (token) => token.type === SourceType.OPERATOR
     );
     if (!operatorIndex) {
       throw this.error(

@@ -128,8 +128,8 @@ describe('chained comparison', () => {
     `,
       {
         options: {
-          looseComparisonNegation: true
-        }
+          looseComparisonNegation: true,
+        },
       }
     );
   });

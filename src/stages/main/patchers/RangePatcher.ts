@@ -17,7 +17,7 @@ const RANGE_HELPER = `function __range__(left, right, inclusive) {
 const MAXIMUM_LITERAL_RANGE_ELEMENTS = 21;
 
 export default class RangePatcher extends BinaryOpPatcher {
-  node: Range;
+  node!: Range;
 
   patchAsExpression(): void {
     if (this.canBecomeLiteralArray()) {

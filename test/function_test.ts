@@ -425,8 +425,8 @@ describe('functions', () => {
   it('keeps function with a single assignment as a parameter in braces in loose param mode', () => {
     check(`(args=false) =>`, `(args=false) => {};`, {
       options: {
-        looseDefaultParams: true
-      }
+        looseDefaultParams: true,
+      },
     });
   });
 

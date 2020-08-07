@@ -103,7 +103,7 @@ export default class BoundFunctionPatcher extends FunctionPatcher {
     if (!this.body) {
       return false;
     }
-    if (containsDescendant(this.node, child => child instanceof AssignOp)) {
+    if (containsDescendant(this.node, (child) => child instanceof AssignOp)) {
       return false;
     }
     return this.body.inline();

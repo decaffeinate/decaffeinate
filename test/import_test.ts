@@ -14,8 +14,8 @@ describe('imports', () => {
       {
         options: {
           useJSModules: true,
-          looseJSModules: true
-        }
+          looseJSModules: true,
+        },
       }
     );
   });
@@ -52,8 +52,8 @@ describe('imports', () => {
       {
         options: {
           useJSModules: true,
-          safeImportFunctionIdentifiers: ['foo']
-        }
+          safeImportFunctionIdentifiers: ['foo'],
+        },
       }
     );
   });
@@ -72,8 +72,8 @@ describe('imports', () => {
     `,
       {
         options: {
-          useJSModules: true
-        }
+          useJSModules: true,
+        },
       }
     );
   });

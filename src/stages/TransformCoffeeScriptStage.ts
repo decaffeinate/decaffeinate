@@ -23,7 +23,7 @@ export default class TransformCoffeeScriptStage {
     patcher.patch();
     return {
       code: editor.toString(),
-      suggestions: stage.suggestions
+      suggestions: stage.suggestions,
     };
   }
 
@@ -49,7 +49,7 @@ export default class TransformCoffeeScriptStage {
   build(): NodePatcher {
     this.root = this.patcherForNode(this.ast);
     // Note that initialize is called in bottom-up order.
-    this.patchers.forEach(patcher => patcher.initialize());
+    this.patchers.forEach((patcher) => patcher.initialize());
     return this.root;
   }
 
@@ -63,12 +63,12 @@ export default class TransformCoffeeScriptStage {
       }
     }
 
-    const children: Array<ChildType> = node.getChildNames().map(name => {
+    const children: Array<ChildType> = node.getChildNames().map((name) => {
       const child = node[name];
       if (!child) {
         return null;
       } else if (Array.isArray(child)) {
-        return child.map(item => (item ? this.patcherForNode(item, constructor, name) : null));
+        return child.map((item) => (item ? this.patcherForNode(item, constructor, name) : null));
       } else {
         return this.patcherForNode(child, constructor, name);
       }
@@ -81,7 +81,7 @@ export default class TransformCoffeeScriptStage {
       options: this.options,
       addSuggestion: (suggestion: Suggestion) => {
         this.suggestions.push(suggestion);
-      }
+      },
     };
     const patcher = new constructor(patcherContext, ...children);
     this.patchers.push(patcher);
@@ -92,7 +92,7 @@ export default class TransformCoffeeScriptStage {
 
   associateParent(parent: NodePatcher, child: Array<ChildType> | NodePatcher | null): void {
     if (Array.isArray(child)) {
-      child.forEach(item => this.associateParent(parent, item));
+      child.forEach((item) => this.associateParent(parent, item));
     } else if (child) {
       child.parent = parent;
     }

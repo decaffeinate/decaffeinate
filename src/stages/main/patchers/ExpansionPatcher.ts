@@ -1,7 +1,7 @@
 import NodePatcher from './../../../patchers/NodePatcher';
 
 export default class ExpansionPatcher extends NodePatcher {
-  _expansionPatcherBrand: never;
+  _expansionPatcherBrand!: never;
 
   patchAsExpression(): void {
     // Any code handling expansions should process them without calling patch.

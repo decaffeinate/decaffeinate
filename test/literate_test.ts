@@ -35,8 +35,8 @@ describe('literate mode', () => {
     `,
       {
         options: {
-          literate: true
-        }
+          literate: true,
+        },
       }
     );
   });
@@ -57,8 +57,8 @@ describe('literate mode', () => {
     `,
       {
         options: {
-          literate: true
-        }
+          literate: true,
+        },
       }
     );
   });
@@ -82,8 +82,8 @@ describe('literate mode', () => {
     `,
       {
         options: {
-          literate: true
-        }
+          literate: true,
+        },
       }
     );
   });
@@ -123,8 +123,8 @@ describe('literate mode', () => {
     `,
       {
         options: {
-          literate: true
-        }
+          literate: true,
+        },
       }
     );
   });
@@ -139,8 +139,8 @@ describe('literate mode', () => {
     `,
       {
         options: {
-          filename: 'foo.coffee'
-        }
+          filename: 'foo.coffee',
+        },
       }
     );
   });
@@ -155,8 +155,8 @@ describe('literate mode', () => {
     `,
       {
         options: {
-          filename: 'foo.coffee.md'
-        }
+          filename: 'foo.coffee.md',
+        },
       }
     );
   });
@@ -171,8 +171,8 @@ describe('literate mode', () => {
     `,
       {
         options: {
-          filename: 'foo.litcoffee'
-        }
+          filename: 'foo.litcoffee',
+        },
       }
     );
   });

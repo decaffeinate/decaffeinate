@@ -32,10 +32,6 @@ jobs:
     docker:
       - image: circleci/node:10
     <<: *unit_test
-  node-v11-latest:
-    docker:
-      - image: circleci/node:11
-    <<: *unit_test
   node-v12-latest:
     docker:
       - image: circleci/node:12
@@ -43,6 +39,10 @@ jobs:
   node-v13-latest:
     docker:
       - image: circleci/node:13
+    <<: *unit_test
+  node-v14-latest:
+    docker:
+      - image: circleci/node:14
     <<: *unit_test
   deploy:
     docker:
@@ -61,15 +61,15 @@ workflows:
   test-deploy:
     jobs:
       - node-v10-latest
-      - node-v11-latest
       - node-v12-latest
       - node-v13-latest
+      - node-v14-latest
       - deploy:
           requires:
             - node-v10-latest
-            - node-v11-latest
             - node-v12-latest
             - node-v13-latest
+            - node-v14-latest
           filters:
             branches:
               only: master

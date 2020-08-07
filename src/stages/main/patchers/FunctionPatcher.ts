@@ -21,7 +21,7 @@ export default class FunctionPatcher extends NodePatcher {
     if (this.body && !this.implicitReturnsDisabled()) {
       this.body.setImplicitlyReturns();
     }
-    this.parameters.forEach(param => {
+    this.parameters.forEach((param) => {
       param.setAssignee();
       param.setRequiresExpression();
     });
@@ -90,7 +90,7 @@ export default class FunctionPatcher extends NodePatcher {
     const closeParenIndex = notNull(this.parent).indexOfSourceTokenBetweenSourceIndicesMatching(
       this.contentEnd,
       notNull(this.parent).contentEnd,
-      token => token.type === SourceType.CALL_END || token.type === SourceType.RPAREN
+      (token) => token.type === SourceType.CALL_END || token.type === SourceType.RPAREN
     );
     if (!closeParenIndex) {
       throw this.error('Expected to find close paren index after function call.');

@@ -80,12 +80,12 @@ export default class SuperPatcher extends NodePatcher {
       }
       return {
         classCode: this.getEnclosingClassName(methodAssignment),
-        accessCode
+        accessCode,
       };
     } else if (methodAssignment instanceof ConstructorPatcher) {
       return {
         classCode: this.getEnclosingClassName(methodAssignment),
-        accessCode: null
+        accessCode: null,
       };
     } else {
       const methodInfo = this.getPrototypeAssignInfo(methodAssignment);
@@ -146,12 +146,12 @@ export default class SuperPatcher extends NodePatcher {
     if (methodAccessPatcher instanceof MemberAccessOpPatcher) {
       return {
         classCode: classRefPatcher.getRepeatCode(),
-        accessCode: `.${methodAccessPatcher.member.node.data}`
+        accessCode: `.${methodAccessPatcher.member.node.data}`,
       };
     } else if (methodAccessPatcher instanceof DynamicMemberAccessOpPatcher) {
       return {
         classCode: classRefPatcher.getRepeatCode(),
-        accessCode: `[${methodAccessPatcher.indexingExpr.getRepeatCode()}]`
+        accessCode: `[${methodAccessPatcher.indexingExpr.getRepeatCode()}]`,
       };
     } else {
       throw this.error(

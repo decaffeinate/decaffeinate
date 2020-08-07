@@ -14,7 +14,7 @@ import LoopPatcher from './LoopPatcher';
  *     b
  */
 export default class WhilePatcher extends LoopPatcher {
-  node: While;
+  node!: While;
 
   condition: NodePatcher;
   guard: NodePatcher | null;
@@ -165,7 +165,7 @@ export default class WhilePatcher extends LoopPatcher {
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      token => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN
     );
   }
 

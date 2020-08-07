@@ -14,7 +14,7 @@ function runCli(argStr: string, stdin: string, expectedStdout: string): void {
   }
 
   const stdout = execSync('./bin/decaffeinate ' + argStr, {
-    input: stdin
+    input: stdin,
   }).toString();
   equal(stdout.trim(), expectedStdout.trim());
 }

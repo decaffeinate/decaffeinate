@@ -47,7 +47,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
         } else {
           constructor += `constructor() {\n`;
         }
-        boundMethods.forEach(method => {
+        boundMethods.forEach((method) => {
           constructor += `${methodBodyIndent}${getBindingCodeForMethod(method)};\n`;
         });
         if (isSubclass) {
@@ -75,7 +75,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
   }
 
   hasConstructor(): boolean {
-    return this.statements.some(statement => statement instanceof ConstructorPatcher);
+    return this.statements.some((statement) => statement instanceof ConstructorPatcher);
   }
 
   boundInstanceMethods(): Array<ClassAssignOpPatcher> {

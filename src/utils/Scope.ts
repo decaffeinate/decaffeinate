@@ -16,7 +16,7 @@ import {
   PreDecrementOp,
   PreIncrementOp,
   Rest,
-  Try
+  Try,
 } from 'decaffeinate-parser/dist/nodes';
 import flatMap from './flatMap';
 import isReservedWord from './isReservedWord';
@@ -61,7 +61,7 @@ export default class Scope {
   }
 
   getOwnNames(): Array<string> {
-    return Object.getOwnPropertyNames(this.bindings).map(key => this.unkey(key));
+    return Object.getOwnPropertyNames(this.bindings).map((key) => this.unkey(key));
   }
 
   hasOwnBinding(name: string): boolean {
@@ -111,7 +111,7 @@ export default class Scope {
       name = 'ref';
     }
     const names = Array.isArray(name) ? name : [name];
-    let binding = names.find(name => this.isBindingAvailable(name));
+    let binding = names.find((name) => this.isBindingAvailable(name));
 
     if (!binding) {
       let counter = 0;
@@ -120,7 +120,7 @@ export default class Scope {
           throw new Error(`Unable to find free binding for names ${names.toString()}`);
         }
         counter += 1;
-        binding = names.find(name => this.isBindingAvailable(`${name}${counter}`));
+        binding = names.find((name) => this.isBindingAvailable(`${name}${counter}`));
       }
       binding = `${binding}${counter}`;
     }
@@ -148,7 +148,7 @@ export default class Scope {
    */
   processNode(node: Node): void {
     if (node instanceof AssignOp) {
-      leftHandIdentifiers(node.assignee).forEach(identifier => this.assigns(identifier.data, identifier));
+      leftHandIdentifiers(node.assignee).forEach((identifier) => this.assigns(identifier.data, identifier));
     } else if (node instanceof CompoundAssignOp) {
       if (node.assignee instanceof Identifier) {
         this.modifies(node.assignee.data);
@@ -163,16 +163,16 @@ export default class Scope {
         this.modifies(node.expression.data);
       }
     } else if (node instanceof BaseFunction) {
-      getBindingsForNode(node).forEach(identifier => this.declares(identifier.data, identifier));
+      getBindingsForNode(node).forEach((identifier) => this.declares(identifier.data, identifier));
     } else if (node instanceof For) {
-      [node.keyAssignee, node.valAssignee].forEach(assignee => {
+      [node.keyAssignee, node.valAssignee].forEach((assignee) => {
         if (assignee) {
-          leftHandIdentifiers(assignee).forEach(identifier => this.assigns(identifier.data, identifier));
+          leftHandIdentifiers(assignee).forEach((identifier) => this.assigns(identifier.data, identifier));
         }
       });
     } else if (node instanceof Try) {
       if (node.catchAssignee) {
-        leftHandIdentifiers(node.catchAssignee).forEach(identifier => this.assigns(identifier.data, identifier));
+        leftHandIdentifiers(node.catchAssignee).forEach((identifier) => this.assigns(identifier.data, identifier));
       }
     } else if (node instanceof Class) {
       if (node.nameAssignee && node.nameAssignee instanceof Identifier && this.parent) {
