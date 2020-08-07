@@ -31,7 +31,7 @@ const JS_KEYWORDS = [
   'super',
   'import',
   'export',
-  'default'
+  'default',
 ];
 
 const COFFEE_KEYWORDS = ['undefined', 'Infinity', 'NaN', 'then', 'unless', 'until', 'loop', 'of', 'by', 'when'];
@@ -57,7 +57,7 @@ const RESERVED = [
   'private',
   'protected',
   'public',
-  'static'
+  'static',
 ];
 
 const STRICT_PROSCRIBED = ['arguments', 'eval'];
@@ -71,7 +71,7 @@ const RESERVED_WORDS = new Set([
   ...RESERVED,
   ...STRICT_PROSCRIBED,
   // Mentioned in https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Future_reserved_keywords
-  'await'
+  'await',
 ]);
 
 /**

@@ -169,7 +169,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
   getCallStartToken(): SourceToken {
     const tokens = this.context.sourceTokens;
     const index = tokens.indexOfTokenMatchingPredicate(
-      token => token.type === SourceType.CALL_START,
+      (token) => token.type === SourceType.CALL_START,
       this.fn.outerEndTokenIndex
     );
     if (!index || index.isAfter(this.contentEndTokenIndex)) {

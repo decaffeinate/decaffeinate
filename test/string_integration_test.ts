@@ -38,12 +38,12 @@ setResult(runTest())`
   );
 }
 
-describe('string integration', function(): void {
+describe('string integration', function (): void {
   const timeout = 180000;
   const strings = ['', '   ', 'word', '   leading indent', 'trailing indent   ', '    leading and trailing indent    '];
   const quotes = [
     ["'", "single quote (')"],
-    ['"', 'double quote (")']
+    ['"', 'double quote (")'],
   ];
 
   const twoLineTests = generateTwoLineTests(strings);

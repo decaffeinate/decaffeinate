@@ -36,7 +36,7 @@ export const DEFAULT_OPTIONS: Options = {
   looseForOf: false,
   looseIncludes: false,
   looseComparisonNegation: false,
-  disallowInvalidConstructors: false
+  disallowInvalidConstructors: false,
 };
 
 export function resolveOptions(options: Options): Options {
@@ -48,7 +48,7 @@ export function resolveOptions(options: Options): Options {
       looseForOf: true,
       looseIncludes: true,
       looseComparisonNegation: true,
-      looseJSModules: true
+      looseJSModules: true,
     };
   }
   if (options.runToStage === 'EsnextStage') {

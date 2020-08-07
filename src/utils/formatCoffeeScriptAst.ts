@@ -5,7 +5,7 @@ import formatCoffeeScriptLocationData from './formatCoffeeScriptLocationData';
 
 export default function formatCoffeeScriptAst(program: CS1Base | CS2Base, context: CodeContext): string {
   const resultLines = formatAstNodeLines(program, context);
-  return resultLines.map(line => line + '\n').join('');
+  return resultLines.map((line) => line + '\n').join('');
 }
 
 function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Array<string> {
@@ -41,11 +41,11 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
         if (Array.isArray(child)) {
           propLines.push(`  [`);
           for (const grandchild of child) {
-            propLines.push(...formatAstNodeLines(grandchild, context).map(s => '    ' + s));
+            propLines.push(...formatAstNodeLines(grandchild, context).map((s) => '    ' + s));
           }
           propLines.push(`  ]`);
         } else {
-          propLines.push(...formatAstNodeLines(child, context).map(s => '  ' + s));
+          propLines.push(...formatAstNodeLines(child, context).map((s) => '  ' + s));
         }
       }
       propLines.push(`]`);
@@ -57,8 +57,8 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
   }
   return [
     `${node.constructor.name} ${formatCoffeeScriptLocationData(node.locationData, context)} {`,
-    ...propLines.map(s => '  ' + s),
-    '}'
+    ...propLines.map((s) => '  ' + s),
+    '}',
   ];
 }
 

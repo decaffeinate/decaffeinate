@@ -4,7 +4,7 @@ import downgradeUnicodeCodePointEscapesInRange from '../../../utils/downgradeUni
 import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespaceInRange';
 
 export default class RegexPatcher extends NodePatcher {
-  node: Regex;
+  node!: Regex;
 
   patchAsExpression(): void {
     escapeSpecialWhitespaceInRange(this.contentStart + 1, this.contentEnd - 1, this);

@@ -7,7 +7,7 @@ import getIndent from './getIndent';
 export default function stripSharedIndent(source: string): string {
   let lines = source.split('\n');
   const commonIndent = getCommonIndent(lines);
-  lines = lines.map(line => {
+  lines = lines.map((line) => {
     if (line.startsWith(commonIndent)) {
       return line.substr(commonIndent.length);
     }

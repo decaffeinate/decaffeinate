@@ -18,12 +18,12 @@ export default class ResugarStage {
     log(content);
 
     const code = transform(content, {
-      plugins: Array.from(this.getPluginsForOptions(options))
+      plugins: Array.from(this.getPluginsForOptions(options)),
     }).code as string;
 
     return {
       code,
-      suggestions: []
+      suggestions: [],
     };
   }
 
@@ -36,8 +36,8 @@ export default class ResugarStage {
         modulesCommonjs,
         {
           forceDefaultExport: !options.looseJSModules,
-          safeFunctionIdentifiers: options.safeImportFunctionIdentifiers
-        }
+          safeFunctionIdentifiers: options.safeImportFunctionIdentifiers,
+        },
       ];
     }
 
@@ -61,8 +61,8 @@ export default class ResugarStage {
           } else {
             return false;
           }
-        }
-      }
+        },
+      },
     ];
 
     yield objectsDestructuring;

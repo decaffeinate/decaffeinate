@@ -20,7 +20,7 @@ export default function escape(
   for (let i = start; i < end; i++) {
     if (skipPattern.test(source.slice(i, end))) {
       i++;
-    } else if (escapeStrings.some(str => source.slice(i, i + str.length) === str)) {
+    } else if (escapeStrings.some((str) => source.slice(i, i + str.length) === str)) {
       patcher.appendRight(i, '\\');
     }
   }

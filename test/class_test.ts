@@ -226,7 +226,7 @@ describe('classes', () => {
       `,
         'Cannot automatically convert a subclass with a constructor that uses `this` before `super`.',
         {
-          disallowInvalidConstructors: true
+          disallowInvalidConstructors: true,
         }
       );
     });
@@ -261,7 +261,7 @@ describe('classes', () => {
       `,
         'Cannot automatically convert a subclass with a constructor that does not call super.',
         {
-          disallowInvalidConstructors: true
+          disallowInvalidConstructors: true,
         }
       );
     });
@@ -275,7 +275,7 @@ describe('classes', () => {
     `,
         'Cannot automatically convert a subclass that uses bound methods.',
         {
-          disallowInvalidConstructors: true
+          disallowInvalidConstructors: true,
         }
       );
     });
@@ -293,7 +293,7 @@ describe('classes', () => {
     `,
         'Cannot automatically convert a subclass that uses bound methods.',
         {
-          disallowInvalidConstructors: true
+          disallowInvalidConstructors: true,
         }
       );
     });
@@ -565,8 +565,8 @@ describe('classes', () => {
       `,
         {
           options: {
-            looseDefaultParams: true
-          }
+            looseDefaultParams: true,
+          },
         }
       );
     });

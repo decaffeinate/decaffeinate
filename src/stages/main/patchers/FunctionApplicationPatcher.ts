@@ -15,7 +15,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
 
   initialize(): void {
     this.fn.setRequiresExpression();
-    this.args.forEach(arg => arg.setRequiresExpression());
+    this.args.forEach((arg) => arg.setRequiresExpression());
   }
 
   /**

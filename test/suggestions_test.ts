@@ -28,8 +28,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -44,8 +44,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -81,8 +81,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -105,8 +105,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -124,8 +124,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -145,8 +145,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -167,8 +167,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -187,8 +187,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -205,8 +205,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -229,8 +229,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -246,8 +246,8 @@ describe('suggestions', () => {
       {
         options: {
           disableSuggestionComment: false,
-          optionalChaining: true
-        }
+          optionalChaining: true,
+        },
       }
     );
   });
@@ -269,8 +269,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -291,8 +291,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -307,8 +307,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -328,8 +328,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -344,8 +344,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -368,8 +368,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -387,8 +387,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -411,8 +411,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -435,8 +435,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -456,8 +456,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -484,8 +484,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -515,8 +515,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -542,8 +542,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -561,8 +561,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -584,8 +584,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -607,8 +607,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -628,8 +628,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -652,8 +652,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -671,8 +671,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -690,8 +690,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -714,8 +714,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });
@@ -739,8 +739,8 @@ describe('suggestions', () => {
     `,
       {
         options: {
-          disableSuggestionComment: false
-        }
+          disableSuggestionComment: false,
+        },
       }
     );
   });

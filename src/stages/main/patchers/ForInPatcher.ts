@@ -173,7 +173,7 @@ export default class ForInPatcher extends ForPatcher {
   }
 
   canAssigneesBecomeParams(): boolean {
-    const assignees = [this.valAssignee, this.keyAssignee].filter(assignee => assignee);
+    const assignees = [this.valAssignee, this.keyAssignee].filter((assignee) => assignee);
     for (const assignee of assignees) {
       if (!(assignee instanceof IdentifierPatcher)) {
         return false;
@@ -373,7 +373,7 @@ export default class ForInPatcher extends ForPatcher {
       return true;
     }
     const fakeScope = new Scope(this.node, null);
-    traverse(this.node, child => {
+    traverse(this.node, (child) => {
       fakeScope.processNode(child);
     });
     return fakeScope.hasModificationAfterDeclaration(userIndex);
@@ -686,7 +686,6 @@ export class Step {
   init: string;
   update: string;
   number: number | null;
-  raw: string;
 
   constructor(patcher: NodePatcher | null) {
     let negated = false;

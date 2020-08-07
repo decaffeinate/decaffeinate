@@ -217,8 +217,8 @@ describe('declarations', () => {
   it('uses let rather than const if specified', () => {
     check('a = 1', 'let a = 1;', {
       options: {
-        preferLet: true
-      }
+        preferLet: true,
+      },
     });
   });
 });

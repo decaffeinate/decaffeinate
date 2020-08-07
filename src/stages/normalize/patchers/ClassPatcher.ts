@@ -16,7 +16,7 @@ import {
   Identifier,
   MemberAccessOp,
   Node,
-  This
+  This,
 } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import { AVOID_INITCLASS } from '../../../suggestions';
@@ -171,7 +171,7 @@ export default class ClassPatcher extends NodePatcher {
     const index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      token => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN
     );
     if (index) {
       this.overwrite(searchStart, searchEnd, `\n${this.getIndent(1)}`);
@@ -221,7 +221,7 @@ export default class ClassPatcher extends NodePatcher {
       if (!this.isClassMethod(patcher)) {
         nonMethodPatchers.push({
           patcher,
-          deleteStart
+          deleteStart,
         });
       }
       deleteStart = patcher.outerEnd;
@@ -315,7 +315,7 @@ export default class ClassPatcher extends NodePatcher {
 
           return {
             ctorName,
-            expressionCode
+            expressionCode,
           };
         }
       }

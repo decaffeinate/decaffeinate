@@ -23,7 +23,7 @@ import {
   SoakedDynamicMemberAccessOp,
   SoakedMemberAccessOp,
   SoakedProtoMemberAccessOp,
-  Spread
+  Spread,
 } from 'decaffeinate-parser/dist/nodes';
 import { Options } from '../options';
 

@@ -7,7 +7,7 @@ import UnaryOpPatcher from './UnaryOpPatcher';
  * Handles unary exists, e.g. `a?`.
  */
 export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
-  node: UnaryExistsOp;
+  node!: UnaryExistsOp;
   negated = false;
 
   /**
@@ -59,7 +59,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
     this.addSuggestion(SHORTEN_NULL_CHECKS);
     const {
       node: { expression },
-      negated
+      negated,
     } = this;
     const needsTypeofCheck = this.needsTypeofCheck();
 

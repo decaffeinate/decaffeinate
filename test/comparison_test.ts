@@ -24,8 +24,8 @@ describe('comparisons', () => {
     `,
       {
         options: {
-          looseComparisonNegation: true
-        }
+          looseComparisonNegation: true,
+        },
       }
     );
   });
@@ -57,8 +57,8 @@ describe('comparisons', () => {
     `,
       {
         options: {
-          looseComparisonNegation: true
-        }
+          looseComparisonNegation: true,
+        },
       }
     );
   });

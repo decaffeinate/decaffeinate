@@ -6,7 +6,7 @@ import DefaultParamPatcher from './DefaultParamPatcher';
 import IdentifierPatcher from './IdentifierPatcher';
 
 export default class MemberAccessOpPatcher extends PassthroughPatcher {
-  node: MemberAccessOp;
+  node!: MemberAccessOp;
   expression: NodePatcher;
   member: IdentifierPatcher;
 

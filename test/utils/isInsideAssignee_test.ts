@@ -13,7 +13,7 @@ import {
   SoakedMemberAccessOp,
   SoakedNewOp,
   CompoundAssignOp,
-  SoakedFunctionApplication
+  SoakedFunctionApplication,
 } from 'decaffeinate-parser/dist/nodes';
 import isInsideAssignee from '../../src/utils/isInsideAssignee';
 import notNull from '../../src/utils/notNull';

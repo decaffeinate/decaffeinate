@@ -20,7 +20,7 @@ export default class SwitchCasePatcher extends NodePatcher {
   }
 
   initialize(): void {
-    this.conditions.forEach(condition => condition.setRequiresExpression());
+    this.conditions.forEach((condition) => condition.setRequiresExpression());
   }
 
   patchAsStatement(): void {
@@ -33,11 +33,11 @@ export default class SwitchCasePatcher extends NodePatcher {
 
     // `a, b, c then d` → `a b c then d`
     //   ^  ^
-    this.getCommaTokens().forEach(comma => {
+    this.getCommaTokens().forEach((comma) => {
       this.remove(comma.start, comma.end);
     });
 
-    this.conditions.forEach(condition => {
+    this.conditions.forEach((condition) => {
       // `a b c then d` → `case a: case b: case c: then d`
       //                   ^^^^^ ^^^^^^^ ^^^^^^^ ^
       this.insert(condition.outerStart, 'case ');
@@ -127,7 +127,7 @@ export default class SwitchCasePatcher extends NodePatcher {
       const commaIndex = this.indexOfSourceTokenBetweenPatchersMatching(
         left,
         right,
-        token => token.type === SourceType.COMMA
+        (token) => token.type === SourceType.COMMA
       );
       if (!commaIndex) {
         throw this.error(`unable to find comma between 'when' conditions`, left.contentEnd, right.contentStart);
@@ -157,7 +157,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     const thenTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.conditions[0].outerEnd,
       this.consequent !== null ? this.consequent.outerStart : this.contentEnd,
-      token => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN
     );
     if (thenTokenIndex) {
       return this.sourceTokenAtIndex(thenTokenIndex);

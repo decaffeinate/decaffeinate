@@ -198,9 +198,9 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
 }
 
 async function runWithStdio(options: CLIOptions): Promise<void> {
-  return new Promise<void>(resolve => {
+  return new Promise<void>((resolve) => {
     let data = '';
-    process.stdin.on('data', chunk => (data += chunk));
+    process.stdin.on('data', (chunk) => (data += chunk));
     process.stdin.on('end', () => {
       const resultCode = runWithCode('stdin', data, options);
       process.stdout.write(resultCode);

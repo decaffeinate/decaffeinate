@@ -26,7 +26,7 @@ export default class ProgramPatcher extends SharedProgramPatcher {
    * @private
    */
   patchContinuations(): void {
-    this.getProgramSourceTokens().forEach(token => {
+    this.getProgramSourceTokens().forEach((token) => {
       if (token.type === SourceType.CONTINUATION) {
         this.remove(token.start, token.end);
       }
@@ -40,7 +40,7 @@ export default class ProgramPatcher extends SharedProgramPatcher {
    */
   patchComments(): void {
     const { source } = this.context;
-    this.getProgramSourceTokens().forEach(token => {
+    this.getProgramSourceTokens().forEach((token) => {
       if (token.type === SourceType.COMMENT) {
         if (token.start === 0 && source[1] === '!') {
           this.patchShebangComment(token);
@@ -101,7 +101,7 @@ export default class ProgramPatcher extends SharedProgramPatcher {
       }
     }
 
-    leadingHashIndexes.forEach(index => {
+    leadingHashIndexes.forEach((index) => {
       this.overwrite(index, index + '#'.length, lineUpAsterisks ? ' *' : '*');
     });
 

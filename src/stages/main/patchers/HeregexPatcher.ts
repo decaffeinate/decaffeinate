@@ -4,7 +4,7 @@ import InterpolatedPatcher from './InterpolatedPatcher';
 const CLOSE_TOKEN_BASE_LENGTH = 3;
 
 export default class HeregexPatcher extends InterpolatedPatcher {
-  node: Heregex;
+  node!: Heregex;
 
   patchAsExpression(): void {
     const openToken = this.firstToken();

@@ -9,7 +9,7 @@ export default class LiterateStage {
   static run(content: string): StageResult {
     return {
       code: convertCodeFromLiterate(content),
-      suggestions: []
+      suggestions: [],
     };
   }
 }
@@ -70,7 +70,7 @@ function convertCommentLines(commentLines: Array<string> | null): Array<string> 
   while (commentLines.length > 0 && lineIsEmpty(commentLines[commentLines.length - 1])) {
     commentLines.pop();
   }
-  return commentLines.map(line => `# ${line}`);
+  return commentLines.map((line) => `# ${line}`);
 }
 
 function lineIsEmpty(line: string): boolean {
@@ -78,7 +78,7 @@ function lineIsEmpty(line: string): boolean {
 }
 
 function lineIsIndented(line: string): boolean {
-  return VALID_INDENTATIONS.some(indent => line.startsWith(indent));
+  return VALID_INDENTATIONS.some((indent) => line.startsWith(indent));
 }
 
 function removeIndentation(line: string): string {

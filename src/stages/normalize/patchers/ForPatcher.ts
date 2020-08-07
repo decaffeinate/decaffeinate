@@ -130,7 +130,7 @@ export default class ForPatcher extends NodePatcher {
       const index = this.indexOfSourceTokenBetweenPatchersMatching(
         this.body,
         afterForToken,
-        token => token.type === SourceType.FOR
+        (token) => token.type === SourceType.FOR
       );
       if (!index) {
         throw this.error(`cannot find 'for' token in loop`);
@@ -153,7 +153,7 @@ export default class ForPatcher extends NodePatcher {
   getFirstHeaderPatcher(): NodePatcher {
     const candidates = [this.keyAssignee, this.valAssignee, this.target];
     let result: NodePatcher | null = null;
-    candidates.forEach(candidate => {
+    candidates.forEach((candidate) => {
       if (!candidate) {
         return;
       }

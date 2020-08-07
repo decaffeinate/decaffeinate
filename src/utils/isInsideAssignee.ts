@@ -12,7 +12,7 @@ import {
   SoakedDynamicMemberAccessOp,
   SoakedMemberAccessOp,
   SoakedNewOp,
-  SoakedFunctionApplication
+  SoakedFunctionApplication,
 } from 'decaffeinate-parser/dist/nodes';
 
 /**

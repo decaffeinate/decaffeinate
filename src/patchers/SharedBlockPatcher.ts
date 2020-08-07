@@ -6,7 +6,7 @@ import NodePatcher from './NodePatcher';
 import { PatcherContext } from './types';
 
 export default class SharedBlockPatcher extends NodePatcher {
-  node: Block;
+  node!: Block;
   statements: Array<NodePatcher>;
   shouldPatchInline: boolean | null = null;
 
@@ -23,7 +23,7 @@ export default class SharedBlockPatcher extends NodePatcher {
     if (index === this.statements.length) {
       const lastStatement = this.statements[this.statements.length - 1];
       const terminatorTokenIndex = this.context.sourceTokens.indexOfTokenMatchingPredicate(
-        token => token.type === SourceType.NEWLINE || token.type === SourceType.SEMICOLON,
+        (token) => token.type === SourceType.NEWLINE || token.type === SourceType.SEMICOLON,
         lastStatement.outerEndTokenIndex
       );
       let insertionPoint = terminatorTokenIndex
@@ -31,7 +31,7 @@ export default class SharedBlockPatcher extends NodePatcher {
         : lastStatement.outerEnd;
       insertionPoint = Math.min(insertionPoint, this.getBoundingPatcher().innerEnd);
       const indent = lastStatement.getIndent();
-      statements.forEach(line => {
+      statements.forEach((line) => {
         const sep = line.trim().startsWith('//') ? '\n' : separator;
         this.insert(insertionPoint, `${sep}${indent}${line}`);
       });
@@ -39,7 +39,7 @@ export default class SharedBlockPatcher extends NodePatcher {
       const statementToInsertBefore = this.statements[index];
       const insertionPoint = statementToInsertBefore.outerStart;
       const indent = statementToInsertBefore.getIndent();
-      statements.forEach(line => {
+      statements.forEach((line) => {
         const sep = line.trim().startsWith('//') ? '\n' : separator;
         this.insert(insertionPoint, `${line}${sep}${indent}`);
       });

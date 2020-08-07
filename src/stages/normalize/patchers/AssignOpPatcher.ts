@@ -56,7 +56,7 @@ export default class AssignOpPatcher extends NodePatcher {
     const colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
-      token => token.type === SourceType.COLON
+      (token) => token.type === SourceType.COLON
     );
     if (colonIndex) {
       const colonToken = notNull(this.sourceTokenAtIndex(colonIndex));
@@ -102,17 +102,17 @@ export default class AssignOpPatcher extends NodePatcher {
         this.assignee.expression.setRequiresRepeatableExpression({
           parens: true,
           ref: 'cls',
-          forceRepeat: true
+          forceRepeat: true,
         });
       } else if (this.assignee instanceof DynamicMemberAccessOpPatcher) {
         this.assignee.expression.setRequiresRepeatableExpression({
           parens: true,
           ref: 'cls',
-          forceRepeat: true
+          forceRepeat: true,
         });
         this.assignee.indexingExpr.setRequiresRepeatableExpression({
           ref: 'method',
-          forceRepeat: true
+          forceRepeat: true,
         });
       } else {
         throw this.error('Unexpected assignee type for early super transform.');
@@ -125,12 +125,12 @@ export default class AssignOpPatcher extends NodePatcher {
       if (this.assignee instanceof MemberAccessOpPatcher) {
         return {
           classCode: this.assignee.expression.getRepeatCode(),
-          accessCode: `.${this.assignee.member.node.data}`
+          accessCode: `.${this.assignee.member.node.data}`,
         };
       } else if (this.assignee instanceof DynamicMemberAccessOpPatcher) {
         return {
           classCode: this.assignee.expression.getRepeatCode(),
-          accessCode: `[${this.assignee.indexingExpr.getRepeatCode()}]`
+          accessCode: `[${this.assignee.indexingExpr.getRepeatCode()}]`,
         };
       } else {
         throw this.error('Unexpected assignee type for early super transform.');
@@ -147,7 +147,7 @@ export default class AssignOpPatcher extends NodePatcher {
     const thenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
-      token => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN
     );
     if (thenIndex) {
       const thenToken = notNull(this.sourceTokenAtIndex(thenIndex));

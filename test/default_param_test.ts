@@ -4,32 +4,32 @@ describe('default params', () => {
   it('keeps default value with loose mode enabled', () => {
     check(`(a=2) ->`, `(function(a=2) {});`, {
       options: {
-        looseDefaultParams: true
-      }
+        looseDefaultParams: true,
+      },
     });
   });
 
   it('ensures transforms happen on the default value in loose mode', () => {
     check(`(a=b c) ->`, `(function(a=b(c)) {});`, {
       options: {
-        looseDefaultParams: true
-      }
+        looseDefaultParams: true,
+      },
     });
   });
 
   it('ensures @foo is transformed correctly in loose mode', () => {
     check(`(a=@b) ->`, `(function(a=this.b) {});`, {
       options: {
-        looseDefaultParams: true
-      }
+        looseDefaultParams: true,
+      },
     });
   });
 
   it('patches value as an expression in loose mode', () => {
     check(`(a=b: c) ->`, `(function(a={b: c}) {});`, {
       options: {
-        looseDefaultParams: true
-      }
+        looseDefaultParams: true,
+      },
     });
   });
 

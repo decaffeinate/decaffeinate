@@ -60,7 +60,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
         if (this.key instanceof DynamicMemberAccessOpPatcher) {
           this.key.indexingExpr.setRequiresRepeatableExpression({
             ref: 'method',
-            forceRepeat: true
+            forceRepeat: true,
           });
         }
       } else {
@@ -70,7 +70,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
           // need to be defensive in that case. For other cases, like number
           // literals, we still mark as repeatable so later code can safely get
           // the repeat code.
-          forceRepeat: this.key instanceof StringPatcher && this.key.expressions.length > 0
+          forceRepeat: this.key instanceof StringPatcher && this.key.expressions.length > 0,
         });
       }
     }
@@ -100,7 +100,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     const colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.key,
       this.expression,
-      token => token.type === SourceType.COLON
+      (token) => token.type === SourceType.COLON
     );
     if (!colonIndex) {
       throw this.error('expected a colon between the key and expression of a class property');

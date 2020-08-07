@@ -11,7 +11,7 @@ export default class SemicolonsStage {
 
     const editor = new MagicString(content);
     const ast = parse(content, {
-      tokens: true
+      tokens: true,
     });
 
     const { insertions, removals } = asi(content, ast);
@@ -21,7 +21,7 @@ export default class SemicolonsStage {
 
     return {
       code: editor.toString(),
-      suggestions: []
+      suggestions: [],
     };
   }
 }

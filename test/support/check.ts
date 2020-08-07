@@ -56,7 +56,7 @@ function checkOutput(source: string, expected: string, options: Options): void {
   try {
     const converted = convert(source, {
       disableSuggestionComment: true,
-      ...options
+      ...options,
     });
     let actual = converted.code;
     if (actual.endsWith('\n') && !expected.endsWith('\n')) {

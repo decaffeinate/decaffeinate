@@ -14,7 +14,7 @@ import postfixNodeNeedsOuterParens from '../../../utils/postfixNodeNeedsOuterPar
  *   while b() then a()
  */
 export default class WhilePatcher extends NodePatcher {
-  node: While;
+  node!: While;
   condition: NodePatcher;
   guard: NodePatcher | null;
   body: NodePatcher | null;

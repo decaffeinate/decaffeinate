@@ -27,6 +27,6 @@ export default function extractPrototypeAssignPatchers(patcher: NodePatcher): Pr
   }
   return {
     classRefPatcher: patcher.assignee.expression.expression,
-    methodAccessPatcher: patcher.assignee
+    methodAccessPatcher: patcher.assignee,
   };
 }

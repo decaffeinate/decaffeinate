@@ -15,13 +15,12 @@ import ReturnPatcher from './ReturnPatcher';
  * such child must call markIIFEPatcherDescendant on this patcher in the
  * initialize step.
  */
-// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface IIFEPatcher extends NodePatcher {
   willPatchAsIIFE(): boolean;
 }
 
 export default class BlockPatcher extends SharedBlockPatcher {
-  statements: Array<NodePatcher>;
+  statements!: Array<NodePatcher>;
 
   _iifePatcherDescendants: Array<IIFEPatcher> = [];
   _explicitDeclarationsToAdd: Array<string> = [];
@@ -44,7 +43,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
       // Use the scope code to find all assignments, including loop assignees,
       // destructuring, etc.
       const fakeScope = new Scope(iifePatcher.node);
-      traverse(iifePatcher.node, child => {
+      traverse(iifePatcher.node, (child) => {
         fakeScope.processNode(child);
       });
       for (const name of fakeScope.getOwnNames()) {
@@ -61,7 +60,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
   canPatchAsExpression(): boolean {
     return (
       this._explicitDeclarationsToAdd.length === 0 &&
-      this.statements.every(statement => statement.canPatchAsExpression())
+      this.statements.every((statement) => statement.canPatchAsExpression())
     );
   }
 
@@ -74,7 +73,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
   setExpression(force = false): boolean {
     const willPatchAsExpression = super.setExpression(force);
     if (willPatchAsExpression && this.prefersToPatchAsExpression()) {
-      this.statements.forEach(statement => statement.setExpression());
+      this.statements.forEach((statement) => statement.setExpression());
       return true;
     }
     return false;
@@ -219,7 +218,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
 
   patchAsExpression({
     leftBrace = this.statements.length > 1,
-    rightBrace = this.statements.length > 1
+    rightBrace = this.statements.length > 1,
   }: PatchOptions = {}): void {
     if (leftBrace) {
       this.insert(this.innerStart, '(');
@@ -254,7 +253,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
    * @private
    */
   getSemicolonSourceTokenIndexBetween(left: NodePatcher, right: NodePatcher): SourceTokenListIndex | null {
-    return this.indexOfSourceTokenBetweenPatchersMatching(left, right, token => token.type === SourceType.SEMICOLON);
+    return this.indexOfSourceTokenBetweenPatchersMatching(left, right, (token) => token.type === SourceType.SEMICOLON);
   }
 
   /**

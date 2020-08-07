@@ -179,7 +179,7 @@ export default class SlicePatcher extends NodePatcher {
   getIndexStartSourceToken(): SourceToken {
     const tokens = this.context.sourceTokens;
     const index = tokens.indexOfTokenMatchingPredicate(
-      token => token.type === SourceType.LBRACKET,
+      (token) => token.type === SourceType.LBRACKET,
       this.expression.outerEndTokenIndex
     );
     if (!index || index.isAfter(this.contentEndTokenIndex)) {
@@ -195,7 +195,7 @@ export default class SlicePatcher extends NodePatcher {
     const tokens = this.context.sourceTokens;
     const { source } = this.context;
     const index = tokens.indexOfTokenMatchingPredicate(
-      token => {
+      (token) => {
         if (token.type !== SourceType.RANGE) {
           return false;
         }
@@ -216,7 +216,7 @@ export default class SlicePatcher extends NodePatcher {
   getIndexEndSourceToken(): SourceToken {
     const tokens = this.context.sourceTokens;
     const index = tokens.lastIndexOfTokenMatchingPredicate(
-      token => token.type === SourceType.RBRACKET,
+      (token) => token.type === SourceType.RBRACKET,
       this.outerEndTokenIndex
     );
     if (!index || index.isBefore(this.contentStartTokenIndex)) {

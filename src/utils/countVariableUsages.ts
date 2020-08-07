@@ -7,7 +7,7 @@ import { Identifier, Node, MemberAccessOp, ObjectInitialiserMember } from 'decaf
 export default function countVariableUsages(node: Node, name: string): number {
   let numUsages = 0;
 
-  traverse(node, child => {
+  traverse(node, (child) => {
     // Make sure it's the name we're looking for.
     if (!(child instanceof Identifier) || child.data !== name) {
       return;
