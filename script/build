@@ -28,4 +28,5 @@ echo 'Building CommonJS version.'
 # Restructure.
 rm -rf dist/test
 mv dist/src/* dist/
+rm -f dist/package.json
 rmdir dist/src
