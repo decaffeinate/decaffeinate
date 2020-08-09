@@ -114,12 +114,5 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  },
-  "greenkeeper": {
-    "ignore": [
-      "repeating",
-      "magic-string",
-      "detect-indent"
-    ]
   }
 }
