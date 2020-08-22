@@ -106,7 +106,7 @@
     "rimraf": "^3.0.2",
     "sort-package-json": "^1.44.0",
     "ts-jest": "^26.1.4",
-    "ts-node": "^8.10.2",
+    "ts-node": "^9.0.0",
     "typescript": "^3.9.7"
   },
   "engines": {
