@@ -91,6 +91,7 @@ Some blog posts on using decaffeinate:
 - [From 200K lines of CoffeeScript to zero: making decaffeinate super-stable][benchling-blog-post]
 - [Converting a large React Codebase from Coffeescript to ES6][bugsnag-blog-post]
 - [Decaffeinating a Large CoffeeScript Codebase Without Losing Sleep][datafox-blog-post]
+- [The Great CoffeeScript to Typescript Migration of 2017][dropbox-blog-post]
 
 If you run into crashes or correctness issues, or you have suggestions on how
 decaffeinate could be improved, feel free to file an issue on the [issues] page.
@@ -129,6 +130,7 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 [benchling-blog-post]: https://benchling.engineering/from-200k-lines-of-coffeescript-to-zero-making-decaffeinate-super-stable-4de0ca68d9bc
 [bugsnag-blog-post]: https://blog.bugsnag.com/converting-a-large-react-codebase-from-coffeescript-to-es6/
 [datafox-blog-post]: https://eng.datafox.com/javascript/2017/07/18/decaffeinating-large-coffeescript-codebase/
+[dropbox-blog-post]: https://dropbox.tech/frontend/the-great-coffeescript-to-typescript-migration-of-2017
 
 ## Goals
 
