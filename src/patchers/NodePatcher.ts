@@ -63,8 +63,8 @@ export default class NodePatcher {
   _returns = false;
 
   // Temporary callbacks that can be added for inter-node communication.
-  addThisAssignmentAtScopeHeader: AddThisAssignmentCallback | null = null;
-  addDefaultParamAssignmentAtScopeHeader: AddDefaultParamCallback | null = null;
+  addThisAssignmentAtScopeHeader?: AddThisAssignmentCallback;
+  addDefaultParamAssignmentAtScopeHeader?: AddDefaultParamCallback;
 
   constructor({ node, context, editor, options, addSuggestion }: PatcherContext) {
     this.log = logger(this.constructor.name);
