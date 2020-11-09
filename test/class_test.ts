@@ -335,7 +335,7 @@ describe('classes', () => {
     });
 
     it('creates a constructor for bound methods with a `super` call in extended classes when requested', () => {
-      check(
+      checkCS1(
         `
       class A extends B
         a: =>
@@ -346,6 +346,31 @@ describe('classes', () => {
         constructor(...args) {
           this.a = this.a.bind(this);
           super(...args);
+        }
+
+        a() {
+          return 1;
+        }
+      }
+    `
+      );
+
+      // The behavior is different in CS2. Binding happens after `super`.
+      // CS2 also has a runtime check to verify inside bound methods, but
+      // we don't bother with that:
+      //
+      // https://coffeescript.org/#try:class%20A%20extends%20B%0A%20%20a%3A%20%3D%3E%0A%20%20%20%201
+      checkCS2(
+        `
+      class A extends B
+        a: =>
+          1
+    `,
+        `
+      class A extends B {
+        constructor(...args) {
+          super(...args);
+          this.a = this.a.bind(this);
         }
 
         a() {
