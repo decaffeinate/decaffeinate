@@ -256,7 +256,7 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.10.4", "@babel/parser@^7.12.3", "@babel/parser@^7.12.5", "@babel/parser@^7.7.5", "@babel/parser@^7.8.0", "@babel/parser@^7.9.0":
+"@babel/parser@^7.1.0", "@babel/parser@^7.10.4", "@babel/parser@^7.12.3", "@babel/parser@^7.12.5", "@babel/parser@^7.7.5":
   version "7.12.5"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.12.5.tgz#b4af32ddd473c0bfa643bd7ff0728b8e71b81ea0"
   integrity sha512-FVM6RZQ0mn2KCf1VUED7KepYeUWoVShczewOCfm3nzoBybaih51h+sYVVGthW9M6lPByEPTQf+xm27PBdlpwmQ==
@@ -863,19 +863,12 @@
     recast "^0.19.0"
     resolve "^1.12.0"
 
-"@codemod/parser@^1.0.3":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.0.6.tgz#0cc89acde17eaa947dfcce00d5bb019bb6a1a7e7"
-  integrity sha512-pF4ZxphbGPunNcwuedlXp7TZQpLQNLgEVoY6uHSEzX/eYqrCX6vzkfMKQcM4zktx1iTh9D2vEd18C/iueLdsvw==
+"@codemod/parser@^1.0.3", "@codemod/parser@^1.0.7":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.1.0.tgz#8a8f0bf2f261082cf5b8a39cfafe3d15e2454da6"
+  integrity sha512-MR2oYTZRobGBFTMzo+NmwzgXUT3VgihaLJroZHA34XaF+Nqnw3rqU/Jf08jI/bctVtyZ0FTosZCRz6OKVbttAw==
   dependencies:
-    "@babel/parser" "^7.8.0"
-
-"@codemod/parser@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.0.7.tgz#00e69a53c88c8dc1f8b2f6b75346485cdd4a5f87"
-  integrity sha512-GSrc8CvwDN24GluYQ7xDBMMQo5mFJO6cs2/jZssfDjOalRKKKb9UqvkNYFuYXXm4buRAF23Soih9bpPhcDxA/g==
-  dependencies:
-    "@babel/parser" "^7.9.0"
+    "@babel/parser" "^7.12.5"
 
 "@eslint/eslintrc@^0.2.1":
   version "0.2.1"
