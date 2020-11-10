@@ -29,12 +29,14 @@ export default class ClassBlockPatcher extends BlockPatcher {
       const boundMethods = this.boundInstanceMethods();
       if (boundMethods.length > 0) {
         const isSubclass = this.getClassPatcher().isSubclass();
-        if (isSubclass && !this.shouldAllowInvalidConstructors()) {
-          throw this.error(
-            getInvalidConstructorErrorMessage('Cannot automatically convert a subclass that uses bound methods.')
-          );
-        } else if (isSubclass) {
-          this.addSuggestion(FIX_INVALID_CONSTRUCTOR);
+        if (!this.options.useCS2) {
+          if (isSubclass && !this.shouldAllowInvalidConstructors()) {
+            throw this.error(
+              getInvalidConstructorErrorMessage('Cannot automatically convert a subclass that uses bound methods.')
+            );
+          } else if (isSubclass) {
+            this.addSuggestion(FIX_INVALID_CONSTRUCTOR);
+          }
         }
 
         const { source } = this.context;
@@ -47,11 +49,20 @@ export default class ClassBlockPatcher extends BlockPatcher {
         } else {
           constructor += `constructor() {\n`;
         }
-        boundMethods.forEach((method) => {
-          constructor += `${methodBodyIndent}${getBindingCodeForMethod(method)};\n`;
-        });
+        const bindingStatements = boundMethods.map(
+          (method) => `${methodBodyIndent}${getBindingCodeForMethod(method)};\n`
+        );
         if (isSubclass) {
-          constructor += `${methodBodyIndent}super(...args)\n`;
+          const superStatement = `${methodBodyIndent}super(...args)\n`;
+
+          if (this.options.useCS2) {
+            // The behavior is different in CS2. Binding happens after `super`.
+            constructor += superStatement + bindingStatements;
+          } else {
+            constructor += bindingStatements + superStatement;
+          }
+        } else {
+          constructor += bindingStatements;
         }
         constructor += `${methodIndent}}\n\n${methodIndent}`;
         this.prependLeft(insertionPoint, constructor);

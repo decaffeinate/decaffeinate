@@ -1,8 +1,8 @@
-import check, { checkCS1 } from './support/check';
+import check, { checkCS1, checkCS2 } from './support/check';
 
 describe('suggestions', () => {
   it('provides a suggestion for invalid constructors', () => {
-    check(
+    checkCS1(
       `
       class A extends B
         c: =>
@@ -19,6 +19,35 @@ describe('suggestions', () => {
         constructor(...args) {
           this.c = this.c.bind(this);
           super(...args);
+        }
+      
+        c() {
+          return d;
+        }
+      }
+    `,
+      {
+        options: {
+          disableSuggestionComment: false,
+        },
+      }
+    );
+    checkCS2(
+      `
+      class A extends B
+        c: =>
+          d
+    `,
+      `
+      /*
+       * decaffeinate suggestions:
+       * DS102: Remove unnecessary code created because of implicit returns
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       */
+      class A extends B {
+        constructor(...args) {
+          super(...args);
+          this.c = this.c.bind(this);
         }
       
         c() {
