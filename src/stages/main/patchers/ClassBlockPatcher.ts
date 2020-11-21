@@ -49,9 +49,9 @@ export default class ClassBlockPatcher extends BlockPatcher {
         } else {
           constructor += `constructor() {\n`;
         }
-        const bindingStatements = boundMethods.map(
-          (method) => `${methodBodyIndent}${getBindingCodeForMethod(method)};\n`
-        );
+        const bindingStatements = boundMethods
+          .map((method) => `${methodBodyIndent}${getBindingCodeForMethod(method)};\n`)
+          .join('');
         if (isSubclass) {
           const superStatement = `${methodBodyIndent}super(...args)\n`;
 

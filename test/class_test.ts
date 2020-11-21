@@ -663,15 +663,21 @@ describe('classes', () => {
       class A
         a: =>
           1
+        b: =>
+          2
     `,
       `
       class A {
         constructor() {
           this.a = this.a.bind(this);
+          this.b = this.b.bind(this);
         }
 
         a() {
           return 1;
+        }
+        b() {
+          return 2;
         }
       }
     `
