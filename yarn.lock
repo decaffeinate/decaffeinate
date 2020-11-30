@@ -1134,9 +1134,9 @@
     fastq "^1.6.0"
 
 "@resugar/codemod-declarations-block-scope@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@resugar/codemod-declarations-block-scope/-/codemod-declarations-block-scope-1.0.2.tgz#7ed3299c0744725ddc20591c08ef007878c39b65"
-  integrity sha512-6haFZi1r/c+ZeTP+6gNAKTKzWkrLTNvYOMBPMvm12Rf8smpSGX/yjCvP9pRYI5cM2P9rsLn/swAys3OxngYpYA==
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@resugar/codemod-declarations-block-scope/-/codemod-declarations-block-scope-1.0.3.tgz#6e3ebf5594f1ccf7f0725fb234c036bfbe64dd76"
+  integrity sha512-jnoNiz/PY4zZXPaLIeiKkGX6xau83Vn2lJRffIKuTPRMRTegFD2G7MmjxgZx9htJ/H9huqKJIhhqfj4VbuaDbA==
 
 "@resugar/codemod-functions-arrow@^1.0.2":
   version "1.0.2"
