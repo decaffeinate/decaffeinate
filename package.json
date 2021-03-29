@@ -98,7 +98,7 @@
     "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "fs-extra": "^9.0.1",
-    "husky": "^5.0.9",
+    "husky": "^6.0.0",
     "jest": "^26.2.2",
     "lint-staged": "^10.2.11",
     "mkdirp": "^1.0.4",
