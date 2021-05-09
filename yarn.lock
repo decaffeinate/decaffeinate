@@ -2432,10 +2432,10 @@ decaffeinate-coffeescript@1.12.7-patch.3:
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.3.tgz#ae261022a35dc42dd9a0bc2c241717d5a23f8e67"
   integrity sha512-4NshbupYgQsVm/jOosp/nen1MWi43i1/z0I+F1JQQ8sNpS6SvvJWYwMayfuYkE/c/5mK3ISWu2H9OyPZYwtMLg==
 
-decaffeinate-parser@^22.5.14:
-  version "22.5.14"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.14.tgz#e5344ecd7a5c61292d2312a76c856171802cadce"
-  integrity sha512-LZZjrRvoPGgdyedIzy/0GbvFFI1wi9KAkahgIK7TAAIN67LtAvRvwgdwpkhLZNUgH/ly87zV1GTMBflTNTxbEA==
+decaffeinate-parser@^22.5.15:
+  version "22.5.15"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.15.tgz#a6cc562546e34ba7ed7b3cf2af56ae8a73f5b91a"
+  integrity sha512-c7cqxeL77vAUZOBVQ4MzpESMqOCfNvYtJ7vW7wpKWGc4ux3L2QI/CcpR5VWt/ovMDz9CfhycTIgXqC2+GmjG2A==
   dependencies:
     "@babel/types" "^7.6.1"
     "@codemod/parser" "^1.0.3"

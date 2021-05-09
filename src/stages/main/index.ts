@@ -22,6 +22,7 @@ import ConditionalPatcher from './patchers/ConditionalPatcher';
 import ConstructorPatcher from './patchers/ConstructorPatcher';
 import ContinuePatcher from './patchers/ContinuePatcher';
 import CSXElementPatcher from './patchers/CSXElementPatcher';
+import DebuggerPatcher from './patchers/DebuggerPatcher';
 import DefaultParamPatcher from './patchers/DefaultParamPatcher';
 import DoOpPatcher from './patchers/DoOpPatcher';
 import DynamicMemberAccessOpPatcher from './patchers/DynamicMemberAccessOpPatcher';
@@ -121,6 +122,9 @@ export default class MainStage extends TransformCoffeeScriptStage {
 
       case 'Continue':
         return ContinuePatcher;
+
+      case 'Debugger':
+        return DebuggerPatcher;
 
       case 'Quasi':
         return QuasiPatcher;
