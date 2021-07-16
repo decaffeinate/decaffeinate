@@ -138,6 +138,10 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.optionalChaining = true;
         break;
 
+      case '--nullish-coalescing':
+        baseOptions.nullishCoalescing = true;
+        break;
+
       default:
         if (arg.startsWith('-')) {
           console.error(`Error: unrecognized option '${arg}'`);
