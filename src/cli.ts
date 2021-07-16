@@ -162,6 +162,10 @@ function parseArguments(args: ReadonlyArray<string>, io: IO): CLIOptions {
         baseOptions.logicalAssignment = true;
         break;
 
+      case '--nullish-coalescing':
+        baseOptions.nullishCoalescing = true;
+        break;
+
       default:
         if (arg.startsWith('-')) {
           io.stderr.write(`Error: unrecognized option '${arg}'\n`);
