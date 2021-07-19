@@ -22,9 +22,7 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "bin": {
-    "decaffeinate": "./bin/decaffeinate"
-  },
+  "bin": "./bin/decaffeinate",
   "files": [
     "bin",
     "dist"
@@ -51,10 +49,6 @@
     "package.json": [
       "sort-package-json"
     ]
-  },
-  "resolutions": {
-    "**/@babel/types": "7.12.6",
-    "**/@resugar/helper-comments": "^1.0.2"
   },
   "dependencies": {
     "@codemod/core": "^1.1.0",
