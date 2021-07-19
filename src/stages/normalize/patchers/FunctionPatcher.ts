@@ -119,9 +119,10 @@ export default class FunctionPatcher extends NodePatcher {
    * Also declare any variables that are assigned and need to be
    * function-scoped, so the outer code can insert `var` declarations.
    */
-  patchParameterAndGetAssignments(
-    parameter: NodePatcher
-  ): { newAssignments: Array<string>; newBindings: Array<string> } {
+  patchParameterAndGetAssignments(parameter: NodePatcher): {
+    newAssignments: Array<string>;
+    newBindings: Array<string>;
+  } {
     const thisAssignments: Array<string> = [];
     const defaultParamAssignments: Array<string> = [];
 
