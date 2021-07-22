@@ -180,7 +180,10 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 - `--loose-js-modules`: Allow named exports when converting to JS modules.
 - `--disallow-invalid-constructors`: Give an error when constructors use `this`
   before `super` or omit the `super` call in a subclass.
-- `--optional-chaining`: Do not transpile optional chaining
+- `--optional-chaining`: Do not transpile optional chaining.
+- `--logical-assignment`: Use the ES2021 [logical
+  assignment](https://github.com/tc39/proposal-logical-assignment) operators
+  `&&=`, `||=`, and `??=`.
 
 For more usage details, see the output of `decaffeinate --help`.
 
