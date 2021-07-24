@@ -6,13 +6,13 @@ import CompoundAssignOpPatcher from './CompoundAssignOpPatcher';
  */
 export default class NullishCoalescingCompoundAssignOpPatcher extends CompoundAssignOpPatcher {
   patchAsExpression(): void {
-    super.patchAsExpression();
     this.patchOperator();
+    super.patchAsExpression();
   }
 
   patchAsStatement(): void {
-    super.patchAsStatement();
     this.patchOperator();
+    super.patchAsStatement();
   }
 
   patchOperator(): void {
