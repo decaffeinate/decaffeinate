@@ -24,4 +24,20 @@ describe('with logical assignment enabled', () => {
   it('patches both sides of nullish coalescing assignment', () => {
     check(`a[f x] ?= -> y`, `a[f(x)] ??= () => y;`);
   });
+
+  it('handles an implicit object literal on the RHS', () => {
+    check(
+      `
+      a[b] ?=
+        k1: v1
+        k2: v2
+    `,
+      `
+      a[b] ??= {
+        k1: v1,
+        k2: v2
+      };
+    `
+    );
+  });
 });
