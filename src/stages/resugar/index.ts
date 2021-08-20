@@ -19,6 +19,8 @@ export default class ResugarStage {
 
     const code = transform(content, {
       plugins: Array.from(this.getPluginsForOptions(options)),
+      configFile: false,
+      babelrc: false,
     }).code as string;
 
     return {
