@@ -19,7 +19,7 @@ export default function normalizeListItem(
   // when combined with other normalize stage transformations. So just
   // remove the redundant comma.
   const lastToken = listItemPatcher.lastToken();
-  if (lastToken.type === SourceType.COMMA && !(listItemPatcher.node instanceof Elision)) {
+  if (lastToken.type === SourceType.COMMA && !(listItemPatcher.node instanceof Elision) && nextListItemPatcher) {
     patcher.remove(lastToken.start, lastToken.end);
   }
   // CoffeeScript allows semicolon-separated lists, so just change them to

@@ -663,7 +663,7 @@ describe('objects', () => {
     `,
       `
       a({
-        b: c});
+        b: c,});
     `
     );
   });
@@ -735,6 +735,20 @@ describe('objects', () => {
         [ref = a(b)]: ref
       };
     `
+    );
+  });
+
+  it('regression test #2413', () => {
+    check(
+      `
+      a ->
+        b
+          c: 1,
+      `,
+      `
+      a(() => b({
+        c: 1,}));
+      `
     );
   });
 });
