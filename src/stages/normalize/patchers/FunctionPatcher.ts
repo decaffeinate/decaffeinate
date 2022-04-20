@@ -2,6 +2,7 @@ import { SourceType } from 'coffee-lex';
 import { Constructor, Node } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';
+import containsSuperCall from '../../../utils/containsSuperCall';
 import getAssigneeBindings from '../../../utils/getAssigneeBindings';
 import normalizeListItem from '../../../utils/normalizeListItem';
 import notNull from '../../../utils/notNull';
@@ -17,6 +18,7 @@ import RestPatcher from './SpreadPatcher';
 export default class FunctionPatcher extends NodePatcher {
   parameters: Array<NodePatcher>;
   body: BlockPatcher | null;
+  _thisAfterSuper = false;
 
   constructor(patcherContext: PatcherContext, parameters: Array<NodePatcher>, body: BlockPatcher | null) {
     super(patcherContext);
@@ -36,10 +38,12 @@ export default class FunctionPatcher extends NodePatcher {
 
     const firstRestParamIndex = this.getFirstRestParamIndex();
     const assignments = [];
+    const thisAssignmentsAfterSuper = [];
     for (const [i, parameter] of this.parameters.entries()) {
       if (firstRestParamIndex === -1 || i < firstRestParamIndex) {
-        const { newAssignments, newBindings } = this.patchParameterAndGetAssignments(parameter);
+        const { newAssignments, newThisAssignments, newBindings } = this.patchParameterAndGetAssignments(parameter);
         assignments.push(...newAssignments);
+        thisAssignmentsAfterSuper.push(...newThisAssignments);
         neededExplicitBindings.push(...newBindings);
       } else {
         parameter.patch();
@@ -97,6 +101,9 @@ export default class FunctionPatcher extends NodePatcher {
 
     // If there were assignments from parameters insert them
     if (this.body) {
+      if (thisAssignmentsAfterSuper.length > 0) {
+        this.body.insertStatementsAtIndex(thisAssignmentsAfterSuper, this.getIndexOfSuperStatement() + 1);
+      }
       // before the actual body
       for (const assignment of assignments) {
         this.body.insertLineBefore(assignment);
@@ -121,6 +128,7 @@ export default class FunctionPatcher extends NodePatcher {
    */
   patchParameterAndGetAssignments(parameter: NodePatcher): {
     newAssignments: Array<string>;
+    newThisAssignments: Array<string>;
     newBindings: Array<string>;
   } {
     const thisAssignments: Array<string> = [];
@@ -165,10 +173,19 @@ export default class FunctionPatcher extends NodePatcher {
     delete this.addDefaultParamAssignmentAtScopeHeader;
     delete this.addThisAssignmentAtScopeHeader;
 
-    return {
-      newAssignments: [...defaultParamAssignments, ...thisAssignments],
-      newBindings,
-    };
+    if (this.options.useCS2 && this.thisAfterSuperEnabled() && this.getIndexOfSuperStatement() >= 0) {
+      return {
+        newAssignments: defaultParamAssignments,
+        newThisAssignments: thisAssignments,
+        newBindings,
+      };
+    } else {
+      return {
+        newAssignments: [...defaultParamAssignments, ...thisAssignments],
+        newThisAssignments: [],
+        newBindings,
+      };
+    }
   }
 
   /**
@@ -245,5 +262,34 @@ export default class FunctionPatcher extends NodePatcher {
       }
     }
     return -1;
+  }
+
+  getIndexOfSuperStatement(): number {
+    if (!this.body) {
+      return -1;
+    }
+    const statements = this.body.statements;
+    for (let i = 0; i < statements.length; i++) {
+      if (containsSuperCall(statements[i].node)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Call before initialization to tell the patcher to place
+   * assignments to `this` after `super()`.
+   */
+  enableThisAfterSuper(): void {
+    this._thisAfterSuper = true;
+  }
+
+  /**
+   * Determines whether the patcher needs to place
+   * assignments to `this` after `super()`.
+   */
+  thisAfterSuperEnabled(): boolean {
+    return this._thisAfterSuper;
   }
 }
