@@ -66,10 +66,6 @@ function parseArguments(args: Array<string>): CLIOptions {
         baseOptions.noArrayIncludes = true;
         break;
 
-      case '--use-optional-chaining':
-        console.warn(`NOTE: ${arg} is disabled and has no effect`);
-        break;
-
       case '--use-js-modules':
         baseOptions.useJSModules = true;
         break;
@@ -135,6 +131,7 @@ function parseArguments(args: Array<string>): CLIOptions {
         break;
 
       case '--optional-chaining':
+      case '--use-optional-chaining':
         baseOptions.optionalChaining = true;
         break;
 
@@ -265,8 +262,6 @@ function usage(): void {
   console.log('                           Do not include a comment with followup suggestions at the');
   console.log('                           top of the output file.');
   console.log('  --no-array-includes      Do not use Array.prototype.includes in generated code.');
-  console.log('  --use-optional-chaining  Use the upcoming optional chaining syntax for operators like `?.`.');
-  console.log('                           NOTE: this is disabled and has no effect.');
   console.log('  --use-js-modules         Convert require and module.exports to import and export.');
   console.log('  --loose-js-modules       Allow named exports when converting to JS modules.');
   console.log('  --safe-import-function-identifiers');
@@ -284,9 +279,10 @@ function usage(): void {
   console.log('  --disallow-invalid-constructors');
   console.log('                           Give an error when constructors use this before super or');
   console.log('                           omit the super call in a subclass.');
-  console.log('  --optional-chaining');
-  console.log('                           Target JavaScript optional chaining. Note the semantics may not');
+  console.log('  --optional-chaining      Target JavaScript optional chaining. Note the semantics may not');
   console.log('                           match exactly.');
+  console.log('  --logical-assignment     Use the ES2021 logical assignment operators `&&=`, `||=`,');
+  console.log('                           and `??=`.');
   console.log();
   console.log('EXAMPLES');
   console.log();
