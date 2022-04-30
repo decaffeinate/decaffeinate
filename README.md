@@ -162,9 +162,6 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
   suggestions at the top of the output file.
 - `--no-array-includes`: Do not use `Array.prototype.includes` in generated
   code.
-- `--use-optional-chaining`: Use the upcoming
-  [optional chaining](https://github.com/tc39/proposal-optional-chaining) syntax
-  for operators like `?.` [**NOTE:** this is disabled and has no effect].
 - `--safe-import-function-identifiers`: Comma-separated list of function names
   that may safely be in the `import`/`require` section of the file. All other
   function calls will disqualify later `require`s from being converted to
@@ -180,7 +177,7 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 - `--loose-js-modules`: Allow named exports when converting to JS modules.
 - `--disallow-invalid-constructors`: Give an error when constructors use `this`
   before `super` or omit the `super` call in a subclass.
-- `--optional-chaining`: Do not transpile optional chaining.
+- `--optional-chaining`: Target JavaScript optional chaining. Note the semantics may not match exactly.
 - `--logical-assignment`: Use the ES2021 [logical
   assignment](https://github.com/tc39/proposal-logical-assignment) operators
   `&&=`, `||=`, and `??=`.
