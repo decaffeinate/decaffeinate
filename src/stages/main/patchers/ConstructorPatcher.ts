@@ -29,7 +29,8 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
 
     if (this.expression.body) {
       const linesToInsert = this.getLinesToInsert();
-      this.expression.body.insertStatementsAtIndex(linesToInsert, 0);
+      const insertIndex = this.options.useCS2 ? this.getIndexOfSuperStatement() + 1 : 0;
+      this.expression.body.insertStatementsAtIndex(linesToInsert, insertIndex);
       super.patch(options);
     } else {
       super.patch(options);
