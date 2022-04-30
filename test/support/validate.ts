@@ -68,7 +68,7 @@ function runValidateCase(
 ): void {
   try {
     runValidation(source, expectedOutput, options, skipNodeCheck);
-  } catch (err) {
+  } catch (err: any) {
     if (PatchError.detect(err)) {
       console.error(PatchError.prettyPrint(err));
     }
@@ -108,7 +108,7 @@ function runValidation(source: string, expectedOutput: unknown, options: Options
   const decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
   try {
     assertDeepEqual(decaffeinateOutput, coffeeOutput, 'decaffeinate and coffee output were different.');
-  } catch (err) {
+  } catch (err: any) {
     // add some additional context for debugging
     err.message = `Additional Debug:
 SOURCE

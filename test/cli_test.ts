@@ -30,7 +30,7 @@ function runCliExpectError(argStr: string, stdin: string, expectedStderr: string
   try {
     execSync('./bin/decaffeinate ' + argStr, { input: stdin });
     ok(false, 'Expected the CLI to fail.');
-  } catch (e) {
+  } catch (e: any) {
     equal(e.output[2].toString().trim(), expectedStderr.trim());
   }
 }

@@ -16,7 +16,7 @@ export default function assertError(
   try {
     convert(source, options);
     assert.fail('Expected an error to be thrown');
-  } catch (err) {
+  } catch (err: any) {
     if (PatchError.detect(err)) {
       const patchError = err as PatchError;
       if (patchError.message.includes(expectedErrorText)) {

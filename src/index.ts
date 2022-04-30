@@ -107,7 +107,7 @@ function runStages(initialContent: string, options: Options, stages: Array<Stage
 function runStage(stage: Stage, content: string, options: Options): StageResult {
   try {
     return stage.run(content, options);
-  } catch (err) {
+  } catch (err: any) {
     const patchError = resolveToPatchError(err, content, stage.name);
     if (patchError !== null) {
       throw patchError;
