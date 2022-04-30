@@ -382,7 +382,7 @@ describe('classes', () => {
     });
 
     it('adds to an existing constructor for bound methods before a `super` call when requested', () => {
-      check(
+      checkCS1(
         `
       class A extends B
         a: =>
@@ -401,6 +401,31 @@ describe('classes', () => {
         constructor() {
           this.a = this.a.bind(this);
           super();
+          this.b = 2;
+        }
+      }
+    `
+      );
+
+      checkCS2(
+        `
+      class A extends B
+        a: =>
+          1
+
+        constructor: ->
+          super()
+          this.b = 2;
+    `,
+        `
+      class A extends B {
+        a() {
+          return 1;
+        }
+
+        constructor() {
+          super();
+          this.a = this.a.bind(this);
           this.b = 2;
         }
       }
