@@ -25,7 +25,7 @@ export default function resolveToPatchError<T extends Error>(
 
   if ('pos' in err) {
     // Handle JavaScript parse errors.
-    let { pos } = (err as unknown) as { pos: number };
+    let { pos } = err as unknown as { pos: number };
     if (pos === content.length) {
       pos--;
     }
@@ -34,7 +34,7 @@ export default function resolveToPatchError<T extends Error>(
     // Handle CoffeeScript parse errors.
     const {
       syntaxError: { location },
-    } = (err as unknown) as { syntaxError: SyntaxError };
+    } = err as unknown as { syntaxError: SyntaxError };
     const lineMap = new LinesAndColumns(content);
     const firstIndex = lineMap.indexForLocation({ line: location.first_line, column: location.first_column });
     let lastIndex = lineMap.indexForLocation({ line: location.last_line, column: location.last_column });
