@@ -28,24 +28,24 @@ aliases:
 
 version: 2
 jobs:
-  node-v14-latest:
+  node-v14:
     docker:
       - image: cimg/node:14.19
     <<: *unit_test
     resource_class: large
-  node-v16-latest:
+  node-v16:
     docker:
       - image: cimg/node:16.15
     <<: *unit_test
     resource_class: large
-  node-v17-latest:
+  node-v17:
     docker:
       - image: cimg/node:17.9
     <<: *unit_test
     resource_class: large
   deploy:
     docker:
-      - image: cimg/node:latest
+      - image: cimg/node:lts
     steps:
       - checkout
       - *restore_cache_step
@@ -59,14 +59,14 @@ workflows:
   version: 2
   test-deploy:
     jobs:
-      - node-v14-latest
-      - node-v16-latest
-      - node-v17-latest
+      - node-v14
+      - node-v16
+      - node-v17
       - deploy:
           requires:
-            - node-v14-latest
-            - node-v16-latest
-            - node-v17-latest
+            - node-v14
+            - node-v16
+            - node-v17
           filters:
             branches:
               only: master
