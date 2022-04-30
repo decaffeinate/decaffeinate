@@ -60,6 +60,7 @@ import ModuleSpecifierPatcher from './patchers/ModuleSpecifierPatcher';
 import ModuloOpCompoundAssignOpPatcher from './patchers/ModuloOpCompoundAssignOpPatcher';
 import ModuloOpPatcher from './patchers/ModuloOpPatcher';
 import NewOpPatcher from './patchers/NewOpPatcher';
+import NullishCoalescingCompoundAssignOpPatcher from './patchers/NullishCoalescingCompoundAssignOpPatcher';
 import ObjectInitialiserMemberPatcher from './patchers/ObjectInitialiserMemberPatcher';
 import ObjectInitialiserPatcher from './patchers/ObjectInitialiserPatcher';
 import OfOpPatcher from './patchers/OfOpPatcher';
@@ -223,10 +224,18 @@ export default class MainStage extends TransformCoffeeScriptStage {
         switch ((node as CompoundAssignOp).op) {
           case 'LogicalAndOp':
           case 'LogicalOrOp':
-            return LogicalOpCompoundAssignOpPatcher;
+            if (this.options.logicalAssignment) {
+              return CompoundAssignOpPatcher;
+            } else {
+              return LogicalOpCompoundAssignOpPatcher;
+            }
 
           case 'ExistsOp':
-            return ExistsOpCompoundAssignOpPatcher;
+            if (this.options.logicalAssignment) {
+              return NullishCoalescingCompoundAssignOpPatcher;
+            } else {
+              return ExistsOpCompoundAssignOpPatcher;
+            }
 
           case 'ModuloOp':
             return ModuloOpCompoundAssignOpPatcher;
