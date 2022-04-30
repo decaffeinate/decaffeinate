@@ -347,7 +347,7 @@ export default class NodePatcher {
   withPrettyErrors(body: () => void): void {
     try {
       body();
-    } catch (err) {
+    } catch (err: any) {
       if (!PatcherError.detect(err)) {
         throw this.error(err.message, this.contentStart, this.contentEnd, err);
       } else {

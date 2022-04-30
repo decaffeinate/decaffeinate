@@ -221,7 +221,7 @@ function runWithCode(name: string, code: string, options: CLIOptions): string {
     } else {
       return convert(code, baseOptions).code;
     }
-  } catch (err) {
+  } catch (err: any) {
     if (PatchError.detect(err)) {
       console.error(`${name}: ${PatchError.prettyPrint(err)}`);
       process.exit(1);

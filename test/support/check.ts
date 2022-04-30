@@ -63,7 +63,7 @@ function checkOutput(source: string, expected: string, options: Options): void {
       actual = actual.substr(0, actual.length - 1);
     }
     expect(actual).toBe(expected);
-  } catch (err) {
+  } catch (err: any) {
     if (PatchError.detect(err)) {
       console.error(PatchError.prettyPrint(err));
     }

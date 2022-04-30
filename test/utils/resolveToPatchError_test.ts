@@ -16,7 +16,7 @@ describe('resolveToPatchError', () => {
     try {
       addVariableDeclarations(content, new MagicString(content));
       ok(false, 'Expected an exception to be thrown.');
-    } catch (e) {
+    } catch (e: any) {
       const patchError = resolveToPatchError(e, content, 'testStage');
       if (!patchError) {
         throw new Error('Expected non-null error.');
@@ -41,7 +41,7 @@ describe('resolveToPatchError', () => {
     try {
       DecaffeinateContext.create(content, false);
       ok(false, 'Expected an exception to be thrown.');
-    } catch (e) {
+    } catch (e: any) {
       const patchError = resolveToPatchError(e, content, 'testStage');
       if (!patchError) {
         throw new Error('Expected non-null error.');
