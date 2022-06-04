@@ -1889,9 +1889,9 @@
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
 "@types/mz@^2.7.0":
-  version "2.7.2"
-  resolved "https://registry.yarnpkg.com/@types/mz/-/mz-2.7.2.tgz#48de03aacc98aeb40cfdeb8c58fff9fb8a2d8dfc"
-  integrity sha512-a6E4fuAakzq/uRHEohiYo9M5G+NV33FodRGCU+N4W65CAk6PPJo9KWPH8hxkqiiUgfs8EgUFuKPxclcUEahsRw==
+  version "2.7.4"
+  resolved "https://registry.yarnpkg.com/@types/mz/-/mz-2.7.4.tgz#f9d1535cb5171199b28ae6abd6ec29e856551401"
+  integrity sha512-Zs0imXxyWT20j3Z2NwKpr0IO2LmLactBblNyLua5Az4UHuqOQ02V3jPTgyKwDkuc33/ahw+C3O1PIZdrhFMuQA==
   dependencies:
     "@types/node" "*"
 
