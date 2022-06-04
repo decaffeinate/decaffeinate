@@ -23,8 +23,7 @@ aliases:
           command: 'yarn build'
       - run:
           name: tests
-          # Why `--maxWorkers`? https://vgpena.github.io/jest-circleci/
-          command: 'yarn jest --ci --maxWorkers=2'
+          command: 'yarn test'
       - run:
           name: lint
           command: 'yarn lint'

@@ -211,7 +211,7 @@ To avoid ugly intermediate variables, decaffeinate assumes that these operations
 may be safely repeated. For example, this code prints one of each statement in
 CoffeeScript and two of each statement after decaffeinate.
 
-```
+```coffee
 a = {valueOf: -> console.log 'Called valueOf'}
 Object.defineProperty(a, 'b', {
   get: ->
@@ -230,7 +230,7 @@ identifier" test in the CoffeeScript test suite.
 For example, this code will fail after decaffeinate because `for own` results in
 code using `Object.keys`:
 
-```
+```coffee
 Object = 1
 for own k of {b: 1, c: 2}
   console.log k

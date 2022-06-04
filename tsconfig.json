@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "es5",
+    "target": "es2018",
     "module": "commonjs",
-    "typeRoots": ["node_modules/@types"],
     "declaration": true,
     "lib": ["es2015"],
     "experimentalDecorators": true,
@@ -20,5 +19,5 @@
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "exclude": ["node_modules", "dist/**/*"]
+  "exclude": ["dist"]
 }
