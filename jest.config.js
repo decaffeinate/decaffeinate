@@ -6,4 +6,5 @@ module.exports = {
   modulePathIgnorePatterns: ['<rootDir>/dist'],
   testEnvironment: 'node',
   testMatch: ['<rootDir>/test/**/(*_test|test).ts'],
+  watchPathIgnorePatterns: ['<rootDir>/dist', '<rootDir>/test_fixtures'],
 };
