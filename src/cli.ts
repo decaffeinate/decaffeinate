@@ -7,43 +7,66 @@ import PatchError from './utils/PatchError';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pkg = require('../package');
 
+export interface IO {
+  readonly stdin: NodeJS.ReadableStream;
+  readonly stdout: NodeJS.WritableStream;
+  readonly stderr: NodeJS.WritableStream;
+}
+
 /**
  * Run the script with the user-supplied arguments.
  */
-export default async function run(args: Array<string>): Promise<void> {
-  const options = parseArguments(args);
+export default async function run(
+  args: ReadonlyArray<string>,
+  io: IO = { stdin: process.stdin, stdout: process.stdout, stderr: process.stderr }
+): Promise<number> {
+  const options = parseArguments(args, io);
+
+  if (options.help) {
+    usage(args[0], io.stdout);
+    return 0;
+  }
+
+  if (options.version) {
+    version(io.stdout);
+    return 0;
+  }
 
   if (options.paths.length) {
-    await runWithPaths(options.paths, options);
+    await runWithPaths(options.paths, options, io);
   } else {
-    await runWithStdio(options);
+    await runWithStdio(options, io);
   }
+
+  return 0;
 }
 
 interface CLIOptions {
   paths: Array<string>;
   baseOptions: Options;
   modernizeJS: boolean;
+  version: boolean;
+  help: boolean;
 }
 
-function parseArguments(args: Array<string>): CLIOptions {
+function parseArguments(args: ReadonlyArray<string>, io: IO): CLIOptions {
   const paths = [];
   const baseOptions: Options = {};
   let modernizeJS = false;
+  let help = false;
+  let version = false;
 
-  for (let i = 0; i < args.length; i++) {
+  for (let i = 2; i < args.length; i++) {
     const arg = args[i];
     switch (arg) {
       case '-h':
       case '--help':
-        usage();
-        process.exit(0);
+        help = true;
         break;
 
       case '-v':
       case '--version':
-        version();
-        process.exit(0);
+        version = true;
         break;
 
       case '--use-cs2':
@@ -84,7 +107,7 @@ function parseArguments(args: Array<string>): CLIOptions {
         break;
 
       case '--disable-babel-constructor-workaround':
-        console.warn(arg, 'no longer has any effect as it is the only supported behavior');
+        io.stderr.write(`${arg} no longer has any effect as it is the only supported behavior\n`);
         break;
 
       case '--disallow-invalid-constructors':
@@ -141,7 +164,7 @@ function parseArguments(args: Array<string>): CLIOptions {
 
       default:
         if (arg.startsWith('-')) {
-          console.error(`Error: unrecognized option '${arg}'`);
+          io.stderr.write(`Error: unrecognized option '${arg}'\n`);
           process.exit(1);
         }
         paths.push(arg);
@@ -149,23 +172,23 @@ function parseArguments(args: Array<string>): CLIOptions {
     }
   }
 
-  return { paths, baseOptions, modernizeJS };
+  return { paths, baseOptions, modernizeJS, version, help };
 }
 
 /**
  * Run decaffeinate on the given paths, changing them in place.
  */
-async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<void> {
-  async function processPath(path: string): Promise<void> {
+async function runWithPaths(paths: Array<string>, options: CLIOptions, io: IO): Promise<void> {
+  async function processPath(path: string): Promise<boolean> {
     const info = await stat(path);
     if (info.isDirectory()) {
-      await processDirectory(path);
+      return await processDirectory(path);
     } else {
-      await processFile(path);
+      return await processFile(path);
     }
   }
 
-  async function processDirectory(path: string): Promise<void> {
+  async function processDirectory(path: string): Promise<boolean> {
     const children = await readdir(path);
 
     for (const child of children) {
@@ -173,24 +196,36 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
       const childStat = await stat(childPath);
 
       if (childStat.isDirectory()) {
-        await processDirectory(childPath);
+        if (!(await processDirectory(childPath))) {
+          return false;
+        }
       } else if (options.modernizeJS) {
         if (child.endsWith('.js')) {
-          await processPath(childPath);
+          if (!(await processPath(childPath))) {
+            return false;
+          }
         }
       } else if (child.endsWith('.coffee') || child.endsWith('.litcoffee') || child.endsWith('.coffee.md')) {
-        await processPath(childPath);
+        if (!(await processPath(childPath))) {
+          return false;
+        }
       }
     }
+
+    return true;
   }
 
-  async function processFile(path: string): Promise<void> {
+  async function processFile(path: string): Promise<boolean> {
     const extension = path.endsWith('.coffee.md') ? '.coffee.md' : extname(path);
     const outputPath = join(dirname(path), basename(path, extension)) + '.js';
-    console.log(`${path} → ${outputPath}`);
+    io.stdout.write(`${path} → ${outputPath}\n`);
     const data = await readFile(path, 'utf8');
-    const resultCode = runWithCode(path, data, options);
-    await writeFile(outputPath, resultCode);
+    const resultCode = runWithCode(path, data, options, io);
+    const success = typeof resultCode === 'string';
+    if (success) {
+      await writeFile(outputPath, resultCode);
+    }
+    return success;
   }
 
   for (const path of paths) {
@@ -198,14 +233,17 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions): Promise<
   }
 }
 
-async function runWithStdio(options: CLIOptions): Promise<void> {
-  return new Promise<void>((resolve) => {
+async function runWithStdio(options: CLIOptions, io: IO): Promise<boolean> {
+  return new Promise((resolve) => {
     let data = '';
-    process.stdin.on('data', (chunk) => (data += chunk));
-    process.stdin.on('end', () => {
-      const resultCode = runWithCode('stdin', data, options);
-      process.stdout.write(resultCode);
-      resolve();
+    io.stdin.on('data', (chunk) => (data += chunk));
+    io.stdin.on('end', () => {
+      const resultCode = runWithCode('stdin', data, options, io);
+      const success = typeof resultCode === 'string';
+      if (success) {
+        io.stdout.write(resultCode);
+      }
+      resolve(success);
     });
   });
 }
@@ -213,7 +251,7 @@ async function runWithStdio(options: CLIOptions): Promise<void> {
 /**
  * Run decaffeinate on the given code string and return the resulting code.
  */
-function runWithCode(name: string, code: string, options: CLIOptions): string {
+function runWithCode(name: string, code: string, options: CLIOptions, io: IO): string | undefined {
   const baseOptions = Object.assign({ filename: name }, options.baseOptions);
   try {
     if (options.modernizeJS) {
@@ -223,8 +261,8 @@ function runWithCode(name: string, code: string, options: CLIOptions): string {
     }
   } catch (err: any) {
     if (PatchError.detect(err)) {
-      console.error(`${name}: ${PatchError.prettyPrint(err)}`);
-      process.exit(1);
+      io.stderr.write(`${name}: ${PatchError.prettyPrint(err)}\n`);
+      return undefined;
     }
     throw err;
   }
@@ -233,71 +271,70 @@ function runWithCode(name: string, code: string, options: CLIOptions): string {
 /**
  * Print version
  */
-function version(): void {
-  console.log('%s v%s', pkg.name, pkg.version);
+function version(out: NodeJS.WritableStream): void {
+  out.write(`${pkg.name} v${pkg.version}`);
 }
 
 /**
  * Print usage help.
  */
-function usage(): void {
-  const exe = basename(process.argv[1]);
-  console.log('%s [OPTIONS] PATH [PATH …]', exe);
-  console.log('%s [OPTIONS] < INPUT', exe);
-  console.log();
-  console.log('Move your CoffeeScript source to JavaScript using modern syntax.');
-  console.log();
-  console.log('OPTIONS');
-  console.log();
-  console.log('  -h, --help               Display this help message.');
-  console.log('  --use-cs2                Treat the input as CoffeeScript 2 code. CoffeeScript 2 has');
-  console.log('                           some small breaking changes and differences in behavior');
-  console.log('                           compared with CS1, so decaffeinate assumes CS1 by default');
-  console.log('                           and allows CS2 via this flag.');
-  console.log('  --modernize-js           Treat the input as JavaScript and only run the');
-  console.log('                           JavaScript-to-JavaScript transforms, modifying the file(s)');
-  console.log('                           in-place.');
-  console.log('  --literate               Treat the input file as Literate CoffeeScript.');
-  console.log('  --disable-suggestion-comment');
-  console.log('                           Do not include a comment with followup suggestions at the');
-  console.log('                           top of the output file.');
-  console.log('  --no-array-includes      Do not use Array.prototype.includes in generated code.');
-  console.log('  --use-js-modules         Convert require and module.exports to import and export.');
-  console.log('  --loose-js-modules       Allow named exports when converting to JS modules.');
-  console.log('  --safe-import-function-identifiers');
-  console.log('                           Comma-separated list of function names that may safely be in the ');
-  console.log('                           import/require section of the file. All other function calls ');
-  console.log('                           will disqualify later requires from being converted to imports.');
-  console.log('  --prefer-let             Use let instead of const for most variables in output code.');
-  console.log('  --loose                  Enable all --loose... options.');
-  console.log('  --loose-default-params   Convert CS default params to JS default params.');
-  console.log('  --loose-for-expressions  Do not wrap expression loop targets in Array.from.');
-  console.log('  --loose-for-of           Do not wrap JS for...of loop targets in Array.from.');
-  console.log('  --loose-includes         Do not wrap in Array.from when converting in to includes.');
-  console.log('  --loose-comparison-negation');
-  console.log('                           Allow unsafe simplifications like `!(a > b)` to `a <= b`.');
-  console.log('  --disallow-invalid-constructors');
-  console.log('                           Give an error when constructors use this before super or');
-  console.log('                           omit the super call in a subclass.');
-  console.log('  --optional-chaining      Target JavaScript optional chaining. Note the semantics may not');
-  console.log('                           match exactly.');
-  console.log('  --logical-assignment     Use the ES2021 logical assignment operators `&&=`, `||=`,');
-  console.log('                           and `??=`.');
-  console.log();
-  console.log('EXAMPLES');
-  console.log();
-  console.log('  # Convert a .coffee file to a .js file.');
-  console.log('  $ decaffeinate index.coffee');
-  console.log();
-  console.log('  # Pipe an example from the command-line.');
-  console.log('  $ echo "a = 1" | decaffeinate');
-  console.log();
-  console.log('  # On macOS this may come in handy:');
-  console.log('  $ pbpaste | decaffeinate | pbcopy');
-  console.log();
-  console.log('  # Process everything in a directory.');
-  console.log('  $ decaffeinate src/');
-  console.log();
-  console.log('  # Redirect input from a file.');
-  console.log('  $ decaffeinate < index.coffee');
+function usage(exe: string, out: NodeJS.WritableStream): void {
+  out.write(`${exe} [OPTIONS] PATH [PATH …]\n`);
+  out.write(`${exe} [OPTIONS] < INPUT\n`);
+  out.write('\n');
+  out.write('Move your CoffeeScript source to JavaScript using modern syntax.\n');
+  out.write('\n');
+  out.write('OPTIONS\n');
+  out.write('\n');
+  out.write('  -h, --help               Display this help message.\n');
+  out.write('  --use-cs2                Treat the input as CoffeeScript 2 code. CoffeeScript 2 has\n');
+  out.write('                           some small breaking changes and differences in behavior\n');
+  out.write('                           compared with CS1, so decaffeinate assumes CS1 by default\n');
+  out.write('                           and allows CS2 via this flag.\n');
+  out.write('  --modernize-js           Treat the input as JavaScript and only run the\n');
+  out.write('                           JavaScript-to-JavaScript transforms, modifying the file(s)\n');
+  out.write('                           in-place.\n');
+  out.write('  --literate               Treat the input file as Literate CoffeeScript.\n');
+  out.write('  --disable-suggestion-comment\n');
+  out.write('                           Do not include a comment with followup suggestions at the\n');
+  out.write('                           top of the output file.\n');
+  out.write('  --no-array-includes      Do not use Array.prototype.includes in generated code.\n');
+  out.write('  --use-js-modules         Convert require and module.exports to import and export.\n');
+  out.write('  --loose-js-modules       Allow named exports when converting to JS modules.\n');
+  out.write('  --safe-import-function-identifiers\n');
+  out.write('                           Comma-separated list of function names that may safely be in the \n');
+  out.write('                           import/require section of the file. All other function calls \n');
+  out.write('                           will disqualify later requires from being converted to imports.\n');
+  out.write('  --prefer-let             Use let instead of const for most variables in output code.\n');
+  out.write('  --loose                  Enable all --loose... options.\n');
+  out.write('  --loose-default-params   Convert CS default params to JS default params.\n');
+  out.write('  --loose-for-expressions  Do not wrap expression loop targets in Array.from.\n');
+  out.write('  --loose-for-of           Do not wrap JS for...of loop targets in Array.from.\n');
+  out.write('  --loose-includes         Do not wrap in Array.from when converting in to includes.\n');
+  out.write('  --loose-comparison-negation\n');
+  out.write('                           Allow unsafe simplifications like `!(a > b)` to `a <= b`.\n');
+  out.write('  --disallow-invalid-constructors\n');
+  out.write('                           Give an error when constructors use this before super or\n');
+  out.write('                           omit the super call in a subclass.\n');
+  out.write('  --optional-chaining      Target JavaScript optional chaining. Note the semantics may not\n');
+  out.write('                           match exactly.\n');
+  out.write('  --logical-assignment     Use the ES2021 logical assignment operators `&&=`, `||=`,\n');
+  out.write('                           and `??=`.\n');
+  out.write('\n');
+  out.write('EXAMPLES\n');
+  out.write('\n');
+  out.write('  # Convert a .coffee file to a .js file.\n');
+  out.write('  $ decaffeinate index.coffee\n');
+  out.write('\n');
+  out.write('  # Pipe an example from the command-line.\n');
+  out.write('  $ echo "a = 1" | decaffeinate\n');
+  out.write('\n');
+  out.write('  # On macOS this may come in handy:\n');
+  out.write('  $ pbpaste | decaffeinate | pbcopy\n');
+  out.write('\n');
+  out.write('  # Process everything in a directory.\n');
+  out.write('  $ decaffeinate src/\n');
+  out.write('\n');
+  out.write('  # Redirect input from a file.\n');
+  out.write('  $ decaffeinate < index.coffee\n');
 }
