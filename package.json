@@ -34,7 +34,7 @@
     "build": "script/build",
     "lint": "eslint --ext .ts src script test",
     "lint:fix": "yarn lint --fix",
-    "prepublish": "yarn build",
+    "prepublishOnly": "yarn build",
     "pretest": "yarn build",
     "test": "jest",
     "update-website": "ts-node ./script/update-website.ts"
