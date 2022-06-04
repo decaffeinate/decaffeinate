@@ -580,27 +580,7 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.12.10", "@babel/parser@^7.12.11", "@babel/parser@^7.12.5", "@babel/parser@^7.12.7":
-  version "7.12.11"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.12.11.tgz#9ce3595bcd74bc5c466905e86c535b8b25011e79"
-  integrity sha512-N3UxG+uuF4CMYoNj8AhnbAcJF0PiuJ9KHuy1lQmkYsxTer/MAH9UBNHsBoAX/4s6NvlDD047No8mYVGGzLL4hg==
-
-"@babel/parser@^7.12.13":
-  version "7.12.13"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.12.13.tgz#3ee7be4131fe657ba9143d5c5b3a9f253fdb75e9"
-  integrity sha512-z7n7ybOUzaRc3wwqLpAX8UFIXsrVXUJhtNGBwAnLz6d1KUapqyq7ad2La8gZ6CXhHmGAIL32cop8Tst4/PNWLw==
-
-"@babel/parser@^7.13.0":
-  version "7.13.0"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.13.0.tgz#49b9b6ee213e5634fa80361dae139effef893f78"
-  integrity sha512-w80kxEMFhE3wjMOQkfdTvv0CSdRSJZptIlLhU4eU/coNJeWjduspUFz+IRnBbAq6m5XYBFMoT1TNkk9K9yf10g==
-
-"@babel/parser@^7.14.0":
-  version "7.14.0"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.14.0.tgz#2f0ebfed92bcddcc8395b91f1895191ce2760380"
-  integrity sha512-AHbfoxesfBALg33idaTBVUkLnfXtsgvJREf93p4p0Lwsz4ppfE7g1tpEXVm4vrxUcH4DVhAa9Z1m1zqf9WUC7Q==
-
-"@babel/parser@^7.14.7", "@babel/parser@^7.16.7", "@babel/parser@^7.18.0":
+"@babel/parser@^7.1.0", "@babel/parser@^7.12.10", "@babel/parser@^7.12.11", "@babel/parser@^7.12.13", "@babel/parser@^7.12.7", "@babel/parser@^7.13.0", "@babel/parser@^7.14.0", "@babel/parser@^7.14.7", "@babel/parser@^7.16.3", "@babel/parser@^7.16.7", "@babel/parser@^7.18.0":
   version "7.18.4"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.18.4.tgz#6774231779dd700e0af29f6ad8d479582d7ce5ef"
   integrity sha512-FDge0dFazETFcxGw/EXzOkN8uJp0PC7Qbm+Pe9T+av2zlBpOgunFHkQPPn+eRuClU73JF+98D531UgayY89tow==
@@ -1342,11 +1322,11 @@
     resolve "^1.12.0"
 
 "@codemod/parser@^1.0.3", "@codemod/parser@^1.0.7", "@codemod/parser@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.1.0.tgz#8a8f0bf2f261082cf5b8a39cfafe3d15e2454da6"
-  integrity sha512-MR2oYTZRobGBFTMzo+NmwzgXUT3VgihaLJroZHA34XaF+Nqnw3rqU/Jf08jI/bctVtyZ0FTosZCRz6OKVbttAw==
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@codemod/parser/-/parser-1.2.1.tgz#255aa050bf8174c2c091ac9fcf2d45803932db50"
+  integrity sha512-JJKEESRXSsfbvrKnXaxaOLxrBeCrv0lCEin3MeSepbwQmKb138eGpK22c+M6/mQUuAFYbsGdtJ5eI/mdf4rXww==
   dependencies:
-    "@babel/parser" "^7.12.5"
+    "@babel/parser" "^7.16.3"
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
