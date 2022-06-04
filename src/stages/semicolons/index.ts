@@ -1,5 +1,5 @@
 import { parse } from '@codemod/parser';
-import asi from 'automatic-semicolon-insertion';
+import * as asi from 'automatic-semicolon-insertion';
 import MagicString from 'magic-string';
 import { StageResult } from '../../index';
 import { logger } from '../../utils/debug';
@@ -14,7 +14,7 @@ export default class SemicolonsStage {
       tokens: true,
     });
 
-    const { insertions, removals } = asi(content, ast);
+    const { insertions, removals } = asi.process(content, ast);
 
     insertions.forEach(({ index, content }) => editor.appendLeft(index, content));
     removals.forEach(({ start, end }) => editor.remove(start, end));
