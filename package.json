@@ -35,8 +35,9 @@
     "lint": "eslint --ext .ts src script test",
     "lint:fix": "yarn lint --fix",
     "prepublishOnly": "yarn build",
-    "pretest": "yarn build",
-    "test": "jest",
+    "test": "is-ci test:ci test:watch",
+    "test:ci": "jest --ci --maxWorkers=2",
+    "test:watch": "jest --watch",
     "update-website": "ts-node ./script/update-website.ts"
   },
   "husky": {
@@ -73,6 +74,7 @@
     "decaffeinate-coffeescript2": "2.2.1-patch.5",
     "decaffeinate-parser": "^22.5.15",
     "detect-indent": "^4.0.0",
+    "is-ci-cli": "^2.2.0",
     "lines-and-columns": "^1.1.6",
     "magic-string": "^0.25.7",
     "mz": "^2.7.0",
