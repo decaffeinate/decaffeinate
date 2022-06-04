@@ -178,6 +178,7 @@ decaffeinate could be improved, feel free to file an issue on the [issues] page.
 - `--disallow-invalid-constructors`: Give an error when constructors use `this`
   before `super` or omit the `super` call in a subclass.
 - `--optional-chaining`: Target JavaScript optional chaining. Note the semantics may not match exactly.
+- `--nullish-coalescing`: Target JavaScript [nullish coalescing](https://github.com/tc39/proposal-nullish-coalescing). Note the semantics may not match exactly.
 - `--logical-assignment`: Use the ES2021 [logical
   assignment](https://github.com/tc39/proposal-logical-assignment) operators
   `&&=`, `||=`, and `??=`.
