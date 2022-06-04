@@ -1,11 +1,10 @@
 import { equal, ok } from 'assert';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { copySync } from 'fs-extra';
-
 import stripSharedIndent from '../src/utils/stripSharedIndent';
 
-function runCli(argStr: string, stdin: string, expectedStdout: string): void {
+function runCli(args: ReadonlyArray<string>, stdin: string, expectedStdout: string): void {
   if (stdin[0] === '\n') {
     stdin = stripSharedIndent(stdin);
   }
@@ -13,13 +12,13 @@ function runCli(argStr: string, stdin: string, expectedStdout: string): void {
     expectedStdout = stripSharedIndent(expectedStdout);
   }
 
-  const stdout = execSync('./bin/decaffeinate ' + argStr, {
+  const stdout = execFileSync('./bin/decaffeinate', args, {
     input: stdin,
   }).toString();
   equal(stdout.trim(), expectedStdout.trim());
 }
 
-function runCliExpectError(argStr: string, stdin: string, expectedStderr: string): void {
+function runCliExpectError(args: ReadonlyArray<string>, stdin: string, expectedStderr: string): void {
   if (stdin[0] === '\n') {
     stdin = stripSharedIndent(stdin);
   }
@@ -28,7 +27,7 @@ function runCliExpectError(argStr: string, stdin: string, expectedStderr: string
   }
 
   try {
-    execSync('./bin/decaffeinate ' + argStr, { input: stdin });
+    execFileSync('./bin/decaffeinate', args, { input: stdin });
     ok(false, 'Expected the CLI to fail.');
   } catch (e: any) {
     equal(e.output[2].toString().trim(), expectedStderr.trim());
@@ -37,13 +36,13 @@ function runCliExpectError(argStr: string, stdin: string, expectedStderr: string
 
 describe('decaffeinate CLI', () => {
   it('print current version', () => {
-    runCli('--version', '', 'decaffeinate v0.0.0-development');
-    runCli('-v', '', 'decaffeinate v0.0.0-development');
+    runCli(['--version'], '', 'decaffeinate v0.0.0-development');
+    runCli(['-v'], '', 'decaffeinate v0.0.0-development');
   });
 
   it('accepts a file on stdin', () => {
     runCli(
-      '',
+      [],
       `
       a = require 'a'
       x = 1
@@ -59,7 +58,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --use-cs2 flag', () => {
     runCli(
-      '--use-cs2',
+      ['--use-cs2'],
       `
       a = [...b, c]
     `,
@@ -71,7 +70,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --literate flag', () => {
     runCli(
-      '--literate',
+      ['--literate'],
       `
       This is a literate file.
       
@@ -86,7 +85,7 @@ describe('decaffeinate CLI', () => {
 
   it('keeps imports as commonjs by default', () => {
     runCli(
-      '',
+      [],
       `
       a = require 'a'
     `,
@@ -98,7 +97,7 @@ describe('decaffeinate CLI', () => {
 
   it('treats the --keep-commonjs option as a no-op', () => {
     runCli(
-      '--keep-commonjs',
+      ['--keep-commonjs'],
       `
       a = require 'a'
     `,
@@ -110,7 +109,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --use-js-modules flag', () => {
     runCli(
-      '--use-js-modules',
+      ['--use-js-modules'],
       `
       exports.a = 1
       exports.b = 2
@@ -126,7 +125,7 @@ describe('decaffeinate CLI', () => {
 
   it('treats the --force-default-export flag as an alias for --use-js-modules', () => {
     runCli(
-      '--force-default-export',
+      ['--force-default-export'],
       `
       exports.a = 1
       exports.b = 2
@@ -142,7 +141,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --safe-import-function-identifiers option', () => {
     runCli(
-      '--use-js-modules --safe-import-function-identifiers foo',
+      ['--use-js-modules', '--safe-import-function-identifiers', 'foo'],
       `
       a = require 'a'
       foo()
@@ -162,7 +161,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --loose-js-modules option', () => {
     runCli(
-      '--use-js-modules --loose-js-modules',
+      ['--use-js-modules', '--loose-js-modules'],
       `
       exports.a = 1
       exports.b = 2
@@ -176,7 +175,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --no-array-includes option', () => {
     runCli(
-      '--no-array-includes',
+      ['--no-array-includes'],
       `
       a in b
     `,
@@ -191,7 +190,7 @@ describe('decaffeinate CLI', () => {
 
   it('prefers const with no options specified', () => {
     runCli(
-      '',
+      [],
       `
       a = 1
     `,
@@ -203,7 +202,7 @@ describe('decaffeinate CLI', () => {
 
   it('allows the --prefer-const option, which is a no-op', () => {
     runCli(
-      '--prefer-const',
+      ['--prefer-const'],
       `
       a = 1
     `,
@@ -215,7 +214,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --prefer-let option', () => {
     runCli(
-      '--prefer-let',
+      ['--prefer-let'],
       `
       a = 1
     `,
@@ -227,7 +226,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --loose option', () => {
     runCli(
-      '--loose',
+      ['--loose'],
       `
       f = (x = 1) ->
         unless x < 0
@@ -249,7 +248,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --loose-default-params option', () => {
     runCli(
-      '--loose-default-params',
+      ['--loose-default-params'],
       `
       f = (x = 1) ->
         2
@@ -267,7 +266,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --loose-for-expressions option', () => {
     runCli(
-      '--loose-for-expressions',
+      ['--loose-for-expressions'],
       `
       x = (a + 1 for a in b)
     `,
@@ -279,7 +278,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --loose-for-of option', () => {
     runCli(
-      '--loose-for-of',
+      ['--loose-for-of'],
       `
       for a in b
         c
@@ -294,7 +293,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --loose-includes option', () => {
     runCli(
-      '--loose-includes',
+      ['--loose-includes'],
       `
       a in b
     `,
@@ -306,7 +305,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --loose-comparison-negation option', () => {
     runCli(
-      '--loose-comparison-negation',
+      ['--loose-comparison-negation'],
       `
       unless a > b
         c
@@ -321,7 +320,7 @@ describe('decaffeinate CLI', () => {
 
   it('treats the --disable-babel-constructor-workaround option as a no-op', () => {
     runCli(
-      '--disable-babel-constructor-workaround',
+      ['--disable-babel-constructor-workaround'],
       `
       class A extends B
         constructor: ->
@@ -346,7 +345,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --allow-invalid-constructors option as a no-op', () => {
     runCli(
-      '--allow-invalid-constructors',
+      ['--allow-invalid-constructors'],
       `
       class A extends B
         constructor: ->
@@ -371,7 +370,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --disallow-invalid-constructors option', () => {
     runCliExpectError(
-      '--disallow-invalid-constructors',
+      ['--disallow-invalid-constructors'],
       `
       class A extends B
         constructor: ->
@@ -400,7 +399,7 @@ describe('decaffeinate CLI', () => {
 
   it('enables suggestions by default', () => {
     runCli(
-      '',
+      [],
       `
       a?
     `,
@@ -417,7 +416,7 @@ describe('decaffeinate CLI', () => {
 
   it('respects the --disable-suggestion-comment option', () => {
     runCli(
-      '--disable-suggestion-comment',
+      ['--disable-suggestion-comment'],
       `
       a?
     `,
@@ -429,7 +428,7 @@ describe('decaffeinate CLI', () => {
 
   it('discovers and converts CoffeeScript files when prompted', () => {
     runCli(
-      './test_fixtures',
+      ['./test_fixtures'],
       '',
       `
       test_fixtures/A.coffee → test_fixtures/A.js
@@ -445,7 +444,7 @@ describe('decaffeinate CLI', () => {
 
   it('properly converts an unrecognized extension', () => {
     runCli(
-      './test_fixtures/D.cjsx',
+      ['./test_fixtures/D.cjsx'],
       '',
       `
       ./test_fixtures/D.cjsx → test_fixtures/D.js
@@ -456,7 +455,7 @@ describe('decaffeinate CLI', () => {
 
   it('properly converts an extensionless file', () => {
     runCli(
-      './test_fixtures/E',
+      ['./test_fixtures/E'],
       '',
       `
       ./test_fixtures/E → test_fixtures/E.js
@@ -468,7 +467,7 @@ describe('decaffeinate CLI', () => {
   it('properly modernizes a JS file', () => {
     copySync('./test_fixtures/F.js', './test_fixtures/F.tmp.js');
     runCli(
-      'test_fixtures/F.tmp.js --modernize-js --use-js-modules',
+      ['test_fixtures/F.tmp.js', '--modernize-js', '--use-js-modules'],
       '',
       `
       test_fixtures/F.tmp.js → test_fixtures/F.tmp.js
@@ -485,13 +484,13 @@ describe('decaffeinate CLI', () => {
   });
 
   it('allows --modernize-js on stdin', () => {
-    runCli('--modernize-js', 'var a;', 'let a;');
+    runCli(['--modernize-js'], 'var a;', 'let a;');
   });
 
   it('discovers JS files with --modernize-js specified', () => {
     copySync('./test_fixtures/F.js', './test_fixtures/searchDir/F.js');
     runCli(
-      'test_fixtures/searchDir --modernize-js --use-js-modules',
+      ['test_fixtures/searchDir', '--modernize-js', '--use-js-modules'],
       '',
       `
       test_fixtures/searchDir/F.js → test_fixtures/searchDir/F.js
@@ -509,7 +508,7 @@ describe('decaffeinate CLI', () => {
 
   it('recursively scans directories', () => {
     runCli(
-      'test_fixtures/level1',
+      ['test_fixtures/level1'],
       '',
       `
       test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js 
