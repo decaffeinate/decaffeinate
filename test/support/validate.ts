@@ -1,4 +1,5 @@
 import * as babel from '@babel/core';
+import assert from 'assert';
 import { compile as cs1Compile } from 'decaffeinate-coffeescript';
 import { compile as cs2Compile } from 'decaffeinate-coffeescript2';
 import * as vm from 'vm';
@@ -33,14 +34,17 @@ export interface ValidateOptions {
  */
 export default function validate(
   source: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  expectedOutput?: any | { cs1: any; cs2: any },
+  expectedOutput?: unknown | { cs1: unknown; cs2: unknown },
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
-  const expectedCS1 =
-    expectedOutput && Object.prototype.hasOwnProperty.call(expectedOutput, 'cs1') ? expectedOutput.cs1 : expectedOutput;
-  const expectedCS2 =
-    expectedOutput && Object.prototype.hasOwnProperty.call(expectedOutput, 'cs2') ? expectedOutput.cs2 : expectedOutput;
+  const expectedCS1: unknown =
+    expectedOutput && Object.prototype.hasOwnProperty.call(expectedOutput, 'cs1')
+      ? (expectedOutput as { cs1: unknown }).cs1
+      : expectedOutput;
+  const expectedCS2: unknown =
+    expectedOutput && Object.prototype.hasOwnProperty.call(expectedOutput, 'cs2')
+      ? (expectedOutput as { cs2: unknown }).cs2
+      : expectedOutput;
   runValidateCase(source, expectedCS1, { options: { ...options, useCS2: false }, skipNodeCheck });
   runValidateCase(source, expectedCS2, { options: { ...options, useCS2: true }, skipNodeCheck });
 }
@@ -68,7 +72,8 @@ function runValidateCase(
 ): void {
   try {
     runValidation(source, expectedOutput, options, skipNodeCheck);
-  } catch (err: any) {
+  } catch (err: unknown) {
+    assert(err instanceof Error);
     if (PatchError.detect(err)) {
       console.error(PatchError.prettyPrint(err));
     }
@@ -76,13 +81,11 @@ function runValidateCase(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function runCodeAndExtract(source: string): any {
-  let result = null;
+function runCodeAndExtract(source: string): unknown {
+  let result: unknown = null;
   let numCalls = 0;
   const sandbox = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setResult(r: any): void {
+    setResult(r: unknown): void {
       result = r;
       numCalls++;
     },
@@ -108,7 +111,8 @@ function runValidation(source: string, expectedOutput: unknown, options: Options
   const decaffeinateOutput = runCodeAndExtract(decaffeinateES5);
   try {
     assertDeepEqual(decaffeinateOutput, coffeeOutput, 'decaffeinate and coffee output were different.');
-  } catch (err: any) {
+  } catch (err: unknown) {
+    assert(err instanceof Error);
     // add some additional context for debugging
     err.message = `Additional Debug:
 SOURCE

@@ -77,7 +77,7 @@ export default class ClassPatcher extends NodePatcher {
       if (name) {
         // `A.B` → `A.B = class B`
         //             ^^^^^^^^^^
-        this.insert(this.nameAssignee.outerEnd, ` = class ${this.getName()}`);
+        this.insert(this.nameAssignee.outerEnd, ` = class ${name}`);
       } else {
         // `A[0]` → `A[0] = class`
         //               ^^^^^^^^

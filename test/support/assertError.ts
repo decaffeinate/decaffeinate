@@ -16,14 +16,14 @@ export default function assertError(
   try {
     convert(source, options);
     assert.fail('Expected an error to be thrown');
-  } catch (err: any) {
+  } catch (err: unknown) {
+    assert(err instanceof Error);
     if (PatchError.detect(err)) {
-      const patchError = err as PatchError;
-      if (patchError.message.includes(expectedErrorText)) {
+      if (err.message.includes(expectedErrorText)) {
         return;
       }
 
-      assert.equal(patchError.message, expectedErrorText, `patch failed with code: ${patchError.source}`);
+      assert.equal(err.message, expectedErrorText, `patch failed with code: ${err.source}`);
     }
     throw err;
   }

@@ -13,7 +13,7 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
   const blacklistedProps = ['locationData'];
   // Show the non-node children first.
   for (const key of Object.keys(node)) {
-    const value = node[key];
+    const value = node[key as keyof typeof node];
     if (shouldTraverse(value) || blacklistedProps.indexOf(key) !== -1) {
       continue;
     }
@@ -28,7 +28,7 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
 
   // Then show the node children.
   for (const key of Object.keys(node)) {
-    const value = node[key];
+    const value = node[key as keyof typeof node];
     if (!shouldTraverse(value)) {
       continue;
     }
@@ -41,16 +41,16 @@ function formatAstNodeLines(node: CS1Base | CS2Base, context: CodeContext): Arra
         if (Array.isArray(child)) {
           propLines.push(`  [`);
           for (const grandchild of child) {
-            propLines.push(...formatAstNodeLines(grandchild, context).map((s) => '    ' + s));
+            propLines.push(...formatAstNodeLines(grandchild as CS1Base | CS2Base, context).map((s) => '    ' + s));
           }
           propLines.push(`  ]`);
         } else {
-          propLines.push(...formatAstNodeLines(child, context).map((s) => '  ' + s));
+          propLines.push(...formatAstNodeLines(child as unknown as CS1Base | CS2Base, context).map((s) => '  ' + s));
         }
       }
       propLines.push(`]`);
     } else {
-      const childLines = formatAstNodeLines(value, context);
+      const childLines = formatAstNodeLines(value as unknown as CS1Base | CS2Base, context);
       childLines[0] = `${key}: ${childLines[0]}`;
       propLines.push(...childLines);
     }

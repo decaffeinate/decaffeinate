@@ -23,6 +23,7 @@ import resolveToPatchError from './utils/resolveToPatchError';
 export { default as run } from './cli';
 import { resolveOptions, Options } from './options';
 import notNull from './utils/notNull';
+import assert from 'assert';
 export { PatchError };
 
 export interface ConversionResult {
@@ -107,7 +108,8 @@ function runStages(initialContent: string, options: Options, stages: Array<Stage
 function runStage(stage: Stage, content: string, options: Options): StageResult {
   try {
     return stage.run(content, options);
-  } catch (err: any) {
+  } catch (err: unknown) {
+    assert(err instanceof Error);
     const patchError = resolveToPatchError(err, content, stage.name);
     if (patchError !== null) {
       throw patchError;

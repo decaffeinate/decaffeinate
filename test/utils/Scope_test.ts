@@ -44,65 +44,67 @@ describe('scope', () => {
     const scope = new Scope(containerNode);
 
     scope.processNode(statement('a = 1'));
-    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope.inspect()}`);
 
     scope.processNode(statement('{b, c} = this'));
-    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
-    ok(scope.getBinding('c'), `\`c\` should be bound in: ${scope}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope.inspect()}`);
+    ok(scope.getBinding('c'), `\`c\` should be bound in: ${scope.inspect()}`);
   });
 
   it('processes functions by binding all its parameters', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('(a, b) ->'));
-    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
-    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope.inspect()}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope.inspect()}`);
   });
 
   it('processes bound functions by binding all its parameters', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('(a, b) =>'));
-    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
-    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope.inspect()}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope.inspect()}`);
   });
 
   it('processes functions with default parameters', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('(a=0) ->'));
-    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope.inspect()}`);
   });
 
   it('processes functions with rest parameters', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('(a...) ->'));
-    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope.inspect()}`);
   });
 
   it('processes functions with destructured object parameters', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('({a, b}) ->'));
-    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
-    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope.inspect()}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope.inspect()}`);
   });
 
   it('processes functions with destructured array parameters', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('([a, b]) ->'));
-    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope}`);
-    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope}`);
+    ok(scope.getBinding('a'), `\`a\` should be bound in: ${scope.inspect()}`);
+    ok(scope.getBinding('b'), `\`b\` should be bound in: ${scope.inspect()}`);
   });
 
   it('processes for-of loops by binding key and value assignees', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('for key, {a, b, c: [d, e]} of object\n  key'));
     ['key', 'a', 'b', 'd', 'e'].forEach((name) =>
-      ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`)
+      ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope.inspect()}`)
     );
   });
 
   it('processes for-in loops by binding value assignees', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('for [a, {b, c}, d] in array\n  a'));
-    ['a', 'b', 'c', 'd'].forEach((name) => ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope}`));
+    ['a', 'b', 'c', 'd'].forEach((name) =>
+      ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope.inspect()}`)
+    );
   });
 
   describe('claimFreeBinding', () => {

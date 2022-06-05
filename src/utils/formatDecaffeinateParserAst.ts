@@ -33,7 +33,7 @@ function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
   }
 
   for (const childProp of childPropNames) {
-    const value = node[childProp];
+    const value = node[childProp as keyof Node];
     if (value === null) {
       propLines.push(`${childProp}: null`);
     } else if (Array.isArray(value) && value.length === 0) {
@@ -41,11 +41,11 @@ function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
     } else if (Array.isArray(value)) {
       propLines.push(`${childProp}: [`);
       for (const child of value) {
-        propLines.push(...formatAstNodeLines(child, context).map((s) => '  ' + s));
+        propLines.push(...formatAstNodeLines(child as Node, context).map((s) => '  ' + s));
       }
       propLines.push(`]`);
     } else {
-      const childLines = formatAstNodeLines(value, context);
+      const childLines = formatAstNodeLines(value as Node, context);
       childLines[0] = `${childProp}: ${childLines[0]}`;
       propLines.push(...childLines);
     }

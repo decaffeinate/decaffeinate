@@ -52,7 +52,7 @@ describe('string integration', function (): void {
   for (const quoteTest of quotes) {
     const [quote, quoteName] = quoteTest;
     it(
-      quoteName + ' two line assignment test (' + twoLineTests.length + ' permutations)',
+      `${quoteName} two line assignment test (${twoLineTests.length} permutations)`,
       () => {
         for (const string of twoLineTests) {
           runAssignmentTest(quote, string);
@@ -62,7 +62,7 @@ describe('string integration', function (): void {
     );
 
     it(
-      quoteName + ' two line function test (' + twoLineTests.length + ' permutations)',
+      `${quoteName} two line function test (${twoLineTests.length} permutations)`,
       () => {
         for (const string of twoLineTests) {
           runFunctionTest(quote, string);
@@ -72,7 +72,7 @@ describe('string integration', function (): void {
     );
 
     it(
-      quoteName + ' three line assignment test (' + threeLineTests.length + ' permutations)',
+      `${quoteName} three line assignment test (${threeLineTests.length} permutations)`,
       () => {
         for (const string of threeLineTests) {
           runAssignmentTest(quote, string);
@@ -82,7 +82,7 @@ describe('string integration', function (): void {
     );
 
     it(
-      quoteName + ' three line function test (' + threeLineTests.length + ' permutations)',
+      `${quoteName} three line function test (${threeLineTests.length} permutations)`,
       () => {
         for (const string of threeLineTests) {
           runFunctionTest(quote, string);

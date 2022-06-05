@@ -216,13 +216,11 @@ export default class AssignOpPatcher extends NodePatcher {
       }
 
       const assignees = patcher.members;
-      let hasSeenExpansion = false;
-      let lengthCode = null;
+      let lengthCode: string | null = null;
       const assignments = [];
       for (const [i, assignee] of assignees.entries()) {
         let valueCode;
         if (assignee instanceof ExpansionPatcher || assignee instanceof SpreadPatcher) {
-          hasSeenExpansion = true;
           if (assignee instanceof SpreadPatcher && i < assignees.length - 1) {
             lengthCode = this.claimFreeBinding('adjustedLength');
             assignments.push(`${lengthCode} = Math.max(${ref}.length, ${assignees.length - 1})`);
@@ -230,7 +228,7 @@ export default class AssignOpPatcher extends NodePatcher {
             lengthCode = `${ref}.length`;
           }
           valueCode = `${ref}.slice(${i}, ${lengthCode} - ${assignees.length - i - 1})`;
-        } else if (hasSeenExpansion) {
+        } else if (typeof lengthCode === 'string') {
           valueCode = `${ref}[${lengthCode} - ${assignees.length - i}]`;
         } else {
           valueCode = `${ref}[${i}]`;
@@ -260,8 +258,7 @@ export default class AssignOpPatcher extends NodePatcher {
             .join(', ');
           assignments.push(...this.generateAssignments(member, `${helper}(${ref}, [${omittedKeysCode}])`, false));
         } else {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          throw this.error(`Unexpected object initializer member: ${(member as any).node.type}`);
+          throw this.error(`Unexpected object initializer member: ${(member as NodePatcher).node.type}`);
         }
       }
       return assignments;

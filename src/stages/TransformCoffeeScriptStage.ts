@@ -64,13 +64,13 @@ export default class TransformCoffeeScriptStage {
     }
 
     const children: Array<ChildType> = node.getChildNames().map((name) => {
-      const child = node[name];
+      const child = node[name as keyof typeof node];
       if (!child) {
         return null;
       } else if (Array.isArray(child)) {
-        return child.map((item) => (item ? this.patcherForNode(item, constructor, name) : null));
+        return child.map((item) => (item ? this.patcherForNode(item as Node, constructor, name) : null));
       } else {
-        return this.patcherForNode(child, constructor, name);
+        return this.patcherForNode(child as Node, constructor, name);
       }
     });
 

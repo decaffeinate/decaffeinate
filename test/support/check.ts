@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { convert } from '../../src/index';
 import { Options } from '../../src/options';
 import PatchError from '../../src/utils/PatchError';
@@ -63,7 +64,8 @@ function checkOutput(source: string, expected: string, options: Options): void {
       actual = actual.substr(0, actual.length - 1);
     }
     expect(actual).toBe(expected);
-  } catch (err: any) {
+  } catch (err: unknown) {
+    assert(err instanceof Error);
     if (PatchError.detect(err)) {
       console.error(PatchError.prettyPrint(err));
     }

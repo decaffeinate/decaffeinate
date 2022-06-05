@@ -15,10 +15,10 @@ export default function getLatestVersion(packageName: string): Promise<string> {
       response.on('data', (chunk) => (body += chunk));
       response.on('end', () => {
         if (response.statusCode !== 200) {
-          reject(new Error(`unable to get latest version (code=${response.statusCode}): ${body}`));
+          reject(new Error(`unable to get latest version (code=${response.statusCode as number}): ${body}`));
         }
 
-        const packageInfo = JSON.parse(body);
+        const packageInfo = JSON.parse(body) as { 'dist-tags': { latest: string } };
         resolve(packageInfo['dist-tags']['latest']);
       });
     }).on('error', reject);
