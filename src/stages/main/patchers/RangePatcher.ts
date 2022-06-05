@@ -79,7 +79,7 @@ export default class RangePatcher extends BinaryOpPatcher {
 
     // `__range__(a, b]` → `__range__(a, b, true)`
     //                ^                   ^^^^^^
-    this.overwrite(this.right.outerEnd, this.contentEnd, `, ${this.isInclusive()})`);
+    this.overwrite(this.right.outerEnd, this.contentEnd, `, ${JSON.stringify(this.isInclusive())})`);
   }
 
   /**

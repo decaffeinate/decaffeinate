@@ -1,5 +1,5 @@
 import addVariableDeclarations from 'add-variable-declarations';
-import { ok, strictEqual } from 'assert';
+import assert, { ok, strictEqual } from 'assert';
 import MagicString from 'magic-string';
 
 import DecaffeinateContext from '../../src/utils/DecaffeinateContext';
@@ -16,7 +16,8 @@ describe('resolveToPatchError', () => {
     try {
       addVariableDeclarations(content, new MagicString(content));
       ok(false, 'Expected an exception to be thrown.');
-    } catch (e: any) {
+    } catch (e: unknown) {
+      assert(e instanceof Error);
       const patchError = resolveToPatchError(e, content, 'testStage');
       if (!patchError) {
         throw new Error('Expected non-null error.');
@@ -41,7 +42,8 @@ describe('resolveToPatchError', () => {
     try {
       DecaffeinateContext.create(content, false);
       ok(false, 'Expected an exception to be thrown.');
-    } catch (e: any) {
+    } catch (e: unknown) {
+      assert(e instanceof Error);
       const patchError = resolveToPatchError(e, content, 'testStage');
       if (!patchError) {
         throw new Error('Expected non-null error.');

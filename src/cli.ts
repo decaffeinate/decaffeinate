@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { readdir, readFile, stat, writeFile } from 'mz/fs';
 import { basename, dirname, extname, join } from 'path';
 import { convert, modernizeJS } from './index';
@@ -5,7 +6,7 @@ import { Options } from './options';
 import PatchError from './utils/PatchError';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const pkg = require('../package');
+const pkg = require('../package') as { name: string; version: string };
 
 export interface IO {
   readonly stdin: NodeJS.ReadableStream;
@@ -263,7 +264,8 @@ function runWithCode(name: string, code: string, options: CLIOptions, io: IO): s
     } else {
       return convert(code, baseOptions).code;
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
+    assert(err instanceof Error);
     if (PatchError.detect(err)) {
       io.stderr.write(`${name}: ${PatchError.prettyPrint(err)}\n`);
       return undefined;

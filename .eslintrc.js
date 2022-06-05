@@ -1,8 +1,16 @@
 module.exports = {
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:jest/recommended', 'prettier'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:jest/recommended',
+    'prettier',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     sourceType: 'module',
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json'],
   },
   env: {
     node: true,
@@ -12,6 +20,7 @@ module.exports = {
   reportUnusedDisableDirectives: true,
   rules: {
     '@typescript-eslint/array-type': ['error', { default: 'generic' }],
+    '@typescript-eslint/await-thenable': 'error',
     '@typescript-eslint/explicit-member-accessibility': 'off',
     '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
     '@typescript-eslint/no-parameter-properties': 'off',

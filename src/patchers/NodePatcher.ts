@@ -1,3 +1,4 @@
+import assert from 'assert';
 import { SourceType } from 'coffee-lex';
 import SourceToken from 'coffee-lex/dist/SourceToken';
 import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
@@ -347,7 +348,8 @@ export default class NodePatcher {
   withPrettyErrors(body: () => void): void {
     try {
       body();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      assert(err instanceof Error);
       if (!PatcherError.detect(err)) {
         throw this.error(err.message, this.contentStart, this.contentEnd, err);
       } else {
@@ -432,7 +434,7 @@ export default class NodePatcher {
    */
   insert(index: number, content: string): void {
     if (typeof index !== 'number') {
-      throw new Error(`cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`);
+      throw new Error(`cannot insert ${JSON.stringify(content)} at non-numeric index ${index as number}`);
     }
     this.log(
       'INSERT',
@@ -457,7 +459,7 @@ export default class NodePatcher {
    */
   prependLeft(index: number, content: string): void {
     if (typeof index !== 'number') {
-      throw new Error(`cannot insert ${JSON.stringify(content)} at non-numeric index ${index}`);
+      throw new Error(`cannot insert ${JSON.stringify(content)} at non-numeric index ${index as number}`);
     }
     this.log(
       'PREPEND LEFT',
@@ -589,7 +591,7 @@ export default class NodePatcher {
       throw this.error(`cannot remove non-numeric range [${start}, ${end})`);
     }
     if (typeof index !== 'number') {
-      throw this.error(`cannot move to non-numeric index: ${index}`);
+      throw this.error(`cannot move to non-numeric index: ${index as number}`);
     }
     this.log(
       'MOVE',

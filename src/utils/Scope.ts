@@ -35,7 +35,7 @@ export default class Scope {
   private innerClosureModifications: { [key: string]: boolean };
 
   constructor(readonly containerNode: Node, readonly parent: Scope | null = null) {
-    this.bindings = Object.create(parent ? parent.bindings : {});
+    this.bindings = Object.create(parent ? parent.bindings : {}) as Bindings;
     this.modificationsAfterDeclaration = {};
     this.innerClosureModifications = {};
   }

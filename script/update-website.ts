@@ -3,6 +3,7 @@ import { readFile } from 'mz/fs';
 import { join } from 'path';
 import getLatestVersion from './getLatestVersion';
 import type Package from '../package.json';
+import assert from 'assert';
 
 let commit = true;
 
@@ -21,7 +22,7 @@ for (let i = 2; i < process.argv.length; i++) {
 
 async function pkg(): Promise<typeof Package> {
   const content = await readFile(join(__dirname, '../package.json'), { encoding: 'utf8' });
-  return JSON.parse(content);
+  return JSON.parse(content) as typeof Package;
 }
 
 async function configureGithubRemote(name: string, project: string): Promise<void> {
@@ -76,7 +77,7 @@ async function updateWebsite(): Promise<void> {
   await run('git', ['reset', '--hard', 'website-master']);
 
   const websitePackage = await pkg();
-  const currentVersion = websitePackage['devDependencies']['decaffeinate'];
+  const currentVersion = websitePackage['devDependencies']['decaffeinate'] as string;
 
   if (currentVersion === latestVersion) {
     console.log(`Already using decaffeinate v${latestVersion}, skipping install.`);
@@ -107,6 +108,7 @@ async function updateWebsite(): Promise<void> {
 }
 
 updateWebsite().catch((err) => {
+  assert(err instanceof Error);
   console.error(err.stack);
   process.exit(1);
 });
