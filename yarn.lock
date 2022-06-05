@@ -2193,10 +2193,10 @@ astral-regex@^2.0.0:
   resolved "https://registry.yarnpkg.com/astral-regex/-/astral-regex-2.0.0.tgz#483143c567aeed4785759c0865786dc77d7d2e31"
   integrity sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==
 
-automatic-semicolon-insertion@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/automatic-semicolon-insertion/-/automatic-semicolon-insertion-3.0.0.tgz#3176a0947231ce32e6df6a9b3d2aac1cb8d33c1f"
-  integrity sha512-SqLDJ45I4vK4cboFuaksCnI+c3D7HBLcChXmFfgxUwUDgHz/k+k5Z0V7lBWb55hIpvNcRQ9M61YNZUx5qNDgSA==
+automatic-semicolon-insertion@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/automatic-semicolon-insertion/-/automatic-semicolon-insertion-3.0.2.tgz#3ea2cbfb4c3337696ec18dd7824955baa6a13a22"
+  integrity sha512-UMJH1FWsV/FFHGgcLy09BBss1yZj3mNz/bwNCZ164hlt6SyBL/cwMqbkzmJfnLpFhFm64A+sAfkW2lb/vcf7oA==
   dependencies:
     "@babel/traverse" "^7.18.2"
     "@babel/types" "^7.18.4"

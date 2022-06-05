@@ -68,7 +68,7 @@
     "@resugar/codemod-objects-shorthand": "^1.0.1",
     "@resugar/codemod-strings-template": "^1.0.1",
     "add-variable-declarations": "^4.0.7",
-    "automatic-semicolon-insertion": "^3.0.0",
+    "automatic-semicolon-insertion": "^3.0.2",
     "coffee-lex": "^9.1.5",
     "decaffeinate-coffeescript": "1.12.7-patch.3",
     "decaffeinate-coffeescript2": "2.2.1-patch.5",
