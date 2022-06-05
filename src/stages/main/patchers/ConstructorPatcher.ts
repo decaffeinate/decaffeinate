@@ -84,7 +84,7 @@ export default class ConstructorPatcher extends ObjectBodyMemberPatcher {
 
     // Any bindings would ideally go before the super call, so if there are any,
     // we'll need this before super.
-    if (this.getBindings().length > 0) {
+    if (this.getBindings().length > 0 && !this.options.useCS2) {
       return 'Cannot automatically convert a subclass that uses bound methods.';
     }
 
