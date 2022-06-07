@@ -1,32 +1,43 @@
 aliases:
+  # Edit this comment somehow in order to invalidate the CircleCI cache.
+  # Since the contents of this file affect the cache key, editing only a
+  # comment will invalidate the cache without changing the behavior.
   restore_cache_step: &restore_cache_step
     restore_cache:
-      key: dependency-cache-{{ checksum "yarn.lock" }}
+      key:
+        dotcache-cache-{{checksum ".circleci/config.yml" }}-{{ checksum
+        "pnpm-lock.yaml" }}
   save_cache_step: &save_cache_step
     save_cache:
-      key: dependency-cache-{{ checksum "yarn.lock" }}
+      key:
+        dotcache-cache-{{checksum ".circleci/config.yml" }}-{{ checksum
+        "pnpm-lock.yaml" }}
       paths:
-        - ./node_modules
+        - ~/.pnpm-store
   install_dependencies_step: &install_dependencies_step
     run:
       name: install-dependencies
-      command: yarn install
+      command: pnpm install --frozen-lockfile
 
   unit_test: &unit_test
     steps:
+      - run:
+          name: Install pnpm
+          command: |
+            curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm
       - checkout
       - *restore_cache_step
       - *install_dependencies_step
       - *save_cache_step
       - run:
           name: build
-          command: 'yarn build'
+          command: 'pnpm build'
       - run:
           name: tests
-          command: 'yarn test'
+          command: 'pnpm test'
       - run:
           name: lint
-          command: 'yarn lint'
+          command: 'pnpm lint'
 
 version: 2
 jobs:
@@ -55,7 +66,7 @@ jobs:
       - *save_cache_step
       - run:
           name: Publish package
-          command: 'yarn install && yarn build && npx semantic-release && yarn update-website'
+          command: 'pnpm install --frozen-lockfile && pnpm build && npx semantic-release && pnpm update-website'
 
 workflows:
   version: 2

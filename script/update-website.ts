@@ -83,13 +83,13 @@ async function updateWebsite(): Promise<void> {
     console.log(`Already using decaffeinate v${latestVersion}, skipping install.`);
   } else {
     console.log(`${currentVersion} != ${latestVersion}, installing decaffeinate v${latestVersion}…`);
-    const args = ['add', '--dev', '--exact', `decaffeinate@${latestVersion}`];
+    const args = ['install', '--save-dev', '--save-exact', `decaffeinate@${latestVersion}`];
 
     if (decaffeinateRegistry) {
       args.unshift('--registry', decaffeinateRegistry);
     }
 
-    await run('yarn', args);
+    await run('pnpm', args);
 
     if (await hasChanges()) {
       if (commit) {

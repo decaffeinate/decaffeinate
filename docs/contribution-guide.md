@@ -10,13 +10,13 @@ come in, and this document will explain how to help.
 ```
 $ git clone https://github.com/decaffeinate/decaffeinate.git
 $ cd decaffeinate
-$ npm install
+$ pnpm install
 ```
 
 Run the tests to make sure everything works as expected:
 
 ```
-$ npm test
+$ pnpm test
 ```
 
 ## How is decaffeinate structured?
@@ -38,7 +38,7 @@ For example, to log all the edits made by the `BlockPatcher` you can set
 `DEBUG:BlockPatcher` to `1`, like so:
 
 ```
-$ env 'DEBUG:BlockPatcher=1' npm test
+$ env 'DEBUG:BlockPatcher=1' pnpm test
 ```
 
 To enable all loggers, use `DEBUG:*=1`. To log within a patcher, use the `log`
