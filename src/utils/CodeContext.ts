@@ -1,4 +1,4 @@
-import LinesAndColumns from 'lines-and-columns';
+import { LinesAndColumns } from 'lines-and-columns';
 
 export default class CodeContext {
   readonly linesAndColumns: LinesAndColumns;

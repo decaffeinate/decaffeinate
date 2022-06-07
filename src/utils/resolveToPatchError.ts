@@ -1,4 +1,4 @@
-import LinesAndColumns from 'lines-and-columns';
+import { LinesAndColumns } from 'lines-and-columns';
 import PatchError from './PatchError';
 
 interface SyntaxError {
