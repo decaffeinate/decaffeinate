@@ -2312,27 +2312,27 @@ debug@^4.1.0, debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   dependencies:
     ms "2.1.2"
 
-decaffeinate-coffeescript2@2.2.1-patch.5:
+decaffeinate-coffeescript2@2.2.1-patch.5, decaffeinate-coffeescript2@^2.2.1-patch.5:
   version "2.2.1-patch.5"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript2/-/decaffeinate-coffeescript2-2.2.1-patch.5.tgz#016ff1e967812d42bbfe270faa63b77681d2d7df"
   integrity sha512-VlI2TQNRj9U/wifgs2kB+LzzfhMkrJAW7RlLWY8yZSafM3O2HaTHzpZE4mDRfEnioAaD/SV/FCuCQ73vCJnrVw==
 
-decaffeinate-coffeescript@1.12.7-patch.3:
+decaffeinate-coffeescript@1.12.7-patch.3, decaffeinate-coffeescript@^1.12.7-patch.3:
   version "1.12.7-patch.3"
   resolved "https://registry.yarnpkg.com/decaffeinate-coffeescript/-/decaffeinate-coffeescript-1.12.7-patch.3.tgz#ae261022a35dc42dd9a0bc2c241717d5a23f8e67"
   integrity sha512-4NshbupYgQsVm/jOosp/nen1MWi43i1/z0I+F1JQQ8sNpS6SvvJWYwMayfuYkE/c/5mK3ISWu2H9OyPZYwtMLg==
 
-decaffeinate-parser@^22.5.15:
-  version "22.5.15"
-  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.15.tgz#a6cc562546e34ba7ed7b3cf2af56ae8a73f5b91a"
-  integrity sha512-c7cqxeL77vAUZOBVQ4MzpESMqOCfNvYtJ7vW7wpKWGc4ux3L2QI/CcpR5VWt/ovMDz9CfhycTIgXqC2+GmjG2A==
+decaffeinate-parser@^22.5.17:
+  version "22.5.17"
+  resolved "https://registry.yarnpkg.com/decaffeinate-parser/-/decaffeinate-parser-22.5.17.tgz#b37a80c3184bd886afa7ac37ca051b3fab6bdac1"
+  integrity sha512-LilxxRs4QgshiUkcSZhbw+0WkaOBRRpyRS2pWRLN6ut/PoqDTxjVV/MCGt0JMlmi0eFppvxgt1g4b1XptZ5wBA==
   dependencies:
-    "@babel/types" "^7.6.1"
-    "@codemod/parser" "^1.0.3"
+    "@babel/types" "^7.18.4"
+    "@codemod/parser" "^1.2.1"
     coffee-lex "^9.1.5"
-    decaffeinate-coffeescript "1.12.7-patch.3"
-    decaffeinate-coffeescript2 "2.2.1-patch.5"
-    lines-and-columns "^1.1.6"
+    decaffeinate-coffeescript "^1.12.7-patch.3"
+    decaffeinate-coffeescript2 "^2.2.1-patch.5"
+    lines-and-columns "^2.0.3"
 
 dedent@^0.7.0:
   version "0.7.0"
@@ -3678,6 +3678,11 @@ lilconfig@2.0.5:
 lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
+
+lines-and-columns@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-2.0.3.tgz#b2f0badedb556b747020ab8ea7f0373e22efac1b"
+  integrity sha512-cNOjgCnLB+FnvWWtyRTzmB3POJ+cXxTA81LoW7u8JdmhfXzriropYwpjShnz1QLLWsQwY7nIxoDmcPTwphDK9w==
 
 lint-staged@^13.0.0:
   version "13.0.0"

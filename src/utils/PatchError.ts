@@ -1,4 +1,4 @@
-import LinesAndColumns from 'lines-and-columns';
+import { LinesAndColumns } from 'lines-and-columns';
 import printTable, { Column } from './printTable';
 
 export default class PatchError extends Error {
