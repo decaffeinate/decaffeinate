@@ -1986,11 +1986,10 @@ astral-regex@^2.0.0:
   integrity sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==
 
 automatic-semicolon-insertion@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/automatic-semicolon-insertion/-/automatic-semicolon-insertion-3.0.2.tgz#3ea2cbfb4c3337696ec18dd7824955baa6a13a22"
-  integrity sha512-UMJH1FWsV/FFHGgcLy09BBss1yZj3mNz/bwNCZ164hlt6SyBL/cwMqbkzmJfnLpFhFm64A+sAfkW2lb/vcf7oA==
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/automatic-semicolon-insertion/-/automatic-semicolon-insertion-3.0.6.tgz#9dbab96446ef39e74f050e16203661d8986a3622"
+  integrity sha512-M/+n8XFfrGzjgjXm+zzaCEy9nqiM+YkxQUN/P8Kfdu2i9FPvix7ece4B9kBN8Ca76UYiBJRQ+5u9DlLa7ownsA==
   dependencies:
-    "@babel/traverse" "^7.18.2"
     "@babel/types" "^7.18.4"
 
 babel-jest@^28.1.0:
