@@ -18,13 +18,15 @@ aliases:
     run:
       name: install-dependencies
       command: pnpm install --frozen-lockfile
+  install_pnpm: &install_pnpm
+    run:
+      name: Install pnpm
+      command: |
+        curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm
 
   unit_test: &unit_test
     steps:
-      - run:
-          name: Install pnpm
-          command: |
-            curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm
+      - *install_pnpm
       - checkout
       - *restore_cache_step
       - *install_dependencies_step
@@ -60,6 +62,7 @@ jobs:
     docker:
       - image: cimg/node:lts
     steps:
+      - *install_pnpm
       - checkout
       - *restore_cache_step
       - *install_dependencies_step
