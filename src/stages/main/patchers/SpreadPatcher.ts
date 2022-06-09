@@ -1,4 +1,4 @@
-import SourceType from 'coffee-lex/dist/SourceType';
+import { SourceType } from 'coffee-lex';
 import { Identifier } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import { REMOVE_ARRAY_FROM } from '../../../suggestions';

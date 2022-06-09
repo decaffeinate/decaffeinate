@@ -1,6 +1,6 @@
 import { SourceType } from 'coffee-lex';
 
-import SourceToken from 'coffee-lex/dist/SourceToken';
+import { SourceToken } from 'coffee-lex';
 import { CSXElement } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext } from '../../../patchers/types';
 import normalizeListItem from '../../../utils/normalizeListItem';

@@ -1,4 +1,4 @@
-import SourceType from 'coffee-lex/dist/SourceType';
+import { SourceType } from 'coffee-lex';
 import { PatcherContext } from '../../../patchers/types';
 import normalizeListItem from '../../../utils/normalizeListItem';
 import NodePatcher from './../../../patchers/NodePatcher';

@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { SourceTokenListIndex } from 'coffee-lex';
 import { traverse } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import SharedBlockPatcher from '../../../patchers/SharedBlockPatcher';

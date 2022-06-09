@@ -1,4 +1,4 @@
-import lex from 'coffee-lex';
+import { lex } from 'coffee-lex';
 import { nodes as getCoffee1Nodes, tokens as getCoffee1Tokens } from 'decaffeinate-coffeescript';
 import { nodes as getCoffee2Nodes, tokens as getCoffee2Tokens } from 'decaffeinate-coffeescript2';
 import { parse as decaffeinateParse } from 'decaffeinate-parser';

@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import SourceToken from 'coffee-lex/dist/SourceToken';
+import { SourceToken } from 'coffee-lex';
 import SharedProgramPatcher from '../../../patchers/SharedProgramPatcher';
 import getIndent from '../../../utils/getIndent';
 import notNull from '../../../utils/notNull';

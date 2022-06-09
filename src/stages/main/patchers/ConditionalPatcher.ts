@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { SourceTokenListIndex } from 'coffee-lex';
 import { Conditional } from 'decaffeinate-parser/dist/nodes';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
 import getEnclosingScopeBlock from '../../../utils/getEnclosingScopeBlock';

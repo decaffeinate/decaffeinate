@@ -1,4 +1,4 @@
-import SourceType from 'coffee-lex/dist/SourceType';
+import { SourceType } from 'coffee-lex';
 import NodePatcher from './../../../patchers/NodePatcher';
 import FunctionApplicationPatcher from './FunctionApplicationPatcher';
 

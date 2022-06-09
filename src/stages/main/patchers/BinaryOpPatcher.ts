@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import SourceToken from 'coffee-lex/dist/SourceToken';
+import { SourceToken } from 'coffee-lex';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';

@@ -1,8 +1,8 @@
 import assert from 'assert';
 import { SourceType } from 'coffee-lex';
-import SourceToken from 'coffee-lex/dist/SourceToken';
-import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
-import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { SourceToken } from 'coffee-lex';
+import { SourceTokenList } from 'coffee-lex';
+import { SourceTokenListIndex } from 'coffee-lex';
 import { FunctionApplication, NewOp, Node, SoakedFunctionApplication } from 'decaffeinate-parser/dist/nodes';
 import MagicString from 'magic-string';
 import { Options } from '../options';
