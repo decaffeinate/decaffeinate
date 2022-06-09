@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import lex from 'coffee-lex';
+import { lex } from 'coffee-lex';
 import CodeContext from '../../src/utils/CodeContext';
 import formatCoffeeLexTokens from '../../src/utils/formatCoffeeLexTokens';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';

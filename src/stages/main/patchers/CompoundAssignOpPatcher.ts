@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import SourceToken from 'coffee-lex/dist/SourceToken';
+import { SourceToken } from 'coffee-lex';
 import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';
 import notNull from '../../../utils/notNull';
 import AssignOpPatcher from './AssignOpPatcher';

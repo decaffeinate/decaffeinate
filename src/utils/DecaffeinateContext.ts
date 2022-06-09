@@ -1,4 +1,4 @@
-import SourceTokenList from 'coffee-lex/dist/SourceTokenList';
+import { SourceTokenList } from 'coffee-lex';
 import { Block } from 'decaffeinate-coffeescript2/lib/coffeescript/nodes';
 import { parse as decaffeinateParse, traverse } from 'decaffeinate-parser';
 import { Node, Program } from 'decaffeinate-parser/dist/nodes';

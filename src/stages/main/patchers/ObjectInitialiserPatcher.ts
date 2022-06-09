@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import SourceTokenListIndex from 'coffee-lex/dist/SourceTokenListIndex';
+import { SourceTokenListIndex } from 'coffee-lex';
 import { PatcherContext } from '../../../patchers/types';
 import notNull from '../../../utils/notNull';
 import { isSemanticToken } from '../../../utils/types';

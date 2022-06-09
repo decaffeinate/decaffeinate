@@ -1,6 +1,6 @@
 import { SourceType } from 'coffee-lex';
 
-import SourceToken from 'coffee-lex/dist/SourceToken';
+import { SourceToken } from 'coffee-lex';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
 import canPatchAssigneeToJavaScript from '../../../utils/canPatchAssigneeToJavaScript';

@@ -26,10 +26,10 @@ specifiers:
   '@typescript-eslint/parser': ^5.27.0
   add-variable-declarations: ^4.0.7
   automatic-semicolon-insertion: ^3.0.2
-  coffee-lex: ^9.1.5
+  coffee-lex: ^9.2.1
   decaffeinate-coffeescript: 1.12.7-patch.3
   decaffeinate-coffeescript2: 2.2.1-patch.5
-  decaffeinate-parser: ^22.5.17
+  decaffeinate-parser: ^22.5.18
   detect-indent: ^4.0.0
   esbuild: ^0.14.42
   esbuild-runner: ^2.2.1
@@ -66,10 +66,10 @@ dependencies:
   '@resugar/codemod-strings-template': 1.0.1
   add-variable-declarations: 4.0.7
   automatic-semicolon-insertion: 3.0.6
-  coffee-lex: 9.1.5
+  coffee-lex: 9.2.1
   decaffeinate-coffeescript: 1.12.7-patch.3
   decaffeinate-coffeescript2: 2.2.1-patch.5
-  decaffeinate-parser: 22.5.17
+  decaffeinate-parser: 22.5.18
   detect-indent: 4.0.0
   is-ci-cli: 2.2.0
   lines-and-columns: 2.0.3
@@ -2304,8 +2304,8 @@ packages:
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
     dev: true
 
-  /coffee-lex/9.1.5:
-    resolution: {integrity: sha512-94lUMjs1vhlV86vnbCCnnIYzR4oszuO4qJzKUuKOLidiksh/UyQFOzPusjmLJt6vy5CNB0d/KtaceqV84zr46g==}
+  /coffee-lex/9.2.1:
+    resolution: {integrity: sha512-uvylajBdHBDF4szw3O2NKNOkk3vPq37CPWyJNvXJmQzQ33Z3h8mPXYQ+ToMy+PL92gUbZ8g8MBOxMXNTvGxxjQ==}
     dev: false
 
   /collect-v8-coverage/1.0.1:
@@ -2391,13 +2391,13 @@ packages:
     hasBin: true
     dev: false
 
-  /decaffeinate-parser/22.5.17:
-    resolution: {integrity: sha512-LilxxRs4QgshiUkcSZhbw+0WkaOBRRpyRS2pWRLN6ut/PoqDTxjVV/MCGt0JMlmi0eFppvxgt1g4b1XptZ5wBA==}
+  /decaffeinate-parser/22.5.18:
+    resolution: {integrity: sha512-K59cEOC1QfjX/jTMj3MCy/PaH/yK+ku/wlGr6pfm+Q9MHSmSusK/H9Ub2YzxnoGIw8TWb1mKxyps/Ep/+SR6gg==}
     engines: {node: '>=6'}
     dependencies:
       '@babel/types': 7.18.4
       '@codemod/parser': 1.2.1
-      coffee-lex: 9.1.5
+      coffee-lex: 9.2.1
       decaffeinate-coffeescript: 1.12.7-patch.3
       decaffeinate-coffeescript2: 2.2.1-patch.5
       lines-and-columns: 2.0.3

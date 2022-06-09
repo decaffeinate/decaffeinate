@@ -1,6 +1,6 @@
 import { SourceType } from 'coffee-lex';
 
-import SourceToken from 'coffee-lex/dist/SourceToken';
+import { SourceToken } from 'coffee-lex';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';
 import AssignOpPatcher, { EarlySuperTransformInfo } from './AssignOpPatcher';
