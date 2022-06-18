@@ -75,7 +75,7 @@
     "automatic-semicolon-insertion": "^3.0.2",
     "coffee-lex": "^9.3.1",
     "decaffeinate-coffeescript": "1.12.7-patch.3",
-    "decaffeinate-coffeescript2": "2.2.1-patch.5",
+    "decaffeinate-coffeescript2": "2.2.1-patch.6",
     "decaffeinate-parser": "^23.0.1",
     "detect-indent": "^4.0.0",
     "is-ci-cli": "^2.2.0",
