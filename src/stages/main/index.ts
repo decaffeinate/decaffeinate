@@ -1,4 +1,4 @@
-import { CompoundAssignOp, Node } from 'decaffeinate-parser/dist/nodes';
+import { CompoundAssignOp, Node } from 'decaffeinate-parser';
 import { PatcherClass } from '../../patchers/NodePatcher';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';
 import PassthroughPatcher from './../../patchers/PassthroughPatcher';

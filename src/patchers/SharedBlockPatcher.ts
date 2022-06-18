@@ -1,6 +1,6 @@
 import { SourceType } from 'coffee-lex';
 
-import { Block } from 'decaffeinate-parser/dist/nodes';
+import { Block } from 'decaffeinate-parser';
 import notNull from '../utils/notNull';
 import NodePatcher from './NodePatcher';
 import { PatcherContext } from './types';

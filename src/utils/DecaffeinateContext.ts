@@ -1,7 +1,6 @@
 import { SourceTokenList } from 'coffee-lex';
 import { Block } from 'decaffeinate-coffeescript2/lib/coffeescript/nodes';
-import { parse as decaffeinateParse, traverse } from 'decaffeinate-parser';
-import { Node, Program } from 'decaffeinate-parser/dist/nodes';
+import { parse as decaffeinateParse, traverse, Node, Program } from 'decaffeinate-parser';
 import { LinesAndColumns } from 'lines-and-columns';
 import Scope from './Scope';
 

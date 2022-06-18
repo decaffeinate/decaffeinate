@@ -1,5 +1,4 @@
-import { SourceType } from 'coffee-lex';
-import { SourceTokenList } from 'coffee-lex';
+import { SourceType, SourceTokenList } from 'coffee-lex';
 
 import CodeContext from './CodeContext';
 

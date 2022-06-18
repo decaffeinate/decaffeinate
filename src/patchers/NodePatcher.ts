@@ -1,9 +1,6 @@
 import assert from 'assert';
-import { SourceType } from 'coffee-lex';
-import { SourceToken } from 'coffee-lex';
-import { SourceTokenList } from 'coffee-lex';
-import { SourceTokenListIndex } from 'coffee-lex';
-import { FunctionApplication, NewOp, Node, SoakedFunctionApplication } from 'decaffeinate-parser/dist/nodes';
+import { SourceType, SourceToken, SourceTokenList, SourceTokenListIndex } from 'coffee-lex';
+import { FunctionApplication, NewOp, Node, SoakedFunctionApplication } from 'decaffeinate-parser';
 import MagicString from 'magic-string';
 import { Options } from '../options';
 import { AVOID_IIFES, AVOID_INLINE_ASSIGNMENTS, CLEAN_UP_IMPLICIT_RETURNS, Suggestion } from '../suggestions';

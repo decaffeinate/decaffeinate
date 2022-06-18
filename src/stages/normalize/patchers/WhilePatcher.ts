@@ -1,4 +1,4 @@
-import { While } from 'decaffeinate-parser/dist/nodes';
+import { While } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
 import postfixExpressionRequiresParens from '../../../utils/postfixExpressionRequiresParens';

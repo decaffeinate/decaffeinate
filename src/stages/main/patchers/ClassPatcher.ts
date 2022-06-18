@@ -1,6 +1,5 @@
-import { SourceType } from 'coffee-lex';
-import { SourceToken } from 'coffee-lex';
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { SourceType, SourceToken } from 'coffee-lex';
+import { Node } from 'decaffeinate-parser';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
 import { isForbiddenJsName } from '../../../utils/isReservedWord';
 import notNull from '../../../utils/notNull';

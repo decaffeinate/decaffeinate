@@ -1,4 +1,4 @@
-import { Identifier, Node } from 'decaffeinate-parser/dist/nodes';
+import { Identifier, Node } from 'decaffeinate-parser';
 import containsDescendant from './containsDescendant';
 import { isFunction } from './types';
 

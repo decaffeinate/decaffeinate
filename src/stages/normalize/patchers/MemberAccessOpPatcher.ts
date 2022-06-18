@@ -1,4 +1,4 @@
-import { MemberAccessOp } from 'decaffeinate-parser/dist/nodes';
+import { MemberAccessOp } from 'decaffeinate-parser';
 import NodePatcher, { AddThisAssignmentCallback } from '../../../patchers/NodePatcher';
 import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
 import { PatcherContext } from '../../../patchers/types';

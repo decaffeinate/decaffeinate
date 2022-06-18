@@ -1,6 +1,5 @@
-import { SourceType } from 'coffee-lex';
+import { SourceType, SourceToken } from 'coffee-lex';
 
-import { SourceToken } from 'coffee-lex';
 import extractPrototypeAssignPatchers from '../../../utils/extractPrototypeAssignPatchers';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';

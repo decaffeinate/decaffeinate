@@ -1,6 +1,5 @@
-import { SourceType } from 'coffee-lex';
-import { SourceToken } from 'coffee-lex';
-import { MemberAccessOp } from 'decaffeinate-parser/dist/nodes';
+import { SourceType, SourceToken } from 'coffee-lex';
+import { MemberAccessOp } from 'decaffeinate-parser';
 import { PatcherContext, PatchOptions, RepeatableOptions } from '../../../patchers/types';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';

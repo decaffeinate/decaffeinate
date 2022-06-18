@@ -1,4 +1,4 @@
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { Node } from 'decaffeinate-parser';
 import { PatchOptions } from '../../../patchers/types';
 import adjustIndent from '../../../utils/adjustIndent';
 import getBindingCodeForMethod from '../../../utils/getBindingCodeForMethod';

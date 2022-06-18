@@ -13,7 +13,7 @@ import {
   SoakedMemberAccessOp,
   SoakedNewOp,
   SoakedFunctionApplication,
-} from 'decaffeinate-parser/dist/nodes';
+} from 'decaffeinate-parser';
 
 /**
  * Determines whether `node` is inside the main path to an assignee.

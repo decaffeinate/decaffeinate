@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import { Identifier } from 'decaffeinate-parser/dist/nodes';
+import { Identifier } from 'decaffeinate-parser';
 import { PatcherContext } from '../../../patchers/types';
 import { REMOVE_ARRAY_FROM } from '../../../suggestions';
 import NodePatcher from './../../../patchers/NodePatcher';

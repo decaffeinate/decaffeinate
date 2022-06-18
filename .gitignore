@@ -2,3 +2,7 @@ node_modules
 dist
 .idea/
 *.log
+*.d.ts
+!src/env.d.ts
+src/**/*.js
+test/**/*.js

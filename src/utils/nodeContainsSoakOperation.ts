@@ -3,7 +3,7 @@ import {
   SoakedDynamicMemberAccessOp,
   SoakedFunctionApplication,
   SoakedMemberAccessOp,
-} from 'decaffeinate-parser/dist/nodes';
+} from 'decaffeinate-parser';
 import containsDescendant from './containsDescendant';
 
 /**

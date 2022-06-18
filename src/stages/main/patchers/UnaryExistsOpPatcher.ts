@@ -1,4 +1,4 @@
-import { UnaryExistsOp } from 'decaffeinate-parser/dist/nodes';
+import { UnaryExistsOp } from 'decaffeinate-parser';
 import { PatchOptions } from '../../../patchers/types';
 import { SHORTEN_NULL_CHECKS } from '../../../suggestions';
 import UnaryOpPatcher from './UnaryOpPatcher';

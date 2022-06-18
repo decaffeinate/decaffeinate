@@ -1,4 +1,4 @@
-import { Class, This } from 'decaffeinate-parser/dist/nodes';
+import { Class, This } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
 import { FIX_INVALID_CONSTRUCTOR } from '../../../suggestions';

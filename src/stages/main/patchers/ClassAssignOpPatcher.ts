@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { Node } from 'decaffeinate-parser';
 import { PatcherClass } from '../../../patchers/NodePatcher';
 import containsSuperCall from '../../../utils/containsSuperCall';
 import notNull from '../../../utils/notNull';

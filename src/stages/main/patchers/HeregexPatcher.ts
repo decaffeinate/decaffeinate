@@ -1,4 +1,4 @@
-import { Heregex } from 'decaffeinate-parser/dist/nodes';
+import { Heregex } from 'decaffeinate-parser';
 import InterpolatedPatcher from './InterpolatedPatcher';
 
 const CLOSE_TOKEN_BASE_LENGTH = 3;

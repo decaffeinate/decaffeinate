@@ -1,4 +1,4 @@
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { Node } from 'decaffeinate-parser';
 import CodeContext from './CodeContext';
 
 export default function formatDecaffeinateParserAst(program: Node, context: CodeContext): string {

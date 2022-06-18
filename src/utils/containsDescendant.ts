@@ -1,5 +1,4 @@
-import { traverse } from 'decaffeinate-parser';
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { traverse, Node } from 'decaffeinate-parser';
 
 export default function containsDescendant(
   node: Node,

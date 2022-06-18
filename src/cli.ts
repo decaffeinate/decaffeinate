@@ -5,9 +5,6 @@ import { convert, modernizeJS } from './index';
 import { Options } from './options';
 import PatchError from './utils/PatchError';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pkg = require('../package') as { name: string; version: string };
-
 export interface IO {
   readonly stdin: NodeJS.ReadableStream;
   readonly stdout: NodeJS.WritableStream;
@@ -278,7 +275,7 @@ function runWithCode(name: string, code: string, options: CLIOptions, io: IO): s
  * Print version
  */
 function version(out: NodeJS.WritableStream): void {
-  out.write(`${pkg.name} v${pkg.version}`);
+  out.write(`${__PACKAGE__} v${__VERSION__}`);
 }
 
 /**

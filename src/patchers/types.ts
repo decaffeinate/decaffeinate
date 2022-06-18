@@ -1,4 +1,4 @@
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { Node } from 'decaffeinate-parser';
 import MagicString from 'magic-string';
 import { Options } from '../options';
 import { Suggestion } from '../suggestions';

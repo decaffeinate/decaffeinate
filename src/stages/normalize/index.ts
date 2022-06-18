@@ -1,4 +1,4 @@
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { Node } from 'decaffeinate-parser';
 import { PatcherClass } from '../../patchers/NodePatcher';
 import PassthroughPatcher from '../../patchers/PassthroughPatcher';
 import TransformCoffeeScriptStage from '../TransformCoffeeScriptStage';

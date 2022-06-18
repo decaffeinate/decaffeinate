@@ -11,7 +11,7 @@ import {
   ObjectInitialiserMember,
   Rest,
   Spread,
-} from 'decaffeinate-parser/dist/nodes';
+} from 'decaffeinate-parser';
 
 export default function getAssigneeBindings(node: Node): Array<string> {
   if (node instanceof Identifier) {

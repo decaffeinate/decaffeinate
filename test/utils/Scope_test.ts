@@ -1,6 +1,5 @@
 import { ok, strictEqual } from 'assert';
-import { parse } from 'decaffeinate-parser';
-import { AssignOp, Identifier, Node } from 'decaffeinate-parser/dist/nodes';
+import { parse, AssignOp, Identifier, Node } from 'decaffeinate-parser';
 import Scope from '../../src/utils/Scope';
 
 describe('scope', () => {

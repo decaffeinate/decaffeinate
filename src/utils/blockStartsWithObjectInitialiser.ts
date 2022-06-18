@@ -1,4 +1,4 @@
-import { ObjectInitialiser } from 'decaffeinate-parser/dist/nodes';
+import { ObjectInitialiser } from 'decaffeinate-parser';
 import NodePatcher from '../patchers/NodePatcher';
 import BlockPatcher from '../stages/main/patchers/BlockPatcher';
 import containsDescendant from './containsDescendant';

@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import { ForOf } from 'decaffeinate-parser/dist/nodes';
+import { ForOf } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { CLEAN_UP_FOR_OWN_LOOPS } from '../../../suggestions';
 import notNull from '../../../utils/notNull';

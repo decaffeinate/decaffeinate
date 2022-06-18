@@ -5,7 +5,7 @@ import {
   ObjectInitialiser,
   ObjectInitialiserMember,
   Spread,
-} from 'decaffeinate-parser/dist/nodes';
+} from 'decaffeinate-parser';
 import flatMap from './flatMap';
 
 /**

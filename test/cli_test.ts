@@ -75,8 +75,8 @@ async function runCli(
 
 describe('decaffeinate CLI', () => {
   it('print current version', async () => {
-    await runCli(['--version'], '', 'decaffeinate v0.0.0-development');
-    await runCli(['-v'], '', 'decaffeinate v0.0.0-development');
+    await runCli(['--version'], '', 'decaffeinate v0.0.0-test');
+    await runCli(['-v'], '', 'decaffeinate v0.0.0-test');
   });
 
   it('accepts a file on stdin', async () => {

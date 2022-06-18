@@ -17,7 +17,7 @@ import {
   PreIncrementOp,
   Rest,
   Try,
-} from 'decaffeinate-parser/dist/nodes';
+} from 'decaffeinate-parser';
 import flatMap from './flatMap';
 import isReservedWord from './isReservedWord';
 import leftHandIdentifiers from './leftHandIdentifiers';

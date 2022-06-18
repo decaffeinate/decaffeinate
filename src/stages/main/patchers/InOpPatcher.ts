@@ -1,6 +1,5 @@
-import { SourceType } from 'coffee-lex';
-import { SourceToken } from 'coffee-lex';
-import { InOp } from 'decaffeinate-parser/dist/nodes';
+import { SourceType, SourceToken } from 'coffee-lex';
+import { InOp } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
 import { FIX_INCLUDES_EVALUATION_ORDER, REMOVE_ARRAY_FROM } from '../../../suggestions';
