@@ -13,7 +13,7 @@ describe('suggestions', () => {
        * decaffeinate suggestions:
        * DS002: Fix invalid constructor
        * DS102: Remove unnecessary code created because of implicit returns
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       class A extends B {
         constructor(...args) {
@@ -42,7 +42,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS102: Remove unnecessary code created because of implicit returns
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       class A extends B {
         constructor(...args) {
@@ -93,7 +93,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS002: Fix invalid constructor
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       class A extends B {
         constructor(c) {
@@ -126,7 +126,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS101: Remove unnecessary use of Array.from
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       for (let a of Array.from(b)) {
         c;
@@ -168,7 +168,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS101: Remove unnecessary use of Array.from
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       Array.from(b).includes(a);
     `,
@@ -190,7 +190,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS102: Remove unnecessary code created because of implicit returns
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       (() => f());
     `,
@@ -249,7 +249,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS103: Rewrite code to no longer use __guard__, or convert again using --optional-chaining
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       __guard__(a(), x => x.b);
       function __guard__(value, transform) {
@@ -290,7 +290,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS207: Consider shorter variations of null checks
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       if (typeof a !== 'undefined' && a !== null) {
         a.b;
@@ -313,7 +313,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS104: Avoid inline assignments
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       let name;
       accounts[name = getAccountId()] = Math.floor(accounts[name] / splitFactor);
@@ -351,7 +351,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS201: Simplify complex destructure assignments
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       const array = d.a, b = array[0], c = array[array.length - 1];
     `,
@@ -389,7 +389,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS202: Simplify dynamic range loops
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       for (let a = b, end = c, asc = b <= end; asc ? a <= end : a >= end; asc ? a++ : a--) {
         d;
@@ -432,7 +432,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS203: Remove \`|| {}\` from converted for-own loops
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       for (let a of Object.keys(b || {})) {
         c;
@@ -457,7 +457,7 @@ describe('suggestions', () => {
        * DS101: Remove unnecessary use of Array.from
        * DS104: Avoid inline assignments
        * DS204: Change includes calls to have a more natural evaluation order
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       let needle;
       (needle = a(), Array.from(b()).includes(needle));
@@ -479,7 +479,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS101: Remove unnecessary use of Array.from
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       Array.from(b).includes(a);
     `,
@@ -503,7 +503,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS205: Consider reworking code to avoid use of IIFEs
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       const x = (() => { try {
         return a;
@@ -532,7 +532,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS102: Remove unnecessary code created because of implicit returns
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       (function() {
         if (a) {
@@ -560,7 +560,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS206: Consider reworking classes to avoid initClass
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       class A {
         static initClass() {
@@ -606,7 +606,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS207: Consider shorter variations of null checks
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       const a = 1;
       const x = a != null ? a : b;
@@ -629,7 +629,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS207: Consider shorter variations of null checks
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       const a = 1;
       const b = (a != null);
@@ -651,7 +651,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS208: Avoid top-level this
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       this;
     `,
@@ -673,7 +673,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS208: Avoid top-level this
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       () => {
         return this;
@@ -735,7 +735,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS209: Avoid top-level return
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       if (foo) {
         return;
@@ -760,7 +760,7 @@ describe('suggestions', () => {
       /*
        * decaffeinate suggestions:
        * DS207: Consider shorter variations of null checks
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       if (typeof a !== 'undefined' && a !== null) {
         a.b;

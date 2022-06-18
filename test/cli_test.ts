@@ -296,7 +296,7 @@ describe('decaffeinate CLI', () => {
       /*
        * decaffeinate suggestions:
        * DS102: Remove unnecessary code created because of implicit returns
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       const f = (x = 1) => 2;
     `
@@ -370,7 +370,7 @@ describe('decaffeinate CLI', () => {
       /*
        * decaffeinate suggestions:
        * DS002: Fix invalid constructor
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       class A extends B {
         constructor() {
@@ -396,7 +396,7 @@ describe('decaffeinate CLI', () => {
       /*
        * decaffeinate suggestions:
        * DS002: Fix invalid constructor
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       class A extends B {
         constructor() {
@@ -448,7 +448,7 @@ describe('decaffeinate CLI', () => {
       /*
        * decaffeinate suggestions:
        * DS207: Consider shorter variations of null checks
-       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+       * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       typeof a !== 'undefined' && a !== null;
     `

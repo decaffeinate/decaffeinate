@@ -191,6 +191,6 @@ For more usage details, see the output of `decaffeinate --help`.
 [crash-issue]: https://github.com/decaffeinate/decaffeinate/issues/new?template=crash.md
 [wrong-issue]: https://github.com/decaffeinate/decaffeinate/issues/new?template=wrong.md
 [feature-issue]: https://github.com/decaffeinate/decaffeinate/issues/new?template=feature.md
-[conversion-guide]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/conversion-guide.md
-[suggestions]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
-[correctness-issues]: https://github.com/decaffeinate/decaffeinate/blob/master/docs/correctness-issues.md
+[conversion-guide]: https://github.com/decaffeinate/decaffeinate/blob/main/docs/conversion-guide.md
+[suggestions]: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+[correctness-issues]: https://github.com/decaffeinate/decaffeinate/blob/main/docs/correctness-issues.md

@@ -91,7 +91,7 @@ export function prependSuggestionComment(code: string, suggestions: Array<Sugges
     '/*',
     ' * decaffeinate suggestions:',
     ...suggestions.map(({ suggestionCode, message }) => ` * ${suggestionCode}: ${message}`),
-    ' * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md',
+    ' * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md',
     ' */',
   ];
 
