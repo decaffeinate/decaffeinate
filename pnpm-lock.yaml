@@ -28,8 +28,8 @@ specifiers:
   add-variable-declarations: ^4.0.7
   automatic-semicolon-insertion: ^3.0.2
   coffee-lex: ^9.3.1
-  decaffeinate-coffeescript: 1.12.7-patch.3
-  decaffeinate-coffeescript2: 2.2.1-patch.5
+  decaffeinate-coffeescript: 1.12.7-patch.4
+  decaffeinate-coffeescript2: 2.2.1-patch.6
   decaffeinate-parser: ^23.0.1
   detect-indent: ^4.0.0
   esbuild: ^0.14.42
@@ -71,8 +71,8 @@ dependencies:
   add-variable-declarations: 4.0.7
   automatic-semicolon-insertion: 3.0.6
   coffee-lex: 9.3.1
-  decaffeinate-coffeescript: 1.12.7-patch.3
-  decaffeinate-coffeescript2: 2.2.1-patch.5
+  decaffeinate-coffeescript: 1.12.7-patch.4
+  decaffeinate-coffeescript2: 2.2.1-patch.6
   decaffeinate-parser: 23.0.1
   detect-indent: 4.0.0
   is-ci-cli: 2.2.0
@@ -2471,21 +2471,9 @@ packages:
     dependencies:
       ms: 2.1.2
 
-  /decaffeinate-coffeescript/1.12.7-patch.3:
-    resolution: {integrity: sha512-4NshbupYgQsVm/jOosp/nen1MWi43i1/z0I+F1JQQ8sNpS6SvvJWYwMayfuYkE/c/5mK3ISWu2H9OyPZYwtMLg==}
-    engines: {node: '>=0.8.0'}
-    hasBin: true
-    dev: false
-
   /decaffeinate-coffeescript/1.12.7-patch.4:
     resolution: {integrity: sha512-VLVyuAahCJMskqpbgcyg7MrxIVeooPDWoU8atvotH+OgLdIIJlKzFFHZoJCTaMdSxqtbCkli7dFzCeqnTixp5Q==}
     engines: {node: '>=0.8.0'}
-    hasBin: true
-    dev: false
-
-  /decaffeinate-coffeescript2/2.2.1-patch.5:
-    resolution: {integrity: sha512-VlI2TQNRj9U/wifgs2kB+LzzfhMkrJAW7RlLWY8yZSafM3O2HaTHzpZE4mDRfEnioAaD/SV/FCuCQ73vCJnrVw==}
-    engines: {node: '>=6'}
     hasBin: true
     dev: false
 
