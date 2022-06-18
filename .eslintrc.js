@@ -4,6 +4,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:jest/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
     'prettier',
   ],
   parser: '@typescript-eslint/parser',
@@ -16,7 +18,7 @@ module.exports = {
     node: true,
     es6: true,
   },
-  plugins: ['prettier', '@typescript-eslint/eslint-plugin', 'jest'],
+  plugins: ['prettier', '@typescript-eslint/eslint-plugin', 'jest', 'import'],
   reportUnusedDisableDirectives: true,
   rules: {
     '@typescript-eslint/array-type': ['error', { default: 'generic' }],

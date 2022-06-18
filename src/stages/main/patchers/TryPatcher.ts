@@ -1,6 +1,4 @@
-import { SourceType } from 'coffee-lex';
-import { SourceToken } from 'coffee-lex';
-import { SourceTokenListIndex } from 'coffee-lex';
+import { SourceType, SourceToken, SourceTokenListIndex } from 'coffee-lex';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
 import getEnclosingScopeBlock from '../../../utils/getEnclosingScopeBlock';

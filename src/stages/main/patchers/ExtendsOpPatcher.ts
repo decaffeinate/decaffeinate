@@ -1,6 +1,5 @@
-import { SourceType } from 'coffee-lex';
+import { SourceType, SourceToken } from 'coffee-lex';
 
-import { SourceToken } from 'coffee-lex';
 import BinaryOpPatcher from './BinaryOpPatcher';
 
 const EXTENDS_HELPER = `

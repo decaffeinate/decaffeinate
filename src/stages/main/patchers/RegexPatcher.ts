@@ -1,4 +1,4 @@
-import { Regex } from 'decaffeinate-parser/dist/nodes';
+import { Regex } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import downgradeUnicodeCodePointEscapesInRange from '../../../utils/downgradeUnicodeCodePointEscapesInRange';
 import escapeSpecialWhitespaceInRange from '../../../utils/escapeSpecialWhitespaceInRange';

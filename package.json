@@ -22,6 +22,13 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "bin": {
     "decaffeinate": "./bin/decaffeinate"
   },
@@ -31,7 +38,7 @@
   ],
   "scripts": {
     "prebuild": "rimraf dist && mkdirp dist && pnpm lint",
-    "build": "script/build",
+    "build": "tsup",
     "lint": "eslint --ext .ts src script test",
     "lint:fix": "pnpm lint --fix",
     "prepublishOnly": "pnpm build",
@@ -54,6 +61,7 @@
     ]
   },
   "dependencies": {
+    "@babel/types": "^7.12.6",
     "@codemod/core": "^2.0.1",
     "@codemod/parser": "^1.2.1",
     "@resugar/codemod-declarations-block-scope": "^1.0.3",
@@ -68,7 +76,7 @@
     "coffee-lex": "^9.2.1",
     "decaffeinate-coffeescript": "1.12.7-patch.3",
     "decaffeinate-coffeescript2": "2.2.1-patch.5",
-    "decaffeinate-parser": "^22.5.18",
+    "decaffeinate-parser": "^23.0.0",
     "detect-indent": "^4.0.0",
     "is-ci-cli": "^2.2.0",
     "lines-and-columns": "^2.0.3",
@@ -80,7 +88,7 @@
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
     "@babel/traverse": "^7.12.5",
-    "@babel/types": "^7.12.6",
+    "@jest/types": "^28.1.1",
     "@types/babel__core": "^7.1.12",
     "@types/babel__generator": "^7.6.2",
     "@types/babel__template": "^7.0.3",
@@ -95,6 +103,7 @@
     "esbuild-runner": "^2.2.1",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^26.4.6",
     "eslint-plugin-prettier": "^4.0.0",
     "fs-extra": "^10.1.0",
@@ -107,6 +116,7 @@
     "sort-package-json": "^1.57.0",
     "ts-jest": "^28.0.4",
     "ts-node": "^10.8.1",
+    "tsup": "^6.1.2",
     "typescript": "^4.7.3"
   },
   "engines": {
@@ -114,5 +124,10 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ]
   }
 }

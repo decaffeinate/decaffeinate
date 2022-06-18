@@ -17,7 +17,7 @@ import {
   MemberAccessOp,
   Node,
   This,
-} from 'decaffeinate-parser/dist/nodes';
+} from 'decaffeinate-parser';
 import { PatcherContext } from '../../../patchers/types';
 import { AVOID_INITCLASS } from '../../../suggestions';
 

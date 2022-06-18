@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import { Identifier, ObjectInitialiserMember } from 'decaffeinate-parser/dist/nodes';
+import { Identifier, ObjectInitialiserMember } from 'decaffeinate-parser';
 import MemberAccessOpPatcher from './MemberAccessOpPatcher';
 import ObjectBodyMemberPatcher from './ObjectBodyMemberPatcher';
 import StringPatcher from './StringPatcher';

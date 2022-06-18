@@ -1,4 +1,4 @@
-import { Identifier } from 'decaffeinate-parser/dist/nodes';
+import { Identifier } from 'decaffeinate-parser';
 import PassthroughPatcher from '../../../patchers/PassthroughPatcher';
 
 export default class IdentifierPatcher extends PassthroughPatcher {

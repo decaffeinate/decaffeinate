@@ -4,6 +4,7 @@
     "target": "es2018",
     "module": "commonjs",
     "declaration": true,
+    "noEmit": true,
     "lib": ["es2015"],
     "experimentalDecorators": true,
     "noImplicitAny": true,

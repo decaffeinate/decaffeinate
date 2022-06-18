@@ -1,7 +1,6 @@
-import { SourceType } from 'coffee-lex';
+import { SourceType, SourceToken } from 'coffee-lex';
 
-import { SourceToken } from 'coffee-lex';
-import { Int, Range } from 'decaffeinate-parser/dist/nodes';
+import { Int, Range } from 'decaffeinate-parser';
 import BinaryOpPatcher from './BinaryOpPatcher';
 
 const RANGE_HELPER = `function __range__(left, right, inclusive) {

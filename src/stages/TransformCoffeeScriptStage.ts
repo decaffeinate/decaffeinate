@@ -1,4 +1,4 @@
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { Node } from 'decaffeinate-parser';
 import MagicString from 'magic-string';
 import { StageResult } from '../index';
 import { Options } from '../options';

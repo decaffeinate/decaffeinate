@@ -1,5 +1,4 @@
-import { traverse } from 'decaffeinate-parser';
-import { Float, Int, Number, UnaryNegateOp } from 'decaffeinate-parser/dist/nodes';
+import { traverse, Float, Int, Number, UnaryNegateOp } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
 import { REMOVE_ARRAY_FROM, SIMPLIFY_DYNAMIC_RANGE_LOOPS } from '../../../suggestions';

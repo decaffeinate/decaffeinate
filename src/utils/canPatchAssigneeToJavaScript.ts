@@ -24,7 +24,7 @@ import {
   SoakedMemberAccessOp,
   SoakedProtoMemberAccessOp,
   Spread,
-} from 'decaffeinate-parser/dist/nodes';
+} from 'decaffeinate-parser';
 import { Options } from '../options';
 
 export default function canPatchAssigneeToJavaScript(node: Node, options: Options, isTopLevel = true): boolean {

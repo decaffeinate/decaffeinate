@@ -4,7 +4,7 @@
  * syntax in the normalize stage.
  */
 import { SourceType } from 'coffee-lex';
-import { Block, Elision } from 'decaffeinate-parser/dist/nodes';
+import { Block, Elision } from 'decaffeinate-parser';
 import NodePatcher from '../patchers/NodePatcher';
 import containsDescendant from './containsDescendant';
 import notNull from './notNull';

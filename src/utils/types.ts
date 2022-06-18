@@ -1,6 +1,5 @@
-import { SourceType } from 'coffee-lex';
-import { SourceToken } from 'coffee-lex';
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { SourceType, SourceToken } from 'coffee-lex';
+import { Node } from 'decaffeinate-parser';
 
 /**
  * Determines whether a node represents a function, i.e. `->` or `=>`.

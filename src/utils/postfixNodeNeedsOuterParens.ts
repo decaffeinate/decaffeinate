@@ -1,5 +1,5 @@
 import { SourceType } from 'coffee-lex';
-import { Spread } from 'decaffeinate-parser/dist/nodes';
+import { Spread } from 'decaffeinate-parser';
 import NodePatcher from '../patchers/NodePatcher';
 import ObjectInitialiserPatcher from '../stages/normalize/patchers/ObjectInitialiserPatcher';
 

@@ -1,4 +1,4 @@
-import { InstanceofOp, OfOp } from 'decaffeinate-parser/dist/nodes';
+import { InstanceofOp, OfOp } from 'decaffeinate-parser';
 import NodePatcher from '../../../patchers/NodePatcher';
 import { PatcherContext } from '../../../patchers/types';
 import BinaryOpPatcher from './BinaryOpPatcher';

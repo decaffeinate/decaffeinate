@@ -1,6 +1,5 @@
-import { SourceType } from 'coffee-lex';
-import { SourceTokenListIndex } from 'coffee-lex';
-import { While } from 'decaffeinate-parser/dist/nodes';
+import { SourceType, SourceTokenListIndex } from 'coffee-lex';
+import { While } from 'decaffeinate-parser';
 import { PatcherContext } from '../../../patchers/types';
 import notNull from '../../../utils/notNull';
 import NodePatcher from './../../../patchers/NodePatcher';

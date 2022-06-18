@@ -1,4 +1,4 @@
-import { BareSuperFunctionApplication, Class, Node, Super } from 'decaffeinate-parser/dist/nodes';
+import { BareSuperFunctionApplication, Class, Node, Super } from 'decaffeinate-parser';
 import containsDescendant from './containsDescendant';
 
 export default function containsSuperCall(node: Node): boolean {

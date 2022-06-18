@@ -1,4 +1,4 @@
-import { Node } from 'decaffeinate-parser/dist/nodes';
+import { Node } from 'decaffeinate-parser';
 
 /**
  * Determines whether the given node spans multiple lines.

@@ -1,4 +1,4 @@
-import { ObjectInitialiserMember } from 'decaffeinate-parser/dist/nodes';
+import { ObjectInitialiserMember } from 'decaffeinate-parser';
 import { PatcherContext } from '../../../patchers/types';
 import NodePatcher from './../../../patchers/NodePatcher';
 import AsyncFunctionPatcher from './AsyncFunctionPatcher';

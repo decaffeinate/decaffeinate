@@ -1,5 +1,5 @@
-import { parse } from 'decaffeinate-parser';
 import {
+  parse,
   AssignOp,
   DynamicMemberAccessOp,
   FunctionApplication,
@@ -14,7 +14,7 @@ import {
   SoakedNewOp,
   CompoundAssignOp,
   SoakedFunctionApplication,
-} from 'decaffeinate-parser/dist/nodes';
+} from 'decaffeinate-parser';
 import isInsideAssignee from '../../src/utils/isInsideAssignee';
 import notNull from '../../src/utils/notNull';
 

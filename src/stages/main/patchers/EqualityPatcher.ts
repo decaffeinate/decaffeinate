@@ -1,5 +1,4 @@
-import { SourceType } from 'coffee-lex';
-import { SourceToken } from 'coffee-lex';
+import { SourceType, SourceToken } from 'coffee-lex';
 import getCompareOperator from '../../../utils/getCompareOperator';
 import isCompareOpNegationUnsafe from '../../../utils/isCompareOpNegationUnsafe';
 import notNull from '../../../utils/notNull';

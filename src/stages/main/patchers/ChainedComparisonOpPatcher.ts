@@ -1,4 +1,4 @@
-import { ChainedComparisonOp } from 'decaffeinate-parser/dist/nodes';
+import { ChainedComparisonOp } from 'decaffeinate-parser';
 import { PatcherContext, PatchOptions } from '../../../patchers/types';
 import getCompareOperator from '../../../utils/getCompareOperator';
 import isCompareOpNegationUnsafe from '../../../utils/isCompareOpNegationUnsafe';

@@ -1,5 +1,4 @@
-import { SourceType } from 'coffee-lex';
-import { SourceToken } from 'coffee-lex';
+import { SourceType, SourceToken } from 'coffee-lex';
 import { REMOVE_GUARD } from '../../../suggestions';
 import findSoakContainer from '../../../utils/findSoakContainer';
 import nodeContainsSoakOperation from '../../../utils/nodeContainsSoakOperation';

@@ -1,4 +1,4 @@
-import { AssignOp, Node } from 'decaffeinate-parser/dist/nodes';
+import { AssignOp, Node } from 'decaffeinate-parser';
 import { PatcherClass } from '../../../patchers/NodePatcher';
 import { PatchOptions } from '../../../patchers/types';
 import blockStartsWithObjectInitialiser from '../../../utils/blockStartsWithObjectInitialiser';
