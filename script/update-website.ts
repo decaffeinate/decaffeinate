@@ -72,8 +72,8 @@ async function updateWebsite(): Promise<void> {
   const decaffeinateRegistry = decaffeinatePackage['publishConfig']['registry'];
 
   console.log('Setting up website repo…');
-  await run('git', ['fetch', '-f', 'website', 'master:website-master']);
-  await run('git', ['reset', '--hard', 'website-master']);
+  await run('git', ['fetch', '-f', 'website', 'main:website-main']);
+  await run('git', ['reset', '--hard', 'website-main']);
 
   const websitePackage = await pkg();
   const currentVersion = websitePackage['devDependencies']['decaffeinate'] as string;
@@ -94,7 +94,7 @@ async function updateWebsite(): Promise<void> {
       if (commit) {
         console.log('Pushing changes to website repo…');
         await run('git', ['commit', '-av', '-m', `chore: update to decaffeinate ${latestVersion}`]);
-        await run('git', ['push', 'website', 'HEAD:master']);
+        await run('git', ['push', 'website', 'HEAD:main']);
       } else {
         console.log('Not committing because --no-commit was given:');
         console.log((await run('git', ['diff'])).stdout);
