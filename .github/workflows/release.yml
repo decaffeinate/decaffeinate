@@ -30,6 +30,11 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
 
+      # set up deploy key for website
+      - uses: webfactory/ssh-agent@v0.5.4
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Update Website
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
