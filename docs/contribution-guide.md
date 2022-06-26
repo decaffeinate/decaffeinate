@@ -7,7 +7,15 @@ come in, and this document will explain how to help.
 
 ## Get the code, get it running
 
+Enable [`corepack`](https://nodejs.org/api/corepack.html), or otherwise install `pnpm` globally:
+
+```bash
+$ corepack enable
 ```
+
+Get the code and install the dependencies.
+
+```bash
 $ git clone https://github.com/decaffeinate/decaffeinate.git
 $ cd decaffeinate
 $ pnpm install
@@ -15,7 +23,7 @@ $ pnpm install
 
 Run the tests to make sure everything works as expected:
 
-```
+```bash
 $ pnpm test
 ```
 
