@@ -45,6 +45,10 @@ interface Stage {
  * and formatting.
  */
 export function convert(source: string, options: Options = {}): ConversionResult {
+  if (!options.bare && options.useJSModules) {
+    throw new Error('useJSModules requires bare output');
+  }
+
   source = removeUnicodeBOMIfNecessary(source);
   options = resolveOptions(options);
   const originalNewlineStr = detectNewlineStr(source);
@@ -77,7 +81,7 @@ export function convert(source: string, options: Options = {}): ConversionResult
   }
   result.code = convertNewlines(result.code, originalNewlineStr);
   return {
-    code: result.code,
+    code: options.bare ? result.code : `(function() {\n${result.code}\n}).call(this);`,
   };
 }
 

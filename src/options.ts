@@ -19,6 +19,7 @@ export interface Options {
   optionalChaining?: boolean;
   logicalAssignment?: boolean;
   nullishCoalescing?: boolean;
+  bare?: boolean;
 }
 
 export const DEFAULT_OPTIONS: Options = {
@@ -39,6 +40,10 @@ export const DEFAULT_OPTIONS: Options = {
   looseIncludes: false,
   looseComparisonNegation: false,
   disallowInvalidConstructors: false,
+  optionalChaining: false,
+  logicalAssignment: false,
+  nullishCoalescing: false,
+  bare: true,
 };
 
 export function resolveOptions(options: Options): Options {
