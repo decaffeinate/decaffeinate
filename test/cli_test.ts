@@ -528,6 +528,10 @@ describe('decaffeinate CLI', () => {
     await runCli(['--modernize-js'], 'var a;', 'let a;');
   });
 
+  it('allows --modernize-js with --no-bare', async () => {
+    await runCli(['--modernize-js', '--no-bare'], 'var a;', '(function() {\nlet a;\n}).call(this);');
+  });
+
   it('discovers JS files with --modernize-js specified', async () => {
     copySync('./test_fixtures/F.js', './test_fixtures/searchDir/F.js');
     await runCli(
@@ -565,18 +569,6 @@ describe('decaffeinate CLI', () => {
 
   it('can wrap output in an IIFE', async () => {
     await runCli(['--no-bare'], '', `(function() {\n\n}).call(this);`);
-  });
-
-  it('cannot use --modernize-js with --no-bare', async () => {
-    await runCli(
-      ['--no-bare', '--modernize-js'],
-      '',
-      '',
-      `
-      cannot use --modernize-js with --no-bare
-    `,
-      1
-    );
   });
 
   it('cannot use --use-js-modules with --no-bare', async () => {
