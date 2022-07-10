@@ -30,7 +30,8 @@ async function runCli(
   args: ReadonlyArray<string>,
   stdin: string,
   expectedStdout: string,
-  expectedStderr = ''
+  expectedStderr = '',
+  expectedExitCode = 0
 ): Promise<void> {
   if (stdin[0] === '\n') {
     stdin = stripSharedIndent(stdin);
@@ -67,7 +68,7 @@ async function runCli(
 
   // Check the exit code and output streams.
   expect({ exitCode, stdout: stdout.trim(), stderr: stderr.trim() }).toEqual({
-    exitCode: 0,
+    exitCode: expectedExitCode,
     stdout: expectedStdout.trim(),
     stderr: expectedStderr.trim(),
   });
@@ -559,6 +560,34 @@ describe('decaffeinate CLI', () => {
       stripSharedIndent(`
       const a = 1;
     `)
+    );
+  });
+
+  it('can wrap output in an IIFE', async () => {
+    await runCli(['--no-bare'], '', `(function() {\n\n}).call(this);`);
+  });
+
+  it('cannot use --modernize-js with --no-bare', async () => {
+    await runCli(
+      ['--no-bare', '--modernize-js'],
+      '',
+      '',
+      `
+      cannot use --modernize-js with --no-bare
+    `,
+      1
+    );
+  });
+
+  it('cannot use --use-js-modules with --no-bare', async () => {
+    await runCli(
+      ['--no-bare', '--use-js-modules'],
+      '',
+      '',
+      `
+      cannot use --use-js-modules with --no-bare
+    `,
+      1
     );
   });
 });

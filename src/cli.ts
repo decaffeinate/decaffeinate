@@ -2,7 +2,7 @@ import assert from 'assert';
 import { readdir, readFile, stat, writeFile } from 'mz/fs';
 import { basename, dirname, extname, join } from 'path';
 import { convert, modernizeJS } from './index';
-import { Options } from './options';
+import { DEFAULT_OPTIONS, Options } from './options';
 import PatchError from './utils/PatchError';
 
 export interface IO {
@@ -18,7 +18,14 @@ export default async function run(
   args: ReadonlyArray<string>,
   io: IO = { stdin: process.stdin, stdout: process.stdout, stderr: process.stderr }
 ): Promise<number> {
-  const options = parseArguments(args, io);
+  const parseResult = parseArguments(args, io);
+
+  if (parseResult.kind === 'error') {
+    io.stderr.write(`${parseResult.message}\n`);
+    return 1;
+  }
+
+  const options = parseResult;
 
   if (options.help) {
     usage(args[0], io.stdout);
@@ -39,17 +46,25 @@ export default async function run(
   return 0;
 }
 
+type ParseOptionsResult = CLIOptions | ParseOptionsError;
+
 interface CLIOptions {
-  paths: Array<string>;
-  baseOptions: Options;
-  modernizeJS: boolean;
-  version: boolean;
-  help: boolean;
+  readonly kind: 'success';
+  readonly paths: Array<string>;
+  readonly baseOptions: Options;
+  readonly modernizeJS: boolean;
+  readonly version: boolean;
+  readonly help: boolean;
 }
 
-function parseArguments(args: ReadonlyArray<string>, io: IO): CLIOptions {
+interface ParseOptionsError {
+  readonly kind: 'error';
+  readonly message: string;
+}
+
+function parseArguments(args: ReadonlyArray<string>, io: IO): ParseOptionsResult {
   const paths = [];
-  const baseOptions: Options = {};
+  const baseOptions: Options = { ...DEFAULT_OPTIONS };
   let modernizeJS = false;
   let help = false;
   let version = false;
@@ -73,6 +88,11 @@ function parseArguments(args: ReadonlyArray<string>, io: IO): CLIOptions {
 
       case '--modernize-js':
         modernizeJS = true;
+        break;
+
+      case '--bare':
+      case '--no-bare':
+        baseOptions.bare = arg === '--bare';
         break;
 
       case '--literate':
@@ -166,15 +186,22 @@ function parseArguments(args: ReadonlyArray<string>, io: IO): CLIOptions {
 
       default:
         if (arg.startsWith('-')) {
-          io.stderr.write(`Error: unrecognized option '${arg}'\n`);
-          process.exit(1);
+          return { kind: 'error', message: `unrecognized option: ${arg}` };
         }
         paths.push(arg);
         break;
     }
   }
 
-  return { paths, baseOptions, modernizeJS, version, help };
+  if (!baseOptions.bare && modernizeJS) {
+    return { kind: 'error', message: 'cannot use --modernize-js with --no-bare' };
+  }
+
+  if (!baseOptions.bare && baseOptions.useJSModules) {
+    return { kind: 'error', message: 'cannot use --use-js-modules with --no-bare' };
+  }
+
+  return { kind: 'success', paths, baseOptions, modernizeJS, version, help };
 }
 
 /**

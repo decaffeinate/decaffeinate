@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { convert } from '../../src/index';
-import { Options } from '../../src/options';
+import { DEFAULT_OPTIONS, Options } from '../../src/options';
 import PatchError from '../../src/utils/PatchError';
 import stripSharedIndent from '../../src/utils/stripSharedIndent';
 
@@ -56,12 +56,13 @@ function maybeStripIndent(
 function checkOutput(source: string, expected: string, options: Options): void {
   try {
     const converted = convert(source, {
+      ...DEFAULT_OPTIONS,
       disableSuggestionComment: true,
       ...options,
     });
     let actual = converted.code;
     if (actual.endsWith('\n') && !expected.endsWith('\n')) {
-      actual = actual.substr(0, actual.length - 1);
+      actual = actual.slice(0, -1);
     }
     expect(actual).toBe(expected);
   } catch (err: unknown) {
