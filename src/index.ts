@@ -94,7 +94,7 @@ export function modernizeJS(source: string, options: Options = {}): ConversionRe
   const result = runStages(source, options, stages);
   result.code = convertNewlines(result.code, originalNewlineStr);
   return {
-    code: result.code,
+    code: options.bare ? result.code : `(function() {\n${result.code}\n}).call(this);`,
   };
 }
 

@@ -193,10 +193,6 @@ function parseArguments(args: ReadonlyArray<string>, io: IO): ParseOptionsResult
     }
   }
 
-  if (!baseOptions.bare && modernizeJS) {
-    return { kind: 'error', message: 'cannot use --modernize-js with --no-bare' };
-  }
-
   if (!baseOptions.bare && baseOptions.useJSModules) {
     return { kind: 'error', message: 'cannot use --use-js-modules with --no-bare' };
   }
