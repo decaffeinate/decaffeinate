@@ -37,13 +37,11 @@ export default async function run(
     return 0;
   }
 
-  if (options.paths.length) {
-    await runWithPaths(options.paths, options, io);
-  } else {
-    await runWithStdio(options, io);
-  }
+  const success = options.paths.length
+    ? await runWithPaths(options.paths, options, io)
+    : await runWithStdio(options, io);
 
-  return 0;
+  return success ? 0 : 1;
 }
 
 type ParseOptionsResult = CLIOptions | ParseOptionsError;
@@ -203,7 +201,7 @@ function parseArguments(args: ReadonlyArray<string>, io: IO): ParseOptionsResult
 /**
  * Run decaffeinate on the given paths, changing them in place.
  */
-async function runWithPaths(paths: Array<string>, options: CLIOptions, io: IO): Promise<void> {
+async function runWithPaths(paths: Array<string>, options: CLIOptions, io: IO): Promise<boolean> {
   async function processPath(path: string): Promise<boolean> {
     const info = await stat(path);
     if (info.isDirectory()) {
@@ -254,8 +252,12 @@ async function runWithPaths(paths: Array<string>, options: CLIOptions, io: IO): 
   }
 
   for (const path of paths) {
-    await processPath(path);
+    if (!(await processPath(path))) {
+      return false;
+    }
   }
+
+  return true;
 }
 
 async function runWithStdio(options: CLIOptions, io: IO): Promise<boolean> {

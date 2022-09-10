@@ -435,7 +435,8 @@ describe('decaffeinate CLI', () => {
       > 2 |   constructor: ->
       > 3 |     @a = 1
       > 4 |     super(arguments...)
-    `
+    `,
+      1
     );
   });
 
