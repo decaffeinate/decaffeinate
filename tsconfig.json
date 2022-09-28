@@ -18,7 +18,8 @@
     "noEmitHelpers": true,
     "importHelpers": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "exclude": ["dist"]
 }
