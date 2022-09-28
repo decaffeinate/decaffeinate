@@ -45,7 +45,7 @@
     "test": "is-ci test:ci test:watch",
     "test:ci": "jest --ci --maxWorkers=2",
     "test:watch": "jest --watch",
-    "update-website": "esr --cache ./script/update-website.ts"
+    "update-website": "./script/update-website"
   },
   "husky": {
     "hooks": {
