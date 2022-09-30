@@ -114,7 +114,7 @@
     "mkdirp": "^1.0.4",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
-    "sort-package-json": "^1.57.0",
+    "sort-package-json": "^2.0.0",
     "ts-jest": "^28.0.4",
     "tsup": "^6.1.2",
     "typescript": "^4.8.4"
