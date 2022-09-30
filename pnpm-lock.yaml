@@ -27,7 +27,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.38.1
   add-variable-declarations: ^4.0.7
   automatic-semicolon-insertion: ^3.0.2
-  coffee-lex: ^9.3.1
+  coffee-lex: ^9.3.2
   decaffeinate-coffeescript: 1.12.7-patch.4
   decaffeinate-coffeescript2: 2.2.1-patch.6
   decaffeinate-parser: ^23.0.1
@@ -69,7 +69,7 @@ dependencies:
   '@resugar/codemod-strings-template': 1.0.1
   add-variable-declarations: 4.0.7
   automatic-semicolon-insertion: 3.0.6
-  coffee-lex: 9.3.1
+  coffee-lex: 9.3.2
   decaffeinate-coffeescript: 1.12.7-patch.4
   decaffeinate-coffeescript2: 2.2.1-patch.6
   decaffeinate-parser: 23.0.1
@@ -2388,8 +2388,8 @@ packages:
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
     dev: true
 
-  /coffee-lex/9.3.1:
-    resolution: {integrity: sha512-5KRL4RDU1PcQDQ7CEKNymqfvqhTOdZWWsMoisPNLv2bMErauKoBiqpZRpdapxQavWusffbTGVeaas1M3CzVCsQ==}
+  /coffee-lex/9.3.2:
+    resolution: {integrity: sha512-lft4PwdLuqh3q50uR+yU5rpBKif1asJsXFPQ8AHDLs9woru6ENJ7jUVLGHk8cuCktvPFxaIzNeES9bNuSd89RA==}
     dev: false
 
   /collect-v8-coverage/1.0.1:
@@ -2504,7 +2504,7 @@ packages:
     dependencies:
       '@babel/types': 7.18.4
       '@codemod/parser': 1.2.1
-      coffee-lex: 9.3.1
+      coffee-lex: 9.3.2
       decaffeinate-coffeescript: 1.12.7-patch.4
       decaffeinate-coffeescript2: 2.2.1-patch.6
       lines-and-columns: 2.0.3

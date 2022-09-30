@@ -88,4 +88,8 @@ describe('comparisons', () => {
     `
     );
   });
+
+  it('interprets "<" after a call with parens as non-CSX', () => {
+    check(`a()<b`, 'a()<b;');
+  });
 });
