@@ -89,7 +89,7 @@
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
     "@babel/traverse": "^7.12.5",
-    "@jest/types": "^28.1.1",
+    "@jest/types": "^29.2.0",
     "@types/babel__core": "^7.1.12",
     "@types/babel__generator": "^7.6.2",
     "@types/babel__template": "^7.0.3",
