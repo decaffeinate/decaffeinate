@@ -94,7 +94,7 @@
     "@types/babel__generator": "^7.6.2",
     "@types/babel__template": "^7.0.3",
     "@types/babel__traverse": "^7.0.15",
-    "@types/fs-extra": "^9.0.1",
+    "@types/fs-extra": "^11.0.1",
     "@types/jest": "^29.2.4",
     "@types/mz": "^2.7.0",
     "@types/node": "^17.0.39",
