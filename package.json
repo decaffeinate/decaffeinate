@@ -81,7 +81,7 @@
     "detect-indent": "^4.0.0",
     "is-ci-cli": "^2.2.0",
     "lines-and-columns": "^2.0.3",
-    "magic-string": "^0.26.2",
+    "magic-string": "^0.29.0",
     "mz": "^2.7.0",
     "tslib": "^2.4.0"
   },
