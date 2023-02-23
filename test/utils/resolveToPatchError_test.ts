@@ -1,4 +1,4 @@
-import addVariableDeclarations from 'add-variable-declarations';
+import { addVariableDeclarations } from 'add-variable-declarations';
 import assert, { ok, strictEqual } from 'assert';
 import MagicString from 'magic-string';
 

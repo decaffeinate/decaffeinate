@@ -1,4 +1,4 @@
-import addVariableDeclarations from 'add-variable-declarations';
+import { addVariableDeclarations } from 'add-variable-declarations';
 import MagicString from 'magic-string';
 import { StageResult } from '../../index';
 import { logger } from '../../utils/debug';
