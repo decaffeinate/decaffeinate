@@ -635,8 +635,7 @@ describe('expansion', () => {
       [a, , b] = [1, , 3]
     `,
       `
-      let a, b;
-      [a, , b] = [1, , 3];
+      const [a, , b] = [1, , 3];
     `
     );
   });

@@ -72,7 +72,7 @@
     "@resugar/codemod-objects-destructuring": "^1.0.1",
     "@resugar/codemod-objects-shorthand": "^1.0.1",
     "@resugar/codemod-strings-template": "^1.0.1",
-    "add-variable-declarations": "^4.0.7",
+    "add-variable-declarations": "^6.0.0",
     "automatic-semicolon-insertion": "^3.0.2",
     "coffee-lex": "^9.3.2",
     "decaffeinate-coffeescript": "1.12.7-patch.4",
