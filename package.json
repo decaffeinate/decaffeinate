@@ -78,7 +78,7 @@
     "decaffeinate-coffeescript": "1.12.7-patch.4",
     "decaffeinate-coffeescript2": "2.2.1-patch.6",
     "decaffeinate-parser": "^23.0.1",
-    "detect-indent": "^4.0.0",
+    "detect-indent": "^7.0.1",
     "is-ci-cli": "^2.2.0",
     "lines-and-columns": "^2.0.3",
     "magic-string": "^0.30.0",
