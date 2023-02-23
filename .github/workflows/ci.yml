@@ -14,14 +14,21 @@ jobs:
       CI: true
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Enable Corepack
         run: corepack enable
+
+      # setup node again but with pnpm caching
+      # https://github.com/actions/setup-node/issues/531
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile

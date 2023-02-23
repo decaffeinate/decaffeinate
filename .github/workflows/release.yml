@@ -10,13 +10,20 @@ jobs:
     environment: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 18
 
-      - name: Install pnpm
-        run: curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm
+      - name: Enable Corepack
+        run: corepack enable
+
+      # setup node again but with pnpm caching
+      # https://github.com/actions/setup-node/issues/531
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: pnpm
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
