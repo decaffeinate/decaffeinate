@@ -164,18 +164,12 @@ export default class SlicePatcher extends NodePatcher {
     this.remove(indexEnd.start, indexEnd.end);
   }
 
-  /**
-   * @private
-   */
   isInclusive(): boolean {
     const slice = this.getSliceSourceToken();
     return slice.end - slice.start === '..'.length;
   }
 
-  /**
-   * @private
-   */
-  getIndexStartSourceToken(): SourceToken {
+  private getIndexStartSourceToken(): SourceToken {
     const tokens = this.context.sourceTokens;
     const index = tokens.indexOfTokenMatchingPredicate(
       (token) => token.type === SourceType.LBRACKET,
@@ -187,10 +181,7 @@ export default class SlicePatcher extends NodePatcher {
     return notNull(tokens.tokenAtIndex(index));
   }
 
-  /**
-   * @private
-   */
-  getSliceSourceToken(): SourceToken {
+  private getSliceSourceToken(): SourceToken {
     const tokens = this.context.sourceTokens;
     const { source } = this.context;
     const index = tokens.indexOfTokenMatchingPredicate(
@@ -209,10 +200,7 @@ export default class SlicePatcher extends NodePatcher {
     return notNull(tokens.tokenAtIndex(index));
   }
 
-  /**
-   * @private
-   */
-  getIndexEndSourceToken(): SourceToken {
+  private getIndexEndSourceToken(): SourceToken {
     const tokens = this.context.sourceTokens;
     const index = tokens.lastIndexOfTokenMatchingPredicate(
       (token) => token.type === SourceType.RBRACKET,

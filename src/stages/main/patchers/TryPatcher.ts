@@ -184,10 +184,7 @@ export default class TryPatcher extends NodePatcher {
     return false;
   }
 
-  /**
-   * @private
-   */
-  getTryToken(): SourceToken {
+  private getTryToken(): SourceToken {
     const tryTokenIndex = this.contentStartTokenIndex;
     const tryToken = this.sourceTokenAtIndex(tryTokenIndex);
     if (!tryToken || tryToken.type !== SourceType.TRY) {
@@ -196,10 +193,7 @@ export default class TryPatcher extends NodePatcher {
     return tryToken;
   }
 
-  /**
-   * @private
-   */
-  getCatchToken(): SourceToken | null {
+  private getCatchToken(): SourceToken | null {
     let searchStart;
     if (this.body) {
       searchStart = this.body.outerEnd;
@@ -229,10 +223,7 @@ export default class TryPatcher extends NodePatcher {
     return this.sourceTokenAtIndex(catchTokenIndex);
   }
 
-  /**
-   * @private
-   */
-  getThenTokenIndex(): SourceTokenListIndex | null {
+  private getThenTokenIndex(): SourceTokenListIndex | null {
     let searchStart;
     if (this.catchAssignee) {
       searchStart = this.catchAssignee.outerEnd;
@@ -265,10 +256,7 @@ export default class TryPatcher extends NodePatcher {
     );
   }
 
-  /**
-   * @private
-   */
-  getFinallyToken(): SourceToken | null {
+  private getFinallyToken(): SourceToken | null {
     let searchStart;
     if (this.catchBody) {
       searchStart = this.catchBody.outerEnd;
@@ -298,10 +286,7 @@ export default class TryPatcher extends NodePatcher {
     return this.sourceTokenAtIndex(finallyTokenIndex);
   }
 
-  /**
-   * @private
-   */
-  getErrorBinding(): string {
+  private getErrorBinding(): string {
     if (!this._errorBinding) {
       this._errorBinding = this.claimFreeBinding('error');
     }

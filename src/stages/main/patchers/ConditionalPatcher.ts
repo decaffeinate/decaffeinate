@@ -80,9 +80,6 @@ export default class ConditionalPatcher extends NodePatcher {
     );
   }
 
-  /**
-   * @private
-   */
   willPatchAsIIFE(): boolean {
     return !this.willPatchAsTernary() && this.forcedToPatchAsExpression();
   }
@@ -210,10 +207,7 @@ export default class ConditionalPatcher extends NodePatcher {
     this.patchAlternateForStatement();
   }
 
-  /**
-   * @private
-   */
-  patchConditionForStatement(): void {
+  private patchConditionForStatement(): void {
     // `unless a` → `if a`
     //  ^^^^^^        ^^
     const ifToken = notNull(this.sourceTokenAtIndex(this.getIfSourceTokenIndex()));
@@ -248,10 +242,7 @@ export default class ConditionalPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  patchConsequentForStatement(): void {
+  private patchConsequentForStatement(): void {
     this.insert(this.condition.outerEnd, ' {');
 
     if (this.alternate) {
@@ -271,10 +262,7 @@ export default class ConditionalPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  patchAlternateForStatement(): void {
+  private patchAlternateForStatement(): void {
     const elseTokenIndex = this.getElseSourceTokenIndex();
     if (this.alternate && elseTokenIndex) {
       const ifToken = this.sourceTokenAtIndex(notNull(elseTokenIndex.next()));
@@ -329,10 +317,8 @@ export default class ConditionalPatcher extends NodePatcher {
 
   /**
    * Gets the index of the token representing the `if` at the start.
-   *
-   * @private
    */
-  getIfSourceTokenIndex(): SourceTokenListIndex {
+  private getIfSourceTokenIndex(): SourceTokenListIndex {
     const ifTokenIndex = this.indexOfSourceTokenStartingAtSourceIndex(this.contentStart);
     if (!ifTokenIndex) {
       throw this.error('expected IF token at start of conditional');
@@ -346,10 +332,8 @@ export default class ConditionalPatcher extends NodePatcher {
   /**
    * Gets the index of the token representing the `else` between consequent and
    * alternate.
-   *
-   * @private
    */
-  getElseSourceTokenIndex(): SourceTokenListIndex | null {
+  private getElseSourceTokenIndex(): SourceTokenListIndex | null {
     const elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.consequent !== null ? this.consequent.outerEnd : this.condition.outerEnd,
       this.alternate !== null ? this.alternate.outerStart : this.outerEnd,
@@ -368,10 +352,8 @@ export default class ConditionalPatcher extends NodePatcher {
   /**
    * Gets the index of the token representing the `then` between condition and
    * consequent.
-   *
-   * @private
    */
-  getThenTokenIndex(): SourceTokenListIndex | null {
+  private getThenTokenIndex(): SourceTokenListIndex | null {
     let searchEnd;
     if (this.consequent) {
       searchEnd = this.consequent.outerStart;

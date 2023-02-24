@@ -82,10 +82,7 @@ export default class ChainedComparisonOpPatcher extends NodePatcher {
     );
   }
 
-  /**
-   * @private
-   */
-  getMiddleOperands(): Array<NodePatcher> {
+  private getMiddleOperands(): Array<NodePatcher> {
     return this.operands.slice(1, -1);
   }
 

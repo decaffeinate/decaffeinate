@@ -98,10 +98,7 @@ export default class ForPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  isPostFor(): boolean {
+  private isPostFor(): boolean {
     return this.body && this.body.contentStart < this.target.contentStart;
   }
 
@@ -120,10 +117,7 @@ export default class ForPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  getForToken(): SourceToken {
+  private getForToken(): SourceToken {
     if (this.isPostFor()) {
       const afterForToken = this.getFirstHeaderPatcher();
       const index = this.indexOfSourceTokenBetweenPatchersMatching(
@@ -146,10 +140,7 @@ export default class ForPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  getFirstHeaderPatcher(): NodePatcher {
+  private getFirstHeaderPatcher(): NodePatcher {
     const candidates = [this.keyAssignee, this.valAssignee, this.target];
     let result: NodePatcher | null = null;
     candidates.forEach((candidate) => {

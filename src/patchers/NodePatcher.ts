@@ -92,10 +92,7 @@ export default class NodePatcher {
     return null;
   }
 
-  /**
-   * @private
-   */
-  setupLocationInformation(): void {
+  private setupLocationInformation(): void {
     const { node, context } = this;
 
     /**
@@ -1207,10 +1204,8 @@ export default class NodePatcher {
 
   /**
    * Gets the index ending the line following this patcher's node.
-   *
-   * @private
    */
-  getEndOfLine(): number {
+  private getEndOfLine(): number {
     const { source } = this.context;
     for (let i = this.outerEnd - '\n'.length; i < source.length; i++) {
       if (source[i] === '\n') {

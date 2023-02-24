@@ -26,10 +26,7 @@ export default class RangePatcher extends BinaryOpPatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  patchAsLiteralArray(): void {
+  private patchAsLiteralArray(): void {
     if (!(this.left.node instanceof Int) || !(this.right.node instanceof Int)) {
       throw this.error('Expected ints on both sides for a literal array.');
     }
@@ -58,10 +55,7 @@ export default class RangePatcher extends BinaryOpPatcher {
     this.overwrite(this.contentStart, this.contentEnd, `[${list}]`);
   }
 
-  /**
-   * @private
-   */
-  patchAsIIFE(): void {
+  private patchAsIIFE(): void {
     const helper = this.registerHelper('__range__', RANGE_HELPER);
 
     // `[a..b]` → `__range__(a..b]`
@@ -81,10 +75,7 @@ export default class RangePatcher extends BinaryOpPatcher {
     this.overwrite(this.right.outerEnd, this.contentEnd, `, ${JSON.stringify(this.isInclusive())})`);
   }
 
-  /**
-   * @private
-   */
-  canBecomeLiteralArray(): boolean {
+  private canBecomeLiteralArray(): boolean {
     const range = this.getLiteralRange();
 
     if (!range) {
@@ -95,10 +86,7 @@ export default class RangePatcher extends BinaryOpPatcher {
     return Math.abs(last - first) <= MAXIMUM_LITERAL_RANGE_ELEMENTS;
   }
 
-  /**
-   * @private
-   */
-  getLiteralRange(): [number, number] | null {
+  private getLiteralRange(): [number, number] | null {
     const left = this.left.node;
     const right = this.right.node;
 
@@ -115,9 +103,6 @@ export default class RangePatcher extends BinaryOpPatcher {
     }
   }
 
-  /**
-   * @private
-   */
   isInclusive(): boolean {
     return this.node.isInclusive;
   }

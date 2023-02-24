@@ -69,7 +69,7 @@ export default class BinaryOpPatcher extends NodePatcher {
     // override point for subclasses
   }
 
-  getOperator(): string {
+  protected getOperator(): string {
     return this.sourceOfToken(this.getOperatorToken());
   }
 

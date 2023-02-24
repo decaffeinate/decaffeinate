@@ -110,10 +110,7 @@ export default class SwitchPatcher extends NodePatcher {
     return this.willPatchAsExpression();
   }
 
-  /**
-   * @private
-   */
-  overwriteElse(): void {
+  private overwriteElse(): void {
     // `else` → `default:`
     //           ^^^^^^^^
     const elseToken = this.getElseToken();
@@ -122,10 +119,7 @@ export default class SwitchPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  getElseToken(): SourceToken | null {
+  private getElseToken(): SourceToken | null {
     let searchStart;
     if (this.cases.length > 0) {
       searchStart = this.cases[this.cases.length - 1].outerEnd;
@@ -155,10 +149,7 @@ export default class SwitchPatcher extends NodePatcher {
     return this.sourceTokenAtIndex(elseTokenIndex);
   }
 
-  /**
-   * @private
-   */
-  getSwitchToken(): SourceToken {
+  private getSwitchToken(): SourceToken {
     const switchToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
     if (!switchToken) {
       throw this.error(`bad token index for start of 'switch'`);

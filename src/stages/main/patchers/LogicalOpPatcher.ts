@@ -21,10 +21,8 @@ export default class LogicalOpPatcher extends BinaryOpPatcher {
 
   /**
    * Apply De Morgan's law.
-   *
-   * @private
    */
-  getOperator(): string {
+  protected getOperator(): string {
     const operatorToken = this.getOperatorToken();
     let operator = this.context.source.slice(operatorToken.start, operatorToken.end);
     if (operator === 'and') {

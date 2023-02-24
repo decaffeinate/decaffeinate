@@ -47,10 +47,8 @@ export default class WhilePatcher extends NodePatcher {
   /**
    * `BODY 'while' CONDITION ('when' GUARD)?` → `while CONDITION [when GUARD] then BODY`
    * `BODY 'until' CONDITION ('when' GUARD)?` → `until CONDITION [when GUARD] then BODY`
-   *
-   * @private
    */
-  normalize(): void {
+  private normalize(): void {
     if (this.body === null) {
       throw this.error('Expected non-null body.');
     }
@@ -76,10 +74,7 @@ export default class WhilePatcher extends NodePatcher {
     this.overwrite(this.contentStart, this.contentEnd, newContent);
   }
 
-  /**
-   * @private
-   */
-  isPostWhile(): boolean {
+  private isPostWhile(): boolean {
     return this.body !== null && this.condition.contentStart > this.body.contentStart;
   }
 }

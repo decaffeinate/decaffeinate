@@ -21,10 +21,7 @@ export default class EqualityPatcher extends BinaryOpPatcher {
     return getCompareOperator(this.sourceOfToken(token), this.negated);
   }
 
-  /**
-   * @private
-   */
-  getCompareToken(): SourceToken {
+  private getCompareToken(): SourceToken {
     const { left, right } = this;
     const compareTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       left,

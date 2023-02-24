@@ -248,10 +248,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  getSemicolonSourceTokenIndexBetween(left: NodePatcher, right: NodePatcher): SourceTokenListIndex | null {
+  private getSemicolonSourceTokenIndexBetween(left: NodePatcher, right: NodePatcher): SourceTokenListIndex | null {
     return this.indexOfSourceTokenBetweenPatchersMatching(left, right, (token) => token.type === SourceType.SEMICOLON);
   }
 
