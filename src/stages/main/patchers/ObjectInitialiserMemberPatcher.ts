@@ -31,10 +31,7 @@ export default class ObjectInitialiserMemberPatcher extends ObjectBodyMemberPatc
     }
   }
 
-  /**
-   * @private
-   */
-  patchAsShorthand({ expand = false }: { expand: boolean }): void {
+  private patchAsShorthand({ expand = false }: { expand: boolean }): void {
     const { key } = this;
     if (key instanceof MemberAccessOpPatcher) {
       key.patch();

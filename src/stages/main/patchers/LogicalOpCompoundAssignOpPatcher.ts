@@ -61,10 +61,7 @@ export default class LogicalOpCompoundAssignOpPatcher extends CompoundAssignOpPa
     this.insert(this.expression.outerEnd, ' }');
   }
 
-  /**
-   * @private
-   */
-  isOrOp(): boolean {
+  private isOrOp(): boolean {
     const operator = this.getOperatorToken();
     const op = this.sourceOfToken(operator);
     // There could be a space in the middle of the operator, like `or =` or

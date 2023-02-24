@@ -120,10 +120,7 @@ export default class WhilePatcher extends LoopPatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  getWhileTokenIndex(): SourceTokenListIndex {
+  private getWhileTokenIndex(): SourceTokenListIndex {
     const whileTokenIndex = this.contentStartTokenIndex;
     const whileToken = this.sourceTokenAtIndex(whileTokenIndex);
     if (!whileToken || whileToken.type !== SourceType.WHILE) {
@@ -132,10 +129,7 @@ export default class WhilePatcher extends LoopPatcher {
     return whileTokenIndex;
   }
 
-  /**
-   * @private
-   */
-  getThenTokenIndex(): SourceTokenListIndex | null {
+  private getThenTokenIndex(): SourceTokenListIndex | null {
     const whileTokenIndex = this.getWhileTokenIndex();
     if (!whileTokenIndex) {
       throw this.error(`could not get first token of 'while' loop`);

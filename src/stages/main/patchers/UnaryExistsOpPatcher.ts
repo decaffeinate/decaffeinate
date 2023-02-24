@@ -111,10 +111,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
     this.negated = !this.negated;
   }
 
-  /**
-   * @private
-   */
-  needsTypeofCheck(): boolean {
+  private needsTypeofCheck(): boolean {
     return this.expression.mayBeUnboundReference();
   }
 

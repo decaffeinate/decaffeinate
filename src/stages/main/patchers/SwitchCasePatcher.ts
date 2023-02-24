@@ -101,10 +101,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     this.negated = !this.negated;
   }
 
-  /**
-   * @private
-   */
-  getWhenToken(): SourceToken {
+  private getWhenToken(): SourceToken {
     const whenToken = this.sourceTokenAtIndex(this.contentStartTokenIndex);
     if (!whenToken) {
       throw this.error(`bad token index for start of 'when'`);
@@ -115,10 +112,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     return whenToken;
   }
 
-  /**
-   * @private
-   */
-  getCommaTokens(): Array<SourceToken> {
+  private getCommaTokens(): Array<SourceToken> {
     const result: Array<SourceToken> = [];
     for (let i = 1; i < this.conditions.length; i++) {
       const left = this.conditions[i - 1];
@@ -136,10 +130,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     return result;
   }
 
-  /**
-   * @private
-   */
-  hasExistingBreak(): boolean {
+  private hasExistingBreak(): boolean {
     if (!(this.consequent instanceof BlockPatcher)) {
       return false;
     }
@@ -149,10 +140,8 @@ export default class SwitchCasePatcher extends NodePatcher {
 
   /**
    * Gets the token representing the `then` between condition and consequent.
-   *
-   * @private
    */
-  getThenToken(): SourceToken | null {
+  private getThenToken(): SourceToken | null {
     const thenTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.conditions[0].outerEnd,
       this.consequent !== null ? this.consequent.outerStart : this.contentEnd,

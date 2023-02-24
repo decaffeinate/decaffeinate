@@ -21,10 +21,8 @@ export default class ProgramPatcher extends SharedProgramPatcher {
 
   /**
    * Removes continuation tokens (i.e. '\' at the end of a line).
-   *
-   * @private
    */
-  patchContinuations(): void {
+  private patchContinuations(): void {
     this.getProgramSourceTokens().forEach((token) => {
       if (token.type === SourceType.CONTINUATION) {
         this.remove(token.start, token.end);
@@ -34,10 +32,8 @@ export default class ProgramPatcher extends SharedProgramPatcher {
 
   /**
    * Replaces CoffeeScript style comments with JavaScript style comments.
-   *
-   * @private
    */
-  patchComments(): void {
+  private patchComments(): void {
     const { source } = this.context;
     this.getProgramSourceTokens().forEach((token) => {
       if (token.type === SourceType.COMMENT) {
@@ -54,10 +50,8 @@ export default class ProgramPatcher extends SharedProgramPatcher {
 
   /**
    * Patches a block comment.
-   *
-   * @private
    */
-  patchBlockComment(comment: SourceToken): void {
+  private patchBlockComment(comment: SourceToken): void {
     const { start, end } = comment;
     this.overwrite(start, start + BLOCK_COMMENT_DELIMITER.length, '/*');
 
@@ -109,20 +103,16 @@ export default class ProgramPatcher extends SharedProgramPatcher {
 
   /**
    * Patches a single-line comment.
-   *
-   * @private
    */
-  patchLineComment(comment: SourceToken): void {
+  private patchLineComment(comment: SourceToken): void {
     const { start } = comment;
     this.overwrite(start, start + '#'.length, '//');
   }
 
   /**
    * Patches a shebang comment.
-   *
-   * @private
    */
-  patchShebangComment(comment: SourceToken): void {
+  private patchShebangComment(comment: SourceToken): void {
     const { start, end } = comment;
     const commentBody = this.slice(start, end);
     const coffeeIndex = commentBody.indexOf('coffee');

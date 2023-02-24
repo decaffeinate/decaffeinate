@@ -138,20 +138,14 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  shouldExpandCurlyBraces(): boolean {
+  private shouldExpandCurlyBraces(): boolean {
     return (
       this.isMultiline() ||
       (this.parent instanceof ObjectInitialiserMemberPatcher && notNull(this.parent.parent).isMultiline())
     );
   }
 
-  /**
-   * @private
-   */
-  patchMembers(): void {
+  private patchMembers(): void {
     this.members.forEach((member, i, members) => {
       member.patch();
       if (i !== members.length - 1) {

@@ -129,17 +129,11 @@ export default class Scope {
     return binding;
   }
 
-  /**
-   * @private
-   */
-  key(name: string): string {
+  private key(name: string): string {
     return `$${name}`;
   }
 
-  /**
-   * @private
-   */
-  unkey(key: string): string {
+  private unkey(key: string): string {
     return key.slice(1);
   }
 

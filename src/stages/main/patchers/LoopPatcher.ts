@@ -168,19 +168,13 @@ export default class LoopPatcher extends NodePatcher {
     return `${this.getResultArrayBinding()}.push(undefined)`;
   }
 
-  /**
-   * @private
-   */
-  getResultArrayBinding(): string {
+  private getResultArrayBinding(): string {
     if (!this._resultArrayBinding) {
       this._resultArrayBinding = this.claimFreeBinding('result');
     }
     return this._resultArrayBinding;
   }
 
-  /**
-   * @private
-   */
   getResultArrayElementBinding(): string {
     if (!this._resultArrayElementBinding) {
       this._resultArrayElementBinding = this.claimFreeBinding('item');

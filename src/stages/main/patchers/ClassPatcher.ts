@@ -115,10 +115,7 @@ export default class ClassPatcher extends NodePatcher {
     return this.isAnonymous();
   }
 
-  /**
-   * @private
-   */
-  getClassToken(): SourceToken {
+  private getClassToken(): SourceToken {
     const tokens = this.context.sourceTokens;
     const classSourceToken = notNull(tokens.tokenAtIndex(this.contentStartTokenIndex));
     if (classSourceToken.type !== SourceType.CLASS) {
@@ -131,17 +128,11 @@ export default class ClassPatcher extends NodePatcher {
     return classSourceToken;
   }
 
-  /**
-   * @private
-   */
-  isAnonymous(): boolean {
+  private isAnonymous(): boolean {
     return this.nameAssignee === null;
   }
 
-  /**
-   * @private
-   */
-  isNamespaced(): boolean {
+  private isNamespaced(): boolean {
     return !this.isAnonymous() && !(this.nameAssignee instanceof IdentifierPatcher);
   }
 
@@ -155,9 +146,6 @@ export default class ClassPatcher extends NodePatcher {
     return this.nameAssignee !== null && name !== null && this.getScope().getBinding(name) !== this.nameAssignee.node;
   }
 
-  /**
-   * @private
-   */
   getName(): string | null {
     const { nameAssignee } = this;
     let name;
@@ -178,10 +166,7 @@ export default class ClassPatcher extends NodePatcher {
     return this.superclass !== null;
   }
 
-  /**
-   * @private
-   */
-  getBraceInsertionOffset(): number {
+  private getBraceInsertionOffset(): number {
     if (this.superclass) {
       return this.superclass.outerEnd;
     }

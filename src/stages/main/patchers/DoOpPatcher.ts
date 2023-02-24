@@ -73,10 +73,7 @@ export default class DoOpPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  getDoTokenIndex(): SourceTokenListIndex {
+  private getDoTokenIndex(): SourceTokenListIndex {
     const index = this.contentStartTokenIndex;
     const token = this.sourceTokenAtIndex(index);
     if (!token || token.type !== SourceType.DO) {

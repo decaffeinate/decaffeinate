@@ -55,10 +55,7 @@ export default class SuperPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  getEnclosingMethodInfo(): MethodInfo {
+  private getEnclosingMethodInfo(): MethodInfo {
     const methodAssignment = this.getEnclosingMethodAssignment();
     if (methodAssignment instanceof ClassAssignOpPatcher) {
       let accessCode;
@@ -95,10 +92,7 @@ export default class SuperPatcher extends NodePatcher {
     }
   }
 
-  /**
-   * @private
-   */
-  getEnclosingClassName(patcher: NodePatcher): string | null {
+  private getEnclosingClassName(patcher: NodePatcher): string | null {
     let { parent } = patcher;
     while (parent) {
       if (parent instanceof ClassPatcher) {
@@ -112,10 +106,7 @@ export default class SuperPatcher extends NodePatcher {
     throw this.error('Expected super expression to be in a class body.');
   }
 
-  /**
-   * @private
-   */
-  getEnclosingMethodAssignment(): NodePatcher {
+  private getEnclosingMethodAssignment(): NodePatcher {
     let { parent } = this;
     while (parent) {
       if (
@@ -133,10 +124,8 @@ export default class SuperPatcher extends NodePatcher {
   /**
    * Extract the 'A' and 'b' from a node like `A.prototype.b = -> c`, if it
    * matches that form. Return null otherwise.
-   *
-   * @private
    */
-  getPrototypeAssignInfo(patcher: NodePatcher): MethodInfo | null {
+  private getPrototypeAssignInfo(patcher: NodePatcher): MethodInfo | null {
     const prototypeAssignPatchers = extractPrototypeAssignPatchers(patcher);
     if (!prototypeAssignPatchers) {
       return null;
@@ -169,10 +158,8 @@ export default class SuperPatcher extends NodePatcher {
    * - CoffeeScript allows `super` from nested methods (which end up compiling
    *   to use whatever `arguments` is relevant at that point in code if the
    *   `super` is written without args).
-   *
-   * @private
    */
-  canConvertToJsSuper(): boolean {
+  private canConvertToJsSuper(): boolean {
     const methodAssignment = this.getEnclosingMethodAssignment();
     if (methodAssignment instanceof ConstructorPatcher || methodAssignment instanceof ClassAssignOpPatcher) {
       return methodAssignment.expression === this.getEnclosingFunction();
@@ -180,10 +167,7 @@ export default class SuperPatcher extends NodePatcher {
     return false;
   }
 
-  /**
-   * @private
-   */
-  getEnclosingFunction(): NodePatcher {
+  private getEnclosingFunction(): NodePatcher {
     let { parent } = this;
     while (parent) {
       if (parent instanceof FunctionPatcher) {
@@ -194,10 +178,7 @@ export default class SuperPatcher extends NodePatcher {
     throw this.error('super called outside of a function.');
   }
 
-  /**
-   * @private
-   */
-  getFollowingOpenParenToken(): SourceToken {
+  private getFollowingOpenParenToken(): SourceToken {
     const openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
       this.contentEndTokenIndex,
       SourceType.CALL_START
