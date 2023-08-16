@@ -34,7 +34,7 @@ export interface ValidateOptions {
  */
 export default function validate(
   source: string,
-  expectedOutput?: unknown | { cs1: unknown; cs2: unknown },
+  expectedOutput?: unknown,
   { options = {}, skipNodeCheck = false }: ValidateOptions = {}
 ): void {
   const expectedCS1: unknown =

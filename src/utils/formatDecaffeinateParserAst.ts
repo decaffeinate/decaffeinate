@@ -25,7 +25,7 @@ function formatAstNodeLines(node: Node, context: CodeContext): Array<string> {
     }
     let valueText;
     try {
-      valueText = JSON.stringify(node[key]);
+      valueText = JSON.stringify(node[key as keyof typeof node]);
     } catch (e) {
       valueText = '(error)';
     }

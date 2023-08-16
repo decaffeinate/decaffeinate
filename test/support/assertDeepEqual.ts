@@ -23,7 +23,9 @@ function isDeepEqual(actual: unknown, expected: unknown): boolean {
   if (typeof actual === 'object' && actual && typeof expected === 'object' && expected) {
     return (
       isDeepEqual(Object.keys(actual).sort(), Object.keys(expected).sort()) &&
-      Object.keys(actual).every((key) => isDeepEqual(actual[key], expected[key]))
+      Object.keys(actual).every((key) =>
+        isDeepEqual(actual[key as keyof typeof actual], expected[key as keyof typeof expected])
+      )
     );
   }
   return false;

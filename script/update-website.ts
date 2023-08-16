@@ -2,7 +2,6 @@ import { execFile } from 'mz/child_process';
 import { readFile } from 'mz/fs';
 import { join } from 'path';
 import getLatestVersion from './getLatestVersion';
-import type Package from '../package.json';
 import assert from 'assert';
 
 let commit = true;
@@ -20,9 +19,17 @@ for (let i = 2; i < process.argv.length; i++) {
   }
 }
 
-async function pkg(): Promise<typeof Package> {
+interface Package {
+  name: string;
+  version: string;
+  dependencies: { [name: string]: string };
+  devDependencies: { [name: string]: string };
+  publishConfig: { [name: string]: string };
+}
+
+async function pkg(): Promise<Package> {
   const content = await readFile(join(__dirname, '../package.json'), { encoding: 'utf8' });
-  return JSON.parse(content) as typeof Package;
+  return JSON.parse(content) as Package;
 }
 
 async function configureGithubRemote(name: string, project: string): Promise<void> {
@@ -76,7 +83,7 @@ async function updateWebsite(): Promise<void> {
   await run('git', ['reset', '--hard', 'website-main']);
 
   const websitePackage = await pkg();
-  const currentVersion = websitePackage['devDependencies']['decaffeinate'] as string;
+  const currentVersion = websitePackage['devDependencies']['decaffeinate'];
 
   if (currentVersion === latestVersion) {
     console.log(`Already using decaffeinate v${latestVersion}, skipping install.`);

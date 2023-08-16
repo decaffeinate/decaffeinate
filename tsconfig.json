@@ -13,7 +13,6 @@
     "noUnusedLocals": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "suppressImplicitAnyIndexErrors": true,
     "downlevelIteration": true,
     "noEmitHelpers": true,
     "importHelpers": true,
