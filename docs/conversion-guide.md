@@ -77,7 +77,7 @@ but don't work as well in JavaScript.
 
 For a comprehensive list of things to keep in mind when looking over the
 JavaScript output, see
-[Cleanup suggestions after running decaffeinate](./correctness-issues.md).
+[Cleanup suggestions after running decaffeinate](./suggestions.md).
 
 ### Run your tests
 
