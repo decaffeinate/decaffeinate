@@ -60,7 +60,7 @@
       "sort-package-json"
     ]
   },
-  "packageManager": "pnpm@7.20.0",
+  "packageManager": "pnpm@8.15.0",
   "dependencies": {
     "@babel/types": "^7.12.6",
     "@codemod/core": "^2.0.1",
