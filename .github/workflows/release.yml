@@ -10,8 +10,8 @@ jobs:
     environment: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
@@ -20,7 +20,7 @@ jobs:
 
       # setup node again but with pnpm caching
       # https://github.com/actions/setup-node/issues/531
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
@@ -38,7 +38,7 @@ jobs:
         run: npx semantic-release
 
       # set up deploy key for website
-      - uses: webfactory/ssh-agent@v0.5.4
+      - uses: webfactory/ssh-agent@v0.9.0
         with:
             ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
