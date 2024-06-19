@@ -33,7 +33,7 @@ export default class BlockPatcher extends SharedBlockPatcher {
           const charsToRemove = indentLength - blockIndentLength;
           if (charsToRemove < 0) {
             throw this.error(
-              'Unexpected statement at an earlier indentation level than an ' + 'earlier statement in the block.'
+              'Unexpected statement at an earlier indentation level than an ' + 'earlier statement in the block.',
             );
           }
           if (charsToRemove > 0) {

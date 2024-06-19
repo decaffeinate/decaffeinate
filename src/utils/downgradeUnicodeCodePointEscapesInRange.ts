@@ -14,7 +14,7 @@ export default function downgradeUnicodeCodePointEscapesInRange(
   start: number,
   end: number,
   patcher: NodePatcher,
-  { needsExtraEscape }: { needsExtraEscape?: boolean } = {}
+  { needsExtraEscape }: { needsExtraEscape?: boolean } = {},
 ): void {
   const source = patcher.context.source;
   let numBackslashes = 0;
@@ -40,7 +40,7 @@ export default function downgradeUnicodeCodePointEscapesInRange(
         patcher.overwrite(
           i,
           codePointEnd + 1,
-          `${toUnicodeEscape(high)}${needsExtraEscape ? '\\' : ''}${toUnicodeEscape(low)}`
+          `${toUnicodeEscape(high)}${needsExtraEscape ? '\\' : ''}${toUnicodeEscape(low)}`,
         );
       }
       i = codePointEnd;

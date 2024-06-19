@@ -14,7 +14,7 @@ export default class ForInPatcher extends ForPatcher {
     target: NodePatcher,
     step: NodePatcher | null,
     filter: NodePatcher | null,
-    body: BlockPatcher
+    body: BlockPatcher,
   ) {
     super(patcherContext, keyAssignee, valAssignee, target, filter, body);
     this.step = step;

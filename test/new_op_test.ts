@@ -14,7 +14,7 @@ describe('`new` operator', () => {
         a,
         b
       );
-    `
+    `,
     );
   });
 
@@ -25,7 +25,7 @@ describe('`new` operator', () => {
     `,
       `
       new Array(1);
-    `
+    `,
     );
   });
 
@@ -36,7 +36,7 @@ describe('`new` operator', () => {
     `,
       `
       new Object;
-    `
+    `,
     );
   });
 
@@ -47,7 +47,7 @@ describe('`new` operator', () => {
     `,
       `
       new A().B;
-    `
+    `,
     );
   });
 
@@ -63,7 +63,7 @@ describe('`new` operator', () => {
         a,
         b
       });
-    `
+    `,
     );
   });
 
@@ -83,7 +83,7 @@ describe('`new` operator', () => {
           'def'
         ]
       });
-    `
+    `,
     );
   });
 
@@ -94,7 +94,7 @@ describe('`new` operator', () => {
     `,
       `
       (new (function() { return a; }));
-    `
+    `,
     );
   });
 
@@ -107,7 +107,7 @@ describe('`new` operator', () => {
     `,
       `
       new (() => a);
-    `
+    `,
     );
   });
 
@@ -118,7 +118,7 @@ describe('`new` operator', () => {
     `,
       `
       new ((() => { try { return Array; } catch (error) {} })());
-    `
+    `,
     );
   });
 
@@ -129,7 +129,7 @@ describe('`new` operator', () => {
     `,
       `
       new (((() => (function() {})))());
-    `
+    `,
     );
   });
 });

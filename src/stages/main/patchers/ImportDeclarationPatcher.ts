@@ -12,7 +12,7 @@ export default class ImportDeclarationPatcher extends NodePatcher {
     public defaultBinding: IdentifierPatcher | null,
     public namespaceImport: IdentifierPatcher | null,
     public namedImports: Array<ModuleSpecifierPatcher> | null,
-    public source: StringPatcher
+    public source: StringPatcher,
   ) {
     super(patcherContext);
   }
@@ -35,7 +35,7 @@ export default class ImportDeclarationPatcher extends NodePatcher {
         const commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
           namedImport.outerEndTokenIndex,
           SourceType.COMMA,
-          isSemanticToken
+          isSemanticToken,
         );
         const commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
         if (!isLast && !commaToken) {

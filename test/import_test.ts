@@ -16,7 +16,7 @@ describe('imports', () => {
           useJSModules: true,
           looseJSModules: true,
         },
-      }
+      },
     );
   });
 
@@ -29,7 +29,7 @@ describe('imports', () => {
       `
       const x = require('x');
       module.exports.y = 3;
-    `
+    `,
     );
   });
 
@@ -54,7 +54,7 @@ describe('imports', () => {
           useJSModules: true,
           safeImportFunctionIdentifiers: ['foo'],
         },
-      }
+      },
     );
   });
 
@@ -74,7 +74,7 @@ describe('imports', () => {
         options: {
           useJSModules: true,
         },
-      }
+      },
     );
   });
 
@@ -85,7 +85,7 @@ describe('imports', () => {
     `,
       `
       import a from 'b';
-    `
+    `,
     );
   });
 
@@ -96,7 +96,7 @@ describe('imports', () => {
     `,
       `
       import * as a from 'b';
-    `
+    `,
     );
   });
 
@@ -107,7 +107,7 @@ describe('imports', () => {
     `,
       `
       import {a as b, c} from 'd';
-    `
+    `,
     );
   });
 
@@ -118,7 +118,7 @@ describe('imports', () => {
     `,
       `
       import 'd';
-    `
+    `,
     );
   });
 
@@ -135,7 +135,7 @@ describe('imports', () => {
         a,
         b
       } from 'c';
-    `
+    `,
     );
   });
 
@@ -146,7 +146,7 @@ describe('imports', () => {
     `,
       `
       export {a as b, c};
-    `
+    `,
     );
   });
 
@@ -163,7 +163,7 @@ describe('imports', () => {
         a as b,
         c
       };
-    `
+    `,
     );
   });
 
@@ -174,7 +174,7 @@ describe('imports', () => {
     `,
       `
       export default a(b);
-    `
+    `,
     );
   });
 
@@ -185,7 +185,7 @@ describe('imports', () => {
     `,
       `
       export * from 'a';
-    `
+    `,
     );
   });
 
@@ -196,7 +196,7 @@ describe('imports', () => {
       `,
       `
       export { default } from 'a';
-      `
+      `,
     );
   });
 
@@ -207,7 +207,7 @@ describe('imports', () => {
     `,
       `
       export var a = 1;
-    `
+    `,
     );
   });
 
@@ -224,7 +224,7 @@ describe('imports', () => {
           return c;
         }
       }
-    `
+    `,
     );
   });
 
@@ -245,7 +245,7 @@ describe('imports', () => {
       ";
       export { a } from "a third stupid file name\\
       ";
-      `
+      `,
     );
   });
 });

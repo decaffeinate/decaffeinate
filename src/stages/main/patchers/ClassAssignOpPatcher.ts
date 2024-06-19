@@ -100,7 +100,7 @@ export default class ClassAssignOpPatcher extends ObjectBodyMemberPatcher {
     const colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.key,
       this.expression,
-      (token) => token.type === SourceType.COLON
+      (token) => token.type === SourceType.COLON,
     );
     if (!colonIndex) {
       throw this.error('expected a colon between the key and expression of a class property');

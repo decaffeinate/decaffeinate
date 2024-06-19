@@ -8,7 +8,7 @@ describe('return', () => {
     `,
       `
       (function() { a; return 1; });
-    `
+    `,
     ));
 
   it('works without a return value', () =>
@@ -21,7 +21,7 @@ describe('return', () => {
       (function() {
         if (a) { return; }
       });
-    `
+    `,
     ));
 
   it('forces the return value to be an expression', () =>
@@ -31,7 +31,7 @@ describe('return', () => {
     `,
       `
       (() => true ? null : undefined);
-    `
+    `,
     ));
 
   it('preserves comments when removing trailing empty returns', () =>
@@ -45,7 +45,7 @@ describe('return', () => {
       (function() {
         a;  // b
       });
-    `
+    `,
     ));
 
   it('correctly removes trailing empty returns on the same line as another statement', () =>
@@ -55,7 +55,7 @@ describe('return', () => {
     `,
       `
       (function() { a; });
-    `
+    `,
     ));
 
   it('correctly removes trailing empty returns as the only function statement', () =>
@@ -65,7 +65,7 @@ describe('return', () => {
     `,
       `
       (function() {  });
-    `
+    `,
     ));
 
   it('does not pull code into comments when followed by a trailing empty return', () => {
@@ -83,7 +83,7 @@ describe('return', () => {
         }).c(() => {
         return d;
       });
-    `
+    `,
     );
   });
 
@@ -94,7 +94,7 @@ describe('return', () => {
     `,
       `
       return a;
-    `
+    `,
     ));
 
   it('allows return surrounded by parens', () =>
@@ -109,7 +109,7 @@ describe('return', () => {
         return;
         return a;
       });
-    `
+    `,
     ));
 
   it('allows return surrounded by two sets of parens', () =>
@@ -124,6 +124,6 @@ describe('return', () => {
         return;
         return a;
       });
-    `
+    `,
     ));
 });

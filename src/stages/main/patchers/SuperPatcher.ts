@@ -37,7 +37,7 @@ export default class SuperPatcher extends NodePatcher {
           'Cannot handle a super call in an inner function in a constructor. ' +
             'Please either rewrite your CoffeeScript code to not use this ' +
             'construct or file a bug to discuss ways that decaffeinate could ' +
-            'handle this case.'
+            'handle this case.',
         );
       }
       if (!classCode) {
@@ -50,7 +50,7 @@ export default class SuperPatcher extends NodePatcher {
       this.overwrite(
         this.contentStart,
         openParenToken.end,
-        `${classCode}.prototype.__proto__${accessCode}.call(this, `
+        `${classCode}.prototype.__proto__${accessCode}.call(this, `,
       );
     }
   }
@@ -143,7 +143,7 @@ export default class SuperPatcher extends NodePatcher {
       };
     } else {
       throw this.error(
-        'Expected the method access patcher to be either ' + 'MemberAccessOpPatcher or DynamicMemberAccessOpPatcher.'
+        'Expected the method access patcher to be either ' + 'MemberAccessOpPatcher or DynamicMemberAccessOpPatcher.',
       );
     }
   }
@@ -181,7 +181,7 @@ export default class SuperPatcher extends NodePatcher {
   private getFollowingOpenParenToken(): SourceToken {
     const openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
       this.contentEndTokenIndex,
-      SourceType.CALL_START
+      SourceType.CALL_START,
     );
     if (!openParenTokenIndex) {
       throw this.error('Expected open-paren after super.');

@@ -8,7 +8,7 @@ describe('sequences', () => {
     `,
       `
       (() => (a, b));
-    `
+    `,
     );
   });
 
@@ -19,7 +19,7 @@ describe('sequences', () => {
     `,
       `
       (() => (a, b, c));
-    `
+    `,
     );
   });
 
@@ -36,7 +36,7 @@ describe('sequences', () => {
         b;
         c
       ; }
-    `
+    `,
     );
   });
 
@@ -55,7 +55,7 @@ describe('sequences', () => {
         b; c;
         d
       ;
-    `
+    `,
     );
   });
 
@@ -69,7 +69,7 @@ describe('sequences', () => {
       if (!(a, b)) {
         c;
       }
-    `
+    `,
     );
   });
 });

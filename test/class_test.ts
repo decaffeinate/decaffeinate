@@ -24,7 +24,7 @@ describe('classes', () => {
           return 1;
         }
       };
-    `
+    `,
     );
   });
 
@@ -41,7 +41,7 @@ describe('classes', () => {
           return 1;
         }
       }
-    `
+    `,
     );
     check(
       `
@@ -56,7 +56,7 @@ describe('classes', () => {
           return 1;
         }
       }));
-    `
+    `,
     );
   });
 
@@ -73,7 +73,7 @@ describe('classes', () => {
           return yield 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -87,7 +87,7 @@ describe('classes', () => {
       (class extends Parent {
         constructor() {}
       });
-    `
+    `,
     );
   });
 
@@ -104,7 +104,7 @@ describe('classes', () => {
           this.a = 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -121,7 +121,7 @@ describe('classes', () => {
           this.a = a;
         }
       }
-    `
+    `,
     );
   });
 
@@ -145,7 +145,7 @@ describe('classes', () => {
               this.c = args[2];
           }
         }
-      `
+      `,
       );
       checkCS2(
         `
@@ -160,7 +160,7 @@ describe('classes', () => {
             this.c = c;
           }
         }
-      `
+      `,
       );
     });
 
@@ -176,7 +176,7 @@ describe('classes', () => {
             this.a = a;
           }
         }
-      `
+      `,
       );
     });
 
@@ -194,7 +194,7 @@ describe('classes', () => {
             super();
           }
         }
-      `
+      `,
       );
 
       checkCS2(
@@ -215,7 +215,7 @@ describe('classes', () => {
           options: {
             disallowInvalidConstructors: true,
           },
-        }
+        },
       );
     });
 
@@ -231,7 +231,7 @@ describe('classes', () => {
             this.a = a;
           }
         }
-      `
+      `,
       );
     });
 
@@ -251,7 +251,7 @@ describe('classes', () => {
             this.a = a;
           }
         }
-      `
+      `,
       );
     });
 
@@ -266,7 +266,7 @@ describe('classes', () => {
         'Cannot automatically convert a subclass with a constructor that uses `this` before `super`.',
         {
           disallowInvalidConstructors: true,
-        }
+        },
       );
     });
 
@@ -287,7 +287,7 @@ describe('classes', () => {
             f();
           }
         }
-      `
+      `,
       );
     });
 
@@ -301,7 +301,7 @@ describe('classes', () => {
         'Cannot automatically convert a subclass with a constructor that does not call super.',
         {
           disallowInvalidConstructors: true,
-        }
+        },
       );
     });
 
@@ -315,7 +315,7 @@ describe('classes', () => {
         'Cannot automatically convert a subclass that uses bound methods.',
         {
           disallowInvalidConstructors: true,
-        }
+        },
       );
     });
 
@@ -334,7 +334,7 @@ describe('classes', () => {
         {
           disallowInvalidConstructors: true,
           useCS2: false,
-        }
+        },
       );
     });
 
@@ -366,7 +366,7 @@ describe('classes', () => {
           options: {
             disallowInvalidConstructors: true,
           },
-        }
+        },
       );
     });
 
@@ -385,7 +385,7 @@ describe('classes', () => {
             super(...arguments);
           }
         }
-      `
+      `,
       );
     });
 
@@ -402,7 +402,7 @@ describe('classes', () => {
             this.a = 2;
           }
         }
-      `
+      `,
       );
     });
 
@@ -424,7 +424,7 @@ describe('classes', () => {
           return 1;
         }
       }
-    `
+    `,
       );
 
       // The behavior is different in CS2. Binding happens after `super`.
@@ -449,7 +449,7 @@ describe('classes', () => {
           return 1;
         }
       }
-    `
+    `,
       );
     });
 
@@ -476,7 +476,7 @@ describe('classes', () => {
           this.b = 2;
         }
       }
-    `
+    `,
       );
 
       checkCS2(
@@ -501,7 +501,7 @@ describe('classes', () => {
           this.b = 2;
         }
       }
-    `
+    `,
       );
     });
 
@@ -520,7 +520,7 @@ describe('classes', () => {
             super(...arguments);
           }
         }
-      `
+      `,
       );
     });
 
@@ -537,7 +537,7 @@ describe('classes', () => {
             this.a = 2;
           }
         }
-      `
+      `,
       );
     });
 
@@ -564,7 +564,7 @@ describe('classes', () => {
             return null;
           }
         }
-      `
+      `,
       );
     });
 
@@ -587,7 +587,7 @@ describe('classes', () => {
             return null;
           }
         }
-      `
+      `,
       );
     });
 
@@ -603,7 +603,7 @@ describe('classes', () => {
           this.a = a1;
           return a = 1;
         });
-      `
+      `,
       );
     });
 
@@ -617,7 +617,7 @@ describe('classes', () => {
         class A {
           member(a) { this.a = a; return console.log(this.a); }
         }
-      `
+      `,
       );
     });
 
@@ -631,7 +631,7 @@ describe('classes', () => {
           if (a == null) { a = 1; }
           this.a = a;
         });
-      `
+      `,
       );
     });
 
@@ -644,7 +644,7 @@ describe('classes', () => {
         (function({a}) {
           this.a = a;
         });
-      `
+      `,
       );
     });
 
@@ -657,7 +657,7 @@ describe('classes', () => {
         (function({a: b}) {
           this.b = b;
         });
-      `
+      `,
       );
     });
 
@@ -671,7 +671,7 @@ describe('classes', () => {
           this.a = a;
           if (b == null) { b = this.c; }
         });
-      `
+      `,
       );
     });
 
@@ -689,7 +689,7 @@ describe('classes', () => {
           options: {
             looseDefaultParams: true,
           },
-        }
+        },
       );
     });
 
@@ -703,7 +703,7 @@ describe('classes', () => {
           this.a = a;
           if (b == null) { b = this.a; }
         });
-      `
+      `,
       );
     });
   });
@@ -718,7 +718,7 @@ describe('classes', () => {
       class A extends B {
         constructor() {}
       }
-    `
+    `,
     );
   });
 
@@ -733,7 +733,7 @@ describe('classes', () => {
       class A extends (B = class B extends C {}) {
         constructor() {}
       }
-    `
+    `,
     );
   });
 
@@ -750,7 +750,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -777,7 +777,7 @@ describe('classes', () => {
           return 2;
         }
       }
-    `
+    `,
     );
   });
 
@@ -794,7 +794,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -812,7 +812,7 @@ describe('classes', () => {
 
         b(c) {}
       }
-    `
+    `,
     );
   });
 
@@ -837,7 +837,7 @@ describe('classes', () => {
           2;
         }
       }
-    `
+    `,
     );
   });
 
@@ -854,7 +854,7 @@ describe('classes', () => {
           return super.a(...arguments);
         }
       }
-    `
+    `,
     );
   });
 
@@ -871,7 +871,7 @@ describe('classes', () => {
           return super.a(1, 2);
         }
       }
-    `
+    `,
     );
   });
 
@@ -888,7 +888,7 @@ describe('classes', () => {
           return super.a(...arguments);
         }
       }
-    `
+    `,
     );
   });
 
@@ -905,7 +905,7 @@ describe('classes', () => {
           return 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -922,7 +922,7 @@ describe('classes', () => {
           return 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -939,7 +939,7 @@ describe('classes', () => {
           return 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -953,7 +953,7 @@ describe('classes', () => {
       A.B = class B {
         a() { return 1; }
       };
-    `
+    `,
     );
   });
 
@@ -967,7 +967,7 @@ describe('classes', () => {
       A[B] = class {
         a() { return 1; }
       };
-    `
+    `,
     );
   });
 
@@ -989,7 +989,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1018,7 +1018,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1044,7 +1044,7 @@ describe('classes', () => {
         A.initClass();
         return A;
       })();
-    `
+    `,
     );
   });
 
@@ -1061,7 +1061,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1078,7 +1078,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1138,7 +1138,7 @@ describe('classes', () => {
         A.initClass();
         return A;
       })();
-    `
+    `,
     );
   });
 
@@ -1160,7 +1160,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1182,7 +1182,7 @@ describe('classes', () => {
       
         add() {}
       }
-    `
+    `,
     );
   });
 
@@ -1202,7 +1202,7 @@ describe('classes', () => {
       
         add() {}
       }
-    `
+    `,
     );
   });
 
@@ -1222,7 +1222,7 @@ describe('classes', () => {
       
         add() {}
       }
-    `
+    `,
     );
   });
 
@@ -1254,7 +1254,7 @@ describe('classes', () => {
       
         add() {}
       }
-    `
+    `,
     );
   });
 
@@ -1272,7 +1272,7 @@ describe('classes', () => {
       
         add() {}
       }
-    `
+    `,
     );
   });
 
@@ -1291,7 +1291,7 @@ describe('classes', () => {
         }
         launch(x) { return true; }
       }
-    `
+    `,
     );
   });
 
@@ -1304,7 +1304,7 @@ describe('classes', () => {
       class A {
         b() { return c; }
       }
-    `
+    `,
     );
   });
 
@@ -1320,7 +1320,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1342,7 +1342,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1365,7 +1365,7 @@ describe('classes', () => {
           });
         }
       }
-    `
+    `,
     );
   });
 
@@ -1388,7 +1388,7 @@ describe('classes', () => {
       (cls = B).prototype.c = function() { return cls.prototype.__proto__.c.call(this, ...arguments); };
       const b = new B();
       b.c();
-    `
+    `,
     );
   });
 
@@ -1402,7 +1402,7 @@ describe('classes', () => {
       b = new B()
       setResult(b.c())
     `,
-      4
+      4,
     );
   });
 
@@ -1419,7 +1419,7 @@ describe('classes', () => {
       b = new B()
       setResult(b.c(1))
     `,
-      9
+      9,
     );
   });
 
@@ -1439,7 +1439,7 @@ describe('classes', () => {
         Cls.initClass();
         return Cls;
       })();
-    `
+    `,
     );
   });
 
@@ -1462,7 +1462,7 @@ describe('classes', () => {
         Cls.initClass();
         return Cls;
       })();
-    `
+    `,
     );
   });
 
@@ -1474,7 +1474,7 @@ describe('classes', () => {
       `
       let B;
       const A = (B = class B {});
-    `
+    `,
     );
   });
 
@@ -1495,7 +1495,7 @@ describe('classes', () => {
         B.initClass();
         return B;
       })());
-    `
+    `,
     );
   });
 
@@ -1505,7 +1505,7 @@ describe('classes', () => {
       A = class B
       setResult(B.name)
     `,
-      'B'
+      'B',
     );
   });
 
@@ -1529,7 +1529,7 @@ describe('classes', () => {
           return A;
         })();
       };
-    `
+    `,
     );
   });
 
@@ -1557,7 +1557,7 @@ describe('classes', () => {
           return MainLayout;
         })();
       });
-    `
+    `,
     );
   });
 
@@ -1574,7 +1574,7 @@ describe('classes', () => {
         }
       }
       Outer.initClass();
-    `
+    `,
     );
   });
 
@@ -1588,7 +1588,7 @@ describe('classes', () => {
       (function() {
         return (this.for = class _for {});
       });
-    `
+    `,
     );
   });
 
@@ -1611,7 +1611,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1637,7 +1637,7 @@ describe('classes', () => {
         method() {}
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1651,7 +1651,7 @@ describe('classes', () => {
       class A {
         [f()]() { return 'Hello'; }
       }
-    `
+    `,
     );
   });
 
@@ -1665,7 +1665,7 @@ describe('classes', () => {
       class A {
         [\`\${f()}, World\`]() { return 'Hello'; }
       }
-    `
+    `,
     );
   });
 
@@ -1678,7 +1678,7 @@ describe('classes', () => {
       `
       class A {}
       A = class A {};
-    `
+    `,
     );
   });
 
@@ -1688,7 +1688,7 @@ describe('classes', () => {
       class A
       setResult(A.name)
     `,
-      'A'
+      'A',
     );
   });
 
@@ -1699,7 +1699,7 @@ describe('classes', () => {
       class A.B
       setResult(A.B.name)
     `,
-      'B'
+      'B',
     );
   });
 
@@ -1710,7 +1710,7 @@ describe('classes', () => {
       class A.for
       setResult(A.for.name)
     `,
-      '_for'
+      '_for',
     );
   });
 
@@ -1721,7 +1721,7 @@ describe('classes', () => {
       class A.or
       setResult(A.or.name)
     `,
-      'or'
+      'or',
     );
   });
 
@@ -1739,7 +1739,7 @@ describe('classes', () => {
       
         [b]() { return c; }
       }
-    `
+    `,
     );
   });
 
@@ -1757,7 +1757,7 @@ describe('classes', () => {
       
         [\`\${b}foo\`]() { return c; }
       }
-    `
+    `,
     );
   });
 
@@ -1779,7 +1779,7 @@ describe('classes', () => {
       
         [b]() { return c; }
       }
-    `
+    `,
     );
   });
 
@@ -1801,7 +1801,7 @@ describe('classes', () => {
       
         [\`\${b}foo\`]() { return c; }
       }
-    `
+    `,
     );
   });
 
@@ -1824,7 +1824,7 @@ describe('classes', () => {
         }
       }
       B.initClass();
-    `
+    `,
     );
   });
 
@@ -1841,7 +1841,7 @@ describe('classes', () => {
         }
       };
       Cls.initClass();
-    `
+    `,
     );
   });
 
@@ -1872,7 +1872,7 @@ describe('classes', () => {
         A.initClass();
         return A;
       })());
-    `
+    `,
     );
   });
 
@@ -1892,7 +1892,7 @@ describe('classes', () => {
         Cls.initClass();
         return Cls();
       })());
-    `
+    `,
     );
   });
 
@@ -1904,7 +1904,7 @@ describe('classes', () => {
       `
       let A;
       new (A = class A {});
-    `
+    `,
     );
   });
 
@@ -1922,7 +1922,7 @@ describe('classes', () => {
           return c; // d
         }
       });
-    `
+    `,
     );
   });
 
@@ -1942,7 +1942,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -1957,7 +1957,7 @@ describe('classes', () => {
       b = A.b
       setResult(b())
     `,
-      5
+      5,
     );
   });
 
@@ -1981,7 +1981,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -2005,7 +2005,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -2017,7 +2017,7 @@ describe('classes', () => {
       `
       let cls, method;
       (cls = A).prototype[method = m] = function() { return cls.prototype.__proto__[method].call(this, ...arguments); };
-    `
+    `,
     );
   });
 
@@ -2033,7 +2033,7 @@ describe('classes', () => {
       m = 'g'
       setResult((new A).f())
     `,
-      1
+      1,
     );
   });
 
@@ -2051,7 +2051,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -2066,7 +2066,7 @@ describe('classes', () => {
       class A extends B {
         [method = m]() { return super[method](...arguments); }
       }
-    `
+    `,
     );
   });
 
@@ -2084,7 +2084,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -2098,7 +2098,7 @@ describe('classes', () => {
       class A {
         static [b]() { return 'hello'; }
       }
-    `
+    `,
     );
   });
 
@@ -2113,7 +2113,7 @@ describe('classes', () => {
       class A extends B {
         static [method = c]() { return super[method](...arguments); }
       }
-    `
+    `,
     );
   });
 
@@ -2134,7 +2134,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -2155,7 +2155,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -2176,7 +2176,7 @@ describe('classes', () => {
         }
       }
       A.initClass();
-    `
+    `,
     );
   });
 
@@ -2190,7 +2190,7 @@ describe('classes', () => {
           @a = -> super
       setResult(B.a())
     `,
-      3
+      3,
     );
   });
 
@@ -2205,7 +2205,7 @@ describe('classes', () => {
           @[m] = -> super
       setResult(B.a())
     `,
-      3
+      3,
     );
   });
 
@@ -2234,7 +2234,7 @@ describe('classes', () => {
       })());
       
     `,
-      { shouldStripIndent: false }
+      { shouldStripIndent: false },
     );
   });
 
@@ -2251,7 +2251,7 @@ describe('classes', () => {
           return yield 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -2268,7 +2268,7 @@ describe('classes', () => {
           return await 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -2288,7 +2288,7 @@ describe('classes', () => {
         Cls.initClass();
         return Cls;
       })();
-    `
+    `,
     );
   });
 
@@ -2306,7 +2306,7 @@ describe('classes', () => {
         super
   `,
       'Cannot automatically convert a subclass with a constructor that uses `this` before `super`.',
-      { disallowInvalidConstructors: true }
+      { disallowInvalidConstructors: true },
     );
   });
 });

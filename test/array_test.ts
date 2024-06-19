@@ -22,7 +22,7 @@ describe('arrays', () => {
         1,
         2
       ];
-    `
+    `,
     );
   });
 
@@ -47,7 +47,7 @@ describe('arrays', () => {
         ,
         3
       ];
-    `
+    `,
     );
   });
 
@@ -66,7 +66,7 @@ describe('arrays', () => {
         2,
         3
       ];
-    `
+    `,
     );
   });
 
@@ -83,7 +83,7 @@ describe('arrays', () => {
         1, //,
         2
       ];
-    `
+    `,
     );
   });
 
@@ -102,7 +102,7 @@ describe('arrays', () => {
         3,
         4
       ];
-    `
+    `,
     );
   });
 
@@ -125,7 +125,7 @@ describe('arrays', () => {
         ],
         3
       ];
-    `
+    `,
     );
   });
 
@@ -138,7 +138,7 @@ describe('arrays', () => {
       `
       [a(b, c({
       }))];
-    `
+    `,
     );
   });
 
@@ -154,7 +154,7 @@ describe('arrays', () => {
         a;
         return b;
       }];
-    `
+    `,
     ));
 
   it('allows semicolon delimiters between array values', () =>
@@ -164,7 +164,7 @@ describe('arrays', () => {
     `,
       `
       [a, b, c, d,];
-    `
+    `,
     ));
 
   it('allows a function call over an object followed by an object array element', () =>
@@ -180,7 +180,7 @@ describe('arrays', () => {
         a({}),
           {b: {}}
       ];
-    `
+    `,
     ));
 
   it('allows a block ending in an implicit call followed by an implicit object', () =>
@@ -198,6 +198,6 @@ describe('arrays', () => {
           b(c) : undefined,
          {d: {}}
       ];
-    `
+    `,
     ));
 });

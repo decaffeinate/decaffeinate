@@ -46,7 +46,7 @@ describe('changing shorthand this to longhand this', () => {
       `
       const a = this;
       if (b) { c; }
-      `
+      `,
     );
   });
 });

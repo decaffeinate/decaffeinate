@@ -41,7 +41,7 @@ describe('compound assignment', () => {
         b = +b;
         return (a % b + b) % b;
       }
-    `
+    `,
     );
   });
 
@@ -52,7 +52,7 @@ describe('compound assignment', () => {
     `,
       `
       var a = Math.floor(a / b);
-    `
+    `,
     );
   });
 
@@ -63,7 +63,7 @@ describe('compound assignment', () => {
     `,
       `
       var a = Math.floor(a / (b + c));
-    `
+    `,
     );
   });
 
@@ -75,7 +75,7 @@ describe('compound assignment', () => {
       `
       let name;
       a[name = b()] = Math.floor(a[name] / c);
-    `
+    `,
     );
   });
 
@@ -92,7 +92,7 @@ describe('compound assignment', () => {
         b = +b;
         return (a % b + b) % b;
       }
-    `
+    `,
     );
   });
 
@@ -105,7 +105,7 @@ describe('compound assignment', () => {
         `
         let a;
         [a || (a = b)];
-      `
+      `,
       );
     });
 
@@ -117,7 +117,7 @@ describe('compound assignment', () => {
         `
         let a;
         [a && (a = b)];
-      `
+      `,
       );
     });
 
@@ -128,7 +128,7 @@ describe('compound assignment', () => {
       `,
         `
         [a.b || (a.b = c)];
-      `
+      `,
       );
     });
 
@@ -139,7 +139,7 @@ describe('compound assignment', () => {
       `,
         `
         [a.b && (a.b = c)];
-      `
+      `,
       );
     });
 
@@ -150,7 +150,7 @@ describe('compound assignment', () => {
       `,
         `
         [a[b] || (a[b] = c)];
-      `
+      `,
       );
     });
 
@@ -161,7 +161,7 @@ describe('compound assignment', () => {
       `,
         `
         [a[b] && (a[b] = c)];
-      `
+      `,
       );
     });
 
@@ -172,7 +172,7 @@ describe('compound assignment', () => {
       `,
         `
         [a[0] || (a[0] = c)];
-      `
+      `,
       );
     });
 
@@ -183,7 +183,7 @@ describe('compound assignment', () => {
       `,
         `
         [a[0] && (a[0] = c)];
-      `
+      `,
       );
     });
 
@@ -194,7 +194,7 @@ describe('compound assignment', () => {
       `,
         `
         [a[0.9] || (a[0.9] = c)];
-      `
+      `,
       );
     });
 
@@ -205,7 +205,7 @@ describe('compound assignment', () => {
       `,
         `
         [a[0.9] && (a[0.9] = c)];
-      `
+      `,
       );
     });
 
@@ -217,7 +217,7 @@ describe('compound assignment', () => {
         `
         let name;
         [a[name = b()] || (a[name] = c)];
-      `
+      `,
       );
     });
 
@@ -229,7 +229,7 @@ describe('compound assignment', () => {
         `
         let name;
         [a[name = b()] && (a[name] = c)];
-      `
+      `,
       );
     });
 
@@ -241,7 +241,7 @@ describe('compound assignment', () => {
         `
         let base;
         [(base = a())[c] || (base[c] = d)];
-      `
+      `,
       );
     });
 
@@ -253,7 +253,7 @@ describe('compound assignment', () => {
         `
         let base;
         [(base = a())[c] && (base[c] = d)];
-      `
+      `,
       );
     });
 
@@ -265,7 +265,7 @@ describe('compound assignment', () => {
         `
         let base, name;
         [(base = a())[name = b()] || (base[name] = c)];
-      `
+      `,
       );
     });
 
@@ -277,7 +277,7 @@ describe('compound assignment', () => {
         `
         let base, name;
         [(base = a())[name = b()] && (base[name] = c)];
-      `
+      `,
       );
     });
 
@@ -291,7 +291,7 @@ describe('compound assignment', () => {
         let name1;
         const name = 'abc';
         [a[name1 = b()] || (a[name1] = c)];
-      `
+      `,
       );
     });
 
@@ -304,7 +304,7 @@ describe('compound assignment', () => {
         `
         let a = 1;
         [a != null ? a : (a = 2)];
-      `
+      `,
       );
     });
 
@@ -315,7 +315,7 @@ describe('compound assignment', () => {
       `,
         `
         [a.b != null ? a.b : (a.b = 1)];
-      `
+      `,
       );
     });
 
@@ -326,7 +326,7 @@ describe('compound assignment', () => {
       `,
         `
         [a[b] != null ? a[b] : (a[b] = 1)];
-      `
+      `,
       );
     });
 
@@ -338,7 +338,7 @@ describe('compound assignment', () => {
         `
         let name;
         [a[name = b()] != null ? a[name] : (a[name] = 1)];
-      `
+      `,
       );
     });
 
@@ -350,7 +350,7 @@ describe('compound assignment', () => {
         `
         let base;
         [(base = a())[b] != null ? base[b] : (base[b] = 1)];
-      `
+      `,
       );
     });
 
@@ -362,7 +362,7 @@ describe('compound assignment', () => {
         `
         let base, name;
         [(base = a())[name = b()] != null ? base[name] : (base[name] = 1)];
-      `
+      `,
       );
     });
 
@@ -373,7 +373,7 @@ describe('compound assignment', () => {
       `,
         `
         [this.a || (this.a = 0)];
-      `
+      `,
       );
     });
 
@@ -389,7 +389,7 @@ describe('compound assignment', () => {
         if (!(a || (a = b))) {
           c;
         }
-      `
+      `,
       );
     });
 
@@ -405,7 +405,7 @@ describe('compound assignment', () => {
         if (!(a != null ? a : (a = b))) {
           c;
         }
-      `
+      `,
       );
     });
 
@@ -426,7 +426,7 @@ describe('compound assignment', () => {
           b = +b;
           return (a % b + b) % b;
         }
-      `
+      `,
       );
     });
   });
@@ -439,7 +439,7 @@ describe('compound assignment', () => {
       `,
         `
         if (!a) { var a = b; }
-      `
+      `,
       );
     });
 
@@ -450,7 +450,7 @@ describe('compound assignment', () => {
       `,
         `
         if (a) { var a = b; }
-      `
+      `,
       );
     });
 
@@ -461,7 +461,7 @@ describe('compound assignment', () => {
       `,
         `
         if (!a.b) { a.b = c; }
-      `
+      `,
       );
     });
 
@@ -472,7 +472,7 @@ describe('compound assignment', () => {
       `,
         `
         if (a.b) { a.b = c; }
-      `
+      `,
       );
     });
 
@@ -483,7 +483,7 @@ describe('compound assignment', () => {
       `,
         `
         if (!a[b]) { a[b] = c; }
-      `
+      `,
       );
     });
 
@@ -494,7 +494,7 @@ describe('compound assignment', () => {
       `,
         `
         if (a[b]) { a[b] = c; }
-      `
+      `,
       );
     });
 
@@ -505,7 +505,7 @@ describe('compound assignment', () => {
       `,
         `
         if (!a[0]) { a[0] = c; }
-      `
+      `,
       );
     });
 
@@ -516,7 +516,7 @@ describe('compound assignment', () => {
       `,
         `
         if (a[0]) { a[0] = c; }
-      `
+      `,
       );
     });
 
@@ -527,7 +527,7 @@ describe('compound assignment', () => {
       `,
         `
         if (!a[0.9]) { a[0.9] = c; }
-      `
+      `,
       );
     });
 
@@ -538,7 +538,7 @@ describe('compound assignment', () => {
       `,
         `
         if (a[0.9]) { a[0.9] = c; }
-      `
+      `,
       );
     });
 
@@ -550,7 +550,7 @@ describe('compound assignment', () => {
         `
         let name;
         if (!a[name = b()]) { a[name] = c; }
-      `
+      `,
       );
     });
 
@@ -562,7 +562,7 @@ describe('compound assignment', () => {
         `
         let name;
         if (a[name = b()]) { a[name] = c; }
-      `
+      `,
       );
     });
 
@@ -574,7 +574,7 @@ describe('compound assignment', () => {
         `
         let base;
         if (!(base = a())[c]) { base[c] = d; }
-      `
+      `,
       );
     });
 
@@ -586,7 +586,7 @@ describe('compound assignment', () => {
         `
         let base;
         if ((base = a())[c]) { base[c] = d; }
-      `
+      `,
       );
     });
 
@@ -598,7 +598,7 @@ describe('compound assignment', () => {
         `
         let base, name;
         if (!(base = a())[name = b()]) { base[name] = c; }
-      `
+      `,
       );
     });
 
@@ -610,7 +610,7 @@ describe('compound assignment', () => {
         `
         let base, name;
         if ((base = a())[name = b()]) { base[name] = c; }
-      `
+      `,
       );
     });
 
@@ -624,7 +624,7 @@ describe('compound assignment', () => {
         let name1;
         const name = 'abc';
         if (!a[name1 = b()]) { a[name1] = c; }
-      `
+      `,
       );
     });
 
@@ -637,7 +637,7 @@ describe('compound assignment', () => {
         `
         let a = 1;
         if (a == null) { a = 2; }
-      `
+      `,
       );
     });
 
@@ -651,7 +651,7 @@ describe('compound assignment', () => {
         let a;
         if (typeof a === 'undefined' || a === null) { a = 2; }
         console.log(a);
-      `
+      `,
       );
     });
 
@@ -662,7 +662,7 @@ describe('compound assignment', () => {
       `,
         `
         if (a.b == null) { a.b = 1; }
-      `
+      `,
       );
     });
 
@@ -673,7 +673,7 @@ describe('compound assignment', () => {
       `,
         `
         if (a) { if (typeof b === 'undefined' || b === null) { var b = c; } }
-      `
+      `,
       );
     });
 
@@ -684,7 +684,7 @@ describe('compound assignment', () => {
       `,
         `
         if (a[b] == null) { a[b] = 1; }
-      `
+      `,
       );
     });
 
@@ -696,7 +696,7 @@ describe('compound assignment', () => {
         `
         let name;
         if (a[name = b()] == null) { a[name] = 1; }
-      `
+      `,
       );
     });
 
@@ -708,7 +708,7 @@ describe('compound assignment', () => {
         `
         let base;
         if ((base = a())[b] == null) { base[b] = 1; }
-      `
+      `,
       );
     });
 
@@ -720,7 +720,7 @@ describe('compound assignment', () => {
         `
         let base, name;
         if ((base = a())[name = b()] == null) { base[name] = 1; }
-      `
+      `,
       );
     });
 
@@ -733,7 +733,7 @@ describe('compound assignment', () => {
         if (a.b != null) {
           a.b.c != null ? a.b.c : (a.b.c = d);
         }
-      `
+      `,
       );
     });
 
@@ -745,7 +745,7 @@ describe('compound assignment', () => {
         `
         let base;
         if (!((base = a || b)).c) { base.c = d || e; }
-      `
+      `,
       );
     });
 
@@ -756,7 +756,7 @@ describe('compound assignment', () => {
       `,
         `
         if (!this.a) { this.a = 0; }
-      `
+      `,
       );
     });
 
@@ -767,7 +767,7 @@ describe('compound assignment', () => {
       `,
         `
         if (!a) { var a = () => b; }
-      `
+      `,
       );
     });
   });

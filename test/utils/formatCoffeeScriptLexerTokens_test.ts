@@ -26,7 +26,7 @@ describe('formatCoffeeScriptLexerTokens', () => {
       [2:5(19)-2:6(20)]: CALL_END: ")"
       [2:5(19)-2:6(20)]: OUTDENT: 2
       [2:6(20)-2:6(20)]: TERMINATOR: "\\n"
-    `) + '\n'
+    `) + '\n',
     );
   });
 });

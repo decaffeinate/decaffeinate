@@ -18,7 +18,7 @@ interface SyntaxError {
 export default function resolveToPatchError<T extends Error>(
   err: T,
   content: string,
-  stageName: string
+  stageName: string,
 ): PatchError | null {
   const makePatchError = (start: number, end: number, source: string): PatchError =>
     new PatchError(`${stageName} failed to parse: ${err.message}`, source, start, end);

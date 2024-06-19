@@ -70,7 +70,7 @@ export default class FunctionPatcher extends NodePatcher {
         } else {
           this.remove(
             this.parameters[firstRestParamIndex - 1].outerEnd,
-            this.parameters[this.parameters.length - 1].outerEnd
+            this.parameters[this.parameters.length - 1].outerEnd,
           );
         }
       } else {
@@ -149,7 +149,7 @@ export default class FunctionPatcher extends NodePatcher {
     this.addDefaultParamAssignmentAtScopeHeader = (
       assigneeCode: string,
       initCode: string,
-      assigneeNode: Node
+      assigneeNode: Node,
     ): string => {
       if (assigneeNode.type === 'Identifier' || assigneeNode.type === 'MemberAccessOp') {
         // Wrap in parens to avoid precedence issues for inline statements. The

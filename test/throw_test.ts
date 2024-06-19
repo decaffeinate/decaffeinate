@@ -26,7 +26,7 @@ describe('throw', () => {
           throw 42;
         }
       });
-    `
+    `,
     );
   });
 
@@ -37,7 +37,7 @@ describe('throw', () => {
     `,
       `
       (function() { if (a) { throw b; } });
-    `
+    `,
     );
   });
 
@@ -48,7 +48,7 @@ describe('throw', () => {
     `,
       `
       (function() { if (a) { throw b; } else { return c; } });
-    `
+    `,
     );
   });
 
@@ -59,7 +59,7 @@ describe('throw', () => {
     `,
       `
       () => { if (a) { throw b; } };
-    `
+    `,
     );
   });
 
@@ -71,7 +71,7 @@ describe('throw', () => {
     `,
       `
       throw a;
-    `
+    `,
     );
   });
 
@@ -83,7 +83,7 @@ describe('throw', () => {
     `,
       `
       throw a;
-    `
+    `,
     );
   });
 
@@ -94,7 +94,7 @@ describe('throw', () => {
     `,
       `
       throw(res.data != null ? res.data.error : undefined);
-    `
+    `,
     );
   });
 });

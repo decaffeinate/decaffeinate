@@ -153,7 +153,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       this.indexOfSourceTokenBetweenSourceIndicesMatching(
         searchStart,
         searchEnd,
-        (token) => token.type === SourceType.CALL_START
+        (token) => token.type === SourceType.CALL_START,
       ) === null
     );
   }
@@ -166,7 +166,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
     if (this.node.type === 'SoakedFunctionApplication' || this.node.type === 'SoakedNewOp') {
       const questionMarkTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         this.fn.outerEndTokenIndex,
-        SourceType.EXISTENCE
+        SourceType.EXISTENCE,
       );
       if (!questionMarkTokenIndex) {
         throw this.error('Expected to find question mark token index.');

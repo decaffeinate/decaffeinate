@@ -8,7 +8,7 @@ describe('of operator', () => {
     `,
       `
       a in b;
-    `
+    `,
     );
   });
 
@@ -19,7 +19,7 @@ describe('of operator', () => {
     `,
       `
       a(b, c.d in e);
-    `
+    `,
     );
   });
 
@@ -34,7 +34,7 @@ describe('of operator', () => {
       !(a in b);
       !(a in b);
       !(a in b);
-    `
+    `,
     );
   });
 
@@ -48,7 +48,7 @@ describe('of operator', () => {
       if (a in b) {
         c;
       }
-    `
+    `,
     );
   });
 });

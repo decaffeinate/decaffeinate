@@ -62,7 +62,7 @@ export default class SeqOpPatcher extends NodePatcher {
     const operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.left,
       this.right,
-      (token) => token.type === SourceType.SEMICOLON || token.type === SourceType.NEWLINE
+      (token) => token.type === SourceType.SEMICOLON || token.type === SourceType.NEWLINE,
     );
     if (!operatorTokenIndex) {
       throw this.error('expected operator between binary operands');

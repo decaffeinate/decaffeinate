@@ -31,7 +31,7 @@ describe('instanceof', () => {
       if (a instanceof b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -45,7 +45,7 @@ describe('instanceof', () => {
       if (!(a instanceof b)) {
         c;
       }
-    `
+    `,
     );
   });
 });

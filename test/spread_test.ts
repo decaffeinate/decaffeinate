@@ -9,7 +9,7 @@ describe('spread', () => {
     `,
       `
       a(...Array.from(b || []));
-    `
+    `,
     );
   });
 
@@ -20,7 +20,7 @@ describe('spread', () => {
     `,
       `
       a(...b);
-    `
+    `,
     );
   });
 
@@ -31,7 +31,7 @@ describe('spread', () => {
     `,
       `
       a(1, 2, ...Array.from(makeArray(...arguments)));
-    `
+    `,
     );
   });
 
@@ -42,7 +42,7 @@ describe('spread', () => {
     `,
       `
       a(1, 2, ...makeArray(...arguments));
-    `
+    `,
     );
   });
 
@@ -56,7 +56,7 @@ describe('spread', () => {
       catch
         setResult('Fails in CS2')
     `,
-      { cs1: 0, cs2: 'Fails in CS2' }
+      { cs1: 0, cs2: 'Fails in CS2' },
     );
   });
 
@@ -68,7 +68,7 @@ describe('spread', () => {
       obj = {length: 2, 0: 'a', 1: 'b'}
       setResult(f(1, 2, obj...))
     `,
-      4
+      4,
     );
   });
 
@@ -79,7 +79,7 @@ describe('spread', () => {
     `,
       `
       [...Array.from(b)];
-    `
+    `,
     );
   });
 
@@ -90,7 +90,7 @@ describe('spread', () => {
     `,
       `
       [...b];
-    `
+    `,
     );
   });
 
@@ -101,7 +101,7 @@ describe('spread', () => {
     `,
       `
       [1, 2, ...Array.from(makeArray(...arguments))];
-    `
+    `,
     );
   });
 
@@ -112,7 +112,7 @@ describe('spread', () => {
     `,
       `
       [1, 2, ...makeArray(...arguments)];
-    `
+    `,
     );
   });
 
@@ -123,7 +123,7 @@ describe('spread', () => {
       obj = {length: 2, 0: 'a', 1: 'b'}
       setResult([1, 2, obj...])
     `,
-      [1, 2, 'a', 'b']
+      [1, 2, 'a', 'b'],
     );
   });
 
@@ -134,7 +134,7 @@ describe('spread', () => {
     `,
       `
       const a = [...b, c];
-    `
+    `,
     );
   });
 
@@ -145,7 +145,7 @@ describe('spread', () => {
     `,
       `
       [...(b ? a : undefined)];
-    `
+    `,
     );
   });
 });

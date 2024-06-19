@@ -26,7 +26,7 @@ describe('comparisons', () => {
         options: {
           looseComparisonNegation: true,
         },
-      }
+      },
     );
   });
 
@@ -40,7 +40,7 @@ describe('comparisons', () => {
       if (!(a < b)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -59,7 +59,7 @@ describe('comparisons', () => {
         options: {
           looseComparisonNegation: true,
         },
-      }
+      },
     );
   });
 
@@ -73,7 +73,7 @@ describe('comparisons', () => {
       if (!(a < b) || !(b > c)) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -85,7 +85,7 @@ describe('comparisons', () => {
       `
       let b;
       a === (b = c);
-    `
+    `,
     );
   });
 

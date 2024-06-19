@@ -9,7 +9,7 @@ export default class ExportBindingsDeclarationPatcher extends NodePatcher {
   constructor(
     patcherContext: PatcherContext,
     public namedExports: Array<ModuleSpecifierPatcher>,
-    public source: StringPatcher | null
+    public source: StringPatcher | null,
   ) {
     super(patcherContext);
   }
@@ -22,7 +22,7 @@ export default class ExportBindingsDeclarationPatcher extends NodePatcher {
       const commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         namedExport.outerEndTokenIndex,
         SourceType.COMMA,
-        isSemanticToken
+        isSemanticToken,
       );
       const commaToken = commaTokenIndex && this.sourceTokenAtIndex(commaTokenIndex);
       if (!isLast && !commaToken) {

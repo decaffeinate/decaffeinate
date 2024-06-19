@@ -26,7 +26,7 @@ export default class EqualityPatcher extends BinaryOpPatcher {
     const compareTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       left,
       right,
-      (token) => token.type === SourceType.OPERATOR
+      (token) => token.type === SourceType.OPERATOR,
     );
 
     if (!compareTokenIndex) {

@@ -8,13 +8,13 @@ export default class CompoundAssignOpPatcher extends AssignOpPatcher {
     const operatorIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
-      (token) => token.type === SourceType.OPERATOR
+      (token) => token.type === SourceType.OPERATOR,
     );
     if (!operatorIndex) {
       throw this.error(
         `expected OPERATOR token between assignee and expression`,
         this.assignee.outerEnd,
-        this.expression.outerStart
+        this.expression.outerStart,
       );
     }
     return notNull(this.sourceTokenAtIndex(operatorIndex));

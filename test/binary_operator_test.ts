@@ -8,7 +8,7 @@ describe('binary operators', () => {
     `,
       `
       a - b;
-    `
+    `,
     );
   });
 
@@ -19,7 +19,7 @@ describe('binary operators', () => {
     `,
       `
       a & b;
-    `
+    `,
     );
   });
 
@@ -30,7 +30,7 @@ describe('binary operators', () => {
     `,
       `
       a ^ b;
-    `
+    `,
     );
   });
 
@@ -43,7 +43,7 @@ describe('binary operators', () => {
       `
       (a - b) & c;
       a & (b - c);
-    `
+    `,
     );
   });
 
@@ -56,7 +56,7 @@ describe('binary operators', () => {
       `
       (a - b) | c;
       a | (b - c);
-    `
+    `,
     );
   });
 
@@ -67,7 +67,7 @@ describe('binary operators', () => {
     `,
       `
       a << b;
-    `
+    `,
     );
   });
 
@@ -78,7 +78,7 @@ describe('binary operators', () => {
     `,
       `
       a >> b;
-    `
+    `,
     );
   });
 
@@ -89,7 +89,7 @@ describe('binary operators', () => {
     `,
       `
       a >>> b;
-    `
+    `,
     );
   });
 
@@ -100,7 +100,7 @@ describe('binary operators', () => {
     `,
       `
       a || b || c;
-    `
+    `,
     );
   });
 
@@ -111,7 +111,7 @@ describe('binary operators', () => {
     `,
       `
       if (typeof a === 'undefined' || a === null) { b; }
-    `
+    `,
     );
   });
 
@@ -122,7 +122,7 @@ describe('binary operators', () => {
     `,
       `
       const x = (typeof a !== 'undefined' && a !== null ? a : b);
-    `
+    `,
     );
   });
 
@@ -133,7 +133,7 @@ describe('binary operators', () => {
     `,
       `
       if (a.b == null) { a; }
-    `
+    `,
     );
   });
 
@@ -144,7 +144,7 @@ describe('binary operators', () => {
     `,
       `
       if (this.a == null) { this.b; }
-    `
+    `,
     );
   });
 
@@ -155,7 +155,7 @@ describe('binary operators', () => {
     `,
       `
       if (typeof a === 'undefined' || a === null) { this.b; }
-    `
+    `,
     );
   });
 
@@ -166,7 +166,7 @@ describe('binary operators', () => {
     `,
       `
       const x = (a.b != null ? a.b : a);
-    `
+    `,
     );
   });
 
@@ -177,7 +177,7 @@ describe('binary operators', () => {
     `,
       `
       const x = (this.a.b != null ? this.a.b : c);
-    `
+    `,
     );
   });
 
@@ -188,7 +188,7 @@ describe('binary operators', () => {
     `,
       `
       if (a() == null) { b; }
-    `
+    `,
     );
   });
 
@@ -200,7 +200,7 @@ describe('binary operators', () => {
       `
       let left;
       const x = ((left = a()) != null ? left : b);
-    `
+    `,
     );
   });
 
@@ -211,7 +211,7 @@ describe('binary operators', () => {
       `,
       `
       if (!(1 != null ? 1 : 2)) { 3; }
-      `
+      `,
     );
   });
 
@@ -225,7 +225,7 @@ describe('binary operators', () => {
         let left1;
         const left = 1;
         const x = (left1 = a()) != null ? left1 : this.b;
-      `
+      `,
     );
   });
 
@@ -239,7 +239,7 @@ describe('binary operators', () => {
         let left, left1;
         const x = (left = a()) != null ? left : this.b;
         const y = (left1 = c()) != null ? left1 : this.d;
-      `
+      `,
     );
   });
 
@@ -250,7 +250,7 @@ describe('binary operators', () => {
     `,
       `
       const x = 1 + (typeof y !== 'undefined' && y !== null ? y : 0);
-    `
+    `,
     );
   });
 
@@ -262,7 +262,7 @@ describe('binary operators', () => {
     `,
       `
       if (typeof a === 'undefined' || a === null) { b; }
-    `
+    `,
     );
   });
 
@@ -273,7 +273,7 @@ describe('binary operators', () => {
     `,
       `
       const value = (object.id << 8) | object.type;
-    `
+    `,
     );
   });
 
@@ -289,7 +289,7 @@ describe('binary operators', () => {
         b = +b;
         return (a % b + b) % b;
       }
-    `
+    `,
     );
   });
 
@@ -305,7 +305,7 @@ describe('binary operators', () => {
         b = +b;
         return (a % b + b) % b;
       }
-    `
+    `,
     );
   });
 
@@ -324,7 +324,7 @@ describe('binary operators', () => {
         child.__super__ = parent.prototype;
         return child;
       }
-    `
+    `,
     );
   });
 
@@ -336,7 +336,7 @@ describe('binary operators', () => {
       `
       let b;
       a && (b = c);
-    `
+    `,
     );
   });
 
@@ -349,7 +349,7 @@ describe('binary operators', () => {
       `
       let b = 1;
       a && (b != null ? b : (b = c));
-    `
+    `,
     );
   });
 
@@ -362,7 +362,7 @@ describe('binary operators', () => {
       `
       let b = 1;
       a && (b || (b = c));
-    `
+    `,
     );
   });
 
@@ -373,7 +373,7 @@ describe('binary operators', () => {
     `,
       `
       const a = b;
-    `
+    `,
     );
   });
 
@@ -384,7 +384,7 @@ describe('binary operators', () => {
     `,
       `
       a += b;
-    `
+    `,
     );
   });
 
@@ -395,7 +395,7 @@ describe('binary operators', () => {
     `,
       `
       const a = b;
-    `
+    `,
     );
   });
 
@@ -415,7 +415,7 @@ describe('binary operators', () => {
         }
         return range;
       }
-    `
+    `,
     );
   });
 
@@ -434,7 +434,7 @@ describe('binary operators', () => {
         child.__super__ = parent.prototype;
         return child;
       }
-    `
+    `,
     );
   });
 });

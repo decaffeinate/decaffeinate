@@ -3,7 +3,7 @@ import { traverse, Node } from 'decaffeinate-parser';
 export default function containsDescendant(
   node: Node,
   predicate: (node: Node) => boolean,
-  { shouldStopTraversal = () => false }: { shouldStopTraversal?: (node: Node) => boolean } = {}
+  { shouldStopTraversal = () => false }: { shouldStopTraversal?: (node: Node) => boolean } = {},
 ): boolean {
   let found = false;
   traverse(node, (childNode) => {

@@ -80,7 +80,7 @@ export default class ObjectInitialiserPatcher extends NodePatcher {
         if (tokenIndexBeforeOuterStartTokenIndex) {
           const precedingTokenIndex = this.context.sourceTokens.lastIndexOfTokenMatchingPredicate(
             isSemanticToken,
-            tokenIndexBeforeOuterStartTokenIndex
+            tokenIndexBeforeOuterStartTokenIndex,
           );
           if (precedingTokenIndex) {
             const precedingToken = notNull(this.sourceTokenAtIndex(precedingTokenIndex));

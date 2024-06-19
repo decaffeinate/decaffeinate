@@ -14,7 +14,7 @@ describe('soaked expressions', () => {
         if (typeof a === 'function') {
           a();
         }
-      `
+      `,
       );
     });
 
@@ -28,7 +28,7 @@ describe('soaked expressions', () => {
         function __guardFunc__(func, transform) {
           return typeof func === 'function' ? transform(func) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -42,7 +42,7 @@ describe('soaked expressions', () => {
         function __guardFunc__(func, transform) {
           return typeof func === 'function' ? transform(func) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -56,7 +56,7 @@ describe('soaked expressions', () => {
         function __guardFunc__(func, transform) {
           return typeof func === 'function' ? transform(func) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -72,7 +72,7 @@ describe('soaked expressions', () => {
         function __guardFunc__(func, transform) {
           return typeof func === 'function' ? transform(func) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -85,7 +85,7 @@ describe('soaked expressions', () => {
         if (typeof a.b === 'function') {
           a.b();
         }
-      `
+      `,
       );
     });
 
@@ -103,7 +103,7 @@ describe('soaked expressions', () => {
             return undefined;
           }
         }
-      `
+      `,
       );
     });
 
@@ -116,7 +116,7 @@ describe('soaked expressions', () => {
         if (typeof a[b] === 'function') {
           a[b]();
         }
-      `
+      `,
       );
     });
 
@@ -134,7 +134,7 @@ describe('soaked expressions', () => {
             return undefined;
           }
         }
-      `
+      `,
       );
     });
 
@@ -152,7 +152,7 @@ describe('soaked expressions', () => {
             return undefined;
           }
         }
-      `
+      `,
       );
     });
 
@@ -163,7 +163,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = typeof b === 'function' ? b() : undefined;
-      `
+      `,
       );
     });
 
@@ -173,7 +173,7 @@ describe('soaked expressions', () => {
         a?.b
         setResult(true)
       `,
-        true
+        true,
       );
     });
 
@@ -183,7 +183,7 @@ describe('soaked expressions', () => {
         a?['b']
         setResult(true)
       `,
-        true
+        true,
       );
     });
 
@@ -193,7 +193,7 @@ describe('soaked expressions', () => {
         a?()
         setResult(true)
       `,
-        true
+        true,
       );
     });
 
@@ -203,7 +203,7 @@ describe('soaked expressions', () => {
         f = -> 3
         setResult(f?())
       `,
-        3
+        3,
       );
     });
 
@@ -219,7 +219,7 @@ describe('soaked expressions', () => {
         a.b?()
         setResult(o)
       `,
-        true
+        true,
       );
     });
 
@@ -237,7 +237,7 @@ describe('soaked expressions', () => {
         a.b()
         setResult(o)
       `,
-        true
+        true,
       );
     });
 
@@ -253,7 +253,7 @@ describe('soaked expressions', () => {
         a['b']?()
         setResult(o)
       `,
-        true
+        true,
       );
     });
   });
@@ -270,7 +270,7 @@ describe('soaked expressions', () => {
         if (canvasContext != null) {
           canvasContext.font = $('body').css('font');
         }
-      `
+      `,
       );
     });
 
@@ -286,7 +286,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -299,7 +299,7 @@ describe('soaked expressions', () => {
         `
         const b = null;
         a(b != null ? b.c = d : undefined);
-      `
+      `,
       );
     });
 
@@ -314,7 +314,7 @@ describe('soaked expressions', () => {
         if (a != null) {
           a.b();
         }
-      `
+      `,
       );
     });
 
@@ -328,7 +328,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -341,7 +341,7 @@ describe('soaked expressions', () => {
         `
         const b = null;
         a(b != null ? b.c : undefined);
-      `
+      `,
       );
     });
 
@@ -356,7 +356,7 @@ describe('soaked expressions', () => {
         if (a != null) {
           a[b]();
         }
-      `
+      `,
       );
     });
 
@@ -371,7 +371,7 @@ describe('soaked expressions', () => {
         if (a != null) {
           a[b].c[d];
         }
-      `
+      `,
       );
     });
 
@@ -387,7 +387,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -398,7 +398,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = typeof b !== 'undefined' && b !== null ? b[c] : undefined;
-      `
+      `,
       );
     });
 
@@ -411,7 +411,7 @@ describe('soaked expressions', () => {
         `
         const b = {};
         const a = b != null ? b[c] : undefined;
-      `
+      `,
       );
     });
 
@@ -424,7 +424,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         if (a != null ? a.b : undefined) { c; }
-      `
+      `,
       );
     });
 
@@ -438,7 +438,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -451,7 +451,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         (a != null ? a.b : undefined).c;
-      `
+      `,
       );
     });
 
@@ -465,7 +465,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -479,7 +479,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -493,7 +493,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -507,7 +507,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -521,7 +521,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -535,7 +535,7 @@ describe('soaked expressions', () => {
         function __guardFunc__(func, transform) {
           return typeof func === 'function' ? transform(func) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -553,7 +553,7 @@ describe('soaked expressions', () => {
             return undefined;
           }
         }
-      `
+      `,
       );
     });
 
@@ -571,7 +571,7 @@ describe('soaked expressions', () => {
             return undefined;
           }
         }
-      `
+      `,
       );
     });
 
@@ -585,7 +585,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -599,7 +599,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -613,7 +613,7 @@ describe('soaked expressions', () => {
         function __guard__(value, transform) {
           return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
         }
-      `
+      `,
       );
     });
 
@@ -623,7 +623,7 @@ describe('soaked expressions', () => {
         a = {b: 5}
         setResult(a?.b)
       `,
-        5
+        5,
       );
     });
 
@@ -633,7 +633,7 @@ describe('soaked expressions', () => {
         a = {b: null}
         setResult('' + a.b?.c)
       `,
-        'undefined'
+        'undefined',
       );
     });
 
@@ -643,7 +643,7 @@ describe('soaked expressions', () => {
         a = {b: 5}
         setResult(a?['b'])
       `,
-        5
+        5,
       );
     });
 
@@ -653,7 +653,7 @@ describe('soaked expressions', () => {
         a = {b: null}
         setResult('' + a.b?['c'])
       `,
-        'undefined'
+        'undefined',
       );
     });
 
@@ -663,7 +663,7 @@ describe('soaked expressions', () => {
         a = {b: 5}
         setResult('' + a.d?.e.f())
       `,
-        'undefined'
+        'undefined',
       );
     });
 
@@ -677,7 +677,7 @@ describe('soaked expressions', () => {
         z?.a = x++
         setResult(x)
       `,
-        2
+        2,
       );
     });
   });
@@ -698,7 +698,7 @@ describe('soaked expressions', () => {
           return undefined;
         }
       }
-    `
+    `,
     );
   });
 
@@ -718,7 +718,7 @@ describe('soaked expressions', () => {
           return undefined;
         }
       }
-    `
+    `,
     );
   });
 
@@ -741,7 +741,7 @@ describe('soaked expressions', () => {
           return undefined;
         }
       }
-    `
+    `,
     );
   });
 
@@ -760,7 +760,7 @@ describe('soaked expressions', () => {
       function __guardFunc__(func, transform) {
         return typeof func === 'function' ? transform(func) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -773,7 +773,7 @@ describe('soaked expressions', () => {
       `
       const a = null;
       Array.from(c).includes(a != null ? a.b : undefined);
-    `
+    `,
     );
   });
 
@@ -786,7 +786,7 @@ describe('soaked expressions', () => {
       `
       const b = null;
       Array.from(b != null ? b.c : undefined).includes(a);
-    `
+    `,
     );
   });
 
@@ -801,7 +801,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -816,7 +816,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -831,7 +831,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -847,7 +847,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -862,7 +862,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -878,7 +878,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -894,7 +894,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -909,7 +909,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -922,7 +922,7 @@ describe('soaked expressions', () => {
       if (typeof a !== 'undefined' && a !== null) {
         ++a.b[c()];
       }
-    `
+    `,
     );
   });
 
@@ -937,7 +937,7 @@ describe('soaked expressions', () => {
       if (a != null) {
         ++a.b[c()];
       }
-    `
+    `,
     );
   });
 
@@ -948,7 +948,7 @@ describe('soaked expressions', () => {
     `,
       `
       const x = typeof a !== 'undefined' && a !== null ? ++a.b[c()] : undefined;
-    `
+    `,
     );
   });
 
@@ -961,7 +961,7 @@ describe('soaked expressions', () => {
       `
       const a = f();
       const x = a != null ? ++a.b[c()] : undefined;
-    `
+    `,
     );
   });
 
@@ -974,7 +974,7 @@ describe('soaked expressions', () => {
       `
       const a = f();
       const x = (a != null ? a.b : undefined) || [];
-    `
+    `,
     );
   });
 
@@ -993,7 +993,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -1007,7 +1007,7 @@ describe('soaked expressions', () => {
       let left;
       const b = null;
       const a = (left = (b != null ? b.filter(() => c) : undefined)) != null ? left : null;
-    `
+    `,
     );
   });
 
@@ -1020,7 +1020,7 @@ describe('soaked expressions', () => {
       `
       const b = 0;
       const a = (b != null ? b.c : undefined) ? d : e;
-    `
+    `,
     );
   });
 
@@ -1030,7 +1030,7 @@ describe('soaked expressions', () => {
       a = {b: 'should not return'}
       setResult(if a?.b then 'should return')
     `,
-      'should return'
+      'should return',
     );
   });
 
@@ -1046,7 +1046,7 @@ describe('soaked expressions', () => {
       while (a != null ? a.b : undefined) {
         break;
       }
-    `
+    `,
     );
   });
 
@@ -1061,7 +1061,7 @@ describe('soaked expressions', () => {
       const a = {};
       const b = {};
       const d = a[b != null ? b.c : undefined];
-    `
+    `,
     );
   });
 
@@ -1077,7 +1077,7 @@ describe('soaked expressions', () => {
       if (!(a != null ? a.b : undefined)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1093,7 +1093,7 @@ describe('soaked expressions', () => {
       while (!(a != null ? a.b : undefined)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1110,7 +1110,7 @@ describe('soaked expressions', () => {
       if (!(a = b != null ? b.c : undefined)) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -1125,7 +1125,7 @@ describe('soaked expressions', () => {
       if (a != null) {
         a[this.b];
       }
-    `
+    `,
     );
   });
 
@@ -1138,7 +1138,7 @@ describe('soaked expressions', () => {
       `
       const b = null;
       const a = (b != null ? b.c = 1 : undefined);
-    `
+    `,
     );
   });
 
@@ -1153,7 +1153,7 @@ describe('soaked expressions', () => {
       if (typeof A === 'function') {
         new A(b);
       }
-    `
+    `,
     );
   });
 
@@ -1168,7 +1168,7 @@ describe('soaked expressions', () => {
       if (typeof A === 'function') {
         new A(b);
       }
-    `
+    `,
     );
   });
 
@@ -1182,7 +1182,7 @@ describe('soaked expressions', () => {
       function __guardFunc__(func, transform) {
         return typeof func === 'function' ? transform(func) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -1196,7 +1196,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -1210,7 +1210,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -1224,7 +1224,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -1239,7 +1239,7 @@ describe('soaked expressions', () => {
       function __guard__(value, transform) {
         return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
       }
-    `
+    `,
     );
   });
 
@@ -1255,7 +1255,7 @@ describe('soaked expressions', () => {
       if (!(a != null ? a.b : undefined)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1271,7 +1271,7 @@ describe('soaked expressions', () => {
       if (!(a != null ? a.b.c : undefined)) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -1287,7 +1287,7 @@ describe('soaked expressions', () => {
       while (!(a != null ? a.b : undefined)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1303,7 +1303,7 @@ describe('soaked expressions', () => {
       if (!c || (!(a != null ? a.b : undefined))) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -1322,7 +1322,7 @@ describe('soaked expressions', () => {
           c;
           break;
       }
-    `
+    `,
     );
   });
 });

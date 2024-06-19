@@ -10,7 +10,7 @@ describe('continuation', () => {
       `
       a 
         + 1;
-    `
+    `,
     );
   });
 
@@ -23,7 +23,7 @@ describe('continuation', () => {
       `
       a( 
         b);
-    `
+    `,
     );
   });
 });

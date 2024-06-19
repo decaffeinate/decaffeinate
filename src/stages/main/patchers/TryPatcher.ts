@@ -21,7 +21,7 @@ export default class TryPatcher extends NodePatcher {
     body: BlockPatcher | null,
     catchAssignee: NodePatcher | null,
     catchBody: BlockPatcher | null,
-    finallyBody: BlockPatcher | null
+    finallyBody: BlockPatcher | null,
   ) {
     super(patcherContext);
     this.body = body;
@@ -215,7 +215,7 @@ export default class TryPatcher extends NodePatcher {
     const catchTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      (token) => token.type === SourceType.CATCH
+      (token) => token.type === SourceType.CATCH,
     );
     if (!catchTokenIndex) {
       return null;
@@ -252,7 +252,7 @@ export default class TryPatcher extends NodePatcher {
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      (token) => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN,
     );
   }
 
@@ -278,7 +278,7 @@ export default class TryPatcher extends NodePatcher {
     const finallyTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      (token) => token.type === SourceType.FINALLY
+      (token) => token.type === SourceType.FINALLY,
     );
     if (!finallyTokenIndex) {
       return null;

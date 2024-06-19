@@ -24,7 +24,7 @@ export default class ConditionalPatcher extends NodePatcher {
     patcherContext: PatcherContext,
     condition: NodePatcher,
     consequent: NodePatcher,
-    alternate: NodePatcher | null
+    alternate: NodePatcher | null,
   ) {
     super(patcherContext);
     this.condition = condition;

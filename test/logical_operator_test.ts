@@ -8,7 +8,7 @@ describe('`and` operator', () => {
     `,
       `
       a && b;
-    `
+    `,
     );
   });
 
@@ -19,7 +19,7 @@ describe('`and` operator', () => {
     `,
       `
       a && b;
-    `
+    `,
     );
   });
 
@@ -30,7 +30,7 @@ describe('`and` operator', () => {
     `,
       `
       (a === b) && (c === d);
-    `
+    `,
     );
   });
 
@@ -44,7 +44,7 @@ describe('`and` operator', () => {
       if (!a || !b) {
         c();
       }
-    `
+    `,
     );
   });
 });
@@ -57,7 +57,7 @@ describe('`or` operator', () => {
     `,
       `
       a || b;
-    `
+    `,
     );
   });
 
@@ -68,7 +68,7 @@ describe('`or` operator', () => {
     `,
       `
       a || b;
-    `
+    `,
     );
   });
 
@@ -79,7 +79,7 @@ describe('`or` operator', () => {
     `,
       `
       (a === b) || (c === d);
-    `
+    `,
     );
   });
 
@@ -93,7 +93,7 @@ describe('`or` operator', () => {
       if (!a && !b) {
         c();
       }
-    `
+    `,
     );
   });
 });

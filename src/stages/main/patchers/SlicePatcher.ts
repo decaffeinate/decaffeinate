@@ -19,7 +19,7 @@ export default class SlicePatcher extends NodePatcher {
     patcherContext: PatcherContext,
     expression: NodePatcher,
     left: NodePatcher | null,
-    right: NodePatcher | null
+    right: NodePatcher | null,
   ) {
     super(patcherContext);
     this.expression = expression;
@@ -173,7 +173,7 @@ export default class SlicePatcher extends NodePatcher {
     const tokens = this.context.sourceTokens;
     const index = tokens.indexOfTokenMatchingPredicate(
       (token) => token.type === SourceType.LBRACKET,
-      this.expression.outerEndTokenIndex
+      this.expression.outerEndTokenIndex,
     );
     if (!index || index.isAfter(this.contentEndTokenIndex)) {
       throw this.error(`could not find INDEX_START after slice expression`);
@@ -192,7 +192,7 @@ export default class SlicePatcher extends NodePatcher {
         const operator = source.slice(token.start, token.end);
         return operator === '...' || operator === '..';
       },
-      this.left ? this.left.outerEndTokenIndex : this.expression.outerEndTokenIndex
+      this.left ? this.left.outerEndTokenIndex : this.expression.outerEndTokenIndex,
     );
     if (!index || index.isAfter(this.contentEndTokenIndex)) {
       throw this.error(`could not find '..' or '...' in slice`);
@@ -204,7 +204,7 @@ export default class SlicePatcher extends NodePatcher {
     const tokens = this.context.sourceTokens;
     const index = tokens.lastIndexOfTokenMatchingPredicate(
       (token) => token.type === SourceType.RBRACKET,
-      this.outerEndTokenIndex
+      this.outerEndTokenIndex,
     );
     if (!index || index.isBefore(this.contentStartTokenIndex)) {
       throw this.error(`could not find ']' ending slice`);

@@ -8,7 +8,7 @@ describe('division', () => {
     `,
       `
       a / b;
-    `
+    `,
     );
   });
 
@@ -19,7 +19,7 @@ describe('division', () => {
     `,
       `
       (a(b)) / (c(d));
-    `
+    `,
     );
   });
 });
@@ -32,7 +32,7 @@ describe('multiplication', () => {
     `,
       `
       a * b;
-    `
+    `,
     );
   });
 
@@ -43,7 +43,7 @@ describe('multiplication', () => {
     `,
       `
       (a(b)) * (c(d));
-    `
+    `,
     );
   });
 });
@@ -56,7 +56,7 @@ describe('remainder', () => {
     `,
       `
       a % b;
-    `
+    `,
     );
   });
 
@@ -67,7 +67,7 @@ describe('remainder', () => {
     `,
       `
       (a(b)) % (c(d));
-    `
+    `,
     );
   });
 });
@@ -80,7 +80,7 @@ describe('floor division', () => {
     `,
       `
       Math.floor(a / b);
-    `
+    `,
     );
   });
 
@@ -91,7 +91,7 @@ describe('floor division', () => {
     `,
       `
       Math.floor((a(b)) / (c(d)));
-    `
+    `,
     );
   });
 });
@@ -104,7 +104,7 @@ describe('exponentiation', () => {
     `,
       `
       Math.pow((a(b)), (c(d)));
-    `
+    `,
     );
   });
 });

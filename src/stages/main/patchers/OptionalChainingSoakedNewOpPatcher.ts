@@ -8,7 +8,7 @@ import OptionalChainingSoakedFunctionApplicationPatcher from './OptionalChaining
 export default class OptionalChainingSoakedNewOpPatcher extends OptionalChainingSoakedFunctionApplicationPatcher {
   patchAsExpression(): void {
     throw this.error(
-      `JavaScript does not allow constructors with optional chaining. Run without --optional-chaining or edit the original source to manually invoke the constructor conditionally.`
+      `JavaScript does not allow constructors with optional chaining. Run without --optional-chaining or edit the original source to manually invoke the constructor conditionally.`,
     );
   }
 }

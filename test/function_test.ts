@@ -18,7 +18,7 @@ describe('functions', () => {
         0;
         return 0;
       });
-    `
+    `,
     );
   });
 
@@ -29,7 +29,7 @@ describe('functions', () => {
     `,
       `
       (function() { 0; return 0; });
-    `
+    `,
     );
   });
 
@@ -47,7 +47,7 @@ describe('functions', () => {
         return 0; // hey
       });
       b;
-    `
+    `,
     );
   });
 
@@ -58,7 +58,7 @@ describe('functions', () => {
     `,
       `
       (function() { 0; return 0; }); // b
-    `
+    `,
     );
   });
 
@@ -73,7 +73,7 @@ describe('functions', () => {
       (function() {
         0;
         return 0;}); // b
-    `
+    `,
     );
   });
 
@@ -101,7 +101,7 @@ describe('functions', () => {
       };
 
       module.exports = { validExpirationDate };
-    `
+    `,
     );
   });
 
@@ -116,7 +116,7 @@ describe('functions', () => {
       (function() {
         return this.get('delegateEmail') || this.get('email');
       }).property('delegateEmail', 'email');
-    `
+    `,
     );
   });
 
@@ -138,7 +138,7 @@ describe('functions', () => {
       const add = (a, b) => {
         return a + b;
       };
-    `
+    `,
     );
   });
 
@@ -157,7 +157,7 @@ describe('functions', () => {
     `,
       `
       (function() { return arguments[0]; }.bind(this));
-    `
+    `,
     );
   });
 
@@ -174,7 +174,7 @@ describe('functions', () => {
           return c(arguments);
         }
       }.bind(this));
-    `
+    `,
     );
   });
 
@@ -185,7 +185,7 @@ describe('functions', () => {
     `,
       `
       const x = function() { return arguments[0] + this; }.bind(this);
-    `
+    `,
     );
   });
 
@@ -200,7 +200,7 @@ describe('functions', () => {
       ({
         x: function() { return arguments[0] + this; }.bind(this)
       });
-    `
+    `,
     );
   });
 
@@ -218,7 +218,7 @@ describe('functions', () => {
 
         x() { return arguments[0] + this; }
       }
-    `
+    `,
     );
   });
 
@@ -229,7 +229,7 @@ describe('functions', () => {
     `,
       `
       (function*() { return yield fn(); });
-    `
+    `,
     );
   });
 
@@ -240,7 +240,7 @@ describe('functions', () => {
     `,
       `
       (function*() { return yield* fn(); });
-    `
+    `,
     );
   });
 
@@ -251,7 +251,7 @@ describe('functions', () => {
     `,
       `
       (function*() { return 1 + (yield 2); });
-    `
+    `,
     );
   });
 
@@ -262,7 +262,7 @@ describe('functions', () => {
     `,
       `
       (function*() { return 1 + (yield* 2); });
-    `
+    `,
     );
   });
 
@@ -278,7 +278,7 @@ describe('functions', () => {
         const x = yield 2;
         return x;
       });
-    `
+    `,
     );
   });
 
@@ -294,7 +294,7 @@ describe('functions', () => {
         const x = yield* 2;
         return x;
       });
-    `
+    `,
     );
   });
 
@@ -308,7 +308,7 @@ describe('functions', () => {
       (function*() {
         return yield 2;
       });
-    `
+    `,
     );
   });
 
@@ -322,7 +322,7 @@ describe('functions', () => {
       (function*() {
         return yield* 2;
       });
-    `
+    `,
     );
   });
 
@@ -333,7 +333,7 @@ describe('functions', () => {
     `,
       `
       (function*() { return yield fn(); }.bind(this));
-    `
+    `,
     );
   });
 
@@ -351,7 +351,7 @@ describe('functions', () => {
           return yield fn();
         }.bind(this)
       });
-    `
+    `,
     );
   });
 
@@ -372,7 +372,7 @@ describe('functions', () => {
           return yield fn();
         }
       }
-    `
+    `,
     );
   });
 
@@ -386,7 +386,7 @@ describe('functions', () => {
       (function*() {
         return 3;
       });
-    `
+    `,
     );
   });
 
@@ -399,7 +399,7 @@ describe('functions', () => {
       `
       (function*() {
       });
-    `
+    `,
     );
   });
 
@@ -414,7 +414,7 @@ describe('functions', () => {
       (function*() {
         yield;
       });
-    `
+    `,
     );
   });
 
@@ -450,7 +450,7 @@ describe('functions', () => {
         }
       };
       G;
-    `
+    `,
     ));
 
   it('puts parens around an arrow function returning a single-element object', () =>
@@ -460,7 +460,7 @@ describe('functions', () => {
     `,
       `
       () => ({a: b});
-    `
+    `,
     ));
 
   it('puts parens around an arrow function returning a multi-element object', () =>
@@ -470,7 +470,7 @@ describe('functions', () => {
     `,
       `
       () => ({a: b, c: d});
-    `
+    `,
     ));
 
   it('properly closes a function as the only argument to a function', () =>
@@ -484,7 +484,7 @@ describe('functions', () => {
       it(function() {
         a;
       });
-    `
+    `,
     ));
 
   it('properly closes a function as the second argument to a function', () =>
@@ -498,7 +498,7 @@ describe('functions', () => {
       it(a, function() {
         b;
       });
-    `
+    `,
     ));
 
   it('handles functions that omit commas in the parameter list', () =>
@@ -510,7 +510,7 @@ describe('functions', () => {
     `,
       `
       ((foo, bar) => baz);
-    `
+    `,
     ));
 
   it('handles a this-assign parameter with a reserved word name', () =>
@@ -522,7 +522,7 @@ describe('functions', () => {
       (function(case1) {
         this.case = case1;
       });
-    `
+    `,
     ));
 
   it('allows semicolon delimiters between parameters', () =>
@@ -532,7 +532,7 @@ describe('functions', () => {
     `,
       `
       (function(a, b, c, d) {});
-    `
+    `,
     ));
 
   it('handles a complex fat arrow function body starting with an open-brace', () =>
@@ -542,7 +542,7 @@ describe('functions', () => {
     `,
       `
       x(() => ({a: 'b'}['a']));
-    `
+    `,
     ));
 
   it('handles a fat arrow function with an implicit object body', () =>
@@ -552,7 +552,7 @@ describe('functions', () => {
     `,
       `
       x(() => ({a: b}));
-    `
+    `,
     ));
 
   it('handles nested functions surrounded in parens', () =>
@@ -566,7 +566,7 @@ describe('functions', () => {
     `,
       `
       (() => a(() => b(() => c)));
-    `
+    `,
     ));
 
   it('generates nice-looking code for a function call around an arrow function', () =>
@@ -581,7 +581,7 @@ describe('functions', () => {
         const a = 1;
         return a;
       });
-    `
+    `,
     ));
 
   it('handles an arrow function argument that is wrapped in parens', () =>
@@ -595,7 +595,7 @@ describe('functions', () => {
       a((() => {
         return b;
       }));
-    `
+    `,
     ));
 
   it('handles an implicit return wrapped in multiline parens', () =>
@@ -607,7 +607,7 @@ describe('functions', () => {
     `,
       `
       (() => true);
-    `
+    `,
     ));
 
   it('has the correct result for an implicit return wrapped in multiline parens', () =>
@@ -618,7 +618,7 @@ describe('functions', () => {
       )
       setResult(f())
     `,
-      true
+      true,
     ));
 
   it('does not overwrite outer variables when doing parameter array destructuring', () =>
@@ -629,7 +629,7 @@ describe('functions', () => {
       f(['new'])
       setResult(x)
     `,
-      'original'
+      'original',
     ));
 
   it('does not overwrite outer variables when doing parameter object destructuring', () =>
@@ -641,7 +641,7 @@ describe('functions', () => {
       f({a: 3})
       setResult(a)
     `,
-      1
+      1,
     ));
 
   it('handles a default param and a parenthesized body', () =>
@@ -655,7 +655,7 @@ describe('functions', () => {
         if (a == null) { a = 1; }
         return (a);
       });
-    `
+    `,
     ));
 
   it('handles a function call with a lambda as the first arg', () =>
@@ -668,7 +668,7 @@ describe('functions', () => {
       `
       a(() => b
       , c);
-    `
+    `,
     ));
 
   it('applies proper variable scopes with sibling arrow functions (#1201)', () =>
@@ -690,7 +690,7 @@ describe('functions', () => {
       () => {
         const a = 2;
       };
-    `
+    `,
     ));
 
   it('applies proper variable scopes with sibling blockless arrow functions (#1202)', () =>
@@ -704,7 +704,7 @@ describe('functions', () => {
       return a = 1; };
       () => { let a;
       return a = 2; };
-    `
+    `,
     ));
 
   it('correctly handles scoping for an assignment in an inline arrow function', () =>
@@ -715,7 +715,7 @@ describe('functions', () => {
       f()
       setResult(a)
     `,
-      2
+      2,
     ));
 
   it('correctly hoists variable declarations for async functions', () => {
@@ -743,7 +743,7 @@ describe('functions', () => {
             return e = 1;
           }
         }
-        `
+        `,
     );
   });
 });

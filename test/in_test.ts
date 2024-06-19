@@ -9,7 +9,7 @@ describe('in operator', () => {
     `,
       `
       Array.from(b).includes(a);
-    `
+    `,
     );
   });
 
@@ -25,7 +25,7 @@ describe('in operator', () => {
         options: {
           looseIncludes: true,
         },
-      }
+      },
     );
   });
 
@@ -36,7 +36,7 @@ describe('in operator', () => {
     `,
       `
       Array.from(c).includes(a.b);
-    `
+    `,
     );
   });
 
@@ -47,7 +47,7 @@ describe('in operator', () => {
     `,
       `
       a(b, Array.from(e).includes(c.d));
-    `
+    `,
     );
   });
 
@@ -58,7 +58,7 @@ describe('in operator', () => {
     `,
       `
       Array.from(b + c).includes(a);
-    `
+    `,
     );
   });
 
@@ -72,7 +72,7 @@ describe('in operator', () => {
       if (Array.from(c + d).includes(a + b)) {
         e;
       }
-    `
+    `,
     );
   });
 
@@ -87,7 +87,7 @@ describe('in operator', () => {
       !Array.from(b).includes(a);
       !Array.from(b).includes(a);
       !Array.from(b).includes(a);
-    `
+    `,
     );
   });
 
@@ -98,7 +98,7 @@ describe('in operator', () => {
     `,
       `
       a || !Array.from(b).includes(a);
-    `
+    `,
     );
   });
 
@@ -109,7 +109,7 @@ describe('in operator', () => {
     `,
       `
       a && !Array.from(b).includes(a);
-    `
+    `,
     );
   });
 
@@ -123,7 +123,7 @@ describe('in operator', () => {
       if (!Array.from(b).includes(a)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -137,7 +137,7 @@ describe('in operator', () => {
       if (!(Array.from(b).includes(a))) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -151,7 +151,7 @@ describe('in operator', () => {
       if (Array.from(b).includes(a)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -165,7 +165,7 @@ describe('in operator', () => {
       if ([true, false].includes(a)) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -179,7 +179,7 @@ describe('in operator', () => {
       if (![true, false].includes(a)) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -193,7 +193,7 @@ describe('in operator', () => {
       if ([true].includes(a)) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -208,7 +208,7 @@ describe('in operator', () => {
       if ((needle = a(), [true, false].includes(needle))) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -220,7 +220,7 @@ describe('in operator', () => {
       `
       let needle;
       (needle = a, Array.from(b()).includes(needle));
-    `
+    `,
     );
   });
 
@@ -232,7 +232,7 @@ describe('in operator', () => {
       `
       let needle;
       (needle = a(), !Array.from(b).includes(needle));
-    `
+    `,
     );
   });
 
@@ -246,7 +246,7 @@ describe('in operator', () => {
       if ([b && c, +d].includes(a)) {
         e;
       }
-    `
+    `,
     );
   });
 
@@ -260,7 +260,7 @@ describe('in operator', () => {
       if ([].includes(a)) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -271,7 +271,7 @@ describe('in operator', () => {
       arr.push('first') in [arr.push('second')]
       setResult(arr)
     `,
-      ['first', 'second']
+      ['first', 'second'],
     );
   });
 
@@ -286,7 +286,7 @@ describe('in operator', () => {
       if ((needle = typeof a !== 'undefined' && a !== null ? a.b() : undefined, Array.from(c).includes(needle))) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -305,7 +305,7 @@ describe('in operator', () => {
         options: {
           noArrayIncludes: true,
         },
-      }
+      },
     );
   });
 });

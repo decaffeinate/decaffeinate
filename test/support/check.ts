@@ -12,7 +12,7 @@ export interface Extra {
 export default function check(
   source: string,
   expected: string,
-  { options = {}, shouldStripIndent = true }: Extra = {}
+  { options = {}, shouldStripIndent = true }: Extra = {},
 ): void {
   ({ source, expected } = maybeStripIndent(shouldStripIndent, source, expected));
   checkOutput(source, expected, { ...options, useCS2: false });
@@ -22,7 +22,7 @@ export default function check(
 export function checkCS1(
   source: string,
   expected: string,
-  { options = {}, shouldStripIndent = true }: Extra = {}
+  { options = {}, shouldStripIndent = true }: Extra = {},
 ): void {
   ({ source, expected } = maybeStripIndent(shouldStripIndent, source, expected));
   checkOutput(source, expected, { ...options, useCS2: false });
@@ -31,7 +31,7 @@ export function checkCS1(
 export function checkCS2(
   source: string,
   expected: string,
-  { options = {}, shouldStripIndent = true }: Extra = {}
+  { options = {}, shouldStripIndent = true }: Extra = {},
 ): void {
   ({ source, expected } = maybeStripIndent(shouldStripIndent, source, expected));
   checkOutput(source, expected, { ...options, useCS2: true });
@@ -40,7 +40,7 @@ export function checkCS2(
 function maybeStripIndent(
   shouldStripIndent: boolean,
   source: string,
-  expected: string
+  expected: string,
 ): { source: string; expected: string } {
   if (shouldStripIndent) {
     if (source[0] === '\n') {

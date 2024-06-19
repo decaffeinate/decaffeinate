@@ -51,7 +51,7 @@ describe('formatCoffeeScriptAst', () => {
         ]
       }
 
-    `) + '\n'
+    `) + '\n',
     );
   });
 
@@ -95,7 +95,7 @@ describe('formatCoffeeScriptAst', () => {
           }
         ]
       }
-    `) + '\n'
+    `) + '\n',
     );
   });
 
@@ -130,7 +130,7 @@ describe('formatCoffeeScriptAst', () => {
           }
         ]
       }
-    `) + '\n'
+    `) + '\n',
     );
   });
 });

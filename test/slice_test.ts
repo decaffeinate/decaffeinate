@@ -52,7 +52,7 @@ describe('slice', () => {
     `,
       `
       const a = (Array.from(d).filter((c) => e).map((c) => b)).slice(0, 2);
-    `
+    `,
     );
   });
 
@@ -64,7 +64,7 @@ describe('slice', () => {
       end = '3'
       setResult(a[start..end])
     `,
-      [2, 3, 4]
+      [2, 3, 4],
     );
   });
 
@@ -75,7 +75,7 @@ describe('slice', () => {
     `,
       `
       a.slice(start, + +end + 1 || undefined);
-    `
+    `,
     );
   });
 
@@ -86,7 +86,7 @@ describe('slice', () => {
     `,
       `
       a.splice(b, c - b, ...[].concat(d));
-    `
+    `,
     );
   });
 
@@ -97,7 +97,7 @@ describe('slice', () => {
     `,
       `
       a.splice(b, c - b + 1, ...[].concat(d));
-    `
+    `,
     );
   });
 
@@ -108,7 +108,7 @@ describe('slice', () => {
     `,
       `
       a.splice(b, 9e9, ...[].concat(c));
-    `
+    `,
     );
   });
 
@@ -119,7 +119,7 @@ describe('slice', () => {
     `,
       `
       a.splice(b, 9e9, ...[].concat(c));
-    `
+    `,
     );
   });
 
@@ -130,7 +130,7 @@ describe('slice', () => {
     `,
       `
       a.splice(0, b, ...[].concat(c));
-    `
+    `,
     );
   });
 
@@ -141,7 +141,7 @@ describe('slice', () => {
     `,
       `
       a.splice(0, b + 1, ...[].concat(c));
-    `
+    `,
     );
   });
 
@@ -152,7 +152,7 @@ describe('slice', () => {
     `,
       `
       a.splice(0, 9e9, ...[].concat(b));
-    `
+    `,
     );
   });
 
@@ -163,7 +163,7 @@ describe('slice', () => {
     `,
       `
       a.splice(0, 9e9, ...[].concat(b));
-    `
+    `,
     );
   });
 
@@ -174,7 +174,7 @@ describe('slice', () => {
     `,
       `
       a.splice(b, c - b + 1, ...[].concat(d()));
-    `
+    `,
     );
   });
 
@@ -189,7 +189,7 @@ describe('slice', () => {
         let ref;
         return ref = d(), a.splice(b, c - b, ...[].concat(ref)), ref;
       };
-    `
+    `,
     );
   });
 
@@ -200,7 +200,7 @@ describe('slice', () => {
       arr[1...3] = ['Hello', 'World']
       setResult(arr)
     `,
-      ['a', 'Hello', 'World', 'd']
+      ['a', 'Hello', 'World', 'd'],
     );
   });
 
@@ -211,7 +211,7 @@ describe('slice', () => {
       arr[1...3] = 'Hello';
       setResult(arr)
     `,
-      ['a', 'Hello', 'd']
+      ['a', 'Hello', 'd'],
     );
   });
 
@@ -222,7 +222,7 @@ describe('slice', () => {
     `,
       `
       a.slice(b, +(c || d) + 1 || undefined);
-    `
+    `,
     );
   });
 
@@ -233,7 +233,7 @@ describe('slice', () => {
     `,
       `
       a.splice(b, (c || d) - b + 1, ...[].concat(e));
-    `
+    `,
     );
   });
 
@@ -243,7 +243,7 @@ describe('slice', () => {
       a = [1..4]
       setResult(a[..2 or 3])
     `,
-      [1, 2, 3]
+      [1, 2, 3],
     );
   });
 });

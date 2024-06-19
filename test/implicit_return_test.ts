@@ -12,7 +12,7 @@ describe('implicit return', () => {
         let a;
         return a = 1;
       });
-    `
+    `,
     );
   });
 
@@ -36,7 +36,7 @@ describe('implicit return', () => {
         1;
         return 2;
       });
-    `
+    `,
     );
   });
 
@@ -50,7 +50,7 @@ describe('implicit return', () => {
       () => {
         return 1;
       };
-    `
+    `,
     );
   });
 
@@ -67,7 +67,7 @@ describe('implicit return', () => {
           return 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -84,7 +84,7 @@ describe('implicit return', () => {
           this.a = 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -98,7 +98,7 @@ describe('implicit return', () => {
       (function() {
         throw 1;
       });
-    `
+    `,
     );
 
     check(`-> throw 1`, `(function() { throw 1; });`);
@@ -111,7 +111,7 @@ describe('implicit return', () => {
     `,
       `
       (function() { if (a) { return b; } else { return c; } });
-    `
+    `,
     );
   });
 });

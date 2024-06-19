@@ -64,7 +64,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     const dotIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.expression.outerEnd,
       this.outerEnd - 1,
-      (token) => token.type === SourceType.DOT
+      (token) => token.type === SourceType.DOT,
     );
 
     if (!dotIndex) {
@@ -94,7 +94,7 @@ export default class MemberAccessOpPatcher extends NodePatcher {
     const tokens = this.context.sourceTokens;
     const index = tokens.lastIndexOfTokenMatchingPredicate(
       (token) => token.type === SourceType.IDENTIFIER,
-      this.contentEndTokenIndex
+      this.contentEndTokenIndex,
     );
     if (!index || index.isBefore(this.contentStartTokenIndex)) {
       throw this.error(`unable to find member name token in access`);

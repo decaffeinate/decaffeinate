@@ -10,7 +10,7 @@ describe('comments', () => {
       `
       // foo
       1;
-    `
+    `,
     );
   });
 
@@ -27,7 +27,7 @@ describe('comments', () => {
       HEY
       */
       1;
-    `
+    `,
     );
   });
 
@@ -44,7 +44,7 @@ describe('comments', () => {
        * HEY
        */
       1;
-    `
+    `,
     );
   });
 
@@ -61,7 +61,7 @@ describe('comments', () => {
       @param {Buffer} un-hashed
       */
       (function(buffer) {});
-    `
+    `,
     );
   });
 
@@ -74,7 +74,7 @@ describe('comments', () => {
       `
       /* HEX */
       a0;
-    `
+    `,
     );
   });
 
@@ -87,7 +87,7 @@ describe('comments', () => {
       `
       #!/usr/bin/env node
       console.log("Hello World!");
-    `
+    `,
     );
   });
 
@@ -106,7 +106,7 @@ describe('comments', () => {
         }
         /* d */
       });
-    `
+    `,
     );
   });
 });

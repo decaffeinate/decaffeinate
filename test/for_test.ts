@@ -12,7 +12,7 @@ describe('for loops', () => {
       for (let k in o) {
         k;
       }
-    `
+    `,
     );
   });
 
@@ -27,7 +27,7 @@ describe('for loops', () => {
         const v = o[k];
         k;
       }
-    `
+    `,
     );
   });
 
@@ -43,7 +43,7 @@ describe('for loops', () => {
         const v = object[k];
         k;
       }
-    `
+    `,
     );
   });
 
@@ -58,7 +58,7 @@ describe('for loops', () => {
         const {x, y} = o[k];
         k + x;
       }
-    `
+    `,
     );
   });
 
@@ -74,7 +74,7 @@ describe('for loops', () => {
         const {x, y} = object[key];
         key + x;
       }
-    `
+    `,
     );
   });
 
@@ -91,7 +91,7 @@ describe('for loops', () => {
           console.log(v);
         }
       }
-    `
+    `,
     );
   });
 
@@ -105,7 +105,7 @@ describe('for loops', () => {
       for (let a of Array.from(b)) {
         a;
       }
-    `
+    `,
     );
   });
 
@@ -124,7 +124,7 @@ describe('for loops', () => {
         options: {
           looseForOf: true,
         },
-      }
+      },
     );
   });
 
@@ -138,7 +138,7 @@ describe('for loops', () => {
       for (let a of [1, 2, 3]) {
         a;
       }
-    `
+    `,
     );
   });
 
@@ -159,7 +159,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -190,7 +190,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -205,7 +205,7 @@ describe('for loops', () => {
         const a = b[j];
         a;
       }
-    `
+    `,
     );
   });
 
@@ -219,7 +219,7 @@ describe('for loops', () => {
       for (let { a, b } of Array.from(c)) {
         a + b;
       }
-    `
+    `,
     );
   });
 
@@ -234,7 +234,7 @@ describe('for loops', () => {
         const { a, b } = c[i];
         a + b;
       }
-    `
+    `,
     );
   });
 
@@ -248,7 +248,7 @@ describe('for loops', () => {
       for (let i = 0; i <= 1; i++) {
         2;
       }
-    `
+    `,
     );
   });
 
@@ -262,7 +262,7 @@ describe('for loops', () => {
       for (let j = 0; j <= 1; j++) {
         const i = 1;
       }
-    `
+    `,
     );
   });
 
@@ -276,7 +276,7 @@ describe('for loops', () => {
       for (let a = 10; a <= 5; a++) {
         b();
       }
-    `
+    `,
     );
   });
 
@@ -290,7 +290,7 @@ describe('for loops', () => {
       for (let a = 1, step = b(); a <= 10; a += step) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -304,7 +304,7 @@ describe('for loops', () => {
       for (let a = 10, step = b(); a >= 1; a += step) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -318,7 +318,7 @@ describe('for loops', () => {
       for (let a = 1; a >= 10; a--) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -332,7 +332,7 @@ describe('for loops', () => {
       for (let a = b, end = c; a >= end; a--) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -346,7 +346,7 @@ describe('for loops', () => {
       for (let a = b, end = c, step = d, asc = step > 0; asc ? a <= end : a >= end; a += step) {
         e;
       }
-    `
+    `,
     );
   });
 
@@ -360,7 +360,7 @@ describe('for loops', () => {
       for (let i = 1; i < 3; i++) {
         console.log(i);
       }
-    `
+    `,
     );
   });
 
@@ -374,7 +374,7 @@ describe('for loops', () => {
       for (let i = 5; i >= 3; i--) {
         console.log(i);
       }
-    `
+    `,
     );
   });
 
@@ -388,7 +388,7 @@ describe('for loops', () => {
       for (let i = a, end = b; i <= end; i++) {
         2;
       }
-    `
+    `,
     );
   });
 
@@ -402,7 +402,7 @@ describe('for loops', () => {
       for (let n = a, end = b, asc = a <= end; asc ? n <= end : n >= end; asc ? n++ : n--) {
         n;
       }
-    `
+    `,
     );
   });
 
@@ -416,7 +416,7 @@ describe('for loops', () => {
       for (let start = a(), n = start, end = b(), asc = start <= end; asc ? n <= end : n >= end; asc ? n++ : n--) {
         n;
       }
-    `
+    `,
     );
   });
 
@@ -427,7 +427,7 @@ describe('for loops', () => {
     `,
       `
       const x = [0, 1, 2].map((i) => a);
-    `
+    `,
     );
   });
 
@@ -442,7 +442,7 @@ describe('for loops', () => {
         const a = b[i];
         a;
       }
-    `
+    `,
     );
   });
 
@@ -457,7 +457,7 @@ describe('for loops', () => {
         const a = b[i];
         a;
       }
-    `
+    `,
     );
   });
 
@@ -472,7 +472,7 @@ describe('for loops', () => {
         const a = b[i];
         a;
       }
-    `
+    `,
     );
   });
 
@@ -488,7 +488,7 @@ describe('for loops', () => {
           a;
         }
       }
-    `
+    `,
     );
   });
 
@@ -505,7 +505,7 @@ describe('for loops', () => {
           a;
         }
       }
-    `
+    `,
     );
   });
 
@@ -516,7 +516,7 @@ describe('for loops', () => {
     `,
       `
       for (let a of Array.from(b)) { if (a.c) { a; } }
-    `
+    `,
     );
   });
 
@@ -527,7 +527,7 @@ describe('for loops', () => {
     `,
       `
       for (let i = 0; i < b.length; i++) { const a = b[i]; if (a.c) { a; } }
-    `
+    `,
     );
   });
 
@@ -544,7 +544,7 @@ describe('for loops', () => {
           a;
         }
       }
-    `
+    `,
     );
   });
 
@@ -560,7 +560,7 @@ describe('for loops', () => {
         const e = iterable[i];
         break;
       }
-    `
+    `,
     );
   });
 
@@ -574,7 +574,7 @@ describe('for loops', () => {
       for (let e of Array.from(list())) {
         break;
       }
-    `
+    `,
     );
   });
 
@@ -588,7 +588,7 @@ describe('for loops', () => {
       for (let i = 0; i <= 10; i++) {
         i;
       }
-    `
+    `,
     );
   });
 
@@ -602,7 +602,7 @@ describe('for loops', () => {
       for (let i = 0; i < 10; i++) {
         i;
       }
-    `
+    `,
     );
   });
 
@@ -616,7 +616,7 @@ describe('for loops', () => {
       for (let i = 10; i >= 0; i--) {
         i;
       }
-    `
+    `,
     );
   });
 
@@ -630,7 +630,7 @@ describe('for loops', () => {
       for (let i = 10; i > 0; i--) {
         i;
       }
-    `
+    `,
     );
   });
 
@@ -644,7 +644,7 @@ describe('for loops', () => {
       for (let i = 100; i >= 0; i -= 2) {
         i;
       }
-    `
+    `,
     );
   });
 
@@ -659,7 +659,7 @@ describe('for loops', () => {
         const a = b[i];
         a();
       }
-    `
+    `,
     );
   });
 
@@ -670,7 +670,7 @@ describe('for loops', () => {
     `,
       `
       for (let k in o) { k; }
-    `
+    `,
     );
   });
 
@@ -681,7 +681,7 @@ describe('for loops', () => {
     `,
       `
       for (let e of Array.from(l)) { e; }
-    `
+    `,
     );
   });
 
@@ -698,7 +698,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -717,7 +717,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -728,7 +728,7 @@ describe('for loops', () => {
     `,
       `
       a(Array.from(l).map((e) => f));
-    `
+    `,
     );
   });
 
@@ -744,7 +744,7 @@ describe('for loops', () => {
         options: {
           looseForExpressions: true,
         },
-      }
+      },
     );
   });
 
@@ -755,7 +755,7 @@ describe('for loops', () => {
     `,
       `
       a([c, d].map((b) => e));
-    `
+    `,
     );
   });
 
@@ -776,7 +776,7 @@ describe('for loops', () => {
         return result;
       })());
       console.log(e);
-    `
+    `,
     );
   });
 
@@ -798,7 +798,7 @@ describe('for loops', () => {
         return result;
       })());
       console.log(i);
-    `
+    `,
     );
   });
 
@@ -816,7 +816,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -828,7 +828,7 @@ describe('for loops', () => {
     `,
       `
       (() => Array.from(b).map((a) => c));
-    `
+    `,
     );
   });
 
@@ -839,7 +839,7 @@ describe('for loops', () => {
     `,
       `
       f(Array.from(b).filter((a) => c).map((a) => d));
-    `
+    `,
     );
   });
 
@@ -850,7 +850,7 @@ describe('for loops', () => {
     `,
       `
       f(Array.from(b).map((a, i) => a + i));
-    `
+    `,
     );
   });
 
@@ -861,7 +861,7 @@ describe('for loops', () => {
     `,
       `
       f(Array.from(d).map((c) => ({a: c, b: c})));
-    `
+    `,
     );
   });
 
@@ -872,7 +872,7 @@ describe('for loops', () => {
     `,
       `
       f(Array.from(d).map((c) => ({a: c, b: c}['a'])));
-    `
+    `,
     );
   });
 
@@ -883,7 +883,7 @@ describe('for loops', () => {
     `,
       `
       f(Array.from(d).map((c) => ({a: b})));
-    `
+    `,
     );
   });
 
@@ -894,7 +894,7 @@ describe('for loops', () => {
         arr.reduce (a, b) -> a + b
       setResult(sum(3*x + i + 1 for x, i in [2, 5, 8]))
     `,
-      51
+      51,
     );
   });
 
@@ -919,7 +919,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -946,7 +946,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -971,7 +971,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -989,7 +989,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -1009,7 +1009,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -1040,7 +1040,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -1070,7 +1070,7 @@ describe('for loops', () => {
       
       // this is here to make the real end of "a" be much later
       stuff;
-    `
+    `,
     );
   });
 
@@ -1089,7 +1089,7 @@ describe('for loops', () => {
           a + c;
         }
       }
-    `
+    `,
     );
   });
 
@@ -1103,7 +1103,7 @@ describe('for loops', () => {
       for (let key of Object.keys(list || {})) {
         console.log(key);
       }
-    `
+    `,
     );
   });
 
@@ -1117,7 +1117,7 @@ describe('for loops', () => {
       for (let key of Object.keys(getObject() || {})) {
         console.log(key);
       }
-    `
+    `,
     );
   });
 
@@ -1132,7 +1132,7 @@ describe('for loops', () => {
         const value = list[key];
         console.log(key, value);
       }
-    `
+    `,
     );
   });
 
@@ -1148,7 +1148,7 @@ describe('for loops', () => {
         const value = object[key];
         console.log(key, value);
       }
-    `
+    `,
     );
   });
 
@@ -1164,7 +1164,7 @@ describe('for loops', () => {
           console.log(key);
         }
       }
-    `
+    `,
     );
   });
 
@@ -1175,7 +1175,7 @@ describe('for loops', () => {
     `,
       `
       for (let a of Object.keys(b || {})) { a; }
-    `
+    `,
     );
   });
 
@@ -1206,7 +1206,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -1223,7 +1223,7 @@ describe('for loops', () => {
           return a;
         }
       });
-    `
+    `,
     );
   });
 
@@ -1237,7 +1237,7 @@ describe('for loops', () => {
       `
       (() => Array.from(b).map((a) =>
         () => a));
-    `
+    `,
     );
   });
 
@@ -1248,7 +1248,7 @@ describe('for loops', () => {
     `,
       `
       for (let a of Array.from(b)) { a(); }
-    `
+    `,
     );
   });
 
@@ -1259,7 +1259,7 @@ describe('for loops', () => {
     `,
       `
       for (let k in o) { k; }
-    `
+    `,
     );
   });
 
@@ -1272,7 +1272,7 @@ describe('for loops', () => {
     `,
       `
       for (let a of Array.from(b)) { ((() => console.log('foo')))(); }
-    `
+    `,
     );
   });
 
@@ -1285,7 +1285,7 @@ describe('for loops', () => {
     `,
       `
       for (let i = 0; i < b.length; i++) { const a = b[i]; ((() => console.log('foo')))(); }
-    `
+    `,
     );
   });
 
@@ -1301,7 +1301,7 @@ describe('for loops', () => {
         const {x, y} = getPoint(entry);
         console.log(x + ', ' + y);
       }
-    `
+    `,
     );
   });
 
@@ -1317,7 +1317,7 @@ describe('for loops', () => {
           d(e);
         }
       }
-    `
+    `,
     ));
 
   it('handles for loops over implicit function calls', () =>
@@ -1330,7 +1330,7 @@ describe('for loops', () => {
       for (let a of Array.from(b(c))) {
         d();
       }
-    `
+    `,
     ));
 
   it('handles for loops with an index over implicit function calls', () =>
@@ -1345,7 +1345,7 @@ describe('for loops', () => {
         const a = iterable[i];
         d();
       }
-    `
+    `,
     ));
 
   it('handles for loop expressions returning implicit objects', () =>
@@ -1360,7 +1360,7 @@ describe('for loops', () => {
         c: d,
         e: f
       }));
-    `
+    `,
     ));
 
   it('handles for loop expressions ending in a break', () =>
@@ -1377,7 +1377,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     ));
 
   it('handles for loop expressions with multiple branches including a control flow statement', () =>
@@ -1403,7 +1403,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     ));
 
   it('handles a `when` clause with existence operator', () => {
@@ -1421,7 +1421,7 @@ describe('for loops', () => {
           filteredData[k] = v;
         }
       }
-    `
+    `,
     );
   });
 
@@ -1432,7 +1432,7 @@ describe('for loops', () => {
     `,
       `
       const a = (Array.from(c).filter((b) => !(b in e)).map((b) => f));
-    `
+    `,
     );
   });
 
@@ -1451,7 +1451,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -1466,7 +1466,7 @@ describe('for loops', () => {
         const b = (typeof c !== 'undefined' && c !== null ? c.d : undefined)[a];
         console.log(a);
       }
-    `
+    `,
     );
   });
 
@@ -1480,7 +1480,7 @@ describe('for loops', () => {
       for (this.a of Array.from(b)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1494,7 +1494,7 @@ describe('for loops', () => {
       for (let a in this.b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1505,7 +1505,7 @@ describe('for loops', () => {
     `,
       `
       for (let step = c(d), asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { const a = b[i]; a; }
-    `
+    `,
     );
   });
 
@@ -1516,7 +1516,7 @@ describe('for loops', () => {
     `,
       `
       for (let a of Array.from(b)) { if (c ? d : undefined) { a; } }
-    `
+    `,
     );
   });
 
@@ -1527,7 +1527,7 @@ describe('for loops', () => {
     `,
       `
       for (let a of Array.from((b ? c : undefined))) { a; }
-    `
+    `,
     );
   });
 
@@ -1538,7 +1538,7 @@ describe('for loops', () => {
     `,
       `
       for (let step = c ? d : undefined, asc = step > 0, i = asc ? 0 : b.length - 1; asc ? i < b.length : i >= 0; i += step) { const a = b[i]; a; }
-    `
+    `,
     );
   });
 
@@ -1553,7 +1553,7 @@ describe('for loops', () => {
         const a = b[i];
         f;
       }
-    `
+    `,
     );
   });
 
@@ -1568,7 +1568,7 @@ describe('for loops', () => {
         const a = value[value.length - 1];
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1584,7 +1584,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
     checkCS2(
       `
@@ -1597,7 +1597,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -1613,7 +1613,7 @@ describe('for loops', () => {
         const v = value[value.length - 1];
         k + v;
       }
-    `
+    `,
     );
   });
 
@@ -1625,7 +1625,7 @@ describe('for loops', () => {
     `,
       `
       for (let step = ((() => d))(), asc = step > 0, i = asc ? 0 : c.length - 1; asc ? i < c.length : i >= 0; i += step) { const b = c[i]; a; }
-    `
+    `,
     );
   });
 
@@ -1654,7 +1654,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -1671,7 +1671,7 @@ describe('for loops', () => {
         const v = object[k];
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1688,7 +1688,7 @@ describe('for loops', () => {
         const v = object[k];
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1699,7 +1699,7 @@ describe('for loops', () => {
     `,
       `
       a((Array.from(c).map((b) => e)), d);
-    `
+    `,
     );
   });
 
@@ -1710,7 +1710,7 @@ describe('for loops', () => {
     `,
       `
       [(Array.from(b).map((a) => d)), c];
-    `
+    `,
     );
   });
 
@@ -1721,7 +1721,7 @@ describe('for loops', () => {
     `,
       `
       ({a: (Array.from(c).map((b) => e)), d});
-    `
+    `,
     );
   });
 
@@ -1732,7 +1732,7 @@ describe('for loops', () => {
     `,
       `
       const foo = function() { for (let i of []) { null; } return t; };
-    `
+    `,
     );
   });
 
@@ -1743,7 +1743,7 @@ describe('for loops', () => {
     `,
       `
       for (let b of Array.from(c)) { a; break; }
-    `
+    `,
     );
   });
 
@@ -1772,7 +1772,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -1792,7 +1792,7 @@ describe('for loops', () => {
           return result;
         }).call(this);
       });
-    `
+    `,
     );
   });
 
@@ -1811,7 +1811,7 @@ describe('for loops', () => {
         console.log(i);
         i = 10;
       }
-    `
+    `,
     );
   });
 
@@ -1835,7 +1835,7 @@ describe('for loops', () => {
         console.log(i);
         f();
       }
-    `
+    `,
     );
   });
 
@@ -1859,7 +1859,7 @@ describe('for loops', () => {
         val = arr[i];
         console.log(i);
       }
-    `
+    `,
     );
   });
 
@@ -1875,7 +1875,7 @@ describe('for loops', () => {
       values.push(i)
       setResult(values)
     `,
-      [0, 1, 2, 3]
+      [0, 1, 2, 3],
     );
   });
 
@@ -1891,7 +1891,7 @@ describe('for loops', () => {
         console.log(i);
         i = 100;
       }
-    `
+    `,
     );
   });
 
@@ -1924,7 +1924,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -1947,7 +1947,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -1970,7 +1970,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -1998,7 +1998,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -2021,7 +2021,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -2036,7 +2036,7 @@ describe('for loops', () => {
         const a = arr[i];
         i += 5;
       }
-    `
+    `,
     );
   });
 
@@ -2051,7 +2051,7 @@ describe('for loops', () => {
         const a = arr[i];
         i++;
       }
-    `
+    `,
     );
   });
 
@@ -2072,7 +2072,7 @@ describe('for loops', () => {
         const a = arr[i];
         f();
       }
-    `
+    `,
     );
   });
 
@@ -2083,7 +2083,7 @@ describe('for loops', () => {
     `,
       `
       for (let a of Array.from(b)) {} 
-    `
+    `,
     );
   });
 
@@ -2094,7 +2094,7 @@ describe('for loops', () => {
     `,
       `
       for (let a in b) {} 
-    `
+    `,
     );
   });
 
@@ -2105,7 +2105,7 @@ describe('for loops', () => {
     `,
       `
       for (let a of Object.keys(b || {})) {} 
-    `
+    `,
     );
   });
 
@@ -2124,7 +2124,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -2135,7 +2135,7 @@ describe('for loops', () => {
       x = (a for a in [])
       setResult('did not crash')
     `,
-      'did not crash'
+      'did not crash',
     );
   });
 
@@ -2152,7 +2152,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -2165,7 +2165,7 @@ describe('for loops', () => {
       `
       const x = Array.from(b).map((a) =>
         c);
-    `
+    `,
     );
   });
 
@@ -2176,7 +2176,7 @@ describe('for loops', () => {
     `,
       `
       (() => Array.from(b).filter((a) => a > 0));
-    `
+    `,
     );
   });
 
@@ -2187,7 +2187,7 @@ describe('for loops', () => {
     `,
       `
       (() => Array.from(b));
-    `
+    `,
     );
   });
 
@@ -2202,7 +2202,7 @@ describe('for loops', () => {
         for (let a of Array.from(b)) {}
         return result;
       })(); 
-    `
+    `,
     );
   });
 
@@ -2223,7 +2223,7 @@ describe('for loops', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -2232,7 +2232,7 @@ describe('for loops', () => {
       `
       setResult(for a in [1, 2, 3] when b = a - 1 then b)
     `,
-      [1, 2]
+      [1, 2],
     );
   });
 
@@ -2257,7 +2257,7 @@ describe('for loops', () => {
         return result;
       })();
       d;
-    `
+    `,
     );
   });
 
@@ -2280,7 +2280,7 @@ describe('for loops', () => {
         return result;
       })();
       d;
-    `
+    `,
     );
   });
 
@@ -2294,7 +2294,7 @@ describe('for loops', () => {
       for (let a of b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -2305,7 +2305,7 @@ describe('for loops', () => {
     `,
       `
       const a = (Array.from(d).map((c) => b));
-    `
+    `,
     );
   });
 
@@ -2316,7 +2316,7 @@ describe('for loops', () => {
     `,
       `
       const a = (Array.from(d).map((c) => b));
-    `
+    `,
     );
   });
 
@@ -2336,7 +2336,7 @@ describe('for loops', () => {
           c;
         }
       });
-    `
+    `,
     );
   });
 
@@ -2355,7 +2355,7 @@ describe('for loops', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -2370,7 +2370,7 @@ describe('for loops', () => {
         const value = obj[this.key];
         a;
       }
-    `
+    `,
     );
   });
 
@@ -2395,7 +2395,7 @@ describe('for loops', () => {
         Array.from(c).map((b) =>
           d)
       ];
-      `
+      `,
     );
   });
 });

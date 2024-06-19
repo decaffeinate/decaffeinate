@@ -13,7 +13,7 @@ describe('binary existence with nullish coalescing enabled', () => {
       `,
         `
         if (typeof a === 'undefined' || a === null) { b; }
-      `
+      `,
       );
     });
 
@@ -24,7 +24,7 @@ describe('binary existence with nullish coalescing enabled', () => {
       `,
         `
         if (a.b == null) { a; }
-      `
+      `,
       );
     });
 
@@ -35,7 +35,7 @@ describe('binary existence with nullish coalescing enabled', () => {
       `,
         `
         if (this.a == null) { this.b; }
-      `
+      `,
       );
     });
 
@@ -46,7 +46,7 @@ describe('binary existence with nullish coalescing enabled', () => {
       `,
         `
         if (typeof a === 'undefined' || a === null) { this.b; }
-      `
+      `,
       );
     });
 
@@ -57,7 +57,7 @@ describe('binary existence with nullish coalescing enabled', () => {
     `,
         `
       if (a() == null) { b; }
-    `
+    `,
       );
     });
 
@@ -69,7 +69,7 @@ describe('binary existence with nullish coalescing enabled', () => {
     `,
         `
       if (typeof a === 'undefined' || a === null) { b; }
-    `
+    `,
       );
     });
   });
@@ -84,7 +84,7 @@ describe('binary existence with nullish coalescing enabled', () => {
         `
         const a = 1;
         const b = a ?? 2;
-      `
+      `,
       );
     });
 
@@ -95,7 +95,7 @@ describe('binary existence with nullish coalescing enabled', () => {
       `,
         `
         const b = typeof a !== 'undefined' && a !== null ? a : 2;
-      `
+      `,
       );
     });
 
@@ -106,7 +106,7 @@ describe('binary existence with nullish coalescing enabled', () => {
     `,
         `
       const x = (typeof a !== 'undefined' && a !== null ? a : b);
-    `
+    `,
       );
     });
 
@@ -119,7 +119,7 @@ describe('binary existence with nullish coalescing enabled', () => {
         `
         const a = 1;
         const x = (a ?? b);
-      `
+      `,
       );
     });
 
@@ -130,7 +130,7 @@ describe('binary existence with nullish coalescing enabled', () => {
       `,
         `
         const x = (a.b ?? a);
-      `
+      `,
       );
     });
 
@@ -141,7 +141,7 @@ describe('binary existence with nullish coalescing enabled', () => {
       `,
         `
         const x = (this.a.b ?? c);
-      `
+      `,
       );
     });
 
@@ -152,7 +152,7 @@ describe('binary existence with nullish coalescing enabled', () => {
       `,
         `
         const x = (a() ?? b);
-      `
+      `,
       );
     });
 
@@ -163,7 +163,7 @@ describe('binary existence with nullish coalescing enabled', () => {
         `,
         `
         if (!(1 ?? 2)) { 3; }
-        `
+        `,
       );
     });
 
@@ -176,7 +176,7 @@ describe('binary existence with nullish coalescing enabled', () => {
         `
         const y = 1;
         const x = 1 + (y ?? 0);
-      `
+      `,
       );
     });
   });

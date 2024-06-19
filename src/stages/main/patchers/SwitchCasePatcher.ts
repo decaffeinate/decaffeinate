@@ -120,7 +120,7 @@ export default class SwitchCasePatcher extends NodePatcher {
       const commaIndex = this.indexOfSourceTokenBetweenPatchersMatching(
         left,
         right,
-        (token) => token.type === SourceType.COMMA
+        (token) => token.type === SourceType.COMMA,
       );
       if (!commaIndex) {
         throw this.error(`unable to find comma between 'when' conditions`, left.contentEnd, right.contentStart);
@@ -145,7 +145,7 @@ export default class SwitchCasePatcher extends NodePatcher {
     const thenTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.conditions[0].outerEnd,
       this.consequent !== null ? this.consequent.outerStart : this.contentEnd,
-      (token) => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN,
     );
     if (thenTokenIndex) {
       return this.sourceTokenAtIndex(thenTokenIndex);

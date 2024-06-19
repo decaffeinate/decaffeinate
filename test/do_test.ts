@@ -42,7 +42,7 @@ describe('`do`', () => {
         const result = i + n;
         return result;
       })(i, 0);
-    `
+    `,
     );
   });
 
@@ -59,7 +59,7 @@ describe('`do`', () => {
         const a = 1;
         return b = a;
       })()) + 1;
-    `
+    `,
     );
   });
 
@@ -74,7 +74,7 @@ describe('`do`', () => {
       (a = () => {
         return b;
       })();
-    `
+    `,
     );
   });
 
@@ -87,7 +87,7 @@ describe('`do`', () => {
       `
       let a;
       (a = (b, d) => e)(c, d);
-    `
+    `,
     );
   });
 
@@ -99,7 +99,7 @@ describe('`do`', () => {
       `
       let a;
       (a = b)();
-    `
+    `,
     );
   });
 
@@ -110,7 +110,7 @@ describe('`do`', () => {
     `,
       `
       (!a)();
-    `
+    `,
     );
   });
 
@@ -121,7 +121,7 @@ describe('`do`', () => {
     `,
       `
       (() => 1)();
-    `
+    `,
     );
   });
 
@@ -134,7 +134,7 @@ describe('`do`', () => {
         setTimeout((do (i) => => arr.push(i)), 0);
       setResult(arr)
     `,
-      [0, 1, 2, 3, 4]
+      [0, 1, 2, 3, 4],
     );
   });
 
@@ -149,7 +149,7 @@ describe('`do`', () => {
       ((() => b))();
       
     `,
-      { shouldStripIndent: false }
+      { shouldStripIndent: false },
     );
   });
 });

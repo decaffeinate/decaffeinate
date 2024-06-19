@@ -135,11 +135,11 @@ export default class NodePatcher {
     for (;;) {
       const previousSurroundingTokenIndex = tokens.lastIndexOfTokenMatchingPredicate(
         isSemanticToken,
-        outerStartTokenIndex.previous()
+        outerStartTokenIndex.previous(),
       );
       const nextSurroundingTokenIndex = tokens.indexOfTokenMatchingPredicate(
         isSemanticToken,
-        outerEndTokenIndex.next()
+        outerEndTokenIndex.next(),
       );
 
       if (!previousSurroundingTokenIndex || !nextSurroundingTokenIndex) {
@@ -435,7 +435,7 @@ export default class NodePatcher {
       index,
       JSON.stringify(content),
       'BEFORE',
-      JSON.stringify(this.context.source.slice(index, index + 8))
+      JSON.stringify(this.context.source.slice(index, index + 8)),
     );
 
     this.adjustBoundsToInclude(index);
@@ -460,7 +460,7 @@ export default class NodePatcher {
       index,
       JSON.stringify(content),
       'BEFORE',
-      JSON.stringify(this.context.source.slice(index, index + 8))
+      JSON.stringify(this.context.source.slice(index, index + 8)),
     );
 
     this.adjustBoundsToInclude(index);
@@ -511,7 +511,7 @@ export default class NodePatcher {
       throw this.error(
         `cannot edit index ${index} because it is not editable (i.e. outside [${start}, ${end}))`,
         start,
-        end
+        end,
       );
     }
   }
@@ -561,7 +561,7 @@ export default class NodePatcher {
       `[${start}, ${end})`,
       JSON.stringify(this.context.source.slice(start, end)),
       '→',
-      JSON.stringify(content)
+      JSON.stringify(content),
     );
     this.editor.overwrite(start, end, content);
   }
@@ -592,7 +592,7 @@ export default class NodePatcher {
       `[${start}, ${end}) → ${index}`,
       JSON.stringify(this.context.source.slice(start, end)),
       'BEFORE',
-      JSON.stringify(this.context.source.slice(index, index + 8))
+      JSON.stringify(this.context.source.slice(index, index + 8)),
     );
     this.editor.move(start, end, index);
   }
@@ -862,7 +862,7 @@ export default class NodePatcher {
   indexOfSourceTokenBetweenPatchersMatching(
     left: NodePatcher,
     right: NodePatcher,
-    predicate: (token: SourceToken) => boolean
+    predicate: (token: SourceToken) => boolean,
   ): SourceTokenListIndex | null {
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(left.outerEnd, right.outerStart, predicate);
   }
@@ -874,7 +874,7 @@ export default class NodePatcher {
   indexOfSourceTokenBetweenSourceIndicesMatching(
     left: number,
     right: number,
-    predicate: (token: SourceToken) => boolean
+    predicate: (token: SourceToken) => boolean,
   ): SourceTokenListIndex | null {
     const tokenList = this.getProgramSourceTokens();
     return tokenList.indexOfTokenMatchingPredicate(
@@ -882,7 +882,7 @@ export default class NodePatcher {
         return token.start >= left && token.start <= right && predicate(token);
       },
       tokenList.indexOfTokenNearSourceIndex(left),
-      tokenList.indexOfTokenNearSourceIndex(right).next()
+      tokenList.indexOfTokenNearSourceIndex(right).next(),
     );
   }
 
@@ -957,7 +957,7 @@ export default class NodePatcher {
   indexOfSourceTokenAfterSourceTokenIndex(
     start: SourceTokenListIndex,
     type: SourceType,
-    predicate: (token: SourceToken) => boolean = isSemanticToken
+    predicate: (token: SourceToken) => boolean = isSemanticToken,
   ): SourceTokenListIndex | null {
     const index = this.getProgramSourceTokens().indexOfTokenMatchingPredicate(predicate, start.next());
     if (!index) {
@@ -1012,7 +1012,7 @@ export default class NodePatcher {
     const parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(
       leftTokenType,
       rightTokenType,
-      this.outerStartTokenIndex
+      this.outerStartTokenIndex,
     );
     if (!parenRange) {
       return false;
@@ -1182,7 +1182,7 @@ export default class NodePatcher {
               // indentation wrong means ugly JS code that's still correct.
               this.log(
                 'Warning: Ignoring an unindent operation because the line ' +
-                  'did not start with the proper indentation.'
+                  'did not start with the proper indentation.',
               );
             }
             hasIndentedThisLine = true;
@@ -1236,7 +1236,7 @@ export default class NodePatcher {
     message: string,
     start: number = this.contentStart,
     end: number = this.contentEnd,
-    error: Error | null = null
+    error: Error | null = null,
   ): PatcherError {
     const patcherError = new PatcherError(message, this.context.source, start, end);
     if (error) {
@@ -1330,7 +1330,7 @@ export default class NodePatcher {
    */
   getFirstSemanticToken(
     from: number = this.contentStart,
-    to: number = notNull(this.parent).contentEnd
+    to: number = notNull(this.parent).contentEnd,
   ): SourceToken | null {
     const nextSemanticIdx = this.indexOfSourceTokenBetweenSourceIndicesMatching(from, to, isSemanticToken);
     return nextSemanticIdx && this.sourceTokenAtIndex(nextSemanticIdx);

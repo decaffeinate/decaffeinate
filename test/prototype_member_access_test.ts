@@ -25,7 +25,7 @@ describe('changing prototype member access into normal member access', () => {
       `
       let base;
       if ((base = a()).prototype == null) { base.prototype = b; }
-    `
+    `,
     );
   });
 
@@ -37,7 +37,7 @@ describe('changing prototype member access into normal member access', () => {
       `
       let base;
       if ((base = a()).prototype.b == null) { base.prototype.b = c; }
-    `
+    `,
     );
   });
 });

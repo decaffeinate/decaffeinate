@@ -37,7 +37,7 @@ describe('literate mode', () => {
         options: {
           literate: true,
         },
-      }
+      },
     );
   });
 
@@ -59,7 +59,7 @@ describe('literate mode', () => {
         options: {
           literate: true,
         },
-      }
+      },
     );
   });
 
@@ -84,7 +84,7 @@ describe('literate mode', () => {
         options: {
           literate: true,
         },
-      }
+      },
     );
   });
 
@@ -125,7 +125,7 @@ describe('literate mode', () => {
         options: {
           literate: true,
         },
-      }
+      },
     );
   });
 
@@ -141,7 +141,7 @@ describe('literate mode', () => {
         options: {
           filename: 'foo.coffee',
         },
-      }
+      },
     );
   });
 
@@ -157,7 +157,7 @@ describe('literate mode', () => {
         options: {
           filename: 'foo.coffee.md',
         },
-      }
+      },
     );
   });
 
@@ -173,7 +173,7 @@ describe('literate mode', () => {
         options: {
           filename: 'foo.litcoffee',
         },
-      }
+      },
     );
   });
 });

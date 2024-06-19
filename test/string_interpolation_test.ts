@@ -36,7 +36,7 @@ describe('string interpolation', () => {
       const a=\`\\
       bar="\${bar}"\\
       \`;
-    `
+    `,
     );
   });
 
@@ -51,7 +51,7 @@ describe('string interpolation', () => {
       const a=\`\${
       b // foo!
       }\`;
-    `
+    `,
     );
   });
 
@@ -62,7 +62,7 @@ describe('string interpolation', () => {
     `,
       `
       \`a\${\`b\${c}d\`}e\`;
-    `
+    `,
     );
   });
 
@@ -83,7 +83,7 @@ describe('string interpolation', () => {
       \\\${a}
       \\\${b}\\
       \`;
-    `
+    `,
     );
   });
 
@@ -94,7 +94,7 @@ describe('string interpolation', () => {
     `,
       `
       ({ a: \`\${b}\` });
-    `
+    `,
     );
   });
 
@@ -105,7 +105,7 @@ describe('string interpolation', () => {
     `,
       `
       \`\${a} \${b}\`;
-    `
+    `,
     );
   });
 
@@ -116,7 +116,7 @@ describe('string interpolation', () => {
     `,
       `
       \`(\${a}\`;
-    `
+    `,
     );
   });
 
@@ -137,7 +137,7 @@ describe('string interpolation', () => {
       a
       \${b}\\
       \`;
-    `
+    `,
     );
   });
 
@@ -152,7 +152,7 @@ describe('string interpolation', () => {
       \`    a
       b\${c}\\
       \`;
-    `
+    `,
     );
   });
 
@@ -171,7 +171,7 @@ describe('string interpolation', () => {
       \${b} \\
       c\\
       \`;
-    `
+    `,
     );
   });
 
@@ -182,7 +182,7 @@ describe('string interpolation', () => {
     `,
       `
       \`ab\`;
-    `
+    `,
     );
   });
 
@@ -193,7 +193,7 @@ describe('string interpolation', () => {
     `,
       `
       new RegExp(\`ab\`);
-    `
+    `,
     );
   });
 
@@ -204,7 +204,7 @@ describe('string interpolation', () => {
     `,
       `
       \`\`;
-    `
+    `,
     );
   });
 
@@ -215,7 +215,7 @@ describe('string interpolation', () => {
     `,
       `
       a\`b\${c}d\`;
-    `
+    `,
     );
   });
 
@@ -226,7 +226,7 @@ describe('string interpolation', () => {
     `,
       `
       a\`b\`;
-    `
+    `,
     );
   });
 });

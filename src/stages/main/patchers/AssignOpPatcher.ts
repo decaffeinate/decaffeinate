@@ -124,7 +124,7 @@ export default class AssignOpPatcher extends NodePatcher {
       const assignments = this.generateAssignments(
         this.assignee,
         this.expression.patchAndGetCode(),
-        this.expression.isRepeatable()
+        this.expression.isRepeatable(),
       );
       this.overwriteWithAssignments(assignments);
     }

@@ -27,7 +27,7 @@ export default class ProtoMemberAccessOpPatcher extends NodePatcher {
     const protoIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.expression.outerEnd,
       this.contentEnd,
-      (token) => token.type === SourceType.PROTO
+      (token) => token.type === SourceType.PROTO,
     );
 
     if (protoIndex) {

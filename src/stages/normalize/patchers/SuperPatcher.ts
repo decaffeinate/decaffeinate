@@ -52,7 +52,7 @@ export default class SuperPatcher extends NodePatcher {
   getFollowingOpenParenToken(): SourceToken {
     const openParenTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
       this.contentEndTokenIndex,
-      SourceType.CALL_START
+      SourceType.CALL_START,
     );
     if (!openParenTokenIndex) {
       throw this.error('Expected open-paren after super.');
