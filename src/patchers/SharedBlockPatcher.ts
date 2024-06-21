@@ -24,7 +24,7 @@ export default class SharedBlockPatcher extends NodePatcher {
       const lastStatement = this.statements[this.statements.length - 1];
       const terminatorTokenIndex = this.context.sourceTokens.indexOfTokenMatchingPredicate(
         (token) => token.type === SourceType.NEWLINE || token.type === SourceType.SEMICOLON,
-        lastStatement.outerEndTokenIndex
+        lastStatement.outerEndTokenIndex,
       );
       let insertionPoint = terminatorTokenIndex
         ? notNull(this.sourceTokenAtIndex(terminatorTokenIndex)).start

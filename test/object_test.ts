@@ -16,7 +16,7 @@ describe('objects', () => {
     `,
       `
       a({b: c, d: e});
-    `
+    `,
     );
   });
 
@@ -27,7 +27,7 @@ describe('objects', () => {
     `,
       `
       if (a) { ({ b: c }); }
-    `
+    `,
     );
   });
 
@@ -38,7 +38,7 @@ describe('objects', () => {
     `,
       `
       if (a) { b; } else { ({ c: d }); }
-    `
+    `,
     );
   });
 
@@ -55,7 +55,7 @@ describe('objects', () => {
         a: b,
         c: d
       });
-    `
+    `,
     );
   });
 
@@ -70,7 +70,7 @@ describe('objects', () => {
         a: b,
         c: d
       });
-    `
+    `,
     );
   });
 
@@ -86,7 +86,7 @@ describe('objects', () => {
           b: c
         }
       });
-    `
+    `,
     );
   });
 
@@ -103,7 +103,7 @@ describe('objects', () => {
         e: f
       }
       );
-    `
+    `,
     );
   });
 
@@ -120,7 +120,7 @@ describe('objects', () => {
         a() { return true; },
         b() { return false; }
       });
-    `
+    `,
     );
   });
 
@@ -137,7 +137,7 @@ describe('objects', () => {
         a: () => this.true,
         b  :  () => this.false
       });
-    `
+    `,
     );
   });
 
@@ -152,7 +152,7 @@ describe('objects', () => {
       ({
         'a'() { return b; }
       });
-    `
+    `,
     );
   });
 
@@ -167,7 +167,7 @@ describe('objects', () => {
       ({
         'a': b
       });
-    `
+    `,
     );
   });
 
@@ -178,7 +178,7 @@ describe('objects', () => {
     `,
       `
       ({ 0: 1, 3.14: 0 });
-    `
+    `,
     );
   });
 
@@ -189,7 +189,7 @@ describe('objects', () => {
     `,
       `
       write(301, '', {'Location': pathname+'/'});
-    `
+    `,
     );
   });
 
@@ -200,7 +200,7 @@ describe('objects', () => {
     `,
       `
       a(b, {c: d});
-    `
+    `,
     );
   });
 
@@ -211,7 +211,7 @@ describe('objects', () => {
     `,
       `
       a({b: c}, d);
-    `
+    `,
     );
   });
 
@@ -222,7 +222,7 @@ describe('objects', () => {
     `,
       `
       a(b, {c: d}, e);
-    `
+    `,
     );
   });
 
@@ -233,7 +233,7 @@ describe('objects', () => {
     `,
       `
       a({b}, {c}, {d});
-    `
+    `,
     );
   });
 
@@ -250,7 +250,7 @@ describe('objects', () => {
         {b: c},
         d
       );
-    `
+    `,
     );
   });
 
@@ -267,7 +267,7 @@ describe('objects', () => {
         b,
         {c: d}
       );
-    `
+    `,
     );
   });
 
@@ -283,7 +283,7 @@ describe('objects', () => {
         a: b,
         c: d
       });
-    `
+    `,
     );
   });
 
@@ -294,7 +294,7 @@ describe('objects', () => {
     `,
       `
       ({a: this.a});
-    `
+    `,
     );
   });
 
@@ -316,7 +316,7 @@ describe('objects', () => {
           c: d
         };
       });
-    `
+    `,
     );
   });
 
@@ -327,7 +327,7 @@ describe('objects', () => {
     `,
       `
       ({a}.b = c);
-    `
+    `,
     );
   });
 
@@ -338,7 +338,7 @@ describe('objects', () => {
     `,
       `
       const x = {"FOO": "FOO", "BAR": "BAR", "BAZ": "BAZ"};
-    `
+    `,
     );
   });
 
@@ -349,7 +349,7 @@ describe('objects', () => {
     `,
       `
       const x = {[\`a\${b}c\`]: \`a\${b}c\`};
-    `
+    `,
     );
   });
 
@@ -361,7 +361,7 @@ describe('objects', () => {
       `
       let ref;
       const x = {[ref = \`a\${b()}c\`]: ref};
-    `
+    `,
     );
   });
 
@@ -378,7 +378,7 @@ describe('objects', () => {
         a: b,
         c: d
       });
-    `
+    `,
     );
   });
 
@@ -396,7 +396,7 @@ describe('objects', () => {
         a: b,
         c: d
       }));
-    `
+    `,
     );
   });
 
@@ -414,7 +414,7 @@ describe('objects', () => {
         a: b,
         c: d
       }));
-    `
+    `,
     );
   });
 
@@ -425,7 +425,7 @@ describe('objects', () => {
     `,
       `
       ({[\`a\${b}c\`]: d});
-    `
+    `,
     );
   });
 
@@ -438,7 +438,7 @@ describe('objects', () => {
       `
       ({[\`a
       b\`]: c});
-    `
+    `,
     );
   });
 
@@ -449,7 +449,7 @@ describe('objects', () => {
     `,
       `
       ({[a.b]: c});
-    `
+    `,
     );
   });
 
@@ -460,7 +460,7 @@ describe('objects', () => {
     `,
       `
       ({x() { return x; }});
-    `
+    `,
     );
   });
 
@@ -478,7 +478,7 @@ describe('objects', () => {
         c: d
       }
       ];
-    `
+    `,
     );
   });
 
@@ -489,7 +489,7 @@ describe('objects', () => {
     `,
       `
       ({a: b, c: d, e: f, g: h,});
-    `
+    `,
     );
   });
 
@@ -505,7 +505,7 @@ describe('objects', () => {
         c: d,
         e: f
       };
-    `
+    `,
     );
   });
 
@@ -521,7 +521,7 @@ describe('objects', () => {
           b: c,
           d: e
         }); }
-    `
+    `,
     );
   });
 
@@ -532,7 +532,7 @@ describe('objects', () => {
     `,
       `
       const x = count ? {a: {b: c}} : {d: {e: f}};
-    `
+    `,
     );
   });
 
@@ -543,7 +543,7 @@ describe('objects', () => {
     `,
       `
       if (count) { ({a: {b: c}}); } else { ({d: {e: f}}); }
-    `
+    `,
     );
   });
 
@@ -566,7 +566,7 @@ describe('objects', () => {
           return d;
         }
       });
-    `
+    `,
     );
   });
 
@@ -589,7 +589,7 @@ describe('objects', () => {
           return (d);
         }
       });
-    `
+    `,
     );
   });
 
@@ -616,7 +616,7 @@ describe('objects', () => {
         }
           
       });
-    `
+    `,
     );
   });
 
@@ -635,7 +635,7 @@ describe('objects', () => {
           }
         }
       });
-    `
+    `,
     );
   });
 
@@ -651,7 +651,7 @@ describe('objects', () => {
         a: 1,
         b: 2
       };
-    `
+    `,
     );
   });
 
@@ -664,7 +664,7 @@ describe('objects', () => {
       `
       a({
         b: c,});
-    `
+    `,
     );
   });
 
@@ -688,7 +688,7 @@ describe('objects', () => {
         friend: 3
       }
       );
-    `
+    `,
     );
   });
 
@@ -703,7 +703,7 @@ describe('objects', () => {
       const o = {
         [a(b)]: c
       };
-    `
+    `,
     );
   });
 
@@ -718,7 +718,7 @@ describe('objects', () => {
       const o = {
         [a]: a
       };
-    `
+    `,
     );
   });
 
@@ -734,7 +734,7 @@ describe('objects', () => {
       const o = {
         [ref = a(b)]: ref
       };
-    `
+    `,
     );
   });
 
@@ -748,7 +748,7 @@ describe('objects', () => {
       `
       a(() => b({
         c: 1,}));
-      `
+      `,
     );
   });
 });

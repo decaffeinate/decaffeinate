@@ -38,7 +38,7 @@ export default class ExistsOpPatcher extends BinaryOpPatcher {
       this.overwrite(
         this.left.outerEnd,
         this.right.outerStart,
-        ` !== 'undefined' && ${leftAgain} !== null ? ${leftAgain} : `
+        ` !== 'undefined' && ${leftAgain} !== null ? ${leftAgain} : `,
       );
     } else {
       const leftAgain = this.left.patchRepeatable({ parens: true, ref: 'left' });

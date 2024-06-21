@@ -77,7 +77,7 @@ export default class BinaryOpPatcher extends NodePatcher {
     const operatorTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.left,
       this.right,
-      this.operatorTokenPredicate()
+      this.operatorTokenPredicate(),
     );
     if (!operatorTokenIndex) {
       throw this.error('expected operator between binary operands');

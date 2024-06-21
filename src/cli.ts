@@ -16,7 +16,7 @@ export interface IO {
  */
 export default async function run(
   args: ReadonlyArray<string>,
-  io: IO = { stdin: process.stdin, stdout: process.stdout, stderr: process.stderr }
+  io: IO = { stdin: process.stdin, stdout: process.stdout, stderr: process.stderr },
 ): Promise<number> {
   const parseResult = parseArguments(args, io);
 

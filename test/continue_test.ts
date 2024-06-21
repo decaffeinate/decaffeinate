@@ -11,7 +11,7 @@ describe('continue', () => {
       for (let a of Array.from(b)) {
         continue;
       }
-    `
+    `,
     );
   });
 });

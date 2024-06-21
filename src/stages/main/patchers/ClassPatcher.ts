@@ -17,7 +17,7 @@ export default class ClassPatcher extends NodePatcher {
     patcherContext: PatcherContext,
     nameAssignee: NodePatcher | null,
     parent: NodePatcher | null,
-    body: ClassBlockPatcher | null
+    body: ClassBlockPatcher | null,
   ) {
     super(patcherContext);
     this.nameAssignee = nameAssignee;
@@ -122,7 +122,7 @@ export default class ClassPatcher extends NodePatcher {
       throw this.error(
         `expected CLASS token but found ${SourceType[classSourceToken.type]}`,
         classSourceToken.start,
-        classSourceToken.end
+        classSourceToken.end,
       );
     }
     return classSourceToken;

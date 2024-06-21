@@ -9,7 +9,7 @@ describe('expansion', () => {
     `,
       `
       const a = arr[arr.length - 2], b = arr[arr.length - 1];
-    `
+    `,
     );
   });
 
@@ -20,7 +20,7 @@ describe('expansion', () => {
     `,
       `
       const adjustedLength = Math.max(arr.length, 2), a = arr.slice(0, adjustedLength - 2), b = arr[adjustedLength - 2], c = arr[adjustedLength - 1];
-    `
+    `,
     );
   });
 
@@ -31,7 +31,7 @@ describe('expansion', () => {
     `,
       `
       const a = arr[0], adjustedLength = Math.max(arr.length, 2), b = arr.slice(1, adjustedLength - 1), c = arr[adjustedLength - 1];
-    `
+    `,
     );
   });
 
@@ -42,7 +42,7 @@ describe('expansion', () => {
     `,
       `
       const [a, b, ...c] = Array.from(arr);
-    `
+    `,
     );
     checkCS2(
       `
@@ -50,7 +50,7 @@ describe('expansion', () => {
     `,
       `
       const [a, b, ...c] = arr;
-    `
+    `,
     );
   });
 
@@ -63,7 +63,7 @@ describe('expansion', () => {
       (function(...args) {
         const a = args[args.length - 2], b = args[args.length - 1];
       });
-    `
+    `,
     );
   });
 
@@ -76,7 +76,7 @@ describe('expansion', () => {
       (function(...args) {
         const val = args[args.length - 1], a = val != null ? val : 1;
       });
-    `
+    `,
     );
   });
 
@@ -89,7 +89,7 @@ describe('expansion', () => {
       (function(...args) {
         this.a = args[args.length - 1];
       });
-    `
+    `,
     );
   });
 
@@ -107,7 +107,7 @@ describe('expansion', () => {
         this.a = args[args.length - 1];
         console.log(a);
       });
-    `
+    `,
     );
   });
 
@@ -120,7 +120,7 @@ describe('expansion', () => {
       (function(...args) {
         const adjustedLength = Math.max(args.length, 2), a = args.slice(0, adjustedLength - 2), b = args[adjustedLength - 2], c = args[adjustedLength - 1];
       });
-    `
+    `,
     );
   });
 
@@ -131,7 +131,7 @@ describe('expansion', () => {
     `,
       `
       const [a, b] = Array.from(arr);
-    `
+    `,
     );
     checkCS2(
       `
@@ -139,7 +139,7 @@ describe('expansion', () => {
     `,
       `
       const [a, b] = arr;
-    `
+    `,
     );
   });
 
@@ -150,7 +150,7 @@ describe('expansion', () => {
     `,
       `
       (function(a, b) {});
-    `
+    `,
     );
   });
 
@@ -161,7 +161,7 @@ describe('expansion', () => {
     `,
       `
       (function(a, b, ...c) {});
-    `
+    `,
     );
   });
 
@@ -172,7 +172,7 @@ describe('expansion', () => {
     `,
       `
       const a = arr[0], b = arr[1], c = arr[arr.length - 2], d = arr[arr.length - 1];
-    `
+    `,
     );
   });
 
@@ -185,7 +185,7 @@ describe('expansion', () => {
       (function(...args) {
         const a = args[0], b = args[1], c = args[args.length - 2], d = args[args.length - 1];
       });
-    `
+    `,
     );
   });
 
@@ -198,7 +198,7 @@ describe('expansion', () => {
       (function(a, b, ...rest) {
         const adjustedLength = Math.max(rest.length, 2), c = rest.slice(0, adjustedLength - 2), d = rest[adjustedLength - 2], e = rest[adjustedLength - 1];
       });
-    `
+    `,
     );
   });
 
@@ -211,7 +211,7 @@ describe('expansion', () => {
       (...args) => {
         const a = args[0], b = args[1], c = args[args.length - 2], d = args[args.length - 1];
       };
-    `
+    `,
     );
   });
 
@@ -226,7 +226,7 @@ describe('expansion', () => {
         const array = rest[0], b = array[array.length - 1], c = rest[1];
         return d;
       });
-    `
+    `,
     );
   });
 
@@ -237,7 +237,7 @@ describe('expansion', () => {
     `,
       `
       const fn = function(...args) { const [a,b] = Array.from(args[0]); return {a,b}; };
-    `
+    `,
     );
     checkCS2(
       `
@@ -248,7 +248,7 @@ describe('expansion', () => {
         a,
         b
       });
-    `
+    `,
     );
   });
 
@@ -273,7 +273,7 @@ describe('expansion', () => {
               } = args[args.length - 1];
         return f;
       };
-    `
+    `,
     );
   });
 
@@ -284,7 +284,7 @@ describe('expansion', () => {
     `,
       `
       const array = getArray(), a = array[0], b = array[1], c = array[array.length - 2], d = array[array.length - 1];
-    `
+    `,
     );
   });
 
@@ -295,7 +295,7 @@ describe('expansion', () => {
     `,
       `
       const array = getArray(), a = array[0], b = array[1], adjustedLength = Math.max(array.length, 4), c = array.slice(2, adjustedLength - 2), d = array[adjustedLength - 2], e = array[adjustedLength - 1];
-    `
+    `,
     );
   });
 
@@ -306,7 +306,7 @@ describe('expansion', () => {
     `,
       `
       const {a, b} = arr[arr.length - 1];
-    `
+    `,
     );
   });
 
@@ -317,7 +317,7 @@ describe('expansion', () => {
     `,
       `
       const {a: b, c: d} = arr[arr.length - 1];
-    `
+    `,
     );
   });
 
@@ -328,7 +328,7 @@ describe('expansion', () => {
     `,
       `
       const array = arr[arr.length - 1], a = array[array.length - 1];
-    `
+    `,
     );
   });
 
@@ -340,7 +340,7 @@ describe('expansion', () => {
       `
       let array;
       array = arr[arr.length - 1], a[b()] = array[array.length - 1];
-    `
+    `,
     );
   });
 
@@ -351,7 +351,7 @@ describe('expansion', () => {
     `,
       `
       const a = arr[0], adjustedLength = Math.max(arr.length, 2), [b] = Array.from(arr.slice(1, adjustedLength - 1)), c = arr[adjustedLength - 1];
-    `
+    `,
     );
   });
 
@@ -362,7 +362,7 @@ describe('expansion', () => {
     `,
       `
       const val = arr[arr.length - 1], a = val != null ? val : 1;
-    `
+    `,
     );
   });
 
@@ -374,7 +374,7 @@ describe('expansion', () => {
       `
       let val;
       val = c.a, this.a = val != null ? val : b;
-    `
+    `,
     );
     checkCS2(
       `
@@ -382,7 +382,7 @@ describe('expansion', () => {
     `,
       `
       ({a: this.a = b} = c);
-    `
+    `,
     );
   });
 
@@ -393,7 +393,7 @@ describe('expansion', () => {
     `,
       `
       const obj = {}, val = obj.a, a = val != null ? val : 1;
-    `
+    `,
     );
     checkCS2(
       `
@@ -401,7 +401,7 @@ describe('expansion', () => {
     `,
       `
       const {a = 1} = {};
-    `
+    `,
     );
   });
 
@@ -412,7 +412,7 @@ describe('expansion', () => {
     `,
       `
       const val = e[\`\${a(b)}\`], c = val != null ? val : d;
-    `
+    `,
     );
     checkCS2(
       `
@@ -420,7 +420,7 @@ describe('expansion', () => {
     `,
       `
       const {[a(b)]: c = d} = e;
-    `
+    `,
     );
   });
 
@@ -432,7 +432,7 @@ describe('expansion', () => {
       [a, [b, c..., d]..., e] = arr
       setResult(a + b + d + e + c.length)
     `,
-      16
+      16,
     );
   });
 
@@ -446,7 +446,7 @@ describe('expansion', () => {
       catch
         setResult('Fails in CS2')
     `,
-      { cs1: 'Hello', cs2: 'Fails in CS2' }
+      { cs1: 'Hello', cs2: 'Fails in CS2' },
     );
   });
 
@@ -460,7 +460,7 @@ describe('expansion', () => {
       catch
         setResult('Fails in CS2')
     `,
-      { cs1: 'World', cs2: 'Fails in CS2' }
+      { cs1: 'World', cs2: 'Fails in CS2' },
     );
   });
 
@@ -471,7 +471,7 @@ describe('expansion', () => {
       [..., secondWord] = arr
       setResult(secondWord)
     `,
-      'World'
+      'World',
     );
   });
 
@@ -480,7 +480,7 @@ describe('expansion', () => {
       `
       setResult([] = 3)
     `,
-      3
+      3,
     );
   });
 
@@ -489,7 +489,7 @@ describe('expansion', () => {
       `
       [] = undefined
     `,
-      ''
+      '',
     );
   });
 
@@ -500,7 +500,7 @@ describe('expansion', () => {
     `,
       `
       const array = a();
-    `
+    `,
     );
   });
 
@@ -511,7 +511,7 @@ describe('expansion', () => {
       c = [a] = b
       setResult(b == c)
     `,
-      true
+      true,
     );
   });
 
@@ -522,7 +522,7 @@ describe('expansion', () => {
       o = [[]] = a
       setResult(o)
     `,
-      [1]
+      [1],
     );
   });
 
@@ -535,7 +535,7 @@ describe('expansion', () => {
       catch
         setResult('Fails in CS2')
     `,
-      { cs1: true, cs2: 'Fails in CS2' }
+      { cs1: true, cs2: 'Fails in CS2' },
     );
   });
 
@@ -546,7 +546,7 @@ describe('expansion', () => {
     `,
       `
       const obj = b.slice(0, b.length - 0), val = obj.a, a = val != null ? val : 1;
-    `
+    `,
     );
   });
 
@@ -558,7 +558,7 @@ describe('expansion', () => {
         return [a, b, c, d]
       setResult(f(1, 2))
     `,
-      [1, undefined, 1, 2]
+      [1, undefined, 1, 2],
     );
   });
 
@@ -569,7 +569,7 @@ describe('expansion', () => {
       [a, ..., b, c, d] = [1, 2]
       setResult([a, b, c, d])
     `,
-      [1, undefined, 1, 2]
+      [1, undefined, 1, 2],
     );
   });
 
@@ -580,7 +580,7 @@ describe('expansion', () => {
         return [a, b, c, d]
       setResult(f(1, 2))
     `,
-      [1, [], 2, undefined]
+      [1, [], 2, undefined],
     );
   });
 
@@ -590,7 +590,7 @@ describe('expansion', () => {
       [a, b..., c, d] = [1, 2]
       setResult([a, b, c, d])
     `,
-      [1, [], 2, undefined]
+      [1, [], 2, undefined],
     );
   });
 
@@ -614,7 +614,7 @@ describe('expansion', () => {
         }
         return result;
       }
-    `
+    `,
     );
   });
 
@@ -625,7 +625,7 @@ describe('expansion', () => {
     `,
       `
       const {a, ...r} = arr[arr.length - 1];
-    `
+    `,
     );
   });
 
@@ -636,7 +636,7 @@ describe('expansion', () => {
     `,
       `
       const [a, , b] = [1, , 3];
-    `
+    `,
     );
   });
 
@@ -654,7 +654,7 @@ describe('expansion', () => {
         }
         return result;
       }
-    `
+    `,
     );
   });
 
@@ -665,7 +665,7 @@ describe('expansion', () => {
     `,
       `
       const a = arr[0], b = arr[arr.length - 1];
-    `
+    `,
     );
   });
 });

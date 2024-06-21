@@ -25,7 +25,7 @@ export default abstract class ForPatcher extends LoopPatcher {
     valAssignee: NodePatcher | null,
     target: NodePatcher,
     filter: NodePatcher | null,
-    body: BlockPatcher
+    body: BlockPatcher,
   ) {
     super(patcherContext, body);
     this.keyAssignee = keyAssignee;
@@ -124,7 +124,7 @@ export default abstract class ForPatcher extends LoopPatcher {
       searchStart,
       this.target.outerStart,
       // "of" and "in" are relation tokens, but "from" is a plain identifier.
-      (token) => token.type === SourceType.RELATION || token.type === SourceType.IDENTIFIER
+      (token) => token.type === SourceType.RELATION || token.type === SourceType.IDENTIFIER,
     );
     if (!tokenIndex) {
       throw this.error(`cannot find relation keyword in 'for' loop`);
@@ -192,7 +192,7 @@ export default abstract class ForPatcher extends LoopPatcher {
     const index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      (token) => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN,
     );
     if (index) {
       const thenToken = notNull(this.sourceTokenAtIndex(index));

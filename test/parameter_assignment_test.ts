@@ -8,7 +8,7 @@ describe('parameter assignment', () => {
     `,
       `
       (function(a) {});
-    `
+    `,
     );
   });
 
@@ -21,7 +21,7 @@ describe('parameter assignment', () => {
       (function(a) {
         this.a = a;
       });
-    `
+    `,
     );
   });
 
@@ -35,7 +35,7 @@ describe('parameter assignment', () => {
         this.a = a;
         this.b = b;
       });
-    `
+    `,
     );
   });
 
@@ -51,7 +51,7 @@ describe('parameter assignment', () => {
         this.b = b;
         return this.a + this.b;
       });
-    `
+    `,
     );
   });
 
@@ -71,7 +71,7 @@ describe('parameter assignment', () => {
         const b = 2;
         return a + b;
       });
-    `
+    `,
     );
   });
 
@@ -89,7 +89,7 @@ describe('parameter assignment', () => {
           return this.a;
         });
       }
-    `
+    `,
     );
   });
 
@@ -110,7 +110,7 @@ describe('parameter assignment', () => {
               return this.b;
           }
       });
-    `
+    `,
     );
   });
 
@@ -127,7 +127,7 @@ describe('parameter assignment', () => {
           this.y = y;
         }
       }
-    `
+    `,
     );
   });
 
@@ -141,7 +141,7 @@ describe('parameter assignment', () => {
         if (a == null) { a = 1; }
         this.a = a;
       });
-    `
+    `,
     );
   });
 
@@ -156,7 +156,7 @@ describe('parameter assignment', () => {
         if (a == null) { a = 0; }
         return a != null ? a : (a = 1);
       });
-    `
+    `,
     );
   });
 });

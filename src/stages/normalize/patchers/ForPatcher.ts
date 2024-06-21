@@ -21,7 +21,7 @@ export default class ForPatcher extends NodePatcher {
     valAssignee: NodePatcher | null,
     target: NodePatcher,
     filter: NodePatcher | null,
-    body: BlockPatcher
+    body: BlockPatcher,
   ) {
     super(patcherContext);
     this.keyAssignee = keyAssignee;
@@ -123,7 +123,7 @@ export default class ForPatcher extends NodePatcher {
       const index = this.indexOfSourceTokenBetweenPatchersMatching(
         this.body,
         afterForToken,
-        (token) => token.type === SourceType.FOR
+        (token) => token.type === SourceType.FOR,
       );
       if (!index) {
         throw this.error(`cannot find 'for' token in loop`);

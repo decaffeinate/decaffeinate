@@ -35,7 +35,7 @@ export interface ValidateOptions {
 export default function validate(
   source: string,
   expectedOutput?: unknown,
-  { options = {}, skipNodeCheck = false }: ValidateOptions = {}
+  { options = {}, skipNodeCheck = false }: ValidateOptions = {},
 ): void {
   const expectedCS1: unknown =
     expectedOutput && Object.prototype.hasOwnProperty.call(expectedOutput, 'cs1')
@@ -52,7 +52,7 @@ export default function validate(
 export function validateCS1(
   source: string,
   expectedOutput?: unknown,
-  { options = {}, skipNodeCheck = false }: ValidateOptions = {}
+  { options = {}, skipNodeCheck = false }: ValidateOptions = {},
 ): void {
   runValidateCase(source, expectedOutput, { options: { ...options, useCS2: false }, skipNodeCheck });
 }
@@ -60,7 +60,7 @@ export function validateCS1(
 export function validateCS2(
   source: string,
   expectedOutput?: unknown,
-  { options = {}, skipNodeCheck = false }: ValidateOptions = {}
+  { options = {}, skipNodeCheck = false }: ValidateOptions = {},
 ): void {
   runValidateCase(source, expectedOutput, { options: { ...options, useCS2: true }, skipNodeCheck });
 }
@@ -68,7 +68,7 @@ export function validateCS2(
 function runValidateCase(
   source: string,
   expectedOutput?: unknown,
-  { options = {}, skipNodeCheck = false }: ValidateOptions = {}
+  { options = {}, skipNodeCheck = false }: ValidateOptions = {},
 ): void {
   try {
     runValidation(source, expectedOutput, options, skipNodeCheck);

@@ -21,7 +21,7 @@ describe('super', () => {
           return super.fn(...arguments);
         }
       }
-    `
+    `,
     );
   });
 
@@ -39,7 +39,7 @@ describe('super', () => {
           return c(super.b(...arguments));
         }
       }
-    `
+    `,
     );
   });
 
@@ -56,7 +56,7 @@ describe('super', () => {
           return super.f(...arguments);
         }
       };
-    `
+    `,
     );
   });
 
@@ -68,7 +68,7 @@ describe('super', () => {
       `
       let cls;
       (cls = a.b).prototype.c = function() { return cls.prototype.__proto__.c.call(this, ...arguments); };
-    `
+    `,
     );
   });
 
@@ -80,7 +80,7 @@ describe('super', () => {
       `
       let cls;
       (cls = a()).prototype.b = function() { return cls.prototype.__proto__.b.call(this, ...arguments); };
-    `
+    `,
     );
   });
 
@@ -95,7 +95,7 @@ describe('super', () => {
       (cls = A()).prototype[method = b()] = function() {
         return cls.prototype.__proto__[method].call(this, ...arguments);
       };
-    `
+    `,
     );
   });
 
@@ -107,7 +107,7 @@ describe('super', () => {
     `,
       `
       A().prototype[b()] = () => 3;
-    `
+    `,
     );
   });
 
@@ -121,7 +121,7 @@ describe('super', () => {
       class A {
         0() { return super[0](...arguments); }
       }
-    `
+    `,
     );
   });
 
@@ -136,7 +136,7 @@ describe('super', () => {
       class A {
         [method = b()]() { return super[method](...arguments); }
       }
-    `
+    `,
     );
   });
 });

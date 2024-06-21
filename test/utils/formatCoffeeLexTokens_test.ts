@@ -25,7 +25,7 @@ describe('formatCoffeeLexTokens', () => {
       [2:3(17)-2:4(18)]: IDENTIFIER
       [2:4(18)-2:5(19)]: CALL_START
       [2:5(19)-2:6(20)]: CALL_END
-    `) + '\n'
+    `) + '\n',
     );
   });
 });

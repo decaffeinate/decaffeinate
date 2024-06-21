@@ -67,7 +67,7 @@ export default class WhilePatcher extends LoopPatcher {
         this.overwrite(
           this.condition.outerEnd,
           this.guard.outerStart,
-          `${conditionNeedsParens ? ')' : ''} { if ${guardNeedsParens ? '(' : ''}`
+          `${conditionNeedsParens ? ')' : ''} { if ${guardNeedsParens ? '(' : ''}`,
         );
       } else {
         // `while (a when b` → `while (a) {\n  if (b`
@@ -75,7 +75,7 @@ export default class WhilePatcher extends LoopPatcher {
         this.overwrite(
           this.condition.outerEnd,
           this.guard.outerStart,
-          `${conditionNeedsParens ? ')' : ''} {\n${this.getOuterLoopBodyIndent()}if ${guardNeedsParens ? '(' : ''}`
+          `${conditionNeedsParens ? ')' : ''} {\n${this.getOuterLoopBodyIndent()}if ${guardNeedsParens ? '(' : ''}`,
         );
       }
       this.guard.patch({ needsParens: false });
@@ -158,7 +158,7 @@ export default class WhilePatcher extends LoopPatcher {
     return this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      (token) => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN,
     );
   }
 

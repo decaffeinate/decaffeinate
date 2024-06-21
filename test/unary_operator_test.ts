@@ -44,7 +44,7 @@ describe('unary operators', () => {
       if (!0) {
         1;
       }
-    `
+    `,
     );
   });
 
@@ -63,7 +63,7 @@ describe('unary operators', () => {
     `,
       `
       (a => a != null);
-    `
+    `,
     );
   });
 
@@ -92,7 +92,7 @@ describe('unary operators', () => {
       if ((typeof a === 'undefined' || a === null) || !c) {
         b;
       }
-    `
+    `,
     );
 
     check(
@@ -104,7 +104,7 @@ describe('unary operators', () => {
       if (a.b == null) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -115,7 +115,7 @@ describe('unary operators', () => {
     `,
       `
       (a => a == null);
-    `
+    `,
     );
   });
 
@@ -129,7 +129,7 @@ describe('unary operators', () => {
       if (!typeof (a.b != null)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -140,7 +140,7 @@ describe('unary operators', () => {
       (n++)?.toString()
       setResult(n)
     `,
-      2
+      2,
     );
   });
 });

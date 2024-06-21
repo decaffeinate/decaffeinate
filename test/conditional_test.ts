@@ -12,7 +12,7 @@ describe('conditionals', () => {
       if (a) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -26,7 +26,7 @@ describe('conditionals', () => {
       if (!a) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -40,7 +40,7 @@ describe('conditionals', () => {
       if (a !== b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -54,7 +54,7 @@ describe('conditionals', () => {
       if (a) {
         b;
       }
-    `
+    `,
     );
     check(
       `
@@ -65,7 +65,7 @@ describe('conditionals', () => {
       if (!a) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -81,7 +81,7 @@ describe('conditionals', () => {
       if (a != null) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -95,7 +95,7 @@ describe('conditionals', () => {
       if (a !== b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -110,7 +110,7 @@ describe('conditionals', () => {
       if (!(a = b)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -125,7 +125,7 @@ describe('conditionals', () => {
       if (!(a = b)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -139,7 +139,7 @@ describe('conditionals', () => {
       if (!(a + b)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -153,7 +153,7 @@ describe('conditionals', () => {
       if (!(a + b)) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -170,7 +170,7 @@ describe('conditionals', () => {
           c;
         }
       }
-    `
+    `,
     );
   });
 
@@ -188,7 +188,7 @@ describe('conditionals', () => {
       } else {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -206,7 +206,7 @@ describe('conditionals', () => {
       } else if (c) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -232,7 +232,7 @@ describe('conditionals', () => {
       } else {
         g;
       }
-    `
+    `,
     );
   });
 
@@ -251,7 +251,7 @@ describe('conditionals', () => {
         }
       });
       c;
-    `
+    `,
     );
   });
 
@@ -300,7 +300,7 @@ describe('conditionals', () => {
         return a - d;
       }
       })()));
-    `
+    `,
     );
   });
 
@@ -317,7 +317,7 @@ describe('conditionals', () => {
           if (a === b) { return; }
           return null;
         });
-    `
+    `,
     );
   });
 
@@ -328,7 +328,7 @@ describe('conditionals', () => {
     `,
       `
       if (b(c)) { a; }
-    `
+    `,
     );
   });
 
@@ -353,7 +353,7 @@ describe('conditionals', () => {
           return b;
         }
       });
-    `
+    `,
     );
   });
 
@@ -374,7 +374,7 @@ describe('conditionals', () => {
           return d;
         }
       });
-    `
+    `,
     );
   });
 
@@ -393,7 +393,7 @@ describe('conditionals', () => {
     `,
       `
       if (!e(f)) { if (c(d)) { a(b); } }
-    `
+    `,
     );
   });
 
@@ -404,7 +404,7 @@ describe('conditionals', () => {
     `,
       `
       if (!e(f)) { if (c(d)) { a(b); } }
-    `
+    `,
     );
   });
 
@@ -415,7 +415,7 @@ describe('conditionals', () => {
     `,
       `
       const x = (!b ? a : undefined);
-    `
+    `,
     );
   });
 
@@ -434,7 +434,7 @@ describe('conditionals', () => {
       const testing = {
           test: !isValid ? "Hello world" : undefined
       };
-    `
+    `,
     );
   });
 
@@ -445,7 +445,7 @@ describe('conditionals', () => {
     `,
       `
       a + (b ? c : d);
-    `
+    `,
     );
   });
 
@@ -456,7 +456,7 @@ describe('conditionals', () => {
     `,
       `
       -(b ? c : d);
-    `
+    `,
     );
   });
 
@@ -467,7 +467,7 @@ describe('conditionals', () => {
     `,
       `
       a + (b ? c : d);
-    `
+    `,
     );
   });
 
@@ -478,7 +478,7 @@ describe('conditionals', () => {
     `,
       `
       Math.pow(a, b ? c : d);
-    `
+    `,
     );
   });
 
@@ -489,7 +489,7 @@ describe('conditionals', () => {
     `,
       `
       if ((a) && (b)) { alert; }
-    `
+    `,
     );
   });
 
@@ -500,7 +500,7 @@ describe('conditionals', () => {
     `,
       `
       const r = (f === 0.5) ? a : b;
-    `
+    `,
     );
   });
 
@@ -518,7 +518,7 @@ describe('conditionals', () => {
       } else {
         c(d);
       }
-    `
+    `,
     ));
 
   it('creates an IIFE when a complicated condition is used in an expression context', () =>
@@ -537,7 +537,7 @@ describe('conditionals', () => {
           return e;
         }
       })();
-    `
+    `,
     ));
 
   it('creates a properly-formatted IIFE for nested `if`s in a function body', () =>
@@ -555,7 +555,7 @@ describe('conditionals', () => {
           }
         }
       })());
-    `
+    `,
     ));
 
   it('creates a properly-formatted IIFE with the `if` on the next line', () =>
@@ -580,7 +580,7 @@ describe('conditionals', () => {
           return 1;
         }
       })();
-    `
+    `,
     ));
 
   it('allows a missing consequent in an if-else', () =>
@@ -597,7 +597,7 @@ describe('conditionals', () => {
       } else {
         b;
       }
-    `
+    `,
     ));
 
   it('allows a missing consequent in an expression-style if-else', () =>
@@ -615,7 +615,7 @@ describe('conditionals', () => {
           // Do nothing
         undefined :
           b;
-    `
+    `,
     ));
 
   it('allows a condition with an else token but not an alternate', () =>
@@ -632,7 +632,7 @@ describe('conditionals', () => {
       }
       else {}
         // Do nothing
-    `
+    `,
     ));
 
   it('allows an expression-style condition with an else token but not an alternate', () =>
@@ -650,7 +650,7 @@ describe('conditionals', () => {
           b
          : undefined;
           // Do nothing
-    `
+    `,
     ));
 
   it('handles a conditional without a space before the `else` token', () =>
@@ -660,7 +660,7 @@ describe('conditionals', () => {
     `,
       `
       if (a) { b;} else { c; }
-    `
+    `,
     ));
 
   it('handles an IIFE conditional within an IIFE for loop', () =>
@@ -694,7 +694,7 @@ describe('conditionals', () => {
         }
         return result;
       })();
-    `
+    `,
     ));
 
   it('handles a multiline condition in a postfix conditional', () => {
@@ -705,7 +705,7 @@ describe('conditionals', () => {
     `,
       `
       if (((() => b))()) { a; }
-    `
+    `,
     );
   });
 
@@ -718,7 +718,7 @@ describe('conditionals', () => {
       `
       if (a) {} 
       else {}
-    `
+    `,
     );
   });
 
@@ -744,7 +744,7 @@ describe('conditionals', () => {
           */
         else {}
       });
-    `
+    `,
     );
   });
 
@@ -761,7 +761,7 @@ describe('conditionals', () => {
         /* a */
       undefined : undefined
       );
-    `
+    `,
     );
   });
 
@@ -786,7 +786,7 @@ describe('conditionals', () => {
         }
         }).call(this);
       });
-    `
+    `,
     );
   });
 
@@ -797,7 +797,7 @@ describe('conditionals', () => {
     `,
       `
       a((c ? b : undefined), d);
-    `
+    `,
     );
   });
 
@@ -808,7 +808,7 @@ describe('conditionals', () => {
     `,
       `
       [(b ? a : undefined), c];
-    `
+    `,
     );
   });
 
@@ -819,7 +819,7 @@ describe('conditionals', () => {
     `,
       `
       ({a: (c ? b : undefined), d});
-    `
+    `,
     );
   });
 
@@ -833,7 +833,7 @@ describe('conditionals', () => {
           3
       setResult(b)
     `,
-      1
+      1,
     );
   });
 
@@ -848,7 +848,7 @@ describe('conditionals', () => {
         let x;
         return x = (a ? b : c);
       });
-    `
+    `,
     );
   });
 
@@ -859,7 +859,7 @@ describe('conditionals', () => {
     `,
       `
       if (b) { for (let a of Array.from(b)) { a; } }
-    `
+    `,
     );
   });
 
@@ -870,7 +870,7 @@ describe('conditionals', () => {
     `,
       `
       if (!(c ? b : undefined)) { a; }
-    `
+    `,
     );
   });
 
@@ -891,7 +891,7 @@ describe('conditionals', () => {
           }
         }
       })()) { a; }
-    `
+    `,
     );
   });
 
@@ -902,7 +902,7 @@ describe('conditionals', () => {
     `,
       `
       if (b) { a; } c;
-    `
+    `,
     );
   });
 
@@ -919,7 +919,7 @@ describe('conditionals', () => {
           return b;
         }
       });
-    `
+    `,
     );
   });
 
@@ -930,7 +930,7 @@ describe('conditionals', () => {
     `,
       `
       if (a) {}  
-    `
+    `,
     );
   });
 
@@ -949,7 +949,7 @@ describe('conditionals', () => {
         }
         return c;
       });
-    `
+    `,
     );
   });
 
@@ -962,7 +962,7 @@ describe('conditionals', () => {
         2
       setResult(f())
     `,
-      2
+      2,
     );
   });
 
@@ -975,7 +975,7 @@ describe('conditionals', () => {
         2
       setResult('' + f())
     `,
-      'undefined'
+      'undefined',
     );
   });
 
@@ -987,7 +987,7 @@ describe('conditionals', () => {
     `,
       `
       const x = a ? undefined : undefined;
-    `
+    `,
     );
   });
 
@@ -1004,7 +1004,7 @@ describe('conditionals', () => {
         
       undefined :
         b;
-    `
+    `,
     );
   });
 
@@ -1029,7 +1029,7 @@ describe('conditionals', () => {
         }
       })();
       c;
-    `
+    `,
     );
   });
 
@@ -1047,7 +1047,7 @@ describe('conditionals', () => {
       if value == 3
         setResult(x)
     `,
-      1
+      1,
     );
   });
 
@@ -1061,7 +1061,7 @@ describe('conditionals', () => {
       `
       const test  = (typeof cond !== 'undefined' && cond !== null) 
         ? 'true' : 'no';
-    `
+    `,
     );
   });
 });

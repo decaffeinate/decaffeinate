@@ -29,7 +29,7 @@ describe('resolveToPatchError', () => {
           1 | let x = 3;
         > 2 | f())
             |    ^
-          3 | console.log('test');`) + '\n'
+          3 | console.log('test');`) + '\n',
       );
     }
   });
@@ -55,7 +55,7 @@ describe('resolveToPatchError', () => {
           1 | x = 3
         > 2 |   f()
             | ^^
-          3 | console.log 'test'`) + '\n'
+          3 | console.log 'test'`) + '\n',
       );
     }
   });

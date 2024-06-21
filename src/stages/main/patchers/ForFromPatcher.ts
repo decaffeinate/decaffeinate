@@ -10,7 +10,7 @@ export default class ForFromPatcher extends ForInPatcher {
     valAssignee: NodePatcher | null,
     target: NodePatcher,
     filter: NodePatcher | null,
-    body: BlockPatcher
+    body: BlockPatcher,
   ) {
     super(patcherContext, keyAssignee, valAssignee, target, null /* step */, filter, body);
   }

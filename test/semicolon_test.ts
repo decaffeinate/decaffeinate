@@ -11,7 +11,7 @@ describe('semicolons', () => {
       `
       ((() => result))();
       a;
-    `
+    `,
     );
   });
 
@@ -27,7 +27,7 @@ describe('semicolons', () => {
         return arguments; // c
       };
       d;
-    `
+    `,
     );
   });
 
@@ -65,7 +65,7 @@ describe('semicolons', () => {
       if (a) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -79,7 +79,7 @@ describe('semicolons', () => {
       for (let a of Array.from(b)) {
         a;
       }
-    `
+    `,
     );
     check(
       `
@@ -90,7 +90,7 @@ describe('semicolons', () => {
       for (let a in b) {
         a;
       }
-    `
+    `,
     );
   });
 
@@ -104,7 +104,7 @@ describe('semicolons', () => {
       while (a) {
         a;
       }
-    `
+    `,
     );
   });
 
@@ -118,7 +118,7 @@ describe('semicolons', () => {
       while (true) {
         a;
       }
-    `
+    `,
     );
   });
 
@@ -132,7 +132,7 @@ describe('semicolons', () => {
       `
       const x = 1;
       (() => 2);
-    `
+    `,
     );
   });
 });

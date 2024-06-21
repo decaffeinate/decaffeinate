@@ -3,7 +3,10 @@ import { PatcherContext } from '../../../patchers/types';
 import StringPatcher from './StringPatcher';
 
 export default class ExportAllDeclarationPatcher extends NodePatcher {
-  constructor(patcherContext: PatcherContext, public source: StringPatcher) {
+  constructor(
+    patcherContext: PatcherContext,
+    public source: StringPatcher,
+  ) {
     super(patcherContext);
   }
 

@@ -39,7 +39,7 @@ export default class FunctionApplicationPatcher extends NodePatcher {
       let commaTokenIndex = this.indexOfSourceTokenAfterSourceTokenIndex(
         arg.outerEndTokenIndex,
         SourceType.COMMA,
-        isSemanticToken
+        isSemanticToken,
       );
       // Ignore commas after the end of the function call.
       if (commaTokenIndex && commaTokenIndex.compare(outerEndTokenIndex) <= 0) {

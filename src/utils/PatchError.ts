@@ -2,7 +2,12 @@ import { LinesAndColumns } from 'lines-and-columns';
 import printTable, { Column } from './printTable';
 
 export default class PatchError extends Error {
-  constructor(readonly message: string, readonly source: string, readonly start: number, readonly end: number) {
+  constructor(
+    readonly message: string,
+    readonly source: string,
+    readonly start: number,
+    readonly end: number,
+  ) {
     super(message);
   }
 
@@ -59,7 +64,7 @@ export default class PatchError extends Error {
         const highlightLength = Math.max(endLoc.column - startLoc.column, 1);
         rows.push(
           [`>`, `${line + 1} |`, lineSource],
-          [``, `|`, ' '.repeat(startLoc.column) + '^'.repeat(highlightLength)]
+          [``, `|`, ' '.repeat(startLoc.column) + '^'.repeat(highlightLength)],
         );
       } else {
         rows.push([``, `${line + 1} |`, lineSource]);

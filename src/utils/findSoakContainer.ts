@@ -75,7 +75,7 @@ function canParentHandleSoak(patcher: NodePatcher): boolean {
   }
   if (
     ['PostIncrementOp', 'PostDecrementOp', 'PreIncrementOp', 'PreDecrementOp', 'DeleteOp'].indexOf(
-      patcher.parent.node.type
+      patcher.parent.node.type,
     ) >= 0
   ) {
     return true;

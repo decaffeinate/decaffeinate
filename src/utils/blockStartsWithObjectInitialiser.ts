@@ -15,6 +15,6 @@ export default function blockStartsWithObjectInitialiser(patcher: NodePatcher): 
   const statement = patcher.statements[0];
   return containsDescendant(
     statement.node,
-    (child) => child instanceof ObjectInitialiser && child.start === statement.contentStart
+    (child) => child instanceof ObjectInitialiser && child.start === statement.contentStart,
   );
 }

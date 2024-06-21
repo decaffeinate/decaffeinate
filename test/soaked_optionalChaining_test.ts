@@ -20,7 +20,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         a?.();
-      `
+      `,
       );
     });
 
@@ -31,7 +31,7 @@ describe('soaked expressions', () => {
       `,
         `
         a()?.();
-      `
+      `,
       );
     });
 
@@ -42,7 +42,7 @@ describe('soaked expressions', () => {
       `,
         `
         a(b()?.());
-      `
+      `,
       );
     });
 
@@ -53,7 +53,7 @@ describe('soaked expressions', () => {
       `,
         `
         a()?.(1, 2, 3);
-      `
+      `,
       );
     });
 
@@ -66,7 +66,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         a?.(1)?.(2);
-      `
+      `,
       );
     });
 
@@ -79,7 +79,7 @@ describe('soaked expressions', () => {
         if (typeof a.b === 'function') {
           a.b();
         }
-      `
+      `,
       );
     });
 
@@ -97,7 +97,7 @@ describe('soaked expressions', () => {
             return undefined;
           }
         }
-      `
+      `,
       );
     });
 
@@ -110,7 +110,7 @@ describe('soaked expressions', () => {
         if (typeof a[b] === 'function') {
           a[b]();
         }
-      `
+      `,
       );
     });
 
@@ -128,7 +128,7 @@ describe('soaked expressions', () => {
             return undefined;
           }
         }
-      `
+      `,
       );
     });
 
@@ -146,7 +146,7 @@ describe('soaked expressions', () => {
             return undefined;
           }
         }
-      `
+      `,
       );
     });
 
@@ -157,7 +157,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = typeof b === 'function' ? b() : undefined;
-      `
+      `,
       );
     });
 
@@ -168,7 +168,7 @@ describe('soaked expressions', () => {
         setResult(true)
       `,
         true,
-        { options: { optionalChaining: true } }
+        { options: { optionalChaining: true } },
       );
     });
 
@@ -179,7 +179,7 @@ describe('soaked expressions', () => {
         setResult(true)
       `,
         true,
-        { options: { optionalChaining: true } }
+        { options: { optionalChaining: true } },
       );
     });
 
@@ -190,7 +190,7 @@ describe('soaked expressions', () => {
         setResult(true)
       `,
         true,
-        { options: { optionalChaining: true } }
+        { options: { optionalChaining: true } },
       );
     });
 
@@ -201,7 +201,7 @@ describe('soaked expressions', () => {
         setResult(f?())
       `,
         3,
-        { options: { optionalChaining: true } }
+        { options: { optionalChaining: true } },
       );
     });
 
@@ -218,7 +218,7 @@ describe('soaked expressions', () => {
         setResult(o)
       `,
         true,
-        { options: { optionalChaining: true } }
+        { options: { optionalChaining: true } },
       );
     });
 
@@ -237,7 +237,7 @@ describe('soaked expressions', () => {
         setResult(o)
       `,
         true,
-        { options: { optionalChaining: true } }
+        { options: { optionalChaining: true } },
       );
     });
 
@@ -254,7 +254,7 @@ describe('soaked expressions', () => {
         setResult(o)
       `,
         true,
-        { options: { optionalChaining: true } }
+        { options: { optionalChaining: true } },
       );
     });
   });
@@ -267,7 +267,7 @@ describe('soaked expressions', () => {
         canvasContext?.font = $('body').css('font')
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
     });
 
@@ -280,7 +280,7 @@ describe('soaked expressions', () => {
         `
         const x = 5;
         a()?.b(x);
-      `
+      `,
       );
     });
 
@@ -291,7 +291,7 @@ describe('soaked expressions', () => {
         a(b?.c = d)
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
     });
 
@@ -304,7 +304,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         a?.b();
-      `
+      `,
       );
     });
 
@@ -315,7 +315,7 @@ describe('soaked expressions', () => {
       `,
         `
         a.b()?.c;
-      `
+      `,
       );
     });
 
@@ -328,7 +328,7 @@ describe('soaked expressions', () => {
         `
         const b = null;
         a(b?.c);
-      `
+      `,
       );
     });
 
@@ -341,7 +341,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         a?.[b]();
-      `
+      `,
       );
     });
 
@@ -354,7 +354,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         a?.[b].c[d];
-      `
+      `,
       );
     });
 
@@ -367,7 +367,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         a?.[b].c?.[d];
-      `
+      `,
       );
     });
 
@@ -378,7 +378,7 @@ describe('soaked expressions', () => {
       `,
         `
         const a = b?.[c];
-      `
+      `,
       );
     });
 
@@ -391,7 +391,7 @@ describe('soaked expressions', () => {
         `
         const b = {};
         const a = b?.[c];
-      `
+      `,
       );
     });
 
@@ -404,7 +404,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         if (a?.b) { c; }
-      `
+      `,
       );
     });
 
@@ -417,7 +417,7 @@ describe('soaked expressions', () => {
         `
         const a = null;
         (a?.b).c;
-      `
+      `,
       );
     });
 
@@ -427,7 +427,7 @@ describe('soaked expressions', () => {
         a()?.b++
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
 
       assertError(
@@ -435,7 +435,7 @@ describe('soaked expressions', () => {
         a()?.b--
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
 
       assertError(
@@ -443,7 +443,7 @@ describe('soaked expressions', () => {
         ++a()?.b
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
 
       assertError(
@@ -451,7 +451,7 @@ describe('soaked expressions', () => {
         --a()?.b
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
 
       assertError(
@@ -459,7 +459,7 @@ describe('soaked expressions', () => {
         ++(a())?[b]
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
 
       assertError(
@@ -467,7 +467,7 @@ describe('soaked expressions', () => {
         --(a())?[b]
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
 
       assertError(
@@ -475,7 +475,7 @@ describe('soaked expressions', () => {
         ++a()?(b).c
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
 
       assertError(
@@ -483,7 +483,7 @@ describe('soaked expressions', () => {
         --a()?(b).c
       `,
         'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-        { optionalChaining: true }
+        { optionalChaining: true },
       );
     });
 
@@ -494,7 +494,7 @@ describe('soaked expressions', () => {
         `,
         `
         ((() => a?.b)).c++;
-        `
+        `,
       );
 
       checkOptionalChaining(
@@ -503,7 +503,7 @@ describe('soaked expressions', () => {
         `,
         `
         a[b?.c]++;
-        `
+        `,
       );
     });
 
@@ -514,7 +514,7 @@ describe('soaked expressions', () => {
       `,
         `
         delete a()?.b;
-      `
+      `,
       );
     });
 
@@ -525,7 +525,7 @@ describe('soaked expressions', () => {
       `,
         `
         a()?.prototype.b;
-      `
+      `,
       );
     });
 
@@ -535,7 +535,7 @@ describe('soaked expressions', () => {
         a = {b: 5}
         setResult(a?.b)
       `,
-        5
+        5,
       );
     });
 
@@ -545,7 +545,7 @@ describe('soaked expressions', () => {
         a = {b: null}
         setResult('' + a.b?.c)
       `,
-        'undefined'
+        'undefined',
       );
     });
 
@@ -555,7 +555,7 @@ describe('soaked expressions', () => {
         a = {b: 5}
         setResult(a?['b'])
       `,
-        5
+        5,
       );
     });
 
@@ -565,7 +565,7 @@ describe('soaked expressions', () => {
         a = {b: null}
         setResult('' + a.b?['c'])
       `,
-        'undefined'
+        'undefined',
       );
     });
 
@@ -575,7 +575,7 @@ describe('soaked expressions', () => {
         a = {b: 5}
         setResult('' + a.d?.e.f())
       `,
-        'undefined'
+        'undefined',
       );
     });
   });
@@ -589,7 +589,7 @@ describe('soaked expressions', () => {
       `
       const a = {};
       a?.b?.();
-    `
+    `,
     );
   });
 
@@ -602,7 +602,7 @@ describe('soaked expressions', () => {
       `
       const a = null;
       a?.[b]?.();
-    `
+    `,
     );
   });
 
@@ -615,7 +615,7 @@ describe('soaked expressions', () => {
       `
       const a = null;
       a?.(1)?.b?.()?.[c].d?.()?.e;
-    `
+    `,
     );
   });
 
@@ -631,7 +631,7 @@ describe('soaked expressions', () => {
         b: c,
         d: e
       });
-    `
+    `,
     );
   });
 
@@ -644,7 +644,7 @@ describe('soaked expressions', () => {
       `
       const a = null;
       Array.from(c).includes(a?.b);
-    `
+    `,
     );
   });
 
@@ -657,7 +657,7 @@ describe('soaked expressions', () => {
       `
       const b = null;
       Array.from(b?.c).includes(a);
-    `
+    `,
     );
   });
 
@@ -669,7 +669,7 @@ describe('soaked expressions', () => {
       `
       let left;
       const a = (left = b()?.c) != null ? left : d;
-    `
+    `,
     );
   });
 
@@ -681,7 +681,7 @@ describe('soaked expressions', () => {
       `
       let left;
       const a = (left = b()?.[c()]) != null ? left : d;
-    `
+    `,
     );
   });
 
@@ -691,7 +691,7 @@ describe('soaked expressions', () => {
       a()?.b ?= c
     `,
       'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
 
     assertError(
@@ -699,7 +699,7 @@ describe('soaked expressions', () => {
       a()?[b()] ?= d
     `,
       'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
 
     assertError(
@@ -707,7 +707,7 @@ describe('soaked expressions', () => {
       a()?.b and= c
     `,
       'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
 
     assertError(
@@ -715,7 +715,7 @@ describe('soaked expressions', () => {
       a()?[b()] and= d
     `,
       'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
 
     assertError(
@@ -723,7 +723,7 @@ describe('soaked expressions', () => {
       a.b()?.c or= (it) -> it
     `,
       'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
   });
 
@@ -736,7 +736,7 @@ describe('soaked expressions', () => {
       let left;
       const iterable = (left = foo()?.bar) != null ? left : [];
       for (let i = 0; i < iterable.length; i++) { const j = iterable[i]; i + j; } 
-    `
+    `,
     );
   });
 
@@ -747,7 +747,7 @@ describe('soaked expressions', () => {
     `,
       `
       a?.b[c()]();
-    `
+    `,
     );
   });
 
@@ -760,7 +760,7 @@ describe('soaked expressions', () => {
       `
       const a = f();
       a?.b[c()];
-    `
+    `,
     );
   });
 
@@ -773,7 +773,7 @@ describe('soaked expressions', () => {
       `
       const a = f();
       const x = a?.b || [];
-    `
+    `,
     );
   });
 
@@ -789,7 +789,7 @@ describe('soaked expressions', () => {
       if (a?.b?.c != null) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -803,7 +803,7 @@ describe('soaked expressions', () => {
       let left;
       const b = null;
       const a = (left = b?.filter(() => c)) != null ? left : null;
-    `
+    `,
     );
   });
 
@@ -816,7 +816,7 @@ describe('soaked expressions', () => {
       `
       const b = 0;
       const a = b?.c ? d : e;
-    `
+    `,
     );
   });
 
@@ -827,7 +827,7 @@ describe('soaked expressions', () => {
       setResult(if a?.b then 'should return')
     `,
       'should return',
-      { options: { optionalChaining: true }, skipNodeCheck: true }
+      { options: { optionalChaining: true }, skipNodeCheck: true },
     );
   });
 
@@ -843,7 +843,7 @@ describe('soaked expressions', () => {
       while (a?.b) {
         break;
       }
-    `
+    `,
     );
   });
 
@@ -858,7 +858,7 @@ describe('soaked expressions', () => {
       const a = {};
       const b = {};
       const d = a[b?.c];
-    `
+    `,
     );
   });
 
@@ -874,7 +874,7 @@ describe('soaked expressions', () => {
       if (!a?.b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -890,7 +890,7 @@ describe('soaked expressions', () => {
       while (!a?.b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -907,7 +907,7 @@ describe('soaked expressions', () => {
       if (!(a = b?.c)) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -920,7 +920,7 @@ describe('soaked expressions', () => {
       `
       const a = null;
       a?.[this.b];
-    `
+    `,
     );
   });
 
@@ -931,7 +931,7 @@ describe('soaked expressions', () => {
       a = b?.c = 1
     `,
       'JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
   });
 
@@ -942,7 +942,7 @@ describe('soaked expressions', () => {
       new A?(b)
     `,
       'JavaScript does not allow constructors with optional chaining. Run without --optional-chaining or edit the original source to manually invoke the constructor conditionally.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
 
     assertError(
@@ -951,7 +951,7 @@ describe('soaked expressions', () => {
       new A? b
     `,
       'JavaScript does not allow constructors with optional chaining. Run without --optional-chaining or edit the original source to manually invoke the constructor conditionally.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
 
     assertError(
@@ -959,7 +959,7 @@ describe('soaked expressions', () => {
       new A[b()]?(c)
     `,
       'JavaScript does not allow constructors with optional chaining. Run without --optional-chaining or edit the original source to manually invoke the constructor conditionally.',
-      { optionalChaining: true }
+      { optionalChaining: true },
     );
   });
 
@@ -970,7 +970,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = b?.slice(c, +d + 1 || undefined);
-    `
+    `,
     );
   });
 
@@ -981,7 +981,7 @@ describe('soaked expressions', () => {
     `,
       `
       const a = b?.slice(c, +d + 1 || undefined).e;
-    `
+    `,
     );
   });
 
@@ -992,7 +992,7 @@ describe('soaked expressions', () => {
     `,
       `
       a?.splice(b, c - b + 1, ...[].concat(d));
-    `
+    `,
     );
   });
 
@@ -1004,7 +1004,7 @@ describe('soaked expressions', () => {
       `
       let a;
       a = d[0], b()?.splice(c, 9e9, ...[].concat(d[1]));
-    `
+    `,
     );
   });
 
@@ -1020,7 +1020,7 @@ describe('soaked expressions', () => {
       if (!a?.b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1036,7 +1036,7 @@ describe('soaked expressions', () => {
       if (!a?.b.c) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -1052,7 +1052,7 @@ describe('soaked expressions', () => {
       while (!a?.b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -1068,7 +1068,7 @@ describe('soaked expressions', () => {
       if (!c || (!a?.b)) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -1087,7 +1087,7 @@ describe('soaked expressions', () => {
           c;
           break;
       }
-    `
+    `,
     );
   });
 });

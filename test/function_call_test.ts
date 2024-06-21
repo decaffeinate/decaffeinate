@@ -14,7 +14,7 @@ describe('function calls', () => {
         1,
         2
       );
-    `
+    `,
     );
   });
 
@@ -33,7 +33,7 @@ describe('function calls', () => {
       a(
         1, 2,
         3, 4);
-    `
+    `,
     );
   });
 
@@ -50,7 +50,7 @@ describe('function calls', () => {
         1, // hi
         2
       );
-    `
+    `,
     );
   });
 
@@ -66,7 +66,7 @@ describe('function calls', () => {
         b: \`\${c}\`,
         d: e
       });
-    `
+    `,
     );
   });
 
@@ -77,7 +77,7 @@ describe('function calls', () => {
     `,
       `
       f((1+1),2+2);
-    `
+    `,
     );
   });
 
@@ -88,7 +88,7 @@ describe('function calls', () => {
     `,
       `
       f(1+1,(2+2));
-    `
+    `,
     );
   });
 
@@ -99,7 +99,7 @@ describe('function calls', () => {
     `,
       `
       const a= new c(([b()]));
-    `
+    `,
     );
   });
 
@@ -117,7 +117,7 @@ describe('function calls', () => {
         return b;
       }); // c
       d;
-    `
+    `,
     );
   });
 
@@ -131,7 +131,7 @@ describe('function calls', () => {
       `
       promise.then(a => b);
       c;
-    `
+    `,
     );
   });
 
@@ -157,7 +157,7 @@ describe('function calls', () => {
     `,
       `
       const x = ((() => 1))();
-    `
+    `,
     );
   });
 
@@ -174,7 +174,7 @@ describe('function calls', () => {
         // HEY
         foo
       )(0);
-    `
+    `,
     );
   });
 
@@ -205,7 +205,7 @@ describe('function calls', () => {
     `,
       `
       a(true);
-    `
+    `,
     );
   });
 
@@ -216,7 +216,7 @@ describe('function calls', () => {
     `,
       `
       a()();
-    `
+    `,
     );
   });
 
@@ -227,7 +227,7 @@ describe('function calls', () => {
     `,
       `
       x(1);
-    `
+    `,
     );
   });
 
@@ -239,7 +239,7 @@ describe('function calls', () => {
     `,
       `
       a(() => 0);
-    `
+    `,
     );
   });
 
@@ -250,7 +250,7 @@ describe('function calls', () => {
     `,
       `
       a(b(c), d);
-    `
+    `,
     );
   });
 
@@ -263,7 +263,7 @@ describe('function calls', () => {
       `
       a({
       });
-    `
+    `,
     );
   });
 
@@ -280,7 +280,7 @@ describe('function calls', () => {
         b({
         })
       );
-    `
+    `,
     );
   });
 
@@ -305,7 +305,7 @@ describe('function calls', () => {
         }
       });
       g;
-    `
+    `,
     );
   });
 
@@ -328,7 +328,7 @@ describe('function calls', () => {
         });
         }
       });
-    `
+    `,
     );
   });
 
@@ -342,7 +342,7 @@ describe('function calls', () => {
       this.server.on('sioDisconnect', () => {
         return this._statuses = {};
       });
-    `
+    `,
     );
   });
 
@@ -354,7 +354,7 @@ describe('function calls', () => {
     `,
       `
       Teacher.hasClass(classId, () => cb(null, {}));
-    `
+    `,
     );
   });
 
@@ -366,7 +366,7 @@ describe('function calls', () => {
     `,
       `
       it("should foo", () => expect( bar ).to.eql([1]));
-    `
+    `,
     );
   });
 
@@ -385,7 +385,7 @@ describe('function calls', () => {
       ], () => somefunc('something', ['something', function(ContactService) {}
 
       ]));
-    `
+    `,
     );
   });
 
@@ -402,7 +402,7 @@ describe('function calls', () => {
         let needle;
         return needle = a, !Array.from(b.map(a, e => e)).includes(needle);
       });
-    `
+    `,
     );
   });
 
@@ -415,7 +415,7 @@ describe('function calls', () => {
       if (typeof a === 'function') {
         a(b);
       }
-    `
+    `,
     );
   });
 
@@ -429,7 +429,7 @@ describe('function calls', () => {
       baz(() => {
         if (bar) { return foo; }
       });
-    `
+    `,
     );
   });
 
@@ -446,7 +446,7 @@ describe('function calls', () => {
           if (someCondition) { return $.on('click', assignThis); }
         }
       }));
-    `
+    `,
     );
   });
 
@@ -457,7 +457,7 @@ describe('function calls', () => {
     `,
       `
       this.someMethod(() => { if (condition) { return 'returnValue'; } });
-    `
+    `,
     );
   });
 
@@ -468,7 +468,7 @@ describe('function calls', () => {
     `,
       `
       a(() => { if (c) { return b; } });
-    `
+    `,
     );
   });
 
@@ -482,7 +482,7 @@ describe('function calls', () => {
       a.then(function() {
         if (c) { return b; }
       });
-    `
+    `,
     );
   });
 
@@ -502,7 +502,7 @@ describe('function calls', () => {
           }
         }
       }));
-    `
+    `,
     );
   });
 
@@ -515,7 +515,7 @@ describe('function calls', () => {
     `,
       `
       a(() => null);
-    `
+    `,
     );
   });
 
@@ -528,7 +528,7 @@ describe('function calls', () => {
     `,
       `
       a(b, c(() => null));
-    `
+    `,
     );
   });
 
@@ -549,7 +549,7 @@ describe('function calls', () => {
         d ?
           e(f) : undefined
       );
-    `
+    `,
     );
   });
 
@@ -570,7 +570,7 @@ describe('function calls', () => {
         d ?
           e(f) : undefined
       ];
-    `
+    `,
     );
   });
 
@@ -591,7 +591,7 @@ describe('function calls', () => {
         d ?
           e(f) : undefined
       );
-    `
+    `,
     );
   });
 
@@ -612,7 +612,7 @@ describe('function calls', () => {
         y: d ?
           e(f) : undefined
       });
-    `
+    `,
     );
   });
 
@@ -629,7 +629,7 @@ describe('function calls', () => {
       a
         .b(c, () => d
         .e(f));
-    `
+    `,
     );
   });
 
@@ -657,7 +657,7 @@ describe('function calls', () => {
       })());
       
       g;
-    `
+    `,
     );
   });
 
@@ -685,7 +685,7 @@ describe('function calls', () => {
       })());
     
       f;
-    `
+    `,
     );
   });
 
@@ -696,7 +696,7 @@ describe('function calls', () => {
     `,
       `
       a(b, c, d, e);
-    `
+    `,
     );
   });
 
@@ -711,7 +711,7 @@ describe('function calls', () => {
       a(
         {b: c}
       , d);
-    `
+    `,
     );
   });
 
@@ -726,7 +726,7 @@ describe('function calls', () => {
     `,
       `
       launchMissile(() => setTimeout((() => launch()), 5000));
-    `
+    `,
     );
   });
 
@@ -741,7 +741,7 @@ describe('function calls', () => {
     `,
       `
       launchMissile(() => 1 + setTimeout((() => launch()), 5000));
-    `
+    `,
     );
   });
 
@@ -760,7 +760,7 @@ describe('function calls', () => {
         a(\`\\
       \`)
       ;
-    `
+    `,
     );
   });
 
@@ -777,7 +777,7 @@ describe('function calls', () => {
         b(c,
         d)
       );
-    `
+    `,
     );
   });
 
@@ -796,7 +796,7 @@ describe('function calls', () => {
         },
           d))
       );
-    `
+    `,
     );
   });
 
@@ -808,7 +808,7 @@ describe('function calls', () => {
       `
       let b;
       a(([b] = Array.from(c), c));
-    `
+    `,
     );
     checkCS2(
       `
@@ -817,7 +817,7 @@ describe('function calls', () => {
       `
       let b;
       a(([b] = c));
-    `
+    `,
     );
   });
 
@@ -829,7 +829,7 @@ describe('function calls', () => {
       `
       let b, c;
       a((b = d[0], c = d[d.length - 1], d));
-    `
+    `,
     );
   });
 
@@ -852,7 +852,7 @@ describe('function calls', () => {
         const p = data;
         return done(err);
       }));
-    `
+    `,
     );
   });
 
@@ -863,7 +863,7 @@ describe('function calls', () => {
     `,
       `
       middleware.execute({}, (function() {}), (function() {}));
-    `
+    `,
     );
   });
 });

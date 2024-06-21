@@ -89,7 +89,7 @@ export default class FunctionPatcher extends NodePatcher {
     const closeParenIndex = notNull(this.parent).indexOfSourceTokenBetweenSourceIndicesMatching(
       this.contentEnd,
       notNull(this.parent).contentEnd,
-      (token) => token.type === SourceType.CALL_END || token.type === SourceType.RPAREN
+      (token) => token.type === SourceType.CALL_END || token.type === SourceType.RPAREN,
     );
     if (!closeParenIndex) {
       throw this.error('Expected to find close paren index after function call.');
@@ -112,7 +112,7 @@ export default class FunctionPatcher extends NodePatcher {
       const parenRange = this.getProgramSourceTokens().rangeOfMatchingTokensContainingTokenIndex(
         SourceType.LPAREN,
         SourceType.RPAREN,
-        this.contentStartTokenIndex
+        this.contentStartTokenIndex,
       );
       if (!parenRange) {
         throw this.error('Expected to find function paren range in function.');

@@ -39,7 +39,7 @@ describe('automatic conversions', () => {
            */
           c: d
         });
-      `
+      `,
       );
     });
 
@@ -57,7 +57,7 @@ describe('automatic conversions', () => {
             a: b,
             c: d
           });
-        `
+        `,
         );
       });
 
@@ -74,7 +74,7 @@ describe('automatic conversions', () => {
             a: b,
             c: d
           });
-        `
+        `,
         );
       });
 
@@ -97,7 +97,7 @@ describe('automatic conversions', () => {
             e: f,
             g: h
           });
-        `
+        `,
         );
       });
 
@@ -114,7 +114,7 @@ describe('automatic conversions', () => {
             a: b, // hi!
             c: d
           });
-        `
+        `,
         );
       });
 
@@ -131,7 +131,7 @@ describe('automatic conversions', () => {
             a,
             c
           });
-        `
+        `,
         );
       });
 
@@ -146,7 +146,7 @@ describe('automatic conversions', () => {
             a: b,
             c: d
           });
-        `
+        `,
         );
       });
     });
@@ -173,7 +173,7 @@ describe('automatic conversions', () => {
           const a = 1;
           return {a};
         });
-      `
+      `,
       );
     });
 
@@ -198,7 +198,7 @@ describe('automatic conversions', () => {
 
           d: 1
         });
-      `
+      `,
       );
     });
 
@@ -221,7 +221,7 @@ describe('automatic conversions', () => {
 
         // FOO
         d(e);
-      `
+      `,
       );
     });
   });
@@ -260,7 +260,7 @@ describe('runToStage', () => {
         options: {
           runToStage: 'decaffeinate-parser',
         },
-      }
+      },
     );
   });
 
@@ -276,7 +276,7 @@ describe('runToStage', () => {
         options: {
           runToStage: 'NormalizeStage',
         },
-      }
+      },
     );
   });
 });

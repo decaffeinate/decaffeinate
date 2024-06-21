@@ -71,7 +71,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
         this.overwrite(
           this.contentStart,
           this.contentEnd,
-          `typeof ${expression.raw} === 'undefined' || ${expression.raw} === null`
+          `typeof ${expression.raw} === 'undefined' || ${expression.raw} === null`,
         );
       } else {
         // `a?` → `typeof a !== 'undefined' && a !== null`
@@ -79,7 +79,7 @@ export default class UnaryExistsOpPatcher extends UnaryOpPatcher {
         this.overwrite(
           this.contentStart,
           this.contentEnd,
-          `typeof ${expression.raw} !== 'undefined' && ${expression.raw} !== null`
+          `typeof ${expression.raw} !== 'undefined' && ${expression.raw} !== null`,
         );
       }
     } else {

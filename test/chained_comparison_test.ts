@@ -9,7 +9,7 @@ describe('chained comparison', () => {
     `,
       `
       a < b && b < c;
-    `
+    `,
     );
 
     check(
@@ -18,7 +18,7 @@ describe('chained comparison', () => {
     `,
       `
       a > b && b > c;
-    `
+    `,
     );
 
     check(
@@ -27,7 +27,7 @@ describe('chained comparison', () => {
     `,
       `
       a <= b && b <= c;
-    `
+    `,
     );
 
     check(
@@ -36,7 +36,7 @@ describe('chained comparison', () => {
     `,
       `
       a >= b && b >= c;
-    `
+    `,
     );
   });
 
@@ -48,7 +48,7 @@ describe('chained comparison', () => {
       `
       let middle;
       a < (middle = b()) && middle < c;
-    `
+    `,
     );
   });
 
@@ -62,7 +62,7 @@ describe('chained comparison', () => {
       let middle1;
       const middle = 1;
       a < (middle1 = b()) && middle1 < c;
-    `
+    `,
     );
   });
 
@@ -74,7 +74,7 @@ describe('chained comparison', () => {
       `
       let middle;
       a < ((middle = typeof b !== 'undefined' && b !== null ? b : c)) && middle < d;
-    `
+    `,
     );
   });
 
@@ -88,7 +88,7 @@ describe('chained comparison', () => {
       if (a < b && b < c) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -99,7 +99,7 @@ describe('chained comparison', () => {
     `,
       `
       a < b && b < c && c < d;
-    `
+    `,
     );
   });
 
@@ -111,7 +111,7 @@ describe('chained comparison', () => {
       `
       let middle, middle1;
       a() < (middle = b()) && middle < (middle1 = c()) && middle1 < d();
-    `
+    `,
     );
   });
 
@@ -130,7 +130,7 @@ describe('chained comparison', () => {
         options: {
           looseComparisonNegation: true,
         },
-      }
+      },
     );
   });
 
@@ -144,7 +144,7 @@ describe('chained comparison', () => {
       if (!(a < b && b <= c)) {
         d;
       }
-    `
+    `,
     );
   });
 
@@ -161,7 +161,7 @@ describe('chained comparison', () => {
           return a < (middle = b()) && middle < c;
         }
       });
-    `
+    `,
     );
   });
 
@@ -172,7 +172,7 @@ describe('chained comparison', () => {
     `,
       `
       a === b && b !== c && c === d && d !== e;
-    `
+    `,
     );
   });
 
@@ -183,7 +183,7 @@ describe('chained comparison', () => {
     `,
       `
       (a === b) === c && c === d && d === e;
-    `
+    `,
     );
   });
 
@@ -192,7 +192,7 @@ describe('chained comparison', () => {
       `
       setResult(1 | 2 < 3 < 4)
     `,
-      1
+      1,
     );
   });
 });

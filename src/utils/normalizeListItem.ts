@@ -12,7 +12,7 @@ import notNull from './notNull';
 export default function normalizeListItem(
   patcher: NodePatcher,
   listItemPatcher: NodePatcher,
-  nextListItemPatcher: NodePatcher | null
+  nextListItemPatcher: NodePatcher | null,
 ): void {
   // If the last token of the arg is a comma, then the actual delimiter must
   // be a newline and the comma is unnecessary and can cause a syntax error

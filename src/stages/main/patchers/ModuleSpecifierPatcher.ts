@@ -6,7 +6,7 @@ export default class ModuleSpecifierPatcher extends NodePatcher {
   constructor(
     patcherContext: PatcherContext,
     public original: IdentifierPatcher,
-    public alias: IdentifierPatcher | null
+    public alias: IdentifierPatcher | null,
   ) {
     super(patcherContext);
   }

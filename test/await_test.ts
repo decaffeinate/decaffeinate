@@ -11,7 +11,7 @@ describe('await', () => {
       const f = async function() {
         return await this.g();
       };
-    `
+    `,
     );
   });
 
@@ -25,7 +25,7 @@ describe('await', () => {
       const f = async () => {
         return await g();
       };
-    `
+    `,
     );
   });
 
@@ -37,7 +37,7 @@ describe('await', () => {
     `,
       `
       const f = async () => 3;
-    `
+    `,
     );
   });
 
@@ -59,7 +59,7 @@ describe('await', () => {
           return result;
         })();
       };
-    `
+    `,
     );
   });
 
@@ -77,7 +77,7 @@ describe('await', () => {
           return await 3;
         }
       };
-    `
+    `,
     );
   });
 
@@ -94,7 +94,7 @@ describe('await', () => {
           return await 3;
         }
       }
-    `
+    `,
     );
   });
 });

@@ -9,7 +9,7 @@ describe('csx', () => {
     `,
       `
       <div />;
-    `
+    `,
     );
   });
 
@@ -20,7 +20,7 @@ describe('csx', () => {
     `,
       `
       <div x={/>asds/} />;
-    `
+    `,
     );
   });
 
@@ -31,7 +31,7 @@ describe('csx', () => {
     `,
       `
       <div x="a" />;
-    `
+    `,
     );
   });
 
@@ -42,7 +42,7 @@ describe('csx', () => {
     `,
       `
       <div x={42} />;
-    `
+    `,
     );
   });
 
@@ -54,7 +54,7 @@ describe('csx', () => {
       `
       let y;
       <div x={(y = 42)} />;
-    `
+    `,
     );
   });
 
@@ -65,7 +65,7 @@ describe('csx', () => {
     `,
       `
       <div x={{y: 42}} />;
-    `
+    `,
     );
   });
 
@@ -76,7 +76,7 @@ describe('csx', () => {
     `,
       `
       <div checked x="hello" />;
-    `
+    `,
     );
   });
 
@@ -87,7 +87,7 @@ describe('csx', () => {
     `,
       `
       <div></div>;
-    `
+    `,
     );
   });
 
@@ -98,7 +98,7 @@ describe('csx', () => {
     `,
       `
       <div>Hello world</div>;
-    `
+    `,
     );
   });
 
@@ -109,7 +109,7 @@ describe('csx', () => {
     `,
       `
       <div>Hello {42}</div>;
-    `
+    `,
     );
   });
 
@@ -120,7 +120,7 @@ describe('csx', () => {
     `,
       `
       <div><span /></div>;
-    `
+    `,
     );
   });
 
@@ -131,7 +131,7 @@ describe('csx', () => {
     `,
       `
       <div>Hello {<span />}</div>;
-    `
+    `,
     );
   });
 
@@ -142,7 +142,7 @@ describe('csx', () => {
     `,
       `
       <div>Hello {(<span />)(x)}</div>;
-    `
+    `,
     );
   });
 
@@ -153,7 +153,7 @@ describe('csx', () => {
     `,
       `
       <div>Hello {f(<span />)}</div>;
-    `
+    `,
     );
   });
 
@@ -164,7 +164,7 @@ describe('csx', () => {
     `,
       `
       <div x={/>asds/}><div />{/>asdsad</}</div>;
-    `
+    `,
     );
   });
 
@@ -175,7 +175,7 @@ describe('csx', () => {
     `,
       `
       <div x={\`Hello \${world}\`} />;
-    `
+    `,
     );
   });
 
@@ -186,7 +186,7 @@ describe('csx', () => {
     `,
       `
       <div x={\`Hello \${a(b)}\`} />;
-    `
+    `,
     );
   });
 
@@ -197,7 +197,7 @@ describe('csx', () => {
     `,
       `
       <div x={\`Hello \${a(b)}\`} />;
-    `
+    `,
     );
   });
 
@@ -208,7 +208,7 @@ describe('csx', () => {
     `,
       `
       <div x={\`Hello \${a(b)}\`} />;
-    `
+    `,
     );
   });
 
@@ -219,7 +219,7 @@ describe('csx', () => {
     `,
       `
       a(<b > c </b>);
-    `
+    `,
     );
   });
 
@@ -230,7 +230,7 @@ describe('csx', () => {
     `,
       `
       <Person name={test() ? 'yes' : 'no'} />;
-    `
+    `,
     );
   });
 
@@ -251,7 +251,7 @@ describe('csx', () => {
         :
           'no'
       } />;
-    `
+    `,
     );
   });
 
@@ -292,7 +292,7 @@ describe('csx', () => {
       }
       
       </Person>;
-    `
+    `,
     );
   });
 
@@ -307,7 +307,7 @@ describe('csx', () => {
       <Company>
         <Person name={<NameComponent attr3={ {'a': {}, b: '{'} } />} />
       </Company>;
-    `
+    `,
     );
   });
 
@@ -318,7 +318,7 @@ describe('csx', () => {
     `,
       `
       <div code={someFunc({a:{b:{}, C:'}{}{'}})} />;
-    `
+    `,
     );
   });
 
@@ -343,7 +343,7 @@ describe('csx', () => {
       >
         blah blah blah
       </Person>;
-    `
+    `,
     );
   });
 
@@ -362,7 +362,7 @@ describe('csx', () => {
           {'a' : {}, 'asd': 'asd'}
         }
       </Person>;
-    `
+    `,
     );
   });
 
@@ -375,7 +375,7 @@ describe('csx', () => {
       `
       <Person name={isActive() ? 'active' : 'inactive'}
       someattr='on new line' />;
-    `
+    `,
     );
   });
 
@@ -390,7 +390,7 @@ describe('csx', () => {
       <Person eyes={2} friends={getFriends()} popular = "yes"
       active={ isActive() ? 'active' : 'inactive' } data-attr='works' checked check={me_out}
       />;
-    `
+    `,
     );
   });
 
@@ -403,7 +403,7 @@ describe('csx', () => {
       `
       <Person />;
       /\\/\\/<Person \\/>\\>\\//;
-    `
+    `,
     );
   });
 
@@ -456,7 +456,7 @@ describe('csx', () => {
       /)([imgy]{0,4})(?!\\\\w)\\
       \`);
       <Person />;
-    `
+    `,
     );
   });
 
@@ -471,7 +471,7 @@ describe('csx', () => {
       <Person>
       # i am not a comment
       </Person>;
-    `
+    `,
     );
   });
 
@@ -490,7 +490,7 @@ describe('csx', () => {
         "i am a string"
       }
       </Person>;
-    `
+    `,
     );
   });
 
@@ -509,7 +509,7 @@ describe('csx', () => {
       // i am a comment
       }
       </Person>;
-    `
+    `,
     );
   });
 
@@ -520,7 +520,7 @@ describe('csx', () => {
     `,
       `
       <Person> "i am not a string" 'nor am i' </Person>;
-    `
+    `,
     );
   });
 
@@ -531,7 +531,7 @@ describe('csx', () => {
     `,
       `
       <Person> a,/';][' a\\''@$%^&˚¬∑˜˚∆å∂¬˚*()*&^%$>> '"''"'''\\'\\'m' i </Person>;
-    `
+    `,
     );
   });
 
@@ -542,7 +542,7 @@ describe('csx', () => {
     `,
       `
       <Person>  &&&&euro;  &#8364; &#x20AC;;; </Person>;
-    `
+    `,
     );
   });
 
@@ -553,7 +553,7 @@ describe('csx', () => {
     `,
       `
       <Person name={{value: item, key, item}} />;
-    `
+    `,
     );
   });
 
@@ -564,7 +564,7 @@ describe('csx', () => {
     `,
       `
       <Something.Tag></Something.Tag>;
-    `
+    `,
     );
   });
 
@@ -575,7 +575,7 @@ describe('csx', () => {
     `,
       `
       <something.tag></something.tag>;
-    `
+    `,
     );
   });
 
@@ -586,7 +586,7 @@ describe('csx', () => {
     `,
       `
       <Something.Tag />;
-    `
+    `,
     );
   });
 
@@ -597,7 +597,7 @@ describe('csx', () => {
     `,
       `
       <Component a={b} {...x} b="c" />;
-    `
+    `,
     );
   });
 
@@ -608,7 +608,7 @@ describe('csx', () => {
     `,
       `
       <Component {...x} a={b} {...x} b="c" {...$my_xtraCoolVar123} />;
-    `
+    `,
     );
   });
 
@@ -623,7 +623,7 @@ describe('csx', () => {
       <Component {
         ...x} a={b} {...x} b="c" {...z}>
       </Component>;
-    `
+    `,
     );
   });
 
@@ -646,7 +646,7 @@ describe('csx', () => {
         b="c"
       >
       </Component>;
-    `
+    `,
     );
   });
 
@@ -669,7 +669,7 @@ describe('csx', () => {
         b="c"
       >
       </Component>;
-    `
+    `,
     );
   });
 
@@ -688,7 +688,7 @@ describe('csx', () => {
         } a={b} {...x} b="c" {...z}>
         <div code={someFunc({a:{b:{}, C:'}'}})} />
       </Component>;
-    `
+    `,
     );
   });
 
@@ -699,7 +699,7 @@ describe('csx', () => {
     `,
       `
       <Component a="b" c="d" {...this.props} />;
-    `
+    `,
     );
   });
 
@@ -718,7 +718,7 @@ describe('csx', () => {
         c="d"
         {...this.props}
       />;
-    `
+    `,
     );
   });
 
@@ -735,7 +735,7 @@ describe('csx', () => {
         a="b"
         c="d"
         {...this.props} />;
-    `
+    `,
     );
   });
 
@@ -756,7 +756,7 @@ describe('csx', () => {
         {...this.props}
       
       />;
-    `
+    `,
     );
   });
 
@@ -767,7 +767,7 @@ describe('csx', () => {
     `,
       `
       <Component val="" />;
-    `
+    `,
     );
   });
 
@@ -778,7 +778,7 @@ describe('csx', () => {
     `,
       `
       <paper-button className="button">{text}</paper-button>;
-    `
+    `,
     );
   });
 
@@ -789,7 +789,7 @@ describe('csx', () => {
     `,
       `
       <span>a<div /></span>;
-    `
+    `,
     );
   });
 
@@ -800,7 +800,7 @@ describe('csx', () => {
     `,
       `
       <span>3<div /></span>;
-    `
+    `,
     );
   });
 
@@ -811,7 +811,7 @@ describe('csx', () => {
     `,
       `
       <span>(3)<div /></span>;
-    `
+    `,
     );
   });
 
@@ -822,7 +822,7 @@ describe('csx', () => {
     `,
       `
       <span>]<div /></span>;
-    `
+    `,
     );
   });
 
@@ -837,7 +837,7 @@ describe('csx', () => {
       const a = 3;
       const div = 5;
       const html = <span>{a<div}</span>;
-    `
+    `,
     );
   });
 
@@ -852,7 +852,7 @@ describe('csx', () => {
       const div = 5;
       const res = 2<div;
       const html = <span />;
-    `
+    `,
     );
   });
 
@@ -867,7 +867,7 @@ describe('csx', () => {
       const div = 5;
       const html = <span />;
       const res = 2<div;
-    `
+    `,
     );
   });
 
@@ -888,7 +888,7 @@ describe('csx', () => {
           <div />
         }
       </div>;
-    `
+    `,
     );
   });
 
@@ -909,7 +909,7 @@ describe('csx', () => {
           "value"
         } />
       </div>;
-    `
+    `,
     );
   });
 
@@ -920,7 +920,7 @@ describe('csx', () => {
     `,
       `
       <></>;
-    `
+    `,
     );
   });
 
@@ -943,7 +943,7 @@ describe('csx', () => {
         <h2>Another heading</h2>
         Even more text.
       </>;
-    `
+    `,
     );
   });
 
@@ -963,7 +963,7 @@ describe('csx', () => {
           <OtherComponent />
         </Fragment>;
       };
-    `
+    `,
     );
   });
 });

@@ -94,7 +94,7 @@ describe('scope', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('for key, {a, b, c: [d, e]} of object\n  key'));
     ['key', 'a', 'b', 'd', 'e'].forEach((name) =>
-      ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope.inspect()}`)
+      ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope.inspect()}`),
     );
   });
 
@@ -102,7 +102,7 @@ describe('scope', () => {
     const scope = new Scope(containerNode);
     scope.processNode(statement('for [a, {b, c}, d] in array\n  a'));
     ['a', 'b', 'c', 'd'].forEach((name) =>
-      ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope.inspect()}`)
+      ok(scope.getBinding(name), `\`${name}\` should be bound in: ${scope.inspect()}`),
     );
   });
 

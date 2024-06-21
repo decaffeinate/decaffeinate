@@ -10,7 +10,7 @@ describe('member access', () => {
       `
       a
         .b;
-    `
+    `,
     );
   });
 
@@ -23,7 +23,7 @@ describe('member access', () => {
       `
       a. // hello!
         b;
-    `
+    `,
     );
   });
 
@@ -36,7 +36,7 @@ describe('member access', () => {
       `
       a
         .b();
-    `
+    `,
     );
   });
 
@@ -49,7 +49,7 @@ describe('member access', () => {
       `
       a
         .b(1, 2);
-    `
+    `,
     );
   });
 
@@ -62,7 +62,7 @@ describe('member access', () => {
       `
       a.
         on(1, 2);
-    `
+    `,
     );
   });
 
@@ -77,7 +77,7 @@ describe('member access', () => {
       a
         .b()
         .c();
-    `
+    `,
     );
   });
 
@@ -88,7 +88,7 @@ describe('member access', () => {
     `,
       `
       a.b = function() {};
-    `
+    `,
     );
   });
 
@@ -99,7 +99,7 @@ describe('member access', () => {
     `,
       `
       (1).toString();
-    `
+    `,
     );
   });
 
@@ -110,7 +110,7 @@ describe('member access', () => {
     `,
       `
       (1.5).toString();
-    `
+    `,
     );
   });
 
@@ -121,7 +121,7 @@ describe('member access', () => {
     `,
       `
       a[b]();
-    `
+    `,
     );
   });
 
@@ -132,7 +132,7 @@ describe('member access', () => {
     `,
       `
       a[b ? c : d];
-    `
+    `,
     );
   });
 
@@ -145,7 +145,7 @@ describe('member access', () => {
     `,
       `
       P(() => foo).then;
-    `
+    `,
     );
   });
 
@@ -158,7 +158,7 @@ describe('member access', () => {
     `,
       `
       Q(() => P(() => foo)).then;
-    `
+    `,
     );
   });
 
@@ -172,7 +172,7 @@ describe('member access', () => {
     `,
       `
       Q(() => P(() => foo)).then;
-    `
+    `,
     );
   });
 
@@ -186,7 +186,7 @@ describe('member access', () => {
     `,
       `
       Q(() => P(() => foo)).then;
-    `
+    `,
     );
   });
 
@@ -200,7 +200,7 @@ describe('member access', () => {
       `
       a(b(
         c)).d;
-    `
+    `,
     );
   });
 
@@ -216,7 +216,7 @@ describe('member access', () => {
       a
         .b(c(d,
           e)).f;
-    `
+    `,
     );
   });
 });

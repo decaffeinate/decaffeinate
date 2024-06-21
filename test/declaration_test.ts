@@ -13,7 +13,7 @@ describe('declarations', () => {
       `
       let b;
       a(b = 1);
-    `
+    `,
     );
   });
 
@@ -26,7 +26,7 @@ describe('declarations', () => {
       `
       let a = 1;
       a = 2;
-    `
+    `,
     );
   });
 
@@ -38,7 +38,7 @@ describe('declarations', () => {
     `,
       `
       (a => a = 1);
-    `
+    `,
     );
   });
 
@@ -53,7 +53,7 @@ describe('declarations', () => {
         let a;
         return a = 1;
       });
-    `
+    `,
     );
   });
 
@@ -67,7 +67,7 @@ describe('declarations', () => {
       `
       let a = 1;
       (() => a = 2);
-    `
+    `,
     );
   });
 
@@ -84,7 +84,7 @@ describe('declarations', () => {
           const c = 1;
         }
       }
-    `
+    `,
     );
   });
 
@@ -99,7 +99,7 @@ describe('declarations', () => {
       if (a = 1) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -125,7 +125,7 @@ describe('declarations', () => {
       `
       let a = 1;
       [a] = Array.from(b);
-    `
+    `,
     );
     checkCS2(
       `
@@ -135,7 +135,7 @@ describe('declarations', () => {
       `
       let a = 1;
       [a] = b;
-    `
+    `,
     );
   });
 
@@ -148,7 +148,7 @@ describe('declarations', () => {
       `
       let a = 1;
       ({a} = b);
-    `
+    `,
     );
   });
 
@@ -159,7 +159,7 @@ describe('declarations', () => {
       `,
       `
       const { data = {}, status, statusText } = e.response || {};
-      `
+      `,
     );
   });
 
@@ -173,7 +173,7 @@ describe('declarations', () => {
       let b;
       let a = 1;
       [a, b] = Array.from(c);
-    `
+    `,
     );
     checkCS2(
       `
@@ -184,7 +184,7 @@ describe('declarations', () => {
       let b;
       let a = 1;
       [a, b] = c;
-    `
+    `,
     );
   });
 
@@ -210,7 +210,7 @@ describe('declarations', () => {
       let c;
       const a = 1;
       const b = (c = 2);
-    `
+    `,
     );
   });
 

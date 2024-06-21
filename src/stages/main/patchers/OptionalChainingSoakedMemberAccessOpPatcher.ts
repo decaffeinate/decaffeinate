@@ -18,7 +18,7 @@ export default class OptionalChainingSoakedMemberAccessOpPatcher extends MemberA
   patchAsExpression(): void {
     if (isInsideAssignee(this.node)) {
       throw this.error(
-        `JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.`
+        `JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.`,
       );
     }
 

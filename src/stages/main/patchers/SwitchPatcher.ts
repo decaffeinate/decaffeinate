@@ -12,7 +12,7 @@ export default class SwitchPatcher extends NodePatcher {
     patcherContext: PatcherContext,
     expression: NodePatcher,
     cases: Array<NodePatcher>,
-    alternate: NodePatcher | null
+    alternate: NodePatcher | null,
   ) {
     super(patcherContext);
     this.expression = expression;
@@ -137,7 +137,7 @@ export default class SwitchPatcher extends NodePatcher {
     const elseTokenIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      (token) => token.type === SourceType.ELSE
+      (token) => token.type === SourceType.ELSE,
     );
     if (!elseTokenIndex || elseTokenIndex.isBefore(this.contentStartTokenIndex)) {
       if (this.alternate) {

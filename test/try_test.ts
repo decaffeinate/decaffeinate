@@ -16,7 +16,7 @@ describe('try', () => {
       } catch (ex) {
         b();
       }
-    `
+    `,
     );
   });
 
@@ -37,7 +37,7 @@ describe('try', () => {
           return b();
         }
       });
-    `
+    `,
     );
   });
 
@@ -55,7 +55,7 @@ describe('try', () => {
       } catch (error) {
         b();
       }
-    `
+    `,
     );
   });
 
@@ -69,7 +69,7 @@ describe('try', () => {
       try {
         a();
       } catch (error) {}
-    `
+    `,
     );
   });
 
@@ -86,7 +86,7 @@ describe('try', () => {
           return a();
         } catch (error) {}
       });
-    `
+    `,
     );
   });
 
@@ -104,7 +104,7 @@ describe('try', () => {
       } finally {
         b();
       }
-    `
+    `,
     );
   });
 
@@ -120,7 +120,7 @@ describe('try', () => {
         a;
       } catch (error) {}
       b;
-    `
+    `,
     );
   });
 
@@ -131,7 +131,7 @@ describe('try', () => {
     `,
       `
       try { a; } catch (error) {}
-    `
+    `,
     );
   });
 
@@ -142,7 +142,7 @@ describe('try', () => {
     `,
       `
       try { a; } catch (err) { b; }
-    `
+    `,
     );
   });
 
@@ -153,7 +153,7 @@ describe('try', () => {
     `,
       `
       const a = (() => { try { return b(); } catch (error) {} })();
-    `
+    `,
     );
   });
 
@@ -169,7 +169,7 @@ describe('try', () => {
       try {
         foo();
       } catch (error1) {}
-    `
+    `,
     );
   });
 
@@ -184,7 +184,7 @@ describe('try', () => {
       try {
         something();
       } catch (error) {}
-    `
+    `,
     );
   });
 
@@ -199,7 +199,7 @@ describe('try', () => {
       try {
         something();
       } finally {}
-    `
+    `,
     );
   });
 
@@ -216,7 +216,7 @@ describe('try', () => {
         something();
       } catch (error) {}
       finally {}
-    `
+    `,
     );
   });
 
@@ -231,7 +231,7 @@ describe('try', () => {
       try {
         something();
       } catch (err) {}
-    `
+    `,
     );
   });
 
@@ -248,7 +248,7 @@ describe('try', () => {
         something();
       } catch (err) {}
       finally {}
-    `
+    `,
     );
   });
 
@@ -266,7 +266,7 @@ describe('try', () => {
         catch (err) {}
         finally {}
       });
-    `
+    `,
     );
   });
 
@@ -277,7 +277,7 @@ describe('try', () => {
     `,
       `
       try {} catch (error) {}
-    `
+    `,
     );
   });
 
@@ -293,7 +293,7 @@ describe('try', () => {
       catch (error) {
         a;
       }
-    `
+    `,
     );
   });
 
@@ -304,7 +304,7 @@ describe('try', () => {
     `,
       `
       try {} catch (err) {} finally {}
-    `
+    `,
     );
   });
 
@@ -315,7 +315,7 @@ describe('try', () => {
     `,
       `
       const x = ((() => { try { return a; } catch (b) { return c; } })());
-    `
+    `,
     );
   });
 
@@ -326,7 +326,7 @@ describe('try', () => {
     `,
       `
       if (!(() => { try { return a; } catch (b) { return c; } })()) { d; }
-    `
+    `,
     );
   });
 
@@ -348,7 +348,7 @@ describe('try', () => {
           return yield 2;
         } }).call(this);
       });
-    `
+    `,
     );
   });
 
@@ -370,7 +370,7 @@ describe('try', () => {
         b;
       }
       console.log(e);
-    `
+    `,
     );
   });
 
@@ -389,7 +389,7 @@ describe('try', () => {
         const array = error.b, c = array[0], d = array[array.length - 1];
         e;
       }
-    `
+    `,
     );
   });
 
@@ -408,7 +408,7 @@ describe('try', () => {
         const {error} = error1;
         b;
       }
-    `
+    `,
     );
   });
 
@@ -426,7 +426,7 @@ describe('try', () => {
         a;
       } catch (error1) { error = error1; }
       console.log(error);
-    `
+    `,
     );
   });
 
@@ -441,7 +441,7 @@ describe('try', () => {
         let x;
         return x = ((() => { try { return a; } catch (error) {} })());
       });
-    `
+    `,
     );
   });
 
@@ -466,7 +466,7 @@ describe('try', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -477,7 +477,7 @@ describe('try', () => {
     `,
       `
       const x = (() => { try { throw a; } catch (error) { return b; } })();
-    `
+    `,
     );
   });
 
@@ -492,7 +492,7 @@ describe('try', () => {
         val
       setResult(arr)
     `,
-      [1, 1, 1]
+      [1, 1, 1],
     );
   });
 
@@ -507,7 +507,7 @@ describe('try', () => {
       try {
         a;
       } catch (b) {} 
-    `
+    `,
     );
   });
 
@@ -527,7 +527,7 @@ describe('try', () => {
           return b = c;
         } catch (error) {} })();
       b;
-    `
+    `,
     );
   });
 });

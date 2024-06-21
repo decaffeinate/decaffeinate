@@ -45,7 +45,7 @@ describe('countVariableUsages', () => {
       x = 1
       { [x]: 2 }
     `,
-      { useCS2: true }
+      { useCS2: true },
     );
     strictEqual(countVariableUsages(ast, 'x'), 2);
   });

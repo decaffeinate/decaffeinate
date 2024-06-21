@@ -15,6 +15,6 @@ export default function nodeContainsSoakOperation(node: Node): boolean {
     (child) =>
       child instanceof SoakedDynamicMemberAccessOp ||
       child instanceof SoakedFunctionApplication ||
-      child instanceof SoakedMemberAccessOp
+      child instanceof SoakedMemberAccessOp,
   );
 }

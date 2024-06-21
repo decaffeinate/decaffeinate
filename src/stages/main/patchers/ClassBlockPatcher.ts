@@ -32,7 +32,7 @@ export default class ClassBlockPatcher extends BlockPatcher {
         if (!this.options.useCS2) {
           if (isSubclass && !this.shouldAllowInvalidConstructors()) {
             throw this.error(
-              getInvalidConstructorErrorMessage('Cannot automatically convert a subclass that uses bound methods.')
+              getInvalidConstructorErrorMessage('Cannot automatically convert a subclass that uses bound methods.'),
             );
           } else if (isSubclass) {
             this.addSuggestion(FIX_INVALID_CONSTRUCTOR);

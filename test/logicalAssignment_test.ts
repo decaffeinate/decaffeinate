@@ -37,7 +37,7 @@ describe('with logical assignment enabled', () => {
         k1: v1,
         k2: v2
       };
-    `
+    `,
     );
   });
 });

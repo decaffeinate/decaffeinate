@@ -15,7 +15,7 @@ export default function escape(
   skipPattern: RegExp,
   escapeStrings: Array<string>,
   start: number,
-  end: number
+  end: number,
 ): void {
   for (let i = start; i < end; i++) {
     if (skipPattern.test(source.slice(i, end))) {

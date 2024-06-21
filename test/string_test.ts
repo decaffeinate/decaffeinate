@@ -67,7 +67,7 @@ describe('strings', () => {
       foo
       bar\\
       \`;
-    `
+    `,
     );
   });
 
@@ -80,7 +80,7 @@ describe('strings', () => {
       `
       a(\`line1
       line2\`);
-    `
+    `,
     );
   });
 
@@ -93,7 +93,7 @@ describe('strings', () => {
       `
       a(\`line1
       line2\`);
-    `
+    `,
     );
   });
 
@@ -108,7 +108,7 @@ describe('strings', () => {
       const a = \`this is a \\
       multi line \\
       string\`;
-    `
+    `,
     );
   });
 
@@ -123,7 +123,7 @@ describe('strings', () => {
       fn(\`this is a \\
       multi line \\
       string\`);
-    `
+    `,
     );
   });
 
@@ -136,7 +136,7 @@ describe('strings', () => {
       `
       const a = \`a\\
       b\`;
-    `
+    `,
     );
   });
 
@@ -147,7 +147,7 @@ describe('strings', () => {
       `,
       `
       '\\u2028';
-    `
+    `,
     );
   });
 
@@ -158,7 +158,7 @@ describe('strings', () => {
       `,
       `
       '\\u2029';
-    `
+    `,
     );
   });
 
@@ -169,7 +169,7 @@ describe('strings', () => {
       `,
       `
       '\\u2028';
-    `
+    `,
     );
   });
 
@@ -180,7 +180,7 @@ describe('strings', () => {
       `,
       `
       '\\\\\\u2028';
-    `
+    `,
     );
   });
 
@@ -192,7 +192,7 @@ describe('strings', () => {
         1
       ')
       `,
-      '\x001'
+      '\x001',
     );
   });
 });

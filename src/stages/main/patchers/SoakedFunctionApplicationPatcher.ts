@@ -114,7 +114,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     this.overwrite(
       fn.expression.outerEnd,
       callStartToken.end,
-      `, '${memberName}', ${varName} => ${prefix}${varName}.${memberName}(`
+      `, '${memberName}', ${varName} => ${prefix}${varName}.${memberName}(`,
     );
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
     soakContainer.appendDeferredSuffix(')');
@@ -144,7 +144,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     this.overwrite(
       indexingExpr.outerEnd,
       callStartToken.end,
-      `, (${objVarName}, ${methodVarName}) => ${prefix}${objVarName}[${methodVarName}](`
+      `, (${objVarName}, ${methodVarName}) => ${prefix}${objVarName}[${methodVarName}](`,
     );
     soakContainer.insert(soakContainer.contentStart, '__guardMethod__(');
     soakContainer.appendDeferredSuffix(')');
@@ -169,7 +169,7 @@ export default class SoakedFunctionApplicationPatcher extends FunctionApplicatio
     const tokens = this.context.sourceTokens;
     const index = tokens.indexOfTokenMatchingPredicate(
       (token) => token.type === SourceType.CALL_START,
-      this.fn.outerEndTokenIndex
+      this.fn.outerEndTokenIndex,
     );
     if (!index || index.isAfter(this.contentEndTokenIndex)) {
       throw this.error(`unable to find open-paren for function call`);

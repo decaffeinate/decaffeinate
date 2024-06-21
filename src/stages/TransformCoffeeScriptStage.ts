@@ -35,7 +35,7 @@ export default class TransformCoffeeScriptStage {
     readonly ast: Node,
     readonly context: DecaffeinateContext,
     readonly editor: MagicString,
-    readonly options: Options
+    readonly options: Options,
   ) {}
 
   /**
@@ -107,7 +107,7 @@ export default class TransformCoffeeScriptStage {
         `no patcher available for node type: ${node.type}` + `${props.length ? ` (props: ${props.join(', ')})` : ''}`,
         this.context.source,
         node.start,
-        node.end
+        node.end,
       );
     }
 

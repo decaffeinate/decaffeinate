@@ -40,7 +40,7 @@ export default class ForInPatcher extends ForPatcher {
     target: NodePatcher,
     step: NodePatcher | null,
     filter: NodePatcher | null,
-    body: BlockPatcher
+    body: BlockPatcher,
   ) {
     super(patcherContext, keyAssignee, valAssignee, target, filter, body);
     this.step = step;
@@ -261,7 +261,7 @@ export default class ForInPatcher extends ForPatcher {
     this.overwrite(
       firstHeaderPatcher.outerStart,
       lastHeaderPatcher.outerEnd,
-      `(${this.getInitCode()}; ${this.getTestCode()}; ${this.getUpdateCode()}) {`
+      `(${this.getInitCode()}; ${this.getTestCode()}; ${this.getUpdateCode()}) {`,
     );
   }
 
@@ -567,7 +567,7 @@ export default class ForInPatcher extends ForPatcher {
     if (step.isVirtual) {
       if (!this.shouldPatchAsInitTestUpdateLoop()) {
         throw new Error(
-          'Should not be getting asc code when the target is not a range and ' + 'the step is unspecified.'
+          'Should not be getting asc code when the target is not a range and ' + 'the step is unspecified.',
         );
       }
       return `${this.getStartReference()} <= ${this.getEndReference()}`;

@@ -27,7 +27,7 @@ describe('regular expressions', () => {
       foo.*\\
       bar\\
       \`);
-    `
+    `,
     );
   });
 
@@ -64,7 +64,7 @@ describe('regular expressions', () => {
       foo\${abc}d\\
       \${bar}\\
       \`, 'g');
-    `
+    `,
     );
   });
 
@@ -81,7 +81,7 @@ describe('regular expressions', () => {
       foo\\
       \${bar}\\
       \`, 'g');
-    `
+    `,
     );
   });
 
@@ -96,7 +96,7 @@ describe('regular expressions', () => {
       `,
       `
       /\\u2028/;
-    `
+    `,
     );
   });
 
@@ -107,7 +107,7 @@ describe('regular expressions', () => {
       `,
       `
       /\\u2029/;
-    `
+    `,
     );
   });
 
@@ -118,7 +118,7 @@ describe('regular expressions', () => {
       `,
       `
       /\\u2028/;
-    `
+    `,
     );
   });
 
@@ -129,7 +129,7 @@ describe('regular expressions', () => {
       `,
       `
       /\\\\\\u2028/;
-    `
+    `,
     );
   });
 
@@ -140,7 +140,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\`);
-    `
+    `,
     );
   });
 
@@ -151,7 +151,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\`);
-    `
+    `,
     );
   });
 
@@ -162,7 +162,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\\u2028\`);
-    `
+    `,
     );
   });
 
@@ -173,7 +173,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\\u2029\`);
-    `
+    `,
     );
   });
 
@@ -184,7 +184,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\\\\x00\`);
-    `
+    `,
     );
   });
 
@@ -193,7 +193,7 @@ describe('regular expressions', () => {
       `
       setResult(///\\0 1///.test('\\0' + '1'))
       `,
-      true
+      true,
     );
   });
 
@@ -204,7 +204,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\\\\\\\\[\\\\\\\\]\`);
-    `
+    `,
     );
   });
 
@@ -215,7 +215,7 @@ describe('regular expressions', () => {
       `,
       `
       /\\u000a/;
-    `
+    `,
     );
   });
 
@@ -226,7 +226,7 @@ describe('regular expressions', () => {
       `,
       `
       /\\ud800\\udc00/;
-    `
+    `,
     );
   });
 
@@ -237,7 +237,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\\\\u000a\`);
-    `
+    `,
     );
   });
 
@@ -248,7 +248,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\\\\ud800\\\\udc00\`);
-    `
+    `,
     );
   });
 
@@ -259,7 +259,7 @@ describe('regular expressions', () => {
       `,
       `
       /\\u{a}/u;
-    `
+    `,
     );
   });
 
@@ -270,7 +270,7 @@ describe('regular expressions', () => {
       `,
       `
       new RegExp(\`\\\\u{a}\`, 'u');
-    `
+    `,
     );
   });
 
@@ -281,7 +281,7 @@ describe('regular expressions', () => {
       `,
       `
       /\\\\u{a}/;
-    `
+    `,
     );
   });
 });

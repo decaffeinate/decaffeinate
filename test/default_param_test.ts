@@ -43,7 +43,7 @@ describe('default params', () => {
       (function(a) {
         if (a == null) { a = b(); }
       });
-    `
+    `,
     );
   });
 
@@ -56,7 +56,7 @@ describe('default params', () => {
       (function(a) {
         if (a == null) { a = b(c); }
       });
-    `
+    `,
     );
   });
 
@@ -75,7 +75,7 @@ describe('default params', () => {
         this.a = a1;
         console.log(a);
       });
-    `
+    `,
     );
   });
 
@@ -90,7 +90,7 @@ describe('default params', () => {
         if (param == null) { param = {}; }
         const {a} = param;
       });
-    `
+    `,
     );
   });
 
@@ -114,7 +114,7 @@ describe('default params', () => {
           return c;
         };
       });
-    `
+    `,
     );
   });
 
@@ -134,7 +134,7 @@ describe('default params', () => {
         } = param;
         return c;
       };
-    `
+    `,
     );
   });
 
@@ -145,7 +145,7 @@ describe('default params', () => {
     `,
       `
       const filter = function(items, predicate) { if (predicate == null) { predicate = () => true; } return items.filter(predicate); };
-    `
+    `,
     );
   });
 
@@ -157,7 +157,7 @@ describe('default params', () => {
     `,
       `
       ((a = null) => console.log(a));
-    `
+    `,
     );
   });
 });

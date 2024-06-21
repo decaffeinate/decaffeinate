@@ -56,7 +56,7 @@ export default class AssignOpPatcher extends NodePatcher {
     const colonIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
-      (token) => token.type === SourceType.COLON
+      (token) => token.type === SourceType.COLON,
     );
     if (colonIndex) {
       const colonToken = notNull(this.sourceTokenAtIndex(colonIndex));
@@ -147,7 +147,7 @@ export default class AssignOpPatcher extends NodePatcher {
     const thenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.assignee,
       this.expression,
-      (token) => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN,
     );
     if (thenIndex) {
       const thenToken = notNull(this.sourceTokenAtIndex(thenIndex));

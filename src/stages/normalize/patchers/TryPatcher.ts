@@ -15,7 +15,7 @@ export default class TryPatcher extends NodePatcher {
     body: BlockPatcher | null,
     catchAssignee: NodePatcher | null,
     catchBody: BlockPatcher | null,
-    finallyBody: BlockPatcher | null
+    finallyBody: BlockPatcher | null,
   ) {
     super(patcherContext);
     this.body = body;

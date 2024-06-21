@@ -11,7 +11,7 @@ describe('while', () => {
       while (a) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -28,7 +28,7 @@ describe('while', () => {
           c;
         }
       }
-    `
+    `,
     );
   });
 
@@ -39,7 +39,7 @@ describe('while', () => {
     `,
       `
       while (a) { b; }
-    `
+    `,
     );
   });
 
@@ -53,7 +53,7 @@ describe('while', () => {
       while (a) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -67,7 +67,7 @@ describe('while', () => {
       while (!a) {
         b;
       }
-    `
+    `,
     );
   });
 
@@ -81,7 +81,7 @@ describe('while', () => {
       while (!(a < b)) {
         a--;
       }
-    `
+    `,
     );
   });
 
@@ -95,7 +95,7 @@ describe('while', () => {
       while (true) {
         a;
       }
-    `
+    `,
     );
   });
 
@@ -106,7 +106,7 @@ describe('while', () => {
     `,
       `
       while (true) { a; }
-    `
+    `,
     );
   });
 
@@ -123,7 +123,7 @@ describe('while', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -142,7 +142,7 @@ describe('while', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -173,7 +173,7 @@ describe('while', () => {
 
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -205,7 +205,7 @@ describe('while', () => {
 
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -222,7 +222,7 @@ describe('while', () => {
           return a;
         }
       });
-    `
+    `,
     );
   });
 
@@ -241,7 +241,7 @@ describe('while', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -252,7 +252,7 @@ describe('while', () => {
     `,
       `
       while (a) { ((a => a))(1); }
-    `
+    `,
     );
   });
 
@@ -263,7 +263,7 @@ describe('while', () => {
     `,
       `
       while (true) { a; }
-    `
+    `,
     );
   });
 
@@ -281,7 +281,7 @@ describe('while', () => {
           g(h);
         }
       }
-    `
+    `,
     );
   });
 
@@ -297,7 +297,7 @@ describe('while', () => {
           c;
         }
       }
-    `
+    `,
     );
   });
 
@@ -326,7 +326,7 @@ describe('while', () => {
         }
         return result;
       })());
-    `
+    `,
     );
   });
 
@@ -342,7 +342,7 @@ describe('while', () => {
       while (a != null) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -366,7 +366,7 @@ describe('while', () => {
         }
         return result;
       }).call(this); });
-    `
+    `,
     );
   });
 
@@ -393,7 +393,7 @@ describe('while', () => {
           return result;
         }).apply(this, arguments);
       });
-    `
+    `,
     );
   });
 
@@ -420,7 +420,7 @@ describe('while', () => {
           return result;
         }).call(this);
       });
-    `
+    `,
     );
   });
 
@@ -431,7 +431,7 @@ describe('while', () => {
     `,
       `
       while (1 ? 0 : undefined) { 2; }
-    `
+    `,
     );
   });
 
@@ -442,7 +442,7 @@ describe('while', () => {
     `,
       `
       while (1 ? 0 : undefined) { 2; }
-    `
+    `,
     );
   });
 
@@ -453,7 +453,7 @@ describe('while', () => {
     `,
       `
       while (b) { if (c ? d : undefined) { a; } }
-    `
+    `,
     );
   });
 
@@ -465,7 +465,7 @@ describe('while', () => {
     `,
       `
       while (((() => b))()) { a; }
-    `
+    `,
     );
   });
 
@@ -482,7 +482,7 @@ describe('while', () => {
         }
         return result;
       })()), d);
-    `
+    `,
     );
   });
 
@@ -499,7 +499,7 @@ describe('while', () => {
         }
         return result;
       })()), c];
-    `
+    `,
     );
   });
 
@@ -516,7 +516,7 @@ describe('while', () => {
         }
         return result;
       })()), d});
-    `
+    `,
     );
   });
 
@@ -527,7 +527,7 @@ describe('while', () => {
     `,
       `
       while (b) { a; } c;
-    `
+    `,
     );
   });
 
@@ -538,7 +538,7 @@ describe('while', () => {
     `,
       `
       while (a) {} 
-    `
+    `,
     );
   });
 
@@ -549,7 +549,7 @@ describe('while', () => {
     `,
       `
       while (true) {} 
-    `
+    `,
     );
   });
 
@@ -572,7 +572,7 @@ describe('while', () => {
         return result;
       })();
       c;
-    `
+    `,
     );
   });
 
@@ -597,7 +597,7 @@ describe('while', () => {
           e: f
         }
       };
-    `
+    `,
     );
   });
 
@@ -623,7 +623,7 @@ describe('while', () => {
           e: f
         }
       };
-    `
+    `,
     );
   });
 });

@@ -15,7 +15,7 @@ describe('switch', () => {
           c;
           break;
       }
-    `
+    `,
     );
   });
 
@@ -32,7 +32,7 @@ describe('switch', () => {
           c;
           break;
       }
-    `
+    `,
     );
   });
 
@@ -49,7 +49,7 @@ describe('switch', () => {
           c;
           break;
       }
-    `
+    `,
     );
   });
 
@@ -73,7 +73,7 @@ describe('switch', () => {
           e;
           break;
       }
-    `
+    `,
     );
   });
 
@@ -95,7 +95,7 @@ describe('switch', () => {
           e;
           break;
       }
-    `
+    `,
     );
   });
 
@@ -112,7 +112,7 @@ describe('switch', () => {
           d;
           break;
       }
-    `
+    `,
     );
   });
 
@@ -126,7 +126,7 @@ describe('switch', () => {
       switch (a) {
         case b: c; break;
       }
-    `
+    `,
     );
   });
 
@@ -147,7 +147,7 @@ describe('switch', () => {
         default:
           d;
       }
-    `
+    `,
     );
   });
 
@@ -163,7 +163,7 @@ describe('switch', () => {
         case b: c; break;
         default: d;
       }
-    `
+    `,
     );
   });
 
@@ -183,7 +183,7 @@ describe('switch', () => {
             break;
         }
       }
-    `
+    `,
     );
   });
 
@@ -208,7 +208,7 @@ describe('switch', () => {
           default: return g;
         }
       });
-    `
+    `,
     );
   });
 
@@ -229,7 +229,7 @@ describe('switch', () => {
             return d;
         }
       });
-    `
+    `,
     );
   });
 
@@ -250,7 +250,7 @@ describe('switch', () => {
         }
       };
       e;
-    `
+    `,
     );
   });
 
@@ -277,7 +277,7 @@ describe('switch', () => {
         options: {
           looseComparisonNegation: true,
         },
-      }
+      },
     );
   });
 
@@ -299,7 +299,7 @@ describe('switch', () => {
           'D';
           break;
       }
-    `
+    `,
     );
   });
 
@@ -319,7 +319,7 @@ describe('switch', () => {
           return g;
         default: return e;
       } })();
-    `
+    `,
     );
   });
 
@@ -333,7 +333,7 @@ describe('switch', () => {
       a((() => { switch (b) {
         case c: return d;
       } })());
-    `
+    `,
     );
   });
 
@@ -365,7 +365,7 @@ describe('switch', () => {
         case "Sun": go(church); break;
         default: go(work);
       }
-    `
+    `,
     );
   });
 
@@ -381,7 +381,7 @@ describe('switch', () => {
         case d:
           return {};
       } })());
-    `
+    `,
     );
   });
 
@@ -403,7 +403,7 @@ describe('switch', () => {
           break;
       }
           // Do nothing
-    `
+    `,
     );
   });
 
@@ -424,7 +424,7 @@ describe('switch', () => {
           return f;
       
       } })());
-    `
+    `,
     );
   });
 
@@ -455,7 +455,7 @@ describe('switch', () => {
             break;
         }
       });
-    `
+    `,
     );
   });
 
@@ -483,7 +483,7 @@ describe('switch', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -513,7 +513,7 @@ describe('switch', () => {
         }
         return result;
       })();
-    `
+    `,
     );
   });
 
@@ -538,7 +538,7 @@ describe('switch', () => {
           console.log('Got here');
           break;
       }
-    `
+    `,
     );
   });
 
@@ -557,7 +557,7 @@ describe('switch', () => {
           d;
           break;
       }
-    `
+    `,
     );
   });
 
@@ -577,7 +577,7 @@ describe('switch', () => {
             return 3;
         } }).call(this);
       });
-    `
+    `,
     );
   });
 
@@ -597,7 +597,7 @@ describe('switch', () => {
              return c;
         } })());
       });
-    `
+    `,
     );
   });
 
@@ -613,7 +613,7 @@ describe('switch', () => {
         case b:
           break;
       } })();
-    `
+    `,
     );
   });
 
@@ -632,7 +632,7 @@ describe('switch', () => {
             break;
         }
       });
-    `
+    `,
     );
   });
 
@@ -649,7 +649,7 @@ describe('switch', () => {
           c;
           break;
       }
-    `
+    `,
     );
   });
 
@@ -670,7 +670,7 @@ describe('switch', () => {
         }
         return d;
       });
-    `
+    `,
     );
   });
 
@@ -684,7 +684,7 @@ describe('switch', () => {
         4
       setResult(f())
     `,
-      4
+      4,
     );
   });
 
@@ -698,7 +698,7 @@ describe('switch', () => {
         4
       setResult('' + f())
     `,
-      'undefined'
+      'undefined',
     );
   });
 
@@ -719,7 +719,7 @@ describe('switch', () => {
             return d = e;
         } })();
       d;
-    `
+    `,
     );
   });
 });

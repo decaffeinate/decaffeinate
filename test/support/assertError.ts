@@ -7,7 +7,7 @@ import stripSharedIndent from '../../src/utils/stripSharedIndent';
 export default function assertError(
   source: string,
   expectedErrorText: string,
-  options: Options = DEFAULT_OPTIONS
+  options: Options = DEFAULT_OPTIONS,
 ): void {
   if (source[0] === '\n') {
     source = stripSharedIndent(source);

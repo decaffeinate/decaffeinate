@@ -31,7 +31,7 @@ async function runCli(
   stdin: string,
   expectedStdout: string,
   expectedStderr = '',
-  expectedExitCode = 0
+  expectedExitCode = 0,
 ): Promise<void> {
   if (stdin[0] === '\n') {
     stdin = stripSharedIndent(stdin);
@@ -92,7 +92,7 @@ describe('decaffeinate CLI', () => {
       const a = require('a');
       const x = 1;
       exports.b = 2;
-    `
+    `,
     );
   });
 
@@ -104,7 +104,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       const a = [...b, c];
-    `
+    `,
     );
   });
 
@@ -119,7 +119,7 @@ describe('decaffeinate CLI', () => {
       `
       // This is a literate file.
       const literate = true;
-    `
+    `,
     );
   });
 
@@ -131,7 +131,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       const a = require('a');
-    `
+    `,
     );
   });
 
@@ -143,7 +143,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       const a = require('a');
-    `
+    `,
     );
   });
 
@@ -159,7 +159,7 @@ describe('decaffeinate CLI', () => {
       defaultExport.a = 1;
       defaultExport.b = 2;
       export default defaultExport;
-    `
+    `,
     );
   });
 
@@ -175,7 +175,7 @@ describe('decaffeinate CLI', () => {
       defaultExport.a = 1;
       defaultExport.b = 2;
       export default defaultExport;
-    `
+    `,
     );
   });
 
@@ -195,7 +195,7 @@ describe('decaffeinate CLI', () => {
       import b from 'b';
       bar();
       const c = require('c');
-    `
+    `,
     );
   });
 
@@ -209,7 +209,7 @@ describe('decaffeinate CLI', () => {
       `
       export let a = 1;
       export let b = 2;
-    `
+    `,
     );
   });
 
@@ -224,7 +224,7 @@ describe('decaffeinate CLI', () => {
       function __in__(needle, haystack) {
         return Array.from(haystack).indexOf(needle) >= 0;
       }
-    `
+    `,
     );
   });
 
@@ -236,7 +236,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       const a = 1;
-    `
+    `,
     );
   });
 
@@ -248,7 +248,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       const a = 1;
-    `
+    `,
     );
   });
 
@@ -260,7 +260,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       let a = 1;
-    `
+    `,
     );
   });
 
@@ -282,7 +282,7 @@ describe('decaffeinate CLI', () => {
           }
         }
       };
-    `
+    `,
     );
   });
 
@@ -300,7 +300,7 @@ describe('decaffeinate CLI', () => {
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       const f = (x = 1) => 2;
-    `
+    `,
     );
   });
 
@@ -312,7 +312,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       const x = (b.map((a) => a + 1));
-    `
+    `,
     );
   });
 
@@ -327,7 +327,7 @@ describe('decaffeinate CLI', () => {
       for (let a of b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -339,7 +339,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       b.includes(a);
-    `
+    `,
     );
   });
 
@@ -354,7 +354,7 @@ describe('decaffeinate CLI', () => {
       if (a <= b) {
         c;
       }
-    `
+    `,
     );
   });
 
@@ -380,7 +380,7 @@ describe('decaffeinate CLI', () => {
         }
       }
     `,
-      '--disable-babel-constructor-workaround no longer has any effect as it is the only supported behavior'
+      '--disable-babel-constructor-workaround no longer has any effect as it is the only supported behavior',
     );
   });
 
@@ -405,7 +405,7 @@ describe('decaffeinate CLI', () => {
           super(...arguments);
         }
       }
-    `
+    `,
     );
   });
 
@@ -436,7 +436,7 @@ describe('decaffeinate CLI', () => {
       > 3 |     @a = 1
       > 4 |     super(arguments...)
     `,
-      1
+      1,
     );
   });
 
@@ -453,7 +453,7 @@ describe('decaffeinate CLI', () => {
        * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
        */
       typeof a !== 'undefined' && a !== null;
-    `
+    `,
     );
   });
 
@@ -465,7 +465,7 @@ describe('decaffeinate CLI', () => {
     `,
       `
       typeof a !== 'undefined' && a !== null;
-    `
+    `,
     );
   });
 
@@ -478,7 +478,7 @@ describe('decaffeinate CLI', () => {
       test_fixtures/B.coffee.md → test_fixtures/B.js
       test_fixtures/C.litcoffee → test_fixtures/C.js
       test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js
-    `
+    `,
     );
     ok(existsSync('test_fixtures/A.js'));
     ok(existsSync('test_fixtures/B.js'));
@@ -491,7 +491,7 @@ describe('decaffeinate CLI', () => {
       '',
       `
       ./test_fixtures/D.cjsx → test_fixtures/D.js
-    `
+    `,
     );
     ok(existsSync('test_fixtures/D.js'));
   });
@@ -502,7 +502,7 @@ describe('decaffeinate CLI', () => {
       '',
       `
       ./test_fixtures/E → test_fixtures/E.js
-    `
+    `,
     );
     ok(existsSync('test_fixtures/E.js'));
   });
@@ -514,14 +514,14 @@ describe('decaffeinate CLI', () => {
       '',
       `
       test_fixtures/F.tmp.js → test_fixtures/F.tmp.js
-    `
+    `,
     );
     const contents = readFileSync('./test_fixtures/F.tmp.js').toString();
     expect(stripSharedIndent(contents)).toEqual(
       stripSharedIndent(`
       import path from 'path';
       const b = 1;
-    `)
+    `),
     );
   });
 
@@ -540,14 +540,14 @@ describe('decaffeinate CLI', () => {
       '',
       `
       test_fixtures/searchDir/F.js → test_fixtures/searchDir/F.js
-    `
+    `,
     );
     const contents = readFileSync('./test_fixtures/searchDir/F.js').toString();
     expect(stripSharedIndent(contents)).toEqual(
       stripSharedIndent(`
       import path from 'path';
       const b = 1;
-    `)
+    `),
     );
   });
 
@@ -557,14 +557,14 @@ describe('decaffeinate CLI', () => {
       '',
       `
       test_fixtures/level1/level2/file.coffee → test_fixtures/level1/level2/file.js 
-    `
+    `,
     );
     const contents = readFileSync('./test_fixtures/level1/level2/file.js').toString();
     equal(
       stripSharedIndent(contents),
       stripSharedIndent(`
       const a = 1;
-    `)
+    `),
     );
   });
 
@@ -580,7 +580,7 @@ describe('decaffeinate CLI', () => {
       `
       cannot use --use-js-modules with --no-bare
     `,
-      1
+      1,
     );
   });
 });

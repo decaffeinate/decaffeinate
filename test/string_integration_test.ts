@@ -25,7 +25,7 @@ function generateThreeLineTests(strings: Array<string>): Array<string> {
 function runAssignmentTest(quote: string, string: string): void {
   validate(
     `testVariable = "test variable"
-setResult(${quote}${string}${quote})`
+setResult(${quote}${string}${quote})`,
   );
 }
 
@@ -34,7 +34,7 @@ function runFunctionTest(quote: string, string: string): void {
     `runTest = () ->
   testVariable = "test variable"
   return ${quote}${string}${quote}
-setResult(runTest())`
+setResult(runTest())`,
   );
 }
 
@@ -58,7 +58,7 @@ describe('string integration', function (): void {
           runAssignmentTest(quote, string);
         }
       },
-      timeout
+      timeout,
     );
 
     it(
@@ -68,7 +68,7 @@ describe('string integration', function (): void {
           runFunctionTest(quote, string);
         }
       },
-      timeout
+      timeout,
     );
 
     it(
@@ -78,7 +78,7 @@ describe('string integration', function (): void {
           runAssignmentTest(quote, string);
         }
       },
-      timeout
+      timeout,
     );
 
     it(
@@ -88,7 +88,7 @@ describe('string integration', function (): void {
           runFunctionTest(quote, string);
         }
       },
-      timeout
+      timeout,
     );
   }
 });

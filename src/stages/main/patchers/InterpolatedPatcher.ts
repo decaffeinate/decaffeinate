@@ -45,7 +45,7 @@ export default class InterpolatedPatcher extends NodePatcher {
     const interpolationStartIndex = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       this.quasis[index].contentEnd,
       this.contentEnd,
-      (token) => token.type === SourceType.INTERPOLATION_START
+      (token) => token.type === SourceType.INTERPOLATION_START,
     );
     if (!interpolationStartIndex) {
       throw this.error('Cannot find interpolation start for string interpolation.');

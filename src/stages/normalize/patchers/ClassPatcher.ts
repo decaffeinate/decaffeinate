@@ -40,7 +40,7 @@ export default class ClassPatcher extends NodePatcher {
     patcherContext: PatcherContext,
     nameAssignee: NodePatcher | null,
     parent: NodePatcher | null,
-    body: BlockPatcher | null
+    body: BlockPatcher | null,
   ) {
     super(patcherContext);
     this.nameAssignee = nameAssignee;
@@ -171,7 +171,7 @@ export default class ClassPatcher extends NodePatcher {
     const index = this.indexOfSourceTokenBetweenSourceIndicesMatching(
       searchStart,
       searchEnd,
-      (token) => token.type === SourceType.THEN
+      (token) => token.type === SourceType.THEN,
     );
     if (index) {
       this.overwrite(searchStart, searchEnd, `\n${this.getIndent(1)}`);
@@ -310,7 +310,7 @@ export default class ClassPatcher extends NodePatcher {
           this.overwrite(
             patcher.expression.outerStart,
             patcher.expression.outerEnd,
-            `->\n${bodyIndent}${indentString}return ${ctorName}.apply(this, arguments)`
+            `->\n${bodyIndent}${indentString}return ${ctorName}.apply(this, arguments)`,
           );
 
           return {
@@ -334,7 +334,7 @@ export default class ClassPatcher extends NodePatcher {
   generateInitClassMethod(
     nonMethodPatchers: Array<NonMethodInfo>,
     customConstructorInfo: CustomConstructorInfo | null,
-    insertPoint: number
+    insertPoint: number,
   ): Array<string> {
     const bodyIndent = this.getBodyIndent();
     const indentString = this.getProgramIndentString();

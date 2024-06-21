@@ -26,15 +26,15 @@ export default class OptionalChainingSoakedFunctionApplicationPatcher extends Fu
   patchAsExpression(): void {
     if (isInsideAssignee(this.node)) {
       throw this.error(
-        `JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.`
+        `JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.`,
       );
     }
 
     const existenceTokenIndex = notNull(
-      this.indexOfSourceTokenAfterSourceTokenIndex(this.fn.outerEndTokenIndex, SourceType.EXISTENCE)
+      this.indexOfSourceTokenAfterSourceTokenIndex(this.fn.outerEndTokenIndex, SourceType.EXISTENCE),
     );
     const lparenTokenIndex = notNull(
-      this.indexOfSourceTokenAfterSourceTokenIndex(existenceTokenIndex, SourceType.CALL_START)
+      this.indexOfSourceTokenAfterSourceTokenIndex(existenceTokenIndex, SourceType.CALL_START),
     );
     const lparenToken = notNull(this.sourceTokenAtIndex(lparenTokenIndex));
 

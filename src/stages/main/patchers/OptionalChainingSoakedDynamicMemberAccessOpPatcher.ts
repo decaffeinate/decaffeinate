@@ -25,14 +25,14 @@ export default class OptionalChainingSoakedDynamicMemberAccessOpPatcher extends 
   patchAsExpression(): void {
     if (isInsideAssignee(this.node)) {
       throw this.error(
-        `JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.`
+        `JavaScript does not allow an optional chaining expression in an assignment position. Run without --optional-chaining or edit the original source to remove the assignment of an optional chaining expression.`,
       );
     }
 
     const bracketTokenIndex = this.indexOfSourceTokenBetweenPatchersMatching(
       this.expression,
       this.indexingExpr,
-      (token) => token.type === SourceType.LBRACKET
+      (token) => token.type === SourceType.LBRACKET,
     );
 
     if (!bracketTokenIndex) {

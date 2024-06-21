@@ -8,7 +8,7 @@ describe('debugger', () => {
     `,
       `
       debugger;
-    `
+    `,
     );
   });
 });

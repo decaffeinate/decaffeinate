@@ -10,6 +10,6 @@ test('wraps in an IIFE if requested', () => {
 
 test('cannot be used with useJSModules', () => {
   expect(() => check(`a = 1`, `const a = 1;`, { options: { useJSModules: true, bare: false } })).toThrow(
-    /useJSModules requires bare output/
+    /useJSModules requires bare output/,
   );
 });
